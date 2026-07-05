@@ -186,6 +186,10 @@ function App() {
             k0 === 'chat' || k0 === 'chat-v2' || k0 === 'caty-suggestions' ||
             k0 === 'profile-avatars-local' || k0 === 'profile-avatars-by-name-local'
           ) return false;
+          // STRATA role affordances must never be served stale from disk —
+          // a role grant would otherwise stay invisible until the 30-day
+          // buster or a manual cache clear (CAT-STRATA-20260705-001 s004).
+          if (k0 === 'strata' && q.queryKey[1] === 'my-roles') return false;
           return q.state.status === 'success';
         },
       },

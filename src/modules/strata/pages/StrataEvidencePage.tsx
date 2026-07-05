@@ -14,12 +14,13 @@ import { useLocation, useNavigate, useParams, useSearchParams } from 'react-rout
 import {
   CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip as RechartsTooltip, XAxis, YAxis,
 } from 'recharts';
-import { Button, EmptyState, SectionMessage, Spinner } from '@/components/ads';
-import { Activity, FileText } from '@/lib/atlaskit-icons';
+import { Button, EmptyState, Lozenge, SectionMessage, Spinner } from '@/components/ads';
+import { Activity, FileText, Layers } from '@/lib/atlaskit-icons';
 import { Routes } from '@/lib/routes';
 import { LABEL, SMALL } from '@/components/project-hub/dashboard/dashboardTypography';
 import {
-  useCalcValues, useKpiBySlug, usePortfolioBySlug, useScorecardInstanceBySlug, useUploadRuns,
+  useCalcValues, useKpiBySlug, useKpiEvidenceChain, usePerspectives, usePortfolioBySlug,
+  useProfileNames, useScorecardInstanceBySlug, useSnapshots, useStrataContext, useUploadRuns,
 } from '@/modules/strata/hooks/useStrata';
 import {
   StrataBandLozenge, StrataPageShell, StrataPanel, StrataScoreRing, T,
@@ -27,7 +28,7 @@ import {
 import {
   EvidenceConfigContext, EvidenceInputs, EvidenceRow, shortId,
 } from '@/modules/strata/components/evidence';
-import { fmtDate, fmtDateTime, fmtPct, fmtRatioPct, fmtScore, labelize } from '@/modules/strata/components/format';
+import { fmtDate, fmtDateTime, fmtPct, fmtRatioPct, fmtScore, fmtUnit, labelize } from '@/modules/strata/components/format';
 import type { StrataCalculatedValue } from '@/modules/strata/types';
 
 type EvidenceKind = 'kpi' | 'scorecard' | 'portfolio';
@@ -59,10 +60,68 @@ const KIND_META: Record<EvidenceKind, {
   },
 };
 
-/** Confidence arrives either as ratio (0–1) or percent — format by scale. */
+/** Confidence/progress arrive either as ratio (0–1) or percent — format by scale. */
 const fmtConfidence = (v: number | null | undefined): string | null => {
   if (v == null) return null;
   return Number(v) <= 1 ? fmtRatioPct(v) : fmtPct(v);
+};
+
+// ── KPI evidence chain (strata_kpi_evidence_chain jsonb — honest nulls/[]) ───
+interface EvidenceChainPayload {
+  kpi?: { id: string; name: string; unit: string | null } | null;
+  formula_version?: { version?: number | null; expression?: string | null; formula_type?: string | null } | null;
+  target?: { target?: number | null; baseline?: number | null; target_type?: string | null; version?: number | null } | null;
+  actual?: {
+    value?: number | null; validation_status?: string | null; entry_method?: string | null;
+    submitted_by?: string | null; submitted_at?: string | null; validated_by?: string | null;
+  } | null;
+  lineage?: Array<{
+    id: string; upload_run_id: string | null; run_key: string | null; written_at?: string | null;
+  }> | null;
+  elements?: Array<{
+    id: string; name: string; element_type?: string | null; owner_id: string | null;
+    perspective_id: string | null; weight?: number | null;
+  }> | null;
+  initiatives?: Array<{
+    id: string; name: string; stage: string | null; status: string | null; owner_id: string | null;
+  }> | null;
+  projects?: Array<{
+    id: string; name: string; source_system: string | null; execution_health: string | null;
+    actual_progress: number | null; milestones: number | null; blocked_dependencies: number | null;
+  }> | null;
+  benefits?: Array<{
+    id: string; name: string; lifecycle_stage: string | null; confidence: number | null;
+  }> | null;
+  snapshots?: Array<{ snapshot_id: string }> | null;
+}
+
+/** Validation status → lozenge (same convention as KPI detail / VMO pages). */
+const VALIDATION_LOZENGE: Record<string, { label: string; appearance: React.ComponentProps<typeof Lozenge>['appearance'] }> = {
+  validated: { label: 'Validated', appearance: 'success' },
+  pending: { label: 'Pending', appearance: 'moved' },
+  rejected: { label: 'Rejected', appearance: 'removed' },
+  quarantined: { label: 'Quarantined', appearance: 'moved' },
+};
+
+/** Honest empty line for a chain section — never invented data. */
+function ChainEmpty({ text }: { text: string }) {
+  return <span style={{ color: T.subtlest }}>{text}</span>;
+}
+
+/** One linked entity line inside a chain section. */
+function ChainItem({ children }: { children: React.ReactNode }) {
+  return (
+    <span style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', minWidth: 0 }}>
+      {children}
+    </span>
+  );
+}
+
+const chainMetaStyle: React.CSSProperties = {
+  fontSize: 'var(--ds-font-size-100)', color: T.subtlest, whiteSpace: 'nowrap',
+};
+const chainListStyle: React.CSSProperties = {
+  display: 'flex', flexDirection: 'column', gap: 6,
 };
 
 export default function StrataEvidencePage() {
@@ -85,11 +144,33 @@ export default function StrataEvidencePage() {
 
   const calcQ = useCalcValues(entity ? meta.entityType : undefined, entity?.id);
   const uploadRunsQ = useUploadRuns();
+
+  // Full KPI evidence chain (F-REP-005) — KPI routes only, for the active period.
+  const { activePeriod } = useStrataContext();
+  const chainQ = useKpiEvidenceChain(
+    kind === 'kpi' ? entity?.id : undefined,
+    kind === 'kpi' ? activePeriod?.id : undefined,
+  );
+  const chain = (chainQ.data ?? null) as EvidenceChainPayload | null;
+  const profilesQ = useProfileNames();
+  const perspectivesQ = usePerspectives();
+  const perspectiveNameById = useMemo(
+    () => new Map((perspectivesQ.data ?? []).map((p) => [p.id, p.name])),
+    [perspectivesQ.data],
+  );
+  const nameOf = (id?: string | null): string | null =>
+    (id ? profilesQ.data?.get(id)?.name ?? null : null);
   const runKeyById = useMemo(() => {
     const m = new Map<string, string>();
     (uploadRunsQ.data ?? []).forEach((r) => m.set(r.id, r.run_key));
     return m;
   }, [uploadRunsQ.data]);
+  // Snapshot deep links: resolve snapshot_id → snapshot_key (route-first canon — no UUID URLs).
+  const snapshotsQ = useSnapshots();
+  const snapshotKeyById = useMemo(
+    () => new Map((snapshotsQ.data ?? []).map((s) => [s.id, s.snapshot_key])),
+    [snapshotsQ.data],
+  );
 
   // Hook returns newest-first (calculated_at desc).
   const values: StrataCalculatedValue[] = calcQ.data ?? [];
@@ -201,6 +282,188 @@ export default function StrataEvidencePage() {
             </div>
           ) : null}
 
+          {/* Full evidence chain (KPI routes only): strategy → execution → value → source */}
+          {kind === 'kpi' ? (
+            <StrataPanel
+              title={activePeriod ? `Evidence chain · ${activePeriod.name}` : 'Evidence chain'}
+              icon={<Layers size={16} />}
+              testId="strata-evidence-chain"
+            >
+              {!activePeriod ? (
+                <EmptyState
+                  size="compact"
+                  header="No active period"
+                  description="Select a period to trace this KPI's evidence chain."
+                  testId="strata-evidence-chain-no-period"
+                />
+              ) : chainQ.isLoading ? (
+                <div style={{ display: 'flex', justifyContent: 'center', padding: 24 }}><Spinner size="medium" /></div>
+              ) : chainQ.isError ? (
+                <SectionMessage appearance="error" title="Could not load the evidence chain">
+                  <p>{(chainQ.error as Error | null)?.message ?? 'Unknown error.'}</p>
+                </SectionMessage>
+              ) : chain ? (
+                <>
+                  <EvidenceRow k="Strategy">
+                    {chain.elements?.length ? (
+                      <span style={chainListStyle}>
+                        {chain.elements.map((el) => (
+                          <ChainItem key={el.id}>
+                            <strong style={{ color: T.text, fontWeight: 600 }}>{el.name}</strong>
+                            {el.element_type ? <Lozenge appearance="default">{labelize(el.element_type)}</Lozenge> : null}
+                            <span style={chainMetaStyle}>
+                              {[
+                                el.perspective_id ? perspectiveNameById.get(el.perspective_id) ?? null : null,
+                                nameOf(el.owner_id) ? `Owner ${nameOf(el.owner_id)}` : null,
+                                el.weight != null ? `Weight ${fmtScore(el.weight)}` : null,
+                              ].filter(Boolean).join(' · ') || '—'}
+                            </span>
+                          </ChainItem>
+                        ))}
+                      </span>
+                    ) : <ChainEmpty text="No linked strategy elements yet" />}
+                  </EvidenceRow>
+                  <EvidenceRow k="Initiatives">
+                    {chain.initiatives?.length ? (
+                      <span style={chainListStyle}>
+                        {chain.initiatives.map((ini) => (
+                          <ChainItem key={ini.id}>
+                            <strong style={{ color: T.text, fontWeight: 600 }}>{ini.name}</strong>
+                            {ini.stage ? <Lozenge appearance="default">{labelize(ini.stage)}</Lozenge> : null}
+                            {ini.status ? <Lozenge appearance={ini.status === 'active' ? 'inprogress' : 'default'}>{labelize(ini.status)}</Lozenge> : null}
+                            <span style={chainMetaStyle}>{nameOf(ini.owner_id) ? `Owner ${nameOf(ini.owner_id)}` : '—'}</span>
+                          </ChainItem>
+                        ))}
+                      </span>
+                    ) : <ChainEmpty text="No linked initiatives yet" />}
+                  </EvidenceRow>
+                  <EvidenceRow k="Projects">
+                    {chain.projects?.length ? (
+                      <span style={chainListStyle}>
+                        {chain.projects.map((p) => (
+                          <ChainItem key={p.id}>
+                            <strong style={{ color: T.text, fontWeight: 600 }}>{p.name}</strong>
+                            {p.source_system ? <Lozenge appearance="default">{labelize(p.source_system)}</Lozenge> : null}
+                            <StrataBandLozenge bandKey={p.execution_health} />
+                            <span style={chainMetaStyle}>
+                              {[
+                                p.actual_progress != null ? `Progress ${fmtConfidence(p.actual_progress)}` : null,
+                                p.milestones != null ? `${p.milestones} milestone${p.milestones === 1 ? '' : 's'}` : null,
+                              ].filter(Boolean).join(' · ') || '—'}
+                            </span>
+                            {p.blocked_dependencies ? (
+                              <span style={{ ...chainMetaStyle, color: 'var(--ds-text-danger)', fontWeight: 600 }}>
+                                {p.blocked_dependencies} blocked
+                              </span>
+                            ) : null}
+                          </ChainItem>
+                        ))}
+                      </span>
+                    ) : <ChainEmpty text="No linked projects yet" />}
+                  </EvidenceRow>
+                  <EvidenceRow k="Benefits">
+                    {chain.benefits?.length ? (
+                      <span style={chainListStyle}>
+                        {chain.benefits.map((b) => (
+                          <ChainItem key={b.id}>
+                            <strong style={{ color: T.text, fontWeight: 600 }}>{b.name}</strong>
+                            {b.lifecycle_stage ? <Lozenge appearance="default">{labelize(b.lifecycle_stage)}</Lozenge> : null}
+                            <span style={chainMetaStyle}>
+                              {fmtConfidence(b.confidence) ? `Confidence ${fmtConfidence(b.confidence)}` : '—'}
+                            </span>
+                          </ChainItem>
+                        ))}
+                      </span>
+                    ) : <ChainEmpty text="No linked benefits yet" />}
+                  </EvidenceRow>
+                  <EvidenceRow k="Source lineage">
+                    {chain.lineage?.length ? (
+                      <span style={chainListStyle}>
+                        {chain.lineage.map((l) => (
+                          <ChainItem key={l.id}>
+                            {l.run_key ? (
+                              <Button appearance="subtle" spacing="compact" onClick={() => navigate(Routes.strata.run(l.run_key!))}>
+                                {l.run_key}
+                              </Button>
+                            ) : (
+                              <span style={{ color: T.text }}>Manual channel</span>
+                            )}
+                            <span style={chainMetaStyle}>{l.written_at ? `Written ${fmtDateTime(l.written_at)}` : '—'}</span>
+                          </ChainItem>
+                        ))}
+                      </span>
+                    ) : <ChainEmpty text="No lineage recorded yet" />}
+                  </EvidenceRow>
+                  <EvidenceRow k="Formula version">
+                    {chain.formula_version ? (
+                      <ChainItem>
+                        <strong style={{ color: T.text, fontWeight: 600 }}>
+                          {chain.formula_version.version != null ? `v${chain.formula_version.version}` : '—'}
+                        </strong>
+                        <span style={{ color: T.subtle }}>{chain.formula_version.expression ?? '—'}</span>
+                      </ChainItem>
+                    ) : <ChainEmpty text="No approved formula yet" />}
+                  </EvidenceRow>
+                  <EvidenceRow k="Target">
+                    {chain.target ? (
+                      <ChainItem>
+                        <strong style={{ color: T.text, fontWeight: 600 }}>
+                          {fmtUnit(chain.target.target, chain.kpi?.unit)}
+                        </strong>
+                        <span style={chainMetaStyle}>
+                          {chain.target.baseline != null ? `Baseline ${fmtUnit(chain.target.baseline, chain.kpi?.unit)}` : 'Baseline —'}
+                        </span>
+                      </ChainItem>
+                    ) : <ChainEmpty text="No approved target for this period" />}
+                  </EvidenceRow>
+                  <EvidenceRow k="Actual">
+                    {chain.actual ? (
+                      <ChainItem>
+                        <strong style={{ color: T.text, fontWeight: 600 }}>
+                          {fmtUnit(chain.actual.value, chain.kpi?.unit)}
+                        </strong>
+                        {chain.actual.validation_status && VALIDATION_LOZENGE[chain.actual.validation_status] ? (
+                          <Lozenge appearance={VALIDATION_LOZENGE[chain.actual.validation_status].appearance}>
+                            {VALIDATION_LOZENGE[chain.actual.validation_status].label}
+                          </Lozenge>
+                        ) : chain.actual.validation_status ? (
+                          <Lozenge appearance="default">{labelize(chain.actual.validation_status)}</Lozenge>
+                        ) : null}
+                        <span style={chainMetaStyle}>
+                          {[
+                            nameOf(chain.actual.submitted_by) ? `Submitted by ${nameOf(chain.actual.submitted_by)}` : null,
+                            nameOf(chain.actual.validated_by) ? `Validated by ${nameOf(chain.actual.validated_by)}` : null,
+                          ].filter(Boolean).join(' · ') || '—'}
+                        </span>
+                      </ChainItem>
+                    ) : <ChainEmpty text="No actual submitted for this period" />}
+                  </EvidenceRow>
+                  <EvidenceRow k="Snapshots">
+                    {chain.snapshots?.length ? (
+                      <span style={chainListStyle}>
+                        {chain.snapshots.map((s) => {
+                          const key = snapshotKeyById.get(s.snapshot_id) ?? null;
+                          return (
+                            <ChainItem key={s.snapshot_id}>
+                              <Button
+                                appearance="subtle"
+                                spacing="compact"
+                                onClick={() => navigate(key ? Routes.strata.review(key) : Routes.strata.reviews())}
+                              >
+                                {key ?? shortId(s.snapshot_id)}
+                              </Button>
+                              <span style={chainMetaStyle}>Frozen in governance snapshot</span>
+                            </ChainItem>
+                          );
+                        })}
+                      </span>
+                    ) : <ChainEmpty text="Not yet frozen in any snapshot" />}
+                  </EvidenceRow>
+                </>
+              ) : null}
+            </StrataPanel>
+          ) : null}
+
           {/* History — calc-value trend, oldest → newest */}
           <StrataPanel
             title={latest ? `History · ${labelize(latest.metric_key)}` : 'History'}
@@ -288,7 +551,16 @@ export default function StrataEvidencePage() {
                   <EvidenceRow k="Config context"><EvidenceConfigContext ctx={cv.config_context} /></EvidenceRow>
                   <EvidenceRow k="Confidence">{fmtConfidence(cv.confidence) ?? '—'}</EvidenceRow>
                   <EvidenceRow k="Calculated at">{fmtDateTime(cv.calculated_at)}</EvidenceRow>
-                  <EvidenceRow k="Snapshot">{cv.snapshot_id ? 'Frozen in snapshot' : 'Live (not yet snapshotted)'}</EvidenceRow>
+                  <EvidenceRow k="Snapshot">
+                    {cv.snapshot_id ? (() => {
+                      const key = snapshotKeyById.get(cv.snapshot_id!) ?? null;
+                      return key ? (
+                        <Button appearance="subtle" spacing="compact" onClick={() => navigate(Routes.strata.review(key))}>
+                          {key}
+                        </Button>
+                      ) : 'Frozen in snapshot';
+                    })() : 'Live (not yet snapshotted)'}
+                  </EvidenceRow>
                 </div>
               ))
             )}

@@ -446,7 +446,7 @@ export function StrataDecisionModal({
     }
   };
   return (
-    <Modal onClose={busy ? () => {} : onClose} width="small" testId={testId}>
+    <Modal isOpen onClose={busy ? () => {} : onClose} width="small" testId={testId}>
       <ModalHeader><ModalTitle>{title}</ModalTitle></ModalHeader>
       <ModalBody>
         {description ? <p style={{ margin: '0 0 12px', fontSize: 'var(--ds-font-size-200)', color: T.subtle }}>{description}</p> : null}

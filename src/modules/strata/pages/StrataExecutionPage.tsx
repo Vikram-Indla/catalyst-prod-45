@@ -22,14 +22,20 @@ import { Routes } from '@/lib/routes';
 import {
   StrataBandLozenge, StrataPageShell, StrataPanel, StrataStatStrip, T,
 } from '@/modules/strata/components/shared';
+import { StrataFormModal } from '@/modules/strata/components/authoring';
+import type { StrataFormValues } from '@/modules/strata/components/authoring';
+import { InitiativeDetailModal } from '@/modules/strata/components/InitiativeDetailModal';
+import { ProjectDetailModal } from '@/modules/strata/components/ProjectDetailModal';
+import { executionApi } from '@/modules/strata/domain';
 import { fmtDate, fmtPct, fmtRatioPct, fmtSarCompact, labelize } from '@/modules/strata/components/format';
 import {
   useDependencies, useInitiativeElements, useInitiativeKpis, useInitiativeProjects,
-  useInitiatives, useKpis, useMilestones, useProfileNames, useProjectCards, useStrataContext, useStrategyElements,
+  useInitiatives, useInvalidateStrata, useKpis, useMilestones, useProfileNames,
+  useProjectCards, useStrataContext, useStrataRoles, useStrategyElements,
 } from '@/modules/strata/hooks/useStrata';
 import type {
   StrataDependency, StrataInitiative, StrataInitiativeProject, StrataKpi,
-  StrataMilestone, StrataProjectCard, StrataStrategyElement,
+  StrataMilestone, StrataProjectCard, StrataRole, StrataStrategyElement,
 } from '@/modules/strata/types';
 
 type LozengeAppearance = React.ComponentProps<typeof Lozenge>['appearance'];
@@ -47,6 +53,17 @@ const DEPENDENCY_STATUS: Record<StrataDependency['status'], 'default' | 'inprogr
 const SOURCE_LABEL: Record<StrataProjectCard['source_system'], string> = {
   jira: 'Jira', manual: 'Manual', upload: 'Upload', api: 'API',
 };
+
+// Create/edit affordances (DB enforces the real rules — this is UI gating only).
+const WRITE_ROLES: StrataRole[] = ['strategy_office', 'vmo_validator', 'data_steward', 'strata_admin'];
+
+/** Form-value coercion: empty/blank → undefined so optional RPC args stay null. */
+const fvStr = (v: unknown): string | undefined =>
+  typeof v === 'string' && v.trim() !== '' ? v.trim() : undefined;
+const fvNum = (v: unknown): number | undefined =>
+  typeof v === 'number' && Number.isFinite(v) ? v : undefined;
+
+const DEPENDENCY_TYPE_OPTIONS = ['delivery', 'data', 'decision', 'resource', 'external'];
 
 const Dash = () => <span style={{ color: T.subtlest }}>—</span>;
 
@@ -231,9 +248,10 @@ function MilestonesSubtable({ projectCardId }: { projectCardId: string }) {
 }
 
 // ── Project card (source-agnostic showcase) ──────────────────────────────────
-function ProjectCardItem({ card, mappingConfidence }: {
+function ProjectCardItem({ card, mappingConfidence, onOpenDetail }: {
   card: StrataProjectCard;
   mappingConfidence: number | null;
+  onOpenDetail: () => void;
 }) {
   const [expanded, setExpanded] = useState(false);
   // Fetched eagerly so the toggle can show the milestone count (S-161);
@@ -298,9 +316,17 @@ function ProjectCardItem({ card, mappingConfidence }: {
         ) : null}
         {synced ? <span style={captionStyle}>Synced {synced}</span> : null}
       </div>
-      <div>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
         <Button appearance="subtle" spacing="compact" onClick={() => setExpanded((v) => !v)}>
           {`${expanded ? 'Hide' : 'Show'} milestones${milestoneCount != null ? ` (${milestoneCount})` : ''}`}
+        </Button>
+        <Button
+          appearance="subtle"
+          spacing="compact"
+          onClick={onOpenDetail}
+          testId={`strata-project-detail-open-${card.slug ?? card.id}`}
+        >
+          Details
         </Button>
       </div>
       {expanded ? <MilestonesSubtable projectCardId={card.id} /> : null}
@@ -325,6 +351,14 @@ export default function StrataExecutionPage() {
   const dependenciesQ = useDependencies();
   const profilesQ = useProfileNames();
   const [railFilter, setRailFilter] = useState('');
+
+  // ── Authoring state (Lanes C+D) ────────────────────────────────────────────
+  const invalidate = useInvalidateStrata();
+  const roles = useStrataRoles().data ?? [];
+  const canWrite = roles.some((r) => WRITE_ROLES.includes(r));
+  const [pageForm, setPageForm] = useState<'new-initiative' | 'new-project' | 'new-dependency' | null>(null);
+  const [detailInitiativeId, setDetailInitiativeId] = useState<string | null>(null);
+  const [detailProjectId, setDetailProjectId] = useState<string | null>(null);
 
   const initiatives = initiativesQ.data ?? [];
   const projectCards = projectCardsQ.data ?? [];
@@ -437,6 +471,14 @@ export default function StrataExecutionPage() {
   // fallback selection (initiatives[0]) is still the index view.
   const trailEntity = slug && selected && selected.slug === slug ? selected : null;
 
+  // Detail-modal entities derived from live query data so RPC writes +
+  // invalidation refresh the open modal (never a stale snapshot).
+  const detailInitiative = detailInitiativeId ? initiativeById.get(detailInitiativeId) ?? null : null;
+  const detailProject = detailProjectId ? cardById.get(detailProjectId) ?? null : null;
+
+  const submitAndRefresh = (fn: (v: StrataFormValues) => Promise<unknown>) =>
+    async (v: StrataFormValues) => { await fn(v); invalidate(); };
+
   return (
     <StrataPageShell
       trail={trailEntity ? [
@@ -445,6 +487,16 @@ export default function StrataExecutionPage() {
       ] : undefined}
       hideTitle={!!trailEntity}
       docTitle={trailEntity ? trailEntity.name : undefined}
+      headerActions={canWrite ? (
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <Button spacing="compact" onClick={() => setPageForm('new-initiative')} testId="strata-new-initiative">
+            New initiative
+          </Button>
+          <Button spacing="compact" appearance="primary" onClick={() => setPageForm('new-project')} testId="strata-new-project-card">
+            New project card
+          </Button>
+        </div>
+      ) : undefined}
       testId="strata-execution-chrome"
     >
       {isLoading ? (
@@ -506,6 +558,15 @@ export default function StrataExecutionPage() {
                           <span style={{ fontSize: 'var(--ds-font-size-100)', color: T.subtle }}>{ownerProfile.name}</span>
                         </span>
                       ) : null}
+                      <span style={{ marginLeft: 'auto' }}>
+                        <Button
+                          spacing="compact"
+                          onClick={() => setDetailInitiativeId(selected.id)}
+                          testId="strata-initiative-detail-open"
+                        >
+                          Details
+                        </Button>
+                      </span>
                     </div>
                     <StrataStatStrip
                       items={[
@@ -590,7 +651,12 @@ export default function StrataExecutionPage() {
                           const card = cardById.get(link.project_card_id);
                           if (!card) return null;
                           return (
-                            <ProjectCardItem key={link.id} card={card} mappingConfidence={link.mapping_confidence} />
+                            <ProjectCardItem
+                              key={link.id}
+                              card={card}
+                              mappingConfidence={link.mapping_confidence}
+                              onOpenDetail={() => setDetailProjectId(card.id)}
+                            />
                           );
                         })}
                       </div>
@@ -607,6 +673,11 @@ export default function StrataExecutionPage() {
               title="Dependencies — all initiatives"
               icon={<GitBranch size={16} />}
               count={dependencies.length || null}
+              actions={canWrite ? (
+                <Button spacing="compact" onClick={() => setPageForm('new-dependency')} testId="strata-new-dependency">
+                  New dependency
+                </Button>
+              ) : undefined}
               testId="strata-dependencies"
               noPadding
             >
@@ -637,6 +708,178 @@ export default function StrataExecutionPage() {
           </div>
         </>
       )}
+
+      {/* ── Authoring modals (Lanes C+D) — server-validated RPCs only ── */}
+      <StrataFormModal
+        open={pageForm === 'new-initiative'}
+        onClose={() => setPageForm(null)}
+        title="New initiative"
+        description={activeCycle ? `Created in cycle "${activeCycle.name}".` : undefined}
+        submitLabel="Create"
+        fields={[
+          { key: 'name', label: 'Name', kind: 'text', required: true },
+          { key: 'description', label: 'Description', kind: 'textarea' },
+          { key: 'sponsorId', label: 'Sponsor', kind: 'user' },
+          { key: 'ownerId', label: 'Owner', kind: 'user' },
+          { key: 'stage', label: 'Stage', kind: 'text', placeholder: 'proposed', helper: 'Governed stage taxonomy — free text' },
+          { key: 'budgetEnvelope', label: 'Budget envelope (SAR)', kind: 'number', min: 0 },
+          { key: 'businessCase', label: 'Business case', kind: 'textarea' },
+          { key: 'valueHypothesis', label: 'Value hypothesis', kind: 'textarea' },
+        ]}
+        onSubmit={submitAndRefresh((v) => executionApi.createInitiative({
+          name: String(v.name ?? '').trim(), cycleId: activeCycle?.id,
+          description: fvStr(v.description), sponsorId: fvStr(v.sponsorId), ownerId: fvStr(v.ownerId),
+          stage: fvStr(v.stage), budgetEnvelope: fvNum(v.budgetEnvelope),
+          businessCase: fvStr(v.businessCase), valueHypothesis: fvStr(v.valueHypothesis),
+        }))}
+        testId="strata-initiative-create-modal"
+      />
+
+      <StrataFormModal
+        open={pageForm === 'new-project'}
+        onClose={() => setPageForm(null)}
+        title="New project card"
+        description="Project cards are source-agnostic: manual cards need no source key."
+        submitLabel="Create"
+        fields={[
+          { key: 'name', label: 'Name', kind: 'text', required: true },
+          {
+            key: 'sourceSystem', label: 'Source system', kind: 'select', required: true,
+            options: [
+              { value: 'manual', label: 'Manual' },
+              { value: 'jira', label: 'Jira' },
+              { value: 'upload', label: 'Upload' },
+              { value: 'api', label: 'API' },
+            ],
+          },
+          { key: 'sourceKey', label: 'Source key', kind: 'text', helper: 'Required for Jira / Upload / API sources; not used for Manual' },
+          { key: 'pmId', label: 'Project manager', kind: 'user' },
+          { key: 'sector', label: 'Sector', kind: 'text' },
+          { key: 'budget', label: 'Budget (SAR)', kind: 'number', min: 0 },
+          { key: 'baselineStart', label: 'Baseline start', kind: 'date' },
+          { key: 'baselineEnd', label: 'Baseline end', kind: 'date' },
+          { key: 'forecastEnd', label: 'Forecast end', kind: 'date' },
+          { key: 'stage', label: 'Stage', kind: 'text', placeholder: 'planning', helper: 'Governed stage taxonomy — free text' },
+          {
+            key: 'executionHealth', label: 'Execution health', kind: 'select',
+            options: [
+              { value: 'on_track', label: 'On track' },
+              { value: 'at_risk', label: 'At risk' },
+              { value: 'off_track', label: 'Off track' },
+            ],
+            helper: 'Leave empty when unknown',
+          },
+        ]}
+        initial={{ sourceSystem: 'manual' }}
+        onSubmit={submitAndRefresh(async (v) => {
+          const sourceSystem = (fvStr(v.sourceSystem) ?? 'manual') as 'manual' | 'upload' | 'api' | 'jira';
+          const sourceKey = fvStr(v.sourceKey);
+          if (sourceSystem !== 'manual' && !sourceKey) {
+            throw new Error(`Source key is required for ${SOURCE_LABEL[sourceSystem]} project cards.`);
+          }
+          return executionApi.createProjectCard({
+            name: String(v.name ?? '').trim(), sourceSystem,
+            sourceKey: sourceSystem === 'manual' ? undefined : sourceKey,
+            pmId: fvStr(v.pmId), sector: fvStr(v.sector), budget: fvNum(v.budget),
+            baselineStart: fvStr(v.baselineStart), baselineEnd: fvStr(v.baselineEnd),
+            forecastEnd: fvStr(v.forecastEnd), stage: fvStr(v.stage),
+            executionHealth: fvStr(v.executionHealth),
+          });
+        })}
+        testId="strata-project-create-modal"
+      />
+
+      <StrataFormModal
+        open={pageForm === 'new-dependency'}
+        onClose={() => setPageForm(null)}
+        title="New dependency"
+        submitLabel="Create"
+        fields={[
+          {
+            key: 'requestingType', label: 'Requesting type', kind: 'select', required: true,
+            options: [
+              { value: 'initiative', label: 'Initiative' },
+              { value: 'project_card', label: 'Project card' },
+            ],
+          },
+          {
+            key: 'requestingInitiativeId', label: 'Requesting initiative', kind: 'select',
+            helper: 'Used when requesting type is Initiative',
+            options: initiatives.map((i) => ({ value: i.id, label: i.name })),
+          },
+          {
+            key: 'requestingProjectId', label: 'Requesting project card', kind: 'select',
+            helper: 'Used when requesting type is Project card',
+            options: projectCards.map((p) => ({ value: p.id, label: p.name })),
+          },
+          {
+            key: 'servingType', label: 'Serving type', kind: 'select', required: true,
+            options: [
+              { value: 'initiative', label: 'Initiative' },
+              { value: 'project_card', label: 'Project card' },
+              { value: 'external', label: 'External' },
+            ],
+          },
+          {
+            key: 'servingInitiativeId', label: 'Serving initiative', kind: 'select',
+            helper: 'Used when serving type is Initiative',
+            options: initiatives.map((i) => ({ value: i.id, label: i.name })),
+          },
+          {
+            key: 'servingProjectId', label: 'Serving project card', kind: 'select',
+            helper: 'Used when serving type is Project card',
+            options: projectCards.map((p) => ({ value: p.id, label: p.name })),
+          },
+          { key: 'servingLabel', label: 'Serving label', kind: 'text', helper: 'Used when serving type is External' },
+          {
+            key: 'dependencyType', label: 'Dependency type', kind: 'select', required: true,
+            options: DEPENDENCY_TYPE_OPTIONS.map((t) => ({ value: t, label: labelize(t) })),
+          },
+          { key: 'dueDate', label: 'Due date', kind: 'date' },
+          { key: 'slaDays', label: 'SLA (days)', kind: 'number', min: 0, step: 1 },
+          { key: 'impact', label: 'Impact', kind: 'textarea' },
+          { key: 'isBlocker', label: 'Blocker', kind: 'checkbox', placeholder: 'This dependency blocks delivery' },
+        ]}
+        initial={{
+          requestingType: 'initiative',
+          requestingInitiativeId: selected?.id ?? null,
+          servingType: 'external',
+          dependencyType: 'delivery',
+        }}
+        onSubmit={submitAndRefresh(async (v) => {
+          const requestingType = String(v.requestingType) as 'initiative' | 'project_card';
+          const requestingId = requestingType === 'initiative'
+            ? fvStr(v.requestingInitiativeId)
+            : fvStr(v.requestingProjectId);
+          if (!requestingId) {
+            throw new Error(`Pick the requesting ${requestingType === 'initiative' ? 'initiative' : 'project card'}.`);
+          }
+          const servingType = String(v.servingType) as 'initiative' | 'project_card' | 'external';
+          const servingId = servingType === 'initiative' ? fvStr(v.servingInitiativeId)
+            : servingType === 'project_card' ? fvStr(v.servingProjectId) : undefined;
+          if (servingType !== 'external' && !servingId) {
+            throw new Error(`Pick the serving ${servingType === 'initiative' ? 'initiative' : 'project card'}.`);
+          }
+          if (servingType === 'external' && !fvStr(v.servingLabel)) {
+            throw new Error('External dependencies need a serving label.');
+          }
+          return executionApi.createDependency({
+            requestingType, requestingId, servingType, servingId,
+            servingLabel: fvStr(v.servingLabel), dependencyType: fvStr(v.dependencyType),
+            dueDate: fvStr(v.dueDate), slaDays: fvNum(v.slaDays),
+            impact: fvStr(v.impact), isBlocker: Boolean(v.isBlocker),
+          });
+        })}
+        testId="strata-dependency-create-modal"
+      />
+
+      {/* ── Detail modals (tabbed, x-large) — entities from live query data ── */}
+      {detailInitiative ? (
+        <InitiativeDetailModal initiative={detailInitiative} onClose={() => setDetailInitiativeId(null)} />
+      ) : null}
+      {detailProject ? (
+        <ProjectDetailModal card={detailProject} onClose={() => setDetailProjectId(null)} />
+      ) : null}
     </StrataPageShell>
   );
 }

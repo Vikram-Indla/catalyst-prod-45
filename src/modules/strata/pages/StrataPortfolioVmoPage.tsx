@@ -25,13 +25,18 @@ import { valueApi } from '@/modules/strata/domain';
 import { StrataChipMenu,
   StrataBandBar, StrataDecisionModal, StrataPageShell, StrataPanel, StrataStatStrip, T,
 } from '@/modules/strata/components/shared';
+import { StrataFormModal } from '@/modules/strata/components/authoring';
+import {
+  StrataPortfolioMembersPanel, StrataScheduleGateModal, VMO_AUTHOR_ROLES, VMO_VALUE_ROLES,
+} from '@/modules/strata/components/vmoAuthoring';
+import type { StrataGateSubject } from '@/modules/strata/components/vmoAuthoring';
 import {
   fmtDate, fmtPct, fmtRatioPct, fmtSarCompact, fmtUnit, labelize,
 } from '@/modules/strata/components/format';
 import {
   useAssumptions, useBenefitRealization, useBenefits, useBenefitValues, useCalcValues,
   useGateInstances, useGateModels, useInvalidateStrata, usePortfolios, useProfileNames,
-  useStrataContext, useValueAtRisk, useValueCategories,
+  useStrataContext, useStrataRoles, useValueAtRisk, useValueCategories,
 } from '@/modules/strata/hooks/useStrata';
 import type {
   StrataAssumption, StrataBenefit, StrataBenefitValue, StrataGateInstance, StrataGateModelStage,
@@ -53,6 +58,24 @@ const LIFECYCLE_STAGE: Record<string, LozengeAppearance> = {
   finance_validated: 'success', closed: 'default',
 };
 const VALUE_KINDS: Array<StrataBenefitValue['value_kind']> = ['baseline', 'planned', 'forecast', 'realized'];
+
+// ── Authoring option lists (mirror DB CHECK constraints; UI copy states server rules) ──
+/** All lifecycle stages except finance_validated — that stage is only reachable
+ *  through value validation, never by direct edit (server-enforced). */
+const LIFECYCLE_STAGE_OPTIONS = (
+  ['identified', 'qualified', 'approved', 'baselined', 'in_flight', 'forecast_revised', 'realized', 'closed'] as const
+).map((s) => ({ value: s, label: labelize(s) }));
+const ASSUMPTION_STATUS_OPTIONS = (['open', 'holding', 'broken', 'retired'] as const)
+  .map((s) => ({ value: s, label: labelize(s) }));
+const VALUE_KIND_OPTIONS = VALUE_KINDS.map((k) => ({ value: k, label: labelize(k) }));
+const RULE_TYPE_OPTIONS = (['shared_benefit', 'counterfactual', 'double_counting'] as const)
+  .map((t) => ({ value: t, label: labelize(t) }));
+const PORTFOLIO_STATUS_OPTIONS = (['active', 'archived'] as const)
+  .map((s) => ({ value: s, label: labelize(s) }));
+
+/** Clear-flag detection: the modal opened with a value and the user cleared the field. */
+const wasCleared = (initial: string | null | undefined, submitted: unknown): boolean =>
+  initial != null && (submitted == null || (typeof submitted === 'string' && submitted.trim() === ''));
 
 // ── Display-only helpers ──────────────────────────────────────────────────────
 /** Confidence arrives either as ratio (0–1) or percent — format by scale. */
@@ -143,16 +166,33 @@ interface ProfileRow {
 }
 
 // ── Benefit detail section (own hooks; mounted only when a benefit exists) ───
-function BenefitDetailSection({ benefit, isFirst }: { benefit: StrataBenefit; isFirst: boolean }) {
+function BenefitDetailSection({ benefit, isFirst, canAuthor, canAuthorValues }: {
+  benefit: StrataBenefit;
+  isFirst: boolean;
+  /** Portfolio/benefit/assumption/attribution/gate authoring affordance. */
+  canAuthor: boolean;
+  /** Benefit-value authoring affordance (also kpi_owner | data_steward). */
+  canAuthorValues: boolean;
+}) {
   const navigate = useNavigate();
   const { periods } = useStrataContext();
   const invalidate = useInvalidateStrata();
   /** Governance verdict modal — decide gate / validate benefit value. */
   const [decision, setDecision] = useState<
     | { kind: 'gate'; gate: StrataGateInstance; stage: StrataGateModelStage }
-    | { kind: 'validate-value'; id: string; label: string }
+    | { kind: 'validate-value'; id: string; label: string; valueKind: StrataBenefitValue['value_kind'] }
     | null
   >(null);
+  /** Authoring modal — create/edit flows against the Lane E RPCs. */
+  const [author, setAuthor] = useState<
+    | { kind: 'edit-benefit' }
+    | { kind: 'add-value' }
+    | { kind: 'add-assumption' }
+    | { kind: 'edit-assumption'; assumption: StrataAssumption }
+    | { kind: 'add-rule' }
+    | null
+  >(null);
+  const [gateSubject, setGateSubject] = useState<StrataGateSubject | null>(null);
   const valuesQ = useBenefitValues(benefit.id);
   const assumptionsQ = useAssumptions(benefit.id);
   const gatesQ = useGateInstances();
@@ -213,7 +253,7 @@ function BenefitDetailSection({ benefit, isFirst }: { benefit: StrataBenefit; is
               <Button
                 appearance="default"
                 spacing="compact"
-                onClick={() => setDecision({ kind: 'validate-value', id: v.id, label: `${labelize(kind)} · ${row.periodName}` })}
+                onClick={() => setDecision({ kind: 'validate-value', id: v.id, label: `${labelize(kind)} · ${row.periodName}`, valueKind: v.value_kind })}
                 testId={`strata-validate-value-${v.id}`}
               >
                 Validate
@@ -236,6 +276,11 @@ function BenefitDetailSection({ benefit, isFirst }: { benefit: StrataBenefit; is
           label={labelize(benefit.lifecycle_stage)}
           appearance={LIFECYCLE_STAGE[benefit.lifecycle_stage] ?? 'default'}
         />
+        {canAuthor ? (
+          <Button appearance="default" spacing="compact" onClick={() => setAuthor({ kind: 'edit-benefit' })} testId="strata-edit-benefit">
+            Edit
+          </Button>
+        ) : null}
         {!isFirst ? (
           <Button appearance="subtle" spacing="compact" onClick={() => navigate(Routes.strata.portfolio())}>
             Back to first benefit
@@ -243,7 +288,18 @@ function BenefitDetailSection({ benefit, isFirst }: { benefit: StrataBenefit; is
         ) : null}
       </div>
 
-      <StrataPanel title="Value profile" icon={<FileBarChart size={16} />} count={values.length} noPadding testId="strata-value-profile">
+      <StrataPanel
+        title="Value profile"
+        icon={<FileBarChart size={16} />}
+        count={values.length}
+        noPadding
+        testId="strata-value-profile"
+        actions={canAuthorValues ? (
+          <Button appearance="default" spacing="compact" onClick={() => setAuthor({ kind: 'add-value' })} testId="strata-add-value">
+            Add value
+          </Button>
+        ) : undefined}
+      >
         {valuesQ.isLoading ? (
           <div style={{ display: 'flex', justifyContent: 'center', padding: 24 }}><Spinner /></div>
         ) : valuesQ.isError ? (
@@ -292,7 +348,17 @@ function BenefitDetailSection({ benefit, isFirst }: { benefit: StrataBenefit; is
         </div>
       </StrataPanel>
 
-      <StrataPanel title="Assumptions" icon={<ListChecks size={16} />} count={assumptions.length} testId="strata-assumptions">
+      <StrataPanel
+        title="Assumptions"
+        icon={<ListChecks size={16} />}
+        count={assumptions.length}
+        testId="strata-assumptions"
+        actions={canAuthor ? (
+          <Button appearance="default" spacing="compact" onClick={() => setAuthor({ kind: 'add-assumption' })} testId="strata-add-assumption">
+            Add assumption
+          </Button>
+        ) : undefined}
+      >
         {assumptionsQ.isLoading ? (
           <div style={{ display: 'flex', justifyContent: 'center', padding: 24 }}><Spinner /></div>
         ) : assumptionsQ.isError ? (
@@ -314,13 +380,33 @@ function BenefitDetailSection({ benefit, isFirst }: { benefit: StrataBenefit; is
                   label={labelize(a.status)}
                   appearance={ASSUMPTION_STATUS[a.status] ?? 'default'}
                 />
+                {canAuthor ? (
+                  <Button
+                    appearance="subtle"
+                    spacing="compact"
+                    onClick={() => setAuthor({ kind: 'edit-assumption', assumption: a })}
+                    testId={`strata-edit-assumption-${a.id}`}
+                  >
+                    Edit
+                  </Button>
+                ) : null}
               </div>
             ))}
           </div>
         )}
       </StrataPanel>
 
-      <StrataPanel title="Attribution" icon={<Wallet size={16} />} count={attributionRules.length} testId="strata-attribution">
+      <StrataPanel
+        title="Attribution"
+        icon={<Wallet size={16} />}
+        count={attributionRules.length}
+        testId="strata-attribution"
+        actions={canAuthor ? (
+          <Button appearance="default" spacing="compact" onClick={() => setAuthor({ kind: 'add-rule' })} testId="strata-add-attribution-rule">
+            Add rule
+          </Button>
+        ) : undefined}
+      >
         {attributionQ.isLoading ? (
           <div style={{ display: 'flex', justifyContent: 'center', padding: 24 }}><Spinner /></div>
         ) : attributionQ.isError ? (
@@ -347,6 +433,15 @@ function BenefitDetailSection({ benefit, isFirst }: { benefit: StrataBenefit; is
                         </div>
                       ))}
                     </div>
+                  ) : rule.definition != null ? (
+                    /* Unrecognized shape — show the governed definition verbatim, pretty-printed */
+                    <pre style={{
+                      margin: 0, padding: 8, borderRadius: 6, background: T.sunken,
+                      border: `1px solid ${T.border}`, overflowX: 'auto',
+                      fontSize: 'var(--ds-font-size-100)', color: T.subtle, lineHeight: 1.5,
+                    }}>
+                      {JSON.stringify(rule.definition, null, 2)}
+                    </pre>
                   ) : (
                     <span style={{ color: T.subtlest, fontSize: 'var(--ds-font-size-100)' }}>—</span>
                   )}
@@ -357,7 +452,22 @@ function BenefitDetailSection({ benefit, isFirst }: { benefit: StrataBenefit; is
         )}
       </StrataPanel>
 
-      <StrataPanel title="Gates" icon={<ShieldCheck size={16} />} count={gates.length} testId="strata-benefit-gates">
+      <StrataPanel
+        title="Gates"
+        icon={<ShieldCheck size={16} />}
+        count={gates.length}
+        testId="strata-benefit-gates"
+        actions={canAuthor ? (
+          <Button
+            appearance="default"
+            spacing="compact"
+            onClick={() => setGateSubject({ type: 'benefit', id: benefit.id, label: benefit.name })}
+            testId="strata-schedule-gate"
+          >
+            Schedule gate
+          </Button>
+        ) : undefined}
+      >
         {gatesQ.isLoading ? (
           <div style={{ display: 'flex', justifyContent: 'center', padding: 24 }}><Spinner /></div>
         ) : gatesQ.isError ? (
@@ -444,9 +554,160 @@ function BenefitDetailSection({ benefit, isFirst }: { benefit: StrataBenefit; is
         onConfirm={async (verdict, note) => {
           if (decision?.kind !== 'validate-value') return;
           await valueApi.validateBenefitValue(decision.id, verdict as 'validated' | 'rejected', note || undefined);
-          invalidate();
+          try {
+            // A newly validated REALIZED value changes the server-calculated numbers:
+            // recompute benefit realization and (if portfolio-linked) value at risk
+            // so the register/hero update from authored data.
+            if (verdict === 'validated' && decision.valueKind === 'realized') {
+              await valueApi.benefitRealization(benefit.id);
+              if (benefit.portfolio_id) await valueApi.valueAtRisk(benefit.portfolio_id);
+            }
+          } finally {
+            invalidate();
+          }
         }}
         testId="strata-validate-value-modal"
+      />
+
+      {/* ── Authoring modals (Lane E) — RPC-validated; rejections surface verbatim ── */}
+      <StrataFormModal
+        open={author?.kind === 'edit-benefit'}
+        onClose={() => setAuthor(null)}
+        title={`Edit benefit · ${benefit.name}`}
+        submitLabel="Save"
+        fields={[
+          { key: 'ownerId', label: 'Owner', kind: 'user' },
+          { key: 'validatorId', label: 'Validator', kind: 'user', helper: 'Validator must differ from owner (SoD)' },
+          { key: 'unit', label: 'Unit', kind: 'text', placeholder: 'e.g. SAR, %, hours' },
+          { key: 'valueHypothesis', label: 'Value hypothesis', kind: 'textarea' },
+          { key: 'causalMechanism', label: 'Causal mechanism', kind: 'textarea' },
+          { key: 'confidence', label: 'Confidence', kind: 'number', min: 0, max: 1, step: 0.05, helper: '0–1' },
+          {
+            key: 'lifecycleStage', label: 'Lifecycle stage', kind: 'select', options: LIFECYCLE_STAGE_OPTIONS,
+            helper: 'Forward-only (forecast revised may step back); finance validated is set by value validation',
+          },
+        ]}
+        initial={{
+          ownerId: benefit.owner_id, validatorId: benefit.validator_id, unit: benefit.unit,
+          valueHypothesis: benefit.value_hypothesis, causalMechanism: benefit.causal_mechanism,
+          confidence: benefit.confidence, lifecycleStage: benefit.lifecycle_stage,
+        }}
+        onSubmit={async (v) => {
+          await valueApi.updateBenefit(benefit.id, {
+            ownerId: (v.ownerId as string | null) ?? undefined,
+            validatorId: (v.validatorId as string | null) ?? undefined,
+            unit: (v.unit as string | null) ?? undefined,
+            valueHypothesis: (v.valueHypothesis as string | null) ?? undefined,
+            causalMechanism: (v.causalMechanism as string | null) ?? undefined,
+            confidence: (v.confidence as number | null) ?? undefined,
+            lifecycleStage: (v.lifecycleStage as string | null) ?? undefined,
+            // Clear affordances: the field opened with a value and the user emptied it.
+            clearOwner: wasCleared(benefit.owner_id, v.ownerId),
+            clearValidator: wasCleared(benefit.validator_id, v.validatorId),
+          });
+          invalidate();
+        }}
+        testId="strata-edit-benefit-modal"
+      />
+      <StrataFormModal
+        open={author?.kind === 'add-value'}
+        onClose={() => setAuthor(null)}
+        title={`Add value · ${benefit.name}`}
+        description="Values enter as pending; realized values must be validated by a different user than the submitter."
+        fields={[
+          { key: 'valueKind', label: 'Value kind', kind: 'select', required: true, options: VALUE_KIND_OPTIONS },
+          {
+            key: 'periodId', label: 'Period', kind: 'select', required: true,
+            options: periods.map((p) => ({ value: p.id, label: p.name })),
+            helper: 'Closed periods reject writes',
+          },
+          { key: 'value', label: 'Value', kind: 'number', required: true, helper: benefit.unit ?? undefined },
+        ]}
+        onSubmit={async (v) => {
+          await valueApi.createBenefitValue({
+            benefitId: benefit.id,
+            periodId: v.periodId as string,
+            valueKind: v.valueKind as StrataBenefitValue['value_kind'],
+            value: Number(v.value),
+          });
+          invalidate();
+        }}
+        testId="strata-add-value-modal"
+      />
+      <StrataFormModal
+        open={author?.kind === 'add-assumption' || author?.kind === 'edit-assumption'}
+        onClose={() => setAuthor(null)}
+        title={author?.kind === 'edit-assumption' ? 'Edit assumption' : 'Add assumption'}
+        submitLabel={author?.kind === 'edit-assumption' ? 'Save' : 'Create'}
+        fields={[
+          { key: 'description', label: 'Description', kind: 'textarea', required: true },
+          { key: 'ownerId', label: 'Owner', kind: 'user' },
+          { key: 'confidence', label: 'Confidence', kind: 'number', min: 0, max: 1, step: 0.05, helper: '0–1' },
+          { key: 'status', label: 'Status', kind: 'select', options: ASSUMPTION_STATUS_OPTIONS },
+        ]}
+        initial={author?.kind === 'edit-assumption'
+          ? {
+              description: author.assumption.description, ownerId: author.assumption.owner_id,
+              confidence: author.assumption.confidence, status: author.assumption.status,
+            }
+          : { status: 'open' }}
+        onSubmit={async (v) => {
+          const patch = {
+            description: (v.description as string | null) ?? undefined,
+            ownerId: (v.ownerId as string | null) ?? undefined,
+            confidence: (v.confidence as number | null) ?? undefined,
+            status: (v.status as string | null) ?? undefined,
+          };
+          if (author?.kind === 'edit-assumption') {
+            await valueApi.updateAssumption(author.assumption.id, {
+              ...patch,
+              // Clear affordance: the owner field opened with a value and the user emptied it.
+              clearOwner: wasCleared(author.assumption.owner_id, v.ownerId),
+            });
+          } else {
+            await valueApi.createAssumption({ benefitId: benefit.id, ...patch, description: String(v.description) });
+          }
+          invalidate();
+        }}
+        testId="strata-assumption-modal"
+      />
+      <StrataFormModal
+        open={author?.kind === 'add-rule'}
+        onClose={() => setAuthor(null)}
+        title="Add attribution rule"
+        description="Rules attribute realized value to initiatives (shared benefit, counterfactual, double counting)."
+        fields={[
+          { key: 'ruleType', label: 'Rule type', kind: 'select', required: true, options: RULE_TYPE_OPTIONS },
+          {
+            key: 'definition', label: 'Definition (JSON)', kind: 'textarea', required: true,
+            placeholder: '{"splits": [{"initiative_id": "…", "pct": 50}]}',
+            helper: 'Must be a valid JSON object',
+          },
+        ]}
+        onSubmit={async (v) => {
+          let parsed: unknown;
+          try {
+            parsed = JSON.parse(String(v.definition));
+          } catch (e) {
+            throw new Error(`Definition is not valid JSON: ${e instanceof Error ? e.message : String(e)}`);
+          }
+          if (parsed == null || typeof parsed !== 'object') {
+            throw new Error('Definition must be a JSON object or array.');
+          }
+          await valueApi.createAttributionRule(
+            benefit.id,
+            v.ruleType as 'shared_benefit' | 'counterfactual' | 'double_counting',
+            parsed as Record<string, unknown>,
+          );
+          invalidate();
+        }}
+        testId="strata-attribution-rule-modal"
+      />
+      <StrataScheduleGateModal
+        open={!!gateSubject}
+        subject={gateSubject}
+        onClose={() => setGateSubject(null)}
+        onScheduled={invalidate}
       />
     </div>
   );
@@ -468,9 +729,24 @@ export default function StrataPortfolioVmoPage() {
   const varQ = useValueAtRisk(portfolio?.id);
   const calcValuesQ = useCalcValues(portfolio ? 'portfolio' : undefined, portfolio?.id);
   const profilesQ = useProfileNames();
+  const rolesQ = useStrataRoles();
+  const invalidate = useInvalidateStrata();
+
+  // UI affordance gating only — the RPCs enforce the real role rules.
+  const roles = rolesQ.data ?? [];
+  const canAuthor = roles.some((r) => (VMO_AUTHOR_ROLES as readonly string[]).includes(r));
+  const canAuthorValues = roles.some((r) => (VMO_VALUE_ROLES as readonly string[]).includes(r));
+
+  /** Page-level authoring modals (portfolio create/edit, benefit create). */
+  const [portfolioModal, setPortfolioModal] = useState<'create' | 'edit' | null>(null);
+  const [benefitCreateOpen, setBenefitCreateOpen] = useState(false);
+  /** Gate scheduling launched from a membership row (initiative / project card). */
+  const [memberGateSubject, setMemberGateSubject] = useState<StrataGateSubject | null>(null);
 
   const benefits = portfolio ? (benefitsQ.data ?? []) : [];
   const categories = categoriesQ.data ?? [];
+  // Category authoring options: approved governed records only.
+  const approvedCategories = categories.filter((c) => c.status === 'approved');
   const openGates = (gatesQ.data ?? []).filter((g) => g.status === 'open' || g.status === 'in_review');
 
   const selectedBenefit: StrataBenefit | null =
@@ -559,6 +835,22 @@ export default function StrataPortfolioVmoPage() {
     />
   ) : null;
 
+  const headerActions = (
+    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+      {portfolioSwitcher}
+      {canAuthor && portfolio ? (
+        <Button appearance="default" spacing="compact" onClick={() => setPortfolioModal('edit')} testId="strata-edit-portfolio">
+          Edit portfolio
+        </Button>
+      ) : null}
+      {canAuthor ? (
+        <Button appearance="primary" spacing="compact" onClick={() => setPortfolioModal('create')} testId="strata-new-portfolio">
+          New portfolio
+        </Button>
+      ) : null}
+    </span>
+  );
+
   // Benefit deep-link (/strata/portfolio/benefits/:slug) gets an entity trail;
   // the portfolio index renders without one.
   const trailBenefit = slug ? benefits.find((b) => b.slug === slug) ?? null : null;
@@ -569,7 +861,7 @@ export default function StrataPortfolioVmoPage() {
         ? [{ text: 'Portfolio & VMO', href: Routes.strata.portfolio() }, { text: trailBenefit.name }]
         : undefined}
       docTitle={trailBenefit ? trailBenefit.name : 'Portfolio / VMO'}
-      headerActions={portfolioSwitcher}
+      headerActions={headerActions}
       testId="strata-portfolio-chrome"
     >
       {isLoading ? (
@@ -647,8 +939,28 @@ export default function StrataPortfolioVmoPage() {
             </div>
           ) : null}
 
+          {/* Portfolio membership (initiatives / project cards funding the value) */}
+          <div style={{ marginBottom: 16 }}>
+            <StrataPortfolioMembersPanel
+              portfolioId={portfolio.id}
+              canAuthor={canAuthor}
+              onScheduleGate={setMemberGateSubject}
+            />
+          </div>
+
           {/* Benefit register */}
-          <StrataPanel title="Benefit register" icon={<ListChecks size={16} />} count={benefits.length} noPadding testId="strata-benefit-register">
+          <StrataPanel
+            title="Benefit register"
+            icon={<ListChecks size={16} />}
+            count={benefits.length}
+            noPadding
+            testId="strata-benefit-register"
+            actions={canAuthor ? (
+              <Button appearance="default" spacing="compact" onClick={() => setBenefitCreateOpen(true)} testId="strata-new-benefit">
+                New benefit
+              </Button>
+            ) : undefined}
+          >
             {benefitsQ.isLoading ? (
               <div style={{ display: 'flex', justifyContent: 'center', padding: 24 }}><Spinner /></div>
             ) : benefits.length === 0 ? (
@@ -672,10 +984,117 @@ export default function StrataPortfolioVmoPage() {
             <BenefitDetailSection
               benefit={selectedBenefit}
               isFirst={selectedBenefit.id === (benefits[0]?.id ?? null)}
+              canAuthor={canAuthor}
+              canAuthorValues={canAuthorValues}
             />
           ) : null}
         </>
       )}
+
+      {/* ── Page-level authoring modals (Lane E) — RPC-validated; rejections verbatim ── */}
+      <StrataFormModal
+        open={portfolioModal === 'create'}
+        onClose={() => setPortfolioModal(null)}
+        title="New portfolio"
+        fields={[
+          { key: 'name', label: 'Name', kind: 'text', required: true },
+          { key: 'description', label: 'Description', kind: 'textarea' },
+          {
+            key: 'categoryId', label: 'Category', kind: 'select',
+            options: approvedCategories.map((c) => ({ value: c.id, label: c.name })),
+            helper: 'Approved value categories only',
+          },
+          { key: 'ownerId', label: 'Owner', kind: 'user' },
+          { key: 'valueTarget', label: 'Value target', kind: 'number', min: 0, helper: 'SAR' },
+        ]}
+        onSubmit={async (v) => {
+          await valueApi.createPortfolio({
+            name: String(v.name).trim(),
+            description: (v.description as string | null) || undefined,
+            categoryId: (v.categoryId as string | null) ?? undefined,
+            ownerId: (v.ownerId as string | null) ?? undefined,
+            valueTarget: v.valueTarget != null ? Number(v.valueTarget) : undefined,
+          });
+          invalidate();
+        }}
+        testId="strata-new-portfolio-modal"
+      />
+      {portfolio ? (
+        <StrataFormModal
+          open={portfolioModal === 'edit'}
+          onClose={() => setPortfolioModal(null)}
+          title={`Edit portfolio · ${portfolio.name}`}
+          submitLabel="Save"
+          fields={[
+            { key: 'name', label: 'Name', kind: 'text', required: true },
+            { key: 'description', label: 'Description', kind: 'textarea' },
+            {
+              key: 'categoryId', label: 'Category', kind: 'select',
+              options: approvedCategories.map((c) => ({ value: c.id, label: c.name })),
+              helper: 'Approved value categories only',
+            },
+            { key: 'ownerId', label: 'Owner', kind: 'user' },
+            { key: 'valueTarget', label: 'Value target', kind: 'number', min: 0, helper: 'SAR' },
+            {
+              key: 'status', label: 'Status', kind: 'select', required: true, options: PORTFOLIO_STATUS_OPTIONS,
+              helper: 'Archived portfolios leave active tracking',
+            },
+          ]}
+          initial={{
+            name: portfolio.name, description: portfolio.description, categoryId: portfolio.category_id,
+            ownerId: portfolio.owner_id, valueTarget: portfolio.value_target, status: portfolio.status,
+          }}
+          onSubmit={async (v) => {
+            await valueApi.updatePortfolio(portfolio.id, {
+              name: (v.name as string | null) ?? undefined,
+              description: (v.description as string | null) ?? undefined,
+              categoryId: (v.categoryId as string | null) ?? undefined,
+              ownerId: (v.ownerId as string | null) ?? undefined,
+              valueTarget: v.valueTarget != null ? Number(v.valueTarget) : undefined,
+              status: (v.status as 'active' | 'archived' | null) ?? undefined,
+              // Clear affordances: the field opened with a value and the user emptied it.
+              clearOwner: wasCleared(portfolio.owner_id, v.ownerId),
+              clearCategory: wasCleared(portfolio.category_id, v.categoryId),
+            });
+            invalidate();
+          }}
+          testId="strata-edit-portfolio-modal"
+        />
+      ) : null}
+      <StrataFormModal
+        open={benefitCreateOpen}
+        onClose={() => setBenefitCreateOpen(false)}
+        title="New benefit"
+        description="Owner, validator, values and lifecycle are authored on the benefit after creation."
+        fields={[
+          { key: 'name', label: 'Name', kind: 'text', required: true },
+          {
+            key: 'portfolioId', label: 'Portfolio', kind: 'select',
+            options: portfolios.map((p) => ({ value: p.id, label: p.name })),
+          },
+          {
+            key: 'categoryId', label: 'Category', kind: 'select',
+            options: approvedCategories.map((c) => ({ value: c.id, label: c.name })),
+            helper: 'Approved value categories only',
+          },
+        ]}
+        initial={{ portfolioId: portfolio?.id ?? null }}
+        onSubmit={async (v) => {
+          await valueApi.createBenefit({
+            name: String(v.name).trim(),
+            portfolioId: (v.portfolioId as string | null) ?? undefined,
+            categoryId: (v.categoryId as string | null) ?? undefined,
+          });
+          invalidate();
+        }}
+        testId="strata-new-benefit-modal"
+      />
+      <StrataScheduleGateModal
+        open={!!memberGateSubject}
+        subject={memberGateSubject}
+        onClose={() => setMemberGateSubject(null)}
+        onScheduled={invalidate}
+      />
     </StrataPageShell>
   );
 }

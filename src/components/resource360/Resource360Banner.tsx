@@ -1,6 +1,6 @@
 import React from 'react';
 import type { Resource360Summary } from '@/types/resource360';
-import { useIsDark } from '@/components/strategy/themes/useIsDark';
+import { useIsDark } from '@/hooks/useIsDark';
 
 interface Props {
   summary: Resource360Summary | null;
