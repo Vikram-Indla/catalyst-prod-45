@@ -439,6 +439,11 @@ function CreateCycleModal({ projectId, onClose }: { projectId: string; onClose: 
                 <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtle)' }}>
                   Select all ({filteredCases.length} cases)
                 </span>
+                {selectedCaseIds.size === 0 && (
+                  <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest)', marginLeft: 'auto' }}>
+                    Add at least one test case to make this cycle executable
+                  </span>
+                )}
                 {selectedCaseIds.size > 0 && (
                   <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-link)', marginLeft: 'auto' }}>
                     {selectedCaseIds.size} selected
@@ -484,7 +489,7 @@ function CreateCycleModal({ projectId, onClose }: { projectId: string; onClose: 
         <Button appearance="subtle" onClick={onClose}>Cancel</Button>
         <Button
           appearance="primary"
-          isDisabled={!name.trim() || createCycle.isPending || addCases.isPending}
+          isDisabled={!name.trim() || selectedCaseIds.size === 0 || createCycle.isPending || addCases.isPending}
           onClick={handleCreateCycle}
         >
           {createCycle.isPending || addCases.isPending ? 'Creating…' : 'Create Cycle'}

@@ -199,7 +199,14 @@ export default function CatalystViewTmDefect({
                   {sourceCase.title ? <span style={{ color: 'var(--ds-text-subtle)' }}>{` — ${sourceCase.title}`}</span> : null}
                 </span>
               </KeyDetailsFieldRow>
-            ) : null}
+            ) : (
+              // CAT-0001/CAT-0002 remediation: lineage is optional at the DB
+              // level (legit standalone backlog defects exist), so surface the
+              // gap instead of hiding it — don't fabricate a fake source.
+              <KeyDetailsFieldRow label="Raised from test case">
+                <span style={{ color: 'var(--ds-text-subtlest)' }}>Not linked to a test case</span>
+              </KeyDetailsFieldRow>
+            )}
           </>
         }
         afterBody={
