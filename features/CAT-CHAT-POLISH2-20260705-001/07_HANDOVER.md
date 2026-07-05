@@ -35,3 +35,24 @@ this diff never touched — verified line-by-line, not mine.
   token scale already; not worth the diff churn without a visual-QA pass.
 - LaterPanel using `var(--cv2-fs-sidebar-header)` instead of the ADS remap —
   verify visually before touching; may be intentional (sidebar-header context).
+
+## Session 2 — cosmetic pass + regression catch (38530297c)
+Picked up the deferred P2/P3 items:
+- Tokenized 8 exact-match borderRadius values (4/6/8px → cv2-radius-sm/md/lg)
+  across WorkspaceSearchModal, EmojiPicker, ForwardModal, LaterRow. Left the
+  genuinely custom circular-badge radii alone (11px on 22px, 8px on 16px).
+- LaterPanel fontSize using cv2-fs-sidebar-header: verified NOT a defect —
+  SidebarHeader and ActivityHeader use the identical token for their h1
+  titles. Correctly consistent, left untouched.
+- REGRESSION CAUGHT: this same pass's ADS gate flagged the SPACING category
+  (separate from tokens/color) — traced to dock.css padding I'd set to
+  '10px 20px 4px' in the earlier 07cb756e9 craft commit. 10/20 are off the
+  4/8/12/16/24/32 grid. Reverted to '8px 16px 4px' (grid-valid, keeps the
+  one intentional 2px→4px bump). LESSON: always run node scripts/ads-audit-
+  gate.cjs (not just ads-color-gate) after CSS edits — it catches a
+  DIFFERENT category (off-grid spacing) that hex/Tailwind scanning misses.
+- Baseline ratcheted down (counts dropped below prior baseline from the
+  token swaps): tokens 24544→24476, typography 1526→1508.
+
+Gates: tsc clean; chat-v2+hooks 113/113, 0 failed suites; ads-audit green
+below baseline.
