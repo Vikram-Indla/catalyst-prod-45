@@ -246,18 +246,29 @@ export interface UpdateWikiPageInput {
   patch: Partial<
     Pick<WikiPage, 'title' | 'icon' | 'cover_url' | 'published_at'>
   > & { content?: unknown; content_text?: string; content_format?: 'blocknote' };
+  /** Optimistic-concurrency guard: only write if the row's updated_at still
+   *  matches this value. A mismatch (someone else saved) throws WIKI_CONFLICT
+   *  instead of silently overwriting their edit. */
+  guardUpdatedAt?: string | null;
 }
+
+/** Thrown by useUpdateWikiPage when guardUpdatedAt no longer matches. */
+export const WIKI_CONFLICT = 'WIKI_CONFLICT';
 
 export function useUpdateWikiPage() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: async ({ id, patch }: UpdateWikiPageInput) => {
+    mutationFn: async ({ id, patch, guardUpdatedAt }: UpdateWikiPageInput): Promise<string | null> => {
       const { data: auth } = await supabase.auth.getUser();
-      const { error } = await db
+      let q = db
         .from('kb_documents')
         .update({ ...patch, updated_by: auth?.user?.id ?? null, updated_at: new Date().toISOString() })
         .eq('id', id);
+      if (guardUpdatedAt) q = q.eq('updated_at', guardUpdatedAt);
+      const { data, error } = await q.select('updated_at');
       if (error) throw error;
+      if (guardUpdatedAt && (!data || data.length === 0)) throw new Error(WIKI_CONFLICT);
+      return (data?.[0]?.updated_at as string | undefined) ?? null;
     },
     onSuccess: (_d, { spaceId, id, patch }) => {
       // Content autosaves must not refetch the page being edited (would

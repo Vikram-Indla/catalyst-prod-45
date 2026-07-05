@@ -15,10 +15,12 @@ import { ImageIcon, Smile as SmileIcon } from '@/lib/atlaskit-icons';
 import { Routes } from '@/lib/routes';
 import {
   useUpdateWikiPage,
+  WIKI_CONFLICT,
   type WikiPage,
   type WikiPageSummary,
   type WikiWorkspace,
 } from '@/hooks/useWiki';
+import { WikiEditorBoundary } from './editor/WikiEditorBoundary';
 import { blocksToText } from './editor/blocksToText';
 import { clearDraft, getDraft, saveDraft } from './editor/localDraft';
 import { attachMarqueeSelection } from './editor/marqueeSelection';
@@ -106,6 +108,14 @@ export function WikiPageSurface({ workspace, page, treePages }: WikiPageSurfaceP
   // ---- Autosave (blocknote content) ----
   const pendingDoc = useRef<Block[] | null>(null);
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // Optimistic-concurrency: last updated_at we know the server has. A save
+  // that no longer matches means someone else edited this page meanwhile.
+  const serverUpdatedAt = useRef<string | null>(page.updated_at ?? null);
+  useEffect(() => {
+    serverUpdatedAt.current = page.updated_at ?? null;
+  }, [page.id, page.updated_at]);
+  const [saveFailed, setSaveFailed] = useState(false);
+  const [conflictDoc, setConflictDoc] = useState<Block[] | null>(null);
 
   const flush = useCallback(() => {
     if (saveTimer.current) {
@@ -120,10 +130,29 @@ export function WikiPageSurface({ workspace, page, treePages }: WikiPageSurfaceP
         id: page.id,
         spaceId: page.space_id,
         patch: { content: doc, content_text: blocksToText(doc), content_format: 'blocknote' },
+        guardUpdatedAt: serverUpdatedAt.current,
       },
       {
         // Confirmed on the server — the local journal entry is now redundant.
-        onSuccess: () => clearDraft(page.id),
+        onSuccess: (nextUpdatedAt) => {
+          if (nextUpdatedAt) serverUpdatedAt.current = nextUpdatedAt;
+          setSaveFailed(false);
+          clearDraft(page.id);
+        },
+        onError: (e) => {
+          if (e instanceof Error && e.message === WIKI_CONFLICT) {
+            // Someone else saved this page since we loaded it. Don't retry
+            // blindly — let the author choose (their text stays journaled).
+            setConflictDoc(doc);
+            return;
+          }
+          // Transient failure (network/API): keep the doc queued, retry with
+          // backoff, and tell the author their changes aren't on the server.
+          setSaveFailed(true);
+          if (!pendingDoc.current) pendingDoc.current = doc;
+          if (saveTimer.current) clearTimeout(saveTimer.current);
+          saveTimer.current = setTimeout(flush, 5000);
+        },
       },
     );
     // Mirror @-mention chips into kb_document_links / kb_page_links.
@@ -132,6 +161,32 @@ export function WikiPageSurface({ workspace, page, treePages }: WikiPageSurfaceP
       console.warn('[wiki] mention link sync failed', e),
     );
   }, [page.id, page.space_id, updatePage]);
+
+  // Conflict resolution: overwrite keeps mine (unguarded save); reload takes theirs.
+  const resolveConflict = useCallback(
+    (keepMine: boolean) => {
+      const doc = conflictDoc;
+      setConflictDoc(null);
+      if (keepMine && doc) {
+        updatePage.mutate(
+          {
+            id: page.id,
+            spaceId: page.space_id,
+            patch: { content: doc, content_text: blocksToText(doc), content_format: 'blocknote' },
+          },
+          {
+            onSuccess: (nextUpdatedAt) => {
+              if (nextUpdatedAt) serverUpdatedAt.current = nextUpdatedAt;
+              clearDraft(page.id);
+            },
+          },
+        );
+      } else {
+        window.location.reload();
+      }
+    },
+    [conflictDoc, page.id, page.space_id, updatePage],
+  );
 
   // Empty-page invitation (Notion "press / for commands", bilingual).
   const [showInvite, setShowInvite] = useState(() => isDocEmpty(page.content as Block[]));
@@ -252,7 +307,12 @@ export function WikiPageSurface({ workspace, page, treePages }: WikiPageSurfaceP
         kind === 'md'
           ? exportPageMarkdown(page.title, currentBlocks())
           : exportPageHtml(page.title, currentBlocks());
-      void task.catch(() => catalystToast.error('Export failed'));
+      void task.catch(() =>
+        catalystToast.error('Export failed', undefined, {
+          label: 'Retry',
+          onClick: () => runExport(kind),
+        }),
+      );
     },
     [flush, page.title, currentBlocks],
   );
@@ -638,6 +698,75 @@ export function WikiPageSurface({ workspace, page, treePages }: WikiPageSurfaceP
                 </button>
               </div>
             )}
+            {saveFailed && !conflictDoc && (
+              <div
+                role="status"
+                className="wiki-no-print"
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 12,
+                  margin: '0 0 14px',
+                  padding: '8px 12px',
+                  borderRadius: 6,
+                  border: '1px solid var(--ds-border)',
+                  background: 'var(--ds-background-warning)',
+                }}
+              >
+                <span style={{ color: 'var(--ds-text)', font: 'var(--ds-font-body-small)', flex: 1 }}>
+                  Changes aren’t reaching the server — retrying. Everything you type stays
+                  safe on this device.
+                </span>
+              </div>
+            )}
+            {conflictDoc && (
+              <div
+                role="alert"
+                className="wiki-no-print"
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 12,
+                  margin: '0 0 14px',
+                  padding: '8px 12px',
+                  borderRadius: 6,
+                  border: '1px solid var(--ds-border-danger)',
+                  background: 'var(--ds-background-danger)',
+                }}
+              >
+                <span style={{ color: 'var(--ds-text)', font: 'var(--ds-font-body-small)', flex: 1 }}>
+                  This page was changed by someone else while you were editing.
+                </span>
+                <button
+                  type="button"
+                  onClick={() => resolveConflict(true)}
+                  style={{
+                    border: '1px solid var(--ds-border)',
+                    borderRadius: 4,
+                    background: 'var(--ds-surface)',
+                    color: 'var(--ds-text)',
+                    font: 'var(--ds-font-body-small)',
+                    padding: '3px 10px',
+                    cursor: 'pointer',
+                  }}
+                >
+                  Keep my version
+                </button>
+                <button
+                  type="button"
+                  onClick={() => resolveConflict(false)}
+                  style={{
+                    border: 'none',
+                    background: 'transparent',
+                    color: 'var(--ds-text-subtle)',
+                    font: 'var(--ds-font-body-small)',
+                    cursor: 'pointer',
+                  }}
+                >
+                  Load theirs
+                </button>
+              </div>
+            )}
             <div>
               {showInvite && (
                 <p
@@ -674,16 +803,18 @@ export function WikiPageSurface({ workspace, page, treePages }: WikiPageSurfaceP
                   للأوامر
                 </p>
               )}
-              <WikiEditor
-                key={restoredBlocks ? `${page.id}-draft` : page.id}
-                initialContent={restoredBlocks ?? ((page.content as Block[]) ?? undefined)}
-                onChange={handleEditorChange}
-                onReady={handleEditorReady}
-                dictationStyle="brd-page"
-                workspaceId={workspace.id}
-                workspaceSlug={workspace.slug}
-                uploadFile={uploadWikiFile}
-              />
+              <WikiEditorBoundary>
+                <WikiEditor
+                  key={restoredBlocks ? `${page.id}-draft` : page.id}
+                  initialContent={restoredBlocks ?? ((page.content as Block[]) ?? undefined)}
+                  onChange={handleEditorChange}
+                  onReady={handleEditorReady}
+                  dictationStyle="brd-page"
+                  workspaceId={workspace.id}
+                  workspaceSlug={workspace.slug}
+                  uploadFile={uploadWikiFile}
+                />
+              </WikiEditorBoundary>
             </div>
           </Suspense>
         )}
