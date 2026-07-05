@@ -5,10 +5,11 @@ import Spinner from '@atlaskit/spinner';
 import Lozenge from '@atlaskit/lozenge';
 import EmptyState from '@atlaskit/empty-state';
 import Button from '@atlaskit/button/standard-button';
-import DynamicTable from '@atlaskit/dynamic-table';
 import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
 import { useTestHubProject } from '@/hooks/test-management/useTestHubProject';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
+import { JiraTable } from '@/components/shared/JiraTable';
+import type { Column } from '@/components/shared/JiraTable/types';
 import { supabase } from '@/integrations/supabase/client';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -205,89 +206,91 @@ export default function TraceabilityPage() {
   const passed = useMemo(() => groups.filter(g => g.links.some(l => l.exec_status === 'passed')).length, [groups]);
   const failed = useMemo(() => groups.filter(g => g.links.some(l => l.exec_status === 'failed')).length, [groups]);
 
-  const head = {
-    cells: [
-      { key: 'requirement', content: 'Requirement', width: 25 },
-      { key: 'test-cases', content: 'Test cases' },
-      { key: 'coverage', content: 'Coverage', width: 18 },
-    ],
-  };
-
-  const rows = groups.map(g => {
-    const passCount = g.links.filter(l => l.exec_status === 'passed').length;
-    const failCount = g.links.filter(l => l.exec_status === 'failed').length;
-    const covAppearance: 'removed' | 'success' | 'default' =
-      failCount > 0 ? 'removed' : passCount === g.links.length ? 'success' : 'default';
-
-    return {
-      key: g.reqKey,
-      cells: [
-        {
-          key: 'requirement',
-          content: (
-            <div style={{ display: 'flex', gap: 8, alignItems: 'flex-start' }}>
-              {g.issueType && (
-                <span style={{ flexShrink: 0, display: 'inline-flex' }}>
-                  <JiraIssueTypeIcon type={g.issueType} size={16} />
-                </span>
-              )}
-              <div style={{ minWidth: 0 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-                  {g.displayKey && g.displayKey !== g.displayTitle && (
-                    g.reqKey.startsWith('ext:') || g.issueType ? (
-                      <Link
-                        to={`/browse/${g.displayKey}`}
-                        style={{ fontSize: 'var(--ds-font-size-200)', fontFamily: 'var(--ds-font-family-code)', color: 'var(--ds-link)', fontWeight: 500, textDecoration: 'none' }}
-                      >
-                        {g.displayKey}
-                      </Link>
-                    ) : (
-                      <span style={{ fontSize: 'var(--ds-font-size-200)', fontFamily: 'var(--ds-font-family-code)', color: 'var(--ds-text-subtle)', fontWeight: 500 }}>
-                        {g.displayKey}
-                      </span>
-                    )
-                  )}
-                  {g.issueStatusCategory && (
-                    <Lozenge appearance={statusCategoryAppearance(g.issueStatusCategory)}>
-                      {statusCategoryLabel(g.issueStatusCategory)}
-                    </Lozenge>
-                  )}
-                </div>
-                <div style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 220 }} title={g.displayTitle}>
-                  {g.displayTitle}
-                </div>
-              </div>
-            </div>
-          ),
-        },
-        {
-          key: 'test-cases',
-          content: (
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
-              {g.links.map(l => (
-                <span key={l.id} style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '0px 8px', background: 'var(--ds-background-neutral)', borderRadius: 3 }}>
-                  <span style={{ fontFamily: 'var(--ds-font-family-code)', fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtle)' }}>
-                    {l.case_key ?? '—'}
+  // ─── JiraTable columns (canonical) ───────────────────────────────────────────
+  // A fixed 3-column coverage shape: Requirement · Test cases · Coverage. This is
+  // NOT a dynamic per-cycle matrix, so it maps 1:1 onto JiraTable's Column<TRow>
+  // API (no per-row dynamic columns needed). Cell content is preserved verbatim
+  // from the prior DynamicTable render — JiraIssueTypeIcon + status_category
+  // Lozenge + clickable key link + live summary, plus the per-case chips and the
+  // coverage Lozenge (appearance computed per row inside the cell).
+  const columns: Column<ReqGroup>[] = [
+    {
+      id: 'requirement',
+      label: 'Requirement',
+      width: 25,
+      alwaysVisible: true,
+      cell: ({ row: g }) => (
+        <div style={{ display: 'flex', gap: 8, alignItems: 'flex-start' }}>
+          {g.issueType && (
+            <span style={{ flexShrink: 0, display: 'inline-flex' }}>
+              <JiraIssueTypeIcon type={g.issueType} size={16} />
+            </span>
+          )}
+          <div style={{ minWidth: 0 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+              {g.displayKey && g.displayKey !== g.displayTitle && (
+                g.reqKey.startsWith('ext:') || g.issueType ? (
+                  <Link
+                    to={`/browse/${g.displayKey}`}
+                    style={{ fontSize: 'var(--ds-font-size-200)', fontFamily: 'var(--ds-font-family-code)', color: 'var(--ds-link)', fontWeight: 500, textDecoration: 'none' }}
+                  >
+                    {g.displayKey}
+                  </Link>
+                ) : (
+                  <span style={{ fontSize: 'var(--ds-font-size-200)', fontFamily: 'var(--ds-font-family-code)', color: 'var(--ds-text-subtle)', fontWeight: 500 }}>
+                    {g.displayKey}
                   </span>
-                  <Lozenge appearance={execAppearance(l.exec_status)}>
-                    {execLabel(l.exec_status)}
-                  </Lozenge>
-                </span>
-              ))}
+                )
+              )}
+              {g.issueStatusCategory && (
+                <Lozenge appearance={statusCategoryAppearance(g.issueStatusCategory)}>
+                  {statusCategoryLabel(g.issueStatusCategory)}
+                </Lozenge>
+              )}
             </div>
-          ),
-        },
-        {
-          key: 'coverage',
-          content: (
-            <Lozenge appearance={covAppearance}>
-              {passCount}/{g.links.length} passing
-            </Lozenge>
-          ),
-        },
-      ],
-    };
-  });
+            <div style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 220 }} title={g.displayTitle}>
+              {g.displayTitle}
+            </div>
+          </div>
+        </div>
+      ),
+    },
+    {
+      id: 'test-cases',
+      label: 'Test cases',
+      flex: true,
+      cell: ({ row: g }) => (
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+          {g.links.map(l => (
+            <span key={l.id} style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '0px 8px', background: 'var(--ds-background-neutral)', borderRadius: 3 }}>
+              <span style={{ fontFamily: 'var(--ds-font-family-code)', fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtle)' }}>
+                {l.case_key ?? '—'}
+              </span>
+              <Lozenge appearance={execAppearance(l.exec_status)}>
+                {execLabel(l.exec_status)}
+              </Lozenge>
+            </span>
+          ))}
+        </div>
+      ),
+    },
+    {
+      id: 'coverage',
+      label: 'Coverage',
+      width: 18,
+      cell: ({ row: g }) => {
+        const passCount = g.links.filter(l => l.exec_status === 'passed').length;
+        const failCount = g.links.filter(l => l.exec_status === 'failed').length;
+        const covAppearance: 'removed' | 'success' | 'default' =
+          failCount > 0 ? 'removed' : passCount === g.links.length ? 'success' : 'default';
+        return (
+          <Lozenge appearance={covAppearance}>
+            {passCount}/{g.links.length} passing
+          </Lozenge>
+        );
+      },
+    },
+  ];
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', fontFamily: 'var(--ds-font-family-body)', background: 'var(--ds-surface)', paddingTop: 16 }}>
@@ -324,7 +327,13 @@ export default function TraceabilityPage() {
                 }
               />
             ) : (
-              <DynamicTable head={head} rows={rows} isLoading={false} />
+              <JiraTable<ReqGroup>
+                columns={columns}
+                data={groups}
+                getRowId={g => g.reqKey}
+                showRowCount
+                totalRowCount={groups.length}
+              />
             )}
           </>
         )}
