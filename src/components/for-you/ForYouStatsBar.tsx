@@ -3,7 +3,7 @@
  * MARAM V3.1 · fy- ring-fenced
  */
 
-import React from 'react';
+import React, { useMemo } from 'react';
 
 const HUB_DOT_COLORS: Record<string, string> = {
   Project: 'var(--ds-text-brand, var(--ds-text-brand))',
@@ -23,7 +23,7 @@ interface ForYouStatsBarProps {
 }
 
 export function ForYouStatsBar({ hubCounts, projectCount, reporterCount }: ForYouStatsBarProps) {
-  const entries = Object.entries(hubCounts).filter(([, c]) => c > 0);
+  const entries = useMemo(() => Object.entries(hubCounts).filter(([, c]) => c > 0), [hubCounts]);
   if (entries.length === 0) return null;
 
   return (
