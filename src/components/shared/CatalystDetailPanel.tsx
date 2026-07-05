@@ -62,6 +62,7 @@ import { AttachmentsSection } from '@/modules/project-work-hub/components/dialog
 import type { PhAttachment } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/types';
 import { SubtasksPanel } from '@/modules/project-work-hub/components/SubtasksPanel';
 import { LinkedWorkItemsSection } from '@/modules/project-work-hub/components/linked-work-items';
+import { DependenciesSection } from '@/modules/project-work-hub/components/dependencies';
 import { TestCasesSection } from '@/modules/project-work-hub/components/story-test-cases';
 import { useAuth } from '@/hooks/useAuth';
 import { useQuery } from '@tanstack/react-query';
@@ -534,6 +535,19 @@ function PhIssuePanelBody({
               issueKey={issue?.issue_key ?? ''}
               projectKey={issue?.project_key || projectKey}
             />
+
+            {/* Dependencies — same canonical section the full detail views mount.
+                Without it the "+" → Add Dependency quick action fires
+                emitAddDependency() into a bus with no listener (dead on
+                Timeline side panel). Mounting it here registers the listener
+                and shows the blocks / is-blocked-by toolbar, matching Linked
+                work items. */}
+            {issue?.issue_key && (
+              <DependenciesSection
+                issueKey={issue.issue_key}
+                projectKey={issue.project_key || projectKey}
+              />
+            )}
 
             {/* Story-scoped AI-generated test cases — same section that lives
                 on CatalystViewStory. Sits below Linked work items so the

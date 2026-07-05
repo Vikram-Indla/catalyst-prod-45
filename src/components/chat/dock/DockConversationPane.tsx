@@ -21,6 +21,7 @@ import {
 import type { ChatConversation, ChatMessage } from "@/types/chat";
 import { ConversationHeader } from "@/components/chat/main/ConversationHeader";
 import { ThreadPanel } from "@/components/chat/main/ThreadPanel";
+import { DmSummarizePanel } from "./DmSummarizePanel";
 import { MessageList } from "@/features/chat-v2/components/MessagePanel/MessageList";
 import { Composer } from "@/features/chat-v2/components/Composer/Composer";
 import { ComposerScheduledBanner } from "@/features/chat-v2/components/DraftsAndSent/ComposerScheduledBanner";
@@ -113,6 +114,14 @@ export function DockConversationPane({
 
   const [threadParent, setThreadParent] = useState<ChatMessage | null>(null);
   const [jumpHighlightId, setJumpHighlightId] = useState<string | null>(null);
+
+  // DM-only "summarize" panel (shared work items). Reset when the pane
+  // switches to a different conversation.
+  const isDm = conversation.kind === "dm";
+  const [summarizeOpen, setSummarizeOpen] = useState(false);
+  useEffect(() => {
+    setSummarizeOpen(false);
+  }, [conversation.id]);
 
   const savedIds = useMemo(
     () =>
@@ -243,32 +252,13 @@ export function DockConversationPane({
       data-cv2-theme={theme}
       style={{ height: '100%', minHeight: 0 }}
     >
-      <button
-        type="button"
-        className="cc-conv-pane__back"
-        onClick={onBack}
-        aria-label="Back to directory"
-      >
-        <svg
-          width="14"
-          height="14"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          aria-hidden
-        >
-          <polyline points="15 18 9 12 15 6" />
-        </svg>
-        <span>All messages</span>
-      </button>
-
       <ConversationHeader
         conversation={conversation}
         currentUserMuted={conversation.isMuted ?? false}
         currentUserStarred={conversation.isStarred ?? false}
         onBack={onBack}
+        onSummarize={isDm ? () => setSummarizeOpen((v) => !v) : undefined}
+        summarizeActive={summarizeOpen}
       />
 
 
@@ -282,6 +272,12 @@ export function DockConversationPane({
         />
       ) : (
         <div className="cc-conv-pane__body">
+          {summarizeOpen ? (
+            <DmSummarizePanel
+              conversation={conversation}
+              onSkip={() => setSummarizeOpen(false)}
+            />
+          ) : (
           <MessageList
             messages={messages}
             loading={isLoading}
@@ -307,6 +303,7 @@ export function DockConversationPane({
             onTogglePin={handleTogglePin}
             onRequestDelete={handleRequestDelete}
           />
+          )}
           <Composer
             key={conversation.id}
             placeholder={`Message ${

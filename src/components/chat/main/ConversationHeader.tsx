@@ -40,6 +40,10 @@ export interface ConversationHeaderProps {
   onBack?: () => void;
   /** Called when user clicks minimize — navigates from full-screen back to dock. */
   onDock?: () => void;
+  /** DM only — toggles the dock's shared-work-items summarize panel. */
+  onSummarize?: () => void;
+  /** True while the summarize panel is open (highlights the icon). */
+  summarizeActive?: boolean;
 }
 
 const PRESENCE_MAP: Record<string, PresenceColor> = {
@@ -90,7 +94,7 @@ function ConversationMenuItem({
   );
 }
 
-export function ConversationHeader({ conversation, members = [], onAskCaty, onOpenSearch, currentUserMuted = false, currentUserStarred = false, onBack, onDock }: ConversationHeaderProps) {
+export function ConversationHeader({ conversation, members = [], onAskCaty, onOpenSearch, currentUserMuted = false, currentUserStarred = false, onBack, onDock, onSummarize, summarizeActive = false }: ConversationHeaderProps) {
   const [addOpen, setAddOpen] = useState(false);
   const [rosterOpen, setRosterOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -283,21 +287,8 @@ export function ConversationHeader({ conversation, members = [], onAskCaty, onOp
         </button>
       )}
 
-      {/* Close pane — only in dock context where onBack is wired */}
-      {onBack && (
-        <button
-          type="button"
-          className="cc-iconbtn"
-          aria-label="Close conversation"
-          title="Close"
-          onClick={onBack}
-        >
-          <svg viewBox="0 0 24 24" width={16} height={16} fill="none" stroke="currentColor" strokeWidth={2.2} strokeLinecap="round">
-            <line x1="18" y1="6" x2="6" y2="18" />
-            <line x1="6" y1="6" x2="18" y2="18" />
-          </svg>
-        </button>
-      )}
+      {/* Close pane removed — the "All messages" back button in the dock
+          titlebar is the single back affordance (onBack kept for archive/leave). */}
 
       {/* Minimize to dock — only rendered in full-screen mode */}
       {onDock && (
@@ -307,6 +298,24 @@ export function ConversationHeader({ conversation, members = [], onAskCaty, onOp
           appearance="subtle"
           onClick={onDock}
         />
+      )}
+
+      {/* Summarize — DM only: opens the dock shared-work-items panel */}
+      {onSummarize && (
+        <button
+          type="button"
+          className="cc-iconbtn"
+          aria-label="Summarize shared work items"
+          aria-pressed={summarizeActive}
+          title="Shared work items"
+          onClick={onSummarize}
+          style={{ color: summarizeActive ? 'var(--ds-text-brand)' : 'var(--ds-text)' }}
+        >
+          <svg viewBox="0 0 24 24" width={16} height={16} fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+            <path d="M12 3l1.9 4.6L18.5 9.5 13.9 11.4 12 16l-1.9-4.6L5.5 9.5l4.6-1.9z" />
+            <path d="M19 15l.7 1.8L21.5 17.5l-1.8.7L19 20l-.7-1.8L16.5 17.5l1.8-.7z" />
+          </svg>
+        </button>
       )}
 
       {/* Bell — filled=active, crossed=muted (finding 22) */}

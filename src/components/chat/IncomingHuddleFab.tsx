@@ -24,11 +24,13 @@ import type { ChatConversation } from '@/types/chat';
 import './dock/dock.css';
 
 export function IncomingHuddleFab() {
-  const { incoming, snoozedCall, accept, decline, snooze } = useIncomingHuddle();
+  const { incoming, snoozedCall, snoozeActive, accept, decline, snooze } = useIncomingHuddle();
   const { missed, dismiss, dismissAll } = useMissedCalls();
   const { startOrJoin } = useHuddleActions();
   const ringing = !!incoming;
-  const snoozed = !!snoozedCall;
+  // Snooze FAB persists for the whole 1h window (DB-backed), even after the
+  // caller cancels — not just while the huddle is live.
+  const snoozed = !ringing && snoozeActive;
   const callActive = ringing || snoozed;
   // Avatar ONLY while actively ringing; once snoozed we show the snooze mark.
   const callerAvatarUrl = ringing ? (incoming?.callerAvatarUrl ?? null) : null;
@@ -145,7 +147,7 @@ export function IncomingHuddleFab() {
           onPointerDown={handlers.onPointerDown}
           onPointerMove={handlers.onPointerMove}
           onPointerUp={handlers.onPointerUp}
-          aria-label={`Snoozed call from ${snoozedCall?.callerName ?? 'someone'}. Open messages.`}
+          aria-label={snoozedCall ? `Snoozed call from ${snoozedCall.callerName}. Open messages.` : 'Snoozed. Open messages.'}
           title="Open messages"
         >
           <span className="cc-wake-disc">

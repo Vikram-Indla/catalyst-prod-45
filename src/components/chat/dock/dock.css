@@ -860,6 +860,103 @@
   text-align: left;
 }
 
+/* ── DM Summarize panel (shared work items) ──────────────── */
+.cc-sum-panel {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--ds-surface);
+}
+
+.cc-sum-panel__bar {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+}
+
+.cc-sum-panel__title {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ds-text-subtle);
+}
+
+.cc-sum-panel__skip {
+  margin-left: auto;
+  padding: 3px 12px;
+  background: transparent;
+  border: 1px solid var(--ds-border);
+  border-radius: 3px;
+  color: var(--ds-text-subtle);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+}
+.cc-sum-panel__skip:hover {
+  background: var(--ds-background-neutral-subtle-hovered);
+  color: var(--ds-text);
+}
+
+.cc-sum-panel__controls {
+  flex: 0 0 auto;
+  display: flex;
+  gap: 8px;
+  padding: 0 12px 8px;
+}
+.cc-sum-panel__search {
+  flex: 1;
+  min-width: 0;
+}
+.cc-sum-panel__type {
+  flex: 0 0 auto;
+  width: 130px;
+}
+
+.cc-sum-panel__table {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  border-top: 1px solid var(--ds-border);
+}
+
+.cc-sum-panel__empty {
+  padding: 28px 16px;
+  text-align: center;
+  color: var(--ds-text-subtlest);
+  font-size: 13px;
+}
+
+/* Skeleton shimmer while the shared-items query is in flight */
+.cc-sum-skel {
+  display: flex;
+  flex-direction: column;
+}
+.cc-sum-skel__row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 12px;
+  border-bottom: 1px solid var(--ds-border);
+}
+.cc-sum-skel__bar {
+  height: 10px;
+  border-radius: 4px;
+  background: linear-gradient(
+    90deg,
+    var(--ds-background-neutral) 25%,
+    var(--ds-background-neutral-hovered) 37%,
+    var(--ds-background-neutral) 63%
+  );
+  background-size: 400% 100%;
+  animation: cc-sum-shimmer 1.3s ease infinite;
+}
+@keyframes cc-sum-shimmer {
+  0% { background-position: 100% 0; }
+  100% { background-position: 0 0; }
+}
+
 /* ── Dock pane child component compaction ──────────────────
    Full-page chat components (ConversationHeader, MessageStream, MessageComposer)
    are narrower in dock (460px). These scoped rules force horizontal layout and

@@ -226,6 +226,11 @@ export function ChatDock({
   const [catyView, setCatyView] = useState<CatyView>("floating");
   const [dirFocusTick, setDirFocusTick] = useState(0);
 
+  // Inside a conversation (DM/channel) the DockConversationPane owns its own
+  // header (back + ConversationHeader), so the shared Caty branding + mode tabs
+  // are redundant clutter. Hide them in detail view — cleaner UX.
+  const inConversation = dockMode === "messages" && !!activeId;
+
   const { pos, isDragging, isSnapping, didMove, handlers: dragHandlers } = useDraggableFab();
 
   // Only fetch conversations after first dock open to avoid a Supabase query
@@ -250,8 +255,8 @@ export function ChatDock({
   // CatalystShell) owns the FAB (it renders on EVERY route incl. /chat where
   // this dock is hidden). Hide this launcher whenever a call is active so the
   // two never overlap.
-  const { incoming, snoozedCall } = useIncomingHuddle();
-  const callActive = !!incoming || !!snoozedCall;
+  const { incoming, snoozeActive } = useIncomingHuddle();
+  const callActive = !!incoming || snoozeActive;
 
   // Full list passed to DockDirectory so archived section works.
   const listConversations = conversations ?? [];
@@ -387,12 +392,30 @@ export function ChatDock({
 
           {/* Row 1 — brand identity + action icons */}
           <div className="cc-dock__titlebar">
-            <span className="cc-dock__badge" aria-hidden>
-              <CatyMoodFace state="content" size={26} />
-            </span>
-            <div className="cc-dock__title">
-              <span className="cc-dock__wordmark">{dockMode === "caty" ? "Assistant" : "CATY"}</span>
-            </div>
+            {inConversation ? (
+              // Inside a conversation the back affordance lives here, sharing the
+              // row with the +/expand/minimize actions (no separate back row).
+              <button
+                type="button"
+                className="cc-conv-pane__back"
+                onClick={() => onFocusDirectory?.()}
+                aria-label="Back to directory"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden>
+                  <polyline points="15 18 9 12 15 6" />
+                </svg>
+                <span>All messages</span>
+              </button>
+            ) : (
+              <>
+                <span className="cc-dock__badge" aria-hidden>
+                  <CatyMoodFace state="content" size={26} />
+                </span>
+                <div className="cc-dock__title">
+                  <span className="cc-dock__wordmark">{dockMode === "caty" ? "Assistant" : "CATY"}</span>
+                </div>
+              </>
+            )}
             <div className="cc-dock__actions">
               <IconButton
                 icon={(p) => <AddIcon {...p} LEGACY_size="small" />}
@@ -424,26 +447,29 @@ export function ChatDock({
             </div>
           </div>
 
-          {/* Row 2 — dual-mode tabs (@atlaskit/tabs owns the selected-underline) */}
-          <div className="cc-mode-tabs">
-            <Tabs
-              id="cc-dock-mode"
-              selected={dockMode === "caty" ? 1 : 0}
-              onChange={(index) => setDockMode(index === 1 ? "caty" : "messages")}
-            >
-              <TabList>
-                <Tab>
-                  Messages
-                  {totalUnread > 0 && (
-                    <span style={{ marginInlineStart: "var(--ds-space-075)" }}>
-                      <Badge appearance="primary" max={99}>{totalUnread}</Badge>
-                    </span>
-                  )}
-                </Tab>
-                <Tab>Assistant</Tab>
-              </TabList>
-            </Tabs>
-          </div>
+          {/* Row 2 — dual-mode tabs (@atlaskit/tabs owns the selected-underline).
+              Hidden inside a conversation: the pane has its own header. */}
+          {!inConversation && (
+            <div className="cc-mode-tabs">
+              <Tabs
+                id="cc-dock-mode"
+                selected={dockMode === "caty" ? 1 : 0}
+                onChange={(index) => setDockMode(index === 1 ? "caty" : "messages")}
+              >
+                <TabList>
+                  <Tab>
+                    Messages
+                    {totalUnread > 0 && (
+                      <span style={{ marginInlineStart: "var(--ds-space-075)" }}>
+                        <Badge appearance="primary" max={99}>{totalUnread}</Badge>
+                      </span>
+                    )}
+                  </Tab>
+                  <Tab>Assistant</Tab>
+                </TabList>
+              </Tabs>
+            </div>
+          )}
         </div>
 
         {/* Messages mode — directory OR conversation pane */}

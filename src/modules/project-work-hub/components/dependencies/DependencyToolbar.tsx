@@ -164,7 +164,7 @@ export function DependencyToolbar({
           <AsyncSelect<PickerOption, true>
             inputId="dep-issue-picker"
             aria-label="Search work items"
-            placeholder="Type or search a work item"
+            placeholder="Type or search"
             isMulti
             cacheOptions
             defaultOptions
@@ -184,7 +184,7 @@ export function DependencyToolbar({
         </div>
       </div>
 
-      <div className="lwi-toolbar__actions">
+      <div className="lwi-toolbar__actions" style={{ justifyContent: 'flex-end' }}>
         <div className="lwi-toolbar__buttons">
           <Button appearance="primary" isDisabled={!canSubmit} onClick={handleSubmit}>
             Add
