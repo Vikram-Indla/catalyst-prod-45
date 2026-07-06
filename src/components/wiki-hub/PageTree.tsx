@@ -243,6 +243,8 @@ function TreeRow({
           <FileText aria-hidden style={{ width: 14, height: 14, color: 'var(--ds-icon-subtle)', flexShrink: 0 }} />
         )}
         <span
+          // Arabic titles lay out RTL, English LTR (V7 RTL audit).
+          dir="auto"
           style={{
             overflow: 'hidden',
             textOverflow: 'ellipsis',

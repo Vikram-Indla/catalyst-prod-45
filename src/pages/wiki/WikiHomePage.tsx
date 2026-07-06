@@ -61,6 +61,9 @@ export default function WikiHomePage() {
 
   const { data: docs, isLoading } = useQuery({
     queryKey: ['docex', 'all-docs'],
+    // Global staleTime is 15 min + persisted — the hub must reflect renames
+    // and new docs immediately (same trap as the slug-reuse phantom writes).
+    staleTime: 0,
     queryFn: async (): Promise<DocRow[]> => {
       const { data, error } = await db
         .from('kb_documents')
@@ -153,6 +156,7 @@ export default function WikiHomePage() {
           <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
             <span aria-hidden>{row.icon || '📄'}</span>
             <span
+              dir="auto"
               style={{
                 color: 'var(--ds-text)',
                 fontWeight: 500,
@@ -264,7 +268,7 @@ export default function WikiHomePage() {
         </div>
         <div className="docex-hub-search">
           <Search />
-          <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search docs" aria-label="Search docs" />
+          <Input dir="auto" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search docs" aria-label="Search docs" />
         </div>
         <select value={wsFilter} onChange={(e) => setWsFilter(e.target.value)} aria-label="Filter by workspace" style={selectStyle}>
           <option value="">All workspaces</option>

@@ -71,6 +71,7 @@ export default function DocexSearchPage() {
         <Search />
         <Input
           autoFocus
+          dir="auto"
           value={query}
           placeholder="Search pages — title, content, DOC-n, or a work-item key (ICP-415)"
           onChange={(e) => {
@@ -105,7 +106,7 @@ export default function DocexSearchPage() {
               <button key={hit.id} type="button" className="docex-hit" onClick={() => open(hit)}>
                 <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                   <span aria-hidden style={{ fontSize: 16 }}>{hit.icon || '📄'}</span>
-                  <span style={{ color: 'var(--ds-text)', font: 'var(--ds-font-body)', fontWeight: 600 }}>
+                  <span dir="auto" style={{ color: 'var(--ds-text)', font: 'var(--ds-font-body)', fontWeight: 600 }}>
                     {hit.title || 'Untitled'}
                   </span>
                 </span>
