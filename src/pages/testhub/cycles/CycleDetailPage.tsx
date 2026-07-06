@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { createPortal } from 'react-dom';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTestCycleByKey } from '@/hooks/useTestCycleByKey';
 import DropdownMenu, { DropdownItem, DropdownItemGroup } from '@atlaskit/dropdown-menu';
@@ -263,7 +262,9 @@ export default function CycleDetailPage() {
                     i.assignee?.full_name ?? 'Unassigned',
                     sprintName,
                   ]);
-                  const csv = [headers, ...rows].map(r => r.join(',')).join('\n');
+                  // RFC-4180 quoting — titles with commas/quotes/newlines must not corrupt the file
+                  const esc = (v: string) => (/[",\n]/.test(v) ? `"${v.replace(/"/g, '""')}"` : v);
+                  const csv = [headers, ...rows].map(r => r.map(esc).join(',')).join('\n');
                   const blob = new Blob([csv], { type: 'text/csv' });
                   const url = URL.createObjectURL(blob);
                   const a = document.createElement('a');
@@ -612,44 +613,28 @@ function DueDateCell({ scopeId, cycleId, dueDate }: {
   );
 }
 
-// ── Shared panel shell ──────────────────────────────────────────────────────
+// ── Shared compact-action shell ─────────────────────────────────────────────
+// E6 (CAT-TESTHUB-V2): the previous hand-rolled 480px fixed right drawer is
+// banned. Defect/comments/evidence are compact actions → canonical ADS modal;
+// the full run experience owns these flows long-term (Phase F).
 function RightPanel({ title, subtitle, onClose, children }: {
   title: string; subtitle: string; onClose: () => void; children: React.ReactNode;
 }) {
-  useEffect(() => {
-    const h = (e: KeyboardEvent) => { if (e.key === 'Escape') { e.stopPropagation(); onClose(); } };
-    document.addEventListener('keydown', h, true);
-    return () => document.removeEventListener('keydown', h, true);
-  }, [onClose]);
-
-  return createPortal(
-    <>
-      <div onClick={onClose} style={{ position: 'fixed', inset: 0, zIndex: 8000, background: 'var(--ds-blanket)' }} />
-      <div style={{
-        position: 'fixed', top: 0, right: 0, width: 480, height: '100vh', zIndex: 8001,
-        background: 'var(--ds-surface-overlay)',
-        boxShadow: 'var(--ds-shadow-overlay)',
-        display: 'flex', flexDirection: 'column',
-        fontFamily: 'var(--ds-font-family-body)',
-      }}>
-        {/* Header */}
-        <div style={{
-          padding: 'var(--ds-space-200)', borderBottom: '1px solid var(--ds-border)',
-          display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between',
-        }}>
-          <div>
-            <div style={{ fontWeight: 600, fontSize: 'var(--ds-font-size-500)', color: 'var(--ds-text)' }}>{title}</div>
-            <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest)', marginTop: 0 }}>{subtitle}</div>
+  return (
+    <ModalDialog onClose={onClose} width="medium" shouldScrollInViewport>
+      <ModalHeader>
+        <div>
+          <ModalTitle>{title}</ModalTitle>
+          <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest)', marginTop: 2 }}>
+            {subtitle}
           </div>
-          <IconButton icon={CloseIcon} label="Close" appearance="subtle" spacing="compact" onClick={onClose} />
         </div>
-        {/* Body */}
-        <div style={{ flex: 1, overflowY: 'auto', padding: 'var(--ds-space-200)' }}>
-          {children}
-        </div>
-      </div>
-    </>,
-    document.body
+      </ModalHeader>
+      <ModalBody>{children}</ModalBody>
+      <ModalFooter>
+        <Button appearance="subtle" onClick={onClose}>Close</Button>
+      </ModalFooter>
+    </ModalDialog>
   );
 }
 

@@ -113,7 +113,9 @@ export default function CyclesPage() {
   const bulkDelete = useBulkDeleteCycles();
 
   return (
-    <div style={{ padding: '24px', maxWidth: 1200, fontFamily: 'var(--ds-font-family-body)' }}>
+    // E5 (CAT-TESTHUB-V2): full-width — the 1200px clamp contradicted the
+    // full-width dynamic-table rule (CycleDetailPage D025 fixed this first).
+    <div style={{ padding: '24px', fontFamily: 'var(--ds-font-family-body)' }}>
       <div style={{ marginBottom: 24, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <ProjectPageHeader projectKey={projectKey} hubType="test" />
         <Button appearance="primary" onClick={() => setShowCreate(true)} iconBefore={<Plus size={14} label="" />}>
@@ -223,6 +225,9 @@ function CycleActions({ cycle }: { cycle: TMCycle }) {
   const deleteCycle = useDeleteCycle();
   const archiveCycle = useArchiveCycle();
   const cloneCycle = useCloneCycle();
+  // E5 (CAT-TESTHUB-V2): delete is destructive — canonical confirm modal, no
+  // one-click data loss.
+  const [confirmingDelete, setConfirmingDelete] = useState(false);
   return (
     <div onClick={e => e.stopPropagation()}>
       <DropdownMenu
@@ -244,11 +249,38 @@ function CycleActions({ cycle }: { cycle: TMCycle }) {
           <DropdownItem onClick={() => archiveCycle.mutate({ id: cycle.id, project_id: cycle.project_id })}>
             Archive cycle
           </DropdownItem>
-          <DropdownItem onClick={() => deleteCycle.mutate({ id: cycle.id, project_id: cycle.project_id })}>
+          <DropdownItem onClick={() => setConfirmingDelete(true)}>
             Delete cycle
           </DropdownItem>
         </DropdownItemGroup>
       </DropdownMenu>
+      {confirmingDelete && (
+        <ModalDialog onClose={() => setConfirmingDelete(false)} width="small">
+          <ModalHeader>
+            <ModalTitle appearance="danger">Delete cycle?</ModalTitle>
+          </ModalHeader>
+          <ModalBody>
+            <p style={{ margin: 0, color: 'var(--ds-text)' }}>
+              "{cycle.name}" and its scope, runs and step results will be permanently deleted. This cannot be undone.
+            </p>
+          </ModalBody>
+          <ModalFooter>
+            <Button appearance="subtle" onClick={() => setConfirmingDelete(false)}>Cancel</Button>
+            <Button
+              appearance="danger"
+              isLoading={deleteCycle.isPending}
+              onClick={() => {
+                deleteCycle.mutate(
+                  { id: cycle.id, project_id: cycle.project_id },
+                  { onSettled: () => setConfirmingDelete(false) },
+                );
+              }}
+            >
+              Delete
+            </Button>
+          </ModalFooter>
+        </ModalDialog>
+      )}
     </div>
   );
 }
