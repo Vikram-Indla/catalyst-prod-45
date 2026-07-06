@@ -5,7 +5,7 @@
  * sort, and the canonical JiraTable listing every page the user can see.
  * Workspace navigation lives in the hub sidebar.
  */
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { Search } from '@/lib/atlaskit-icons';
@@ -18,6 +18,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { Routes } from '@/lib/routes';
 import { useAuth } from '@/hooks/useAuth';
 import { useWikiWorkspaces, useCreateWikiPage } from '@/hooks/useWiki';
+import { importDocumentFile } from '@/components/wiki-hub/editor/importDoc';
+import { catalystToast } from '@/lib/catalystToast';
 
 const db = supabase as unknown as { from: (t: string) => any };
 
@@ -106,6 +108,38 @@ export default function WikiHomePage() {
       { spaceId, title: 'Untitled' },
       { onSuccess: (created) => navigate(Routes.docex.page(ws.slug, created.slug)) },
     );
+  };
+
+  // V5 — Import Word/PDF → converted (and translated) Docex page.
+  const importInputRef = useRef<HTMLInputElement>(null);
+  const importTargetWs = useRef<string | null>(null);
+  const [importing, setImporting] = useState(false);
+  const onImportFile = async (files: FileList | null) => {
+    const file = files?.[0];
+    const ws = importTargetWs.current ? wsById.get(importTargetWs.current) : null;
+    if (importInputRef.current) importInputRef.current.value = '';
+    if (!file || !ws) return;
+    setImporting(true);
+    try {
+      const imported = await importDocumentFile(file);
+      createPage.mutate(
+        { spaceId: ws.id, title: imported.title, content: imported.blocks as never },
+        {
+          onSuccess: (created) => {
+            catalystToast.success(
+              imported.sourceLang !== 'en'
+                ? `Imported and translated (${imported.sourceLang} → en)`
+                : 'Imported',
+            );
+            navigate(Routes.docex.page(ws.slug, created.slug));
+          },
+          onSettled: () => setImporting(false),
+        },
+      );
+    } catch (e) {
+      setImporting(false);
+      catalystToast.error(`Import failed: ${e instanceof Error ? e.message : String(e)}`);
+    }
   };
 
   const columns: Column<DocRow>[] = useMemo(
@@ -251,6 +285,53 @@ export default function WikiHomePage() {
           <option value="published">Published</option>
         </select>
         <div style={{ flex: 1 }} />
+        <input
+          ref={importInputRef}
+          type="file"
+          accept=".pdf,.docx,.doc,application/pdf"
+          hidden
+          onChange={(e) => onImportFile(e.target.files)}
+        />
+        <DropdownMenu
+          aria-label="Import a document"
+          placement="bottom-end"
+          shouldRenderToParent={false}
+          trigger={() => (
+            <button
+              type="button"
+              disabled={importing}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 6,
+                padding: '6px 14px',
+                border: '1px solid var(--ds-border)',
+                borderRadius: 6,
+                background: 'var(--ds-surface)',
+                color: 'var(--ds-text)',
+                font: 'var(--ds-font-body)',
+                fontWeight: 500,
+                cursor: 'pointer',
+              }}
+            >
+              {importing ? 'Importing…' : 'Import ▾'}
+            </button>
+          )}
+          groups={[
+            {
+              key: 'import-ws',
+              title: 'Import PDF or Word into',
+              items: (workspaces ?? []).map((w) => ({
+                key: w.id,
+                label: w.name,
+                onClick: () => {
+                  importTargetWs.current = w.id;
+                  importInputRef.current?.click();
+                },
+              })),
+            },
+          ]}
+        />
         <DropdownMenu
           aria-label="Create a document"
           placement="bottom-end"
