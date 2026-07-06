@@ -143,6 +143,91 @@ export function useMySpace() {
   return { mySpace, ensure, isLoaded: workspaces !== undefined };
 }
 
+// ---------------------------------------------------------------------------
+// Attachments (V4 — attachment-heavy pages)
+// ---------------------------------------------------------------------------
+
+export interface WikiAttachment {
+  id: string;
+  document_id: string;
+  filename: string;
+  file_path: string;
+  file_size: number;
+  mime_type: string;
+  uploaded_by: string;
+  uploaded_at: string;
+}
+
+const WIKI_MEDIA_BUCKET = 'wiki-media';
+
+export function wikiAttachmentUrl(a: WikiAttachment): string {
+  return supabase.storage.from(WIKI_MEDIA_BUCKET).getPublicUrl(a.file_path).data.publicUrl;
+}
+
+export function useDocexAttachments(documentId: string | undefined) {
+  return useQuery({
+    queryKey: ['docex', 'attachments', documentId],
+    enabled: !!documentId,
+    queryFn: async (): Promise<WikiAttachment[]> => {
+      const { data, error } = await db
+        .from('kb_document_attachments')
+        .select('*')
+        .eq('document_id', documentId)
+        .order('uploaded_at', { ascending: false });
+      if (error) throw error;
+      return (data ?? []) as WikiAttachment[];
+    },
+  });
+}
+
+export function useUploadDocexAttachment() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (input: { documentId: string; file: File }) => {
+      const { data: sess } = await supabase.auth.getSession();
+      const uid = sess.session?.user?.id;
+      if (!uid) throw new Error('Not signed in');
+      const safeName = input.file.name.replace(/[^\w.\- ]+/g, '_');
+      const path = `attachments/${input.documentId}/${Date.now()}-${safeName}`;
+      const { error: upErr } = await supabase.storage
+        .from(WIKI_MEDIA_BUCKET)
+        .upload(path, input.file, { contentType: input.file.type || 'application/octet-stream', upsert: false });
+      if (upErr) throw new Error(upErr.message);
+      const { data, error } = await db
+        .from('kb_document_attachments')
+        .insert({
+          document_id: input.documentId,
+          filename: input.file.name,
+          file_path: path,
+          file_size: input.file.size,
+          mime_type: input.file.type || 'application/octet-stream',
+          uploaded_by: uid,
+        })
+        .select('*')
+        .single();
+      if (error) throw error;
+      return data as WikiAttachment;
+    },
+    onSuccess: (a) => queryClient.invalidateQueries({ queryKey: ['docex', 'attachments', a.document_id] }),
+    onError: (e: Error) => catalystToast.error(`Attachment upload failed: ${e.message}`),
+  });
+}
+
+export function useDeleteDocexAttachment() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (a: WikiAttachment) => {
+      const { error } = await db.from('kb_document_attachments').delete().eq('id', a.id);
+      if (error) throw error;
+      // Best-effort object removal — the row is the source of truth.
+      await supabase.storage.from(WIKI_MEDIA_BUCKET).remove([a.file_path]);
+      return a;
+    },
+    onSuccess: (a) => queryClient.invalidateQueries({ queryKey: ['docex', 'attachments', a.document_id] }),
+    onError: (e: Error) => catalystToast.error(`Delete failed: ${e.message}`),
+  });
+}
+
 /**
  * Move a page to another workspace (V2 — "create pages [in My Space] and then
  * move them into projects"). Re-parents to the target's root; the slug is

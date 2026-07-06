@@ -37,6 +37,7 @@ import { clearDraft, getDraft, saveDraft } from './editor/localDraft';
 import { attachMarqueeSelection } from './editor/marqueeSelection';
 import { syncMentionLinks } from './editor/syncMentionLinks';
 import { BacklinksPanel } from './BacklinksPanel';
+import { DocexAttachments } from './DocexAttachments';
 import { DropdownMenu, Lozenge } from '@/components/ads';
 import { Input } from '@/components/ui/input';
 import { exportPageHtml, exportPageMarkdown, printPage } from './editor/exportPage';
@@ -1204,6 +1205,8 @@ export function WikiPageSurface({ workspace, page, treePages }: WikiPageSurfaceP
         )}
 
         <BacklinksPanel pageId={page.id} />
+
+        <DocexAttachments documentId={page.id} />
 
         <div className="wiki-no-print" style={{ marginTop: 28, borderTop: '1px solid var(--ds-border)', paddingTop: 20 }}>
           <Suspense fallback={null}>
