@@ -34,6 +34,12 @@ const REPO_ROOT = path.resolve(__dirname, '..');
 const SCAN_ROOTS = [
   'src/pages/testhub',
   'src/components/testhub',
+  // CAT-TESTHUB-V2 (I6): V2 surfaces living outside the two legacy roots stay
+  // under the same zero-baseline gate.
+  'src/components/catalyst-detail-views/test-case',
+  'src/components/releases/detail/SprintTestHealthSection.tsx',
+  'src/components/releases/detail/ReleaseTestReadinessSection.tsx',
+  'src/hooks/test-management',
 ];
 const SCAN_EXTENSIONS = ['.ts', '.tsx', '.css'];
 
@@ -65,6 +71,12 @@ function isExcluded(filePath) {
 
 function collectFiles(dir, out) {
   if (!fs.existsSync(dir)) return;
+  // I6: SCAN_ROOTS may name a single file (surgical inclusion of V2 surfaces
+  // that live in directories shared with other modules).
+  if (fs.statSync(dir).isFile()) {
+    if (SCAN_EXTENSIONS.includes(path.extname(dir)) && !isExcluded(dir)) out.push(dir);
+    return;
+  }
   const entries = fs.readdirSync(dir, { withFileTypes: true });
   for (const entry of entries) {
     const full = path.join(dir, entry.name);
