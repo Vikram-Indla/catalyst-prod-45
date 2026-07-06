@@ -1,13 +1,22 @@
 /**
- * FolioSiteMapPage — /folio/sitemap (design-critique F7, Vikram 2026-07-06:
- * "a module called site map where visually we can see the complete
- * hierarchy of the documentation"). Every workspace → nested page tree →
- * linked work items, on one screen.
+ * FolioSiteMapPage — /folio/sitemap (design-critique R3, Vikram 2026-07-06:
+ * "a very rich canvas where you can see seven to eight levels").
+ * @xyflow/react pan/zoom canvas: workspace roots → page nodes (unlimited
+ * parent_id depth) → linked work-item leaf nodes with their type icons.
+ * Click any node to open it. Minimap + zoom controls included.
  */
 import { useMemo } from 'react';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { Lozenge } from '@/components/ads';
+import {
+  ReactFlow,
+  Background,
+  Controls,
+  MiniMap,
+  type Node,
+  type Edge,
+} from '@xyflow/react';
+import '@xyflow/react/dist/style.css';
 import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
 import { Skeleton } from '@/components/ui/skeleton';
 import { supabase } from '@/integrations/supabase/client';
@@ -27,18 +36,17 @@ interface MapDoc {
   doc_key: string | null;
   parent_id: string | null;
   position: number;
-  published_at: string | null;
   linked: Array<{ key: string; type: string }>;
 }
 
 function useSiteMapDocs() {
   return useQuery({
-    queryKey: ['folio', 'sitemap'],
+    queryKey: ['folio', 'sitemap', 'v2'],
     staleTime: 0,
     queryFn: async (): Promise<MapDoc[]> => {
       const { data, error } = await db
         .from('kb_documents')
-        .select('id, space_id, title, slug, icon, doc_key, parent_id, position, published_at')
+        .select('id, space_id, title, slug, icon, doc_key, parent_id, position')
         .eq('is_template', false)
         .order('position')
         .limit(1000);
@@ -72,94 +80,139 @@ function useSiteMapDocs() {
   });
 }
 
-function DocNode({ doc, byParent, wsSlug, depth }: { doc: MapDoc; byParent: Map<string | null, MapDoc[]>; wsSlug: string; depth: number }) {
-  const children = byParent.get(doc.id) ?? [];
-  return (
-    <div style={{ marginInlineStart: depth === 0 ? 0 : 22, borderInlineStart: depth === 0 ? 'none' : '1px solid var(--ds-border)', paddingInlineStart: depth === 0 ? 0 : 10 }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '4px 6px', borderRadius: 6 }}>
-        <span aria-hidden>{doc.icon || '📄'}</span>
-        <Link
-          to={Routes.folio.page(wsSlug, doc.slug)}
-          dir="auto"
-          style={{ color: 'var(--ds-text)', font: 'var(--ds-font-body)', fontWeight: 500, textDecoration: 'none' }}
-        >
-          {doc.title || 'Untitled'}
-        </Link>
-        {doc.doc_key ? (
-          <span style={{ fontFamily: 'var(--ds-font-family-code)', font: 'var(--ds-font-body-small)', color: 'var(--ds-text-subtle)' }}>
-            {doc.doc_key}
-          </span>
-        ) : null}
-        {doc.linked.map((l) => (
-          <span key={l.key} style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
-            {l.type ? <JiraIssueTypeIcon type={l.type} size={16} /> : null}
-            <span style={{ color: 'var(--ds-text-subtle)', font: 'var(--ds-font-body-small)' }}>{l.key}</span>
-          </span>
-        ))}
-        {doc.published_at ? <Lozenge appearance="success">Published</Lozenge> : null}
-      </div>
-      {children.map((c) => (
-        <DocNode key={c.id} doc={c} byParent={byParent} wsSlug={wsSlug} depth={depth + 1} />
-      ))}
-    </div>
-  );
-}
+const COL_W = 300;
+const ROW_H = 64;
+
+const nodeBase: React.CSSProperties = {
+  border: '1px solid var(--ds-border)',
+  borderRadius: 8,
+  background: 'var(--ds-surface-raised)',
+  boxShadow: 'var(--ds-shadow-raised)',
+  padding: '8px 12px',
+  font: 'var(--ds-font-body-small)',
+  color: 'var(--ds-text)',
+  width: 240,
+};
 
 export default function FolioSiteMapPage() {
+  const navigate = useNavigate();
   const { data: workspaces } = useWikiWorkspaces();
   const { data: docs, isLoading } = useSiteMapDocs();
 
-  const byWorkspace = useMemo(() => {
-    const m = new Map<string, Map<string | null, MapDoc[]>>();
-    for (const d of docs ?? []) {
-      const ws = m.get(d.space_id) ?? new Map<string | null, MapDoc[]>();
-      ws.set(d.parent_id, [...(ws.get(d.parent_id) ?? []), d]);
-      m.set(d.space_id, ws);
+  const { nodes, edges } = useMemo(() => {
+    const nodes: Node[] = [];
+    const edges: Edge[] = [];
+    let row = 0;
+
+    const byWs = new Map<string, MapDoc[]>();
+    for (const d of docs ?? []) byWs.set(d.space_id, [...(byWs.get(d.space_id) ?? []), d]);
+
+    for (const ws of workspaces ?? []) {
+      const wsDocs = byWs.get(ws.id) ?? [];
+      if (!wsDocs.length) continue; // keep the canvas dense — empty workspaces live in the sidebar
+      const wsNodeId = `ws-${ws.id}`;
+      const wsRow = row;
+      nodes.push({
+        id: wsNodeId,
+        position: { x: 0, y: wsRow * ROW_H },
+        data: {
+          href: Routes.folio.workspace(ws.slug),
+          label: (
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+              <img src={HUB_ICON_REGISTRY.docex} alt="" width={16} height={16} />
+              <span style={{ fontWeight: 600 }}>{ws.name}</span>
+            </span>
+          ),
+        },
+        style: { ...nodeBase, background: 'var(--ds-background-selected)', borderColor: 'var(--ds-border-focused)' },
+        sourcePosition: 'right' as never,
+        targetPosition: 'left' as never,
+      });
+
+      const byParent = new Map<string | null, MapDoc[]>();
+      for (const d of wsDocs) byParent.set(d.parent_id, [...(byParent.get(d.parent_id) ?? []), d]);
+
+      const walk = (parentNodeId: string, parentId: string | null, depth: number) => {
+        for (const d of byParent.get(parentId) ?? []) {
+          const nodeId = `doc-${d.id}`;
+          nodes.push({
+            id: nodeId,
+            position: { x: depth * COL_W, y: row * ROW_H },
+            data: {
+              href: Routes.folio.page(ws.slug, d.slug),
+              label: (
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, maxWidth: 216 }}>
+                  <span aria-hidden>{d.icon || '📄'}</span>
+                  <span dir="auto" style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontWeight: 500 }}>
+                    {d.title || 'Untitled'}
+                  </span>
+                  <span style={{ color: 'var(--ds-text-subtle)', flexShrink: 0 }}>{d.doc_key ?? ''}</span>
+                </span>
+              ),
+            },
+            style: nodeBase,
+            sourcePosition: 'right' as never,
+            targetPosition: 'left' as never,
+          });
+          edges.push({ id: `e-${parentNodeId}-${nodeId}`, source: parentNodeId, target: nodeId });
+          row += 1;
+          // Linked work items — leaf nodes with the canonical type icon.
+          for (const l of d.linked ?? []) {
+            const wiId = `wi-${d.id}-${l.key}`;
+            nodes.push({
+              id: wiId,
+              position: { x: (depth + 1) * COL_W, y: (row - 1) * ROW_H + 6 },
+              data: {
+                href: `/browse/${l.key}`,
+                label: (
+                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                    {l.type ? <JiraIssueTypeIcon type={l.type} size={16} /> : null}
+                    <span style={{ color: 'var(--ds-text-subtle)' }}>{l.key}</span>
+                  </span>
+                ),
+              },
+              style: { ...nodeBase, width: 150, padding: '4px 10px', background: 'var(--ds-surface)' },
+              targetPosition: 'left' as never,
+            });
+            edges.push({ id: `e-${nodeId}-${wiId}`, source: nodeId, target: wiId, style: { strokeDasharray: '4 4' } });
+            row += 1;
+          }
+          walk(nodeId, d.id, depth + 1);
+        }
+      };
+      walk(wsNodeId, null, 1);
+      if (row === wsRow) row += 1;
+      row += 1; // spacer between workspace clusters
     }
-    return m;
-  }, [docs]);
+    return { nodes, edges };
+  }, [workspaces, docs]);
 
   return (
-    <div style={{ width: '100%', padding: '16px 32px 96px' }}>
+    <div style={{ width: '100%', padding: '16px 32px 24px', display: 'flex', flexDirection: 'column', height: 'calc(100vh - 56px)' }}>
       <ProjectPageHeader hubType="folio" paddingX={0} title="Site map" />
-
-      {isLoading ? (
-        <Skeleton style={{ height: 280, borderRadius: 8 }} />
-      ) : (
-        (workspaces ?? []).map((ws) => {
-          const tree = byWorkspace.get(ws.id);
-          return (
-            <div
-              key={ws.id}
-              style={{
-                marginBottom: 20,
-                border: '1px solid var(--ds-border)',
-                borderRadius: 8,
-                padding: '12px 16px',
-                background: 'var(--ds-surface)',
-              }}
-            >
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: tree ? 8 : 0 }}>
-                <img src={HUB_ICON_REGISTRY.docex} alt="" width={16} height={16} />
-                <Link
-                  to={Routes.folio.workspace(ws.slug)}
-                  style={{ font: 'var(--ds-font-heading-xsmall)', color: 'var(--ds-text)', textDecoration: 'none' }}
-                >
-                  {ws.name}
-                </Link>
-                <span style={{ color: 'var(--ds-text-subtlest)', font: 'var(--ds-font-body-small)' }}>
-                  {ws.container_type}
-                </span>
-              </div>
-              {tree ? (
-                (tree.get(null) ?? []).map((d) => <DocNode key={d.id} doc={d} byParent={tree} wsSlug={ws.slug} depth={0} />)
-              ) : (
-                <p style={{ margin: 0, color: 'var(--ds-text-subtlest)', font: 'var(--ds-font-body-small)' }}>No pages yet.</p>
-              )}
-            </div>
-          );
-        })
-      )}
+      <div style={{ flex: 1, minHeight: 420, border: '1px solid var(--ds-border)', borderRadius: 8, overflow: 'hidden', marginTop: 8 }}>
+        {isLoading ? (
+          <Skeleton style={{ height: '100%', borderRadius: 8 }} />
+        ) : (
+          <ReactFlow
+            nodes={nodes}
+            edges={edges}
+            fitView
+            minZoom={0.1}
+            nodesDraggable={false}
+            nodesConnectable={false}
+            proOptions={{ hideAttribution: true }}
+            onNodeClick={(_, node) => {
+              const href = (node.data as { href?: string })?.href;
+              if (href) navigate(href);
+            }}
+          >
+            <Background gap={24} />
+            <Controls showInteractive={false} />
+            <MiniMap pannable zoomable />
+          </ReactFlow>
+        )}
+      </div>
     </div>
   );
 }
