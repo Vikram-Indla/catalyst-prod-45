@@ -12,7 +12,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import type { Block, BlockNoteEditor } from '@blocknote/core';
 import { Breadcrumbs, type BreadcrumbItem } from '@/components/ads';
 import { Skeleton } from '@/components/ui/skeleton';
-import { ImageIcon, Smile as SmileIcon, Star, StarOff, PanelRight } from '@/lib/atlaskit-icons';
+import { ImageIcon, Star, StarOff, PanelRight } from '@/lib/atlaskit-icons';
 import { Routes } from '@/lib/routes';
 import {
   useUpdateWikiPage,
@@ -111,7 +111,13 @@ export interface WikiPageSurfaceProps {
 
 /** The workspace crumb's canonical project/product icon — the SAME
  *  resolution ContextSwitcher/the sidebar use, so the trail matches
- *  Project Hub exactly (Vikram 2026-07-06 breadcrumb feedback). */
+ *  Project Hub exactly (Vikram 2026-07-06 breadcrumb feedback).
+ *
+ *  Passed straight into Breadcrumbs' `iconBefore` with no wrapping span —
+ *  matching the canonical entity crumb in ProjectPageHeader.tsx (project/
+ *  product hub breadcrumbs). Atlaskit's BreadcrumbsItem already owns the
+ *  icon→label gap; an extra wrapper here fights that layout and glues the
+ *  icon to the label instead of spacing it. */
 function WorkspaceCrumbIcon({ workspace }: { workspace: WikiWorkspace }) {
   const { data: meta } = useWorkspaceContainerMeta();
   if (workspace.container_type === 'project' && workspace.container_id) {
@@ -735,10 +741,6 @@ export function WikiPageSurface({ workspace, page, treePages }: WikiPageSurfaceP
     },
     [page.id, page.space_id, updatePage],
   );
-  const addRandomEmojiIcon = useCallback(() => {
-    const set = ['📄', '📝', '📘', '📗', '📙', '🗂️', '📌', '🧭', '💡', '🚀', '⚙️', '🎯'];
-    commitIcon(set[Math.floor((page.id.charCodeAt(0) + page.id.length) % set.length)]);
-  }, [commitIcon, page.id]);
 
   return (
     <article className="wiki-print-root wiki-page" style={{ minWidth: 0, flex: 1, display: 'flex', flexDirection: 'column' }}>
@@ -1076,11 +1078,8 @@ export function WikiPageSurface({ workspace, page, treePages }: WikiPageSurfaceP
           className="wiki-titlebar wiki-no-print"
           style={{ display: 'flex', gap: 8, minHeight: 26, marginTop: page.cover_url ? 14 : 4, marginBottom: 2 }}
         >
-          {!page.icon && (
-            <button type="button" className="wiki-hover-action" onClick={addRandomEmojiIcon}>
-              <SmileIcon style={{ width: 15, height: 15 }} /> Add icon
-            </button>
-          )}
+          {/* Emoji page-icon affordance removed (Vikram 2026-07-06): Folio
+              leans on the cover feature, not Notion-style emoji icons. */}
           {!page.cover_url && (
             <button type="button" className="wiki-hover-action" onClick={() => setCoverPickerOpen(true)}>
               <ImageIcon style={{ width: 15, height: 15 }} /> Add cover

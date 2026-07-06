@@ -10,6 +10,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { CatyPulseIcon } from '@/components/ui/CatyPulseIcon';
 import { X } from '@/lib/atlaskit-icons';
 import { blocksToText } from './editor/blocksToText';
+import { isArabicDominant } from '@/lib/detectArabic';
 
 type Target = 'en' | 'ar';
 
@@ -59,15 +60,16 @@ export function WikiTranslateBar({ title, getBlocks }: WikiTranslateBarProps) {
     [title, getBlocks],
   );
 
+  // Offer ONLY the language the page is not already in: an English page shows
+  // "الترجمة إلى العربية"; an Arabic page shows "Translate to English" (Vikram
+  // 2026-07-06 — same-language button is redundant, never hidden behind hover).
+  const pageIsArabic = isArabicDominant(`${title}\n\n${blocksToText(getBlocks())}`);
+  const offered: Target[] = pageIsArabic ? ['en'] : ['ar'];
+
   return (
     <div className="wiki-translate wiki-no-print">
-      <style>{`
-        .wiki-translate__triggers { display: flex; gap: 4px; opacity: 0; transition: opacity .12s ease; }
-        .wiki-translate:hover .wiki-translate__triggers,
-        .wiki-translate:focus-within .wiki-translate__triggers { opacity: 1; }
-      `}</style>
-      <div className="wiki-translate__triggers" role="group" aria-label="Translate page">
-        {(['en', 'ar'] as Target[]).map((t) => (
+      <div className="wiki-translate__triggers" role="group" aria-label="Translate page" style={{ display: 'flex', gap: 4 }}>
+        {offered.map((t) => (
           <button
             key={t}
             type="button"
