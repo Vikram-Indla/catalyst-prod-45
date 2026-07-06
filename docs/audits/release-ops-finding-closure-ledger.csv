@@ -23,3 +23,15 @@ RO-P2-10,P2,scope,BR/Sprint/WorkItem release scope joins,decision #13,CLOSED,rh_
 RO-P2-11,P2,build,tsc + npm run build,acceptance,CLOSED,tsc clean; build PASS 46s,2026-07-06
 RO-P2-12,P2,rls,New-table RLS manager/approver hardening,security,DEFERRED,permissive-authenticated for now; harden in security phase,
 RO-P2-13,P2,types,Full types.ts regen,foundation,DEFERRED,avoided cyij-drift import; hooks use as-any per repo convention,
+RO-P3-01,P3,list,Change list operational cockpit columns + flags,phase-3 §2,CLOSED,Flags/Releases/Planned/SOP/APPR cols; verified live,2026-07-06
+RO-P3-02,P3,detail,Full-page Change Detail cockpit (header markers + 7 summary sections),phase-3 §4-12,CLOSED,useChangeCockpit + ChangeCockpitSections; verified live CHG8841/CAT-CHG-21,2026-07-06
+RO-P3-03,P3,timer,Data-driven execution timer summary,phase-3 §8,CLOSED,ExecutionTimer upcoming/running/overrun/completed; verified live,2026-07-06
+RO-P3-04,P3,markers,Emergency override / freeze conflict / unlinked-prod never silent,phase-3 §4/9/10,CLOSED,SectionMessage markers; verified CAT-CHG-21 blocked + CHG8841 override,2026-07-06
+RO-P3-05,P3,create,Create change multi-release + justification + validation,phase-3 §3,CLOSED,CreateChgModal isMulti links + conditional justification + end>start; build-verified,2026-07-06
+RO-P3-06,P3,route,Slug + legacy UUID both open change detail,phase-3 §2/D-004,CLOSED,slug chg8841 + uuid both resolve; verified live,2026-07-06
+RO-P3-07,P3,empty,Educational empty/broken states per section,phase-3 §14,CLOSED,what/why/next hints; verified CAT-CHG-21/CHG8841,2026-07-06
+RO-P3-08,P3,nodrawer,No drawer/side-panel/peek in change surfaces,D-001,CLOSED,row click full-page nav; verified,2026-07-06
+RO-P3-09,P3,build,tsc + npm run build + color gate,acceptance,CLOSED,tsc clean; build PASS 50s; color grep clean,2026-07-06
+RO-P0-11,P0,evidence,Change-detail live screenshots (was OPEN),acceptance,CLOSED,closed by Phase 3 cockpit screenshots on seeded cyij,2026-07-06
+RO-P3-10,P3,actions,Full status-action mutations (request signoff/override/apply-template/execute),phase-4,DEFERRED,cockpit shows state + entry points; mutations Phase 4,
+RO-P3-11,P3,owners,Per-stream owner pickers on create,phase-4,DEFERRED,owners shown from change roles + SOP assignees; create-owner pickers Phase 4,

@@ -20,3 +20,14 @@
 - **Legacy change redirect:** n/a — `:changeSlug` route intentionally not created (no slug column yet, D-004 deferred). `:changeId` remains canonical; existing deep links unbroken.
 
 Close these by seeding a change + a sprint band on cyij, then re-capturing #6 (change detail), #7 (sprint modal preview), and confirming no drawer opens from the changes list row-click.
+
+## Phase 3 — Change Cockpit (2026-07-06, cyij seeded demo)
+| # | Proof | Route | MCP ID | Result |
+|---|---|---|---|---|
+| P3-1 | Change list with Flags | /release-hub/changes | ss_2318yjjsm | Emergency / Unlinked-prod flags, risk, releases columns |
+| P3-2 | CHG8841 cockpit (top) | /release-hub/changes/chg8841 | ss_5037vh3dq | breadcrumb + Emergency-override marker + live timer "Starts in 1h 48m" + tracker + 4 cockpit cards |
+| P3-3 | CHG8841 cockpit (sections) | /release-hub/changes/chg8841 | (scroll) | Freeze "override approved", Incidents clean, Prod event PE-8841 + Replay-disabled |
+| P3-4 | Legacy UUID route | /release-hub/changes/22222222-…-8841 | ss_50163mjf4 | same cockpit — deep link safe |
+| P3-5 | Unlinked-prod cockpit | /release-hub/changes/cat-chg-21 | ss_6463b1v8v | Freeze "execution blocked" + Unlinked-prod + justification + timer "overdue" + educational empty/broken states |
+
+No-drawer proof: row click navigates to full-page detail (URL change); no drawer/peek rendered. Slug + UUID both resolve. Demo data is staging-only (cyij), documented in release-ops-phase-3-functional-proof.md, not committed as a migration.

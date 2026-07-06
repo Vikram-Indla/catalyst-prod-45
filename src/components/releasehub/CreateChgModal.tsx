@@ -82,7 +82,8 @@ export function CreateChgModal({ onClose, initialSource = 'catalyst' }: Props) {
   const [risk, setRisk] = useState<Opt | null>(null);
   const [windowStart, setWindowStart] = useState('');
   const [windowEnd, setWindowEnd] = useState('');
-  const [releaseId, setReleaseId] = useState<Opt | null>(null);
+  const [releaseIds, setReleaseIds] = useState<Opt[]>([]);
+  const [justification, setJustification] = useState('');
   const [approvers, setApprovers] = useState<Approver[]>([]);
   const [notifyIds, setNotifyIds] = useState<Opt[]>([]);
   const [submitted, setSubmitted] = useState(false);
@@ -123,8 +124,14 @@ export function CreateChgModal({ onClose, initialSource = 'catalyst' }: Props) {
     risk: !risk ? 'Risk is required' : '',
     externalSystem: isExternal && !externalSystem.trim() ? 'External system is required' : '',
     externalNumber: isExternal && !externalNumber.trim() ? 'External change number is required' : '',
+    justification: (targetEnv?.value === 'production' && releaseIds.length === 0 && !justification.trim())
+      ? 'Production change with no linked release requires a justification' : '',
+    window: (windowStart && windowEnd && new Date(windowEnd) < new Date(windowStart))
+      ? 'Planned end must be after planned start' : '',
   };
-  const isValid = !errors.title && !errors.changeType && !errors.targetEnv && !errors.risk && !errors.externalSystem && !errors.externalNumber;
+  const needsJustification = targetEnv?.value === 'production' && releaseIds.length === 0;
+  const isValid = !errors.title && !errors.changeType && !errors.targetEnv && !errors.risk
+    && !errors.externalSystem && !errors.externalNumber && !errors.justification && !errors.window;
 
   const addApprover = () => setApprovers((a) => [...a, { userId: '', role: '' }]);
   const updateApprover = (i: number, patch: Partial<Approver>) => setApprovers((a) => a.map((x, idx) => (idx === i ? { ...x, ...patch } : x)));
@@ -159,13 +166,25 @@ export function CreateChgModal({ onClose, initialSource = 'catalyst' }: Props) {
         deployment_category: deployCategory?.value || undefined,
         window_start: windowStart || undefined,
         window_end: windowEnd || undefined,
-        release_id: releaseId?.value || undefined,
+        planned_start_at: windowStart || undefined,
+        planned_end_at: windowEnd || undefined,
+        release_id: releaseIds[0]?.value || undefined,
+        prod_no_release_justification: needsJustification ? justification.trim() : undefined,
         source,
         external_system: isExternal ? externalSystem.trim() : undefined,
       } as any);
 
       const changeId = (change as any)?.id as string | undefined;
       if (changeId) {
+        // Additional linked releases beyond the first (service writes the first
+        // link from release_id) — m2m forward truth.
+        const extraReleases = releaseIds.slice(1).map((r) => r.value);
+        if (extraReleases.length > 0) {
+          await supabase.from('rh_change_release_links').upsert(
+            extraReleases.map((rid) => ({ change_id: changeId, release_id: rid })),
+            { onConflict: 'change_id,release_id' },
+          );
+        }
         const validApprovers = approvers.filter((a) => a.userId && a.role);
         if (validApprovers.length > 0) {
           await supabase.from('rh_change_signoffs').insert(
@@ -287,9 +306,18 @@ export function CreateChgModal({ onClose, initialSource = 'catalyst' }: Props) {
           </div>
 
           <div style={{ marginBottom: 16 }}>
-            <label style={labelStyle}>Map to release</label>
-            <Select inputId="chg-release" options={releaseOpts} value={releaseId} onChange={(v) => setReleaseId(v as Opt)} placeholder="Unassigned" isClearable spacing="compact" menuPosition="fixed" />
+            <label style={labelStyle}>Linked release(s)</label>
+            <Select inputId="chg-release" isMulti options={releaseOpts} value={releaseIds} onChange={(v) => setReleaseIds((v as Opt[]) ?? [])} placeholder="Link one or more releases (optional)" isClearable spacing="compact" menuPosition="fixed" />
           </div>
+
+          {needsJustification && (
+            <div style={{ marginBottom: 16 }}>
+              <label style={labelStyle} htmlFor="chg-justif">Production-unlinked justification <span style={{ color: 'var(--ds-text-danger)' }}>*</span></label>
+              <TextArea id="chg-justif" value={justification} onChange={(e) => setJustification((e.target as HTMLTextAreaElement).value)} placeholder="This production change has no linked release. Explain why (required)." minimumRows={2} />
+              {submitted && errors.justification && <p style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-danger)', margin: '4px 0 0' }}>{errors.justification}</p>}
+            </div>
+          )}
+          {submitted && errors.window && <p style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-danger)', margin: '0 0 12px' }}>{errors.window}</p>}
 
           <div style={{ marginBottom: 16 }}>
             <label style={labelStyle} htmlFor="chg-desc">Description</label>

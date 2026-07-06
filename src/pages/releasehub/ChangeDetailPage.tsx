@@ -7,16 +7,20 @@
  * Sign-offs / Activity read the nested useChange(id) payload. The SOP
  * execution table (rh_sop_steps, expandable + evidence) lands in Phase 8b.
  */
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { format, formatDistanceToNowStrict } from 'date-fns';
 import Tabs, { Tab, TabList, TabPanel } from '@atlaskit/tabs';
 import Spinner from '@atlaskit/spinner';
 import { Check } from '@/lib/atlaskit-icons';
 import { useChange } from '@/hooks/useReleaseHub';
+import { useChangeCockpit } from '@/hooks/useChangeCockpit';
 import { StatusLozenge } from '@/components/shared/StatusLozenge';
 import { NotifyList } from '@/components/releasehub/detail/ReleaseDetailTabs';
 import { SopExecutionTab } from '@/components/releasehub/detail/SopExecutionTab';
+import { ExecutionTimer } from '@/components/releasehub/detail/ExecutionTimer';
+import { ChangeCockpitSections } from '@/components/releasehub/detail/ChangeCockpitSections';
+import { SectionMessage } from '@/components/ads/SectionMessage';
 import { RH } from '@/constants/releasehub.design';
 import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
 
@@ -109,8 +113,10 @@ export default function ChangeDetailPage() {
   const { changeId } = useParams();
   const navigate = useNavigate();
   const { data: change, isLoading, error } = useChange(changeId ?? '');
+  const [selectedTab, setSelectedTab] = useState(0);
 
   const c = change as any;
+  const { data: cockpit } = useChangeCockpit(c ?? null);
   const statusLabel = useMemo(() => (c?.status && TERMINAL[c.status] ? TERMINAL[c.status] : null), [c?.status]);
 
   if (isLoading) {
@@ -166,15 +172,48 @@ export default function ChangeDetailPage() {
         <MetaItem label="Window" value={windowDate ? format(new Date(windowDate), 'MMM d, yyyy') : '—'} />
       </div>
 
+      {/* Cockpit markers — override / freeze / unlinked-prod (never silent) */}
+      {cockpit && (cockpit.override.exists || cockpit.freeze.conflict || cockpit.isUnlinkedProduction) && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8, padding: '12px 0' }}>
+          {cockpit.override.exists && (
+            <SectionMessage appearance="warning" title="Emergency override">
+              <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)' }}>{cockpit.override.reason ?? 'Emergency override in effect.'}{cockpit.override.bypassedGate ? ` · bypasses ${cockpit.override.bypassedGate}` : ''}{cockpit.override.status ? ` · ${cockpit.override.status}` : ''}</span>
+            </SectionMessage>
+          )}
+          {cockpit.freeze.conflict && !cockpit.freeze.overrideApproved && (
+            <SectionMessage appearance="error" title="Freeze conflict — execution blocked">
+              <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)' }}>{cockpit.freeze.window?.name} ({cockpit.freeze.window?.targetEnv}). Requires an approved emergency override.</span>
+            </SectionMessage>
+          )}
+          {cockpit.isUnlinkedProduction && (
+            <SectionMessage appearance="warning" title="Unlinked production change">
+              <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)' }}>Production change with no linked release{c.prod_no_release_justification ? ` — justification: ${c.prod_no_release_justification}` : ' — justification required.'}</span>
+            </SectionMessage>
+          )}
+        </div>
+      )}
+
+      {/* Execution timer (primary placement) */}
+      <div style={{ padding: '4px 0 12px' }}>
+        <ExecutionTimer
+          status={c.status}
+          plannedStartAt={c.planned_start_at ?? c.window_start ?? null}
+          plannedEndAt={c.planned_end_at ?? c.window_end ?? null}
+          actualStartAt={c.actual_start_at ?? null}
+          actualEndAt={c.actual_end_at ?? null}
+          runningStep={cockpit?.sop.running ?? null}
+        />
+      </div>
+
       <div style={{ padding: '12px 0', borderBottom: `1px solid ${T.border}` }}>
         <NotifyList itemType="change" itemId={c.id} />
       </div>
 
       <Tracker status={c.status} />
 
-      <Tabs id="change-detail-tabs">
+      <Tabs id="change-detail-tabs" selected={selectedTab} onChange={setSelectedTab}>
         <TabList>
-          <Tab>Overview</Tab>
+          <Tab>Cockpit</Tab>
           <Tab>SOP</Tab>
           <Tab>Work items</Tab>
           <Tab>Sign-offs</Tab>
@@ -182,16 +221,12 @@ export default function ChangeDetailPage() {
         </TabList>
 
         <TabPanel>
-          <div style={{ padding: '16px 0', width: '100%' }}>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 24 }}>
-              <MetaItem label="Status" value={titleCase(c.status)} />
-              <MetaItem label="Risk" value={titleCase(c.risk_level)} />
-              <MetaItem label="Source" value={titleCase(c.source)} />
-              <MetaItem label="Window start" value={c.window_start ? format(new Date(c.window_start), 'MMM d, yyyy') : '—'} />
-              <MetaItem label="Window end" value={c.window_end ? format(new Date(c.window_end), 'MMM d, yyyy') : '—'} />
-            </div>
+          <div style={{ width: '100%' }}>
+            {cockpit
+              ? <ChangeCockpitSections cockpit={cockpit} onOpenSop={() => setSelectedTab(1)} />
+              : <div style={{ padding: 24, display: 'flex', justifyContent: 'center' }}><Spinner size="medium" /></div>}
             {c.description && (
-              <div style={{ marginTop: 24 }}>
+              <div style={{ marginTop: 8, marginBottom: 16 }}>
                 <p style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: T.subtlest, margin: 0 }}>Description</p>
                 <p style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-400)', color: T.text, margin: '4px 0 0', whiteSpace: 'pre-wrap' }}>{c.description}</p>
               </div>
