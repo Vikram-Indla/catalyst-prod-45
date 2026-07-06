@@ -12,7 +12,10 @@
 // hooks directly here while matching StepEditor's visual idiom exactly.
 // ============================================================================
 import React, { useState } from 'react';
-import { Plus, Trash2 } from '@/lib/atlaskit-icons';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { Plus, Trash2, ChevronUp, ChevronDown, Copy } from '@/lib/atlaskit-icons';
+import { supabase } from '@/integrations/supabase/client';
+import { catalystToast } from '@/lib/catalystToast';
 import {
   useAddTestStep,
   useUpdateTestStep,
@@ -43,7 +46,9 @@ const taStyle: React.CSSProperties = {
   color: 'var(--ds-text)',
   background: 'var(--ds-surface)',
   resize: 'vertical',
-  minHeight: 56,
+  // D2 (CAT-TESTHUB-V2): authoring canvas is content-first — no cramped rows
+  minHeight: 96,
+  lineHeight: 'var(--ds-line-height-body)',
   outline: 'none',
   boxSizing: 'border-box',
 };
@@ -77,6 +82,8 @@ function StepCard({
   onUpdate,
   onDelete,
   onMove,
+  onCopy,
+  onQuickAdd,
   busy,
 }: {
   step: StepRow;
@@ -85,6 +92,8 @@ function StepCard({
   onUpdate: (patch: { action?: string; expected_result?: string; test_data?: string }) => void;
   onDelete: () => void;
   onMove: (dir: -1 | 1) => void;
+  onCopy: () => void;
+  onQuickAdd: () => void;
   busy: boolean;
 }) {
   const [action, setAction] = useState(step.action ?? '');
@@ -112,14 +121,30 @@ function StepCard({
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
         <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtle)' }}>Step {index + 1}</span>
         <div style={{ display: 'flex', gap: 4 }}>
-          <button onClick={() => onMove(-1)} disabled={index === 0 || busy} style={smallBtn} title="Move up" aria-label="Move step up">↑</button>
-          <button onClick={() => onMove(1)} disabled={index === total - 1 || busy} style={smallBtn} title="Move down" aria-label="Move step down">↓</button>
+          <button onClick={() => onMove(-1)} disabled={index === 0 || busy} style={smallBtn} title="Move up" aria-label="Move step up">
+            <ChevronUp size={14} />
+          </button>
+          <button onClick={() => onMove(1)} disabled={index === total - 1 || busy} style={smallBtn} title="Move down" aria-label="Move step down">
+            <ChevronDown size={14} />
+          </button>
+          <button onClick={onCopy} disabled={busy} style={smallBtn} title="Copy step" aria-label="Copy step">
+            <Copy size={12} />
+          </button>
           <button onClick={onDelete} disabled={busy} style={{ ...smallBtn, color: 'var(--ds-text-danger)' }} title="Delete step" aria-label="Delete step">
             <Trash2 size={12} />
           </button>
         </div>
       </div>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+      <div
+        style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}
+        onKeyDown={(e) => {
+          // D2: keyboard add-row — Cmd/Ctrl+Enter appends the next step
+          if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+            e.preventDefault();
+            onQuickAdd();
+          }
+        }}
+      >
         <div>
           <label style={labelStyle}>Action</label>
           <textarea
@@ -161,9 +186,35 @@ export function TestCaseStepsEditor({ testCaseId, steps }: TestCaseStepsEditorPr
   const updateStep = useUpdateTestStep();
   const deleteStep = useDeleteTestStep();
   const reorderSteps = useReorderTestSteps();
+  const queryClient = useQueryClient();
+
+  // D2: copy step via the existing tm_clone_step RPC (inserts right after the
+  // source, renumbers server-side)
+  const cloneStep = useMutation({
+    mutationFn: async (input: { stepId: string; insertAfter: number }) => {
+      const { error } = await supabase.rpc(
+        'tm_clone_step' as never,
+        { p_step_id: input.stepId, p_insert_after: input.insertAfter } as never,
+      );
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['tm-case', testCaseId] });
+      queryClient.invalidateQueries({ queryKey: ['tm-case-steps', testCaseId] });
+    },
+    onError: (e: Error) => catalystToast.error('Failed to copy step', e.message),
+  });
 
   const ordered = [...steps].sort((a, b) => a.step_number - b.step_number);
-  const busy = addStep.isPending || updateStep.isPending || deleteStep.isPending || reorderSteps.isPending;
+  const busy = addStep.isPending || updateStep.isPending || deleteStep.isPending || reorderSteps.isPending || cloneStep.isPending;
+
+  const quickAdd = () =>
+    addStep.mutate({
+      test_case_id: testCaseId,
+      step_number: (ordered[ordered.length - 1]?.step_number ?? 0) + 1,
+      action: '',
+      expected_result: '',
+    });
 
   const handleMove = (index: number, dir: -1 | 1) => {
     const target = index + dir;
@@ -189,6 +240,8 @@ export function TestCaseStepsEditor({ testCaseId, steps }: TestCaseStepsEditorPr
               onUpdate={patch => updateStep.mutate({ id: s.id, test_case_id: testCaseId, ...patch })}
               onDelete={() => deleteStep.mutate({ id: s.id, test_case_id: testCaseId })}
               onMove={dir => handleMove(i, dir)}
+              onCopy={() => cloneStep.mutate({ stepId: s.id, insertAfter: s.step_number })}
+              onQuickAdd={quickAdd}
             />
           ))}
         </div>
