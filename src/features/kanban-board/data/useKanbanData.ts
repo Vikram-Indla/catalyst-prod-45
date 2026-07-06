@@ -419,7 +419,8 @@ export function useKanbanData(
       : 'in_progress';
     return {
       id: r.id,
-      issueKey: r.jira_key || r.version || r.id,
+      // Never leak the raw UUID onto a card — prefer jira_key/version, else blank.
+      issueKey: r.jira_key || r.version || '',
       summary: r.name ?? '',
       issueType: 'Release',
       priority: '',
