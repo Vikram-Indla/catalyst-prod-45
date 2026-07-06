@@ -65,14 +65,20 @@ export const useMyExecutionWork = () =>
 
       const [changesRes, linksRes, allStepsRes] = await Promise.all([
         supabase.from('rh_changes').select('*').in('id', changeIds),
-        supabase.from('rh_change_release_links').select('change_id, rh_releases(name)').in('change_id', changeIds).is('unlinked_at', null),
+        supabase.from('rh_change_release_links').select('change_id, rh_releases(name, version, jira_key)').in('change_id', changeIds).is('unlinked_at', null),
         supabase.from('rh_sop_steps').select('*').in('change_id', changeIds).order('step_no'),
       ]);
       const changeRows = (changesRes.data ?? []) as any[];
       const stepsByChange: Record<string, any[]> = {};
       ((allStepsRes.data ?? []) as any[]).forEach((s) => { (stepsByChange[s.change_id] ??= []).push(s); });
       const relNames: Record<string, string[]> = {};
-      ((linksRes.data ?? []) as any[]).forEach((l: any) => { if (l.rh_releases?.name) (relNames[l.change_id] ??= []).push(l.rh_releases.name); });
+      ((linksRes.data ?? []) as any[]).forEach((l: any) => {
+        const r = l.rh_releases;
+        if (!r?.name) return;
+        // Surface the linked release NUMBER (version, else jira key) next to its name.
+        const num = r.version || r.jira_key;
+        (relNames[l.change_id] ??= []).push(num ? `${r.name} (${num})` : r.name);
+      });
 
       const freezeFor = (c: any) => {
         const winStart = c.window_start ?? c.planned_start_at;
