@@ -111,35 +111,34 @@ export interface WikiPageSurfaceProps {
 
 /** The workspace crumb's canonical project/product icon — the SAME
  *  resolution ContextSwitcher/the sidebar use, so the trail matches
- *  Project Hub exactly (Vikram 2026-07-06 breadcrumb feedback). */
+ *  Project Hub exactly (Vikram 2026-07-06 breadcrumb feedback).
+ *
+ *  Passed straight into Breadcrumbs' `iconBefore` with no wrapping span —
+ *  matching the canonical entity crumb in ProjectPageHeader.tsx (project/
+ *  product hub breadcrumbs). Atlaskit's BreadcrumbsItem already owns the
+ *  icon→label gap; an extra wrapper here fights that layout and glues the
+ *  icon to the label instead of spacing it. */
 function WorkspaceCrumbIcon({ workspace }: { workspace: WikiWorkspace }) {
   const { data: meta } = useWorkspaceContainerMeta();
-  // inline-flex + trailing gap: the raw ProjectIcon <img> renders display:block
-  // and sits flush against the crumb label; this centres it and adds the 4px
-  // (0.5×grid) icon→text gap the ads Breadcrumbs wrapper leaves to the surface.
   if (workspace.container_type === 'project' && workspace.container_id) {
     return (
-      <span style={{ display: 'inline-flex', alignItems: 'center', marginInlineEnd: 4 }}>
-        <ProjectIcon
-          size="xsmall"
-          projectKey={meta?.projectKeyById.get(workspace.container_id)}
-          name={workspace.name}
-        />
-      </span>
+      <ProjectIcon
+        size="xsmall"
+        projectKey={meta?.projectKeyById.get(workspace.container_id)}
+        name={workspace.name}
+      />
     );
   }
   if (workspace.container_type === 'product' && workspace.container_id) {
     const product = meta?.productById.get(workspace.container_id);
     return (
-      <span style={{ display: 'inline-flex', alignItems: 'center', marginInlineEnd: 4 }}>
-        <ProjectIcon
-          size="xsmall"
-          projectKey={product?.code}
-          avatarUrl={product?.code ? getProductAvatarUrl(product.code) : undefined}
-          color={product?.color}
-          name={workspace.name}
-        />
-      </span>
+      <ProjectIcon
+        size="xsmall"
+        projectKey={product?.code}
+        avatarUrl={product?.code ? getProductAvatarUrl(product.code) : undefined}
+        color={product?.color}
+        name={workspace.name}
+      />
     );
   }
   return null;
