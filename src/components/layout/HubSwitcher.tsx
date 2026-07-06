@@ -8,7 +8,7 @@
  *   popover renders 11 hubs grouped by SDLC phase:
  *     DISCOVER     → Home, Strategy, Ideation
  *     BUILD & SHIP → Product, Project, Release, Test, Incident, Task, Plan
- *     KNOWLEDGE    → Wiki
+ *     KNOWLEDGE    → Folio
  *
  *   Each row carries a 32x32 colored tile (ADS accent token), a bespoke
  *   24x24 hub glyph (HubIcon), the bare label (no "Hub" suffix), and on
@@ -78,7 +78,6 @@ const HUBS: DeprecatedHubEntry[] = [
   { key: 'task',     label: 'Tasks',    href: '/tasks/overview',             section: 'build_ship', tone: 'yellow',  shortcut: '9', moduleKey: 'planner' },
   { key: 'plan',     label: 'Plan',     href: '/planhub',                    section: 'build_ship', tone: 'gray',    shortcut: '0', moduleKey: 'planner', deprecated: true },
   { key: 'docex',    label: 'Folio',    href: '/folio',                      section: 'knowledge',  tone: 'blue',    shortcut: '-', moduleKey: 'docex' },
-  { key: 'wiki',     label: 'Wiki',     href: '/wiki',                       section: 'knowledge',  tone: 'lime',    shortcut: '-', moduleKey: 'wiki', deprecated: true },
 ];
 
 const SECTIONS: { key: SectionKey; title: string }[] = [
