@@ -665,6 +665,35 @@ export const useReleaseChanges = (releaseId: string) =>
     },
   });
 
+// Phase 2 §5: reverse m2m — the releases a change deploys to. Prefers the
+// join table (forward truth); unions the legacy 1:1 rh_changes.release_id.
+export interface ChangeLinkedRelease {
+  id: string; name: string | null; status: string | null; slug: string | null;
+}
+
+export const useChangeReleases = (changeId: string) =>
+  useQuery({
+    queryKey: ['release-hub', 'changes', changeId, 'releases'],
+    enabled: !!changeId,
+    queryFn: async (): Promise<ChangeLinkedRelease[]> => {
+      const { data: links } = await supabase
+        .from('rh_change_release_links')
+        .select('rh_releases(id, name, status, slug)')
+        .eq('change_id', changeId)
+        .is('unlinked_at', null);
+      const { data: chg } = await supabase
+        .from('rh_changes').select('release_id').eq('id', changeId).maybeSingle();
+      const byId: Record<string, ChangeLinkedRelease> = {};
+      (links ?? []).forEach((l: any) => { const r = l.rh_releases; if (r) byId[r.id] = { id: r.id, name: r.name, status: r.status, slug: r.slug }; });
+      const legacyId = (chg as any)?.release_id;
+      if (legacyId && !byId[legacyId]) {
+        const { data: r } = await supabase.from('rh_releases').select('id, name, status, slug').eq('id', legacyId).maybeSingle();
+        if (r) byId[(r as any).id] = { id: (r as any).id, name: (r as any).name, status: (r as any).status, slug: (r as any).slug };
+      }
+      return Object.values(byId);
+    },
+  });
+
 export interface ReleaseSignoff {
   id: string; changeId: string; chgNumber: string | null; role: string | null; status: string;
   approverId: string | null; approverName: string | null;

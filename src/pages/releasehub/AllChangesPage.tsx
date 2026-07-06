@@ -212,7 +212,7 @@ export default function AllChangesPage() {
           columns={columns}
           data={filtered}
           getRowId={(r) => r.id}
-          onRowClick={(r) => navigate(`/release-hub/changes/${r.id}`)}
+          onRowClick={(r) => navigate(`/release-hub/changes/${(r as any).slug ?? r.id}`)}
           selectable
           selection={selection}
           onSelectionChange={setSelection}

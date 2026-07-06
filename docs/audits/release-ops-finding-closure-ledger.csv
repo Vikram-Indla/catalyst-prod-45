@@ -10,3 +10,16 @@ RO-P0-08,P0,breadcrumb,L1 lists (releases/changes/calendar) breadcrumb,D-002 mir
 RO-P0-09,P0,route,Change detail canonical route slug posture,D-004 :changeSlug,DEFERRED,rh_changes has no slug column; migration-safe; no fake slug; route stays :changeId,2026-07-06
 RO-P0-10,P0,build,npm run build acceptance gate,acceptance,CLOSED,build PASS 1m07s + tsc clean,2026-07-06
 RO-P0-11,P0,evidence,Change-detail + sprint-modal live screenshots,acceptance,OPEN,staging seed gap (0 changes / no sprint bands); code-verified only,
+RO-P2-01,P2,schema,Core migration 20260618120000/140001 recorded-but-not-executed on cyij,foundation,CLOSED,idempotent migration 20260706120000 reconciles + extends; verified,2026-07-06
+RO-P2-02,P2,m2m,rh_change_release_links missing on cyij,decision #2,CLOSED,created + backfilled from legacy release_id; both-direction reads validated,2026-07-06
+RO-P2-03,P2,slug,rh_changes has no slug (P0 RO-P0-09 deferral),D-004 :changeSlug,CLOSED,slug col+trigger+backfill; getById resolves slug-or-UUID; list navs by slug,2026-07-06
+RO-P2-04,P2,sop,SOP template + execution step richness (schedule/commit/evidence/lineage),decision #3/#4/#9,CLOSED,template_steps+sop_steps extended; validated E/F,2026-07-06
+RO-P2-05,P2,signoff,Release-level sign-off table missing; scope model,decision #12,CLOSED,rh_release_signoffs created + rh_change_signoffs scope/deps added; validated G,2026-07-06
+RO-P2-06,P2,override,Emergency override workflow table,decision #6,CLOSED,rh_emergency_overrides created; request/approve/bypassed-gate validated H,2026-07-06
+RO-P2-07,P2,freeze,Freeze window scope/datetime/owner,decision #8/#10,CLOSED,rh_freeze_windows extended + start_at/end_at seeded,2026-07-06
+RO-P2-08,P2,lineage,Incident/Defect deployment-source lineage,decision #5,CLOSED,incidents+tm_defects source_* cols added; validated I,2026-07-06
+RO-P2-09,P2,prodevent,Production event structured FKs + snapshots + rollup,decision #7/#10,CLOSED,rh_production_events extended; ties rel+chg validated J,2026-07-06
+RO-P2-10,P2,scope,BR/Sprint/WorkItem release scope joins,decision #13,CLOSED,rh_release_brs/sprints/work_items created,2026-07-06
+RO-P2-11,P2,build,tsc + npm run build,acceptance,CLOSED,tsc clean; build PASS 46s,2026-07-06
+RO-P2-12,P2,rls,New-table RLS manager/approver hardening,security,DEFERRED,permissive-authenticated for now; harden in security phase,
+RO-P2-13,P2,types,Full types.ts regen,foundation,DEFERRED,avoided cyij-drift import; hooks use as-any per repo convention,
