@@ -24,7 +24,7 @@ Method: DB-enforced criteria probed via live SQL on cyij; UI/surface criteria ma
 | TMV2-P0-015 | Test Case | DONE | Draft/publish/archive + version rows; origin-enforcement + version-immutability triggers |
 | TMV2-P0-016 | Steps | DONE | TestCaseStepsEditor.tsx add/copy/delete/reorder + action/expected/test_data/preconditions/coverage (D2) |
 | TMV2-P0-017 | AI | DONE | `ai-generate-test-artefacts` v2 deployed (reads parent/fields/context → draft cases); AIGenerateTestCasesDialog |
-| TMV2-P0-018 | AI | PARTIAL | Ops coded in `ai-tm-assist` (complete/improve/correct/convert_uat/coverage/gaps/link_suggest/sprint_risk/release_risk). **Deploy blocked** — cyij edge-fn cap (PaymentRequiredException). Client degrades to SectionMessage. Generation live. |
+| TMV2-P0-018 | AI | DONE | `ai-tm-assist` DEPLOYED to cyij (v1, ACTIVE, verify_jwt=true) — 9 ops (complete/improve/correct/convert_uat/coverage/gaps/link_suggest/sprint_risk/release_risk). Smoke-tested live (auth-gate 401 envelope). ANTHROPIC_API_KEY set. Freed cap by deleting 4 stale fns |
 | TMV2-P0-019 | AI | DONE | `language: 'en'\|'ar'` end-to-end; Arabic system prompt in ai-tm-assist + generator; RTL surfaces |
 | TMV2-P0-020 | Insertion | DONE | TestCasesSection on Story/Feature/Epic/BusinessRequest/Defect/Incident (6/6) + Sprint/Release/Repo folder CTAs |
 | TMV2-P0-021 | Plans | DONE | TestPlanDetailPage.tsx curated refs (live vs locked via `tm_plan_versions`); no physical case move |
@@ -39,13 +39,11 @@ Method: DB-enforced criteria probed via live SQL on cyij; UI/surface criteria ma
 | TMV2-P0-030 | Reports | DONE | REPORT_REGISTRY: daily QA, sprint health, release readiness, UAT signoff, regression, defect leakage/retest, variance, evidence, AI audit — all wired bodies |
 
 ## Summary
-- **29/30 DONE**, **1 PARTIAL** (external-dependency only):
-  - TMV2-P0-018: `ai-tm-assist` code complete + committed; deploy blocked by cyij edge-function cap (Vikram: raise cap / delete stale fn, then MCP `deploy_edge_function`). Generation path already live via `ai-generate-test-artefacts` v2.
-- TMV2-P0-029 upgraded PARTIAL→DONE 2026-07-06: built the H7 SVG traceability canvas (was Plan-Lock-accepted EmptyState fallback). All gates green, tsc unchanged.
-- Zero buildable gaps remain. The single PARTIAL is a hard external plan-limit, not implementation.
+- **30/30 DONE.** Full acceptance.
+- TMV2-P0-029 upgraded PARTIAL→DONE 2026-07-06: built the H7 SVG traceability canvas.
+- TMV2-P0-018 upgraded PARTIAL→DONE 2026-07-06: freed the cyij edge-fn cap by deleting 4 stale fns (`standup-summarize`, `catalyst-full-sync`, `jira-bau-reload`, `jira-title-case-pass` — all 0-to-config reference, superseded/one-off), then deployed `ai-tm-assist` v1 (ACTIVE, verify_jwt=true, smoke-tested). `ANTHROPIC_API_KEY` set on cyij.
+- Zero gaps remain.
 
-## Remaining external dependencies (Vikram-only)
-1. Raise cyij edge-function cap → deploy `ai-tm-assist` (unblocks P0-018 assist ops).
-2. Confirm `ANTHROPIC_API_KEY` secret on cyij (generator + assist runtime).
-3. Optional: `supabase login` → regen `types.ts` to type the new tm_* hooks (currently `typedQuery`, functional).
-4. Screenshot signoff sweep on remaining surfaces (repository + case page already visually verified on :8081).
+## Remaining (optional, non-acceptance)
+1. `supabase login` → regen `types.ts` to type the new tm_* hooks (currently `typedQuery`, functional).
+2. Screenshot signoff sweep on remaining surfaces (repository + case page already visually verified on :8081).
