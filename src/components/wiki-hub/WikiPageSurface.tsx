@@ -156,6 +156,11 @@ export function WikiPageSurface({ workspace, page, treePages }: WikiPageSurfaceP
   const createSubPage = useCreateWikiPage();
   const moveInTree = useMoveWikiPage();
 
+  // Right drawer has two tabs: Hierarchy (page tree) and Outline (TOC of the
+  // page's own headings — Notion's signature reading rail).
+  const [drawerTab, setDrawerTab] = useState<'hierarchy' | 'outline'>('hierarchy');
+  const [outlineTick, setOutlineTick] = useState(0);
+
   // V2 — move page to another workspace (My Space → project, or any pair).
   const { data: allWorkspaces } = useWikiWorkspaces();
   const movePage = useMoveWikiPageToSpace();
@@ -436,6 +441,7 @@ export function WikiPageSurface({ workspace, page, treePages }: WikiPageSurfaceP
       pendingDoc.current = doc;
       const empty = isDocEmpty(doc);
       setShowInvite((prev) => (prev !== empty ? empty : prev));
+      setOutlineTick((t) => t + 1); // keep the Outline rail in sync while typing
       // Keystroke durability: journal locally long before the 1.5s autosave.
       saveDraft(page.id, doc);
       if (saveTimer.current) clearTimeout(saveTimer.current);
@@ -543,6 +549,46 @@ export function WikiPageSurface({ workspace, page, treePages }: WikiPageSurfaceP
     (): Block[] => (pendingDoc.current ?? (page.content as Block[]) ?? []) as Block[],
     [page.content],
   );
+
+  // Outline (TOC) — the page's headings, derived from current blocks.
+  const outline = useMemo(() => {
+    const items: { id: string; level: number; text: string }[] = [];
+    for (const b of currentBlocks()) {
+      if ((b as Block).type !== 'heading') continue;
+      const text = Array.isArray(b.content)
+        ? b.content
+            .map((c) => (c && typeof c === 'object' && 'text' in c ? String((c as { text: string }).text) : ''))
+            .join('')
+        : '';
+      if (!text.trim()) continue;
+      const level = Number((b.props as { level?: number } | undefined)?.level ?? 1);
+      items.push({ id: b.id, level, text });
+    }
+    return items;
+    // outlineTick advances on every editor change so the rail stays live.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentBlocks, outlineTick, page.content]);
+
+  const scrollToBlock = (blockId: string) => {
+    const el = document.querySelector<HTMLElement>(`.wiki-bn [data-id="${blockId}"]`);
+    if (!el) return;
+    // The editor scrolls in an inner container, not the window — scrollIntoView
+    // doesn't reliably move it, so compute the delta and scroll it explicitly.
+    let sc: HTMLElement | null = el.parentElement;
+    while (sc) {
+      const oy = getComputedStyle(sc).overflowY;
+      if ((oy === 'auto' || oy === 'scroll') && sc.scrollHeight > sc.clientHeight + 4) break;
+      sc = sc.parentElement;
+    }
+    if (sc) {
+      // Direct scrollTop is reliable here; scrollTo({behavior:'smooth'}) on this
+      // nested flex container silently no-ops (verified live 2026-07-06).
+      const delta = el.getBoundingClientRect().top - sc.getBoundingClientRect().top;
+      sc.scrollTop = sc.scrollTop + delta - 12;
+    } else {
+      el.scrollIntoView({ block: 'start' });
+    }
+  };
 
   const runExport = useCallback(
     (kind: 'md' | 'html' | 'print') => {
@@ -1397,35 +1443,84 @@ export function WikiPageSurface({ workspace, page, treePages }: WikiPageSurfaceP
             padding: '4px 8px 24px',
           }}
         >
-          <p
-            style={{
-              margin: '6px 6px 6px',
-              font: 'var(--ds-font-heading-xsmall)',
-              color: 'var(--ds-text-subtle)',
-            }}
-          >
-            Hierarchy
-          </p>
-          <PageTree
-            pages={treePages ?? []}
-            selectedId={page.id}
-            onSelect={(p) => navigate(Routes.wiki.page(workspace.slug, p.slug))}
-            onMove={(m) =>
-              moveInTree.mutate({
-                id: m.id,
-                spaceId: workspace.id,
-                newParentId: m.newParentId,
-                newPosition: m.newPosition,
-              })
-            }
-            onCreateChild={(parentId) =>
-              createSubPage.mutate(
-                { spaceId: workspace.id, title: 'Untitled', parentId },
-                { onSuccess: (c) => navigate(Routes.wiki.page(workspace.slug, c.slug)) },
-              )
-            }
-            emptyHint="No pages yet."
-          />
+          <div role="tablist" aria-label="Drawer view" style={{ display: 'flex', gap: 2, marginBottom: 8 }}>
+            {(['hierarchy', 'outline'] as const).map((t) => (
+              <button
+                key={t}
+                type="button"
+                role="tab"
+                aria-selected={drawerTab === t}
+                onClick={() => setDrawerTab(t)}
+                style={{
+                  border: 'none',
+                  background: drawerTab === t ? 'var(--ds-background-selected)' : 'transparent',
+                  color: drawerTab === t ? 'var(--ds-text-selected)' : 'var(--ds-text-subtle)',
+                  font: 'var(--ds-font-body-small)',
+                  fontWeight: drawerTab === t ? 600 : 400,
+                  padding: '4px 10px',
+                  borderRadius: 6,
+                  cursor: 'pointer',
+                  textTransform: 'capitalize',
+                }}
+              >
+                {t}
+              </button>
+            ))}
+          </div>
+          {drawerTab === 'hierarchy' ? (
+            <PageTree
+              pages={treePages ?? []}
+              selectedId={page.id}
+              onSelect={(p) => navigate(Routes.wiki.page(workspace.slug, p.slug))}
+              onMove={(m) =>
+                moveInTree.mutate({
+                  id: m.id,
+                  spaceId: workspace.id,
+                  newParentId: m.newParentId,
+                  newPosition: m.newPosition,
+                })
+              }
+              onCreateChild={(parentId) =>
+                createSubPage.mutate(
+                  { spaceId: workspace.id, title: 'Untitled', parentId },
+                  { onSuccess: (c) => navigate(Routes.wiki.page(workspace.slug, c.slug)) },
+                )
+              }
+              emptyHint="No pages yet."
+            />
+          ) : outline.length === 0 ? (
+            <p style={{ margin: '4px 6px', color: 'var(--ds-text-subtlest)', font: 'var(--ds-font-body-small)' }}>
+              No headings yet — add a heading to build the outline.
+            </p>
+          ) : (
+            <nav aria-label="Page outline" style={{ display: 'flex', flexDirection: 'column' }}>
+              {outline.map((h) => (
+                <button
+                  key={h.id}
+                  type="button"
+                  onClick={() => scrollToBlock(h.id)}
+                  dir="auto"
+                  title={h.text}
+                  style={{
+                    border: 'none',
+                    background: 'transparent',
+                    textAlign: 'start',
+                    cursor: 'pointer',
+                    color: 'var(--ds-text-subtle)',
+                    font: 'var(--ds-font-body-small)',
+                    padding: '4px 6px',
+                    paddingInlineStart: 6 + (Math.min(h.level, 4) - 1) * 14,
+                    borderRadius: 4,
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap',
+                  }}
+                >
+                  {h.text}
+                </button>
+              ))}
+            </nav>
+          )}
         </div>
       ) : null}
       </div>{/* /main row */}
