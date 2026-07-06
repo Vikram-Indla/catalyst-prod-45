@@ -10,15 +10,23 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FileText, Plus, X } from '@/lib/atlaskit-icons';
-import { Lozenge } from '@/components/ads';
+import { DropdownMenu, Lozenge } from '@/components/ads';
 import { Button } from '@/components/ui/button';
 import { Routes } from '@/lib/routes';
+import { supabase } from '@/integrations/supabase/client';
+import { catalystToast } from '@/lib/catalystToast';
 import AttachWikiPageDialog from '@/components/wiki-hub/AttachWikiPageDialog';
 import {
+  useCreateWikiPage,
+  useLinkPageToWorkItem,
+  useMySpace,
   useUnlinkPageFromWorkItem,
   useWikiPagesForWorkItem,
+  useWikiWorkspaces,
   type WikiEntityType,
 } from '@/hooks/useWiki';
+
+const db = supabase as unknown as { from: (t: string) => any };
 
 export interface CatalystPagesSectionProps {
   entityType: WikiEntityType;
@@ -44,6 +52,69 @@ export function CatalystPagesSection({
   );
   const unlink = useUnlinkPageFromWorkItem();
 
+  // "Convert to Folio document" (design-critique F6, Vikram 2026-07-06):
+  // one click from the + menu creates a page SEEDED from this work item in
+  // the RECOMMENDED workspace (the item's own project/product; falls back to
+  // My Space), links it both ways, and opens it.
+  const { data: workspaces } = useWikiWorkspaces();
+  const { mySpace } = useMySpace();
+  const createPage = useCreateWikiPage();
+  const linkPage = useLinkPageToWorkItem();
+  const [converting, setConverting] = useState(false);
+  const convertToFolio = async () => {
+    if (!entityId || converting) return;
+    setConverting(true);
+    try {
+      // Source row → title/body + owning project/product.
+      const src =
+        entityType === 'business_request'
+          ? await db.from('business_requests').select('title, description, product_id').eq('id', entityId).maybeSingle()
+          : await db.from('ph_issues').select('summary, description_text, project_key').eq('id', entityId).maybeSingle();
+      const row = src.data ?? {};
+      const summary: string = row.title ?? row.summary ?? '';
+      const body: string = row.description ?? row.description_text ?? '';
+
+      // Recommended workspace: the item's own container, else My Space.
+      let ws = null as null | { id: string; slug: string; name: string };
+      if (entityType === 'business_request' && row.product_id) {
+        ws = (workspaces ?? []).find((w) => w.container_type === 'product' && w.container_id === row.product_id) ?? null;
+      } else if (row.project_key) {
+        const { data: proj } = await supabase.from('v_project_list').select('id').eq('project_key', row.project_key).maybeSingle();
+        if (proj) ws = (workspaces ?? []).find((w) => w.container_type === 'project' && w.container_id === (proj as { id: string }).id) ?? null;
+      }
+      ws = ws ?? mySpace ?? (workspaces ?? [])[0] ?? null;
+      if (!ws) throw new Error('No Folio workspace available');
+
+      const blocks: unknown[] = [];
+      if (summary) blocks.push({ type: 'heading', props: { level: 2 }, content: summary });
+      for (const para of String(body).split(/\n{2,}/).map((s) => s.trim()).filter(Boolean)) {
+        blocks.push({ type: 'paragraph', content: para });
+      }
+      const title = entityLabel ? `${entityLabel} — ${summary || 'document'}` : summary || 'Untitled';
+      const target = ws;
+      createPage.mutate(
+        { spaceId: target.id, title, content: blocks as never },
+        {
+          onSuccess: (page) => {
+            linkPage.mutate(
+              { documentId: page.id, entityType, entityId, origin: 'manual' },
+              {
+                onSuccess: () => {
+                  catalystToast.success(`Folio document created in ${target.name}`);
+                  navigate(Routes.folio.page(target.slug, page.slug));
+                },
+              },
+            );
+          },
+          onSettled: () => setConverting(false),
+        },
+      );
+    } catch (e) {
+      setConverting(false);
+      catalystToast.error(`Convert failed: ${e instanceof Error ? e.message : String(e)}`);
+    }
+  };
+
   if (!entityId) return null;
 
   const rows = (links ?? []).filter((l) => l.document);
@@ -61,15 +132,36 @@ export function CatalystPagesSection({
             {rows.length}
           </span>
         )}
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => setDialogOpen(true)}
-          aria-label="Link a wiki page"
-          style={{ marginInlineStart: 'auto', height: 28 }}
-        >
-          <Plus style={{ width: 14, height: 14, marginInlineEnd: 4 }} /> Add
-        </Button>
+        <div style={{ marginInlineStart: 'auto' }}>
+          <DropdownMenu
+            aria-label="Add a page"
+            placement="bottom-end"
+            shouldRenderToParent={false}
+            trigger={() => (
+              <Button variant="ghost" size="sm" aria-label="Add a page" style={{ height: 28 }}>
+                <Plus style={{ width: 14, height: 14, marginInlineEnd: 4 }} /> Add
+              </Button>
+            )}
+            groups={[
+              {
+                key: 'pages-add',
+                items: [
+                  {
+                    key: 'convert',
+                    label: converting ? 'Creating Folio document…' : 'Convert to Folio document',
+                    isDisabled: converting,
+                    onClick: () => void convertToFolio(),
+                  },
+                  {
+                    key: 'link',
+                    label: 'Link or create a page…',
+                    onClick: () => setDialogOpen(true),
+                  },
+                ],
+              },
+            ]}
+          />
+        </div>
       </div>
 
       {rows.length === 0 ? (
