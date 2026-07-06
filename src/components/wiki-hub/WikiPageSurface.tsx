@@ -688,6 +688,21 @@ export function WikiPageSurface({ workspace, page, treePages }: WikiPageSurfaceP
             <StarOff style={{ width: 16, height: 16 }} />
           )}
         </button>
+        {page.doc_key ? (
+          <span
+            title="Page ID — reference this page from any work item"
+            style={{
+              font: 'var(--ds-font-body-small)',
+              fontFamily: 'var(--ds-font-family-code)',
+              color: 'var(--ds-text-subtle)',
+              border: '1px solid var(--ds-border)',
+              borderRadius: 4,
+              padding: '2px 6px',
+            }}
+          >
+            {page.doc_key}
+          </span>
+        ) : null}
         <Lozenge appearance={page.published_at ? 'success' : 'default'}>
           {page.published_at ? 'Published' : 'Draft'}
         </Lozenge>

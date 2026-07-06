@@ -27,6 +27,7 @@ interface DocRow {
   title: string;
   slug: string;
   icon: string | null;
+  doc_key: string | null;
   created_by: string | null;
   published_at: string | null;
   updated_at: string;
@@ -61,7 +62,7 @@ export default function WikiHomePage() {
     queryFn: async (): Promise<DocRow[]> => {
       const { data, error } = await db
         .from('kb_documents')
-        .select('id, space_id, title, slug, icon, created_by, published_at, updated_at')
+        .select('id, space_id, title, slug, icon, doc_key, created_by, published_at, updated_at')
         .eq('is_template', false)
         .order('updated_at', { ascending: false })
         .limit(500);
@@ -80,7 +81,10 @@ export default function WikiHomePage() {
       list = list.filter((d) => (statusFilter === 'published' ? !!d.published_at : !d.published_at));
     }
     const q = search.trim().toLowerCase();
-    if (q) list = list.filter((d) => (d.title || '').toLowerCase().includes(q));
+    if (q)
+      list = list.filter(
+        (d) => (d.title || '').toLowerCase().includes(q) || (d.doc_key || '').toLowerCase().includes(q),
+      );
     const dir = sortOrder === 'ASC' ? 1 : -1;
     return [...list].sort((a, b) => {
       if (sortKey === 'title') return (a.title || '').localeCompare(b.title || '') * dir;
@@ -125,6 +129,16 @@ export default function WikiHomePage() {
             >
               {row.title || 'Untitled'}
             </span>
+          </span>
+        ),
+      },
+      {
+        id: 'doc_key',
+        label: 'Key',
+        width: 8,
+        cell: ({ row }) => (
+          <span style={{ fontFamily: 'var(--ds-font-family-code)', color: 'var(--ds-text-subtle)' }}>
+            {row.doc_key ?? '—'}
           </span>
         ),
       },

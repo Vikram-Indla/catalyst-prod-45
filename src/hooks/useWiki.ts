@@ -36,6 +36,8 @@ export interface WikiPageSummary {
   icon: string | null;
   is_template: boolean;
   updated_at: string;
+  /** Stable display key (DOC-n) — how pages are referenced from work items (V3). */
+  doc_key: string | null;
 }
 
 export interface WikiPage extends WikiPageSummary {
@@ -66,7 +68,7 @@ export interface WikiDocumentLink {
   created_at: string;
 }
 
-const PAGE_SUMMARY_COLS = 'id, space_id, title, slug, parent_id, position, icon, is_template, updated_at';
+const PAGE_SUMMARY_COLS = 'id, space_id, title, slug, parent_id, position, icon, is_template, updated_at, doc_key';
 
 // kb_* tables postdate the generated Supabase types in this repo; the kb
 // surfaces (KnowledgeHubPage etc.) use the same untyped escape hatch.
