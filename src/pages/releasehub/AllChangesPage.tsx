@@ -16,6 +16,7 @@ import { useChangesList, type ChangeListRow } from '@/hooks/useReleaseHub';
 import { JiraTable } from '@/components/shared/JiraTable';
 import type { Column } from '@/components/shared/JiraTable';
 import { StatusLozenge } from '@/components/shared/StatusLozenge';
+import { ChangeStatusLozenge, RiskLozenge, FlagLozenge } from '@/components/releasehub/shared/ReleaseOpsLozenges';
 import CatalystAvatar from '@/components/shared/CatalystAvatar';
 import { EmptyState, ErrorState } from '@/components/releasehub/EmptyState';
 import { CreateChgModal } from '@/components/releasehub/CreateChgModal';
@@ -123,23 +124,17 @@ export default function AllChangesPage() {
         );
       },
     },
-    { id: 'status', label: 'Status', width: 12, sortable: true, cell: ({ row }) => <StatusLozenge status={row.status} /> },
-    { id: 'risk', label: 'Risk', width: 9, cell: ({ row }) => <RiskPill risk={row.risk_level} /> },
+    { id: 'status', label: 'Status', width: 12, sortable: true, cell: ({ row }) => <ChangeStatusLozenge status={row.status} /> },
+    { id: 'risk', label: 'Risk', width: 9, cell: ({ row }) => <RiskLozenge risk={row.risk_level} /> },
     {
       id: 'flags', label: 'Flags', width: 13,
       cell: ({ row }) => {
-        const flags: Array<{ text: string; fg: string; bg: string }> = [];
-        if (row.isUnlinkedProduction) flags.push({ text: 'Unlinked prod', fg: 'var(--ds-text-danger)', bg: 'var(--ds-background-danger)' });
-        if (row.isEmergency) flags.push({ text: 'Emergency', fg: 'var(--ds-text-warning)', bg: 'var(--ds-background-warning)' });
-        if (row.status === 'failed' || row.status === 'blocked') flags.push({ text: titleCase(row.status), fg: 'var(--ds-text-danger)', bg: 'var(--ds-background-danger)' });
+        const flags: string[] = [];
+        if (row.isUnlinkedProduction) flags.push('Unlinked prod');
+        if (row.isEmergency) flags.push('Emergency');
+        if (row.status === 'failed' || row.status === 'blocked') flags.push(titleCase(row.status));
         if (flags.length === 0) return <span style={{ color: T.subtlest }}>—</span>;
-        return (
-          <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
-            {flags.map((f) => (
-              <span key={f.text} style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: f.fg, background: f.bg, padding: '0 6px', borderRadius: 3, whiteSpace: 'nowrap' }}>{f.text}</span>
-            ))}
-          </div>
-        );
+        return <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>{flags.map((f) => <FlagLozenge key={f} label={f} />)}</div>;
       },
     },
     { id: 'change_type', label: 'Type', width: 9, cell: ({ row }) => <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-300)', color: T.subtle }}>{titleCase(row.change_type)}</span> },
