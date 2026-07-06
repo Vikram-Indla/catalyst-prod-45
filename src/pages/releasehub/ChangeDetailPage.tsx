@@ -8,7 +8,7 @@
  * execution table (rh_sop_steps, expandable + evidence) lands in Phase 8b.
  */
 import React, { useMemo, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { format, formatDistanceToNowStrict } from 'date-fns';
 import Tabs, { Tab, TabList, TabPanel } from '@atlaskit/tabs';
 import Spinner from '@atlaskit/spinner';
@@ -109,7 +109,11 @@ export default function ChangeDetailPage() {
   const { changeId } = useParams();
   const navigate = useNavigate();
   const { data: change, isLoading, error } = useChange(changeId ?? '');
-  const [selectedTab, setSelectedTab] = useState(0);
+  // Deep-linkable tabs: ?tab=cockpit|sop|work|signoffs|activity (e.g. the For-You
+  // banner's "Go to SOP" jumps straight to the runbook).
+  const [searchParams] = useSearchParams();
+  const TAB_INDEX: Record<string, number> = { cockpit: 0, sop: 1, work: 2, 'work-items': 2, signoffs: 3, activity: 4 };
+  const [selectedTab, setSelectedTab] = useState(() => TAB_INDEX[(searchParams.get('tab') ?? '').toLowerCase()] ?? 0);
 
   const c = change as any;
   const { canManage } = useReleaseOpsPermissions();
