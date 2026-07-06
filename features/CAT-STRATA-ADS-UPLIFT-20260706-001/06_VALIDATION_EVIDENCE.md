@@ -75,3 +75,35 @@ Gates after slice 2: tsc 183 = baseline · lint:colors:gate 0 = baseline.
 
 Gates after slice 3: tsc 183 = baseline · lint:colors:gate 0 = baseline.
 /docs withdrawn as a defect (not a route — wrong-URL artifact, see 04 §17).
+
+## Slice 4 evidence — exhaustive deep-screen sweep (2026-07-06)
+
+| Surface | Before | After | Verdict |
+|---|---|---|---|
+| Incident: All Incidents | ss_5978rgvc8 | — | compliant |
+| Incident: Board | ss_7006fxvnr | — | compliant |
+| Incident: Analytics | ss_1821g5o67 | — | compliant; "[Chart] Resolution Trend" placeholder logged (unbuilt widget) |
+| Incident: Reports | ss_55566e553 | — | compliant |
+| Incident: Committee queue | ss_07573vw7k | — | compliant |
+| Release: Changes | ss_9604zksv8 | — | compliant |
+| Release: SOP templates | ss_8373e5uhh | — | compliant |
+| Release: Sign-off queue | ss_3191dd1ax | — | compliant |
+| Release: Freeze windows | ss_4493mphap | — | compliant |
+| Release: Production events | ss_932742sm4 (mixed pill styles) | ss_0510eohrv | FIXED — canonical lozenges |
+| Test: Repository | ss_540825c4z | — | compliant |
+| Test: Plans | ss_2276ar89n | — | compliant |
+| Test: Cycles | ss_45920fcyu | — | compliant |
+| Test: Defects | ss_0925yw6sd | — | compliant |
+| Test: Traceability | ss_95248yz3m | — | compliant |
+| Test: Reports | ss_7105vj842 | — | compliant |
+| Tasks: Board | ss_2972p9e5c | — | compliant |
+| Ideation: Board | ss_2093knvv6 | — | compliant |
+| Ideation: Analytics | ss_6895rn9pg (mono numerals) | ss_9570l7xbf | FIXED — ADS heading numerals |
+| Product: Roadmap | ss_28077jcde | — | compliant |
+| Product: Timeline | ss_8610e5kbp | — | compliant |
+| Product: Milestones | ss_4444d8lmd | — | compliant |
+| Work-item detail (/browse) | ss_7259jo2zv | — | compliant; dependency lozenge clip logged P2 |
+| Starred | ss_5358nt2yh | — | compliant |
+| /admin unmatched deep link | ss_1292gwa18 (silent blank) | ss_4727k6ahl | FIXED — 404 catch-all |
+
+Gates after slice 4: tsc 183 = baseline · lint:colors:gate 0 = baseline.
