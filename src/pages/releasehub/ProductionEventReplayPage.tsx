@@ -132,7 +132,7 @@ export default function ProductionEventReplayPage() {
 
   return (
     <div style={{ padding: 24, background: T.surface, minHeight: '100%' }}>
-      <div style={{ maxWidth: RH.canvasMaxWidth, margin: '0 auto' }}>
+      <div style={{ width: '100%' }}>
       <div style={{ margin: '-24px -24px 16px' }}>
         <ProjectPageHeader projectKey="RELEASES" hubType="release" hideTitle trail={[{ text: 'Production Events', href: '/release-hub/production-events' }, { text: r.eventKey ?? eventKey }]} />
       </div>

@@ -136,7 +136,7 @@ export default function ExecutionCalendarPage() {
 
   return (
     <div style={{ padding: 24, background: T.surface, minHeight: '100%' }}>
-      <div style={{ maxWidth: RH.canvasMaxWidth, margin: '0 auto' }}>
+      <div style={{ width: '100%' }}>
       <div style={{ margin: '-24px -24px 0' }}><ProjectPageHeader projectKey="RELEASES" hubType="release" /></div>
       <div style={{ display: 'flex', alignItems: 'center', gap: 16, padding: '16px 0', flexWrap: 'wrap' }}>
         <div role="heading" aria-level={1} style={{ fontFamily: RH.fontDisplay, fontSize: 'var(--ds-font-size-500)', fontWeight: 600, color: T.text, margin: 0 }}>Execution calendar</div>
