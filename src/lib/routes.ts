@@ -266,6 +266,7 @@ export const strataRoutes = {
   root: () => '/strata',
   strategy: () => '/strata/strategy',
   strategyMap: () => '/strata/strategy/map',
+  strategyElement: (elementSlug: string) => `/strata/strategy/elements/${elementSlug}`,
   scorecards: () => '/strata/scorecards',
   scorecard: (instanceSlug: string) => `/strata/scorecards/${instanceSlug}`,
   scorecardEvidence: (instanceSlug: string) => `/strata/scorecards/${instanceSlug}/evidence`,
