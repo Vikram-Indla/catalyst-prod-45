@@ -182,12 +182,14 @@ export function WikiPageSurface({ workspace, page, treePages }: WikiPageSurfaceP
   const lastSnapshotAt = useRef(0);
 
   // Reading-width preference (Notion's full-width toggle), remembered per page.
-  const [fullWidth, setFullWidth] = useState(false);
+  // Default FULL WIDTH (Vikram 2026-07-06); choice persisted like the drawer.
+  const [fullWidth, setFullWidth] = useState<boolean>(true);
   useEffect(() => {
     try {
-      setFullWidth(localStorage.getItem(`docex.fullwidth.${page.id}`) === '1');
+      // Per-page override wins; otherwise FULL WIDTH is the default.
+      setFullWidth(localStorage.getItem(`docex.fullwidth.${page.id}`) !== '0');
     } catch {
-      setFullWidth(false);
+      setFullWidth(true);
     }
   }, [page.id]);
   const toggleFullWidth = useCallback(() => {

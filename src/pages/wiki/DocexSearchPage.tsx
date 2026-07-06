@@ -54,7 +54,7 @@ export default function DocexSearchPage() {
   };
 
   return (
-    <div style={{ maxWidth: 760, margin: '0 auto', padding: '32px 24px' }}>
+    <div style={{ width: '100%', margin: 0, padding: '16px 32px 96px' }}>
       <style>{`
         .docex-search-input { position: relative; }
         .docex-search-input svg { position: absolute; inset-inline-start: 12px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; color: var(--ds-icon-subtle); pointer-events: none; }

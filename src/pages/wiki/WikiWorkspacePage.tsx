@@ -78,7 +78,7 @@ export default function WikiWorkspacePage() {
 
   if (wsLoading) {
     return (
-      <div style={{ maxWidth: 760, margin: '0 auto', padding: '64px 40px' }}>
+      <div style={{ width: '100%', margin: 0, padding: '32px 40px' }}>
         <Skeleton style={{ height: 40, width: 320, borderRadius: 8, marginBottom: 16 }} />
         <Skeleton style={{ height: 320, borderRadius: 12 }} />
       </div>
@@ -98,7 +98,7 @@ export default function WikiWorkspacePage() {
   if (pageSlug) {
     if (pageLoading) {
       return (
-        <div style={{ maxWidth: 760, margin: '0 auto', padding: '56px 40px' }}>
+        <div style={{ width: '100%', margin: 0, padding: '32px 40px' }}>
           <Skeleton style={{ height: 44, width: 380, borderRadius: 8, marginBottom: 24 }} />
           <Skeleton style={{ height: 22, width: '90%', borderRadius: 6, marginBottom: 10 }} />
           <Skeleton style={{ height: 22, width: '80%', borderRadius: 6, marginBottom: 10 }} />
@@ -129,7 +129,7 @@ export default function WikiWorkspacePage() {
   ];
 
   return (
-    <div style={{ maxWidth: 900, margin: '0 auto', padding: '56px 40px 96px' }}>
+    <div style={{ width: '100%', margin: 0, padding: '24px 40px 96px' }}>
       <style>{`
         .wiki-tpl {
           position: relative;
