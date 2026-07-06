@@ -340,6 +340,27 @@ export function useKanbanData(
     return m;
   }, [releaseManagerIds, approvedProfileMap]);
 
+  /* Product names for releases — product_id → name, surfaced as the card's
+     scope chip (the epic-lozenge slot) so release cards carry the same green
+     chip project cards do, with real data. Card click still routes to detail. */
+  const releaseProductIds = useMemo(
+    () => Array.from(new Set((releaseRows as any[]).map((r) => r.product_id).filter(Boolean))),
+    [releaseRows],
+  );
+  const { data: releaseProductNames } = useQuery({
+    queryKey: ['kb-release-product-names', releaseProductIds],
+    queryFn: async () => {
+      const m = new Map<string, string>();
+      if (!releaseProductIds.length) return m;
+      const { data } = await (supabase as any)
+        .from('products').select('id, name').in('id', releaseProductIds as string[]);
+      for (const p of (data ?? []) as { id: string; name: string }[]) m.set(p.id, p.name);
+      return m;
+    },
+    enabled: isRelease && releaseProductIds.length > 0,
+    staleTime: 60_000,
+  });
+
   /* ── TEST rows (mode='test'): tm_test_cases scoped to the ACTIVE Test Space ──
      Use the canonical resolver (persisted selection → active project with the
      most cases → first active) instead of "first active by created_at", which
@@ -431,7 +452,9 @@ export function useKanbanData(
       sprintName: null,
       storyPoints: null,
       parentKey: null,
-      parentSummary: null,
+      // Product name in the scope-chip slot (renders as the green lozenge) —
+      // real data, no navigation. Null when the release has no product.
+      parentSummary: r.product_id ? (releaseProductNames?.get(r.product_id) ?? null) : null,
       sprintRelease: r.version ?? null,
       // Prefer the explicit is_flagged column now that rh_releases has one;
       // fall back to at_risk health as legacy signal for older data.
