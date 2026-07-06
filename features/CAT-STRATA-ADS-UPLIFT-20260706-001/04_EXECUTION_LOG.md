@@ -81,3 +81,35 @@ Issue Navigator table, global Create modal, Access page structure.
 Slice 3 after IDs: Programs ss_7134bxqu2 · Ideation ss_1919jiprp · Products
 ss_6783ovtdo · Admin ss_2422xlwc8 · Execution ss_6186pzw4v.
 Gates: tsc 183 = baseline · lint:colors:gate 0 = baseline.
+
+## Slice 4 — exhaustive deep-screen sweep (2026-07-06)
+
+Crawled 20+ additional deep screens: Incident (All/Board/Analytics/Reports/
+Committee queue), Release (Changes/SOP/Sign-off/Freeze/Production events),
+Test Hub (Repository/Plans/Cycles/Defects/Traceability/Reports), Tasks Board,
+Ideation (Board/Analytics), Product (Roadmap/Timeline/Milestones), work-item
+detail /browse/BAU-15, Starred, admin deep links.
+
+18. **ProductionEventsPage** — hand-rolled ResultBadge (banned inventory)
+    rendered mixed sentence-case/uppercase pills depending on DB casing;
+    replaced with canonical @atlaskit/lozenge + severity mapping. Verified:
+    uniform PARTIAL/ROLLBACK/IN PROGRESS/SUCCESS column (ss_0510eohrv).
+19. **Ideation numerals** — hero KPIs used legacy --cp-font-mono (slashed
+    terminal zeros unlike every other hub); now ADS heading font +
+    tabular-nums (IdeasAnalyticsPage StatCard, IdeasBacklogPage quarter
+    counts). Verified ss_9570l7xbf.
+20. **FullAppRoutes /admin catch-all** — unmatched /admin/* deep links (e.g.
+    /admin/statuses; nav's "Statuses" actually targets /admin/workflows)
+    rendered a silent blank Outlet; now a proper 404 (ss_4727k6ahl). Same
+    hardening as STRATA CAT-0016.
+
+Audited compliant (no change): Incident board/analytics/reports/committee,
+Changes, SOP templates, Sign-off queue, Freeze windows, Test repository/
+plans/cycles/defects/traceability/reports, Tasks board, Ideas board,
+Product roadmap/timeline/milestones, /browse work-item detail, Starred.
+
+Findings logged (not stylistic/out of scope): incident-analytics
+"[Chart] Resolution Trend" placeholder widget (unbuilt feature); work-item
+detail dependency-row lozenge can clip at panel edge (P2); testhub/
+incident-hub unmatched child routes still blank (needs per-hub catch-alls,
+route-config work — admin done as the template).

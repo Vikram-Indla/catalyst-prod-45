@@ -1011,6 +1011,10 @@ export default function FullAppRoutes() {
           <Route path="roles"        element={<S><RolesAdminPageLazy /></S>} />
           <Route path="permissions"  element={<S><PermissionsAdminPageLazy /></S>} />
           <Route path="ai-assistant" element={<S><AiAccessPageLazy /></S>} />
+          {/* Unmatched /admin/* rendered a silent blank Outlet (e.g. a stale
+              /admin/statuses deep link) — surface a 404 instead, same
+              hardening as STRATA's CAT-0016. */}
+          <Route path="*" element={<S><NotFound /></S>} />
         </Route>
 
         {/* /ads-validator — design governance audit viewer; aliased to canonical admin governance page */}
