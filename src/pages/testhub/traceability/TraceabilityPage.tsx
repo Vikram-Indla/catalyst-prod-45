@@ -1,5 +1,5 @@
-import React, { useMemo } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import React, { useMemo, useState } from 'react';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import Spinner from '@atlaskit/spinner';
 import Lozenge from '@atlaskit/lozenge';
@@ -179,6 +179,7 @@ export default function TraceabilityPage() {
 
   const { data: links = [], isLoading: linksLoading } = useTraceability(projectId);
   const isLoading = projLoading || linksLoading;
+  const [view, setView] = useState<'grid' | 'hierarchy' | 'matrix'>('grid');
 
   const groups = useMemo((): ReqGroup[] => {
     const map = new Map<string, ReqGroup>();
@@ -327,13 +328,39 @@ export default function TraceabilityPage() {
                 }
               />
             ) : (
-              <JiraTable<ReqGroup>
-                columns={columns}
-                data={groups}
-                getRowId={g => g.reqKey}
-                showRowCount
-                totalRowCount={groups.length}
-              />
+              <>
+                {/* H5/H6 (CAT-TESTHUB-V2): grid / hierarchy / matrix view switch */}
+                <div style={{ display: 'flex', gap: 4, marginBottom: 12 }}>
+                  {(['grid', 'hierarchy', 'matrix'] as const).map((v) => (
+                    <button
+                      key={v}
+                      onClick={() => setView(v)}
+                      style={{
+                        padding: '4px 12px', borderRadius: 4, cursor: 'pointer',
+                        border: '1px solid var(--ds-border)',
+                        background: view === v ? 'var(--ds-background-selected)' : 'var(--ds-surface)',
+                        color: view === v ? 'var(--ds-text-selected)' : 'var(--ds-text-subtle)',
+                        fontSize: 'var(--ds-font-size-200)', fontWeight: view === v ? 600 : 400,
+                        textTransform: 'capitalize',
+                      }}
+                    >
+                      {v}
+                    </button>
+                  ))}
+                </div>
+
+                {view === 'grid' && (
+                  <JiraTable<ReqGroup>
+                    columns={columns}
+                    data={groups}
+                    getRowId={g => g.reqKey}
+                    showRowCount
+                    totalRowCount={groups.length}
+                  />
+                )}
+                {view === 'hierarchy' && <HierarchyView groups={groups} />}
+                {view === 'matrix' && <MatrixView groups={groups} />}
+              </>
             )}
           </>
         )}
@@ -350,6 +377,93 @@ function Stat({ label, value, accent }: { label: string; value: number; accent?:
     <div>
       <div style={{ fontSize: 'var(--ds-font-size-800)', fontWeight: 600, color, lineHeight: 1, marginBottom: 4 }}>{value}</div>
       <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest)' }}>{label}</div>
+    </div>
+  );
+}
+
+// ─── H5: Hierarchy view — requirement → test case → latest run chain ──────────
+function HierarchyView({ groups }: { groups: ReqGroup[] }) {
+  const navigate = useNavigate();
+  const [open, setOpen] = useState<Set<string>>(new Set(groups.slice(0, 8).map((g) => g.reqKey)));
+  const toggle = (k: string) => setOpen((prev) => {
+    const n = new Set(prev); n.has(k) ? n.delete(k) : n.add(k); return n;
+  });
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+      {groups.map((g) => {
+        const expanded = open.has(g.reqKey);
+        const cases = Array.from(new Map(g.links.map((l) => [l.test_case_id, l])).values());
+        return (
+          <div key={g.reqKey} style={{ border: '1px solid var(--ds-border)', borderRadius: 6, overflow: 'hidden' }}>
+            <div
+              onClick={() => toggle(g.reqKey)}
+              style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px', cursor: 'pointer', background: 'var(--ds-surface-sunken)' }}
+            >
+              <span style={{ color: 'var(--ds-text-subtlest)', fontSize: 'var(--ds-font-size-200)', width: 12 }}>{expanded ? '▾' : '▸'}</span>
+              {g.issueType && <JiraIssueTypeIcon type={g.issueType} size={16} />}
+              <span style={{ fontFamily: 'var(--ds-font-family-code)', fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle)' }}>{g.displayKey}</span>
+              <span style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{g.displayTitle}</span>
+              <span style={{ marginLeft: 'auto', fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest)' }}>
+                {cases.length} case{cases.length === 1 ? '' : 's'}
+              </span>
+            </div>
+            {expanded && (
+              <div style={{ padding: '4px 0' }}>
+                {cases.map((l) => (
+                  <div
+                    key={l.test_case_id}
+                    onClick={() => l.case_key && navigate(`/testhub/repository/case/${l.case_key}`)}
+                    style={{
+                      display: 'flex', alignItems: 'center', gap: 8,
+                      padding: '6px 12px 6px 40px', cursor: l.case_key ? 'pointer' : 'default',
+                      fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text)',
+                    }}
+                  >
+                    <span style={{ fontFamily: 'var(--ds-font-family-code)', fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-link)', width: 76 }}>{l.case_key ?? '—'}</span>
+                    <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: 'var(--ds-text-subtle)' }}>{l.case_title ?? '—'}</span>
+                    <Lozenge appearance={execAppearance(l.exec_status)}>{execLabel(l.exec_status)}</Lozenge>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+// ─── H6: Coverage matrix — requirements × coverage verdict heat cells ─────────
+function MatrixView({ groups }: { groups: ReqGroup[] }) {
+  const verdict = (g: ReqGroup): { label: string; bg: string; fg: string } => {
+    const statuses = g.links.map((l) => (l.exec_status ?? '').toLowerCase());
+    if (statuses.some((s) => s === 'failed')) return { label: 'Failed', bg: 'var(--ds-background-danger)', fg: 'var(--ds-text-danger)' };
+    if (statuses.some((s) => s === 'blocked')) return { label: 'Blocked', bg: 'var(--ds-background-warning)', fg: 'var(--ds-text-warning)' };
+    if (statuses.length > 0 && statuses.every((s) => s === 'passed' || s === 'skipped')) return { label: 'Passed', bg: 'var(--ds-background-success)', fg: 'var(--ds-text-success)' };
+    if (statuses.every((s) => !s || s === 'not_run')) return { label: 'Not run', bg: 'var(--ds-background-neutral)', fg: 'var(--ds-text-subtle)' };
+    return { label: 'Partial', bg: 'var(--ds-background-information)', fg: 'var(--ds-text-information)' };
+  };
+  return (
+    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: 8 }}>
+      {groups.map((g) => {
+        const v = verdict(g);
+        const caseCount = new Set(g.links.map((l) => l.test_case_id)).size;
+        return (
+          <div key={g.reqKey} style={{ border: '1px solid var(--ds-border)', borderRadius: 6, padding: 10, background: v.bg }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}>
+              {g.issueType && <JiraIssueTypeIcon type={g.issueType} size={14} />}
+              <span style={{ fontFamily: 'var(--ds-font-family-code)', fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtle)' }}>{g.displayKey}</span>
+            </div>
+            <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', marginBottom: 6 }} title={g.displayTitle}>
+              {g.displayTitle}
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: v.fg }}>{v.label}</span>
+              <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest)' }}>{caseCount} case{caseCount === 1 ? '' : 's'}</span>
+            </div>
+          </div>
+        );
+      })}
     </div>
   );
 }
