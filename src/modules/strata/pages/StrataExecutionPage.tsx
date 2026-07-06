@@ -600,11 +600,13 @@ export default function StrataExecutionPage() {
                               {linkedElements.map((row) => {
                                 const el = elementById.get(row.element_id);
                                 const w = row.contribution_weight ?? row.weight ?? null;
+                                const label = `${el?.name ?? '—'}${w != null ? ` · ${(w <= 1 ? w * 100 : w).toFixed(0)}%` : ''}`;
+                                // Atlaskit Tag truncates at ~180px by design — the
+                                // tooltip keeps the full element name reachable.
                                 return (
-                                  <CatalystTag
-                                    key={`${row.initiative_id}-${row.element_id}`}
-                                    text={`${el?.name ?? '—'}${w != null ? ` · ${(w <= 1 ? w * 100 : w).toFixed(0)}%` : ''}`}
-                                  />
+                                  <Tooltip key={`${row.initiative_id}-${row.element_id}`} content={label}>
+                                    <CatalystTag text={label} />
+                                  </Tooltip>
                                 );
                               })}
                             </div>

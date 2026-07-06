@@ -235,12 +235,12 @@ function BenefitDetailSection({ benefit, isFirst, canAuthor, canAuthorValues }: 
       cell: ({ row }) => <span style={{ ...bodyStyle, fontWeight: 600 }}>{row.periodName}</span>,
     },
     ...VALUE_KINDS.map((kind): Column<ProfileRow> => ({
-      id: kind, label: labelize(kind), width: 19,
+      id: kind, label: labelize(kind), width: 16,
       cell: ({ row }) => {
         const v = row.byKind[kind];
         if (!v) return <span style={{ color: T.subtlest }}>—</span>;
         return (
-          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, minWidth: 0 }}>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, rowGap: 4, minWidth: 0, flexWrap: 'wrap' }}>
             <span style={{ ...bodyStyle, fontVariantNumeric: 'tabular-nums' }}>{fmtUnit(v.value, benefit.unit)}</span>
             {v.validation_status !== 'validated' ? (
               <StatusLozenge
@@ -777,7 +777,7 @@ export default function StrataPortfolioVmoPage() {
       ),
     },
     {
-      id: 'category', label: 'Category', width: 14,
+      id: 'category', label: 'Category', width: 12,
       accessor: (b) => categoryName(b.category_id),
       cell: ({ row: b }) => {
         const name = categoryName(b.category_id);
@@ -785,7 +785,7 @@ export default function StrataPortfolioVmoPage() {
       },
     },
     {
-      id: 'lifecycle', label: 'Lifecycle', width: 14, sortable: true,
+      id: 'lifecycle', label: 'Lifecycle', width: 12, sortable: true,
       accessor: (b) => b.lifecycle_stage,
       cell: ({ row: b }) => (
         <StatusLozenge
@@ -803,7 +803,7 @@ export default function StrataPortfolioVmoPage() {
       ),
     },
     {
-      id: 'realization', label: 'Realization', width: 14,
+      id: 'realization', label: 'Realization', width: 13,
       cell: ({ row: b }) => <RealizationCell benefitId={b.id} />,
     },
     {

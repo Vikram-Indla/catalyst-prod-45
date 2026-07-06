@@ -338,7 +338,8 @@ export default function StrataScorecardDetailPage() {
 
   return (
     <StrataPageShell
-      trail={[{ text: 'Scorecards', href: Routes.strata.scorecards() }, { text: instance.name }]}
+      trail={[{ text: 'Scorecards', href: Routes.strata.scorecards() }]}
+      title={instance.name}
       docTitle={instance.name}
       modelLabel={model ? `${model.name} v${instance.model_version}` : null}
       state={instance.status}

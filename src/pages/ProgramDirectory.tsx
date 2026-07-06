@@ -2,10 +2,9 @@ import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
-import { Plus, Search, LayoutGrid, List, Star, Loader2 } from '@/lib/atlaskit-icons';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Avatar, Lozenge, Tooltip } from '@/components/ads';
+import { Plus, Search, LayoutGrid, List, Star } from '@/lib/atlaskit-icons';
+import { Button as UiButton } from '@/components/ui/button';
+import { Avatar, Button, EmptyState, Lozenge, SectionMessage, Spinner, Textfield, Tooltip } from '@/components/ads';
 import { Card, CardContent } from '@/components/ui/card';
 import { CreateProgramDialog } from '@/components/programs/CreateProgramDialog';
 import { cn } from '@/lib/utils';
@@ -87,100 +86,100 @@ export default function ProgramDirectory() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-muted/30 p-8">
-        <Card className="max-w-md mx-auto">
-          <CardContent className="pt-6 text-center">
-            <h2 className="text-lg font-semibold text-foreground mb-2">Error loading programs</h2>
-            <p className="text-sm text-muted-foreground">
-              There was an error loading the program directory. Please try again.
-            </p>
-          </CardContent>
-        </Card>
+      <div style={{ background: 'var(--ds-surface)', minHeight: '100%', padding: 24 }}>
+        <SectionMessage appearance="error" title="Error loading programs">
+          <p>There was an error loading the program directory. Please try again.</p>
+        </SectionMessage>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-muted/30 p-8">
-      {/* PAGE HEADER */}
-      <div className="flex justify-between items-center mb-8">
+    <div style={{ background: 'var(--ds-surface)', minHeight: '100%', padding: 24 }}>
+      {/* PAGE HEADER — hub-standard typography (ProjectPageHeader scale) */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
         <div>
-          <h1 className="text-2xl font-medium text-foreground mb-1">
+          {/* ads-scanner:ignore-next-line — 22px matches ProjectPageHeader's level-1 heading; no ADS token maps to this exact value */}
+          <h1 style={{ fontSize: 22, fontWeight: 600, lineHeight: 1.2, color: 'var(--ds-text)', margin: 0 }}>
             Programs
           </h1>
-          <p className="text-sm text-muted-foreground">
+          <p style={{ margin: '4px 0 0', fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest)' }}>
             {filteredPrograms.length} program{filteredPrograms.length !== 1 ? 's' : ''}
           </p>
         </div>
 
-        <Button onClick={() => setShowCreateDialog(true)} className="gap-2">
-          <Plus className="h-4 w-4" />
+        <Button appearance="primary" iconBefore={<Plus size={16} />} onClick={() => setShowCreateDialog(true)}>
           Create program
         </Button>
       </div>
 
       {/* CONTROLS BAR */}
-      <Card className="mb-6">
-        <CardContent className="p-4 flex justify-between items-center gap-4">
-          {/* Search */}
-          <div className="relative w-80">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Search programs..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-9"
-            />
-          </div>
+      <div
+        style={{
+          display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 16,
+          padding: 16, marginBottom: 24, background: 'var(--ds-surface-raised)',
+          border: '1px solid var(--ds-border)', borderRadius: 8,
+        }}
+      >
+        <div style={{ width: 320 }}>
+          <Textfield
+            placeholder="Search programs..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery((e.target as HTMLInputElement).value)}
+            elemBeforeInput={
+              <span style={{ display: 'inline-flex', paddingLeft: 8, color: 'var(--ds-icon-subtle)' }}>
+                <Search size={16} />
+              </span>
+            }
+            aria-label="Search programs"
+          />
+        </div>
 
-          {/* View Toggle */}
-          <div className="flex gap-1">
-            <Button
-              variant={viewMode === 'grid' ? 'secondary' : 'ghost'}
-              size="sm"
-              onClick={() => setViewMode('grid')}
-              className="gap-2"
-            >
-              <LayoutGrid className="h-4 w-4" />
-              Grid
-            </Button>
-            <Button
-              variant={viewMode === 'list' ? 'secondary' : 'ghost'}
-              size="sm"
-              onClick={() => setViewMode('list')}
-              className="gap-2"
-            >
-              <List className="h-4 w-4" />
-              List
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
+        {/* View Toggle */}
+        <div style={{ display: 'flex', gap: 4 }}>
+          <Button
+            appearance={viewMode === 'grid' ? 'default' : 'subtle'}
+            isSelected={viewMode === 'grid'}
+            spacing="compact"
+            iconBefore={<LayoutGrid size={16} />}
+            onClick={() => setViewMode('grid')}
+          >
+            Grid
+          </Button>
+          <Button
+            appearance={viewMode === 'list' ? 'default' : 'subtle'}
+            isSelected={viewMode === 'list'}
+            spacing="compact"
+            iconBefore={<List size={16} />}
+            onClick={() => setViewMode('list')}
+          >
+            List
+          </Button>
+        </div>
+      </div>
 
       {/* CONTENT */}
       {isLoading ? (
-        <div className="flex justify-center items-center min-h-[200px]">
-          <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 200 }}>
+          <Spinner size="large" />
         </div>
       ) : filteredPrograms.length === 0 ? (
-        <Card className="max-w-md mx-auto">
-          <CardContent className="pt-6 text-center">
-            <h2 className="text-lg font-semibold text-foreground mb-2">No programs found</h2>
-            <p className="text-sm text-muted-foreground mb-4">
-              {searchQuery ? 'Try adjusting your search query' : 'Create your first program to get started'}
-            </p>
-            <div className="flex justify-center gap-2">
-              <Button onClick={() => setShowCreateDialog(true)}>
-                Create program
+        <EmptyState
+          header="No programs found"
+          description={searchQuery ? 'Try adjusting your search query' : 'Create your first program to get started'}
+          primaryAction={
+            <Button appearance="primary" onClick={() => setShowCreateDialog(true)}>
+              Create program
+            </Button>
+          }
+          secondaryAction={
+            searchQuery ? (
+              <Button appearance="subtle" onClick={() => setSearchQuery('')}>
+                Clear search
               </Button>
-              {searchQuery && (
-                <Button variant="outline" onClick={() => setSearchQuery('')}>
-                  Clear search
-                </Button>
-              )}
-            </div>
-          </CardContent>
-        </Card>
+            ) : undefined
+          }
+        />
       ) : viewMode === 'grid' ? (
         <ProgramGrid 
           programs={filteredPrograms}
@@ -259,7 +258,7 @@ function ProgramCard({ program, onToggleStar, onClick }: ProgramCardProps) {
           isHovered || program.isStarred ? "opacity-100" : "opacity-0"
         )}>
           <Tooltip content={program.isStarred ? 'Unstar' : 'Star'}>
-            <Button
+            <UiButton
               variant="ghost"
               size="icon"
               className="h-8 w-8"
@@ -270,21 +269,17 @@ function ProgramCard({ program, onToggleStar, onClick }: ProgramCardProps) {
               }}
             >
               <Star
-                className={cn(
-                  "h-4 w-4",
-                  program.isStarred
-                    ? "fill-amber-400 text-amber-400"
-                    : "text-muted-foreground"
-                )}
+                className="h-4 w-4"
+                style={{ color: program.isStarred ? 'var(--ds-icon-accent-yellow)' : 'var(--ds-icon-subtle)' }}
               />
-            </Button>
+            </UiButton>
           </Tooltip>
         </div>
 
         {/* PROGRAM INFO */}
         <div className="mb-4">
           <div className="flex items-center gap-2 mb-2">
-            <h3 className="text-base font-semibold text-foreground">
+            <h3 className="text-base font-semibold" style={{ color: 'var(--ds-text)' }}>
               {program.name}
             </h3>
             {program.isDefault && (
@@ -292,18 +287,18 @@ function ProgramCard({ program, onToggleStar, onClick }: ProgramCardProps) {
             )}
           </div>
 
-          <p className="text-xs text-muted-foreground mb-1">
+          <p className="text-xs mb-1" style={{ color: 'var(--ds-text-subtlest)' }}>
             {program.key}
           </p>
 
-          <p className="text-sm text-muted-foreground line-clamp-2 min-h-[40px]">
+          <p className="text-sm line-clamp-2 min-h-[40px]" style={{ color: 'var(--ds-text-subtle)' }}>
             {program.description}
           </p>
         </div>
 
         {/* METADATA */}
-        <div className="flex justify-between items-center pt-4 border-t border-border">
-          <div className="flex gap-4 text-xs text-muted-foreground">
+        <div className="flex justify-between items-center pt-4" style={{ borderTop: '1px solid var(--ds-border)' }}>
+          <div className="flex gap-4 text-xs" style={{ color: 'var(--ds-text-subtlest)' }}>
             <span>{program.projectCount} project{program.projectCount !== 1 ? 's' : ''}</span>
             <span>•</span>
             <span>{program.epicCount} epic{program.epicCount !== 1 ? 's' : ''}</span>
@@ -366,15 +361,17 @@ function ProgramListItem({ program, onToggleStar, onClick, isLast }: ProgramList
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       className={cn(
-        "flex items-center gap-6 p-6 cursor-pointer transition-colors duration-150",
-        isHovered && "bg-muted/50",
-        !isLast && "border-b border-border"
+        "flex items-center gap-6 p-6 cursor-pointer transition-colors duration-150"
       )}
+      style={{
+        background: isHovered ? 'var(--ds-surface-sunken)' : undefined,
+        borderBottom: !isLast ? '1px solid var(--ds-border)' : undefined,
+      }}
     >
       {/* PROGRAM INFO */}
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 mb-1">
-          <h4 className="text-sm font-semibold text-foreground">
+          <h4 className="text-sm font-semibold" style={{ color: 'var(--ds-text)' }}>
             {program.name}
           </h4>
           {program.isDefault && (
@@ -382,14 +379,14 @@ function ProgramListItem({ program, onToggleStar, onClick, isLast }: ProgramList
           )}
         </div>
 
-        <p className="text-xs text-muted-foreground truncate">
+        <p className="text-xs truncate" style={{ color: 'var(--ds-text-subtlest)' }}>
           {program.key} • {program.description}
         </p>
       </div>
 
       {/* METADATA */}
       <div className="flex items-center gap-6 flex-shrink-0">
-        <div className="text-xs text-muted-foreground text-right">
+        <div className="text-xs text-right" style={{ color: 'var(--ds-text-subtlest)' }}>
           <div>{program.projectCount} projects</div>
           <div>{program.epicCount} epics</div>
         </div>
@@ -398,7 +395,7 @@ function ProgramListItem({ program, onToggleStar, onClick, isLast }: ProgramList
           <Avatar src={program.lead.avatar} name={program.lead.name} size="xsmall" />
         </Tooltip>
 
-        <Button
+        <UiButton
           variant="ghost"
           size="icon"
           className="h-8 w-8"
@@ -409,14 +406,10 @@ function ProgramListItem({ program, onToggleStar, onClick, isLast }: ProgramList
           }}
         >
           <Star
-            className={cn(
-              "h-4 w-4",
-              program.isStarred
-                ? "fill-amber-400 text-amber-400"
-                : "text-muted-foreground"
-            )}
+            className="h-4 w-4"
+            style={{ color: program.isStarred ? 'var(--ds-icon-accent-yellow)' : 'var(--ds-icon-subtle)' }}
           />
-        </Button>
+        </UiButton>
       </div>
     </div>
   );

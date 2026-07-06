@@ -1608,11 +1608,13 @@ function PeopleTab() {
             <tr style={{ borderBottom: '2px solid var(--ds-border)' }}>
               {[
                 { label: 'Name', width: 180 },
-                { label: 'Email', width: 220 },
+                { label: 'Email', width: 200 },
                 { label: 'Role', width: 148 },
                 { label: 'Department', width: 120 },
                 { label: 'Modules', width: 144 },
-                { label: 'Status', width: 128 },
+                /* 148 fits the widest state lozenge ("PENDING SETUP") — at 128
+                 * it clipped to "PENDING SET…" in every pending row. */
+                { label: 'Status', width: 148 },
                 { label: 'Last active', width: 96 },
                 { label: 'Source', width: 100 },
                 { label: '', width: 44 },

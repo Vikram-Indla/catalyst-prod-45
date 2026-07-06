@@ -188,7 +188,9 @@ function StatCard({ label, value, subtitle, color, isDark, dk }: { label: string
   return (
     <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', border: `1px solid ${isDark ? 'var(--ds-border-bold)' : dk.border}`, borderRadius: '6px', padding: '16px' }}>
       <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: dk.t3, marginBottom: '8px' }}>{label}</div>
-      <span style={{ fontSize: '32px', fontWeight: 800, fontFamily: 'var(--cp-font-mono)', color, letterSpacing: '-0.5px' }}>{value}</span>
+      {/* ADS heading font for hero numerals (was legacy --cp-font-mono, which
+        * rendered slashed-zero terminal digits unlike every other hub KPI). */}
+      <span style={{ fontSize: '32px', fontWeight: 700, fontFamily: 'var(--ds-font-family-heading)', fontVariantNumeric: 'tabular-nums', color }}>{value}</span>
       <div style={{ fontSize: 'var(--ds-font-size-200)', color: dk.t3, marginTop: '4px' }}>{subtitle}</div>
     </div>
   );

@@ -1011,6 +1011,10 @@ export default function FullAppRoutes() {
           <Route path="roles"        element={<S><RolesAdminPageLazy /></S>} />
           <Route path="permissions"  element={<S><PermissionsAdminPageLazy /></S>} />
           <Route path="ai-assistant" element={<S><AiAccessPageLazy /></S>} />
+          {/* Unmatched /admin/* rendered a silent blank Outlet (e.g. a stale
+              /admin/statuses deep link) — surface a 404 instead, same
+              hardening as STRATA's CAT-0016. */}
+          <Route path="*" element={<S><NotFound /></S>} />
         </Route>
 
         {/* /ads-validator — design governance audit viewer; aliased to canonical admin governance page */}
@@ -1097,6 +1101,12 @@ export default function FullAppRoutes() {
         <Route path="/project-hub/:key/reports" element={<PHPlaceholder title="Reports" phase="Phase 4" />} />
         <Route path="/project-hub/:key/sprint-predictor" element={<PHPlaceholder title="Sprint Predictor" phase="Phase 5" />} />
         <Route path="/project-hub/:key/risk-scanner" element={<PHPlaceholder title="Risk Scanner" phase="Phase 5" />} />
+        {/* Global catch-all (CAT-STRATA-ADS-UPLIFT-20260706-001): any URL that
+            matches no route above (stale deep links like /docs,
+            /testhub/test-plans, /incident-hub/incidents) rendered a silent
+            blank content area. Surface a 404 instead — same hardening as
+            STRATA CAT-0016 and the /admin subtree. */}
+        <Route path="*" element={<S><NotFound /></S>} />
       </Routes>
       <KnowledgeAssistFabRouteGuard />
     </>

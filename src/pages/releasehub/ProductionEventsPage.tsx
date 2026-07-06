@@ -12,6 +12,7 @@ import { Clock } from '@/lib/atlaskit-icons';
 import { useProductionEventsList, type ProductionEventRow } from '@/hooks/useReleaseHub';
 import { JiraTable } from '@/components/shared/JiraTable';
 import type { Column } from '@/components/shared/JiraTable';
+import { Lozenge } from '@/components/ads';
 import { EmptyState, ErrorState } from '@/components/releasehub/EmptyState';
 import { RH } from '@/constants/releasehub.design';
 import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
@@ -31,17 +32,18 @@ function titleCase(v: string | null) {
   return v.charAt(0).toUpperCase() + v.slice(1).replace(/_/g, ' ');
 }
 
+/** Canonical @atlaskit/lozenge — replaces a hand-rolled pill whose rendering
+ *  depended on DB casing (mixed "Success" and "SUCCESS" styles in one column). */
 function ResultBadge({ result }: { result: string | null }) {
   if (!result) return <span style={{ color: T.subtlest }}>—</span>;
-  const norm = result.toLowerCase();
-  const map: Record<string, { fg: string; bg: string }> = {
-    success: { fg: 'var(--ds-text-success)', bg: 'var(--ds-background-success)' },
-    partial: { fg: 'var(--ds-text-warning)', bg: 'var(--ds-background-warning)' },
-    failed: { fg: 'var(--ds-text-danger)', bg: 'var(--ds-background-danger)' },
-    rolled_back: { fg: 'var(--ds-text-danger)', bg: 'var(--ds-background-danger)' },
-  };
-  const m = map[norm] ?? { fg: T.subtle, bg: T.sunken };
-  return <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: m.fg, background: m.bg, padding: '0 8px', borderRadius: 3, whiteSpace: 'nowrap', textTransform: 'capitalize' }}>{result.replace(/_/g, ' ')}</span>;
+  const norm = result.toLowerCase().replace(/ /g, '_');
+  const appearance: React.ComponentProps<typeof Lozenge>['appearance'] =
+    norm === 'success' ? 'success'
+    : norm === 'partial' ? 'moved'
+    : norm === 'failed' || norm === 'rolled_back' || norm === 'rollback' ? 'removed'
+    : norm === 'in_progress' ? 'inprogress'
+    : 'default';
+  return <Lozenge appearance={appearance}>{result.replace(/_/g, ' ')}</Lozenge>;
 }
 
 function snapCount(snap: any): number | null {

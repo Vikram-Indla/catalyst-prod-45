@@ -213,7 +213,9 @@ export function ProjectPageHeader({
         <Breadcrumbs items={breadcrumbItems.map(withEntityIcon)} LinkComponent={Link} />
       </div>
 
-      {!hideTitle && (
+      {/* No dangling "/" when there is no title to follow it (Products/Projects
+          index pages derive an empty route word). */}
+      {!hideTitle && (title ?? routeWord) && (
         <>
           <span
             aria-hidden

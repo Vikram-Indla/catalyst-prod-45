@@ -387,9 +387,16 @@ export function StrataPageShell({
     if (docTitle) document.title = `${docTitle} · Catalyst`;
   }, [docTitle]);
   return (
-    <div data-testid={testId} style={{ minWidth: 0 }}>
-      <div style={{ margin: '-24px -24px 0' }}>
-        <ProjectPageHeader hubType="strata" trail={trail} title={title} hideTitle={hideTitle} actions={headerActions} />
+    <div data-testid={testId} className="strata-page-shell" style={{ minWidth: 0 }}>
+      {/* Scoped to STRATA only: JiraTable's grid wrapper is overflow-x hidden and
+        * hard-clips trailing columns (Validator / Realized) when rows outgrow the
+        * panel; inside STRATA it must scroll instead. */}
+      <style>{'.strata-page-shell .jira-table-grid{overflow-x:auto;}'}</style>
+      {/* No negative-margin pull: the HubSurface content wrapper is overflow:clip,
+        * so overhanging it clips the header's left edge (the "TRATA" bug —
+        * CAT-STRATA-ADS-UPLIFT-20260706-001). Align to the content grid instead. */}
+      <div style={{ margin: '-12px 0 0' }}>
+        <ProjectPageHeader hubType="strata" paddingX={0} trail={trail} title={title} hideTitle={hideTitle} actions={headerActions} />
       </div>
       <div style={{ margin: '8px 0 16px' }}>
         <StrataContextToolbar modelLabel={modelLabel} extra={
@@ -683,7 +690,9 @@ export function StrataPanel({
         ) : null}
         <span style={{ marginLeft: 'auto', display: 'inline-flex', alignItems: 'center', gap: 8 }}>{actions}</span>
       </div>
-      <div style={{ padding: noPadding ? 0 : 16, minWidth: 0 }}>
+      {/* Table panels (noPadding) scroll horizontally instead of hard-clipping
+        * the last columns at the viewport edge (KPI Achievement / Validator bug). */}
+      <div style={{ padding: noPadding ? 0 : 16, minWidth: 0, ...(noPadding ? { overflowX: 'auto' as const } : null) }}>
         {children}
       </div>
     </section>
