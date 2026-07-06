@@ -35,14 +35,14 @@ Method: DB-enforced criteria probed via live SQL on cyij; UI/surface criteria ma
 | TMV2-P0-026 | Variance | DONE | `tm_case_variance` (locked_version/latest_version/variance_fields/resolution); variance banner + pull-latest (F5) |
 | TMV2-P0-027 | Defects | DONE | `tm_defect_links` (test_run_id + cycle_scope_id + non_test_origin); CreateStoryModal prefill (F4) |
 | TMV2-P0-028 | Evidence | DONE | tm_attachments polymorphic entity_type (case/step/run/defect/parent) + `testhub-attachments` bucket RLS |
-| TMV2-P0-029 | Traceability | PARTIAL | Grid + hierarchy + coverage matrix (H5/H6) live. Diagram canvas = EmptyState fallback (Plan-Lock-accepted deferral, H7) |
+| TMV2-P0-029 | Traceability | DONE | Grid + hierarchy + coverage matrix + SVG diagram canvas (H5/H6/H7). CanvasView: requirement→case node graph, ADS-token verdict fills, click-navigates to case page, scales via scrollable SVG |
 | TMV2-P0-030 | Reports | DONE | REPORT_REGISTRY: daily QA, sprint health, release readiness, UAT signoff, regression, defect leakage/retest, variance, evidence, AI audit — all wired bodies |
 
 ## Summary
-- **28/30 DONE**, **2 PARTIAL** (both non-code-blocked):
-  - TMV2-P0-018: `ai-tm-assist` code complete + committed; deploy blocked by cyij edge-function cap (Vikram: raise cap / delete stale fn, then MCP `deploy_edge_function`). Generation path already live.
-  - TMV2-P0-029: canvas diagram deferred to EmptyState per approved Plan Lock; grid/hierarchy/matrix satisfy the traceability intent.
-- Zero buildable gaps remain. Both PARTIAL items are external-dependency, not implementation.
+- **29/30 DONE**, **1 PARTIAL** (external-dependency only):
+  - TMV2-P0-018: `ai-tm-assist` code complete + committed; deploy blocked by cyij edge-function cap (Vikram: raise cap / delete stale fn, then MCP `deploy_edge_function`). Generation path already live via `ai-generate-test-artefacts` v2.
+- TMV2-P0-029 upgraded PARTIAL→DONE 2026-07-06: built the H7 SVG traceability canvas (was Plan-Lock-accepted EmptyState fallback). All gates green, tsc unchanged.
+- Zero buildable gaps remain. The single PARTIAL is a hard external plan-limit, not implementation.
 
 ## Remaining external dependencies (Vikram-only)
 1. Raise cyij edge-function cap → deploy `ai-tm-assist` (unblocks P0-018 assist ops).

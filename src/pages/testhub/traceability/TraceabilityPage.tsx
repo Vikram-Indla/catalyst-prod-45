@@ -179,7 +179,7 @@ export default function TraceabilityPage() {
 
   const { data: links = [], isLoading: linksLoading } = useTraceability(projectId);
   const isLoading = projLoading || linksLoading;
-  const [view, setView] = useState<'grid' | 'hierarchy' | 'matrix'>('grid');
+  const [view, setView] = useState<'grid' | 'hierarchy' | 'matrix' | 'canvas'>('grid');
 
   const groups = useMemo((): ReqGroup[] => {
     const map = new Map<string, ReqGroup>();
@@ -329,9 +329,9 @@ export default function TraceabilityPage() {
               />
             ) : (
               <>
-                {/* H5/H6 (CAT-TESTHUB-V2): grid / hierarchy / matrix view switch */}
+                {/* H5/H6/H7 (CAT-TESTHUB-V2): grid / hierarchy / matrix / canvas view switch */}
                 <div style={{ display: 'flex', gap: 4, marginBottom: 12 }}>
-                  {(['grid', 'hierarchy', 'matrix'] as const).map((v) => (
+                  {(['grid', 'hierarchy', 'matrix', 'canvas'] as const).map((v) => (
                     <button
                       key={v}
                       onClick={() => setView(v)}
@@ -360,6 +360,7 @@ export default function TraceabilityPage() {
                 )}
                 {view === 'hierarchy' && <HierarchyView groups={groups} />}
                 {view === 'matrix' && <MatrixView groups={groups} />}
+                {view === 'canvas' && <CanvasView groups={groups} />}
               </>
             )}
           </>
@@ -464,6 +465,108 @@ function MatrixView({ groups }: { groups: ReqGroup[] }) {
           </div>
         );
       })}
+    </div>
+  );
+}
+
+// ─── H7: Traceability canvas — SVG requirement→case node graph, click navigates ─
+// Scales to hundreds of nodes via a scrollable SVG; no drawer, no external graph
+// lib. Case-node fill uses ADS status-background tokens; a click on a case node
+// routes to its full-page repository view (same nav contract as the hierarchy).
+function caseNodeTokens(status: string | null): { bg: string; fg: string } {
+  switch ((status ?? '').toLowerCase()) {
+    case 'passed': return { bg: 'var(--ds-background-success)', fg: 'var(--ds-text-success)' };
+    case 'failed': return { bg: 'var(--ds-background-danger)', fg: 'var(--ds-text-danger)' };
+    case 'blocked': return { bg: 'var(--ds-background-warning)', fg: 'var(--ds-text-warning)' };
+    case 'skipped': return { bg: 'var(--ds-background-neutral)', fg: 'var(--ds-text-subtle)' };
+    case '': case 'not_run': return { bg: 'var(--ds-background-neutral-subtle)', fg: 'var(--ds-text-subtlest)' };
+    default: return { bg: 'var(--ds-background-information)', fg: 'var(--ds-text-information)' };
+  }
+}
+
+function CanvasView({ groups }: { groups: ReqGroup[] }) {
+  const navigate = useNavigate();
+  // Layout constants (px). Requirement column left, case column right.
+  const REQ_X = 12, REQ_W = 256;
+  const CASE_X = 336, CASE_W = 260, CASE_H = 30, CASE_GAP = 8;
+  const BAND_PAD = 14;
+  const trunc = (s: string | null, n: number) => (s && s.length > n ? s.slice(0, n - 1) + '…' : (s ?? ''));
+
+  // Pre-compute each band's height and y-offset.
+  let y = 8;
+  const bands = groups.map((g) => {
+    const cases = Array.from(new Map(g.links.map((l) => [l.test_case_id, l])).values());
+    const bodyH = Math.max(CASE_H, cases.length * (CASE_H + CASE_GAP) - CASE_GAP);
+    const bandH = bodyH + BAND_PAD * 2;
+    const band = { g, cases, y, bandH, bodyH };
+    y += bandH;
+    return band;
+  });
+  const totalH = Math.max(120, y + 8);
+  const width = CASE_X + CASE_W + 12;
+
+  return (
+    <div style={{ overflow: 'auto', maxHeight: '70vh', border: '1px solid var(--ds-border)', borderRadius: 6, background: 'var(--ds-surface)' }}>
+      <svg width={width} height={totalH} role="img" aria-label="Traceability canvas" style={{ display: 'block', minWidth: '100%' }}>
+        {bands.map(({ g, cases, y: by, bandH, bodyH }) => {
+          const reqCY = by + bandH / 2;
+          const reqNodeY = reqCY - 22;
+          return (
+            <g key={g.reqKey}>
+              {/* connectors requirement → each case */}
+              {cases.map((l, i) => {
+                const cy = by + BAND_PAD + i * (CASE_H + CASE_GAP) + CASE_H / 2;
+                return (
+                  <path
+                    key={`edge-${l.test_case_id}`}
+                    d={`M ${REQ_X + REQ_W} ${reqCY} C ${REQ_X + REQ_W + 40} ${reqCY}, ${CASE_X - 40} ${cy}, ${CASE_X} ${cy}`}
+                    fill="none"
+                    stroke="var(--ds-border-bold)"
+                    strokeWidth={1.5}
+                  />
+                );
+              })}
+              {/* requirement node */}
+              <g style={{ cursor: 'default' }}>
+                <rect x={REQ_X} y={reqNodeY} width={REQ_W} height={44} rx={8}
+                  fill="var(--ds-surface-raised)" stroke="var(--ds-border)" strokeWidth={1} />
+                <text x={REQ_X + 12} y={reqNodeY + 18} fill="var(--ds-text-subtle)"
+                  style={{ fontFamily: 'var(--ds-font-family-code)', fontSize: 'var(--ds-font-size-100)' }}>
+                  {trunc(g.displayKey, 22)}
+                </text>
+                <text x={REQ_X + 12} y={reqNodeY + 34} fill="var(--ds-text)"
+                  style={{ fontSize: 'var(--ds-font-size-200)' }}>
+                  {trunc(g.displayTitle, 30)}
+                </text>
+              </g>
+              {/* case nodes */}
+              {cases.map((l, i) => {
+                const cy = by + BAND_PAD + i * (CASE_H + CASE_GAP);
+                const tok = caseNodeTokens(l.exec_status);
+                const clickable = !!l.case_key;
+                return (
+                  <g
+                    key={`case-${l.test_case_id}`}
+                    onClick={() => clickable && navigate(`/testhub/repository/case/${l.case_key}`)}
+                    style={{ cursor: clickable ? 'pointer' : 'default' }}
+                  >
+                    <rect x={CASE_X} y={cy} width={CASE_W} height={CASE_H} rx={6}
+                      fill={tok.bg} stroke="var(--ds-border)" strokeWidth={1} />
+                    <text x={CASE_X + 10} y={cy + 19} fill={tok.fg}
+                      style={{ fontFamily: 'var(--ds-font-family-code)', fontSize: 'var(--ds-font-size-100)' }}>
+                      {trunc(l.case_key ?? '—', 10)}
+                    </text>
+                    <text x={CASE_X + 78} y={cy + 19} fill="var(--ds-text)"
+                      style={{ fontSize: 'var(--ds-font-size-100)' }}>
+                      {trunc(l.case_title, 22)}
+                    </text>
+                  </g>
+                );
+              })}
+            </g>
+          );
+        })}
+      </svg>
     </div>
   );
 }
