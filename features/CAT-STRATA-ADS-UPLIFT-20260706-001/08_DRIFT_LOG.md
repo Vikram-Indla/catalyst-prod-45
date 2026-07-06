@@ -15,3 +15,11 @@
 - **D4**: New cycle / New element modals verified as ads Modal + Textfield +
   @atlaskit/datetime-picker during inventory; datetime placeholder "2/18/1993"
   is the Atlaskit component's own locale placeholder (component-owned, kept).
+
+- **D5 (scope expansion, 2026-07-06)**: Goal condition requires EVERY Catalyst
+  screen (all hubs), not only STRATA. Plan Lock scope extended: sweep all
+  primary nav surfaces (Home, Project Hub, Product Hub, Ideation, Incident Hub,
+  Release Hub, Test Hub, Tasks, Docs, Admin, Portfolio/Programs, Search) with
+  before screenshots + per-screen audit; surgical fixes for visible ADS
+  violations; before/after evidence for every changed screen. Files-forbidden
+  list relaxed accordingly (still surgical, still no data-path changes).
