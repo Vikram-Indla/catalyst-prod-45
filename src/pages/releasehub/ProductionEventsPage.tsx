@@ -6,6 +6,7 @@
  * targeted release reaches `completed` (see useUpdateReleaseStatus).
  */
 import React, { useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
 import Modal, { ModalBody, ModalHeader, ModalTitle, ModalTransition } from '@atlaskit/modal-dialog';
 import { Clock } from '@/lib/atlaskit-icons';
@@ -89,8 +90,10 @@ function EventDetailModal({ event, onClose }: { event: ProductionEventRow; onClo
 
 export default function ProductionEventsPage() {
   const { data: events = [], isLoading, error, refetch } = useProductionEventsList();
+  const navigate = useNavigate();
   const [selected, setSelected] = useState<ProductionEventRow | null>(null);
   const [selection, setSelection] = useState<Set<string>>(new Set());
+  const openReplay = (r: ProductionEventRow) => navigate(`/release-hub/production-events/${r.eventKey ?? r.id}`);
 
   const columns: Column<ProductionEventRow>[] = useMemo(() => [
     {
@@ -109,7 +112,17 @@ export default function ProductionEventsPage() {
       id: 'deployedAt', label: 'Deployed', width: 16, sortable: true, accessor: (r) => r.deployedAt,
       cell: ({ row }) => <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-300)', color: T.subtle }}>{row.deployedAt ? format(new Date(row.deployedAt), 'MMM d, yyyy HH:mm') : '—'}</span>,
     },
-    { id: 'deployedBy', label: 'By', width: 14, cell: ({ row }) => <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-300)', color: T.subtle, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{row.deployedBy}</span> },
+    { id: 'deployedBy', label: 'By', width: 12, cell: ({ row }) => <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-300)', color: T.subtle, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{row.deployedBy}</span> },
+    { id: 'snap', label: 'Snapshot', width: 14, cell: ({ row }) => {
+      const c = snapCount(row.commitsSnapshot), ev = snapCount(row.sopEvidenceSnapshot), ap = snapCount(row.approversSnapshot);
+      return <span style={{ fontFamily: T.mono, fontSize: 'var(--ds-font-size-100)', color: T.subtle }}>{c ?? 0}c · {ev ?? 0}e · {ap ?? 0}a</span>;
+    } },
+    { id: 'replay', label: 'Replay', width: 14, cell: ({ row }) => (
+      <div style={{ display: 'flex', gap: 8 }} onClick={(e) => e.stopPropagation()}>
+        <button onClick={() => openReplay(row)} style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-link)', background: 'transparent', border: 'none', cursor: 'pointer', padding: 0 }}>Replay →</button>
+        <button onClick={() => setSelected(row)} style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', color: T.subtle, background: 'transparent', border: 'none', cursor: 'pointer', padding: 0 }}>Preview</button>
+      </div>
+    ) },
   ], []);
 
   return (
@@ -127,7 +140,7 @@ export default function ProductionEventsPage() {
           columns={columns}
           data={events}
           getRowId={(r) => r.id}
-          onRowClick={(r) => setSelected(r)}
+          onRowClick={openReplay}
           selectable
           selection={selection}
           onSelectionChange={setSelection}

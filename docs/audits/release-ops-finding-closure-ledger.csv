@@ -88,3 +88,15 @@ RO-P8-06,P8,model,Incident-vs-defect functional model,phase-8 §2,CLOSED,default
 RO-P8-07,P8,build,tsc + build + gates,acceptance,CLOSED,tsc clean; build PASS; typo down; spacing flat; tokens noisy-ratchet,2026-07-06
 RO-P8-08,P8,calmark,Execution calendar + For-You issue-count badges,phase-9,DEFERRED,For-You via View-change; calendar badge deferred,
 RO-P8-09,P8,detailctx,Dedicated Release-Ops context panel on Incident/Defect detail,phase-9,DEFERRED,source_* written; panel deferred,
+RO-P9-01,P9,list,Production Events list → full-page replay + result/snapshot cols,phase-9 §2,CLOSED,ProductionEventsPage; verified,2026-07-06
+RO-P9-02,P9,route,Full-page replay route /production-events/:eventKey (key→id fallback),phase-9 §3,CLOSED,ProductionEventReplayPage; breadcrumb compliant,2026-07-06
+RO-P9-03,P9,summary,Deterministic executive summary (honestly labelled),phase-9 §4,CLOSED,buildSummary; no faked AI; verified live,2026-07-06
+RO-P9-04,P9,timeline,SOP execution replay timeline (planned vs actual + issues),phase-9 §7,CLOSED,StepReplay; verified 9 steps,2026-07-06
+RO-P9-05,P9,ledgers,Commit + evidence ledgers with audit gaps,phase-9 §8/9,CLOSED,verified 2 commit / 3 evidence gaps,2026-07-06
+RO-P9-06,P9,trails,Sign-off + override + freeze trails,phase-9 §10/11,CLOSED,gates all-states + override bypass + clean freeze; verified,2026-07-06
+RO-P9-07,P9,issues,Incident/defect trail by prod-event/change/SOP lineage,phase-9 §12,CLOSED,INC-154+DEF-RO-8841; verified,2026-07-06
+RO-P9-08,P9,closure,Result & closure (success cannot hide open critical),phase-9 §13,CLOSED,closure logic; verified,2026-07-06
+RO-P9-09,P9,integration,Change Detail Open-replay link,phase-9 §15,CLOSED,cockpit prod-event card,2026-07-06
+RO-P9-10,P9,copy,Copy deployment summary,phase-9 §16,CLOSED,clipboard; no hallucination,2026-07-06
+RO-P9-11,P9,build,tsc+build+gates,acceptance,CLOSED,green; typo+tokens dropped; no baseline bump,2026-07-06
+RO-P9-12,P9,gen,Change-level auto-gen + richer stored snapshots + release roll-up,phase-10,DEFERRED,replay reconstructs live; auto-gen deferred,

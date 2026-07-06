@@ -1097,7 +1097,7 @@ export const useApplySopTemplate = () => {
 
 // ── Production Events list + detail (Phase 10) ───────────────────────
 export interface ProductionEventRow {
-  id: string; title: string; eventType: string; targetEnv: string | null;
+  id: string; eventKey: string | null; title: string; eventType: string; targetEnv: string | null;
   releaseId: string | null; releaseKey: string | null; changeId: string | null; changeKey: string | null;
   deployedAt: string | null; producedAt: string | null; deployedBy: string;
   result: string | null; deploymentStatus: string | null; durationMinutes: number | null; notes: string | null;
@@ -1117,7 +1117,7 @@ export const useProductionEventsList = () =>
         .order('deployed_at', { ascending: false });
       if (error) throw error;
       return (data ?? []).map((e: any) => ({
-        id: e.id, title: e.title, eventType: e.event_type, targetEnv: e.target_env ?? null,
+        id: e.id, eventKey: e.event_key ?? null, title: e.title, eventType: e.event_type, targetEnv: e.target_env ?? null,
         releaseId: e.release_id ?? null, releaseKey: e.release_key ?? null, changeId: e.change_id ?? null, changeKey: e.change_key ?? null,
         deployedAt: e.deployed_at ?? null, producedAt: e.produced_at ?? null, deployedBy: e.deployed_by,
         result: e.deployment_result ?? null, deploymentStatus: e.deployment_status ?? null, durationMinutes: e.duration_minutes ?? null, notes: e.notes ?? null,

@@ -268,8 +268,8 @@ function ProdEventSummary({ cockpit }: { cockpit: ChangeCockpit }) {
             {pe.executedBy ? ` · by ${pe.executedBy}` : ''}
           </div>
           <div style={{ display: 'flex', gap: 8 }}>
-            <button onClick={() => navigate('/release-hub/production-events')} style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', color: T.link, background: 'transparent', border: 'none', cursor: 'pointer', padding: 0 }}>View event →</button>
-            <span title="Replay is built in a later phase" style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', color: T.subtlest, cursor: 'not-allowed' }}>Replay (coming soon)</span>
+            <button onClick={() => navigate(`/release-hub/production-events/${pe.eventKey ?? pe.id}`)} style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: T.link, background: 'transparent', border: 'none', cursor: 'pointer', padding: 0 }}>Open replay →</button>
+            <button onClick={() => navigate('/release-hub/production-events')} style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', color: T.subtle, background: 'transparent', border: 'none', cursor: 'pointer', padding: 0 }}>All events</button>
           </div>
         </>
       )}

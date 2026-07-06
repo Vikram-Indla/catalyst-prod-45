@@ -100,6 +100,7 @@ function PHPlaceholder({ title, phase }: { title: string; phase: string }) {
 }
 
 const ProductionEventsPageLazy = lazy(() => import("../pages/releasehub/ProductionEventsPage"));
+const ProductionEventReplayPage = lazy(() => import("../pages/releasehub/ProductionEventReplayPage"));
 const RH21CommandCenterPage = lazy(() => import("../pages/releasehub/CommandCenterPage"));
 const RH21AllReleasesPage = lazy(() => import("../pages/releasehub/AllReleasesPage"));
 const ReleaseBoardCanonical = lazy(() => import("../pages/releasehub/ReleaseBoardCanonical"));
@@ -793,6 +794,7 @@ export default function FullAppRoutes() {
         <Route path="/release-hub/timeline" element={<S><ReleaseTimelineOps /></S>} />
         <Route path="/release-hub/timeline-canonical" element={<S><ReleasesTimelineCanonical /></S>} />
         <Route path="/release-hub/production-events" element={<S><ProductionEventsPageLazy /></S>} />
+        <Route path="/release-hub/production-events/:eventKey" element={<S><ProductionEventReplayPage /></S>} />
         <Route path="/release-hub/calendar" element={<S><ReleaseCalendarPage /></S>} />
         <Route path="/release-hub/releases-management" element={<S><ReleasesPageLazy /></S>} />
         <Route path="/release-hub/releases-management/:releaseSlug" element={<S><ReleaseDetailPageLazy /></S>} />

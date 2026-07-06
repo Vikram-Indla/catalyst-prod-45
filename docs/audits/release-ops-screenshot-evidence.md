@@ -76,3 +76,11 @@ No-drawer proof: graph expands inline; actions are inline buttons or centered ad
 | P8-2 | Contextual raise reuses existing modal | /release-hub/changes/chg8841 (Raise incident) | ss_5442mc7o2 | EXISTING global "Create Incident" modal (rich editor, Project/Release/Type, SEV1-4) — not rebuilt; RaiseIssue writes lineage post-create |
 
 No-drawer proof: ledger + SOP step indicators inline; raise reuses centered create modals. Demo issues (eeee0000-…-f1/f2 → source_change_id CHG8841, source_sop_step_id a2/a4) staging-only, documented in release-ops-phase-8-functional-proof.md.
+
+## Phase 9 — Production event full replay (2026-07-06, cyij seeded)
+| # | Proof | Route | MCP ID | Result |
+|---|---|---|---|---|
+| P9-1 | Replay full page (top) | /release-hub/production-events/PE-8841 | ss_3717pu8jx | breadcrumb + Success + Copy summary + header(2h12m overrun) + Emergency-override marker + deterministic exec summary + context + reconstructed scope + SOP timeline |
+| P9-2 | Replay trails | (scroll) | (scroll of ss_3717pu8jx) | SOP step issue markers; Commit ledger (2-missing audit gap + db e4f5g6h); Evidence ledger (3-missing); Sign-off trail (Overdue/Approved/Pending/Rejected+reason) + ⚡ override bypass; Freeze trail clean |
+
+No-drawer proof: full-page replay; list modal is quick-preview only. Demo (PE-8841 event_key, 12min overrun) staging-only, documented in release-ops-phase-9-functional-proof.md.
