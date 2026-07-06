@@ -687,6 +687,14 @@ function CatalystShellContent() {
       return <ProjectHubSidebar expanded={exp} onToggle={cycleSidebarState} />;
     }
 
+    // Folio sidebar — dropped in the 2026-07-06 origin/main merge (40686c9ef
+    // kept main's competing /wiki hub's renderSidebar(), which had already
+    // deleted this branch; isWikiRoute survived as an orphaned variable).
+    // Restored to its original pre-merge position (RCA: /design-critique).
+    if (isWikiRoute) {
+      return <WikiSidebar expanded={exp} onToggle={cycleSidebarState} />;
+    }
+
     // ProductHub V5 sidebar (/product-hub/*) — checked before isProductRoute so
     // /product-hub/* doesn't fall through to ProductRoomSidebar (which gates on
     // isModuleEnabled('PRODUCT') and may return null).
