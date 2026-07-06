@@ -21,7 +21,7 @@ import {
   Settings,
 } from '@/lib/atlaskit-icons';
 import { HUB_ICON_REGISTRY } from '@/components/icons';
-import { NavKanbanIcon, NavDashboardIcon, NavWorkIcon, NavTimelineIcon } from '@/lib/nav-icons';
+import { NavKanbanIcon, NavDashboardIcon, NavWorkIcon } from '@/lib/nav-icons';
 import { SidebarBase, SidebarConfig, SidebarSection } from './SidebarBase';
 
 interface ReleaseHubSidebarProps {
@@ -44,7 +44,6 @@ export const buildReleaseHubSections = (pendingSignoffs: number): SidebarSection
       { id: 'release-management', title: 'Releases', path: '/release-hub/releases-management', icon: List, exact: true },
       { id: 'release-kanban', title: 'Board', path: '/release-hub/release-kanban', icon: NavKanbanIcon, exact: false },
       { id: 'work', title: 'Work', path: '/release-hub/work', icon: NavWorkIcon, exact: false },
-      { id: 'timeline', title: 'Timeline', path: '/release-hub/timeline', icon: NavTimelineIcon, exact: false },
       { id: 'calendar', title: 'Calendar', path: '/release-hub/calendar', icon: Calendar, exact: true },
       { id: 'execution', title: 'Execution', path: '/release-hub/execution', icon: Clock, exact: true },
     ],

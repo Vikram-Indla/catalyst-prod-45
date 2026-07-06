@@ -106,12 +106,10 @@ const RH21AllReleasesPage = lazy(() => import("../pages/releasehub/AllReleasesPa
 const ReleaseBoardCanonical = lazy(() => import("../pages/releasehub/ReleaseBoardCanonical"));
 const ChangeExecutionBoard = lazy(() => import("../pages/releasehub/ChangeExecutionBoard"));
 const ExecutionCalendarPage = lazy(() => import("../pages/releasehub/ExecutionCalendarPage"));
-const ReleaseTimelineOps = lazy(() => import("../pages/releasehub/ReleaseTimelineOps"));
 const ReleasesWorkCanonical = lazy(() => import("../pages/releasehub/ReleasesWorkCanonical"));
 const ReleaseFiltersListPage = lazy(() => import("../pages/releasehub/ReleaseFiltersListPage"));
 const ReleaseFilterPreviewPage = lazy(() => import("../pages/releasehub/ReleaseFilterPreviewPage"));
 const ReleaseFilterDetailPage = lazy(() => import("../pages/releasehub/ReleaseFilterDetailPage"));
-const ReleasesTimelineCanonical = lazy(() => import("../pages/releasehub/ReleasesTimelineCanonical"));
 const RH21AllChangesPage = lazy(() => import("../pages/releasehub/AllChangesPage"));
 const RH21SignOffQueuePage = lazy(() => import("../pages/releasehub/SignOffQueuePage"));
 const RH21FreezeWindowsPage = lazy(() => import("../pages/releasehub/FreezeWindowsPage"));
@@ -801,10 +799,7 @@ export default function FullAppRoutes() {
         <Route path="/release-hub/work" element={<S><ReleasesWorkCanonical /></S>} />
         <Route path="/release-hub/filters" element={<S><ReleaseFiltersListPage /></S>} />
         <Route path="/release-hub/filters/create" element={<S><ReleaseFilterPreviewPage /></S>} />
-        <Route path="/release-hub/filters/:filterId" element={<S><ReleaseFilterPreviewPage /></S>} />
-        <Route path="/release-hub/timeline" element={<S><ReleaseTimelineOps /></S>} />
-        <Route path="/release-hub/timeline-canonical" element={<S><ReleasesTimelineCanonical /></S>} />
-        <Route path="/release-hub/production-events" element={<S><ProductionEventsPageLazy /></S>} />
+        <Route path="/release-hub/filters/:filterId" element={<S><ReleaseFilterPreviewPage /></S>} />        <Route path="/release-hub/production-events" element={<S><ProductionEventsPageLazy /></S>} />
         <Route path="/release-hub/production-events/:eventKey" element={<S><ProductionEventReplayPage /></S>} />
         <Route path="/release-hub/calendar" element={<S><ReleaseCalendarPage /></S>} />
         <Route path="/release-hub/releases-management" element={<S><ReleasesPageLazy /></S>} />

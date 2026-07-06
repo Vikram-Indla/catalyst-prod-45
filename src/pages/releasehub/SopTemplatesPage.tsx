@@ -66,7 +66,7 @@ export default function SopTemplatesPage() {
       cell: ({ row }) => (
         <div style={{ display: 'flex', flexDirection: 'column' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: T.text }}>{row.name}</span>
+            <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: T.text }}>{row.name}</span>
             {!row.isActive && <Lozenge appearance="default">Inactive</Lozenge>}
           </div>
           {row.description && <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', color: T.subtlest, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{row.description}</span>}
@@ -77,11 +77,11 @@ export default function SopTemplatesPage() {
     { id: 'targetEnv', label: 'Env', width: 9, cell: ({ row }) => <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-300)', color: T.subtle }}>{titleCase(row.targetEnv)}</span> },
     { id: 'est', label: 'Est.', width: 8, align: 'end', cell: ({ row }) => <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-300)', color: T.subtle }}>{row.estimatedDurationMinutes ? `${row.estimatedDurationMinutes}m` : '—'}</span> },
     { id: 'steps', label: 'Steps', width: 20, cell: ({ row }) => (
-      <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', color: T.subtle }}>
+      <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-300)', color: T.subtle }}>
         <b style={{ color: T.text }}>{row.stepCount}</b> · {row.mandatoryCount} mand · {row.technicalCount} tech · {row.evidenceCount} ev · {row.rollbackCount} rb
       </span>
     ) },
-    { id: 'updated', label: 'Updated', width: 11, sortable: true, accessor: (r) => r.updatedAt, cell: ({ row }) => <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', color: T.subtlest }}>{row.updatedAt ? format(new Date(row.updatedAt), 'MMM d, yyyy') : '—'}</span> },
+    { id: 'updated', label: 'Updated', width: 11, sortable: true, accessor: (r) => r.updatedAt, cell: ({ row }) => <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-300)', color: T.subtlest }}>{row.updatedAt ? format(new Date(row.updatedAt), 'MMM d, yyyy') : '—'}</span> },
     { id: 'actions', label: 'Actions', width: 16, cell: ({ row }) => canManage ? (
       <div style={{ display: 'flex', gap: 6 }} onClick={(e) => e.stopPropagation()}>
         <button onClick={() => setEditTemplate(row)} style={actBtn}>Edit</button>

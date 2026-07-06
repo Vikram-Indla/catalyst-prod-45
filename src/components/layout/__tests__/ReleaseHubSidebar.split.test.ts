@@ -16,14 +16,19 @@ describe('ReleaseHubSidebar — Backlog + Release Kanban split', () => {
     expect(releases).toBeTruthy();
   });
 
-  it('lists Release, Board, Work, Timeline, Calendar in order (backlog "Releases" item removed 2026-06-23)', () => {
+  it('lists Release, Board, Work, Calendar, Execution in order (backlog "Releases" removed 2026-06-23; Timeline removed 2026-07-06)', () => {
     expect(releases!.items.map((i) => i.id)).toEqual([
       'release-management',
       'release-kanban',
       'work',
-      'timeline',
       'calendar',
+      'execution',
     ]);
+  });
+
+  it('no longer exposes the removed Timeline view', () => {
+    expect(releases!.items.find((i) => i.id === 'timeline')).toBeUndefined();
+    expect(releases!.items.some((i) => i.path === '/release-hub/timeline')).toBe(false);
   });
 
   it('no longer exposes the deprecated /release-hub/releases backlog item', () => {
