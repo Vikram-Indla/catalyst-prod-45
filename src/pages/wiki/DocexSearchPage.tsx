@@ -8,6 +8,7 @@ import { useMemo, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Search } from '@/lib/atlaskit-icons';
 import { Input } from '@/components/ui/input';
+import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
 import { Routes } from '@/lib/routes';
 import {
   useDocexSearch,
@@ -62,10 +63,7 @@ export default function DocexSearchPage() {
         .docex-hit:hover, .docex-hit:focus-visible { background: var(--ds-background-neutral-subtle); }
       `}</style>
 
-      {/* ads-scanner:ignore-next-line — ADS heading token shorthand (font:) */}
-      <h1 style={{ font: 'var(--ds-font-heading-large)', color: 'var(--ds-text)', margin: '0 0 16px' }}>
-        Search Folio
-      </h1>
+      <ProjectPageHeader hubType="folio" paddingX={0} title="Search" />
 
       <div className="docex-search-input" style={{ marginBottom: 24 }}>
         <Search />

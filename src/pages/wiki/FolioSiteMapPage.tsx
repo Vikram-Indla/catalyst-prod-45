@@ -7,12 +7,14 @@
 import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { Breadcrumbs, Heading, Lozenge } from '@/components/ads';
+import { Lozenge } from '@/components/ads';
+import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
 import { Skeleton } from '@/components/ui/skeleton';
 import { supabase } from '@/integrations/supabase/client';
 import { Routes } from '@/lib/routes';
 import { useWikiWorkspaces } from '@/hooks/useWiki';
 import { HUB_ICON_REGISTRY } from '@/components/icons';
+import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 
 const db = supabase as unknown as { from: (t: string) => any };
 
@@ -26,7 +28,7 @@ interface MapDoc {
   parent_id: string | null;
   position: number;
   published_at: string | null;
-  linked_keys: string[];
+  linked: Array<{ key: string; type: string }>;
 }
 
 function useSiteMapDocs() {
@@ -41,7 +43,7 @@ function useSiteMapDocs() {
         .order('position')
         .limit(1000);
       if (error) throw error;
-      const rows = (data ?? []) as Array<Omit<MapDoc, 'linked_keys'>>;
+      const rows = (data ?? []) as Array<Omit<MapDoc, 'linked'>>;
       if (!rows.length) return [];
       const { data: links } = await db
         .from('kb_document_links')
@@ -51,19 +53,21 @@ function useSiteMapDocs() {
       const issueIds = linkList.filter((l) => l.entity_type !== 'business_request').map((l) => l.entity_id);
       const brIds = linkList.filter((l) => l.entity_type === 'business_request').map((l) => l.entity_id);
       const [issues, brs] = await Promise.all([
-        issueIds.length ? db.from('ph_issues').select('id, issue_key').in('id', issueIds) : Promise.resolve({ data: [] }),
+        issueIds.length ? db.from('ph_issues').select('id, issue_key, issue_type').in('id', issueIds) : Promise.resolve({ data: [] }),
         brIds.length ? db.from('business_requests').select('id, request_key').in('id', brIds) : Promise.resolve({ data: [] }),
       ]);
-      const keyByEntity = new Map<string, string>();
-      for (const i of (issues.data ?? []) as Array<{ id: string; issue_key: string }>) keyByEntity.set(String(i.id), i.issue_key);
-      for (const b of (brs.data ?? []) as Array<{ id: string; request_key: string }>) keyByEntity.set(String(b.id), b.request_key);
-      const keysByDoc = new Map<string, string[]>();
+      const byEntity = new Map<string, { key: string; type: string }>();
+      for (const i of (issues.data ?? []) as Array<{ id: string; issue_key: string; issue_type: string | null }>)
+        byEntity.set(String(i.id), { key: i.issue_key, type: i.issue_type ?? '' });
+      for (const b of (brs.data ?? []) as Array<{ id: string; request_key: string }>)
+        byEntity.set(String(b.id), { key: b.request_key, type: 'Business Request' });
+      const byDoc = new Map<string, Array<{ key: string; type: string }>>();
       for (const l of linkList) {
-        const key = keyByEntity.get(String(l.entity_id));
-        if (!key) continue;
-        keysByDoc.set(l.document_id, [...(keysByDoc.get(l.document_id) ?? []), key]);
+        const hit = byEntity.get(String(l.entity_id));
+        if (!hit) continue;
+        byDoc.set(l.document_id, [...(byDoc.get(l.document_id) ?? []), hit]);
       }
-      return rows.map((r) => ({ ...r, linked_keys: keysByDoc.get(r.id) ?? [] }));
+      return rows.map((r) => ({ ...r, linked: byDoc.get(r.id) ?? [] }));
     },
   });
 }
@@ -86,8 +90,11 @@ function DocNode({ doc, byParent, wsSlug, depth }: { doc: MapDoc; byParent: Map<
             {doc.doc_key}
           </span>
         ) : null}
-        {doc.linked_keys.map((k) => (
-          <Lozenge key={k} appearance="inprogress">{k}</Lozenge>
+        {doc.linked.map((l) => (
+          <span key={l.key} style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+            {l.type ? <JiraIssueTypeIcon type={l.type} size={16} /> : null}
+            <span style={{ color: 'var(--ds-text-subtle)', font: 'var(--ds-font-body-small)' }}>{l.key}</span>
+          </span>
         ))}
         {doc.published_at ? <Lozenge appearance="success">Published</Lozenge> : null}
       </div>
@@ -114,19 +121,7 @@ export default function FolioSiteMapPage() {
 
   return (
     <div style={{ width: '100%', padding: '16px 32px 96px' }}>
-      <Breadcrumbs
-        items={[
-          { key: 'folio', text: 'Folio', href: Routes.folio.root() },
-          { key: 'sitemap', text: 'Site map', href: Routes.folio.sitemap() },
-        ]}
-        aria-label="Hub location"
-      />
-      <div style={{ margin: '4px 0 20px' }}>
-        <Heading size="large">Site map</Heading>
-        <p style={{ margin: '2px 0 0', color: 'var(--ds-text-subtle)', font: 'var(--ds-font-body)' }}>
-          The complete documentation hierarchy — every workspace, page, and linked work item.
-        </p>
-      </div>
+      <ProjectPageHeader hubType="folio" paddingX={0} title="Site map" />
 
       {isLoading ? (
         <Skeleton style={{ height: 280, borderRadius: 8 }} />

@@ -11,7 +11,8 @@ import { useQuery } from '@tanstack/react-query';
 import Tabs, { Tab, TabList } from '@atlaskit/tabs';
 import { Search } from '@/lib/atlaskit-icons';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Breadcrumbs, DropdownMenu, Heading, Lozenge, Select, Textfield, type SelectOption } from '@/components/ads';
+import { DropdownMenu, Lozenge, Select, Textfield, type SelectOption } from '@/components/ads';
+import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
 import { JiraTable } from '@/components/shared/JiraTable';
 import type { Column } from '@/components/shared/JiraTable/types';
 import { supabase } from '@/integrations/supabase/client';
@@ -21,6 +22,7 @@ import { useWikiWorkspaces, useCreateWikiPage } from '@/hooks/useWiki';
 import { importDocumentFile } from '@/components/wiki-hub/editor/importDoc';
 import { catalystToast } from '@/lib/catalystToast';
 import { HUB_ICON_REGISTRY } from '@/components/icons';
+import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 
 const db = supabase as unknown as { from: (t: string) => any };
 
@@ -34,8 +36,9 @@ interface DocRow {
   created_by: string | null;
   published_at: string | null;
   updated_at: string;
-  /** Display key of the first linked work item (story/epic/BR), if any. */
+  /** First linked work item (story/epic/BR) — key + REAL issue type. */
   parent_key: string | null;
+  parent_type: string | null;
 }
 
 function relativeTime(iso: string): string {
@@ -88,21 +91,27 @@ export default function WikiHomePage() {
       const brIds = linkList.filter((l) => l.entity_type === 'business_request').map((l) => l.entity_id);
       const [issues, brs] = await Promise.all([
         issueIds.length
-          ? db.from('ph_issues').select('id, issue_key').in('id', issueIds)
+          ? db.from('ph_issues').select('id, issue_key, issue_type').in('id', issueIds)
           : Promise.resolve({ data: [] }),
         brIds.length
           ? db.from('business_requests').select('id, request_key').in('id', brIds)
           : Promise.resolve({ data: [] }),
       ]);
-      const keyByEntity = new Map<string, string>();
-      for (const i of (issues.data ?? []) as Array<{ id: string; issue_key: string }>) keyByEntity.set(String(i.id), i.issue_key);
-      for (const b of (brs.data ?? []) as Array<{ id: string; request_key: string }>) keyByEntity.set(String(b.id), b.request_key);
-      const parentByDoc = new Map<string, string>();
+      const byEntity = new Map<string, { key: string; type: string }>();
+      for (const i of (issues.data ?? []) as Array<{ id: string; issue_key: string; issue_type: string | null }>)
+        byEntity.set(String(i.id), { key: i.issue_key, type: i.issue_type ?? '' });
+      for (const b of (brs.data ?? []) as Array<{ id: string; request_key: string }>)
+        byEntity.set(String(b.id), { key: b.request_key, type: 'Business Request' });
+      const parentByDoc = new Map<string, { key: string; type: string }>();
       for (const l of linkList) {
-        const key = keyByEntity.get(String(l.entity_id));
-        if (key && !parentByDoc.has(l.document_id)) parentByDoc.set(l.document_id, key);
+        const hit = byEntity.get(String(l.entity_id));
+        if (hit && !parentByDoc.has(l.document_id)) parentByDoc.set(l.document_id, hit);
       }
-      return rows.map((r) => ({ ...r, parent_key: parentByDoc.get(r.id) ?? null }));
+      return rows.map((r) => ({
+        ...r,
+        parent_key: parentByDoc.get(r.id)?.key ?? null,
+        parent_type: parentByDoc.get(r.id)?.type ?? null,
+      }));
     },
   });
 
@@ -234,14 +243,11 @@ export default function WikiHomePage() {
         sortable: true,
         cell: ({ row }) =>
           row.parent_key ? (
-            <span
-              style={{
-                fontFamily: 'var(--ds-font-family-code)',
-                color: 'var(--ds-text-brand)',
-                font: 'var(--ds-font-body-small)',
-              }}
-            >
-              {row.parent_key}
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+              {row.parent_type ? <JiraIssueTypeIcon type={row.parent_type} size={16} /> : null}
+              <span style={{ color: 'var(--ds-text-subtle)', font: 'var(--ds-font-body-small)' }}>
+                {row.parent_key}
+              </span>
             </span>
           ) : (
             <span style={{ color: 'var(--ds-text-subtlest)' }}>—</span>
@@ -279,14 +285,9 @@ export default function WikiHomePage() {
 
   return (
     <div style={{ width: '100%', padding: '16px 32px 96px' }}>
-      {/* Canonical hub header — same Breadcrumbs + Heading stack as Project Hub */}
-      <Breadcrumbs items={[{ key: 'folio', text: 'Folio', href: Routes.folio.root() }]} aria-label="Hub location" />
-      <div style={{ margin: '4px 0 12px' }}>
-        <Heading size="large">Document Hub</Heading>
-        <p style={{ margin: '2px 0 0', color: 'var(--ds-text-subtle)', font: 'var(--ds-font-body)' }}>
-          Create and collaborate on documents in one place.
-        </p>
-      </div>
+      {/* Canonical breadcrumb + H2 header (ProjectPageHeader, 2026-06-14
+          directive) — "Folio / Document Hub", same as "IR Platform / Dashboard". */}
+      <ProjectPageHeader hubType="folio" paddingX={0} title="Document Hub" />
 
       {/* Toolbar — Atlaskit tabs · inline search · canonical Select filters */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', marginBottom: 12 }}>
