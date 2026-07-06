@@ -100,3 +100,18 @@ RO-P9-09,P9,integration,Change Detail Open-replay link,phase-9 §15,CLOSED,cockp
 RO-P9-10,P9,copy,Copy deployment summary,phase-9 §16,CLOSED,clipboard; no hallucination,2026-07-06
 RO-P9-11,P9,build,tsc+build+gates,acceptance,CLOSED,green; typo+tokens dropped; no baseline bump,2026-07-06
 RO-P9-12,P9,gen,Change-level auto-gen + richer stored snapshots + release roll-up,phase-10,DEFERRED,replay reconstructs live; auto-gen deferred,
+RO-P10-01,P10,e2e,End-to-end deployment scenario proof,phase-10 §3,CLOSED,CHG8841 full chain verified across all surfaces,2026-07-06
+RO-P10-02,P10,consistency,Cross-view consistency audit,phase-10 §4,CLOSED,shared rh_* + query keys; one truth,2026-07-06
+RO-P10-03,P10,routes,Navigation/route audit (slug+UUID; no dead route),phase-10 §5,CLOSED,all critical routes verified; Project breadcrumbs,2026-07-06
+RO-P10-04,P10,persona,Persona coverage,phase-10 §6,CLOSED,canManage-gated; read-only safe; documented,2026-07-06
+RO-P10-05,P10,broken,Broken/data-quality state audit,phase-10 §7,CLOSED,all broken states explain what/why/next,2026-07-06
+RO-P10-06,P10,prodgen,Change-level production-event generate/refresh,phase-10 §2.1-2.2,CLOSED,useGenerateProductionEvent dup-safe + snapshots,2026-07-06
+RO-P10-07,P10,calbadge,Execution Calendar issue-count badges,phase-10 §2.5,CLOSED,slot ⚠N; verified ss_16317rbmo,2026-07-06
+RO-P10-08,P10,foryoubadge,For-You issue indicator,phase-10 §2.6,CLOSED,reachable via View change → ledger/raise (documented),2026-07-06
+RO-P10-09,P10,export,Replay copy/export summary,phase-10 §2.9,CLOSED,Copy summary (P9); PDF deferred,2026-07-06
+RO-P10-10,P10,usermanual,User training manual,phase-10 §10,CLOSED,docs/training/release-ops-user-manual.md,2026-07-06
+RO-P10-11,P10,adminmanual,Admin manual,phase-10 §11,CLOSED,docs/training/release-ops-admin-manual.md,2026-07-06
+RO-P10-12,P10,acceptance,Final acceptance report,phase-10 §12,CLOSED,release-ops-phase-10-final-acceptance-report.md; GO for pilot,2026-07-06
+RO-P10-13,P10,nodrawer,No-drawer confirmation (all phases),phase-10 §8,CLOSED,full-page/ads-Modal only; verified,2026-07-06
+RO-P10-14,P10,gates,All ADS/CRE/TestHub gates pass,phase-10 §8,CLOSED,tsc/build/color/audit/CRE/testhub/self-test green,2026-07-06
+RO-P10-15,P10,deferred,Remaining deferred items (owner: future Release-Ops phase),phase-11,DEFERRED,release roll-up / stored snapshots / incident-defect detail panel / per-approver authz / PDF,

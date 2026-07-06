@@ -22,7 +22,7 @@ const T = {
   danger: 'var(--ds-text-danger)', warning: 'var(--ds-text-warning)', success: 'var(--ds-text-success)', info: 'var(--ds-text-information)', mono: 'var(--ds-font-family-code, monospace)',
 };
 
-interface Slot { step: SopStepFull; changeId: string; chgNumber: string; title: string; slug: string | null; targetEnv: string | null; isEmergency: boolean; ownerName: string | null }
+interface Slot { step: SopStepFull; changeId: string; chgNumber: string; title: string; slug: string | null; targetEnv: string | null; isEmergency: boolean; ownerName: string | null; issues: number }
 
 function statusTone(s: string): { fg: string; bg: string } {
   switch (s) {
@@ -55,9 +55,19 @@ function useExecutionSchedule(rangeStart: Date, rangeEnd: Date, scope: string, u
       ]);
       const chById: Record<string, any> = {}; ((chRes.data ?? []) as any[]).forEach((c) => { chById[c.id] = c; });
       const nameById: Record<string, string> = {}; ((profRes.data ?? []) as any[]).forEach((p: any) => { nameById[p.id] = p.full_name || p.email || 'Unknown'; });
+      // issue counts by SOP step (source_sop_step_id) — batched
+      const stepIds = rows.map((s) => s.id);
+      const issueByStep: Record<string, number> = {};
+      if (stepIds.length) {
+        const [{ data: incs }, { data: defs }] = await Promise.all([
+          supabase.from('incidents').select('source_sop_step_id').in('source_sop_step_id', stepIds),
+          supabase.from('tm_defects').select('source_sop_step_id').in('source_sop_step_id', stepIds),
+        ]);
+        [...(incs ?? []), ...(defs ?? [])].forEach((r: any) => { if (r.source_sop_step_id) issueByStep[r.source_sop_step_id] = (issueByStep[r.source_sop_step_id] ?? 0) + 1; });
+      }
       let slots: Slot[] = rows.map((s) => {
         const c = chById[s.change_id]; if (!c) return null;
-        return { step: mapSopStep(s, s.owner_id ? nameById[s.owner_id] ?? null : null), changeId: c.id, chgNumber: c.chg_number, title: c.title, slug: c.slug, targetEnv: c.target_env, isEmergency: c.is_emergency_override === true, ownerName: s.owner_id ? nameById[s.owner_id] ?? null : null };
+        return { step: mapSopStep(s, s.owner_id ? nameById[s.owner_id] ?? null : null), changeId: c.id, chgNumber: c.chg_number, title: c.title, slug: c.slug, targetEnv: c.target_env, isEmergency: c.is_emergency_override === true, ownerName: s.owner_id ? nameById[s.owner_id] ?? null : null, issues: issueByStep[s.id] ?? 0 };
       }).filter(Boolean) as Slot[];
       if (scope === 'managed' && userId) slots = slots.filter((sl) => { const c = chById[sl.changeId]; return c.change_manager_id === userId || c.release_manager_id === userId; });
       return slots;
@@ -78,6 +88,7 @@ function SlotChip({ slot, now }: { slot: Slot; now: number }) {
         <span style={{ fontFamily: T.mono, fontSize: 'var(--ds-font-size-50)', fontWeight: 600, color: T.link }}>{slot.chgNumber}</span>
         <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-50)', color: T.subtle }}>#{slot.step.stepNo}</span>
         {slot.isEmergency && <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-50)', fontWeight: 700, color: T.warning }}>⚡</span>}
+        {slot.issues > 0 && <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-50)', fontWeight: 700, color: T.danger }}>⚠{slot.issues}</span>}
         {running && <span style={{ marginLeft: 'auto', fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-50)', fontWeight: 700, color: T.success }}>● LIVE</span>}
         {overdue && !running && <span style={{ marginLeft: 'auto', fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-50)', fontWeight: 700, color: T.danger }}>LATE</span>}
       </div>

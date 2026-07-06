@@ -84,3 +84,10 @@ No-drawer proof: ledger + SOP step indicators inline; raise reuses centered crea
 | P9-2 | Replay trails | (scroll) | (scroll of ss_3717pu8jx) | SOP step issue markers; Commit ledger (2-missing audit gap + db e4f5g6h); Evidence ledger (3-missing); Sign-off trail (Overdue/Approved/Pending/Rejected+reason) + ⚡ override bypass; Freeze trail clean |
 
 No-drawer proof: full-page replay; list modal is quick-preview only. Demo (PE-8841 event_key, 12min overrun) staging-only, documented in release-ops-phase-9-functional-proof.md.
+
+## Phase 10 — Closeout / E2E (2026-07-06, cyij seeded)
+| # | Proof | Route | MCP ID | Result |
+|---|---|---|---|---|
+| P10-1 | Execution Calendar issue badges | /release-hub/execution | ss_16317rbmo | #51 Run DB migration ⚠1 + #53 Smoke test ⚠1 (steps with linked INC-154/DEF-RO-8841); LIVE/LATE markers |
+
+Evidence index: the full Release-Ops screenshot pack spans P0–P10 above (each row maps to an acceptance criterion). Phase-10 closures also build-verified (generate/refresh prod-event button; the E2E chain reuses P3–P9 surfaces already screenshotted). No drawer opened on any interaction; no Folio/wiki touched.

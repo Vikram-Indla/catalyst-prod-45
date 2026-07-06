@@ -25,6 +25,8 @@ import { SectionMessage } from '@/components/ads/SectionMessage';
 import { RequestSignoffModal } from '@/components/releasehub/signoff/RequestSignoffModal';
 import { EmergencyOverrideModal } from '@/components/releasehub/signoff/EmergencyOverrideModal';
 import { RaiseIssue, type IssueContext } from '@/components/releasehub/issues/RaiseIssue';
+import { useGenerateProductionEvent } from '@/hooks/useGenerateProductionEvent';
+import { catalystToast } from '@/lib/catalystToast';
 import { RH } from '@/constants/releasehub.design';
 import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
 
@@ -121,6 +123,7 @@ export default function ChangeDetailPage() {
 
   const c = change as any;
   const { canManage } = useReleaseOpsPermissions();
+  const genEvent = useGenerateProductionEvent();
   const { data: cockpit } = useChangeCockpit(c ?? null);
   const [signoffOpen, setSignoffOpen] = useState(false);
   const [overrideOpen, setOverrideOpen] = useState(false);
@@ -194,6 +197,9 @@ export default function ChangeDetailPage() {
             <>
               <button onClick={() => setSignoffOpen(true)} style={{ height: 30, padding: '0 12px', borderRadius: 6, border: '1px solid var(--ds-border)', background: 'transparent', color: 'var(--ds-text)', cursor: 'pointer', fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', fontWeight: 600 }}>Request sign-off</button>
               <button onClick={() => setOverrideOpen(true)} style={{ height: 30, padding: '0 12px', borderRadius: 6, border: '1px solid var(--ds-border-danger)', background: 'transparent', color: 'var(--ds-text-warning)', cursor: 'pointer', fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', fontWeight: 600 }}>Request override</button>
+              {c.target_env === 'production' && (
+                <button onClick={() => genEvent.mutate({ change: c }, { onSuccess: (r) => { catalystToast.success(r.refreshed ? 'Production event refreshed' : 'Production event generated'); navigate(`/release-hub/production-events/${r.eventKey}`); }, onError: (e: any) => catalystToast.error(e?.message ?? 'Failed') })} disabled={genEvent.isPending} style={{ height: 30, padding: '0 12px', borderRadius: 6, border: '1px solid var(--ds-border)', background: 'transparent', color: 'var(--ds-text)', cursor: 'pointer', fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', fontWeight: 600 }}>{cockpit?.prodEvent.exists ? 'Refresh prod event' : 'Generate prod event'}</button>
+              )}
             </>
           )}
         </div>
