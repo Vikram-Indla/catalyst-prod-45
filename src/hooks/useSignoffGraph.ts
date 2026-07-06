@@ -26,6 +26,7 @@ export interface OverrideRow {
 export interface ChangeNode {
   id: string; chgNumber: string; title: string; slug: string | null; risk: string | null; targetEnv: string | null;
   status: string; isEmergency: boolean; gates: Gate[]; override: OverrideRow | null;
+  releaseId: string | null; releaseName: string | null; releaseVersion: string | null;
 }
 export interface ReleaseNode {
   id: string; name: string; slug: string | null; targetEnv: string | null; status: string;
@@ -54,7 +55,7 @@ export const useSignoffGraph = () =>
       const chIds = [...new Set(chSo.map((s) => s.change_id).filter(Boolean))] as string[];
 
       const [relRes, chRes, linkRes] = await Promise.all([
-        relIds.length ? supabase.from('rh_releases').select('id, name, slug, target_env, status').in('id', relIds) : Promise.resolve({ data: [] as any[] }),
+        relIds.length ? supabase.from('rh_releases').select('id, name, slug, target_env, status, version').in('id', relIds) : Promise.resolve({ data: [] as any[] }),
         chIds.length ? supabase.from('rh_changes').select('id, chg_number, title, slug, risk_level, target_env, status, is_emergency_override').in('id', chIds) : Promise.resolve({ data: [] as any[] }),
         chIds.length ? supabase.from('rh_change_release_links').select('change_id, release_id').in('change_id', chIds).is('unlinked_at', null) : Promise.resolve({ data: [] as any[] }),
       ]);
@@ -83,17 +84,25 @@ export const useSignoffGraph = () =>
         overrideId: s.emergency_override_id, overdue: isOverdue(s), blocking: isBlocking(s.status),
       });
 
+      // change → release map (computed first so changeNode can attach the
+      // linked release's name/version for traceability — a change row must
+      // always show which release it ships under, not just its CHG number).
+      const chToRel: Record<string, string[]> = {};
+      ((linkRes as any).data ?? []).forEach((l: any) => { (chToRel[l.change_id] ??= []).push(l.release_id); });
+
       // change nodes
       const chGates: Record<string, Gate[]> = {};
       chSo.forEach((s) => { (chGates[s.change_id] ??= []).push(toGate(s, 'change')); });
       const changeNode = (id: string): ChangeNode | null => {
         const c = chById[id]; if (!c) return null;
-        return { id, chgNumber: c.chg_number, title: c.title, slug: c.slug, risk: c.risk_level, targetEnv: c.target_env, status: c.status, isEmergency: c.is_emergency_override === true, gates: chGates[id] ?? [], override: overrideForChange(id) };
+        const relId = (chToRel[id] ?? [])[0] ?? null;
+        const rel = relId ? relById[relId] : null;
+        return {
+          id, chgNumber: c.chg_number, title: c.title, slug: c.slug, risk: c.risk_level, targetEnv: c.target_env,
+          status: c.status, isEmergency: c.is_emergency_override === true, gates: chGates[id] ?? [], override: overrideForChange(id),
+          releaseId: rel?.id ?? null, releaseName: rel?.name ?? null, releaseVersion: rel?.version ?? null,
+        };
       };
-
-      // change → release map
-      const chToRel: Record<string, string[]> = {};
-      ((linkRes as any).data ?? []).forEach((l: any) => { (chToRel[l.change_id] ??= []).push(l.release_id); });
 
       // release nodes
       const relGates: Record<string, Gate[]> = {};

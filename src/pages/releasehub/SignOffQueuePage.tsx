@@ -32,7 +32,7 @@ const T = {
 };
 const titleCase = (v: string | null) => (!v ? '—' : v.charAt(0).toUpperCase() + v.slice(1).replace(/_/g, ' '));
 
-interface FlatRow extends Gate { entityLabel: string; entityKey: string; risk: string | null; env: string | null; slug: string | null; changeId: string | null }
+interface FlatRow extends Gate { entityLabel: string; entityKey: string; risk: string | null; env: string | null; slug: string | null; changeId: string | null; releaseLabel: string | null }
 const FILTERS = ['pending', 'overdue', 'rejected', 'approved', 'release', 'change', 'emergency', 'mine'] as const;
 type Filter = typeof FILTERS[number];
 const FILTER_LABEL: Record<Filter, string> = { pending: 'Pending', overdue: 'Overdue', rejected: 'Rejected', approved: 'Approved', release: 'Release-level', change: 'Change-level', emergency: 'Emergency', mine: 'Assigned to me' };
@@ -64,10 +64,16 @@ export default function SignOffQueuePage() {
     if (!graph) return [];
     const rows: FlatRow[] = [];
     graph.releases.forEach((r) => {
-      r.gates.forEach((g) => rows.push({ ...g, entityLabel: r.name, entityKey: r.name, risk: null, env: r.targetEnv, slug: r.slug, changeId: null }));
-      r.changes.forEach((c) => c.gates.forEach((g) => rows.push({ ...g, entityLabel: `${c.chgNumber} · ${c.title}`, entityKey: c.chgNumber, risk: c.risk, env: c.targetEnv, slug: c.slug, changeId: c.id })));
+      r.gates.forEach((g) => rows.push({ ...g, entityLabel: r.name, entityKey: r.name, risk: null, env: r.targetEnv, slug: r.slug, changeId: null, releaseLabel: null }));
+      r.changes.forEach((c) => c.gates.forEach((g) => rows.push({
+        ...g, entityLabel: `${c.chgNumber} · ${c.title}`, entityKey: c.chgNumber, risk: c.risk, env: c.targetEnv, slug: c.slug, changeId: c.id,
+        releaseLabel: c.releaseName ? (c.releaseVersion ? `${c.releaseName} (${c.releaseVersion})` : c.releaseName) : null,
+      })));
     });
-    graph.orphanChanges.forEach((c) => c.gates.forEach((g) => rows.push({ ...g, entityLabel: `${c.chgNumber} · ${c.title}`, entityKey: c.chgNumber, risk: c.risk, env: c.targetEnv, slug: c.slug, changeId: c.id })));
+    graph.orphanChanges.forEach((c) => c.gates.forEach((g) => rows.push({
+      ...g, entityLabel: `${c.chgNumber} · ${c.title}`, entityKey: c.chgNumber, risk: c.risk, env: c.targetEnv, slug: c.slug, changeId: c.id,
+      releaseLabel: null,
+    })));
     return rows;
   }, [graph]);
 
@@ -144,21 +150,43 @@ export default function SignOffQueuePage() {
         <div style={{ background: T.sunken, borderRadius: 8, padding: 24, textAlign: 'center', fontFamily: RH.fontBody, color: T.subtle }}>No sign-offs match your filters.</div>
       ) : (
         <div style={{ border: `1px solid ${T.border}`, borderRadius: 8, overflow: 'hidden' }}>
+          {/* Column header — scope pill/entity/release/role/risk/approver/status previously had
+              no labels, reading as unlabeled data. Widths mirror the row cells below for alignment. */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 16px', background: T.sunken, borderBottom: `1px solid ${T.border}` }}>
+            <span style={{ width: 64, flexShrink: 0, fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: T.subtlest }}>Scope</span>
+            <span style={{ flex: 1, minWidth: 0, fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: T.subtlest }}>Change / release</span>
+            <span style={{ width: 170, flexShrink: 0, fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: T.subtlest }}>Linked release</span>
+            <span style={{ width: 140, flexShrink: 0, fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: T.subtlest }}>Role</span>
+            <span style={{ width: 70, flexShrink: 0, fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: T.subtlest }}>Risk</span>
+            <span style={{ width: 180, flexShrink: 0, fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: T.subtlest }}>Approver</span>
+            <span style={{ width: 100, flexShrink: 0, fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: T.subtlest }}>Status</span>
+            <span style={{ width: 160, flexShrink: 0, fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: T.subtlest }}>Actions</span>
+          </div>
           {filtered.map((g) => {
             return (
               <div key={g.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 16px', borderBottom: `1px solid ${T.border}` }}>
-                <Lozenge appearance="default">{g.scope}</Lozenge>
-                <button onClick={() => navigate(`/release-hub/${g.changeId ? `changes/${g.slug ?? g.changeId}` : g.slug ?? ''}`)} style={{ flex: 1, minWidth: 0, textAlign: 'left', fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-300)', color: T.text, background: 'transparent', border: 'none', cursor: 'pointer', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{g.entityLabel}</button>
-                <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', color: T.subtle }}>{titleCase(g.role ?? g.stage)}</span>
-                {g.risk ? <RiskLozenge risk={g.risk} /> : null}
-                {g.approverName ? <CatalystAvatar name={g.approverName} size="small" /> : <Lozenge appearance="moved">Unassigned</Lozenge>}
-                {g.overdue && g.status === 'pending' ? <Lozenge appearance="removed">Overdue</Lozenge> : <ChangeStatusLozenge status={g.status} />}
-                {canManage && (g.status === 'pending' || g.overdue) && (
-                  <div style={{ display: 'flex', gap: 6 }}>
-                    <button onClick={() => doAction(g, 'approve')} style={aBtn(T.success)}>Approve</button>
-                    <button onClick={() => { const c = window.prompt('Rejection reason (required):') || ''; if (c.trim()) doAction(g, 'reject', c); else catalystToast.error('Reason required'); }} style={aBtn(T.danger)}>Reject</button>
-                  </div>
-                )}
+                <span style={{ width: 64, flexShrink: 0 }}><Lozenge appearance="default">{g.scope}</Lozenge></span>
+                <button onClick={() => navigate(`/release-hub/${g.changeId ? `changes/${g.slug ?? g.changeId}` : g.slug ?? ''}`)} style={{ flex: 1, minWidth: 0, textAlign: 'left', fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: T.text, background: 'transparent', border: 'none', cursor: 'pointer', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{g.entityLabel}</button>
+                <span style={{ width: 170, flexShrink: 0, fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', color: g.releaseLabel ? T.subtle : T.subtlest, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{g.releaseLabel ?? '—'}</span>
+                <span style={{ width: 140, flexShrink: 0, fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', color: T.subtle }}>{titleCase(g.role ?? g.stage)}</span>
+                <span style={{ width: 70, flexShrink: 0 }}>{g.risk ? <RiskLozenge risk={g.risk} /> : <span style={{ color: T.subtlest }}>—</span>}</span>
+                <span style={{ width: 180, flexShrink: 0, display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
+                  {g.approverName ? (
+                    <>
+                      <CatalystAvatar name={g.approverName} size="medium" />
+                      <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-300)', color: T.text, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{g.approverName}</span>
+                    </>
+                  ) : <Lozenge appearance="moved">Unassigned</Lozenge>}
+                </span>
+                <span style={{ width: 100, flexShrink: 0 }}>{g.overdue && g.status === 'pending' ? <Lozenge appearance="removed">Overdue</Lozenge> : <ChangeStatusLozenge status={g.status} />}</span>
+                <span style={{ width: 160, flexShrink: 0 }}>
+                  {canManage && (g.status === 'pending' || g.overdue) && (
+                    <div style={{ display: 'flex', gap: 6 }}>
+                      <button onClick={() => doAction(g, 'approve')} style={aBtn(T.success)}>Approve</button>
+                      <button onClick={() => { const c = window.prompt('Rejection reason (required):') || ''; if (c.trim()) doAction(g, 'reject', c); else catalystToast.error('Reason required'); }} style={aBtn(T.danger)}>Reject</button>
+                    </div>
+                  )}
+                </span>
               </div>
             );
           })}

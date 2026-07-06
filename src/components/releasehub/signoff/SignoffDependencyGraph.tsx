@@ -11,6 +11,7 @@ import TextArea from '@atlaskit/textarea';
 import { useSignoffGraph, useSignoffAction, type Gate, type ChangeNode, type ReleaseNode, type OverrideRow } from '@/hooks/useSignoffGraph';
 import CatalystAvatar from '@/components/shared/CatalystAvatar';
 import { SectionMessage } from '@/components/ads/SectionMessage';
+import { Lozenge, type LozengeAppearance } from '@/components/ads/Lozenge';
 import { catalystToast } from '@/lib/catalystToast';
 import { RH } from '@/constants/releasehub.design';
 
@@ -21,14 +22,17 @@ const T = {
 };
 const titleCase = (v: string | null) => (!v ? '—' : v.charAt(0).toUpperCase() + v.slice(1).replace(/_/g, ' '));
 
-function stateTone(g: { status: string; overdue: boolean }): { fg: string; bg: string; label: string } {
-  if (g.status === 'rejected') return { fg: T.danger, bg: 'var(--ds-background-danger)', label: 'Rejected' };
-  if (g.status === 'overridden' || g.status === 'bypassed') return { fg: T.warning, bg: 'var(--ds-background-warning)', label: 'Overridden' };
-  if (g.overdue) return { fg: T.danger, bg: 'var(--ds-background-danger)', label: 'Overdue' };
-  if (g.status === 'pending') return { fg: T.warning, bg: 'var(--ds-background-warning)', label: 'Pending' };
-  if (g.status === 'approved' || g.status === 'auto_approved') return { fg: T.success, bg: 'var(--ds-background-success)', label: 'Approved' };
-  if (g.status === 'skipped') return { fg: T.subtle, bg: T.sunken, label: 'Skipped' };
-  return { fg: T.subtle, bg: T.sunken, label: titleCase(g.status) };
+// tone.fg still drives the accent rail/rollup text color; the badge itself is
+// now the canonical Lozenge (was a hand-styled colored span — every other
+// Release Ops surface uses Lozenge for gate/change status).
+function stateTone(g: { status: string; overdue: boolean }): { fg: string; appearance: LozengeAppearance; label: string } {
+  if (g.status === 'rejected') return { fg: T.danger, appearance: 'removed', label: 'Rejected' };
+  if (g.status === 'overridden' || g.status === 'bypassed') return { fg: T.warning, appearance: 'moved', label: 'Overridden' };
+  if (g.overdue) return { fg: T.danger, appearance: 'removed', label: 'Overdue' };
+  if (g.status === 'pending') return { fg: T.warning, appearance: 'moved', label: 'Pending' };
+  if (g.status === 'approved' || g.status === 'auto_approved') return { fg: T.success, appearance: 'success', label: 'Approved' };
+  if (g.status === 'skipped') return { fg: T.subtle, appearance: 'default', label: 'Skipped' };
+  return { fg: T.subtle, appearance: 'default', label: titleCase(g.status) };
 }
 function rollup(gates: Gate[]): { fg: string; label: string } {
   if (gates.some((g) => g.status === 'rejected')) return { fg: T.danger, label: 'Rejected' };
@@ -47,18 +51,23 @@ function GateNode({ gate, canManage }: { gate: Gate; canManage: boolean }) {
     action.mutate({ gate, action: a, comment: c }, { onSuccess: () => { catalystToast.success(a === 'approve' ? 'Approved' : 'Rejected'); setRejecting(false); setComment(''); }, onError: (e: any) => catalystToast.error(e?.message ?? 'Action failed') });
   const actionable = canManage && (gate.status === 'pending' || gate.overdue);
   return (
-    <div style={{ borderLeft: `2px solid ${tone.fg}`, background: T.card, border: `1px solid ${T.border}`, borderRadius: 6, padding: '8px 10px', display: 'flex', flexDirection: 'column', gap: 6 }}>
+    <div style={{ borderLeft: `3px solid ${tone.fg}`, background: T.card, border: `1px solid ${T.border}`, borderRadius: 8, padding: '12px', display: 'flex', flexDirection: 'column', gap: 8 }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-        <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: T.text }}>{titleCase(gate.role ?? gate.stage)}</span>
-        {gate.approverName ? <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><CatalystAvatar name={gate.approverName} size="xsmall" /><span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', color: T.subtle }}>{gate.approverName}</span></span> : <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', color: T.warning }}>Unassigned approver</span>}
-        <span style={{ marginLeft: 'auto', fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-50)', fontWeight: 700, color: tone.fg, background: tone.bg, padding: '1px 8px', borderRadius: 3 }}>{tone.label}</span>
+        <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: T.text }}>{titleCase(gate.role ?? gate.stage)}</span>
+        {gate.approverName ? (
+          <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <CatalystAvatar name={gate.approverName} size="medium" />
+            <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-300)', color: T.text }}>{gate.approverName}</span>
+          </span>
+        ) : <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', color: T.warning }}>Unassigned approver</span>}
+        <span style={{ marginLeft: 'auto' }}><Lozenge appearance={tone.appearance}>{tone.label}</Lozenge></span>
       </div>
-      <div style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-50)', color: T.subtlest }}>
+      <div style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', color: T.subtlest }}>
         {gate.dueDate ? `Due ${new Date(gate.dueDate).toLocaleString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}` : 'No due date'}
         {gate.blocking ? ' · blocks progression' : ''}
         {gate.overrideId ? ' · via override' : ''}
       </div>
-      {gate.comment && gate.status === 'rejected' && <div style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', color: T.danger }}>Reason: {gate.comment}</div>}
+      {gate.comment && gate.status === 'rejected' && <div style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', color: T.danger }}>Reason: {gate.comment}</div>}
       {actionable && !rejecting && (
         <div style={{ display: 'flex', gap: 6 }}>
           <button onClick={() => act('approve')} style={btn(T.success)}>Approve</button>
@@ -97,14 +106,15 @@ function ChangeSubtree({ c, canManage }: { c: ChangeNode; canManage: boolean }) 
       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
         <button onClick={() => setOpen((v) => !v)} aria-label={open ? 'Collapse' : 'Expand'} style={iconBtn}>{open ? <ChevronDown size={14} style={{ color: T.subtlest }} /> : <ChevronRight size={14} style={{ color: T.subtlest }} />}</button>
         <span style={{ width: 8, height: 8, borderRadius: '50%', background: roll.fg, flex: 'none' }} />
-        <button onClick={() => navigate(`/release-hub/changes/${c.slug ?? c.id}`)} style={{ fontFamily: T.mono, fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: T.link, background: 'transparent', border: 'none', cursor: 'pointer', padding: 0 }}>{c.chgNumber}</button>
-        <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', color: T.text, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 240 }}>{c.title}</span>
-        {c.isEmergency && <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-50)', fontWeight: 700, color: T.warning }}>⚡</span>}
-        <span style={{ marginLeft: 'auto', fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-50)', fontWeight: 700, color: roll.fg }}>{c.gates.length} gate{c.gates.length === 1 ? '' : 's'} · {roll.label}</span>
+        <button onClick={() => navigate(`/release-hub/changes/${c.slug ?? c.id}`)} style={{ fontFamily: T.mono, fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: T.link, background: 'transparent', border: 'none', cursor: 'pointer', padding: 0 }}>{c.chgNumber}</button>
+        <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-300)', color: T.text, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 240 }}>{c.title}</span>
+        {c.releaseVersion && <span style={{ fontFamily: T.mono, fontSize: 'var(--ds-font-size-100)', color: T.subtlest, whiteSpace: 'nowrap' }}>{c.releaseVersion}</span>}
+        {c.isEmergency && <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: T.warning }}>⚡</span>}
+        <span style={{ marginLeft: 'auto', fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: roll.fg }}>{c.gates.length} gate{c.gates.length === 1 ? '' : 's'} · {roll.label}</span>
       </div>
       {open && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 8, marginLeft: 22 }}>
-          {c.gates.length === 0 ? <div style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', color: T.subtlest }}>No approvers required for this change.</div> : c.gates.map((g) => <GateNode key={g.id} gate={g} canManage={canManage} />)}
+          {c.gates.length === 0 ? <div style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', color: T.subtlest }}>No approvers required for this change.</div> : c.gates.map((g) => <GateNode key={g.id} gate={g} canManage={canManage} />)}
           {c.override && <OverrideBadge o={c.override} />}
         </div>
       )}
@@ -122,19 +132,19 @@ function ReleaseSubtree({ r, canManage }: { r: ReleaseNode; canManage: boolean }
       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
         <button onClick={() => setOpen((v) => !v)} aria-label={open ? 'Collapse' : 'Expand'} style={iconBtn}>{open ? <ChevronDown size={16} style={{ color: T.subtlest }} /> : <ChevronRight size={16} style={{ color: T.subtlest }} />}</button>
         <button onClick={() => navigate(`/release-hub/${r.slug ?? r.id}`)} style={{ fontFamily: RH.fontDisplay, fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: T.link, background: 'transparent', border: 'none', cursor: 'pointer', padding: 0 }}>{r.name}</button>
-        {r.targetEnv && <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', color: T.subtle }}>{r.targetEnv}</span>}
-        <span style={{ marginLeft: 'auto', fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: roll.fg }}>{roll.label}</span>
+        {r.targetEnv && <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', color: T.subtle }}>{r.targetEnv}</span>}
+        <span style={{ marginLeft: 'auto', fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', fontWeight: 700, color: roll.fg }}>{roll.label}</span>
       </div>
       {open && (
         <div style={{ marginTop: 8 }}>
           {r.gates.length > 0 && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginLeft: 22 }}>
-              <div style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-50)', fontWeight: 700, color: T.subtlest }}>Release-level gates</div>
+              <div style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: T.subtlest }}>Release-level gates</div>
               {r.gates.map((g) => <GateNode key={g.id} gate={g} canManage={canManage} />)}
               {r.override && <OverrideBadge o={r.override} />}
             </div>
           )}
-          {r.changes.length > 0 && <div style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-50)', fontWeight: 700, color: T.subtlest, marginLeft: 22, marginTop: 8 }}>Change-level gates</div>}
+          {r.changes.length > 0 && <div style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: T.subtlest, marginLeft: 22, marginTop: 8 }}>Change-level gates</div>}
           {r.changes.map((c) => <ChangeSubtree key={c.id} c={c} canManage={canManage} />)}
           {r.gates.length === 0 && r.changes.length === 0 && <div style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', color: T.subtlest, marginLeft: 22 }}>No sign-offs on this release or its changes.</div>}
         </div>
