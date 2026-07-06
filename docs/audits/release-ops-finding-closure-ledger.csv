@@ -58,3 +58,13 @@ RO-P5-08,P5,manager,Manager vs assignee split,phase-5 §9,CLOSED,Changes-you-man
 RO-P5-09,P5,sync,For You actions sync to Change Detail,phase-5 §12,CLOSED,shared useSopStepAction + query invalidation,2026-07-06
 RO-P5-10,P5,build,tsc + build + color gate,acceptance,CLOSED,tsc clean; build PASS 54s; color clean,2026-07-06
 RO-P5-11,P5,notify,Persisted/push notification delivery,phase-6,DEFERRED,event model + in-app prompts shipped; delivery deferred,
+RO-P6-01,P6,timeline,Rich expandable release timeline + markers,phase-6 §2/3,CLOSED,ReleaseTimelineOps + useReleaseTimeline; verified live,2026-07-06
+RO-P6-02,P6,timeline,Timeline lenses (product/env/status + risk + search),phase-6 §4,CLOSED,group-by + risk-only + search,2026-07-06
+RO-P6-03,P6,execcal,Execution calendar hourly SOP slots (day/week/scope),phase-6 §6/7,CLOSED,ExecutionCalendarPage; LIVE/LATE verified,2026-07-06
+RO-P6-04,P6,board,Change execution board (lifecycle lanes + rich cards),phase-6 §8,CLOSED,ChangeExecutionBoard; verified live,2026-07-06
+RO-P6-05,P6,board,Board drag transition validation + terminal reason,phase-6 §9,CLOSED,useUpdateChangeStatus/validateChangeTransition + reason modal,2026-07-06
+RO-P6-06,P6,consistency,Cross-view consistency (timeline/calendar/board/detail/foryou),phase-6 §10,CLOSED,shared rh_* tables + query keys,2026-07-06
+RO-P6-07,P6,empty,Timeline/board/calendar empty-broken states,phase-6 §11,CLOSED,educational empties everywhere,2026-07-06
+RO-P6-08,P6,nav,Change Board + Execution nav + routes,phase-6,CLOSED,sidebar + FullAppRoutes,2026-07-06
+RO-P6-09,P6,build,tsc + build + color gate,acceptance,CLOSED,tsc clean; build PASS 57s; color clean,2026-07-06
+RO-P6-10,P6,planningcal,Dedicated hourly grid on planning calendar,phase-7,DEFERRED,execution calendar covers hourly; planning calendar retained as-is,

@@ -46,12 +46,14 @@ export const buildReleaseHubSections = (pendingSignoffs: number): SidebarSection
       { id: 'work', title: 'Work', path: '/release-hub/work', icon: NavWorkIcon, exact: false },
       { id: 'timeline', title: 'Timeline', path: '/release-hub/timeline', icon: NavTimelineIcon, exact: false },
       { id: 'calendar', title: 'Calendar', path: '/release-hub/calendar', icon: Calendar, exact: true },
+      { id: 'execution', title: 'Execution', path: '/release-hub/execution', icon: Clock, exact: true },
     ],
   },
   {
     title: 'Change Management',
     items: [
       { id: 'all-changes', title: 'Change Records', path: '/release-hub/changes', icon: ArrowLeftRight, exact: false },
+      { id: 'change-board', title: 'Change Board', path: '/release-hub/change-board', icon: NavKanbanIcon, exact: false },
       { id: 'sop-templates', title: 'SOP Templates', path: '/release-hub/sop-templates', icon: ListChecks, exact: false },
       { id: 'sign-off-queue', title: 'Sign-off Queue', path: '/release-hub/sign-off-queue', icon: CheckSquare, exact: false, badge: pendingSignoffs > 0 ? pendingSignoffs : undefined, badgeVariant: 'danger' as const },
       { id: 'freeze-windows', title: 'Freeze Windows', path: '/release-hub/freeze-windows', icon: CalendarOff, exact: true },

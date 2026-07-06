@@ -50,3 +50,13 @@ No-drawer proof: runbook is inline in the SOP tab; template create/edit + apply 
 | P5-3 | For You action validation | /for-you | ss_3692x7626 | "Mark done" on running step missing commit → toast "This step requires a commit ID before it can be marked done" |
 
 No-drawer proof: section is inline cards + toasts; no side panel. Live page = ForYouPage.atlaskit.tsx. Demo assignments (owner_id 6bbd0863 on 4 CHG8841 steps + CAT-CHG-21 manager) are staging-only, documented in release-ops-phase-5-functional-proof.md.
+
+## Phase 6 — Timeline / Execution Calendar / Change Board (2026-07-06, cyij)
+| # | Proof | Route | MCP ID | Result |
+|---|---|---|---|---|
+| P6-1 | Change execution board | /release-hub/change-board | ss_3942892t3 | lanes Draft…Implementing; CHG8841 SCHEDULED (EMERGENCY, 2 releases, SOP 2/9), CAT-CHG-21 Implementing (Unlinked prod); empty-lane states |
+| P6-2 | Execution calendar (day) | /release-hub/execution | ss_248455dd3 | hourly slots 06:00 #52 LATE + #50 ● LIVE, 07:00 #51, 08:00 #53; emergency ⚡, commit/ev markers; Day/Week + scope lens |
+| P6-3 | Release timeline | /release-hub/timeline | ss_624886294 | 8 July + Q3 Platform; NO PRODUCT/EMERGENCY/EMPTY SCOPE markers; scope counts; group-by + risk-only + search |
+| P6-4 | Timeline expansion | /release-hub/timeline (expand 8 July) | ss_9888rozlz | BRs(0)/Sprints(0) educational empties + Changes(1) CHG8841 EMERGENCY/HIGH/SOP 2/9/SCHEDULED (clickable) |
+
+No-drawer proof: board/timeline/execution are inline surfaces; card/slot/release clicks route to full pages; only modal is the board terminal-reason ads/Modal (centered). Uses existing seed; no new demo data.
