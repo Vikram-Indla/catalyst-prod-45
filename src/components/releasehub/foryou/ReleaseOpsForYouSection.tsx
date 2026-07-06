@@ -13,6 +13,7 @@ import { useSopStepAction, type SopStepFull } from '@/hooks/useSopRunbook';
 import { SectionMessage } from '@/components/ads/SectionMessage';
 import { catalystToast } from '@/lib/catalystToast';
 import { RH } from '@/constants/releasehub.design';
+import { ReleaseChangeAnnouncementBanner } from '@/components/releasehub/foryou/ReleaseChangeAnnouncementBanner';
 
 const T = {
   card: 'var(--ds-surface-raised)', sunken: 'var(--ds-surface-sunken)', border: 'var(--ds-border)',
@@ -173,62 +174,29 @@ function promptAppearance(k: ExecPrompt['kind']): 'warning' | 'error' | 'informa
 
 export function ReleaseOpsForYouSection() {
   const { data, isLoading } = useMyExecutionWork();
-  const navigate = useNavigate();
   if (isLoading || !data) return null;
-  const { assignedCards, managedChanges, dayOfChanges, prompts, isManager } = data;
-  const hasWork = assignedCards.length > 0 || managedChanges.length > 0;
-  if (!hasWork && prompts.length === 0) {
-    return null; // no execution involvement — keep For You uncluttered
+  const { assignedCards, managedChanges, dayOfChanges } = data;
+
+  /* Collapse every change the user touches into ONE ranked list and surface the
+     single most urgent as a slim countdown banner (running first, then soonest
+     planned start). No card stack — the banner links into the hub for actions. */
+  const byId = new Map<string, ChangeCtx>();
+  for (const c of [...dayOfChanges, ...assignedCards.map((k) => k.change), ...managedChanges]) {
+    if (!byId.has(c.id)) byId.set(c.id, c);
   }
+  const changes = Array.from(byId.values());
+  if (changes.length === 0) return null; // no execution involvement — keep For You uncluttered
+
+  const startMs = (c: ChangeCtx) => (c.plannedStartAt ? new Date(c.plannedStartAt).getTime() : Number.MAX_SAFE_INTEGER);
+  changes.sort((a, b) => {
+    const ar = a.running ? 0 : 1, br = b.running ? 0 : 1;
+    return ar !== br ? ar - br : startMs(a) - startMs(b);
+  });
+  const primary = changes[0];
 
   return (
-    <section style={{ marginBottom: 20, display: 'flex', flexDirection: 'column', gap: 12 }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-        <h2 style={{ fontFamily: RH.fontDisplay, fontSize: 'var(--ds-font-size-500)', fontWeight: 600, color: T.text, margin: 0 }}>Change execution</h2>
-        <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', color: T.subtlest }}>{isManager ? 'Manager + assignee view' : 'Your assigned SOP steps'}</span>
-      </div>
-
-      {/* prompts (notification event model) */}
-      {prompts.slice(0, 4).map((p, i) => (
-        <SectionMessage key={`${p.kind}-${i}`} appearance={promptAppearance(p.kind)} title={`${p.chgNumber} · ${p.stepTitle ?? p.title}`}
-          actions={[{ key: 'view', text: 'View change', onClick: () => navigate(`/release-hub/changes/${p.slug ?? p.changeId}`) }]}>
-          <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)' }}>{p.detail}</span>
-        </SectionMessage>
-      ))}
-
-      {/* day-of-change */}
-      {dayOfChanges.map((c) => <DayOfChangeCard key={c.id} c={c} />)}
-
-      {/* assignee cards */}
-      {assignedCards.length > 0 ? (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))', gap: 12 }}>
-          {assignedCards.map((c) => <SopCard key={c.step.id} card={c} />)}
-        </div>
-      ) : isManager ? null : (
-        <div style={{ background: T.sunken, borderRadius: 6, padding: 12 }}>
-          <p style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: T.text, margin: 0 }}>No SOP steps assigned to you</p>
-          <p style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', color: T.subtle, margin: '4px 0 0' }}>When a change manager assigns you a deployment step, it appears here with its timer and actions.</p>
-        </div>
-      )}
-
-      {/* manager overview */}
-      {isManager && managedChanges.length > 0 && (
-        <div>
-          <h3 style={{ fontFamily: RH.fontDisplay, fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: T.text, margin: '4px 0 8px' }}>Changes you manage</h3>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 8 }}>
-            {managedChanges.map((c) => (
-              <button key={c.id} onClick={() => navigate(`/release-hub/changes/${c.slug ?? c.id}`)} style={{ textAlign: 'left', background: T.card, border: `1px solid ${T.border}`, borderRadius: 8, padding: 12, cursor: 'pointer', display: 'flex', flexDirection: 'column', gap: 6 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-                  <span style={{ fontFamily: T.mono, fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: T.link }}>{c.chgNumber}</span>
-                  <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-300)', color: T.text, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 200 }}>{c.title}</span>
-                  {changeMarkers(c)}
-                </div>
-                <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', color: T.subtle }}>{c.managerRole} · {titleCase(c.status)} · SOP {c.sopDone}/{c.sopTotal}{c.running ? ` · running #${c.running.stepNo}` : ''}</span>
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
+    <section style={{ marginBottom: 20 }}>
+      <ReleaseChangeAnnouncementBanner change={primary} assignedCards={assignedCards} moreCount={changes.length - 1} />
     </section>
   );
 }
