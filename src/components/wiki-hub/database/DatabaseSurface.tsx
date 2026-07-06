@@ -7,9 +7,9 @@
 import { useMemo, useState } from 'react';
 import { JiraTable } from '@/components/shared/JiraTable';
 import type { Column } from '@/components/shared/JiraTable/types';
-import { DropdownMenu, Lozenge } from '@/components/ads';
+import { DropdownMenu, Lozenge, Modal, ModalHeader, ModalTitle, ModalBody, ModalFooter } from '@/components/ads';
 import { Input } from '@/components/ui/input';
-import { Plus, ChevronLeft, ChevronRight } from '@/lib/atlaskit-icons';
+import { Plus, ChevronLeft, ChevronRight, X, Settings } from '@/lib/atlaskit-icons';
 import { CalendarGrid } from '@/components/workhub/calendar/CalendarGrid';
 import { toDateString } from '@/lib/workhub/calendarHelpers';
 import type { CalendarEvent } from '@/types/workhub.types';
@@ -20,6 +20,8 @@ import {
   useCreateDocexField,
   useCreateDocexRow,
   useCreateDocexView,
+  useUpdateDocexField,
+  useDeleteDocexField,
   useUpdateDocexRowValues,
   useDeleteDocexRow,
   type DocexDatabase,
@@ -522,12 +524,161 @@ function CalendarView({ fields, rows, onAddRow }: ViewProps) {
   );
 }
 
+/** Field editor (D3): rename, retype, delete, and edit select choices. */
+function FieldsManager({
+  databaseId,
+  fields,
+  onClose,
+}: {
+  databaseId: string;
+  fields: DocexField[];
+  onClose: () => void;
+}) {
+  const updateField = useUpdateDocexField();
+  const deleteField = useDeleteDocexField();
+  const [newChoice, setNewChoice] = useState<Record<string, string>>({});
+
+  const addChoice = (f: DocexField) => {
+    const label = (newChoice[f.id] ?? '').trim();
+    if (!label) return;
+    const id = label.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || `c${Date.now()}`;
+    const choices = [...(f.options.choices ?? []), { id, label, color: 'default' }];
+    updateField.mutate({ fieldId: f.id, databaseId, patch: { options: { choices } } });
+    setNewChoice((p) => ({ ...p, [f.id]: '' }));
+  };
+
+  return (
+    <Modal isOpen onClose={onClose} width="medium">
+      <ModalHeader>
+        <ModalTitle>Edit fields</ModalTitle>
+      </ModalHeader>
+      <ModalBody>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+          {fields.map((f) => (
+            <div
+              key={f.id}
+              style={{
+                border: '1px solid var(--ds-border)',
+                borderRadius: 8,
+                padding: 12,
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 8,
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <Input
+                  defaultValue={f.name}
+                  aria-label={`${f.name} name`}
+                  onBlur={(e) => {
+                    const v = e.target.value.trim();
+                    if (v && v !== f.name) updateField.mutate({ fieldId: f.id, databaseId, patch: { name: v } });
+                  }}
+                  style={{ height: 32, flex: 1 }}
+                />
+                <select
+                  value={f.type}
+                  aria-label={`${f.name} type`}
+                  onChange={(e) =>
+                    updateField.mutate({ fieldId: f.id, databaseId, patch: { type: e.target.value as DocexFieldType } })
+                  }
+                  style={{
+                    font: 'var(--ds-font-body-small)',
+                    background: 'var(--ds-surface)',
+                    color: 'var(--ds-text)',
+                    border: '1px solid var(--ds-border)',
+                    borderRadius: 4,
+                    height: 32,
+                  }}
+                >
+                  {FIELD_TYPES.map((t) => (
+                    <option key={t.value} value={t.value}>
+                      {t.label}
+                    </option>
+                  ))}
+                </select>
+                <button
+                  type="button"
+                  aria-label={`Delete ${f.name}`}
+                  onClick={() => deleteField.mutate({ fieldId: f.id, databaseId })}
+                  style={{
+                    display: 'inline-flex',
+                    border: 'none',
+                    background: 'transparent',
+                    color: 'var(--ds-icon-subtle)',
+                    cursor: 'pointer',
+                    padding: 4,
+                  }}
+                >
+                  <X style={{ width: 15, height: 15 }} />
+                </button>
+              </div>
+
+              {f.type === 'select' ? (
+                <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 6 }}>
+                  {(f.options.choices ?? []).map((c) => (
+                    <span key={c.id} style={{ display: 'inline-flex', alignItems: 'center', gap: 2 }}>
+                      <Lozenge appearance={CHOICE_APPEARANCE[c.color ?? 'default'] ?? 'default'}>{c.label}</Lozenge>
+                      <button
+                        type="button"
+                        aria-label={`Remove ${c.label}`}
+                        onClick={() =>
+                          updateField.mutate({
+                            fieldId: f.id,
+                            databaseId,
+                            patch: { options: { choices: (f.options.choices ?? []).filter((x) => x.id !== c.id) } },
+                          })
+                        }
+                        style={{ border: 'none', background: 'transparent', color: 'var(--ds-icon-subtle)', cursor: 'pointer', padding: 0 }}
+                      >
+                        <X style={{ width: 12, height: 12 }} />
+                      </button>
+                    </span>
+                  ))}
+                  <Input
+                    placeholder="Add option"
+                    value={newChoice[f.id] ?? ''}
+                    onChange={(e) => setNewChoice((p) => ({ ...p, [f.id]: e.target.value }))}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') addChoice(f);
+                    }}
+                    style={{ height: 28, width: 130 }}
+                  />
+                </div>
+              ) : null}
+            </div>
+          ))}
+        </div>
+      </ModalBody>
+      <ModalFooter>
+        <button
+          type="button"
+          onClick={onClose}
+          style={{
+            padding: '6px 14px',
+            border: 'none',
+            borderRadius: 6,
+            background: 'var(--ds-background-brand-bold)',
+            color: 'var(--ds-text-inverse)',
+            font: 'var(--ds-font-body)',
+            fontWeight: 600,
+            cursor: 'pointer',
+          }}
+        >
+          Done
+        </button>
+      </ModalFooter>
+    </Modal>
+  );
+}
+
 export function DatabaseSurface({ database }: { database: DocexDatabase }) {
   const { data: fields } = useDocexFields(database.id);
   const { data: rows, isLoading } = useDocexRows(database.id);
   const { data: views } = useDocexViews(database.id);
   const [activeViewId, setActiveViewId] = useState<string | null>(null);
   const [addingField, setAddingField] = useState(false);
+  const [fieldsOpen, setFieldsOpen] = useState(false);
   const [newField, setNewField] = useState<{ name: string; type: DocexFieldType }>({ name: '', type: 'text' });
 
   const createRow = useCreateDocexRow();
@@ -704,25 +855,47 @@ export function DatabaseSurface({ database }: { database: DocexDatabase }) {
             </select>
           </span>
         ) : (
-          <button
-            type="button"
-            onClick={() => setAddingField(true)}
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 6,
-              border: 'none',
-              background: 'transparent',
-              color: 'var(--ds-text-subtle)',
-              font: 'var(--ds-font-body-small)',
-              cursor: 'pointer',
-              padding: '8px 8px',
-            }}
-          >
-            <Plus style={{ width: 14, height: 14 }} /> Field
-          </button>
+          <>
+            <button
+              type="button"
+              onClick={() => setFieldsOpen(true)}
+              aria-label="Edit fields"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                border: 'none',
+                background: 'transparent',
+                color: 'var(--ds-text-subtle)',
+                cursor: 'pointer',
+                padding: '8px 6px',
+              }}
+            >
+              <Settings style={{ width: 15, height: 15 }} />
+            </button>
+            <button
+              type="button"
+              onClick={() => setAddingField(true)}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 6,
+                border: 'none',
+                background: 'transparent',
+                color: 'var(--ds-text-subtle)',
+                font: 'var(--ds-font-body-small)',
+                cursor: 'pointer',
+                padding: '8px 8px',
+              }}
+            >
+              <Plus style={{ width: 14, height: 14 }} /> Field
+            </button>
+          </>
         )}
       </div>
+
+      {fieldsOpen ? (
+        <FieldsManager databaseId={database.id} fields={fields ?? []} onClose={() => setFieldsOpen(false)} />
+      ) : null}
 
       {activeView?.kind === 'table' || !activeView ? (
         <>

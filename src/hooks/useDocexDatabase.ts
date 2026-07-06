@@ -268,6 +268,38 @@ export function useCreateDocexField() {
   });
 }
 
+export function useUpdateDocexField() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (input: {
+      fieldId: string;
+      databaseId: string;
+      patch: Partial<Pick<DocexField, 'name' | 'type' | 'options' | 'position'>>;
+    }) => {
+      const { error } = await db.from('kb_database_fields').update(input.patch).eq('id', input.fieldId);
+      if (error) throw error;
+    },
+    onSuccess: (_d, { databaseId }) =>
+      qc.invalidateQueries({ queryKey: ['docex-db', 'fields', databaseId] }),
+    onError: (e) =>
+      catalystToast.error('Could not update the field', e instanceof Error ? e.message : undefined),
+  });
+}
+
+export function useDeleteDocexField() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (input: { fieldId: string; databaseId: string }) => {
+      const { error } = await db.from('kb_database_fields').delete().eq('id', input.fieldId);
+      if (error) throw error;
+    },
+    onSuccess: (_d, { databaseId }) =>
+      qc.invalidateQueries({ queryKey: ['docex-db', 'fields', databaseId] }),
+    onError: (e) =>
+      catalystToast.error('Could not delete the field', e instanceof Error ? e.message : undefined),
+  });
+}
+
 export function useCreateDocexRow() {
   const qc = useQueryClient();
   return useMutation({
