@@ -9,7 +9,10 @@ import { JiraTable } from '@/components/shared/JiraTable';
 import type { Column } from '@/components/shared/JiraTable/types';
 import { DropdownMenu, Lozenge } from '@/components/ads';
 import { Input } from '@/components/ui/input';
-import { Plus } from '@/lib/atlaskit-icons';
+import { Plus, ChevronLeft, ChevronRight } from '@/lib/atlaskit-icons';
+import { CalendarGrid } from '@/components/workhub/calendar/CalendarGrid';
+import { toDateString } from '@/lib/workhub/calendarHelpers';
+import type { CalendarEvent } from '@/types/workhub.types';
 import {
   useDocexFields,
   useDocexRows,
@@ -31,6 +34,12 @@ const VIEW_KINDS: { kind: DocexViewKind; label: string }[] = [
   { kind: 'board', label: 'Board' },
   { kind: 'list', label: 'List' },
   { kind: 'gallery', label: 'Gallery' },
+  { kind: 'calendar', label: 'Calendar' },
+];
+
+const MONTH_NAMES = [
+  'January', 'February', 'March', 'April', 'May', 'June',
+  'July', 'August', 'September', 'October', 'November', 'December',
 ];
 
 const FIELD_TYPES: { value: DocexFieldType; label: string }[] = [
@@ -418,6 +427,101 @@ function GalleryView({ fields, rows, onAddRow }: ViewProps) {
   );
 }
 
+function CalendarView({ fields, rows, onAddRow }: ViewProps) {
+  const titleField = pickTitleField(fields);
+  const dateField = fields.find((f) => f.type === 'date');
+  const today = new Date();
+  const [ym, setYm] = useState<{ y: number; m: number }>({ y: today.getFullYear(), m: today.getMonth() });
+
+  if (!dateField) {
+    return (
+      <p style={{ color: 'var(--ds-text-subtle)', font: 'var(--ds-font-body)', padding: 16 }}>
+        Add a Date field to place rows on the calendar.
+      </p>
+    );
+  }
+
+  const events: CalendarEvent[] = rows
+    .map((r) => {
+      const raw = r.values?.[dateField.id];
+      if (!raw) return null;
+      const dateStr = String(raw).slice(0, 10);
+      return {
+        entity_id: r.id,
+        event_type: 'workitem' as const,
+        event_title: String(r.values?.[titleField?.id ?? ''] ?? 'Untitled'),
+        event_date: dateStr,
+        event_status: '',
+        event_color: '',
+      };
+    })
+    .filter((e): e is CalendarEvent => e !== null);
+
+  const shiftMonth = (delta: number) => {
+    setYm((p) => {
+      const d = new Date(p.y, p.m + delta, 1);
+      return { y: d.getFullYear(), m: d.getMonth() };
+    });
+  };
+
+  return (
+    <div>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
+        <span style={{ font: 'var(--ds-font-heading-small)', color: 'var(--ds-text)' }}>
+          {MONTH_NAMES[ym.m]} {ym.y}
+        </span>
+        <div style={{ flex: 1 }} />
+        <button type="button" aria-label="Previous month" className="db-cal-nav" onClick={() => shiftMonth(-1)}>
+          <ChevronLeft style={{ width: 16, height: 16 }} />
+        </button>
+        <button
+          type="button"
+          className="db-cal-nav"
+          onClick={() => setYm({ y: today.getFullYear(), m: today.getMonth() })}
+          style={{ width: 'auto', padding: '0 10px', font: 'var(--ds-font-body-small)' }}
+        >
+          Today
+        </button>
+        <button type="button" aria-label="Next month" className="db-cal-nav" onClick={() => shiftMonth(1)}>
+          <ChevronRight style={{ width: 16, height: 16 }} />
+        </button>
+        <style>{`
+          .db-cal-nav { display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 30px; border: 1px solid var(--ds-border); border-radius: 6px; background: var(--ds-surface); color: var(--ds-text-subtle); cursor: pointer; }
+          .db-cal-nav:hover { background: var(--ds-background-neutral-subtle); }
+        `}</style>
+      </div>
+      <CalendarGrid
+        year={ym.y}
+        month={ym.m}
+        events={events}
+        onDateClick={(dateStr) => onAddRow({ [dateField.id]: dateStr })}
+        renderCell={(_date, dayEvents) => (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 3, marginTop: 2 }}>
+            {dayEvents.map((ev) => (
+              <span
+                key={ev.entity_id}
+                title={ev.event_title}
+                style={{
+                  background: 'var(--ds-background-selected)',
+                  color: 'var(--ds-text-selected, var(--ds-text))',
+                  borderRadius: 4,
+                  padding: '1px 6px',
+                  font: 'var(--ds-font-body-small)',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                {ev.event_title}
+              </span>
+            ))}
+          </div>
+        )}
+      />
+    </div>
+  );
+}
+
 export function DatabaseSurface({ database }: { database: DocexDatabase }) {
   const { data: fields } = useDocexFields(database.id);
   const { data: rows, isLoading } = useDocexRows(database.id);
@@ -681,6 +785,8 @@ export function DatabaseSurface({ database }: { database: DocexDatabase }) {
         <ListView fields={fields ?? []} rows={sortedRows} onUpdate={updateValue} onAddRow={addRow} />
       ) : activeView.kind === 'gallery' ? (
         <GalleryView fields={fields ?? []} rows={sortedRows} onUpdate={updateValue} onAddRow={addRow} />
+      ) : activeView.kind === 'calendar' ? (
+        <CalendarView fields={fields ?? []} rows={sortedRows} onUpdate={updateValue} onAddRow={addRow} />
       ) : (
         <p style={{ color: 'var(--ds-text-subtle)', font: 'var(--ds-font-body)' }}>
           The {activeView.kind} view arrives in the next slice — the Table view has your data.

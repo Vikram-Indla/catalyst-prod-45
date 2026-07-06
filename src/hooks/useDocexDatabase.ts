@@ -114,6 +114,7 @@ export function useDocexFields(databaseId: string | undefined) {
   return useQuery({
     queryKey: ['docex-db', 'fields', databaseId],
     enabled: !!databaseId,
+    staleTime: 0,
     queryFn: async (): Promise<DocexField[]> => {
       const { data, error } = await db
         .from('kb_database_fields')
@@ -130,6 +131,7 @@ export function useDocexRows(databaseId: string | undefined) {
   return useQuery({
     queryKey: ['docex-db', 'rows', databaseId],
     enabled: !!databaseId,
+    staleTime: 0,
     queryFn: async (): Promise<DocexRow[]> => {
       const { data, error } = await db
         .from('kb_database_rows')
@@ -146,6 +148,7 @@ export function useDocexViews(databaseId: string | undefined) {
   return useQuery({
     queryKey: ['docex-db', 'views', databaseId],
     enabled: !!databaseId,
+    staleTime: 0,
     queryFn: async (): Promise<DocexView[]> => {
       const { data, error } = await db
         .from('kb_database_views')
