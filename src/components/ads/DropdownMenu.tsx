@@ -21,6 +21,8 @@ export interface DropdownMenuItem {
   iconBefore?: ReactNode;
   iconAfter?: ReactNode;
   isDisabled?: boolean;
+  /** Renders the Atlaskit selected-item checkmark. */
+  isSelected?: boolean;
   isDanger?: boolean;
   description?: ReactNode;
   onClick?: () => void;
@@ -94,6 +96,7 @@ export function DropdownMenu({
                 <AkDropdownItem
                   key={item.key}
                   isDisabled={item.isDisabled}
+                  isSelected={item.isSelected}
                   description={item.description}
                   elemBefore={item.iconBefore}
                   elemAfter={item.iconAfter}
