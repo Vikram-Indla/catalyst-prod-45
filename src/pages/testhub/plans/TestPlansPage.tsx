@@ -1,6 +1,11 @@
 import React, { useState, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { Routes } from '@/lib/routes';
+import AkButton from '@atlaskit/button/new';
+import SectionMessage from '@atlaskit/section-message';
+import EmptyState from '@atlaskit/empty-state';
 import { useTestHubProject } from '@/hooks/test-management/useTestHubProject';
 import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
 import { JiraTable, makeSummaryCell } from '@/components/shared/JiraTable';
@@ -50,11 +55,12 @@ function fmtDate(d: string | null): string {
 
 export default function TestPlansPage() {
   const { projectId } = useTestHubProject();
+  const navigate = useNavigate();
   const qc = useQueryClient();
   const [createOpen, setCreateOpen] = useState(false);
   const [newName, setNewName] = useState('');
 
-  const { data: plans = [], isLoading } = useQuery({
+  const { data: plans = [], isLoading, isError, error, refetch } = useQuery({
     queryKey: ['tm-test-plans', projectId],
     enabled: !!projectId,
     queryFn: async (): Promise<TmTestPlan[]> => {
@@ -64,8 +70,9 @@ export default function TestPlansPage() {
         .select('id, plan_key, name, status, planned_start_date, planned_end_date, total_tests, passed_count, failed_count, blocked_count')
         .eq('project_id', projectId)
         .order('created_at', { ascending: false });
-      if (error || !data) return [];
-      return data as TmTestPlan[];
+      // E1 (CAT-TESTHUB-V2): a query failure must surface, not render fake-empty
+      if (error) throw error;
+      return (data ?? []) as TmTestPlan[];
     },
   });
 
@@ -158,17 +165,28 @@ export default function TestPlansPage() {
         </div>
 
         <div style={{ flex: 1, minHeight: 0, overflow: 'auto', padding: 'var(--ds-space-050) var(--ds-space-150) var(--ds-space-300)' }}>
-          {isLoading ? (
+          {isError ? (
+            <div style={{ padding: 'var(--ds-space-300)' }}>
+              <SectionMessage appearance="error" title="Couldn't load test plans">
+                <p style={{ margin: 0 }}>{(error as Error)?.message}</p>
+                <AkButton appearance="subtle" onClick={() => refetch()}>Try again</AkButton>
+              </SectionMessage>
+            </div>
+          ) : isLoading ? (
             <div style={{ padding: 'var(--ds-space-400)', display: 'flex', justifyContent: 'center' }}><Spinner size="large" /></div>
           ) : plans.length === 0 ? (
-            <div style={{ padding: 'var(--ds-space-600, 48px)', textAlign: 'center', color: 'var(--ds-text-subtlest)', fontSize: 'var(--ds-font-size-300)' }}>
-              No test plans yet. Create one to group your sets and cycles for a release.
-            </div>
+            <EmptyState
+              header="No test plans yet"
+              description="A plan curates references to repository cases for a sprint, release, or custom scope."
+              primaryAction={<AkButton appearance="primary" onClick={() => setCreateOpen(true)}>Create plan</AkButton>}
+            />
           ) : (
             <JiraTable<TmTestPlan>
               columns={columns}
               data={plans}
               getRowId={r => r.id}
+              // E1: rows were dead — click opens the new full-page plan detail
+              onRowClick={(row) => { if (row.plan_key) navigate(Routes.testHub.plan(row.plan_key)); }}
               showRowCount
               totalRowCount={plans.length}
             />
