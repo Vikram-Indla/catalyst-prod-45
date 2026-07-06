@@ -35,3 +35,15 @@ RO-P3-09,P3,build,tsc + npm run build + color gate,acceptance,CLOSED,tsc clean; 
 RO-P0-11,P0,evidence,Change-detail live screenshots (was OPEN),acceptance,CLOSED,closed by Phase 3 cockpit screenshots on seeded cyij,2026-07-06
 RO-P3-10,P3,actions,Full status-action mutations (request signoff/override/apply-template/execute),phase-4,DEFERRED,cockpit shows state + entry points; mutations Phase 4,
 RO-P3-11,P3,owners,Per-stream owner pickers on create,phase-4,DEFERRED,owners shown from change roles + SOP assignees; create-owner pickers Phase 4,
+RO-P4-01,P4,templates,SOP Template list rich (counts/filters/active/actions),phase-4 §2,CLOSED,useSopTemplatesFull; verified live,2026-07-06
+RO-P4-02,P4,templates,SOP Template create/edit + full step editor + reorder,phase-4 §3-4,CLOSED,CreateSopTemplateModal edit-mode + up/down; build-verified,2026-07-06
+RO-P4-03,P4,apply,Apply template → generate executable steps + timing,phase-4 §5,CLOSED,ApplySopTemplateModal replace/append + previewTemplateSteps; verified,2026-07-06
+RO-P4-04,P4,runbook,SOP Execution runbook (summary + expandable steps),phase-4 §6,CLOSED,SopRunbook; verified live CHG8841,2026-07-06
+RO-P4-05,P4,actions,Step lifecycle actions + validation (commit/evidence/reason),phase-4 §7-8,CLOSED,useSopStepAction validation-aware; verified,2026-07-06
+RO-P4-06,P4,assign,Per-step user assignment,phase-4 §9,CLOSED,useAssignSopStep + picker; verified live,2026-07-06
+RO-P4-07,P4,timer,Step-level execution timer,phase-4 §10,CLOSED,StepTimer data-driven; verified (0m elapsed / in 2h 22m),2026-07-06
+RO-P4-08,P4,rollback,Rollback step first-class + failed-step pointer,phase-4 §12,CLOSED,amber + indicator + recovery hint,2026-07-06
+RO-P4-09,P4,audit,SOP step audit into rh_change_activity_log,phase-4 §15,CLOSED,logSopEvent best-effort on every action,2026-07-06
+RO-P4-10,P4,integration,Change Detail SOP summary reflects live runbook,phase-4 §13,CLOSED,useChangeCockpit + Open execution jump,2026-07-06
+RO-P4-11,P4,build,tsc + build + color gate,acceptance,CLOSED,tsc clean; build PASS 57s; color clean,2026-07-06
+RO-P4-12,P4,dnd,Drag-and-drop template/step reorder (up/down shipped),phase-5,DEFERRED,up/down reorder shipped; @atlaskit pragmatic-dnd polish deferred,

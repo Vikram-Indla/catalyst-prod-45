@@ -31,3 +31,13 @@ Close these by seeding a change + a sprint band on cyij, then re-capturing #6 (c
 | P3-5 | Unlinked-prod cockpit | /release-hub/changes/cat-chg-21 | ss_6463b1v8v | Freeze "execution blocked" + Unlinked-prod + justification + timer "overdue" + educational empty/broken states |
 
 No-drawer proof: row click navigates to full-page detail (URL change); no drawer/peek rendered. Slug + UUID both resolve. Demo data is staging-only (cyij), documented in release-ops-phase-3-functional-proof.md, not committed as a migration.
+
+## Phase 4 — SOP Templates + Execution Runbook (2026-07-06, cyij seeded)
+| # | Proof | Route | MCP ID | Result |
+|---|---|---|---|---|
+| P4-1 | SOP Template list | /release-hub/sop-templates | ss_9362hwlwo | rich counts (5 mand·3 tech·4 ev·1 rb), est 120m, filters, search |
+| P4-2 | SOP runbook summary | /release-hub/changes/chg8841 (SOP tab) | ss_7727yo9g4 | 9 steps, 3/9 done, 1 missing-commit, 3 missing-evidence, 5 unassigned, "multiple in progress" warning, running #3 |
+| P4-3 | Runbook step list | (scroll) | — | indicators COMMIT/EVIDENCE, assignees, planned times, step timer, statuses |
+| P4-4 | Step expanded (actions) | (expand #51) | — | planned/actual + DB commit e4f5g6h, assignee picker, commit/evidence/actual capture, Mark done/Block/Fail, reorder ↑↓ |
+
+No-drawer proof: runbook is inline in the SOP tab; template create/edit + apply are ads/Modal (centered), no side panel. Demo (template cccc0000-…-01, steps dddd0000-…-a1..a4) is staging-only, documented in release-ops-phase-4-functional-proof.md.

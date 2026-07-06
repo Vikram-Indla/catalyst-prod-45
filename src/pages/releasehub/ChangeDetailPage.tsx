@@ -17,7 +17,8 @@ import { useChange } from '@/hooks/useReleaseHub';
 import { useChangeCockpit } from '@/hooks/useChangeCockpit';
 import { StatusLozenge } from '@/components/shared/StatusLozenge';
 import { NotifyList } from '@/components/releasehub/detail/ReleaseDetailTabs';
-import { SopExecutionTab } from '@/components/releasehub/detail/SopExecutionTab';
+import { SopRunbook } from '@/components/releasehub/detail/SopRunbook';
+import { useReleaseOpsPermissions } from '@/hooks/useReleaseOpsPermissions';
 import { ExecutionTimer } from '@/components/releasehub/detail/ExecutionTimer';
 import { ChangeCockpitSections } from '@/components/releasehub/detail/ChangeCockpitSections';
 import { SectionMessage } from '@/components/ads/SectionMessage';
@@ -116,6 +117,7 @@ export default function ChangeDetailPage() {
   const [selectedTab, setSelectedTab] = useState(0);
 
   const c = change as any;
+  const { canManage } = useReleaseOpsPermissions();
   const { data: cockpit } = useChangeCockpit(c ?? null);
   const statusLabel = useMemo(() => (c?.status && TERMINAL[c.status] ? TERMINAL[c.status] : null), [c?.status]);
 
@@ -234,7 +236,7 @@ export default function ChangeDetailPage() {
           </div>
         </TabPanel>
 
-        <TabPanel><div style={{ width: '100%' }}><SopExecutionTab changeId={c.id} /></div></TabPanel>
+        <TabPanel><div style={{ width: '100%' }}><SopRunbook changeId={c.id} change={c} canManage={canManage} /></div></TabPanel>
 
         <TabPanel>
           <div style={{ width: '100%', padding: '8px 0' }}>
