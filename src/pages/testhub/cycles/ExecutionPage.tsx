@@ -109,7 +109,7 @@ async function flushOfflineQueue(qc: { invalidateQueries: (opts: { queryKey: str
   }
 }
 
-type StepStatus = 'NOT_RUN' | 'PASSED' | 'FAILED' | 'BLOCKED' | 'SKIPPED';
+type StepStatus = 'NOT_RUN' | 'PASSED' | 'FAILED' | 'BLOCKED' | 'HOLD' | 'SKIPPED';
 
 interface StepState {
   stepId: string;
@@ -122,6 +122,7 @@ function computeRunStatus(stepStates: StepState[]): RunStatus {
   const statuses = stepStates.map(s => s.status);
   if (statuses.some(s => s === 'FAILED')) return 'FAILED';
   if (statuses.some(s => s === 'BLOCKED')) return 'BLOCKED';
+  if (statuses.some(s => s === 'HOLD')) return 'HOLD';
   if (statuses.every(s => s === 'PASSED' || s === 'SKIPPED')) return 'PASSED';
   if (statuses.every(s => s === 'NOT_RUN')) return 'NOT_RUN';
   return 'IN_PROGRESS';
@@ -422,6 +423,10 @@ function StepRunner({
   // P1-S15 (EXE-004): a 0-step case has no per-step buttons to record a
   // verdict through — this is the case-level equivalent.
   const [caseVerdict, setCaseVerdict] = useState<StepStatus | null>(null);
+  // F2 (CAT-TESTHUB-V2): force pass — explicit override, reason mandatory,
+  // reason lands at the head of the run notes so the audit trail carries it.
+  const [forcePassOpen, setForcePassOpen] = useState(false);
+  const [forcePassReason, setForcePassReason] = useState('');
   const [pendingFiles, setPendingFiles] = useState<File[]>([]);
   const [saving, setSaving] = useState(false);
   const [showSaveModal, setShowSaveModal] = useState(false);
@@ -519,6 +524,7 @@ function StepRunner({
         case '2': e.preventDefault(); applyVerdict('FAILED'); break;
         case '3': e.preventDefault(); applyVerdict('BLOCKED'); break;
         case '4': e.preventDefault(); applyVerdict('SKIPPED'); break;
+        case '5': e.preventDefault(); applyVerdict('HOLD'); break;
         case 'ArrowDown':
           if (steps.length > 0) { e.preventDefault(); setActiveStepIndex(i => Math.min(i + 1, steps.length - 1)); }
           break;
@@ -541,22 +547,31 @@ function StepRunner({
     setStepStates(steps.map(s => ({ stepId: s.id, status: 'NOT_RUN', actualResult: '' })));
     setCaseVerdict(null);
     setPendingFiles([]);
+    setForcePassReason('');
     timer.reset();
   };
 
-  const handleSave = async (notes: string) => {
+  const handleSave = async (rawNotes: string) => {
     setSaving(true);
     timer.pause();
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
+      // F2: force pass overrides the aggregate — the reason is mandatory and
+      // recorded at the head of the run notes.
+      const notes = forcePassReason
+        ? `[FORCE PASS] ${forcePassReason}${rawNotes ? `\n${rawNotes}` : ''}`
+        : rawNotes;
+
       // EXE-004: a 0-step case has no per-step aggregate to compute from —
       // the case-level verdict button IS the verdict.
-      const runStatus: RunStatus = steps.length === 0
-        ? ((caseVerdict ?? 'NOT_RUN') as RunStatus)
-        : computeRunStatus(stepStates);
-      const dbStatus = runStatus.toLowerCase() as 'not_run' | 'in_progress' | 'passed' | 'failed' | 'blocked' | 'skipped';
+      const runStatus: RunStatus = forcePassReason
+        ? 'PASSED'
+        : steps.length === 0
+          ? ((caseVerdict ?? 'NOT_RUN') as RunStatus)
+          : computeRunStatus(stepStates);
+      const dbStatus = runStatus.toLowerCase() as 'not_run' | 'in_progress' | 'passed' | 'failed' | 'blocked' | 'hold' | 'skipped';
 
       // ── Offline path ──────────────────────────────────────────────────────────
       if (!isOnline) {
@@ -592,6 +607,7 @@ function StepRunner({
           catalystToast.success('Offline — result queued. Will sync on reconnect.');
         }
         setPendingFiles([]);
+        setForcePassReason('');
         timer.reset();
         onSaved();
         return;
@@ -679,6 +695,7 @@ function StepRunner({
       setPendingFiles([]);
       setCompletedRunCount(nextRunNumber);
       catalystToast.success(`Run #${nextRunNumber} saved: ${runStatus}`);
+      setForcePassReason('');
       timer.reset();
       onSaved();
     } catch (err: unknown) {
@@ -748,6 +765,19 @@ function StepRunner({
           </button>
         </div>
         <div style={{ flex: 1 }} />
+        {/* F2 (CAT-TESTHUB-V2): force pass — deliberate override with mandatory reason */}
+        <button
+          onClick={() => setForcePassOpen(true)}
+          style={{
+            padding: '4px 12px', borderRadius: 4, border: '1px solid var(--ds-border)',
+            background: forcePassReason ? 'var(--ds-background-success-subtle)' : 'none',
+            cursor: 'pointer', fontSize: 'var(--ds-font-size-200)',
+            color: 'var(--ds-text-success)', fontFamily: 'var(--ds-font-family-body)', fontWeight: 600,
+          }}
+          title={forcePassReason ? `Force pass armed: ${forcePassReason}` : 'Pass this case regardless of step results (reason required)'}
+        >
+          {forcePassReason ? '✓ Force pass armed' : 'Force pass…'}
+        </button>
         <button
           onClick={handleReset}
           style={{
@@ -759,6 +789,22 @@ function StepRunner({
           Reset run
         </button>
       </div>
+
+      {forcePassOpen && (
+        <ForcePassModal
+          initialReason={forcePassReason}
+          onCancel={() => setForcePassOpen(false)}
+          onConfirm={(reason) => {
+            setForcePassReason(reason);
+            setForcePassOpen(false);
+            if (!timer.running) timer.start();
+          }}
+          onClear={() => {
+            setForcePassReason('');
+            setForcePassOpen(false);
+          }}
+        />
+      )}
 
       {/* Case header */}
       <div style={{ marginBottom: 24 }}>
@@ -792,6 +838,7 @@ function StepRunner({
         <span><strong>2</strong> Fail</span>
         <span><strong>3</strong> Block</span>
         <span><strong>4</strong> Skip</span>
+        <span><strong>5</strong> Hold</span>
         {steps.length > 0 && <span><strong>↑↓</strong> Navigate step</span>}
         <span><strong>Enter</strong> Save</span>
       </div>
@@ -810,6 +857,7 @@ function StepRunner({
             <StepBtn label="Fail" icon="✗" active={caseVerdict === 'FAILED'} color="var(--ds-text-danger)" onClick={() => updateCaseVerdict('FAILED')} />
             <StepBtn label="Block" icon="⊘" active={caseVerdict === 'BLOCKED'} color="var(--ds-text-warning)" onClick={() => updateCaseVerdict('BLOCKED')} />
             <StepBtn label="Skip" icon="→" active={caseVerdict === 'SKIPPED'} color="var(--ds-text-subtlest)" onClick={() => updateCaseVerdict('SKIPPED')} />
+            <StepBtn label="Hold" icon="⏸" active={caseVerdict === 'HOLD'} color="var(--ds-text-information)" onClick={() => updateCaseVerdict('HOLD')} />
           </div>
         </div>
       ) : (
@@ -822,7 +870,9 @@ function StepRunner({
                 ? 'var(--ds-background-danger-subtle)'
                 : state?.status === 'BLOCKED'
                   ? 'var(--ds-background-warning-subtle)'
-                  : 'var(--ds-surface-sunken)';
+                  : state?.status === 'HOLD'
+                    ? 'var(--ds-background-information-subtle)'
+                    : 'var(--ds-surface-sunken)';
 
             return (
               <div
@@ -875,6 +925,13 @@ function StepRunner({
                       active={state?.status === 'SKIPPED'}
                       color="var(--ds-text-subtlest)"
                       onClick={() => updateStepStatus(i, 'SKIPPED')}
+                    />
+                    <StepBtn
+                      label="Hold"
+                      icon="⏸"
+                      active={state?.status === 'HOLD'}
+                      color="var(--ds-text-information)"
+                      onClick={() => updateStepStatus(i, 'HOLD')}
                     />
                   </div>
                 </div>
@@ -1120,5 +1177,49 @@ function StepBtn({
     >
       {icon} {label}
     </button>
+  );
+}
+
+// ── Force-pass reason modal (F2, CAT-TESTHUB-V2) ─────────────────────────────
+// A force pass is a deliberate override: the reason is mandatory and lands at
+// the head of the saved run's notes.
+function ForcePassModal({
+  initialReason,
+  onConfirm,
+  onCancel,
+  onClear,
+}: {
+  initialReason: string;
+  onConfirm: (reason: string) => void;
+  onCancel: () => void;
+  onClear: () => void;
+}) {
+  const [reason, setReason] = useState(initialReason);
+  return (
+    <ModalDialog onClose={onCancel} width="small">
+      <ModalHeader>
+        <ModalTitle appearance="warning">Force pass this case?</ModalTitle>
+      </ModalHeader>
+      <ModalBody>
+        <p style={{ margin: '0 0 8px', color: 'var(--ds-text)', fontSize: 'var(--ds-font-size-300)' }}>
+          The run will save as Passed regardless of step results. A reason is required and is recorded in the run notes.
+        </p>
+        <Textarea
+          value={reason}
+          onChange={(e) => setReason((e.target as HTMLTextAreaElement).value)}
+          placeholder="Why is this pass being forced? (e.g. verified manually in staging, known cosmetic diff)"
+          minimumRows={3}
+        />
+      </ModalBody>
+      <ModalFooter>
+        {initialReason && (
+          <Button appearance="subtle" onClick={onClear}>Disarm force pass</Button>
+        )}
+        <Button appearance="subtle" onClick={onCancel}>Cancel</Button>
+        <Button appearance="warning" isDisabled={!reason.trim()} onClick={() => onConfirm(reason.trim())}>
+          Arm force pass
+        </Button>
+      </ModalFooter>
+    </ModalDialog>
   );
 }

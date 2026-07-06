@@ -2,7 +2,8 @@ export type CaseStatus = 'DRAFT' | 'REVIEW' | 'APPROVED' | 'DEPRECATED';
 
 export type CycleStatus = 'PLANNED' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED';
 
-export type RunStatus = 'NOT_RUN' | 'IN_PROGRESS' | 'PASSED' | 'FAILED' | 'BLOCKED' | 'SKIPPED';
+// F2 (CAT-TESTHUB-V2): HOLD = deliberate pause verdict (D-003 added the enum value)
+export type RunStatus = 'NOT_RUN' | 'IN_PROGRESS' | 'PASSED' | 'FAILED' | 'BLOCKED' | 'HOLD' | 'SKIPPED';
 
 export type DefectStatus = 'OPEN' | 'IN_PROGRESS' | 'FIXED' | 'VERIFIED' | 'CLOSED' | 'WONT_FIX' | 'DUPLICATE';
 

@@ -958,7 +958,7 @@ function EvidencePanel({ item, onClose }: { item: TMCycleScope; onClose: () => v
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
       const path = `run/${runId}/${Date.now()}_${file.name}`;
-      const { error: storageErr } = await supabase.storage.from('tm-attachments').upload(path, file);
+      const { error: storageErr } = await supabase.storage.from('testhub-attachments').upload(path, file);
       if (storageErr) throw storageErr;
       const { error: dbErr } = await supabase.from('tm_attachments').insert({
         entity_type: 'run',
@@ -1019,7 +1019,7 @@ function EvidencePanel({ item, onClose }: { item: TMCycleScope; onClose: () => v
                     </div>
                   </div>
                   <a
-                    href={supabase.storage.from('tm-attachments').getPublicUrl(a.file_path).data.publicUrl}
+                    href={supabase.storage.from('testhub-attachments').getPublicUrl(a.file_path).data.publicUrl}
                     target="_blank"
                     rel="noreferrer"
                     style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-link)', textDecoration: 'none' }}

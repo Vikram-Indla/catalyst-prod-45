@@ -456,8 +456,23 @@ export function useCreateDefect() {
         link_source: string;
         test_run_id?: string | null;
         step_result_id?: string | null;
+        // F4 (CAT-TESTHUB-V2): scope lineage + explicit non-test-origin flag —
+        // a Test Hub defect must trace to its failed/blocked run unless flagged.
+        cycle_scope_id?: string | null;
+        non_test_origin?: boolean;
         created_by: string;
       }> = [];
+
+      // F4: resolve the run's cycle-scope row once so every link row carries it
+      let runScopeId: string | null = null;
+      if (input.run_id) {
+        const { data: runRow } = await supabase
+          .from('tm_test_runs')
+          .select('cycle_scope_id')
+          .eq('id', input.run_id)
+          .maybeSingle();
+        runScopeId = (runRow?.cycle_scope_id as string | undefined) ?? null;
+      }
 
       // Row 1 — Test case link
       if (input.source_test_case_id) {
@@ -471,7 +486,7 @@ export function useCreateDefect() {
         });
       }
 
-      // Row 2 — Execution run link
+      // Row 2 — Execution run link (carries scope lineage; test-origin by definition)
       if (input.run_id) {
         linkRows.push({
           defect_id: data.id,
@@ -481,6 +496,8 @@ export function useCreateDefect() {
           link_source: 'auto_execution',
           test_run_id: input.run_id,
           step_result_id: input.step_id || null,
+          cycle_scope_id: runScopeId,
+          non_test_origin: false,
           created_by: user.id,
         });
       }
