@@ -99,24 +99,49 @@
   margin-top: 16px;
 }
 
-/* Notion heading scale (h1 1.875em / h2 1.5em / h3 1.25em, tight leading) */
+/* Notion heading scale — ABSOLUTE sizes (h1 30px / h2 24px / h3 20px).
+   BlockNote's own stylesheet already sizes the heading BLOCK WRAPPER
+   ([data-level] → up to 3em), so em units here COMPOUND on top of it:
+   1.875em × 48px wrapper = 90px headings (Vikram 2026-07-06 "what are
+   these headers"). Neutralize the wrapper and pin px on the h tags. */
+.wiki-bn .bn-editor .bn-block-content[data-content-type='heading'] {
+  font-size: 16px;
+}
 .wiki-bn .bn-editor h1 {
-  font-size: 1.875em;
+  font-size: 30px;
   font-weight: 700;
   line-height: 1.3;
   color: var(--ds-text);
 }
 .wiki-bn .bn-editor h2 {
-  font-size: 1.5em;
+  font-size: 24px;
   font-weight: 600;
   line-height: 1.3;
   color: var(--ds-text);
 }
 .wiki-bn .bn-editor h3 {
-  font-size: 1.25em;
+  font-size: 20px;
   font-weight: 600;
   line-height: 1.3;
   color: var(--ds-text);
+}
+.wiki-bn .bn-editor h4 {
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--ds-text);
+}
+.wiki-bn .bn-editor h5 {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--ds-text);
+}
+.wiki-bn .bn-editor h6 {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--ds-text-subtle);
 }
 
 /* Per-block bidirectional text: Arabic blocks lay out RTL, English LTR. */

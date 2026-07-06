@@ -12,10 +12,12 @@ import { useQueryClient } from '@tanstack/react-query';
 import type { Block, BlockNoteEditor } from '@blocknote/core';
 import { Breadcrumbs, type BreadcrumbItem } from '@/components/ads';
 import { Skeleton } from '@/components/ui/skeleton';
-import { ImageIcon, Smile as SmileIcon, Star, StarOff } from '@/lib/atlaskit-icons';
+import { ImageIcon, Smile as SmileIcon, Star, StarOff, PanelRight } from '@/lib/atlaskit-icons';
 import { Routes } from '@/lib/routes';
 import {
   useUpdateWikiPage,
+  useCreateWikiPage,
+  useMoveWikiPage,
   useDocexFavorites,
   useToggleFavorite,
   useSaveVersion,
@@ -38,6 +40,7 @@ import { attachMarqueeSelection } from './editor/marqueeSelection';
 import { syncMentionLinks } from './editor/syncMentionLinks';
 import { BacklinksPanel } from './BacklinksPanel';
 import { DocexAttachments } from './DocexAttachments';
+import { PageTree } from './PageTree';
 import { DropdownMenu, Lozenge } from '@/components/ads';
 import { Input } from '@/components/ui/input';
 import { exportPageHtml, exportPageMarkdown, printPage } from './editor/exportPage';
@@ -137,6 +140,21 @@ function WorkspaceCrumbIcon({ workspace }: { workspace: WikiWorkspace }) {
 
 export function WikiPageSurface({ workspace, page, treePages }: WikiPageSurfaceProps) {
   const navigate = useNavigate();
+
+  // Hierarchy drawer (Vikram 2026-07-06: "the hierarchy always must be shown
+  // in the right-side drawer") — full workspace tree, open by default,
+  // choice remembered.
+  const [treeOpen, setTreeOpen] = useState<boolean>(
+    () => localStorage.getItem('docex-hierarchy-drawer') !== 'closed',
+  );
+  const toggleTree = () => {
+    setTreeOpen((v) => {
+      localStorage.setItem('docex-hierarchy-drawer', v ? 'closed' : 'open');
+      return !v;
+    });
+  };
+  const createSubPage = useCreateWikiPage();
+  const moveInTree = useMoveWikiPage();
 
   // V2 — move page to another workspace (My Space → project, or any pair).
   const { data: allWorkspaces } = useWikiWorkspaces();
@@ -689,6 +707,9 @@ export function WikiPageSurface({ workspace, page, treePages }: WikiPageSurfaceP
         <div style={{ flex: 1, minWidth: 0 }}>
           <Breadcrumbs
             items={crumbs}
+            // Full ancestor path, never the collapsed "…" (Vikram 2026-07-06:
+            // "the breadcrumb sucks" — deep pages collapsed at the default 4).
+            maxItems={12}
             LinkComponent={Link as never}
             aria-label="Page location"
           />
@@ -798,6 +819,15 @@ export function WikiPageSurface({ workspace, page, treePages }: WikiPageSurfaceP
                 },
                 { key: 'history', label: 'Version history', onClick: () => setHistoryOpen(true) },
                 { key: 'save-version', label: 'Save version now', onClick: () => snapshotNow('Manual save point') },
+                {
+                  key: 'add-subpage',
+                  label: 'Add sub-page',
+                  onClick: () =>
+                    createSubPage.mutate(
+                      { spaceId: workspace.id, title: 'Untitled', parentId: page.id },
+                      { onSuccess: (c) => navigate(Routes.wiki.page(workspace.slug, c.slug)) },
+                    ),
+                },
               ],
             },
             ...(workspace.container_type === 'project' || workspace.container_type === 'product'
@@ -843,7 +873,30 @@ export function WikiPageSurface({ workspace, page, treePages }: WikiPageSurfaceP
               : []),
           ]}
         />
+        <button
+          type="button"
+          onClick={toggleTree}
+          title={treeOpen ? 'Hide hierarchy' : 'Show hierarchy'}
+          aria-pressed={treeOpen}
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            padding: '4px 8px',
+            border: '1px solid var(--ds-border)',
+            borderRadius: 6,
+            background: treeOpen ? 'var(--ds-background-selected)' : 'var(--ds-surface)',
+            color: treeOpen ? 'var(--ds-icon-selected)' : 'var(--ds-icon-subtle)',
+            cursor: 'pointer',
+          }}
+        >
+          <PanelRight style={{ width: 16, height: 16 }} />
+        </button>
       </div>
+
+      {/* Main row: content column + right-side hierarchy drawer (Vikram
+          2026-07-06: full tree always available beside the page). */}
+      <div style={{ display: 'flex', alignItems: 'flex-start', flex: 1, minWidth: 0 }}>
+      <div style={{ flex: 1, minWidth: 0 }}>
 
       {/* ── Cover zone ── */}
       <div
@@ -1280,6 +1333,56 @@ export function WikiPageSurface({ workspace, page, treePages }: WikiPageSurfaceP
           </Suspense>
         </div>
       </div>
+
+      </div>{/* /content column */}
+
+      {treeOpen ? (
+        <aside
+          className="wiki-no-print"
+          aria-label="Page hierarchy"
+          style={{
+            width: 280,
+            flexShrink: 0,
+            position: 'sticky',
+            top: 48,
+            maxHeight: 'calc(100vh - 120px)',
+            overflowY: 'auto',
+            borderInlineStart: '1px solid var(--ds-border)',
+            padding: '4px 8px 24px',
+          }}
+        >
+          <p
+            style={{
+              margin: '6px 6px 6px',
+              font: 'var(--ds-font-heading-xsmall)',
+              color: 'var(--ds-text-subtle)',
+            }}
+          >
+            Hierarchy
+          </p>
+          <PageTree
+            pages={treePages ?? []}
+            selectedId={page.id}
+            onSelect={(p) => navigate(Routes.wiki.page(workspace.slug, p.slug))}
+            onMove={(m) =>
+              moveInTree.mutate({
+                id: m.id,
+                spaceId: workspace.id,
+                newParentId: m.newParentId,
+                newPosition: m.newPosition,
+              })
+            }
+            onCreateChild={(parentId) =>
+              createSubPage.mutate(
+                { spaceId: workspace.id, title: 'Untitled', parentId },
+                { onSuccess: (c) => navigate(Routes.wiki.page(workspace.slug, c.slug)) },
+              )
+            }
+            emptyHint="No pages yet."
+          />
+        </aside>
+      ) : null}
+      </div>{/* /main row */}
 
       <DocexVersionHistory
         page={page}
