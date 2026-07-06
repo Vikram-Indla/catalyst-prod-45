@@ -7,7 +7,7 @@
  *   2. Popover renders 11 hub rows in 3 sections:
  *        DISCOVER     → Home, Strategy, Ideation
  *        BUILD & SHIP → Product, Project, Release, Test, Incident, Task, Plan
- *        KNOWLEDGE    → Wiki
+ *        KNOWLEDGE    → Folio
  *   3. Every row is an SPA-aware anchor with the correct href.
  *   4. Every row label is the bare hub name (no "Hub" suffix).
  *   5. Each row carries a 32x32 colored tile element identified by
