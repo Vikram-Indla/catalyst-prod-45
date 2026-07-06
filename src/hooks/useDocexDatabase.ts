@@ -208,6 +208,37 @@ export function useCreateDocexDatabase() {
   });
 }
 
+export function useCreateDocexView() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (input: {
+      databaseId: string;
+      name: string;
+      kind: DocexViewKind;
+      position: number;
+      config?: DocexViewConfig;
+    }) => {
+      const { data, error } = await db
+        .from('kb_database_views')
+        .insert({
+          database_id: input.databaseId,
+          name: input.name,
+          kind: input.kind,
+          position: input.position,
+          config: input.config ?? {},
+        })
+        .select('*')
+        .single();
+      if (error) throw error;
+      return data as DocexView;
+    },
+    onSuccess: (_d, { databaseId }) =>
+      qc.invalidateQueries({ queryKey: ['docex-db', 'views', databaseId] }),
+    onError: (e) =>
+      catalystToast.error('Could not add the view', e instanceof Error ? e.message : undefined),
+  });
+}
+
 export function useCreateDocexField() {
   const qc = useQueryClient();
   return useMutation({

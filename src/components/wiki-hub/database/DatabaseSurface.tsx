@@ -7,7 +7,7 @@
 import { useMemo, useState } from 'react';
 import { JiraTable } from '@/components/shared/JiraTable';
 import type { Column } from '@/components/shared/JiraTable/types';
-import { Lozenge } from '@/components/ads';
+import { DropdownMenu, Lozenge } from '@/components/ads';
 import { Input } from '@/components/ui/input';
 import { Plus } from '@/lib/atlaskit-icons';
 import {
@@ -16,13 +16,22 @@ import {
   useDocexViews,
   useCreateDocexField,
   useCreateDocexRow,
+  useCreateDocexView,
   useUpdateDocexRowValues,
   useDeleteDocexRow,
   type DocexDatabase,
   type DocexField,
   type DocexRow,
   type DocexFieldType,
+  type DocexViewKind,
 } from '@/hooks/useDocexDatabase';
+
+const VIEW_KINDS: { kind: DocexViewKind; label: string }[] = [
+  { kind: 'table', label: 'Table' },
+  { kind: 'board', label: 'Board' },
+  { kind: 'list', label: 'List' },
+  { kind: 'gallery', label: 'Gallery' },
+];
 
 const FIELD_TYPES: { value: DocexFieldType; label: string }[] = [
   { value: 'text', label: 'Text' },
@@ -161,6 +170,254 @@ function EditableCell({ field, row, onSave }: { field: DocexField; row: DocexRow
   );
 }
 
+/** First text field = the card/row title; falls back to the first field. */
+function pickTitleField(fields: DocexField[]): DocexField | undefined {
+  return fields.find((f) => f.type === 'text') ?? fields[0];
+}
+/** Group-by field for the board: config override, else first select field. */
+function pickGroupField(fields: DocexField[], groupId?: string | null): DocexField | undefined {
+  if (groupId) return fields.find((f) => f.id === groupId);
+  return fields.find((f) => f.type === 'select');
+}
+
+const NO_GROUP = '__none__';
+
+interface ViewProps {
+  fields: DocexField[];
+  rows: DocexRow[];
+  groupFieldId?: string | null;
+  onUpdate: (row: DocexRow, fieldId: string, value: unknown) => void;
+  onAddRow: (seed?: Record<string, unknown>) => void;
+}
+
+/** Non-title fields shown as compact chips on a card/list item. */
+function FieldChips({ fields, row }: { fields: DocexField[]; row: DocexRow }) {
+  return (
+    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 6 }}>
+      {fields.map((f) => {
+        const raw = row.values?.[f.id];
+        if (raw === undefined || raw === null || raw === '') return null;
+        return (
+          <span key={f.id} style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+            <span style={{ color: 'var(--ds-text-subtlest)', font: 'var(--ds-font-body-small)' }}>{f.name}:</span>
+            <span style={{ font: 'var(--ds-font-body-small)', color: 'var(--ds-text-subtle)' }}>
+              <CellValue field={f} row={row} commit={() => {}} />
+            </span>
+          </span>
+        );
+      })}
+    </div>
+  );
+}
+
+function BoardView({ fields, rows, groupFieldId, onUpdate, onAddRow }: ViewProps) {
+  const titleField = pickTitleField(fields);
+  const groupField = pickGroupField(fields, groupFieldId);
+
+  if (!groupField) {
+    return (
+      <p style={{ color: 'var(--ds-text-subtle)', font: 'var(--ds-font-body)', padding: 16 }}>
+        Add a Select field to group the board by status.
+      </p>
+    );
+  }
+  const choices = groupField.options.choices ?? [];
+  const columns = [...choices, { id: NO_GROUP, label: `No ${groupField.name}`, color: 'default' }];
+  const otherFields = fields.filter((f) => f.id !== titleField?.id && f.id !== groupField.id);
+
+  return (
+    <div style={{ display: 'flex', gap: 12, overflowX: 'auto', paddingBottom: 8, alignItems: 'flex-start' }}>
+      {columns.map((col) => {
+        const colRows = rows.filter((r) => (r.values?.[groupField.id] ?? NO_GROUP) === col.id);
+        return (
+          <div
+            key={col.id}
+            style={{
+              width: 280,
+              flexShrink: 0,
+              background: 'var(--ds-surface-sunken)',
+              borderRadius: 8,
+              padding: 8,
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '4px 6px 8px' }}>
+              {col.id === NO_GROUP ? (
+                <span style={{ color: 'var(--ds-text-subtle)', font: 'var(--ds-font-body-small)', fontWeight: 600 }}>
+                  {col.label}
+                </span>
+              ) : (
+                <Lozenge appearance={CHOICE_APPEARANCE[col.color ?? 'default'] ?? 'default'}>{col.label}</Lozenge>
+              )}
+              <span style={{ color: 'var(--ds-text-subtlest)', font: 'var(--ds-font-body-small)' }}>{colRows.length}</span>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              {colRows.map((r) => (
+                <div
+                  key={r.id}
+                  style={{
+                    background: 'var(--ds-surface-raised)',
+                    border: '1px solid var(--ds-border)',
+                    borderRadius: 8,
+                    padding: 10,
+                    boxShadow: 'var(--ds-shadow-raised)',
+                  }}
+                >
+                  <div style={{ font: 'var(--ds-font-body)', fontWeight: 500, color: 'var(--ds-text)' }}>
+                    {String(r.values?.[titleField?.id ?? ''] ?? 'Untitled')}
+                  </div>
+                  <FieldChips fields={otherFields} row={r} />
+                  {/* Move between columns (click-to-move — reliable across the whole board). */}
+                  <select
+                    value={String(r.values?.[groupField.id] ?? '')}
+                    aria-label={`${groupField.name} for card`}
+                    onChange={(e) => onUpdate(r, groupField.id, e.target.value || null)}
+                    style={{
+                      marginTop: 8,
+                      width: '100%',
+                      font: 'var(--ds-font-body-small)',
+                      background: 'var(--ds-surface)',
+                      color: 'var(--ds-text-subtle)',
+                      border: '1px solid var(--ds-border)',
+                      borderRadius: 4,
+                      padding: '2px 4px',
+                    }}
+                  >
+                    <option value="">— {groupField.name}</option>
+                    {choices.map((c) => (
+                      <option key={c.id} value={c.id}>
+                        {c.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              ))}
+              <button
+                type="button"
+                onClick={() => onAddRow(col.id === NO_GROUP ? undefined : { [groupField.id]: col.id })}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 6,
+                  border: 'none',
+                  background: 'transparent',
+                  color: 'var(--ds-text-subtle)',
+                  font: 'var(--ds-font-body-small)',
+                  cursor: 'pointer',
+                  padding: '6px',
+                }}
+              >
+                <Plus style={{ width: 13, height: 13 }} /> New
+              </button>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+function ListView({ fields, rows, onUpdate, onAddRow }: ViewProps) {
+  const titleField = pickTitleField(fields);
+  const otherFields = fields.filter((f) => f.id !== titleField?.id);
+  return (
+    <div>
+      <div style={{ display: 'flex', flexDirection: 'column' }}>
+        {rows.map((r) => (
+          <div
+            key={r.id}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 12,
+              padding: '10px 12px',
+              borderBottom: '1px solid var(--ds-border)',
+            }}
+          >
+            <span style={{ flex: 1, minWidth: 0, font: 'var(--ds-font-body)', fontWeight: 500, color: 'var(--ds-text)' }}>
+              {String(r.values?.[titleField?.id ?? ''] ?? 'Untitled')}
+            </span>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 12, flexShrink: 0 }}>
+              {otherFields.map((f) => (
+                <EditableCell
+                  key={f.id}
+                  field={f}
+                  row={r}
+                  onSave={(v) => onUpdate(r, f.id, v)}
+                />
+              ))}
+            </span>
+          </div>
+        ))}
+      </div>
+      <button
+        type="button"
+        onClick={() => onAddRow()}
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 6,
+          width: '100%',
+          marginTop: 4,
+          padding: '8px 12px',
+          border: 'none',
+          background: 'transparent',
+          color: 'var(--ds-text-subtle)',
+          font: 'var(--ds-font-body)',
+          cursor: 'pointer',
+        }}
+      >
+        <Plus style={{ width: 14, height: 14 }} /> New row
+      </button>
+    </div>
+  );
+}
+
+function GalleryView({ fields, rows, onAddRow }: ViewProps) {
+  const titleField = pickTitleField(fields);
+  const otherFields = fields.filter((f) => f.id !== titleField?.id);
+  return (
+    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: 12 }}>
+      {rows.map((r) => (
+        <div
+          key={r.id}
+          style={{
+            background: 'var(--ds-surface-raised)',
+            border: '1px solid var(--ds-border)',
+            borderRadius: 8,
+            padding: 14,
+            boxShadow: 'var(--ds-shadow-raised)',
+            minHeight: 96,
+          }}
+        >
+          <div style={{ font: 'var(--ds-font-body)', fontWeight: 600, color: 'var(--ds-text)' }}>
+            {String(r.values?.[titleField?.id ?? ''] ?? 'Untitled')}
+          </div>
+          <FieldChips fields={otherFields} row={r} />
+        </div>
+      ))}
+      <button
+        type="button"
+        onClick={() => onAddRow()}
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: 6,
+          minHeight: 96,
+          border: '1px dashed var(--ds-border)',
+          borderRadius: 8,
+          background: 'transparent',
+          color: 'var(--ds-text-subtle)',
+          font: 'var(--ds-font-body)',
+          cursor: 'pointer',
+        }}
+      >
+        <Plus style={{ width: 14, height: 14 }} /> New card
+      </button>
+    </div>
+  );
+}
+
 export function DatabaseSurface({ database }: { database: DocexDatabase }) {
   const { data: fields } = useDocexFields(database.id);
   const { data: rows, isLoading } = useDocexRows(database.id);
@@ -173,6 +430,7 @@ export function DatabaseSurface({ database }: { database: DocexDatabase }) {
   const updateValues = useUpdateDocexRowValues();
   const deleteRow = useDeleteDocexRow();
   const createField = useCreateDocexField();
+  const createView = useCreateDocexView();
 
   const activeView = (views ?? []).find((v) => v.id === activeViewId) ?? (views ?? [])[0];
 
@@ -218,9 +476,22 @@ export function DatabaseSurface({ database }: { database: DocexDatabase }) {
     [fields, database.id, updateValues],
   );
 
-  const addRow = () => {
+  const addRow = (seed?: Record<string, unknown>) => {
     const maxPos = (rows ?? []).reduce((m, r) => Math.max(m, r.position), 0);
-    createRow.mutate({ databaseId: database.id, position: maxPos + 1 });
+    createRow.mutate({ databaseId: database.id, position: maxPos + 1, values: seed ?? {} });
+  };
+  const updateValue = (row: DocexRow, fieldId: string, value: unknown) =>
+    updateValues.mutate({
+      rowId: row.id,
+      databaseId: database.id,
+      values: { ...(row.values ?? {}), [fieldId]: value },
+    });
+  const addView = (kind: DocexViewKind) => {
+    const label = VIEW_KINDS.find((v) => v.kind === kind)?.label ?? kind;
+    createView.mutate(
+      { databaseId: database.id, name: label, kind, position: (views ?? []).length },
+      { onSuccess: (v) => setActiveViewId(v.id) },
+    );
   };
 
   return (
@@ -255,6 +526,36 @@ export function DatabaseSurface({ database }: { database: DocexDatabase }) {
             </button>
           );
         })}
+        <DropdownMenu
+          aria-label="Add a view"
+          placement="bottom-start"
+          shouldRenderToParent={false}
+          trigger={() => (
+            <button
+              type="button"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 4,
+                border: 'none',
+                background: 'transparent',
+                color: 'var(--ds-text-subtle)',
+                font: 'var(--ds-font-body-small)',
+                cursor: 'pointer',
+                padding: '8px 8px',
+              }}
+            >
+              <Plus style={{ width: 13, height: 13 }} /> View
+            </button>
+          )}
+          groups={[
+            {
+              key: 'kinds',
+              title: 'Add view',
+              items: VIEW_KINDS.map((v) => ({ key: v.kind, label: v.label, onClick: () => addView(v.kind) })),
+            },
+          ]}
+        />
         <div style={{ flex: 1 }} />
         {addingField ? (
           <span style={{ display: 'inline-flex', gap: 8, alignItems: 'center', paddingBottom: 4 }}>
@@ -368,6 +669,18 @@ export function DatabaseSurface({ database }: { database: DocexDatabase }) {
             <Plus style={{ width: 14, height: 14 }} /> New row
           </button>
         </>
+      ) : activeView.kind === 'board' ? (
+        <BoardView
+          fields={fields ?? []}
+          rows={sortedRows}
+          groupFieldId={activeView.config?.group_by_field}
+          onUpdate={updateValue}
+          onAddRow={addRow}
+        />
+      ) : activeView.kind === 'list' ? (
+        <ListView fields={fields ?? []} rows={sortedRows} onUpdate={updateValue} onAddRow={addRow} />
+      ) : activeView.kind === 'gallery' ? (
+        <GalleryView fields={fields ?? []} rows={sortedRows} onUpdate={updateValue} onAddRow={addRow} />
       ) : (
         <p style={{ color: 'var(--ds-text-subtle)', font: 'var(--ds-font-body)' }}>
           The {activeView.kind} view arrives in the next slice — the Table view has your data.
