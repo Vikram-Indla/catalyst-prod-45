@@ -1,5 +1,6 @@
 import React from 'react';
-import { Plus, Trash2 } from '@/lib/atlaskit-icons';
+import Button, { IconButton } from '@atlaskit/button/new';
+import { Plus, Trash2, ArrowUp, ArrowDown } from '@/lib/atlaskit-icons';
 
 export interface StepInput {
   action: string;
@@ -71,11 +72,9 @@ export function StepEditor({ steps, onChange }: StepEditorProps) {
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
                 <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtle)' }}>Step {i + 1}</span>
                 <div style={{ display: 'flex', gap: 4 }}>
-                  <button onClick={() => moveUp(i)} disabled={i === 0} style={smallBtn} title="Move up">↑</button>
-                  <button onClick={() => moveDown(i)} disabled={i === steps.length - 1} style={smallBtn} title="Move down">↓</button>
-                  <button onClick={() => removeStep(i)} style={{ ...smallBtn, color: 'var(--ds-text-danger, var(--ds-text-danger))' }} title="Delete step">
-                    <Trash2 size={12} />
-                  </button>
+                  <IconButton icon={ArrowUp} label="Move up" appearance="subtle" spacing="compact" isDisabled={i === 0} onClick={() => moveUp(i)} />
+                  <IconButton icon={ArrowDown} label="Move down" appearance="subtle" spacing="compact" isDisabled={i === steps.length - 1} onClick={() => moveDown(i)} />
+                  <IconButton icon={Trash2} label="Delete step" appearance="subtle" spacing="compact" onClick={() => removeStep(i)} />
                 </div>
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
@@ -103,23 +102,9 @@ export function StepEditor({ steps, onChange }: StepEditorProps) {
         </div>
       )}
 
-      <button onClick={addStep} style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: 4,
-        padding: '4px 12px',
-        background: 'none',
-        border: '1px dashed var(--ds-border)',
-        borderRadius: 4,
-        fontSize: 'var(--ds-font-size-300)',
-        color: 'var(--ds-text-subtle)',
-        cursor: 'pointer',
-        width: '100%',
-        justifyContent: 'center',
-      }}>
-        <Plus size={14} />
+      <Button onClick={addStep} iconBefore={Plus} appearance="subtle" shouldFitContainer>
         Add step
-      </button>
+      </Button>
     </div>
   );
 }
@@ -132,15 +117,4 @@ const labelStyle: React.CSSProperties = {
   marginBottom: 4,
   textTransform: 'uppercase',
   letterSpacing: '0.5px',
-};
-
-const smallBtn: React.CSSProperties = {
-  background: 'none',
-  border: 'none',
-  cursor: 'pointer',
-  color: 'var(--ds-text-subtlest)',
-  padding: '0px 4px',
-  fontSize: 'var(--ds-font-size-200)',
-  display: 'flex',
-  alignItems: 'center',
 };

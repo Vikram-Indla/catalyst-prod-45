@@ -22,6 +22,7 @@ import { JiraTable, makeSummaryCell } from '@/components/shared/JiraTable';
 import type { Column } from '@/components/shared/JiraTable/types';
 import { Routes } from '@/lib/routes';
 import { useTestHubProject } from '@/hooks/test-management/useTestHubProject';
+import { Select } from '@/components/ads';
 import {
   useTestExecutions,
   useCreateTestExecution,
@@ -195,47 +196,29 @@ export default function ExecutionsPage() {
                 <label style={{ display: 'block', fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle)', marginBottom: 4 }}>
                   Scope
                 </label>
-                <select
-                  value={scopeType}
-                  onChange={(e) => setScopeType(e.target.value as ExecutionScopeType)}
-                  style={{
-                    width: '100%', padding: '6px 8px', borderRadius: 3,
-                    border: '1px solid var(--ds-border)', background: 'var(--ds-surface)',
-                    color: 'var(--ds-text)', fontSize: 'var(--ds-font-size-300)',
-                  }}
-                >
-                  {Object.entries(SCOPE_LABEL).map(([k, v]) => (
-                    <option key={k} value={k}>{v}</option>
-                  ))}
-                </select>
+                <Select
+                  options={Object.entries(SCOPE_LABEL).map(([value, label]) => ({ value, label }))}
+                  value={Object.entries(SCOPE_LABEL).map(([value, label]) => ({ value, label })).find(o => o.value === scopeType) ?? null}
+                  onChange={opt => opt && setScopeType(opt.value as ExecutionScopeType)}
+                />
               </div>
               {scopeType === 'sprint' && (
-                <select
-                  value={sprintId}
-                  onChange={(e) => setSprintId(e.target.value)}
-                  style={{
-                    width: '100%', padding: '6px 8px', borderRadius: 3,
-                    border: '1px solid var(--ds-border)', background: 'var(--ds-surface)',
-                    color: 'var(--ds-text)', fontSize: 'var(--ds-font-size-300)',
-                  }}
-                >
-                  <option value="">Select sprint…</option>
-                  {sprints.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
-                </select>
+                <Select
+                  options={sprints.map((s) => ({ value: s.id, label: s.name }))}
+                  value={sprints.map((s) => ({ value: s.id, label: s.name })).find(o => o.value === sprintId) ?? null}
+                  onChange={opt => setSprintId(opt?.value ?? '')}
+                  placeholder="Select sprint…"
+                  isSearchable
+                />
               )}
               {scopeType === 'release' && (
-                <select
-                  value={releaseId}
-                  onChange={(e) => setReleaseId(e.target.value)}
-                  style={{
-                    width: '100%', padding: '6px 8px', borderRadius: 3,
-                    border: '1px solid var(--ds-border)', background: 'var(--ds-surface)',
-                    color: 'var(--ds-text)', fontSize: 'var(--ds-font-size-300)',
-                  }}
-                >
-                  <option value="">Select release…</option>
-                  {releases.map((r) => <option key={r.id} value={r.id}>{r.name}</option>)}
-                </select>
+                <Select
+                  options={releases.map((r) => ({ value: r.id, label: r.name }))}
+                  value={releases.map((r) => ({ value: r.id, label: r.name })).find(o => o.value === releaseId) ?? null}
+                  onChange={opt => setReleaseId(opt?.value ?? '')}
+                  placeholder="Select release…"
+                  isSearchable
+                />
               )}
               {scopeType === 'custom' && (
                 <Textfield

@@ -3,6 +3,7 @@ import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { Routes } from '@/lib/routes';
 import { useQuery } from '@tanstack/react-query';
 import { useTestHubProject } from '@/hooks/test-management/useTestHubProject';
+import { Select } from '@/components/ads';
 import { WorkItemTypeIcon } from '@/components/icons';
 import {
   useFolderTree,
@@ -93,16 +94,12 @@ function FolderModal({
       <ModalBody>
         <div style={{ marginBottom: 16 }}>
           <label style={labelStyle}>Parent folder</label>
-          <select
-            value={parentId ?? ''}
-            onChange={e => setParentId(e.target.value || null)}
-            style={selectStyle}
-          >
-            <option value="">All</option>
-            {flat.map(f => (
-              <option key={f.id} value={f.id}>{f.indent}{f.name}</option>
-            ))}
-          </select>
+          <Select
+            options={[{ value: '', label: 'All' }, ...flat.map(f => ({ value: f.id, label: `${f.indent}${f.name}` }))]}
+            value={[{ value: '', label: 'All' }, ...flat.map(f => ({ value: f.id, label: `${f.indent}${f.name}` }))].find(o => o.value === (parentId ?? '')) ?? null}
+            onChange={opt => setParentId(opt?.value || null)}
+            isSearchable
+          />
         </div>
         <div>
           <label style={labelStyle}>
@@ -225,16 +222,12 @@ function CopyModal({ count, folders, onConfirm, onClose, saving }: {
       <ModalBody>
         <div style={{ marginBottom: 16 }}>
           <label style={labelStyle}>Target folder</label>
-          <select
-            value={targetFolderId}
-            onChange={e => setTargetFolderId(e.target.value)}
-            style={selectStyle}
-          >
-            <option value="">Same folder</option>
-            {flat.map(f => (
-              <option key={f.id} value={f.id}>{f.indent}{f.name}</option>
-            ))}
-          </select>
+          <Select
+            options={[{ value: '', label: 'Same folder' }, ...flat.map(f => ({ value: f.id, label: `${f.indent}${f.name}` }))]}
+            value={[{ value: '', label: 'Same folder' }, ...flat.map(f => ({ value: f.id, label: `${f.indent}${f.name}` }))].find(o => o.value === targetFolderId) ?? null}
+            onChange={opt => setTargetFolderId(opt?.value ?? '')}
+            isSearchable
+          />
         </div>
         <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
           <input
@@ -681,13 +674,6 @@ const inputStyle: React.CSSProperties = {
   color: 'var(--ds-text)', outline: 'none', boxSizing: 'border-box',
 };
 
-const selectStyle: React.CSSProperties = {
-  width: '100%', padding: '4px 8px', fontSize: 'var(--ds-font-size-400)', borderRadius: 4,
-  border: '2px solid var(--ds-border)',
-  background: 'var(--ds-surface)',
-  color: 'var(--ds-text)', outline: 'none', boxSizing: 'border-box',
-};
-
 const cancelBtnStyle: React.CSSProperties = {
   padding: '4px 14px', fontSize: 'var(--ds-font-size-300)', fontWeight: 500, borderRadius: 4,
   border: '2px solid var(--ds-border)',
@@ -938,6 +924,44 @@ export default function RepositoryPage() {
       cell: ({ row }) => <CaseStatusPill status={row.status} override={statusOverride?.(row.status)} />,
     },
     {
+      id: 'health',
+      label: 'Health',
+      width: 10,
+      cell: ({ row }) => {
+        const v2 = tableV2Map?.get(row.id);
+        // Zero-assumption: never run + no defects → no fabricated health.
+        if (!v2 || (v2.latest_run_status == null && v2.open_defects === 0)) {
+          return <span style={{ color: 'var(--ds-text-subtlest)' }}>—</span>;
+        }
+        const atRisk = v2.open_defects > 0 || v2.latest_run_status === 'failed' || v2.latest_run_status === 'blocked';
+        if (atRisk) return <Lozenge appearance="removed">At risk</Lozenge>;
+        if (v2.latest_run_status === 'passed') return <Lozenge appearance="success">Healthy</Lozenge>;
+        return <Lozenge appearance="default">Unproven</Lozenge>;
+      },
+    },
+    {
+      id: 'sprint',
+      label: 'Sprint',
+      width: 12,
+      cell: ({ row }) => {
+        const v2 = tableV2Map?.get(row.id);
+        return v2?.sprint_name
+          ? <span style={{ fontSize: 'var(--ds-font-size-300)', lineHeight: 'var(--ds-line-height-body)', color: 'var(--ds-text-subtle)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={v2.sprint_name}>{v2.sprint_name}</span>
+          : <span style={{ color: 'var(--ds-text-subtlest)' }}>—</span>;
+      },
+    },
+    {
+      id: 'release',
+      label: 'Release',
+      width: 12,
+      cell: ({ row }) => {
+        const v2 = tableV2Map?.get(row.id);
+        return v2?.release_name
+          ? <span style={{ fontSize: 'var(--ds-font-size-300)', lineHeight: 'var(--ds-line-height-body)', color: 'var(--ds-text-subtle)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={v2.release_name}>{v2.release_name}</span>
+          : <span style={{ color: 'var(--ds-text-subtlest)' }}>—</span>;
+      },
+    },
+    {
       id: 'priority',
       label: 'Priority',
       width: 12,
@@ -981,44 +1005,6 @@ export default function RepositoryPage() {
         if (!v2?.origin) return <span style={{ color: 'var(--ds-text-subtlest)' }}>—</span>;
         const label = v2.origin === 'ai' ? 'AI' : v2.origin === 'hybrid' ? 'Hybrid' : 'Manual';
         return <Lozenge appearance={v2.origin === 'manual' ? 'default' : 'new'}>{label}</Lozenge>;
-      },
-    },
-    {
-      id: 'health',
-      label: 'Health',
-      width: 10,
-      cell: ({ row }) => {
-        const v2 = tableV2Map?.get(row.id);
-        // Zero-assumption: never run + no defects → no fabricated health.
-        if (!v2 || (v2.latest_run_status == null && v2.open_defects === 0)) {
-          return <span style={{ color: 'var(--ds-text-subtlest)' }}>—</span>;
-        }
-        const atRisk = v2.open_defects > 0 || v2.latest_run_status === 'failed' || v2.latest_run_status === 'blocked';
-        if (atRisk) return <Lozenge appearance="removed">At risk</Lozenge>;
-        if (v2.latest_run_status === 'passed') return <Lozenge appearance="success">Healthy</Lozenge>;
-        return <Lozenge appearance="default">Unproven</Lozenge>;
-      },
-    },
-    {
-      id: 'sprint',
-      label: 'Sprint',
-      width: 12,
-      cell: ({ row }) => {
-        const v2 = tableV2Map?.get(row.id);
-        return v2?.sprint_name
-          ? <span style={{ fontSize: 'var(--ds-font-size-300)', lineHeight: 'var(--ds-line-height-body)', color: 'var(--ds-text-subtle)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={v2.sprint_name}>{v2.sprint_name}</span>
-          : <span style={{ color: 'var(--ds-text-subtlest)' }}>—</span>;
-      },
-    },
-    {
-      id: 'release',
-      label: 'Release',
-      width: 12,
-      cell: ({ row }) => {
-        const v2 = tableV2Map?.get(row.id);
-        return v2?.release_name
-          ? <span style={{ fontSize: 'var(--ds-font-size-300)', lineHeight: 'var(--ds-line-height-body)', color: 'var(--ds-text-subtle)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={v2.release_name}>{v2.release_name}</span>
-          : <span style={{ color: 'var(--ds-text-subtlest)' }}>—</span>;
       },
     },
     {
