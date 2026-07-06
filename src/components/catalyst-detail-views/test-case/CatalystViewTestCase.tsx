@@ -40,6 +40,7 @@ import { useTestCase } from '@/hooks/test-management/useTestCases';
 import { useTestCaseVersions, useRestoreTestCaseVersion } from '@/hooks/test-management/useTestCaseVersions';
 import { VersionDiffView } from '@/components/testhub/versioning/VersionDiffView';
 import { TestCaseStepsEditor } from './TestCaseStepsEditor';
+import { TestCaseAiCluster } from './TestCaseAiCluster';
 import { TmActivitySection } from './TmActivitySection';
 import { TestCaseAttachments } from './TestCaseAttachments';
 import type { CatalystViewBaseProps } from '../shared/types';
@@ -365,7 +366,18 @@ export default function CatalystViewTestCase({
   const steps = testCase?.steps ?? [];
 
   const stepsPanel = itemId ? (
-    <TestCaseStepsEditor testCaseId={itemId} steps={steps as any} />
+    <>
+      {/* D6 (CAT-TESTHUB-V2): Caty assist cluster — draft proposals, accept/reject */}
+      {(testCase?.case_key || testCase?.key) && (
+        <TestCaseAiCluster
+          caseKey={(testCase?.case_key ?? testCase?.key) as string}
+          caseId={itemId}
+          projectId={projectId ?? null}
+          status={testCase?.status as string | undefined}
+        />
+      )}
+      <TestCaseStepsEditor testCaseId={itemId} steps={steps as any} />
+    </>
   ) : null;
 
   /* ── S4: Runs — this case's execution across every cycle. The reusable spec
