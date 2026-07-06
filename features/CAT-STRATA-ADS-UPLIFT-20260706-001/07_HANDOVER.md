@@ -22,7 +22,7 @@ Branch `feat/CAT-STRATA-ADS-UPLIFT-20260706` @ 57487e37f (base main 23eb46cd3). 
 - @atlaskit/icon components DROP className/style; the atlaskit-icons wrappers
   now carry them on a span (fixed 81 broken call sites).
 
-## Open candidates (slice 3)
+## Open candidates (closed in slice 3 — see 04 §11-17; remaining backlog below)
 - Ideation/ProgramDirectory Tailwind→ADS conversion (D7).
 - /docs blank content area (D6, routing/flag).
 - Products/Projects list dangling "/" crumb (cosmetic).

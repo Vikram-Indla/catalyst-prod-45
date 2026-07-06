@@ -60,3 +60,18 @@ Gates after slice 2: tsc 183 = baseline · lint:colors:gate 0 = baseline.
 | Admin Access | ss_5861yzjih ("PENDING SET…") | ss_73467628x | FIXED |
 | Docs | ss_4597drbrs (blank content) | — | finding D6, data-path |
 | Global Create modal | ss_6893p2xl0 | — | compliant |
+
+## Slice 3 evidence (2026-07-06)
+
+| Surface | Before | After | Verdict |
+|---|---|---|---|
+| Programs | ss_613365mx2 / ss_94113pmrp (Tailwind chrome) | ss_7134bxqu2 | FIXED — full ADS chrome |
+| Ideation Backlog | ss_4308b03yz (IDEAS/IDEAS crumb) | ss_1919jiprp | FIXED — duplicate crumb removed |
+| Products list | ss_425177zab (dangling "/") | ss_6783ovtdo | FIXED |
+| STRATA Admin | ss_99451iist | ss_2422xlwc8 | tab strip scrolls on narrow viewports |
+| STRATA Execution | ss_6273gcyl5 | ss_6186pzw4v | tag tooltips added (Ak Tag 180px truncation is by design) |
+| Dark mode — KPI Library | — | ss_8186484dm | tokens hold; no bare-color slabs |
+| Dark mode — Command Center | — | ss_1473mv2xe | tokens hold |
+
+Gates after slice 3: tsc 183 = baseline · lint:colors:gate 0 = baseline.
+/docs withdrawn as a defect (not a route — wrong-URL artifact, see 04 §17).
