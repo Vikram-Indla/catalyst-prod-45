@@ -136,7 +136,7 @@ describe('HubSwitcher v2 — sectioned popover with bespoke tiles', () => {
     expect(hrefByLabel.Incident).toBe('/incident-hub');
     expect(hrefByLabel.Task).toBe('/tasks/overview');
     expect(hrefByLabel.Plan).toBe('/planhub');
-    expect(hrefByLabel.Docex).toBe('/docex');
+    expect(hrefByLabel.Folio).toBe('/folio');
   });
 
   it('marks the active row via aria-current="page" using pathname.startsWith', () => {

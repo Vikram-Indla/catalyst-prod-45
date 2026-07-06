@@ -64,7 +64,7 @@ export default function DocexSearchPage() {
 
       {/* ads-scanner:ignore-next-line — ADS heading token shorthand (font:) */}
       <h1 style={{ font: 'var(--ds-font-heading-large)', color: 'var(--ds-text)', margin: '0 0 16px' }}>
-        Search Docex
+        Search Folio
       </h1>
 
       <div className="docex-search-input" style={{ marginBottom: 24 }}>

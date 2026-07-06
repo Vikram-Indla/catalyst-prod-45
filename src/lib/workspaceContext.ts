@@ -78,8 +78,8 @@ export function deriveWorkspaceType(pathname: string): WorkspaceType {
     return 'planhub';
   }
   
-  // Docex routes
-  if (pathname.startsWith('/docex')) {
+  // Folio routes (renamed from Docex 2026-07-06; /docex redirects)
+  if (pathname.startsWith('/folio') || pathname.startsWith('/docex')) {
     return 'docex';
   }
   
@@ -158,7 +158,7 @@ export function getActiveNavItem(workspaceType: WorkspaceType): string {
     case 'planhub':
       return 'PlanHub';
     case 'docex':
-      return 'Docex';
+      return 'Folio';
     case 'admin':
       return '';
     default:

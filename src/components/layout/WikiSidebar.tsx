@@ -50,7 +50,7 @@ export function WikiSidebar({ expanded, onToggle, className }: WikiSidebarProps)
       // duplicate "Docex" labels; the pretty hub icon belongs here).
       return {
         badge: 'DX',
-        label: 'Docex',
+        label: 'Folio',
         badgeHubIconUrl: HUB_ICON_REGISTRY.docex,
         sections: [],
       };
@@ -90,11 +90,11 @@ export function WikiSidebar({ expanded, onToggle, className }: WikiSidebarProps)
 
     return {
       badge: 'DX',
-      label: 'Docex',
+      label: 'Folio',
       badgeHubIconUrl: HUB_ICON_REGISTRY.docex,
       sections: [
         {
-          title: 'Docex',
+          title: 'Folio',
           items: [
             { id: 'home', title: 'Home', path: Routes.docex.root(), icon: Home, exact: true },
             { id: 'search', title: 'Search', path: Routes.docex.search(), icon: Search, exact: true },

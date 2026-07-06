@@ -6,6 +6,12 @@ function IssueRedirectToBrowse() {
   return <Navigate to={`/browse/${issueKey ?? ''}`} replace />;
 }
 
+/** Legacy Docex URLs → Folio (module renamed 2026-07-06). */
+function DocexToFolioRedirect() {
+  const { pathname, search, hash } = useLocation();
+  return <Navigate to={pathname.replace(/^\/docex/, '/folio') + search + hash} replace />;
+}
+
 import { ENABLE_AI, ENABLE_HEAVY_EXPORTS } from '../lib/featureFlags';
 import { FeatureComingSoon } from '../components/common/FeatureComingSoon';
 import { ModuleGate } from '../components/common/ModuleGate';
@@ -816,17 +822,21 @@ export default function FullAppRoutes() {
         {/* Plan Hub deprecated 2026-06-25 — all routes removed */}
         <Route path="/planhub*" element={<Navigate to="/tasks/overview" replace />} />
 
-        {/* Docex — Catalyst Pages (CAT-DOCS-NOTION-20260704-001).
-            Renamed from /wiki 2026-07-05: /wiki belongs to the restored
-            knowledge-base hub on main. */}
-        <Route path="/docex" element={<S><WikiHomePage /></S>} />
-        <Route path="/docex/search" element={<S><DocexSearchPage /></S>} />
+        {/* Folio — Catalyst Pages (CAT-DOCS-NOTION-20260704-001).
+            Renamed from /wiki 2026-07-05 (/wiki belongs to the restored
+            knowledge-base hub on main), then Docex → Folio 2026-07-06
+            (Vikram: "Go for folio"). */}
+        <Route path="/folio" element={<S><WikiHomePage /></S>} />
+        <Route path="/folio/search" element={<S><DocexSearchPage /></S>} />
         {import.meta.env.DEV && (
-          <Route path="/docex/_sandbox" element={<S><WikiSandboxPage /></S>} />
+          <Route path="/folio/_sandbox" element={<S><WikiSandboxPage /></S>} />
         )}
-        <Route path="/docex/:workspaceSlug" element={<S><WikiWorkspacePage /></S>} />
-        <Route path="/docex/:workspaceSlug/db/:dbSlug" element={<S><DocexDatabasePage /></S>} />
-        <Route path="/docex/:workspaceSlug/:pageSlug" element={<S><WikiWorkspacePage /></S>} />
+        <Route path="/folio/:workspaceSlug" element={<S><WikiWorkspacePage /></S>} />
+        <Route path="/folio/:workspaceSlug/db/:dbSlug" element={<S><DocexDatabasePage /></S>} />
+        <Route path="/folio/:workspaceSlug/:pageSlug" element={<S><WikiWorkspacePage /></S>} />
+        {/* Legacy Docex URLs — permanent redirects into /folio */}
+        <Route path="/docex" element={<Navigate to="/folio" replace />} />
+        <Route path="/docex/*" element={<DocexToFolioRedirect />} />
 
         <Route path="/mining" element={<S><MiningComingSoon /></S>} />
         <Route path="/product/room" element={<S><ProductRoomPage /></S>} />
@@ -925,7 +935,7 @@ export default function FullAppRoutes() {
         <Route path="/unauthorized" element={<S><UnauthorizedPage /></S>} />
 
         {/* Knowledge Hub absorbed into Wiki — legacy UUID URLs redirect to slug routes */}
-        <Route path="/knowledge-hub" element={<Navigate to="/docex" replace />} />
+        <Route path="/knowledge-hub" element={<Navigate to="/folio" replace />} />
         <Route path="/knowledge-hub/spaces/:spaceId" element={<S><LegacySpaceRedirect /></S>} />
         <Route path="/knowledge-hub/documents/:documentId" element={<S><LegacyDocumentRedirect /></S>} />
 

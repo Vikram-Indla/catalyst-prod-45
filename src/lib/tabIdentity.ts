@@ -12,7 +12,8 @@ export function deriveHubFromPath(pathname: string): string | undefined {
     ['/plan-hub', 'PlanHub'],
     ['/producthub', 'ProductHub'],
     ['/product', 'ProductHub'],
-    ['/docex', 'Docex'],
+    ['/folio', 'Folio'],
+    ['/docex', 'Folio'],
     ['/strategy', 'StrategyHub'],
     ['/release', 'ReleaseHub'],
     ['/priorities', 'Tasks'],
@@ -53,7 +54,7 @@ const HUB_SLUGS = new Set([
 /** Friendly names for known top-level slugs (used when the last URL segment IS a hub slug). */
 const HUB_LANDING_LABEL: Record<string, string> = {
   'for-you': 'Home',
-  'docex': 'Docex',
+  'docex': 'Folio',
   'strategy': 'Strategy',
   'strategyhub': 'Strategy',
   'project-hub': 'Projects',

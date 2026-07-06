@@ -26,7 +26,7 @@ const HUB_ITEMS = [
   { label: "Incidents", path: "/incident-hub", moduleKey: "operations", featureFlagKey: "incident_hub", requiresEnterpriseAccess: false, visibleToProductOwner: false },
   { label: "Tasks", path: "/tasks/overview", moduleKey: "planner", featureFlagKey: "task_hub", requiresEnterpriseAccess: false, visibleToProductOwner: true },
   { label: "Planning", path: "/planhub", moduleKey: "planhub", featureFlagKey: "plan_hub", requiresEnterpriseAccess: false, visibleToProductOwner: true },
-  { label: "Docex", path: "/docex", moduleKey: "docex", featureFlagKey: "docex_hub", requiresEnterpriseAccess: false, visibleToProductOwner: true },
+  { label: "Folio", path: "/folio", moduleKey: "docex", featureFlagKey: "docex_hub", requiresEnterpriseAccess: false, visibleToProductOwner: true },
 ];
 
 export function MobileNavigationMenu() {
