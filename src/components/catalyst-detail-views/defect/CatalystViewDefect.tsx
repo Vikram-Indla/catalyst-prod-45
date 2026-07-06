@@ -28,6 +28,7 @@ import {
 import { LinkedWorkItemsSection } from '@/modules/project-work-hub/components/linked-work-items';
 import { SubtasksPanel } from '@/modules/project-work-hub/components/SubtasksPanel';
 import { TestCoveragePanel } from '../story/TestCoveragePanel';
+import { TestCasesSection } from '@/modules/project-work-hub/components/story-test-cases';
 import { EditablePriority } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/EditableFields';
 import { MoveIssueDialog } from '../shared/MoveIssueDialog';
 import { ConfirmArchiveDialog } from '../shared/ConfirmArchiveDialog';
@@ -168,6 +169,16 @@ export default function CatalystViewDefect({
       {/* Test coverage / Trace-From (CAT-TESTHUB-REPORT-REVAMP, G-002) */}
       {issue?.issue_key && (
         <TestCoveragePanel issueKey={issue.issue_key} statusCategory={issue.status_category} mode="defect" />
+      )}
+      {/* G5 (CAT-TESTHUB-V2): Add/Generate Test Case insertion point */}
+      {issue?.issue_key && (issue?.project_key || projectKey) && (
+        <TestCasesSection
+          storyKey={issue.issue_key}
+          storySummary={issue.summary ?? ''}
+          storyDescription={typeof issue.description === 'string' ? issue.description : issue.description ? JSON.stringify(issue.description) : ''}
+          projectKey={issue.project_key || projectKey || ''}
+          requirementType="defect"
+        />
       )}
       <CatalystActivitySection itemId={itemId} isOpen={isOpen} />
     </>

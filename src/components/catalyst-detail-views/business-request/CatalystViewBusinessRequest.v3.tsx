@@ -33,6 +33,7 @@ import { CatalystKeyDetails, KeyDetailsFieldRow } from '../shared/sections/Catal
 import { Description } from '../shared/sections/Description';
 import { mapBrToIssueLike } from './sections/BrSidebarAdapter';
 import { CatalystQuickActions } from '../shared/sections';
+import { TestCasesSection } from '@/modules/project-work-hub/components/story-test-cases';
 import Select, { CreatableSelect } from '@atlaskit/select';
 import { Checkbox } from '@atlaskit/checkbox';
 import {
@@ -396,6 +397,17 @@ export default function CatalystViewBusinessRequestV3({
             issueId={resolvedId}
             issueKey={request.request_key}
             projectKey={request.request_key.split('-')[0] || 'MDT'}
+          />
+        )}
+        {/* G5 (CAT-TESTHUB-V2): Add/Generate Test Case insertion point on BR —
+            UAT scenarios trace back to the request via tm_requirement_links. */}
+        {!isNewlyCreated && request?.request_key && (
+          <TestCasesSection
+            storyKey={request.request_key}
+            storySummary={request.title ?? ''}
+            storyDescription={typeof request.description === 'string' ? request.description : request.description ? JSON.stringify(request.description) : ''}
+            projectKey={request.request_key.split('-')[0] || 'MDT'}
+            requirementType="business_request"
           />
         )}
         <BrActivitySection requestId={resolvedId ?? ''} isOpen={isOpen} />

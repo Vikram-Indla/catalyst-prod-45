@@ -14,6 +14,7 @@ import {
 } from '../shared/sections';
 import { LinkedWorkItemsSection } from '@/modules/project-work-hub/components/linked-work-items';
 import { TestCoveragePanel } from '../story/TestCoveragePanel';
+import { TestCasesSection } from '@/modules/project-work-hub/components/story-test-cases';
 import { SubtasksPanel } from '@/modules/project-work-hub/components/SubtasksPanel';
 import { ImproveIssueDropdown, useImproveApplyHandlers } from '@/components/catalyst-detail-views/improve';
 import { CatalystSeverityField } from '../shared/sections/CatalystSeverityField';
@@ -119,6 +120,16 @@ export default function CatalystViewIncident({
       {/* Regression coverage / Trace-From (CAT-TESTHUB-REPORT-REVAMP, G-002) */}
       {issue?.issue_key && (
         <TestCoveragePanel issueKey={issue.issue_key} statusCategory={issue.status_category} mode="incident" />
+      )}
+      {/* G5 (CAT-TESTHUB-V2): Add/Generate Test Case insertion point */}
+      {issue?.issue_key && (issue?.project_key || projectKey) && (
+        <TestCasesSection
+          storyKey={issue.issue_key}
+          storySummary={issue.summary ?? ''}
+          storyDescription={typeof issue.description === 'string' ? issue.description : issue.description ? JSON.stringify(issue.description) : ''}
+          projectKey={issue.project_key || projectKey || ''}
+          requirementType="incident"
+        />
       )}
       <CatalystActivitySection itemId={itemId} isOpen={isOpen} />
     </>
