@@ -270,6 +270,32 @@ export const REPORT_REGISTRY: ReportDefinition[] = [
     status: 'wired',
   },
 
+  // ─── CAT-TESTHUB-V2 quality-plane reports (wired) ─────────────────────
+  {
+    id: 'sprint-test-health',
+    label: 'Sprint Test Health',
+    description: 'Latest pass/warn/block gate per sprint: coverage, execution, blockers, draft leaks.',
+    category: 'Sprint',
+    component: lazy(() => import('./bodies/SprintTestHealthBody')),
+    status: 'wired',
+  },
+  {
+    id: 'version-variance',
+    label: 'Version Variance',
+    description: 'Snapshot-vs-repository drift in active cycles and how each was explicitly resolved.',
+    category: 'Governance',
+    component: lazy(() => import('./bodies/VersionVarianceBody')),
+    status: 'wired',
+  },
+  {
+    id: 'ai-generation-audit',
+    label: 'AI Generation Audit',
+    description: 'Every TestHub AI call: who, operation, model, tokens, outcome.',
+    category: 'Governance',
+    component: lazy(() => import('./bodies/AiGenerationAuditBody')),
+    status: 'wired',
+  },
+
   // ─── Traceability (Lab-derived, wired) ────────────────────────────────
   {
     id: 'traceability-summary',
