@@ -288,6 +288,22 @@ export const REPORT_REGISTRY: ReportDefinition[] = [
     status: 'wired',
   },
   {
+    id: 'release-readiness',
+    label: 'Release Readiness',
+    description: 'Live test gate per release: execution health, blocking defects, evidence gaps — blocks sort first.',
+    category: 'Governance',
+    component: lazy(() => import('./bodies/ReleaseReadinessBody')),
+    status: 'wired',
+  },
+  {
+    id: 'defect-leakage',
+    label: 'Defect Leakage & Retest',
+    description: 'Caught-by-testing vs leaked defects, with retest state for fixed test-caught defects.',
+    category: 'Defects',
+    component: lazy(() => import('./bodies/DefectLeakageBody')),
+    status: 'wired',
+  },
+  {
     id: 'ai-generation-audit',
     label: 'AI Generation Audit',
     description: 'Every TestHub AI call: who, operation, model, tokens, outcome.',
