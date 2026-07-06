@@ -164,6 +164,37 @@ export default function FolioSiteMapPage() {
     return m;
   }, [docs]);
 
+  // Depth per doc (roots = 1) — powers "collapse to level N".
+  const depthById = useMemo(() => {
+    const parentOf = new Map<string, string | null>();
+    for (const d of docs ?? []) parentOf.set(d.id, d.parent_id);
+    const m = new Map<string, number>();
+    const depth = (id: string): number => {
+      if (m.has(id)) return m.get(id)!;
+      const p = parentOf.get(id);
+      const v = p ? depth(p) + 1 : 1;
+      m.set(id, v);
+      return v;
+    };
+    for (const d of docs ?? []) depth(d.id);
+    return m;
+  }, [docs]);
+
+  const collapseToLevel = (level: number | null) => {
+    if (level === null) {
+      setCollapsed(new Set());
+      return;
+    }
+    // Collapse every parent AT depth >= level so nothing deeper renders.
+    setCollapsed(
+      new Set(
+        (docs ?? [])
+          .filter((d) => (childCount.get(d.id) ?? 0) > 0 && (depthById.get(d.id) ?? 1) >= level)
+          .map((d) => d.id),
+      ),
+    );
+  };
+
   const visibleWorkspaces = useMemo(
     () => (workspaces ?? []).filter((w) => !wsSlugParam || w.slug === wsSlugParam),
     [workspaces, wsSlugParam],
@@ -248,6 +279,11 @@ export default function FolioSiteMapPage() {
           (nodes[nodes.length - 1].data as Record<string, unknown>).doc = d;
           (nodes[nodes.length - 1].data as Record<string, unknown>).label = (
             <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, maxWidth: 216 }}>
+              {kids > 0 ? (
+                <span aria-hidden style={{ color: 'var(--ds-icon-subtle)', fontSize: 10, flexShrink: 0 }}>
+                  {isCollapsed ? '▶' : '▼'}
+                </span>
+              ) : null}
               <span aria-hidden>{d.icon || '📄'}</span>
               <span dir="auto" style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontWeight: 500 }}>
                 {d.title || 'Untitled'}
@@ -426,14 +462,21 @@ export default function FolioSiteMapPage() {
         </div>
         {view === 0 ? (
           <>
-            <button type="button" className="folio-toolbar-btn" onClick={() => setCollapsed(new Set())}>
+            <div style={{ width: 170 }}>
+              <Select
+                options={[1, 2, 3, 4, 5, 6, 7, 8].map((n) => ({ label: `Collapse to level ${n}`, value: String(n) }))}
+                value={null}
+                onChange={(o) => collapseToLevel(o ? Number(o.value) : null)}
+                placeholder="Collapse to level…"
+                isClearable
+                isSearchable={false}
+                aria-label="Collapse to level"
+              />
+            </div>
+            <button type="button" className="folio-toolbar-btn" onClick={() => collapseToLevel(null)}>
               Expand all
             </button>
-            <button
-              type="button"
-              className="folio-toolbar-btn"
-              onClick={() => setCollapsed(new Set((docs ?? []).filter((d) => childCount.get(d.id)).map((d) => d.id)))}
-            >
+            <button type="button" className="folio-toolbar-btn" onClick={() => collapseToLevel(1)}>
               Collapse all
             </button>
           </>
