@@ -3,20 +3,35 @@
  * the change that matters most to the current user right now. Replaces the old
  * card stack: ONE slim, countdown-driven enterprise banner (live timer + next
  * action + one CTA). Clicking routes into the Release Hub change detail, where
- * the full SOP actions live. ADS tokens only; canonical status/risk lozenges.
+ * the full SOP actions live.
+ *
+ * Controls (persisted in localStorage, per change):
+ *   • Collapse → premium mini-timer pill (rb:collapsed, global)
+ *   • Snooze → hide + remind in 1h / 4h / tomorrow (rb:snooze:<id>)
+ *   • Dismiss for this change (long snooze)
+ * ADS tokens only; canonical status/risk lozenges + canonical DropdownMenu.
  */
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ArrowRightIcon from '@atlaskit/icon/glyph/arrow-right';
+import { MoreHorizontal, Clock, EyeOff, X, ChevronDown, ChevronUp } from '@/lib/atlaskit-icons';
+import { DropdownMenu } from '@/components/ads/DropdownMenu';
 import { ChangeStatusLozenge, RiskLozenge } from '@/components/releasehub/shared/ReleaseOpsLozenges';
 import { RH } from '@/constants/releasehub.design';
 import type { ChangeCtx, ExecCard } from '@/hooks/useMyExecutionWork';
 
 const T = {
   text: 'var(--ds-text)', subtle: 'var(--ds-text-subtle)', subtlest: 'var(--ds-text-subtlest)',
-  inverse: 'var(--ds-text-inverse)', link: 'var(--ds-text-brand)',
+  inverse: 'var(--ds-text-inverse)', link: 'var(--ds-text-brand)', icon: 'var(--ds-icon-subtle)',
   danger: 'var(--ds-text-danger)', success: 'var(--ds-text-success)', info: 'var(--ds-text-information)',
   mono: 'var(--ds-font-family-code, monospace)',
+};
+
+const COLLAPSE_KEY = 'rb:collapsed';
+const snoozeKey = (id: string) => `rb:snooze:${id}`;
+const readSnooze = (id: string): number => {
+  const v = Number(localStorage.getItem(snoozeKey(id)) ?? 0);
+  return Number.isFinite(v) ? v : 0;
 };
 
 /** Two-part countdown target derived from the change window + live SOP state. */
@@ -57,26 +72,100 @@ function nextActionText(c: ChangeCtx, cards: ExecCard[]): string {
   return `SOP ${c.sopDone}/${c.sopTotal} complete`;
 }
 
+const iconBtn: React.CSSProperties = {
+  display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 28, height: 28,
+  borderRadius: 8, border: 'none', background: 'transparent', cursor: 'pointer', color: T.icon, padding: 0,
+};
+
 export function ReleaseChangeAnnouncementBanner({
   change, assignedCards, moreCount,
 }: { change: ChangeCtx; assignedCards: ExecCard[]; moreCount: number }) {
   const navigate = useNavigate();
   const [now, setNow] = useState(() => Date.now());
+  const [collapsed, setCollapsed] = useState<boolean>(() => localStorage.getItem(COLLAPSE_KEY) === '1');
+  const [snoozedUntil, setSnoozedUntil] = useState<number>(() => readSnooze(change.id));
+
   useEffect(() => {
     const id = window.setInterval(() => setNow(Date.now()), 1000);
     return () => window.clearInterval(id);
   }, []);
+  // Re-read persisted state when the surfaced change swaps.
+  useEffect(() => { setSnoozedUntil(readSnooze(change.id)); }, [change.id]);
 
   const timer = computeTimer(change, now);
-  const action = nextActionText(change, assignedCards);
   const open = () => navigate(`/release-hub/changes/${change.slug ?? change.id}`);
 
+  const setCollapse = (v: boolean) => { setCollapsed(v); localStorage.setItem(COLLAPSE_KEY, v ? '1' : '0'); };
+  const snooze = (ms: number) => {
+    const until = Date.now() + ms;
+    localStorage.setItem(snoozeKey(change.id), String(until));
+    setSnoozedUntil(until);
+  };
+  const HOUR = 3600_000;
+
+  // Snoozed → render nothing; the 1s interval keeps ticking and re-surfaces the
+  // banner the moment the reminder window elapses (or on next For-You visit).
+  if (snoozedUntil && now < snoozedUntil) return null;
+
+  const menu = (
+    <DropdownMenu
+      placement="bottom-end"
+      aria-label="Change announcement options"
+      trigger={({ isSelected }) => (
+        <span style={{ ...iconBtn, background: isSelected ? 'var(--ds-background-neutral-subtle-hovered)' : 'transparent' }}>
+          <MoreHorizontal size={16} />
+        </span>
+      )}
+      groups={[
+        { key: 'view', items: [
+          { key: 'collapse', label: 'Collapse to timer', iconBefore: <EyeOff size={16} />, onClick: () => setCollapse(true) },
+        ] },
+        { key: 'remind', title: 'Remind me', items: [
+          { key: '1h', label: 'In 1 hour', iconBefore: <Clock size={16} />, onClick: () => snooze(HOUR) },
+          { key: '4h', label: 'In 4 hours', iconBefore: <Clock size={16} />, onClick: () => snooze(4 * HOUR) },
+          { key: '1d', label: 'Tomorrow', iconBefore: <Clock size={16} />, onClick: () => snooze(24 * HOUR) },
+        ] },
+        { key: 'dismiss', items: [
+          { key: 'x', label: 'Dismiss for this change', iconBefore: <X size={16} />, isDanger: true, onClick: () => snooze(365 * 24 * HOUR) },
+        ] },
+      ]}
+    />
+  );
+
+  // ── Collapsed: premium mini-timer pill (compact, does not occupy the row) ──
+  if (collapsed) {
+    return (
+      <div
+        role="button" tabIndex={0} onClick={open}
+        onKeyDown={(e) => { if (e.key === 'Enter') open(); }}
+        style={{
+          display: 'inline-flex', alignItems: 'center', gap: 12, cursor: 'pointer',
+          padding: '8px 8px 8px 12px', borderRadius: 10,
+          border: `1px solid ${change.isEmergency || change.freezeConflict ? 'var(--ds-border-danger)' : 'var(--ds-border)'}`,
+          background: 'linear-gradient(90deg, var(--ds-surface-raised) 0%, var(--ds-background-information) 100%)',
+          boxShadow: 'var(--ds-shadow-raised)',
+        }}
+      >
+        {timer.pulse && <span aria-hidden style={{ width: 7, height: 7, borderRadius: '50%', background: timer.tone, flexShrink: 0 }} />}
+        <span style={{ fontFamily: T.mono, fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: timer.tone, fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap' }}>{timer.big}</span>
+        <span style={{ fontFamily: T.mono, fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: T.link, whiteSpace: 'nowrap' }}>{change.chgNumber}</span>
+        <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', color: T.subtle, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 200 }}>{change.title}</span>
+        <button aria-label="Expand" style={iconBtn} onClick={(e) => { e.stopPropagation(); setCollapse(false); }}>
+          <ChevronDown size={16} />
+        </button>
+      </div>
+    );
+  }
+
+  // ── Expanded: full announcement banner ──
+  const action = nextActionText(change, assignedCards);
   return (
-    <button
-      onClick={open}
+    <div
+      role="button" tabIndex={0} onClick={open}
+      onKeyDown={(e) => { if (e.key === 'Enter') open(); }}
       style={{
         width: '100%', textAlign: 'left', cursor: 'pointer', display: 'flex', alignItems: 'stretch',
-        gap: 0, padding: 0, borderRadius: 12, overflow: 'hidden',
+        borderRadius: 12, overflow: 'hidden',
         border: `1px solid ${change.isEmergency || change.freezeConflict ? 'var(--ds-border-danger)' : 'var(--ds-border)'}`,
         background: 'linear-gradient(90deg, var(--ds-surface-raised) 0%, var(--ds-background-information) 100%)',
         boxShadow: 'var(--ds-shadow-raised)',
@@ -86,7 +175,7 @@ export function ReleaseChangeAnnouncementBanner({
       <span style={{ width: 4, flexShrink: 0, background: timer.tone }} aria-hidden />
 
       {/* identity block */}
-      <span style={{ display: 'flex', flexDirection: 'column', gap: 6, padding: '16px 16px', minWidth: 0, flex: 1 }}>
+      <span style={{ display: 'flex', flexDirection: 'column', gap: 4, padding: '16px 16px', minWidth: 0, flex: 1 }}>
         <span style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
           <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-050)', fontWeight: 700, letterSpacing: '.08em', color: T.subtlest, textTransform: 'uppercase' as const }}>
             Change execution
@@ -120,7 +209,15 @@ export function ReleaseChangeAnnouncementBanner({
         Open change
         <ArrowRightIcon label="" size="small" />
       </span>
-    </button>
+
+      {/* controls — collapse + snooze/dismiss menu (stop propagation so they don't open the change) */}
+      <span onClick={(e) => e.stopPropagation()} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 4, padding: '0 8px', flexShrink: 0, borderLeft: '1px solid var(--ds-border)' }}>
+        <button aria-label="Collapse to timer" style={iconBtn} onClick={() => setCollapse(true)}>
+          <ChevronUp size={16} />
+        </button>
+        {menu}
+      </span>
+    </div>
   );
 }
 
