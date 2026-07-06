@@ -20,7 +20,8 @@ import { DateTimePicker } from '@atlaskit/datetime-picker';
 import { ListChecks, Minimize2, Maximize2, X } from '@/lib/atlaskit-icons';
 import { ChangeStatusLozenge, RiskLozenge } from '@/components/releasehub/shared/ReleaseOpsLozenges';
 import { RH } from '@/constants/releasehub.design';
-import type { ChangeCtx, ExecCard } from '@/hooks/useMyExecutionWork';
+import { useMyExecutionWork, type ChangeCtx, type ExecCard, type MyExecutionWork } from '@/hooks/useMyExecutionWork';
+import { useReleaseBannerStore } from '@/components/releasehub/foryou/releaseBannerStore';
 
 const T = {
   text: 'var(--ds-text)', subtle: 'var(--ds-text-subtle)', subtlest: 'var(--ds-text-subtlest)',
@@ -133,7 +134,8 @@ export function ReleaseChangeAnnouncementBanner({
   change, assignedCards, moreCount,
 }: { change: ChangeCtx; assignedCards: ExecCard[]; moreCount: number }) {
   const navigate = useNavigate();
-  const [collapsed, setCollapsed] = useState<boolean>(() => localStorage.getItem(COLLAPSE_KEY) === '1');
+  const collapsed = useReleaseBannerStore((s) => s.collapsed);
+  const setCollapsed = useReleaseBannerStore((s) => s.setCollapsed);
   const [snoozedUntil, setSnoozedUntil] = useState<number>(() => readSnooze(change.id));
   const [remindOpen, setRemindOpen] = useState(false);
   const [pickIso, setPickIso] = useState<string>(() => new Date(Date.now() + 3600_000).toISOString());
@@ -158,7 +160,6 @@ export function ReleaseChangeAnnouncementBanner({
   const tone = computeTimer(change, Date.now()).tone;
   const open = () => navigate(`/release-hub/changes/${change.slug ?? change.id}`);
   const openSop = () => navigate(`/release-hub/changes/${change.slug ?? change.id}?tab=sop`);
-  const setCollapse = (v: boolean) => { setCollapsed(v); localStorage.setItem(COLLAPSE_KEY, v ? '1' : '0'); };
   const snoozeUntil = (until: number) => {
     if (!until || until <= Date.now()) return;
     localStorage.setItem(snoozeKey(change.id), String(until));
@@ -202,32 +203,16 @@ export function ReleaseChangeAnnouncementBanner({
             style={{ height: 36, borderRadius: 8, border: 'none', cursor: pickIso ? 'pointer' : 'not-allowed', background: 'var(--ds-background-brand-bold)', color: 'var(--ds-text-inverse)', fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', fontWeight: 600, opacity: pickIso ? 1 : 0.5 }}
           >Set reminder</button>
           <div style={{ height: 1, background: T.border, margin: '4px 0' }} />
-          <MenuRow icon={<Minimize2 size={16} />} label="Collapse to timer" onClick={() => { setRemindOpen(false); setCollapse(true); }} />
+          <MenuRow icon={<Minimize2 size={16} />} label="Collapse to timer" onClick={() => { setRemindOpen(false); setCollapsed(true); }} />
           <MenuRow icon={<X size={16} />} label="Dismiss for this change" danger onClick={() => snoozeUntil(Date.now() + 365 * 24 * HOUR)} />
         </div>
       )}
     </span>
   );
 
-  // ── Collapsed: premium mini-timer pill ──
-  if (collapsed) {
-    return (
-      <div
-        role="button" tabIndex={0} onClick={open} onKeyDown={(e) => { if (e.key === 'Enter') open(); }}
-        style={{
-          display: 'inline-flex', alignItems: 'center', gap: 12, cursor: 'pointer', padding: '8px 8px 8px 12px', borderRadius: 999,
-          border: `1px solid ${change.isEmergency || change.freezeConflict ? 'var(--ds-border-danger)' : T.border}`,
-          background: 'linear-gradient(90deg, var(--ds-surface-raised) 0%, var(--ds-background-information) 100%)',
-          boxShadow: 'var(--ds-shadow-raised)',
-        }}
-      >
-        <LiveCountdown change={change} variant="pill" />
-        <span style={{ fontFamily: T.mono, fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: T.link, whiteSpace: 'nowrap' }}>{change.chgNumber}</span>
-        <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', color: T.subtle, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 220 }}>{change.title}</span>
-        <button aria-label="Expand banner" style={iconBtn} onClick={(e) => { e.stopPropagation(); setCollapse(false); }}><Maximize2 size={15} /></button>
-      </div>
-    );
-  }
+  // ── Collapsed: the live timer docks into the global top nav (ReleaseTimerNavChip);
+  //    the For-You banner itself renders nothing while collapsed. ──
+  if (collapsed) return null;
 
   // ── Expanded: full banner ──
   const action = nextActionText(change, assignedCards);
@@ -273,8 +258,67 @@ export function ReleaseChangeAnnouncementBanner({
           Open change <ArrowRightIcon label="" size="small" />
         </button>
         {remindPopup}
-        <button aria-label="Collapse to timer" style={iconBtn} onClick={() => setCollapse(true)}><Minimize2 size={16} /></button>
+        <button aria-label="Collapse to timer" style={iconBtn} onClick={() => setCollapsed(true)}><Minimize2 size={16} /></button>
       </span>
+    </div>
+  );
+}
+
+/** Rank every change the user touches → the single most urgent (running first,
+ *  then soonest planned start). Shared by the For-You banner and the nav chip. */
+export function pickPrimaryChange(data: MyExecutionWork): { primary: ChangeCtx | null; moreCount: number } {
+  const byId = new Map<string, ChangeCtx>();
+  for (const c of [...data.dayOfChanges, ...data.assignedCards.map((k) => k.change), ...data.managedChanges]) {
+    if (!byId.has(c.id)) byId.set(c.id, c);
+  }
+  const changes = Array.from(byId.values());
+  if (changes.length === 0) return { primary: null, moreCount: 0 };
+  const startMs = (c: ChangeCtx) => (c.plannedStartAt ? new Date(c.plannedStartAt).getTime() : Number.MAX_SAFE_INTEGER);
+  changes.sort((a, b) => { const ar = a.running ? 0 : 1, br = b.running ? 0 : 1; return ar !== br ? ar - br : startMs(a) - startMs(b); });
+  return { primary: changes[0], moreCount: changes.length - 1 };
+}
+
+/**
+ * ReleaseTimerNavChip — the docked, global top-nav SLA timer. Renders ONLY when
+ * the For-You banner is collapsed: a compact live-countdown pill that follows
+ * the user across every page (JSM/PagerDuty-style persistent incident timer).
+ * Click the timer → change detail; click expand → restore the full banner.
+ */
+export function ReleaseTimerNavChip() {
+  const navigate = useNavigate();
+  const collapsed = useReleaseBannerStore((s) => s.collapsed);
+  const setCollapsed = useReleaseBannerStore((s) => s.setCollapsed);
+  const { data } = useMyExecutionWork();
+  if (!collapsed || !data) return null;
+  const { primary } = pickPrimaryChange(data);
+  if (!primary) return null;
+  const snz = readSnooze(primary.id);
+  if (snz && Date.now() < snz) return null;
+
+  return (
+    <div
+      style={{
+        display: 'inline-flex', alignItems: 'center', gap: 8, height: 32, padding: '0 4px 0 12px', borderRadius: 999,
+        border: `1px solid ${primary.isEmergency || primary.freezeConflict ? 'var(--ds-border-danger)' : T.border}`,
+        background: 'linear-gradient(90deg, var(--ds-surface-raised) 0%, var(--ds-background-information) 100%)',
+        boxShadow: 'var(--ds-shadow-raised)', maxWidth: 260,
+      }}
+    >
+      <button
+        onClick={() => navigate(`/release-hub/changes/${primary.slug ?? primary.id}`)}
+        title={`${primary.chgNumber} · ${primary.title}`}
+        style={{ display: 'inline-flex', alignItems: 'center', gap: 8, minWidth: 0, background: 'transparent', border: 'none', cursor: 'pointer', padding: 0 }}
+      >
+        <LiveCountdown change={primary} variant="pill" />
+        <span style={{ fontFamily: T.mono, fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: T.link, whiteSpace: 'nowrap' }}>{primary.chgNumber}</span>
+      </button>
+      <button
+        aria-label="Expand change banner"
+        onClick={() => { setCollapsed(false); navigate('/'); }}
+        style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 24, height: 24, borderRadius: 8, border: 'none', background: 'transparent', cursor: 'pointer', color: T.icon, padding: 0 }}
+      >
+        <Maximize2 size={14} />
+      </button>
     </div>
   );
 }

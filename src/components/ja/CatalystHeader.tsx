@@ -10,6 +10,7 @@ import { HubSwitcher } from '@/components/layout/HubSwitcher';
 import { GlobalSearch } from '@/components/layout/GlobalSearch';
 import { CreateDropdown } from './CreateDropdown';
 import { NotificationsPanel } from './NotificationsPanel';
+import { ReleaseTimerNavChip } from '@/components/releasehub/foryou/ReleaseChangeAnnouncementBanner';
 import { Link } from 'react-router-dom';
 import { useSyncExternalStore } from 'react';
 import { useCatalystContext } from '@/contexts/CatalystContext';
@@ -238,6 +239,7 @@ export function CatalystHeader() {
         flexShrink: 0,
         minWidth: 'max-content',
       }} data-theme-toggle-cluster>
+        {!isNarrow && <ReleaseTimerNavChip />}
         {!isNarrow && <ThemeToggle />}
         <NotificationsPanel />
         {!isNarrow && <SettingsMenu />}
