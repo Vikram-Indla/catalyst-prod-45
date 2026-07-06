@@ -24,6 +24,8 @@ import { ShareFeedbackModal } from '@/components/releases/ShareFeedbackModal';
 import { EditableSectionName } from '@/components/releases/detail/EditableSectionName';
 import { WorkItemsSection } from '@/components/releases/detail/WorkItemsSection';
 import { QualityGatesSection } from '@/components/releases/detail/QualityGatesSection';
+import { SprintTestHealthSection } from '@/components/releases/detail/SprintTestHealthSection';
+import { ReleaseTestReadinessSection } from '@/components/releases/detail/ReleaseTestReadinessSection';
 import { ReleaseSidePanel } from '@/components/releases/detail/ReleaseSidePanel';
 import { Description } from '@/components/catalyst-detail-views/shared/sections/Description';
 import type { AdfDoc } from '@/components/catalyst-detail-views/shared/sections/Description';
@@ -497,6 +499,11 @@ export function ReleaseDetailPage({
       />
 
       <QualityGatesSection releaseId={release.id} />
+
+      {/* G1/G3 (CAT-TESTHUB-V2): sprint + release = first-class quality
+          control planes. Sections are kind-gated — no-op on milestones. */}
+      {config.kind === 'sprint' && <SprintTestHealthSection sprintId={release.id} />}
+      {config.kind === 'release' && <ReleaseTestReadinessSection releaseId={release.id} />}
 
       <ShareFeedbackModal isOpen={isFeedbackOpen} onClose={() => setIsFeedbackOpen(false)} />
       </div>
