@@ -140,7 +140,8 @@ export default function WikiWorkspacePage() {
           padding: 16px 16px 20px;
           border: 1px solid var(--ds-border);
           border-radius: 12px;
-          background: var(--ds-surface);
+          background: var(--ds-surface-raised);
+          box-shadow: var(--ds-shadow-raised);
           cursor: pointer;
           transition: transform 140ms cubic-bezier(.2,.7,.3,1), box-shadow 140ms ease, border-color 140ms ease;
         }
