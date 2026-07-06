@@ -31,6 +31,7 @@ import { useGenerateProductionEvent } from '@/hooks/useGenerateProductionEvent';
 import { catalystToast } from '@/lib/catalystToast';
 import { RH } from '@/constants/releasehub.design';
 import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
+import { AtlaskitPageShell } from '@/components/ads';
 
 const T = {
   surface: 'var(--ds-surface)',
@@ -162,9 +163,10 @@ export default function ChangeDetailPage() {
   const windowDate = c.window_start ?? c.deployment_date;
 
   return (
-    <div style={{ padding: 24, background: T.surface, minHeight: '100%' }}>
-     <div style={{ width: '100%' }}>
-      <div style={{ margin: '-24px -24px 16px' }}>
+    <AtlaskitPageShell
+      flush
+      testId="release-ops-change-detail"
+      chromeBand={
         <ProjectPageHeader
           hubType="release"
           projectKey="RELEASES"
@@ -174,8 +176,9 @@ export default function ChangeDetailPage() {
             { text: c.chg_number },
           ]}
         />
-      </div>
-
+      }
+    >
+      <div style={{ padding: 16 }}>
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16, marginBottom: 8 }}>
         <div>
           <span style={{ fontFamily: T.mono, fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: T.link }}>{c.chg_number}</span>
@@ -315,7 +318,7 @@ export default function ChangeDetailPage() {
           </div>
         </TabPanel>
       </Tabs>
-     </div>
-    </div>
+      </div>
+    </AtlaskitPageShell>
   );
 }

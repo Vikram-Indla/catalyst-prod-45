@@ -33,6 +33,7 @@ import Heading from '@atlaskit/heading';
 import { CreateReleaseModal } from '@/components/releasehub/CreateReleaseModal';
 import { CreateChgModal } from '@/components/releasehub/CreateChgModal';
 import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
+import { AtlaskitPageShell } from '@/components/ads';
 import { CatyRiskPanel } from '@/components/releasehub/CatyRiskPanel';
 import { ReleasePortfolio } from '@/components/releasehub/ReleasePortfolio';
 import { ReleaseTimeline } from '@/components/releasehub/ReleaseTimeline';
@@ -173,12 +174,8 @@ export default function CommandCenterPage() {
   }), [kpis, activeReleases, changes, freezes, approvals]);
 
   return (
-    <div style={{ padding: 24, background: T.surface, minHeight: '100%' }}>
-      {/* Canonical breadcrumb header — pulled to the page edge to cancel the
-          24px container padding so it aligns with every other hub header. */}
-      <div style={{ margin: '-24px -24px 0' }}>
-        <ProjectPageHeader projectKey="RELEASES" hubType="release" />
-      </div>
+    <AtlaskitPageShell flush chromeBand={<ProjectPageHeader projectKey="RELEASES" hubType="release" />} testId="release-ops-overview">
+      <div style={{ padding: 16 }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 8, marginBottom: 16 }}>
         <button onClick={() => canManage && setShowCreateChg(true)} disabled={!canManage} title={canManage ? undefined : PERMISSION_DENIED_TOOLTIP} style={{ height: 32, padding: '0 12px', borderRadius: 6, border: `1px solid ${T.border}`, background: T.card, color: T.text, cursor: canManage ? 'pointer' : 'not-allowed', opacity: canManage ? 1 : 0.5, fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-400)', fontWeight: 500 }}>Create change</button>
         <button onClick={() => canManage && setShowCreateRel(true)} disabled={!canManage} title={canManage ? undefined : PERMISSION_DENIED_TOOLTIP} style={{ height: 32, padding: '0 12px', borderRadius: 6, border: 'none', background: T.brand, color: T.inverse, cursor: canManage ? 'pointer' : 'not-allowed', opacity: canManage ? 1 : 0.5, fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-400)', fontWeight: 500 }}>Create release</button>
@@ -316,6 +313,7 @@ export default function CommandCenterPage() {
 
       {showCreateRel && <CreateReleaseModal onClose={() => setShowCreateRel(false)} />}
       {showCreateChg && <CreateChgModal onClose={() => setShowCreateChg(false)} />}
-    </div>
+      </div>
+    </AtlaskitPageShell>
   );
 }

@@ -22,6 +22,7 @@ import { useReleaseOpsPermissions } from '@/hooks/useReleaseOpsPermissions';
 import { catalystToast } from '@/lib/catalystToast';
 import { RH } from '@/constants/releasehub.design';
 import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
+import { AtlaskitPageShell } from '@/components/ads';
 import { Package } from '@/lib/atlaskit-icons';
 
 const T = {
@@ -148,8 +149,8 @@ export default function ChangeExecutionBoard() {
   if (error) return <div style={{ padding: 24, background: T.surface, minHeight: '100%' }}><ErrorState message={(error as Error).message} onRetry={() => refetch()} /></div>;
 
   return (
-    <div style={{ padding: 24, background: T.surface, minHeight: '100%', display: 'flex', flexDirection: 'column' }}>
-      <div style={{ margin: '-24px -24px 0' }}><ProjectPageHeader projectKey="RELEASES" hubType="release" /></div>
+    <AtlaskitPageShell flush chromeBand={<ProjectPageHeader projectKey="RELEASES" hubType="release" />} testId="release-ops-change-board">
+      <div style={{ padding: 16, display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0 }}>
       <div style={{ padding: '12px 0' }}>
         <div role="heading" aria-level={1} style={{ fontFamily: RH.fontDisplay, fontSize: 'var(--ds-font-size-500)', fontWeight: 600, color: T.text, margin: 0 }}>Change execution board</div>
         <p style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', color: T.subtle, margin: '0px 0 0' }}>{canManage ? 'Drag a card to move it through the lifecycle — invalid transitions are rejected.' : 'Read-only — you do not have permission to move changes.'}</p>
@@ -175,6 +176,7 @@ export default function ChangeExecutionBoard() {
           </ModalFooter>
         </Modal>
       )}
-    </div>
+      </div>
+    </AtlaskitPageShell>
   );
 }

@@ -12,6 +12,7 @@ import { Link } from 'react-router-dom';
 import Spinner from '@atlaskit/spinner';
 import { RH } from '@/constants/releasehub.design';
 import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
+import { AtlaskitPageShell } from '@/components/ads';
 import { useReleaseConfig } from '@/hooks/releases/useReleaseConfig';
 
 const T = {
@@ -59,11 +60,8 @@ export default function ReleaseSettingsPage() {
   const notifyStatus = data?.settings?.notify_on_status_change === true;
 
   return (
-    <div style={{ padding: 24, background: T.surface, minHeight: '100%' }}>
-      <div style={{ margin: '-24px -24px 16px' }}>
-        <ProjectPageHeader projectKey="RELEASES" hubType="release" />
-      </div>
-
+    <AtlaskitPageShell flush chromeBand={<ProjectPageHeader projectKey="RELEASES" hubType="release" />} testId="release-ops-settings">
+      <div style={{ padding: 16 }}>
       <div style={{ background: 'var(--ds-background-information)', border: '1px solid var(--ds-border-information)', borderRadius: 6, padding: '8px 12px', marginBottom: 16 }}>
         <p style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-information)', margin: 0 }}>
           These values are live from the module configuration. Edit them in the{' '}
@@ -96,6 +94,7 @@ export default function ReleaseSettingsPage() {
           </Section>
         </>
       )}
-    </div>
+      </div>
+    </AtlaskitPageShell>
   );
 }

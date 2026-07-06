@@ -23,6 +23,7 @@ import Button from '@atlaskit/button';
 import Spinner from '@atlaskit/spinner';
 import { RH } from '@/constants/releasehub.design';
 import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
+import { AtlaskitPageShell } from '@/components/ads';
 import { ReleasePredictorCard } from '@/components/releasehub/ReleasePredictorCard';
 import { Modal, ModalHeader, ModalTitle, ModalBody, ModalFooter } from '@/components/ads/Modal';
 
@@ -214,12 +215,8 @@ export default function ReleaseCalendarPage() {
   );
 
   return (
-    <div style={{ padding: 24, background: T.surface, minHeight: '100%' }}>
-      <div style={{ width: '100%' }}>
-      <div style={{ margin: '-24px -24px 0' }}>
-        <ProjectPageHeader projectKey="RELEASES" hubType="release" />
-      </div>
-
+    <AtlaskitPageShell flush chromeBand={<ProjectPageHeader projectKey="RELEASES" hubType="release" />} testId="release-ops-calendar">
+      <div style={{ padding: 16 }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16, flexWrap: 'wrap' }}>
         <Seg options={[{ v: 'product', label: 'Product' }, { v: 'project', label: 'Project' }]} value={perspective} onChange={(v) => setPerspective(v as 'product' | 'project')} />
         <Seg options={[{ v: 'month', label: 'Month' }, { v: 'quarter', label: 'Quarter' }]} value={view} onChange={(v) => setView(v as 'month' | 'quarter')} />
@@ -280,6 +277,6 @@ export default function ReleaseCalendarPage() {
         )}
       </Modal>
       </div>
-    </div>
+    </AtlaskitPageShell>
   );
 }

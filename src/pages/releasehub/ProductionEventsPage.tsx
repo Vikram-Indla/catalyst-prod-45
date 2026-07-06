@@ -13,7 +13,7 @@ import { Clock } from '@/lib/atlaskit-icons';
 import { useProductionEventsList, type ProductionEventRow } from '@/hooks/useReleaseHub';
 import { JiraTable } from '@/components/shared/JiraTable';
 import type { Column } from '@/components/shared/JiraTable';
-import { Lozenge } from '@/components/ads';
+import { Lozenge, AtlaskitPageShell } from '@/components/ads';
 import CatalystAvatar from '@/components/shared/CatalystAvatar';
 import { EmptyState, ErrorState } from '@/components/releasehub/EmptyState';
 import { RH } from '@/constants/releasehub.design';
@@ -139,11 +139,8 @@ export default function ProductionEventsPage() {
   ], []);
 
   return (
-    <div style={{ padding: 24, background: T.surface, minHeight: '100%' }}>
-      <div style={{ margin: '-24px -24px 16px' }}>
-        <ProjectPageHeader projectKey="RELEASES" hubType="release" />
-      </div>
-
+    <AtlaskitPageShell flush chromeBand={<ProjectPageHeader projectKey="RELEASES" hubType="release" />} testId="release-ops-production-events">
+      <div style={{ padding: 16 }}>
       {error ? (
         <ErrorState message={(error as Error).message} onRetry={() => refetch()} />
       ) : !isLoading && events.length === 0 ? (
@@ -166,6 +163,7 @@ export default function ProductionEventsPage() {
       )}
 
       {selected && <EventDetailModal event={selected} onClose={() => setSelected(null)} />}
-    </div>
+      </div>
+    </AtlaskitPageShell>
   );
 }

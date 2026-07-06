@@ -18,6 +18,7 @@ import { RH } from '@/constants/releasehub.design';
 import { ChangeStatusLozenge } from '@/components/releasehub/shared/ReleaseOpsLozenges';
 import { Lozenge } from '@/components/ads/Lozenge';
 import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
+import { AtlaskitPageShell } from '@/components/ads';
 import { useReleaseOpsPermissions, PERMISSION_DENIED_TOOLTIP } from '@/hooks/useReleaseOpsPermissions';
 
 const T = {
@@ -95,10 +96,8 @@ export default function FreezeWindowsPage() {
   };
 
   return (
-    <div style={{ padding: 24, background: T.surface, minHeight: '100%' }}>
-      <div style={{ margin: '-24px -24px 0' }}>
-        <ProjectPageHeader projectKey="RELEASES" hubType="release" />
-      </div>
+    <AtlaskitPageShell flush chromeBand={<ProjectPageHeader projectKey="RELEASES" hubType="release" />} testId="release-ops-freeze-windows">
+      <div style={{ padding: 16 }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', marginBottom: 16 }}>
         <button
           onClick={() => canManage && setShowCreate(true)}
@@ -134,6 +133,7 @@ export default function FreezeWindowsPage() {
           onConfirm={handleDeleteConfirm}
         />
       )}
-    </div>
+      </div>
+    </AtlaskitPageShell>
   );
 }

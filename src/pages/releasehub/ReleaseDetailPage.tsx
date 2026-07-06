@@ -195,9 +195,14 @@ export function ReleaseDetailContent({ releaseId, hideChromeHeader = false }: { 
   const targetDate = r.planned_release_date ?? r.target_date;
 
   return (
-    <div style={{ padding: 24, background: T.surface, minHeight: '100%' }}>
+    // Not migrated to AtlaskitPageShell: this component is also mounted embedded
+    // (hideChromeHeader) inside CatalystDetailPanel / ProjectAllWorkView's own
+    // modal chrome — forcing the full-page shell there would double-nest chrome
+    // inside someone else's container. Gutter still corrected 24→16 to match
+    // the canonical Project value everywhere this renders.
+    <div style={{ padding: 16, background: T.surface, minHeight: '100%' }}>
       {!hideChromeHeader && (
-      <div style={{ margin: '-24px -24px 16px' }}>
+      <div style={{ margin: '-16px -16px 16px' }}>
         <ProjectPageHeader
           hubType="release"
           projectKey="RELEASES"

@@ -20,6 +20,7 @@ import { useReleaseOpsPermissions } from '@/hooks/useReleaseOpsPermissions';
 import { catalystToast } from '@/lib/catalystToast';
 import { RH } from '@/constants/releasehub.design';
 import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
+import { AtlaskitPageShell } from '@/components/ads';
 
 const T = {
   surface: 'var(--ds-surface)', card: 'var(--ds-surface-raised)', border: 'var(--ds-border)',
@@ -91,10 +92,8 @@ export default function SopTemplatesPage() {
   ], [canManage, setActive]);
 
   return (
-    <div style={{ padding: 24, background: T.surface, minHeight: '100%' }}>
-      <div style={{ margin: '-24px -24px 0' }}>
-        <ProjectPageHeader projectKey="RELEASES" hubType="release" />
-      </div>
+    <AtlaskitPageShell flush chromeBand={<ProjectPageHeader projectKey="RELEASES" hubType="release" />} testId="release-ops-sop-templates">
+      <div style={{ padding: 16 }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', marginBottom: 16 }}>
         <button onClick={() => setShowCreate(true)} disabled={!canManage} style={{ display: 'flex', alignItems: 'center', gap: 4, height: 32, padding: '0 12px', borderRadius: 6, border: 'none', cursor: canManage ? 'pointer' : 'not-allowed', opacity: canManage ? 1 : 0.5, background: 'var(--ds-background-brand-bold)', color: 'var(--ds-text-inverse)', fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-400)', fontWeight: 500 }}>
           <Plus size={14} style={{ color: 'var(--ds-text-inverse)' }} /> New template
@@ -129,7 +128,8 @@ export default function SopTemplatesPage() {
 
       {showCreate && <CreateSopTemplateModal onClose={() => setShowCreate(false)} />}
       {editTemplate && <CreateSopTemplateModal templateId={editTemplate.id} onClose={() => setEditTemplate(null)} />}
-    </div>
+      </div>
+    </AtlaskitPageShell>
   );
 }
 

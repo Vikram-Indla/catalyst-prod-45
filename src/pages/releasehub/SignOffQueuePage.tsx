@@ -24,6 +24,7 @@ import { useReleaseOpsPermissions } from '@/hooks/useReleaseOpsPermissions';
 import { catalystToast } from '@/lib/catalystToast';
 import { RH } from '@/constants/releasehub.design';
 import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
+import { AtlaskitPageShell } from '@/components/ads';
 
 const T = {
   surface: 'var(--ds-surface)', card: 'var(--ds-surface-raised)', sunken: 'var(--ds-surface-sunken)', border: 'var(--ds-border)',
@@ -100,8 +101,8 @@ export default function SignOffQueuePage() {
   if (error) return <div style={{ padding: 24, background: T.surface, minHeight: '100%' }}><ErrorState message={(error as Error).message} onRetry={() => refetch()} /></div>;
 
   return (
-    <div style={{ padding: 24, background: T.surface, minHeight: '100%' }}>
-      <div style={{ margin: '-24px -24px 0' }}><ProjectPageHeader projectKey="RELEASES" hubType="release" /></div>
+    <AtlaskitPageShell flush chromeBand={<ProjectPageHeader projectKey="RELEASES" hubType="release" />} testId="release-ops-sign-off-queue">
+      <div style={{ padding: 16 }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 0', flexWrap: 'wrap' }}>
         <div role="heading" aria-level={1} style={{ fontFamily: RH.fontDisplay, fontSize: 'var(--ds-font-size-500)', fontWeight: 600, color: T.text, margin: 0 }}>Sign-off queue</div>
         <div style={{ display: 'flex', gap: 4 }}>
@@ -194,7 +195,8 @@ export default function SignOffQueuePage() {
       )}
 
       {requestOpen && <RequestSignoffModal onClose={() => setRequestOpen(false)} />}
-    </div>
+      </div>
+    </AtlaskitPageShell>
   );
 }
 

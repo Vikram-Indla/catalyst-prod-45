@@ -21,6 +21,7 @@ import { SectionMessage } from '@/components/ads/SectionMessage';
 import { catalystToast } from '@/lib/catalystToast';
 import { RH } from '@/constants/releasehub.design';
 import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
+import { AtlaskitPageShell } from '@/components/ads';
 
 const T = {
   surface: 'var(--ds-surface)', card: 'var(--ds-surface-raised)', sunken: 'var(--ds-surface-sunken)', border: 'var(--ds-border)',
@@ -107,10 +108,11 @@ export default function ProductionEventReplayPage() {
   if (isLoading) return <div style={{ padding: 48, display: 'flex', justifyContent: 'center', background: T.surface, minHeight: '100%' }}><Spinner size="large" /></div>;
   if (!r || !r.found) {
     return (
-      <div style={{ padding: 24, background: T.surface, minHeight: '100%' }}>
-        <div style={{ margin: '-24px -24px 16px' }}><ProjectPageHeader projectKey="RELEASES" hubType="release" hideTitle trail={[{ text: 'Production Events', href: '/release-hub/production-events' }, { text: eventKey }]} /></div>
+      <AtlaskitPageShell flush chromeBand={<ProjectPageHeader projectKey="RELEASES" hubType="release" hideTitle trail={[{ text: 'Production Events', href: '/release-hub/production-events' }, { text: eventKey }]} />} testId="release-ops-replay-not-found">
+        <div style={{ padding: 16 }}>
         <SectionMessage appearance="warning" title="Production event not found"><span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)' }}>No production event matches "{eventKey}". It may have been removed, or the link is stale.</span></SectionMessage>
-      </div>
+        </div>
+      </AtlaskitPageShell>
     );
   }
 
@@ -131,12 +133,8 @@ export default function ProductionEventReplayPage() {
   };
 
   return (
-    <div style={{ padding: 24, background: T.surface, minHeight: '100%' }}>
-      <div style={{ width: '100%' }}>
-      <div style={{ margin: '-24px -24px 16px' }}>
-        <ProjectPageHeader projectKey="RELEASES" hubType="release" hideTitle trail={[{ text: 'Production Events', href: '/release-hub/production-events' }, { text: r.eventKey ?? eventKey }]} />
-      </div>
-
+    <AtlaskitPageShell flush chromeBand={<ProjectPageHeader projectKey="RELEASES" hubType="release" hideTitle trail={[{ text: 'Production Events', href: '/release-hub/production-events' }, { text: r.eventKey ?? eventKey }]} />} testId="release-ops-replay">
+      <div style={{ padding: 16 }}>
       {/* header */}
       <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, marginBottom: 8, flexWrap: 'wrap' }}>
         <div style={{ flex: 1, minWidth: 0 }}>
@@ -249,7 +247,7 @@ export default function ProductionEventReplayPage() {
         </SectionMessage>
       </Panel>
       </div>
-    </div>
+    </AtlaskitPageShell>
   );
 }
 

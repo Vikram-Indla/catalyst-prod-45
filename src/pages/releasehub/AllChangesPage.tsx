@@ -24,6 +24,7 @@ import { FacetFilterBar, type Facet } from '@/components/releasehub/FacetFilterB
 import { useReleaseOpsPermissions, PERMISSION_DENIED_TOOLTIP } from '@/hooks/useReleaseOpsPermissions';
 import { RH } from '@/constants/releasehub.design';
 import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
+import { AtlaskitPageShell } from '@/components/ads';
 
 const T = {
   surface: 'var(--ds-surface)',
@@ -185,10 +186,8 @@ export default function AllChangesPage() {
   ], []);
 
   return (
-    <div style={{ padding: 24, background: T.surface, minHeight: '100%' }}>
-      <div style={{ margin: '-24px -24px 0' }}>
-        <ProjectPageHeader projectKey="RELEASES" hubType="release" />
-      </div>
+    <AtlaskitPageShell flush chromeBand={<ProjectPageHeader projectKey="RELEASES" hubType="release" />} testId="release-ops-changes">
+      <div style={{ padding: 16 }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', marginBottom: 16 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <button
@@ -248,6 +247,7 @@ export default function AllChangesPage() {
       )}
 
       {showCreate && <CreateChgModal onClose={() => setShowCreate(false)} initialSource={createSource} />}
-    </div>
+      </div>
+    </AtlaskitPageShell>
   );
 }
