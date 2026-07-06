@@ -842,19 +842,23 @@ export default function StrataAdminConfigPage() {
         selected={selected}
         onChange={(i) => { setActionError(null); navigate(Routes.strata.adminSection(SECTIONS[i].key)); }}
       >
-        <TabList>
-          {SECTIONS.map((s) => {
-            const Icon = s.icon;
-            return (
-              <Tab key={s.key}>
-                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-                  <Icon size={14} />
-                  {s.label}
-                </span>
-              </Tab>
-            );
-          })}
-        </TabList>
+        {/* 11 tabs overflow narrow viewports — scroll the strip instead of
+          * wrapping/clipping (Jira admin parity). */}
+        <div style={{ overflowX: 'auto', minWidth: 0 }}>
+          <TabList>
+            {SECTIONS.map((s) => {
+              const Icon = s.icon;
+              return (
+                <Tab key={s.key}>
+                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, whiteSpace: 'nowrap' }}>
+                    <Icon size={14} />
+                    {s.label}
+                  </span>
+                </Tab>
+              );
+            })}
+          </TabList>
+        </div>
         {SECTIONS.map((s) => (
           <TabPanel key={s.key}>
             <div style={{ width: '100%', paddingTop: 16 }}>

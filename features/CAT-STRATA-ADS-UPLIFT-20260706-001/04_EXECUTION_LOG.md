@@ -55,3 +55,29 @@ Docs, global Create modal. Verdicts + fixes:
 Compliant as-is (no change): Home, Projects, Backlog, Board, Dashboard,
 Timeline, Products, Product Backlog, Incident Hub, Release Hub, Test Hub,
 Issue Navigator table, global Create modal, Access page structure.
+
+## Slice 3 — remaining findings closed (2026-07-06)
+
+11. **ProgramDirectory.tsx** — page chrome converted from shadcn/Tailwind to
+    ADS: hub-standard 22px header, ads Textfield with inline search icon,
+    ads Button view toggle, ads EmptyState/SectionMessage/Spinner. Card
+    grid/list internals retained (0 programs in DB — unverifiable live;
+    covered by ratchet).
+12. **IdeasBacklogPage** — null ChromeHeader injected into the backlog data
+    source: removes the redundant "IDEAS / IDEAS" crumb row (page renders its
+    own header). Verified live.
+13. **ProjectPageHeader** — no dangling "/" separator when the derived route
+    word is empty (Products/Projects index pages). Verified live.
+14. **StrataAdminConfigPage** — 11-tab strip scrolls horizontally on narrow
+    viewports instead of overflowing.
+15. **StrataExecutionPage** — linked-element tags (Atlaskit Tag truncates at
+    ~180px by design) wrapped in Tooltip so full names stay reachable.
+16. **Dark mode pass** — Command Center + KPI Library verified in dark theme
+    (ss_8186484dm, ss_1473mv2xe): tokens flip cleanly, lozenges/band bars
+    legible, no bare-color slabs. Light mode restored after.
+17. **D6 corrected** — /docs is not a Catalyst route at all (no route entry);
+    the "blank Docs page" finding was a wrong-URL artifact, withdrawn.
+
+Slice 3 after IDs: Programs ss_7134bxqu2 · Ideation ss_1919jiprp · Products
+ss_6783ovtdo · Admin ss_2422xlwc8 · Execution ss_6186pzw4v.
+Gates: tsc 183 = baseline · lint:colors:gate 0 = baseline.

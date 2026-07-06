@@ -207,7 +207,10 @@ export default function IdeasBacklogPage() {
             projectKey={IDEAS_SENTINEL_KEY}
             displayName="Ideas"
             baseUrl="/product-hub/ideas"
-            dataSource={adapter}
+            /* Null ChromeHeader: the Ideas page renders its own header above;
+               the fallback ProjectPageHeader duplicated the sentinel key as
+               a redundant "IDEAS / IDEAS" crumb row. */
+            dataSource={{ ...adapter, ChromeHeader: () => null }}
           />
         )}
       </div>
