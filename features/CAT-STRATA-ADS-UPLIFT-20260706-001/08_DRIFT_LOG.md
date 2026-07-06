@@ -23,3 +23,10 @@
   before screenshots + per-screen audit; surgical fixes for visible ADS
   violations; before/after evidence for every changed screen. Files-forbidden
   list relaxed accordingly (still surgical, still no data-path changes).
+
+- **D6 (finding, not fixed)**: /docs renders a blank content area (STRATA
+  sidebar shown) — routing/feature-flag state, data-path; out of styling scope.
+- **D7 (finding, not fixed)**: Ideation backlog shows a redundant "IDEAS /
+  IDEAS" container crumb inside WorkListPanel, and ProgramDirectory/Ideation
+  headers remain Tailwind-styled (pre-existing debt covered by the ratchet
+  gates; full conversion is its own slice).
