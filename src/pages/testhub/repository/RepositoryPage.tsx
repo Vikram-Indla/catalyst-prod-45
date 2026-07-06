@@ -10,7 +10,11 @@ import {
   useCreateFolder,
   useUpdateFolder,
   useDeleteFolder,
+  useMoveFolder,
 } from '@/hooks/test-management/useFolders';
+// C3 (CAT-TESTHUB-V2): folder drag/drop moves via the canonical DnD infra
+import { draggable, dropTargetForElements } from '@atlaskit/pragmatic-drag-and-drop/element/adapter';
+import { combine } from '@atlaskit/pragmatic-drag-and-drop/combine';
 import {
   useTestCases,
   useCreateTestCase,
@@ -298,7 +302,7 @@ function SystemFolderItem({ label, selected, onClick }: {
 // ── Folder node (with ADS dropdown-menu context menu) ────────────────────────
 
 function FolderNode({
-  folder, selectedId, onSelect, onNewSubfolder, indent, projectId,
+  folder, selectedId, onSelect, onNewSubfolder, indent, projectId, onMove,
 }: {
   folder: TMFolder;
   selectedId: string | null;
@@ -306,10 +310,14 @@ function FolderNode({
   onNewSubfolder: (parentId: string) => void;
   indent: number;
   projectId: string | undefined;
+  onMove?: (folderId: string, newParentId: string) => void;
 }) {
   const [expanded, setExpanded] = useState(false);
   const [renaming, setRenaming] = useState(false);
   const [confirmingDelete, setConfirmingDelete] = useState(false);
+  // C3: drag state — row highlights while a folder hovers over it
+  const [isDraggedOver, setIsDraggedOver] = useState(false);
+  const rowRef = useRef<HTMLDivElement>(null);
 
   const updateFolder = useUpdateFolder();
   const deleteFolder = useDeleteFolder();
@@ -317,6 +325,36 @@ function FolderNode({
   const hasChildren = (folder.children?.length ?? 0) > 0;
   const isSelected = selectedId === folder.id;
   const rollupCount = (folder as TMFolder & { rollupCount?: number }).rollupCount ?? folder.case_count ?? 0;
+  // C3: system folders (project/product roots + Functional/UAT/Regression/
+  // Incident/Defect) never move, rename or delete.
+  const isSystem = folder.is_system === true;
+
+  React.useEffect(() => {
+    const el = rowRef.current;
+    if (!el || !onMove) return;
+    const cleanups = [
+      dropTargetForElements({
+        element: el,
+        canDrop: ({ source }) => source.data.type === 'tm-folder' && source.data.folderId !== folder.id,
+        onDragEnter: () => setIsDraggedOver(true),
+        onDragLeave: () => setIsDraggedOver(false),
+        onDrop: ({ source }) => {
+          setIsDraggedOver(false);
+          const sourceId = source.data.folderId as string;
+          if (sourceId && sourceId !== folder.id) onMove(sourceId, folder.id);
+        },
+      }),
+    ];
+    if (!isSystem) {
+      cleanups.push(
+        draggable({
+          element: el,
+          getInitialData: () => ({ type: 'tm-folder', folderId: folder.id }),
+        }),
+      );
+    }
+    return combine(...cleanups);
+  }, [folder.id, isSystem, onMove]);
 
   const handleRename = (name: string) => {
     if (!projectId) return;
@@ -334,12 +372,17 @@ function FolderNode({
   return (
     <>
       <div
+        ref={rowRef}
         style={{
           padding: `6px 8px 6px ${12 + indent * 16}px`, cursor: 'pointer',
-          background: isSelected ? 'var(--ds-background-selected)' : 'transparent',
+          background: isDraggedOver
+            ? 'var(--ds-background-selected)'
+            : isSelected ? 'var(--ds-background-selected)' : 'transparent',
           color: isSelected ? 'var(--ds-text-selected)' : 'var(--ds-text)',
           fontSize: 'var(--ds-font-size-300)', display: 'flex', alignItems: 'center', gap: 4,
           position: 'relative',
+          outline: isDraggedOver ? '2px solid var(--ds-border-focused)' : 'none',
+          outlineOffset: -2,
         }}
         onClick={() => onSelect(folder.id)}
         onMouseEnter={e => {
@@ -406,8 +449,9 @@ function FolderNode({
           >
             <DropdownItemGroup>
               <DropdownItem onClick={() => onNewSubfolder(folder.id)}>New subfolder</DropdownItem>
-              <DropdownItem onClick={() => setRenaming(true)}>Rename</DropdownItem>
-              <DropdownItem onClick={() => setConfirmingDelete(true)}>Delete</DropdownItem>
+              {/* C3: system folders are locked — no rename, no delete */}
+              {!isSystem && <DropdownItem onClick={() => setRenaming(true)}>Rename</DropdownItem>}
+              {!isSystem && <DropdownItem onClick={() => setConfirmingDelete(true)}>Delete</DropdownItem>}
             </DropdownItemGroup>
           </DropdownMenu>
         </span>
@@ -462,6 +506,7 @@ function FolderNode({
           onNewSubfolder={onNewSubfolder}
           indent={indent + 1}
           projectId={projectId}
+          onMove={onMove}
         />
       ))}
     </>
@@ -501,6 +546,13 @@ function FolderTreeView({
 }) {
   const { data: flat = [], isLoading } = useFoldersWithCounts(projectId);
   const tree = useMemo(() => buildCountedTree(flat), [flat]);
+  // C3: drop a folder row onto another row to re-parent (atomic tm_move_folder
+  // RPC — system folders reject the move server-side too).
+  const moveFolder = useMoveFolder();
+  const handleMove = useCallback((folderId: string, newParentId: string) => {
+    if (!projectId) return;
+    moveFolder.mutate({ id: folderId, project_id: projectId, new_parent_id: newParentId });
+  }, [projectId, moveFolder]);
   if (isLoading) return <div style={{ padding: 8 }}><Spinner size="small" /></div>;
   if (tree.length === 0) return null;
   return (
@@ -514,6 +566,7 @@ function FolderTreeView({
           onNewSubfolder={onNewSubfolder}
           indent={0}
           projectId={projectId}
+          onMove={handleMove}
         />
       ))}
     </>

@@ -118,6 +118,11 @@ export interface TMFolder {
   updated_at: string;
   children?: TMFolder[];
   case_count?: number;
+  // CAT-TESTHUB-V2 slice B2: system-folder taxonomy (project_root/product_root
+  // are auto-provisioned and locked; custom folders nest to depth 7)
+  folder_type?: 'project_root' | 'product_root' | 'system' | 'custom';
+  is_system?: boolean;
+  depth?: number;
 }
 
 export interface TMCasePriority {

@@ -283,72 +283,16 @@ export function useMoveFolder() {
       id: string;
       project_id: string;
       new_parent_id: string | null;
-    }): Promise<TMFolder> => {
-      // Get max sort order in new parent
-      let orderQuery = supabase
-        .from('tm_folders')
-        .select('sort_order')
-        .eq('project_id', input.project_id);
-      
-      orderQuery = input.new_parent_id
-        ? orderQuery.eq('parent_id', input.new_parent_id)
-        : orderQuery.is('parent_id', null);
-
-      const { data: siblings, error: siblingsError } = await orderQuery
-        .order('sort_order', { ascending: false })
-        .limit(1);
-
-      if (siblingsError) throw siblingsError;
-
-      const newSortOrder = (siblings?.[0]?.sort_order || 0) + 1;
-
-      // Update path if moving
-      let newPath: string | undefined;
-      if (input.new_parent_id) {
-        const { data: parent, error: parentError } = await supabase
-          .from('tm_folders')
-          .select('path, name')
-          .eq('id', input.new_parent_id)
-          .single();
-        if (parentError) throw parentError;
-        
-        const { data: folder, error: folderError } = await supabase
-          .from('tm_folders')
-          .select('name')
-          .eq('id', input.id)
-          .single();
-        if (folderError) throw folderError;
-
-        const parentPath = String(parent?.path || '');
-        const label = toLtreeLabel(folder.name);
-        newPath = parentPath ? `${parentPath}.${label}` : label;
-      } else {
-        const { data: folder, error: folderError } = await supabase
-          .from('tm_folders')
-          .select('name')
-          .eq('id', input.id)
-          .single();
-        if (folderError) throw folderError;
-        newPath = toLtreeLabel(folder.name);
-      }
-
-      const { data, error } = await supabase
-        .from('tm_folders')
-        .update({
-          parent_id: input.new_parent_id,
-          sort_order: newSortOrder,
-          path: newPath,
-          updated_at: new Date().toISOString(),
-        })
-        .eq('id', input.id)
-        .select()
-        .single();
-
+    }): Promise<void> => {
+      // C3 (CAT-TESTHUB-V2): the move is one atomic RPC — it owns the
+      // circularity check, system-folder lock, depth-7 cap and the ltree
+      // path/depth rewrite for the whole subtree. The previous client-side
+      // update left descendant paths stale.
+      const { error } = await supabase.rpc(
+        'tm_move_folder' as never,
+        { p_folder_id: input.id, p_new_parent_id: input.new_parent_id } as never,
+      );
       if (error) throw error;
-      return {
-        ...data,
-        path: String(data.path || ''),
-      } as TMFolder;
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['tm-folders', variables.project_id] });
