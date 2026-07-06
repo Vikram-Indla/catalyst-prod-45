@@ -21,6 +21,17 @@ export { useTeamMembers } from './useAdminConfig';
 export { useCreateFolder, useDeleteFolder } from './useFolders';
 export { useSaveTestData, hasTestDataToSave } from './useTestData';
 export { useDefects } from './useDefects';
+export {
+  useTestExecutions,
+  useTestExecutionByKey,
+  useCreateTestExecution,
+  useUpdateTestExecution,
+} from './useTestExecutions';
+export type { TmTestExecution, ExecutionScopeType, ExecutionStatus } from './useTestExecutions';
+export { useCycleVariance, usePullLatestIntoScope, useAcceptSnapshotVariance } from './useCaseVariance';
+export type { ScopeVariance } from './useCaseVariance';
+export { useSprintTestHealth, useComputeSprintTestHealth } from './useSprintTestHealth';
+export type { SprintTestHealth, SprintGateState, SprintTestHealthTotals } from './useSprintTestHealth';
 
 // ── Real hooks from sibling files (with adapter wrappers for API compat) ──
 export { useTestPlan, useCreateTestPlan, useUpdateTestPlan, useDeleteTestPlan } from '../useTestPlansG26';
