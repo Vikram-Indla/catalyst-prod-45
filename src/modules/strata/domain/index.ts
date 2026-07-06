@@ -78,6 +78,8 @@ export const strategyApi = {
     run(typedQuery('strata_periods').select('*').eq('cycle_id', cycleId).order('starts_on')),
   elements: (cycleId: string): Promise<StrataStrategyElement[]> =>
     run(typedQuery('strata_strategy_elements').select('*').eq('cycle_id', cycleId).order('order_index')),
+  elementBySlug: (slug: string): Promise<StrataStrategyElement | null> =>
+    run(typedQuery('strata_strategy_elements').select('*').eq('slug', slug).maybeSingle()),
   edges: (cycleId: string): Promise<StrataMapEdge[]> =>
     run(typedQuery('strata_map_edges').select('*').eq('cycle_id', cycleId)),
   charters: (): Promise<StrataPlayCharter[]> =>

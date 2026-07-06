@@ -10,6 +10,7 @@ import { StrataProvider } from './hooks/useStrata';
 
 const CommandCenterPage = lazy(() => import('./pages/StrataCommandCenterPage'));
 const StrategyRoomPage = lazy(() => import('./pages/StrataStrategyRoomPage'));
+const StrategyElementDetailPage = lazy(() => import('./pages/StrataStrategyElementDetailPage'));
 const StrategyMapPage = lazy(() => import('./pages/StrataStrategyMapPage'));
 const ScorecardsPage = lazy(() => import('./pages/StrataScorecardsPage'));
 const ScorecardDetailPage = lazy(() => import('./pages/StrataScorecardDetailPage'));
@@ -54,6 +55,7 @@ export function StrataRoutesShell() {
       <Routes>
         <Route path="" element={<S><CommandCenterPage /></S>} />
         <Route path="strategy" element={<S><StrategyRoomPage /></S>} />
+        <Route path="strategy/elements/:slug" element={<S><StrategyElementDetailPage /></S>} />
         <Route path="strategy/map" element={<S><StrategyMapPage /></S>} />
         <Route path="scorecards" element={<S><ScorecardsPage /></S>} />
         <Route path="scorecards/:slug" element={<S><ScorecardDetailPage /></S>} />
