@@ -13,7 +13,7 @@ import { useMemo, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import Tabs, { Tab, TabList } from '@atlaskit/tabs';
-import { ReactFlow, Background, Controls, MiniMap, type Node, type Edge } from '@xyflow/react';
+import { ReactFlow, Controls, MiniMap, type Node, type Edge } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -544,7 +544,6 @@ export default function FolioSiteMapPage() {
             }}
             onNodeMouseLeave={() => setHover(null)}
           >
-            <Background gap={24} />
             <Controls showInteractive={false} />
             <MiniMap pannable zoomable />
           </ReactFlow>
