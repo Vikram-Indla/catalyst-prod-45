@@ -1,7 +1,7 @@
 {
   "tokens": 23695,
   "typography": 1469,
-  "spacing": 5,
+  "spacing": 0,
   "fontImports": 0,
   "capturedOn": "2026-07-06",
   "audit": "design-governance/rules/audit.js src",

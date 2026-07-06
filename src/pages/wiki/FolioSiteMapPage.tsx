@@ -608,7 +608,7 @@ export default function FolioSiteMapPage() {
           </>
         ) : null}
         <style>{`
-          .folio-toolbar-btn { padding: 6px 12px; border: 1px solid var(--ds-border); border-radius: 6px; background: var(--ds-surface); color: var(--ds-text); font: var(--ds-font-body-small); font-weight: 500; cursor: pointer; }
+          .folio-toolbar-btn { padding: 8px 12px; border: 1px solid var(--ds-border); border-radius: 6px; background: var(--ds-surface); color: var(--ds-text); font: var(--ds-font-body-small); font-weight: 500; cursor: pointer; }
           .folio-toolbar-btn:hover { background: var(--ds-background-neutral-subtle); }
         `}</style>
       </div>

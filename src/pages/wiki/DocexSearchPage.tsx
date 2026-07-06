@@ -58,7 +58,7 @@ export default function DocexSearchPage() {
       <style>{`
         .docex-search-input { position: relative; }
         .docex-search-input svg { position: absolute; inset-inline-start: 12px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; color: var(--ds-icon-subtle); pointer-events: none; }
-        .docex-search-input input { padding-inline-start: 36px; height: 44px; font: var(--ds-font-body-large); }
+        .docex-search-input input { padding-inline-start: 40px; height: 44px; font: var(--ds-font-body-large); }
         .docex-hit { display: block; width: 100%; text-align: start; padding: 12px; border: none; border-radius: 8px; background: transparent; cursor: pointer; }
         .docex-hit:hover, .docex-hit:focus-visible { background: var(--ds-background-neutral-subtle); }
       `}</style>

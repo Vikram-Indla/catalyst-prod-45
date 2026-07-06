@@ -60,7 +60,16 @@ class SpacingGridValidator {
 
         while ((match = regex.exec(scanLine)) !== null) {
           const value = `${match[1]}px`;
-          
+
+          // Skip matches inside a string literal — px mentioned in prose /
+          // guidance strings (e.g. Storybook docs "16px table rows") is not
+          // real spacing. Heuristic: an odd number of quotes precedes the match.
+          const before = scanLine.slice(0, match.index);
+          const inString = ((before.match(/'/g) || []).length % 2 === 1)
+            || ((before.match(/"/g) || []).length % 2 === 1)
+            || ((before.match(/`/g) || []).length % 2 === 1);
+          if (inString) continue;
+
           if (!this.validSpacings.includes(value) && !line.trim().startsWith('//')) {
             this.violations.push({
               file: filePath,

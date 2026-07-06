@@ -82,7 +82,7 @@
   font-family: var(--bn-font-family);
   font-size: 16px;
   line-height: 1.6;
-  padding-inline-start: 54px;
+  padding-inline-start: 48px;
   padding-inline-end: 24px;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
@@ -93,7 +93,7 @@
 /* Block rhythm: breathing room between blocks like Notion (3px flows,
    larger before headings). */
 .wiki-bn .bn-block-outer {
-  margin-block: 2px;
+  margin-block: 4px;
 }
 .wiki-bn .bn-block-content[data-content-type='heading'] {
   margin-top: 16px;
