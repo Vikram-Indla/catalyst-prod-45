@@ -27,6 +27,7 @@ import {
 import { filterSuggestionItems, type Block, type BlockNoteEditor, type PartialBlock } from '@blocknote/core';
 import { supabase } from '@/integrations/supabase/client';
 import { useThemeMode } from '@/providers/ThemeProvider';
+import { useCreateDocexDatabase } from '@/hooks/useDocexDatabase';
 import { wikiSchema } from './wikiSchema';
 import { wikiPasteHandler } from './pasteNormalizer';
 import type { SupabaseYjsProvider } from './SupabaseYjsProvider';
@@ -79,6 +80,7 @@ export default function WikiEditor({
   collab,
 }: WikiEditorProps) {
   const { resolvedTheme } = useThemeMode();
+  const createDatabase = useCreateDocexDatabase();
 
   const editor = useCreateBlockNote(
     {
@@ -222,12 +224,36 @@ export default function WikiEditor({
           }
         },
       };
+      const databaseItem: DefaultReactSuggestionItem = {
+        title: 'Database',
+        subtext: 'Table, board, list, gallery or calendar',
+        group: 'Basic blocks',
+        aliases: ['database', 'table', 'board', 'kanban', 'grid'],
+        onItemClick: () => {
+          if (!workspaceId) return;
+          const cursor = editor.getTextCursorPosition();
+          const current = cursor.block as Block;
+          void createDatabase
+            .mutateAsync({ spaceId: workspaceId, name: 'Untitled database' })
+            .then((created) => {
+              editor.insertBlocks(
+                [{ type: 'databaseEmbed', props: { databaseId: created.id } } as PartialBlock as never],
+                current,
+                'after',
+              );
+            });
+        },
+      };
       return filterSuggestionItems(
-        [...getDefaultReactSlashMenuItems(editor as never), calloutItem],
+        [
+          ...getDefaultReactSlashMenuItems(editor as never),
+          calloutItem,
+          ...(workspaceId ? [databaseItem] : []),
+        ],
         query,
       );
     },
-    [editor],
+    [editor, workspaceId, createDatabase],
   );
 
   return (

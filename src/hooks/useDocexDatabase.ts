@@ -110,10 +110,24 @@ export function useDocexDatabaseBySlug(spaceId: string | undefined, slug: string
   });
 }
 
+export function useDocexDatabaseById(id: string | undefined) {
+  return useQuery({
+    queryKey: ['docex-db', 'by-id', id],
+    enabled: !!id,
+    staleTime: 0,
+    queryFn: async (): Promise<DocexDatabase | null> => {
+      const { data, error } = await db.from('kb_databases').select('*').eq('id', id).maybeSingle();
+      if (error) throw error;
+      return (data as DocexDatabase) ?? null;
+    },
+  });
+}
+
 export function useDocexFields(databaseId: string | undefined) {
   return useQuery({
     queryKey: ['docex-db', 'fields', databaseId],
     enabled: !!databaseId,
+    staleTime: 0,
     queryFn: async (): Promise<DocexField[]> => {
       const { data, error } = await db
         .from('kb_database_fields')
@@ -130,6 +144,7 @@ export function useDocexRows(databaseId: string | undefined) {
   return useQuery({
     queryKey: ['docex-db', 'rows', databaseId],
     enabled: !!databaseId,
+    staleTime: 0,
     queryFn: async (): Promise<DocexRow[]> => {
       const { data, error } = await db
         .from('kb_database_rows')
@@ -146,6 +161,7 @@ export function useDocexViews(databaseId: string | undefined) {
   return useQuery({
     queryKey: ['docex-db', 'views', databaseId],
     enabled: !!databaseId,
+    staleTime: 0,
     queryFn: async (): Promise<DocexView[]> => {
       const { data, error } = await db
         .from('kb_database_views')
@@ -208,6 +224,37 @@ export function useCreateDocexDatabase() {
   });
 }
 
+export function useCreateDocexView() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (input: {
+      databaseId: string;
+      name: string;
+      kind: DocexViewKind;
+      position: number;
+      config?: DocexViewConfig;
+    }) => {
+      const { data, error } = await db
+        .from('kb_database_views')
+        .insert({
+          database_id: input.databaseId,
+          name: input.name,
+          kind: input.kind,
+          position: input.position,
+          config: input.config ?? {},
+        })
+        .select('*')
+        .single();
+      if (error) throw error;
+      return data as DocexView;
+    },
+    onSuccess: (_d, { databaseId }) =>
+      qc.invalidateQueries({ queryKey: ['docex-db', 'views', databaseId] }),
+    onError: (e) =>
+      catalystToast.error('Could not add the view', e instanceof Error ? e.message : undefined),
+  });
+}
+
 export function useCreateDocexField() {
   const qc = useQueryClient();
   return useMutation({
@@ -231,6 +278,38 @@ export function useCreateDocexField() {
       qc.invalidateQueries({ queryKey: ['docex-db', 'fields', databaseId] }),
     onError: (e) =>
       catalystToast.error('Could not add the field', e instanceof Error ? e.message : undefined),
+  });
+}
+
+export function useUpdateDocexField() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (input: {
+      fieldId: string;
+      databaseId: string;
+      patch: Partial<Pick<DocexField, 'name' | 'type' | 'options' | 'position'>>;
+    }) => {
+      const { error } = await db.from('kb_database_fields').update(input.patch).eq('id', input.fieldId);
+      if (error) throw error;
+    },
+    onSuccess: (_d, { databaseId }) =>
+      qc.invalidateQueries({ queryKey: ['docex-db', 'fields', databaseId] }),
+    onError: (e) =>
+      catalystToast.error('Could not update the field', e instanceof Error ? e.message : undefined),
+  });
+}
+
+export function useDeleteDocexField() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (input: { fieldId: string; databaseId: string }) => {
+      const { error } = await db.from('kb_database_fields').delete().eq('id', input.fieldId);
+      if (error) throw error;
+    },
+    onSuccess: (_d, { databaseId }) =>
+      qc.invalidateQueries({ queryKey: ['docex-db', 'fields', databaseId] }),
+    onError: (e) =>
+      catalystToast.error('Could not delete the field', e instanceof Error ? e.message : undefined),
   });
 }
 

@@ -7,22 +7,42 @@
 import { useMemo, useState } from 'react';
 import { JiraTable } from '@/components/shared/JiraTable';
 import type { Column } from '@/components/shared/JiraTable/types';
-import { Lozenge } from '@/components/ads';
+import { DropdownMenu, Lozenge, Modal, ModalHeader, ModalTitle, ModalBody, ModalFooter } from '@/components/ads';
 import { Input } from '@/components/ui/input';
-import { Plus } from '@/lib/atlaskit-icons';
+import { Plus, ChevronLeft, ChevronRight, X, Settings } from '@/lib/atlaskit-icons';
+import { CalendarGrid } from '@/components/workhub/calendar/CalendarGrid';
+import { toDateString } from '@/lib/workhub/calendarHelpers';
+import type { CalendarEvent } from '@/types/workhub.types';
 import {
   useDocexFields,
   useDocexRows,
   useDocexViews,
   useCreateDocexField,
   useCreateDocexRow,
+  useCreateDocexView,
+  useUpdateDocexField,
+  useDeleteDocexField,
   useUpdateDocexRowValues,
   useDeleteDocexRow,
   type DocexDatabase,
   type DocexField,
   type DocexRow,
   type DocexFieldType,
+  type DocexViewKind,
 } from '@/hooks/useDocexDatabase';
+
+const VIEW_KINDS: { kind: DocexViewKind; label: string }[] = [
+  { kind: 'table', label: 'Table' },
+  { kind: 'board', label: 'Board' },
+  { kind: 'list', label: 'List' },
+  { kind: 'gallery', label: 'Gallery' },
+  { kind: 'calendar', label: 'Calendar' },
+];
+
+const MONTH_NAMES = [
+  'January', 'February', 'March', 'April', 'May', 'June',
+  'July', 'August', 'September', 'October', 'November', 'December',
+];
 
 const FIELD_TYPES: { value: DocexFieldType; label: string }[] = [
   { value: 'text', label: 'Text' },
@@ -161,18 +181,511 @@ function EditableCell({ field, row, onSave }: { field: DocexField; row: DocexRow
   );
 }
 
+/** First text field = the card/row title; falls back to the first field. */
+function pickTitleField(fields: DocexField[]): DocexField | undefined {
+  return fields.find((f) => f.type === 'text') ?? fields[0];
+}
+/** Group-by field for the board: config override, else first select field. */
+function pickGroupField(fields: DocexField[], groupId?: string | null): DocexField | undefined {
+  if (groupId) return fields.find((f) => f.id === groupId);
+  return fields.find((f) => f.type === 'select');
+}
+
+const NO_GROUP = '__none__';
+
+interface ViewProps {
+  fields: DocexField[];
+  rows: DocexRow[];
+  groupFieldId?: string | null;
+  onUpdate: (row: DocexRow, fieldId: string, value: unknown) => void;
+  onAddRow: (seed?: Record<string, unknown>) => void;
+}
+
+/** Non-title fields shown as compact chips on a card/list item. */
+function FieldChips({ fields, row }: { fields: DocexField[]; row: DocexRow }) {
+  return (
+    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 6 }}>
+      {fields.map((f) => {
+        const raw = row.values?.[f.id];
+        if (raw === undefined || raw === null || raw === '') return null;
+        return (
+          <span key={f.id} style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+            <span style={{ color: 'var(--ds-text-subtlest)', font: 'var(--ds-font-body-small)' }}>{f.name}:</span>
+            <span style={{ font: 'var(--ds-font-body-small)', color: 'var(--ds-text-subtle)' }}>
+              <CellValue field={f} row={row} commit={() => {}} />
+            </span>
+          </span>
+        );
+      })}
+    </div>
+  );
+}
+
+function BoardView({ fields, rows, groupFieldId, onUpdate, onAddRow }: ViewProps) {
+  const titleField = pickTitleField(fields);
+  const groupField = pickGroupField(fields, groupFieldId);
+
+  if (!groupField) {
+    return (
+      <p style={{ color: 'var(--ds-text-subtle)', font: 'var(--ds-font-body)', padding: 16 }}>
+        Add a Select field to group the board by status.
+      </p>
+    );
+  }
+  const choices = groupField.options.choices ?? [];
+  const columns = [...choices, { id: NO_GROUP, label: `No ${groupField.name}`, color: 'default' }];
+  const otherFields = fields.filter((f) => f.id !== titleField?.id && f.id !== groupField.id);
+
+  return (
+    <div style={{ display: 'flex', gap: 12, overflowX: 'auto', paddingBottom: 8, alignItems: 'flex-start' }}>
+      {columns.map((col) => {
+        const colRows = rows.filter((r) => (r.values?.[groupField.id] ?? NO_GROUP) === col.id);
+        return (
+          <div
+            key={col.id}
+            style={{
+              width: 280,
+              flexShrink: 0,
+              background: 'var(--ds-surface-sunken)',
+              borderRadius: 8,
+              padding: 8,
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '4px 6px 8px' }}>
+              {col.id === NO_GROUP ? (
+                <span style={{ color: 'var(--ds-text-subtle)', font: 'var(--ds-font-body-small)', fontWeight: 600 }}>
+                  {col.label}
+                </span>
+              ) : (
+                <Lozenge appearance={CHOICE_APPEARANCE[col.color ?? 'default'] ?? 'default'}>{col.label}</Lozenge>
+              )}
+              <span style={{ color: 'var(--ds-text-subtlest)', font: 'var(--ds-font-body-small)' }}>{colRows.length}</span>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              {colRows.map((r) => (
+                <div
+                  key={r.id}
+                  style={{
+                    background: 'var(--ds-surface-raised)',
+                    border: '1px solid var(--ds-border)',
+                    borderRadius: 8,
+                    padding: 10,
+                    boxShadow: 'var(--ds-shadow-raised)',
+                  }}
+                >
+                  <div style={{ font: 'var(--ds-font-body)', fontWeight: 500, color: 'var(--ds-text)' }}>
+                    {String(r.values?.[titleField?.id ?? ''] ?? 'Untitled')}
+                  </div>
+                  <FieldChips fields={otherFields} row={r} />
+                  {/* Move between columns (click-to-move — reliable across the whole board). */}
+                  <select
+                    value={String(r.values?.[groupField.id] ?? '')}
+                    aria-label={`${groupField.name} for card`}
+                    onChange={(e) => onUpdate(r, groupField.id, e.target.value || null)}
+                    style={{
+                      marginTop: 8,
+                      width: '100%',
+                      font: 'var(--ds-font-body-small)',
+                      background: 'var(--ds-surface)',
+                      color: 'var(--ds-text-subtle)',
+                      border: '1px solid var(--ds-border)',
+                      borderRadius: 4,
+                      padding: '2px 4px',
+                    }}
+                  >
+                    <option value="">— {groupField.name}</option>
+                    {choices.map((c) => (
+                      <option key={c.id} value={c.id}>
+                        {c.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              ))}
+              <button
+                type="button"
+                onClick={() => onAddRow(col.id === NO_GROUP ? undefined : { [groupField.id]: col.id })}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 6,
+                  border: 'none',
+                  background: 'transparent',
+                  color: 'var(--ds-text-subtle)',
+                  font: 'var(--ds-font-body-small)',
+                  cursor: 'pointer',
+                  padding: '6px',
+                }}
+              >
+                <Plus style={{ width: 13, height: 13 }} /> New
+              </button>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+function ListView({ fields, rows, onUpdate, onAddRow }: ViewProps) {
+  const titleField = pickTitleField(fields);
+  const otherFields = fields.filter((f) => f.id !== titleField?.id);
+  return (
+    <div>
+      <div style={{ display: 'flex', flexDirection: 'column' }}>
+        {rows.map((r) => (
+          <div
+            key={r.id}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 12,
+              padding: '10px 12px',
+              borderBottom: '1px solid var(--ds-border)',
+            }}
+          >
+            <span style={{ flex: 1, minWidth: 0, font: 'var(--ds-font-body)', fontWeight: 500, color: 'var(--ds-text)' }}>
+              {String(r.values?.[titleField?.id ?? ''] ?? 'Untitled')}
+            </span>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 12, flexShrink: 0 }}>
+              {otherFields.map((f) => (
+                <EditableCell
+                  key={f.id}
+                  field={f}
+                  row={r}
+                  onSave={(v) => onUpdate(r, f.id, v)}
+                />
+              ))}
+            </span>
+          </div>
+        ))}
+      </div>
+      <button
+        type="button"
+        onClick={() => onAddRow()}
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 6,
+          width: '100%',
+          marginTop: 4,
+          padding: '8px 12px',
+          border: 'none',
+          background: 'transparent',
+          color: 'var(--ds-text-subtle)',
+          font: 'var(--ds-font-body)',
+          cursor: 'pointer',
+        }}
+      >
+        <Plus style={{ width: 14, height: 14 }} /> New row
+      </button>
+    </div>
+  );
+}
+
+function GalleryView({ fields, rows, onAddRow }: ViewProps) {
+  const titleField = pickTitleField(fields);
+  const otherFields = fields.filter((f) => f.id !== titleField?.id);
+  return (
+    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: 12 }}>
+      {rows.map((r) => (
+        <div
+          key={r.id}
+          style={{
+            background: 'var(--ds-surface-raised)',
+            border: '1px solid var(--ds-border)',
+            borderRadius: 8,
+            padding: 14,
+            boxShadow: 'var(--ds-shadow-raised)',
+            minHeight: 96,
+          }}
+        >
+          <div style={{ font: 'var(--ds-font-body)', fontWeight: 600, color: 'var(--ds-text)' }}>
+            {String(r.values?.[titleField?.id ?? ''] ?? 'Untitled')}
+          </div>
+          <FieldChips fields={otherFields} row={r} />
+        </div>
+      ))}
+      <button
+        type="button"
+        onClick={() => onAddRow()}
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: 6,
+          minHeight: 96,
+          border: '1px dashed var(--ds-border)',
+          borderRadius: 8,
+          background: 'transparent',
+          color: 'var(--ds-text-subtle)',
+          font: 'var(--ds-font-body)',
+          cursor: 'pointer',
+        }}
+      >
+        <Plus style={{ width: 14, height: 14 }} /> New card
+      </button>
+    </div>
+  );
+}
+
+function CalendarView({ fields, rows, onAddRow }: ViewProps) {
+  const titleField = pickTitleField(fields);
+  const dateField = fields.find((f) => f.type === 'date');
+  const today = new Date();
+  const [ym, setYm] = useState<{ y: number; m: number }>({ y: today.getFullYear(), m: today.getMonth() });
+
+  if (!dateField) {
+    return (
+      <p style={{ color: 'var(--ds-text-subtle)', font: 'var(--ds-font-body)', padding: 16 }}>
+        Add a Date field to place rows on the calendar.
+      </p>
+    );
+  }
+
+  const events: CalendarEvent[] = rows
+    .map((r) => {
+      const raw = r.values?.[dateField.id];
+      if (!raw) return null;
+      const dateStr = String(raw).slice(0, 10);
+      return {
+        entity_id: r.id,
+        event_type: 'workitem' as const,
+        event_title: String(r.values?.[titleField?.id ?? ''] ?? 'Untitled'),
+        event_date: dateStr,
+        event_status: '',
+        event_color: '',
+      };
+    })
+    .filter((e): e is CalendarEvent => e !== null);
+
+  const shiftMonth = (delta: number) => {
+    setYm((p) => {
+      const d = new Date(p.y, p.m + delta, 1);
+      return { y: d.getFullYear(), m: d.getMonth() };
+    });
+  };
+
+  return (
+    <div>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
+        <span style={{ font: 'var(--ds-font-heading-small)', color: 'var(--ds-text)' }}>
+          {MONTH_NAMES[ym.m]} {ym.y}
+        </span>
+        <div style={{ flex: 1 }} />
+        <button type="button" aria-label="Previous month" className="db-cal-nav" onClick={() => shiftMonth(-1)}>
+          <ChevronLeft style={{ width: 16, height: 16 }} />
+        </button>
+        <button
+          type="button"
+          className="db-cal-nav"
+          onClick={() => setYm({ y: today.getFullYear(), m: today.getMonth() })}
+          style={{ width: 'auto', padding: '0 10px', font: 'var(--ds-font-body-small)' }}
+        >
+          Today
+        </button>
+        <button type="button" aria-label="Next month" className="db-cal-nav" onClick={() => shiftMonth(1)}>
+          <ChevronRight style={{ width: 16, height: 16 }} />
+        </button>
+        <style>{`
+          .db-cal-nav { display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 30px; border: 1px solid var(--ds-border); border-radius: 6px; background: var(--ds-surface); color: var(--ds-text-subtle); cursor: pointer; }
+          .db-cal-nav:hover { background: var(--ds-background-neutral-subtle); }
+        `}</style>
+      </div>
+      <CalendarGrid
+        year={ym.y}
+        month={ym.m}
+        events={events}
+        onDateClick={(dateStr) => onAddRow({ [dateField.id]: dateStr })}
+        renderCell={(_date, dayEvents) => (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 3, marginTop: 2 }}>
+            {dayEvents.map((ev) => (
+              <span
+                key={ev.entity_id}
+                title={ev.event_title}
+                style={{
+                  background: 'var(--ds-background-selected)',
+                  color: 'var(--ds-text-selected, var(--ds-text))',
+                  borderRadius: 4,
+                  padding: '1px 6px',
+                  font: 'var(--ds-font-body-small)',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                {ev.event_title}
+              </span>
+            ))}
+          </div>
+        )}
+      />
+    </div>
+  );
+}
+
+/** Field editor (D3): rename, retype, delete, and edit select choices. */
+function FieldsManager({
+  databaseId,
+  fields,
+  onClose,
+}: {
+  databaseId: string;
+  fields: DocexField[];
+  onClose: () => void;
+}) {
+  const updateField = useUpdateDocexField();
+  const deleteField = useDeleteDocexField();
+  const [newChoice, setNewChoice] = useState<Record<string, string>>({});
+
+  const addChoice = (f: DocexField) => {
+    const label = (newChoice[f.id] ?? '').trim();
+    if (!label) return;
+    const id = label.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || `c${Date.now()}`;
+    const choices = [...(f.options.choices ?? []), { id, label, color: 'default' }];
+    updateField.mutate({ fieldId: f.id, databaseId, patch: { options: { choices } } });
+    setNewChoice((p) => ({ ...p, [f.id]: '' }));
+  };
+
+  return (
+    <Modal isOpen onClose={onClose} width="medium">
+      <ModalHeader>
+        <ModalTitle>Edit fields</ModalTitle>
+      </ModalHeader>
+      <ModalBody>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+          {fields.map((f) => (
+            <div
+              key={f.id}
+              style={{
+                border: '1px solid var(--ds-border)',
+                borderRadius: 8,
+                padding: 12,
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 8,
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <Input
+                  defaultValue={f.name}
+                  aria-label={`${f.name} name`}
+                  onBlur={(e) => {
+                    const v = e.target.value.trim();
+                    if (v && v !== f.name) updateField.mutate({ fieldId: f.id, databaseId, patch: { name: v } });
+                  }}
+                  style={{ height: 32, flex: 1 }}
+                />
+                <select
+                  value={f.type}
+                  aria-label={`${f.name} type`}
+                  onChange={(e) =>
+                    updateField.mutate({ fieldId: f.id, databaseId, patch: { type: e.target.value as DocexFieldType } })
+                  }
+                  style={{
+                    font: 'var(--ds-font-body-small)',
+                    background: 'var(--ds-surface)',
+                    color: 'var(--ds-text)',
+                    border: '1px solid var(--ds-border)',
+                    borderRadius: 4,
+                    height: 32,
+                  }}
+                >
+                  {FIELD_TYPES.map((t) => (
+                    <option key={t.value} value={t.value}>
+                      {t.label}
+                    </option>
+                  ))}
+                </select>
+                <button
+                  type="button"
+                  aria-label={`Delete ${f.name}`}
+                  onClick={() => deleteField.mutate({ fieldId: f.id, databaseId })}
+                  style={{
+                    display: 'inline-flex',
+                    border: 'none',
+                    background: 'transparent',
+                    color: 'var(--ds-icon-subtle)',
+                    cursor: 'pointer',
+                    padding: 4,
+                  }}
+                >
+                  <X style={{ width: 15, height: 15 }} />
+                </button>
+              </div>
+
+              {f.type === 'select' ? (
+                <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 6 }}>
+                  {(f.options.choices ?? []).map((c) => (
+                    <span key={c.id} style={{ display: 'inline-flex', alignItems: 'center', gap: 2 }}>
+                      <Lozenge appearance={CHOICE_APPEARANCE[c.color ?? 'default'] ?? 'default'}>{c.label}</Lozenge>
+                      <button
+                        type="button"
+                        aria-label={`Remove ${c.label}`}
+                        onClick={() =>
+                          updateField.mutate({
+                            fieldId: f.id,
+                            databaseId,
+                            patch: { options: { choices: (f.options.choices ?? []).filter((x) => x.id !== c.id) } },
+                          })
+                        }
+                        style={{ border: 'none', background: 'transparent', color: 'var(--ds-icon-subtle)', cursor: 'pointer', padding: 0 }}
+                      >
+                        <X style={{ width: 12, height: 12 }} />
+                      </button>
+                    </span>
+                  ))}
+                  <Input
+                    placeholder="Add option"
+                    value={newChoice[f.id] ?? ''}
+                    onChange={(e) => setNewChoice((p) => ({ ...p, [f.id]: e.target.value }))}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') addChoice(f);
+                    }}
+                    style={{ height: 28, width: 130 }}
+                  />
+                </div>
+              ) : null}
+            </div>
+          ))}
+        </div>
+      </ModalBody>
+      <ModalFooter>
+        <button
+          type="button"
+          onClick={onClose}
+          style={{
+            padding: '6px 14px',
+            border: 'none',
+            borderRadius: 6,
+            background: 'var(--ds-background-brand-bold)',
+            color: 'var(--ds-text-inverse)',
+            font: 'var(--ds-font-body)',
+            fontWeight: 600,
+            cursor: 'pointer',
+          }}
+        >
+          Done
+        </button>
+      </ModalFooter>
+    </Modal>
+  );
+}
+
 export function DatabaseSurface({ database }: { database: DocexDatabase }) {
   const { data: fields } = useDocexFields(database.id);
   const { data: rows, isLoading } = useDocexRows(database.id);
   const { data: views } = useDocexViews(database.id);
   const [activeViewId, setActiveViewId] = useState<string | null>(null);
   const [addingField, setAddingField] = useState(false);
+  const [fieldsOpen, setFieldsOpen] = useState(false);
   const [newField, setNewField] = useState<{ name: string; type: DocexFieldType }>({ name: '', type: 'text' });
 
   const createRow = useCreateDocexRow();
   const updateValues = useUpdateDocexRowValues();
   const deleteRow = useDeleteDocexRow();
   const createField = useCreateDocexField();
+  const createView = useCreateDocexView();
 
   const activeView = (views ?? []).find((v) => v.id === activeViewId) ?? (views ?? [])[0];
 
@@ -218,9 +731,22 @@ export function DatabaseSurface({ database }: { database: DocexDatabase }) {
     [fields, database.id, updateValues],
   );
 
-  const addRow = () => {
+  const addRow = (seed?: Record<string, unknown>) => {
     const maxPos = (rows ?? []).reduce((m, r) => Math.max(m, r.position), 0);
-    createRow.mutate({ databaseId: database.id, position: maxPos + 1 });
+    createRow.mutate({ databaseId: database.id, position: maxPos + 1, values: seed ?? {} });
+  };
+  const updateValue = (row: DocexRow, fieldId: string, value: unknown) =>
+    updateValues.mutate({
+      rowId: row.id,
+      databaseId: database.id,
+      values: { ...(row.values ?? {}), [fieldId]: value },
+    });
+  const addView = (kind: DocexViewKind) => {
+    const label = VIEW_KINDS.find((v) => v.kind === kind)?.label ?? kind;
+    createView.mutate(
+      { databaseId: database.id, name: label, kind, position: (views ?? []).length },
+      { onSuccess: (v) => setActiveViewId(v.id) },
+    );
   };
 
   return (
@@ -255,6 +781,36 @@ export function DatabaseSurface({ database }: { database: DocexDatabase }) {
             </button>
           );
         })}
+        <DropdownMenu
+          aria-label="Add a view"
+          placement="bottom-start"
+          shouldRenderToParent={false}
+          trigger={() => (
+            <button
+              type="button"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 4,
+                border: 'none',
+                background: 'transparent',
+                color: 'var(--ds-text-subtle)',
+                font: 'var(--ds-font-body-small)',
+                cursor: 'pointer',
+                padding: '8px 8px',
+              }}
+            >
+              <Plus style={{ width: 13, height: 13 }} /> View
+            </button>
+          )}
+          groups={[
+            {
+              key: 'kinds',
+              title: 'Add view',
+              items: VIEW_KINDS.map((v) => ({ key: v.kind, label: v.label, onClick: () => addView(v.kind) })),
+            },
+          ]}
+        />
         <div style={{ flex: 1 }} />
         {addingField ? (
           <span style={{ display: 'inline-flex', gap: 8, alignItems: 'center', paddingBottom: 4 }}>
@@ -299,25 +855,47 @@ export function DatabaseSurface({ database }: { database: DocexDatabase }) {
             </select>
           </span>
         ) : (
-          <button
-            type="button"
-            onClick={() => setAddingField(true)}
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 6,
-              border: 'none',
-              background: 'transparent',
-              color: 'var(--ds-text-subtle)',
-              font: 'var(--ds-font-body-small)',
-              cursor: 'pointer',
-              padding: '8px 8px',
-            }}
-          >
-            <Plus style={{ width: 14, height: 14 }} /> Field
-          </button>
+          <>
+            <button
+              type="button"
+              onClick={() => setFieldsOpen(true)}
+              aria-label="Edit fields"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                border: 'none',
+                background: 'transparent',
+                color: 'var(--ds-text-subtle)',
+                cursor: 'pointer',
+                padding: '8px 6px',
+              }}
+            >
+              <Settings style={{ width: 15, height: 15 }} />
+            </button>
+            <button
+              type="button"
+              onClick={() => setAddingField(true)}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 6,
+                border: 'none',
+                background: 'transparent',
+                color: 'var(--ds-text-subtle)',
+                font: 'var(--ds-font-body-small)',
+                cursor: 'pointer',
+                padding: '8px 8px',
+              }}
+            >
+              <Plus style={{ width: 14, height: 14 }} /> Field
+            </button>
+          </>
         )}
       </div>
+
+      {fieldsOpen ? (
+        <FieldsManager databaseId={database.id} fields={fields ?? []} onClose={() => setFieldsOpen(false)} />
+      ) : null}
 
       {activeView?.kind === 'table' || !activeView ? (
         <>
@@ -368,6 +946,20 @@ export function DatabaseSurface({ database }: { database: DocexDatabase }) {
             <Plus style={{ width: 14, height: 14 }} /> New row
           </button>
         </>
+      ) : activeView.kind === 'board' ? (
+        <BoardView
+          fields={fields ?? []}
+          rows={sortedRows}
+          groupFieldId={activeView.config?.group_by_field}
+          onUpdate={updateValue}
+          onAddRow={addRow}
+        />
+      ) : activeView.kind === 'list' ? (
+        <ListView fields={fields ?? []} rows={sortedRows} onUpdate={updateValue} onAddRow={addRow} />
+      ) : activeView.kind === 'gallery' ? (
+        <GalleryView fields={fields ?? []} rows={sortedRows} onUpdate={updateValue} onAddRow={addRow} />
+      ) : activeView.kind === 'calendar' ? (
+        <CalendarView fields={fields ?? []} rows={sortedRows} onUpdate={updateValue} onAddRow={addRow} />
       ) : (
         <p style={{ color: 'var(--ds-text-subtle)', font: 'var(--ds-font-body)' }}>
           The {activeView.kind} view arrives in the next slice — the Table view has your data.

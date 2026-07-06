@@ -31,7 +31,7 @@ export default function DocexDatabasePage() {
           Database not found.
         </p>
         <Link to={Routes.docex.root()} style={{ color: 'var(--ds-text-brand)', font: 'var(--ds-font-body)' }}>
-          Back to Docex
+          Back to Folio
         </Link>
       </div>
     );
@@ -41,7 +41,7 @@ export default function DocexDatabasePage() {
     <div style={{ maxWidth: 1080, margin: '0 auto', padding: '20px 40px 96px' }}>
       <Breadcrumbs
         items={[
-          { key: 'docex', text: 'Docex', href: Routes.docex.root() },
+          { key: 'folio', text: 'Folio', href: Routes.folio.root() },
           { key: 'ws', text: workspace.name, href: Routes.docex.workspace(workspace.slug) },
           { key: 'db', text: database.name },
         ]}
