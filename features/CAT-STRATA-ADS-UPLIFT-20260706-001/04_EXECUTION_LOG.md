@@ -113,3 +113,26 @@ Findings logged (not stylistic/out of scope): incident-analytics
 detail dependency-row lozenge can clip at panel edge (P2); testhub/
 incident-hub unmatched child routes still blank (needs per-hub catch-alls,
 route-config work — admin done as the template).
+
+## Slice 5 — residuals closed (2026-07-06)
+
+21. **FullAppRoutes global catch-all 404** — every stale deep link app-wide
+    (/docs, /testhub/test-plans, /incident-hub/incidents, …) rendered a
+    silent blank content area; now the NotFound page (ss_1543jxxve). Closes
+    the per-hub blank-route finding for ALL hubs, not just /admin.
+22. **IncidentAnalyticsPage** — removed the literal "[Chart] Resolution Trend
+    over time" placeholder box (advertised an unbuilt widget; zero-assumption:
+    render nothing until the chart exists). Verified ss_63421oiq2.
+23. **LinkTypeGroup (work-item detail)** — status column 15→20 units; the
+    longest workflow lozenge ("READY FOR DEVELOPMENT") was clipped by its
+    overflow-hidden cell. DOM-probed after: td 175px ≥ pill 152px
+    (ss_1607tad9h).
+24. **ProgramDirectory card grid/list internals** — all remaining Tailwind
+    color utilities (text-foreground/text-muted-foreground/border-border/
+    fill-amber-400) → ADS tokens (--ds-text/-subtle/-subtlest/--ds-border/
+    --ds-icon-accent-yellow). grep: 0 banned utilities left in the file.
+    (Grid branch unreachable with 0 programs in DB — conversion is
+    mechanical color-token substitution, gated by tsc + color gates.)
+
+Gates: tsc 183 = baseline · lint:colors:gate 0 = baseline.
+No open findings remain in this feature.

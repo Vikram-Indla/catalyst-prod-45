@@ -30,9 +30,11 @@ function isDone(category: string | null | undefined): boolean {
 const HEAD = {
   cells: [
     { key: 'type', content: <span className="lwi-dt-head">Type</span>, width: 4 },
-    { key: 'key', content: <span className="lwi-dt-head">Key</span>, width: 10 },
+    { key: 'key', content: <span className="lwi-dt-head">Key</span>, width: 8 },
     { key: 'summary', content: <span className="lwi-dt-head">Summary</span> },
-    { key: 'status', content: <span className="lwi-dt-head">Status</span>, width: 15 },
+    /* 20 units: at 15 the cell clipped the longest workflow lozenge
+       ("READY FOR DEVELOPM…") on the work-item detail page. */
+    { key: 'status', content: <span className="lwi-dt-head">Status</span>, width: 20 },
     { key: 'assignee', content: <span className="lwi-dt-head">Assignee</span>, width: 5 },
     { key: 'priority', content: <span className="lwi-dt-head">Priority</span>, width: 5 },
     { key: 'actions', content: <span className="lwi-dt-head">Actions</span>, width: 5 },

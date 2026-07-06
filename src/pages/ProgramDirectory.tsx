@@ -269,12 +269,8 @@ function ProgramCard({ program, onToggleStar, onClick }: ProgramCardProps) {
               }}
             >
               <Star
-                className={cn(
-                  "h-4 w-4",
-                  program.isStarred
-                    ? "fill-amber-400 text-amber-400"
-                    : "text-muted-foreground"
-                )}
+                className="h-4 w-4"
+                style={{ color: program.isStarred ? 'var(--ds-icon-accent-yellow)' : 'var(--ds-icon-subtle)' }}
               />
             </UiButton>
           </Tooltip>
@@ -283,7 +279,7 @@ function ProgramCard({ program, onToggleStar, onClick }: ProgramCardProps) {
         {/* PROGRAM INFO */}
         <div className="mb-4">
           <div className="flex items-center gap-2 mb-2">
-            <h3 className="text-base font-semibold text-foreground">
+            <h3 className="text-base font-semibold" style={{ color: 'var(--ds-text)' }}>
               {program.name}
             </h3>
             {program.isDefault && (
@@ -291,18 +287,18 @@ function ProgramCard({ program, onToggleStar, onClick }: ProgramCardProps) {
             )}
           </div>
 
-          <p className="text-xs text-muted-foreground mb-1">
+          <p className="text-xs mb-1" style={{ color: 'var(--ds-text-subtlest)' }}>
             {program.key}
           </p>
 
-          <p className="text-sm text-muted-foreground line-clamp-2 min-h-[40px]">
+          <p className="text-sm line-clamp-2 min-h-[40px]" style={{ color: 'var(--ds-text-subtle)' }}>
             {program.description}
           </p>
         </div>
 
         {/* METADATA */}
-        <div className="flex justify-between items-center pt-4 border-t border-border">
-          <div className="flex gap-4 text-xs text-muted-foreground">
+        <div className="flex justify-between items-center pt-4" style={{ borderTop: '1px solid var(--ds-border)' }}>
+          <div className="flex gap-4 text-xs" style={{ color: 'var(--ds-text-subtlest)' }}>
             <span>{program.projectCount} project{program.projectCount !== 1 ? 's' : ''}</span>
             <span>•</span>
             <span>{program.epicCount} epic{program.epicCount !== 1 ? 's' : ''}</span>
@@ -365,15 +361,17 @@ function ProgramListItem({ program, onToggleStar, onClick, isLast }: ProgramList
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       className={cn(
-        "flex items-center gap-6 p-6 cursor-pointer transition-colors duration-150",
-        isHovered && "bg-muted/50",
-        !isLast && "border-b border-border"
+        "flex items-center gap-6 p-6 cursor-pointer transition-colors duration-150"
       )}
+      style={{
+        background: isHovered ? 'var(--ds-surface-sunken)' : undefined,
+        borderBottom: !isLast ? '1px solid var(--ds-border)' : undefined,
+      }}
     >
       {/* PROGRAM INFO */}
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 mb-1">
-          <h4 className="text-sm font-semibold text-foreground">
+          <h4 className="text-sm font-semibold" style={{ color: 'var(--ds-text)' }}>
             {program.name}
           </h4>
           {program.isDefault && (
@@ -381,14 +379,14 @@ function ProgramListItem({ program, onToggleStar, onClick, isLast }: ProgramList
           )}
         </div>
 
-        <p className="text-xs text-muted-foreground truncate">
+        <p className="text-xs truncate" style={{ color: 'var(--ds-text-subtlest)' }}>
           {program.key} • {program.description}
         </p>
       </div>
 
       {/* METADATA */}
       <div className="flex items-center gap-6 flex-shrink-0">
-        <div className="text-xs text-muted-foreground text-right">
+        <div className="text-xs text-right" style={{ color: 'var(--ds-text-subtlest)' }}>
           <div>{program.projectCount} projects</div>
           <div>{program.epicCount} epics</div>
         </div>
@@ -408,12 +406,8 @@ function ProgramListItem({ program, onToggleStar, onClick, isLast }: ProgramList
           }}
         >
           <Star
-            className={cn(
-              "h-4 w-4",
-              program.isStarred
-                ? "fill-amber-400 text-amber-400"
-                : "text-muted-foreground"
-            )}
+            className="h-4 w-4"
+            style={{ color: program.isStarred ? 'var(--ds-icon-accent-yellow)' : 'var(--ds-icon-subtle)' }}
           />
         </UiButton>
       </div>

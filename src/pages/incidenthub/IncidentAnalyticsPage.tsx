@@ -120,12 +120,10 @@ export default function IncidentAnalyticsPage() {
             </div>
           </div>
 
-          {/* Resolution Trend Placeholder */}
-          <div className="p-4 flex items-center justify-center" style={{ border: '1px solid var(--ds-shadow-overlay, rgba(15,23,42,0.12))', borderRadius: 6, minHeight: 180 }}>
-            <div className="text-center" style={{ backgroundColor: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))', borderRadius: 6, padding: '24px 32px', border: '1px solid var(--ds-shadow-overlay, rgba(15,23,42,0.08))' }}>
-              <p style={{ fontFamily: 'var(--cp-font-body)', fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))' }}>[Chart] Resolution Trend over time</p>
-            </div>
-          </div>
+          {/* Resolution-trend chart is not built yet. The literal
+              "[Chart] Resolution Trend over time" placeholder box advertised a
+              broken widget — zero-assumption rule: render nothing until the
+              chart exists. */}
         </div>
       </div>
     </div>

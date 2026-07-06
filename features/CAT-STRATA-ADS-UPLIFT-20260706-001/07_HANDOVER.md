@@ -17,7 +17,7 @@ Branch `feat/CAT-STRATA-ADS-UPLIFT-20260706` @ cc4027cc5 (base main 23eb46cd3). 
 - Gates every slice: tsc 183 = baseline · lint:colors:gate 0 = baseline ·
   audit:ads spacing +3 inherited from main (D1).
 
-## Remaining logged findings (non-styling / feature work)
+## Remaining logged findings — ALL CLOSED in slice 5 (see 04 §21-24)
 - Incident Analytics "[Chart] Resolution Trend over time" placeholder — the
   widget was never built (feature work).
 - Work-item detail dependency-row lozenge can clip at panel edge (P2 polish).
