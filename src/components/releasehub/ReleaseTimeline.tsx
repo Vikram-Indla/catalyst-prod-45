@@ -71,11 +71,14 @@ export function ReleaseTimeline() {
   // Range anchored to rows actually rendered
   const rendered = [...shownPast, ...visible];
   const rangeAnchor = rendered.length > 0 ? rendered : past;
+  // rangeAnchor can be empty when there are freeze windows but zero releases —
+  // firstR/lastR are then undefined, so guard the goLiveDate reads (the range
+  // falls back to a today-anchored window that still renders the freeze bars).
   const firstR = rangeAnchor[0];
   const lastR  = rangeAnchor[rangeAnchor.length - 1];
-  const firstEnd = firstR.goLiveDate ? new Date(firstR.goLiveDate) : addDays(today, -14);
+  const firstEnd = firstR?.goLiveDate ? new Date(firstR.goLiveDate) : addDays(today, -14);
   const rangeStart = addDays(addDays(firstEnd, -14), -7);
-  const rangeEnd = lastR.goLiveDate
+  const rangeEnd = lastR?.goLiveDate
     ? addDays(new Date(lastR.goLiveDate), 21)
     : addDays(today, 60);
 
