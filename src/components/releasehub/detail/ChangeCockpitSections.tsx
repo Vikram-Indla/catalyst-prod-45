@@ -11,6 +11,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
 import { StatusLozenge } from '@/components/shared/StatusLozenge';
+import { RiskLozenge, FlagLozenge } from '@/components/releasehub/shared/ReleaseOpsLozenges';
 import CatalystAvatar from '@/components/shared/CatalystAvatar';
 import { SectionMessage } from '@/components/ads/SectionMessage';
 import { RH } from '@/constants/releasehub.design';
@@ -35,7 +36,7 @@ function Section({ title, count, children, action }: { title: string; count?: nu
   return (
     <section style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 8, padding: 16, display: 'flex', flexDirection: 'column', gap: 12, minWidth: 0 }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-        <h3 style={{ fontFamily: RH.fontDisplay, fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: T.text, margin: 0 }}>{title}</h3>
+        <div role="heading" aria-level={3} style={{ fontFamily: RH.fontDisplay, fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: T.text, margin: 0 }}>{title}</div>
         {count != null && <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: T.subtle, background: T.sunken, borderRadius: 10, padding: '0 8px' }}>{count}</span>}
         {action && <div style={{ marginLeft: 'auto' }}>{action}</div>}
       </div>
@@ -237,9 +238,9 @@ function IssueSummary({ issues, canManage, onRaiseIssue }: { issues: CockpitIssu
           {issues.map((i) => (
             <button key={i.id} onClick={() => navigate(i.kind === 'incident' ? `/incidents/${i.id}` : `/testhub/defects/${i.id}`)}
               style={{ display: 'flex', alignItems: 'center', gap: 10, textAlign: 'left', width: '100%', background: T.sunken, border: `1px solid ${CRIT_ISSUE(i.severity) ? 'var(--ds-border-danger)' : T.border}`, borderRadius: 6, padding: '8px 12px', cursor: 'pointer' }}>
-              <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: i.kind === 'incident' ? T.danger : T.subtle }}>{kindLabel(i.kind)}</span>
+              <FlagLozenge label={kindLabel(i.kind)} />
               <span style={{ flex: 1, minWidth: 0, fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-300)', color: T.text, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{i.key ? `${i.key} · ` : ''}{i.title ?? '—'}{i.sopStepId ? ' · from SOP step' : ''}</span>
-              {i.severity && <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-50)', fontWeight: 700, color: CRIT_ISSUE(i.severity) ? T.danger : T.subtle }}>{i.severity}</span>}
+              {i.severity && <RiskLozenge risk={i.severity} />}
               {i.status && <StatusLozenge status={i.status} />}
             </button>
           ))}

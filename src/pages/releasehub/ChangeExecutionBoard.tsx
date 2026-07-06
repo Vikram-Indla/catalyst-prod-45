@@ -14,7 +14,7 @@ import { draggable, dropTargetForElements } from '@atlaskit/pragmatic-drag-and-d
 import { monitorForElements } from '@atlaskit/pragmatic-drag-and-drop/element/adapter';
 import { useChangesList, useUpdateChangeStatus, type ChangeListRow } from '@/hooks/useReleaseHub';
 import { CHANGE_STAGES } from '@/lib/release-ops/lifecycle';
-import { StatusLozenge } from '@/components/shared/StatusLozenge';
+import { RiskLozenge, FlagLozenge } from '@/components/releasehub/shared/ReleaseOpsLozenges';
 import { Modal, ModalHeader, ModalTitle, ModalBody, ModalFooter } from '@/components/ads/Modal';
 import TextArea from '@atlaskit/textarea';
 import { EmptyState, ErrorState } from '@/components/releasehub/EmptyState';
@@ -47,10 +47,6 @@ function laneOf(status: string): string {
 }
 const titleCase = (v: string | null) => (!v ? '—' : v.charAt(0).toUpperCase() + v.slice(1).replace(/_/g, ' '));
 
-function Marker({ label, tone, bg }: { label: string; tone: string; bg: string }) {
-  return <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-50)', fontWeight: 700, color: tone, background: bg, padding: '0px 5px', borderRadius: 3, textTransform: 'uppercase', letterSpacing: '.03em', whiteSpace: 'nowrap' }}>{label}</span>;
-}
-
 function Card({ row }: { row: ChangeListRow }) {
   const navigate = useNavigate();
   const ref = useRef<HTMLDivElement>(null);
@@ -63,16 +59,16 @@ function Card({ row }: { row: ChangeListRow }) {
   const highRisk = row.risk_level === 'high' || row.risk_level === 'critical';
   return (
     <div ref={ref} onClick={() => navigate(`/release-hub/changes/${row.slug ?? row.id}`)}
-      style={{ background: T.card, border: `1px solid ${highRisk ? 'var(--ds-border-danger)' : T.border}`, borderRadius: 8, padding: 10, cursor: 'pointer', opacity: dragging ? 0.4 : 1, display: 'flex', flexDirection: 'column', gap: 6 }}>
+      style={{ background: T.card, border: `1px solid ${highRisk ? 'var(--ds-border-danger)' : T.border}`, borderRadius: 8, padding: 12, cursor: 'pointer', opacity: dragging ? 0.4 : 1, display: 'flex', flexDirection: 'column', gap: 8 }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
         <span style={{ fontFamily: T.mono, fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: T.link }}>{row.chg_number}</span>
-        {row.risk_level && <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-50)', fontWeight: 700, color: highRisk ? T.danger : T.subtle, textTransform: 'uppercase' }}>{row.risk_level}</span>}
+        {row.risk_level && <RiskLozenge risk={row.risk_level} />}
         {row.target_env && <span style={{ marginLeft: 'auto', fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-50)', color: T.subtle }}>{row.target_env}</span>}
       </div>
       <div style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: T.text, lineHeight: 1.3 }}>{row.title}</div>
       <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
-        {row.isUnlinkedProduction && <Marker label="Unlinked prod" tone="var(--ds-text-danger)" bg="var(--ds-background-danger)" />}
-        {row.isEmergency && <Marker label="Emergency" tone="var(--ds-text-warning)" bg="var(--ds-background-warning)" />}
+        {row.isUnlinkedProduction && <FlagLozenge label="Unlinked prod" />}
+        {row.isEmergency && <FlagLozenge label="Emergency" />}
       </div>
       <div style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', color: T.subtle }}>
         {row.releaseCount === 0 ? (row.target_env === 'production' ? 'No release' : 'Unassigned') : row.releaseCount === 1 ? (row.releaseName ?? '1 release') : `${row.releaseCount} releases`}
@@ -99,7 +95,7 @@ function Lane({ lane, rows }: { lane: typeof LANES[number]; rows: ChangeListRow[
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minWidth: 240, width: 240, flex: 'none' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '4px 8px' }}>
-        <span style={{ fontFamily: RH.fontDisplay, fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: T.text, textTransform: 'uppercase', letterSpacing: '.04em' }}>{lane.label}</span>
+        <span style={{ fontFamily: RH.fontDisplay, fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: T.text }}>{lane.label}</span>
         <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', color: T.subtle, background: T.sunken, borderRadius: 10, padding: '0 6px' }}>{rows.length}</span>
       </div>
       <div ref={ref} style={{ background: over ? 'var(--ds-background-selected)' : T.sunken, border: `1px solid ${over ? 'var(--ds-border-focused)' : 'transparent'}`, borderRadius: 8, padding: 8, display: 'flex', flexDirection: 'column', gap: 8, minHeight: 120, flex: 1 }}>
@@ -155,7 +151,7 @@ export default function ChangeExecutionBoard() {
     <div style={{ padding: 24, background: T.surface, minHeight: '100%', display: 'flex', flexDirection: 'column' }}>
       <div style={{ margin: '-24px -24px 0' }}><ProjectPageHeader projectKey="RELEASES" hubType="release" /></div>
       <div style={{ padding: '12px 0' }}>
-        <h1 style={{ fontFamily: RH.fontDisplay, fontSize: 'var(--ds-font-size-500)', fontWeight: 600, color: T.text, margin: 0 }}>Change execution board</h1>
+        <div role="heading" aria-level={1} style={{ fontFamily: RH.fontDisplay, fontSize: 'var(--ds-font-size-500)', fontWeight: 600, color: T.text, margin: 0 }}>Change execution board</div>
         <p style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', color: T.subtle, margin: '0px 0 0' }}>{canManage ? 'Drag a card to move it through the lifecycle — invalid transitions are rejected.' : 'Read-only — you do not have permission to move changes.'}</p>
       </div>
       {!isLoading && changes.length === 0 ? (

@@ -13,6 +13,7 @@ import { ChevronLeft, ChevronRight } from '@/lib/atlaskit-icons';
 import { supabase } from '@/integrations/supabase/client';
 import { mapSopStep, type SopStepFull } from '@/hooks/useSopRunbook';
 import CatalystAvatar from '@/components/shared/CatalystAvatar';
+import { ChangeStatusLozenge, FlagLozenge } from '@/components/releasehub/shared/ReleaseOpsLozenges';
 import { RH } from '@/constants/releasehub.design';
 import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
 
@@ -83,18 +84,19 @@ function SlotChip({ slot, now }: { slot: Slot; now: number }) {
   const running = slot.step.status === 'in_progress';
   return (
     <button onClick={() => navigate(`/release-hub/changes/${slot.slug ?? slot.changeId}`)}
-      style={{ textAlign: 'left', width: '100%', background: tone.bg, border: `1px solid ${running ? 'var(--ds-border-focused)' : overdue ? 'var(--ds-border-danger)' : T.border}`, borderLeft: `3px solid ${tone.fg}`, borderRadius: 6, padding: '4px 8px', cursor: 'pointer', display: 'flex', flexDirection: 'column', gap: 2 }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+      style={{ textAlign: 'left', width: '100%', background: tone.bg, border: `1px solid ${running ? 'var(--ds-border-focused)' : overdue ? 'var(--ds-border-danger)' : T.border}`, borderLeft: `4px solid ${tone.fg}`, borderRadius: 6, padding: 8, cursor: 'pointer', display: 'flex', flexDirection: 'column', gap: 4 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
         <span style={{ fontFamily: T.mono, fontSize: 'var(--ds-font-size-50)', fontWeight: 600, color: T.link }}>{slot.chgNumber}</span>
         <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-50)', color: T.subtle }}>#{slot.step.stepNo}</span>
-        {slot.isEmergency && <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-50)', fontWeight: 700, color: T.warning }}>⚡</span>}
-        {slot.issues > 0 && <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-50)', fontWeight: 700, color: T.danger }}>⚠{slot.issues}</span>}
-        {running && <span style={{ marginLeft: 'auto', fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-50)', fontWeight: 700, color: T.success }}>● LIVE</span>}
-        {overdue && !running && <span style={{ marginLeft: 'auto', fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-50)', fontWeight: 700, color: T.danger }}>LATE</span>}
+        {slot.isEmergency && <FlagLozenge label="Emergency" />}
+        {slot.issues > 0 && <FlagLozenge label={`Issues ${slot.issues}`} />}
+        {running && <span style={{ marginLeft: 'auto' }}><FlagLozenge label="Live" /></span>}
+        {overdue && !running && <span style={{ marginLeft: 'auto' }}><FlagLozenge label="Late" /></span>}
       </div>
       <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: T.text, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{slot.step.title}</span>
       <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-        {slot.ownerName ? <CatalystAvatar name={slot.ownerName} size="xsmall" /> : <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-50)', color: T.warning }}>Unassigned</span>}
+        <ChangeStatusLozenge status={slot.step.status} />
+        {slot.ownerName ? <CatalystAvatar name={slot.ownerName} size="xsmall" /> : <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-50)', color: T.subtle }}>Unassigned</span>}
         <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-50)', color: T.subtle }}>{slot.targetEnv ?? ''}{slot.step.commitRequired ? ' · commit' : ''}{slot.step.evidenceRequired ? ' · ev' : ''}</span>
       </div>
     </button>
@@ -134,17 +136,18 @@ export default function ExecutionCalendarPage() {
 
   return (
     <div style={{ padding: 24, background: T.surface, minHeight: '100%' }}>
+      <div style={{ maxWidth: RH.canvasMaxWidth, margin: '0 auto' }}>
       <div style={{ margin: '-24px -24px 0' }}><ProjectPageHeader projectKey="RELEASES" hubType="release" /></div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 0', flexWrap: 'wrap' }}>
-        <h1 style={{ fontFamily: RH.fontDisplay, fontSize: 'var(--ds-font-size-500)', fontWeight: 600, color: T.text, margin: 0 }}>Execution calendar</h1>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 16, padding: '16px 0', flexWrap: 'wrap' }}>
+        <div role="heading" aria-level={1} style={{ fontFamily: RH.fontDisplay, fontSize: 'var(--ds-font-size-500)', fontWeight: 600, color: T.text, margin: 0 }}>Execution calendar</div>
         <div style={{ display: 'flex', gap: 4, marginLeft: 8 }}>
           {(['day', 'week'] as const).map((v) => (
-            <button key={v} onClick={() => setView(v)} style={{ height: 30, padding: '0 12px', borderRadius: 6, border: `1px solid ${T.border}`, background: view === v ? 'var(--ds-background-selected)' : 'transparent', color: view === v ? 'var(--ds-text-selected)' : T.text, cursor: 'pointer', fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', fontWeight: 600, textTransform: 'capitalize' }}>{v}</button>
+            <button key={v} onClick={() => setView(v)} style={{ height: 32, padding: '0 12px', borderRadius: 6, border: `1px solid ${T.border}`, background: view === v ? 'var(--ds-background-selected)' : 'transparent', color: view === v ? 'var(--ds-text-selected)' : T.text, cursor: 'pointer', fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', fontWeight: 600 }}>{v === 'day' ? 'Day' : 'Week'}</button>
           ))}
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
           <button onClick={() => setAnchor((d) => addDays(d, view === 'day' ? -1 : -7))} aria-label="Previous" style={navBtn}><ChevronLeft size={16} style={{ color: T.subtle }} /></button>
-          <button onClick={() => { const d = new Date(); d.setHours(0, 0, 0, 0); setAnchor(d); }} style={{ ...navBtn, width: 'auto', padding: '0 10px', fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: T.text }}>Today</button>
+          <button onClick={() => { const d = new Date(); d.setHours(0, 0, 0, 0); setAnchor(d); }} style={{ ...navBtn, width: 'auto', padding: '0 12px', fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: T.text }}>Today</button>
           <button onClick={() => setAnchor((d) => addDays(d, view === 'day' ? 1 : 7))} aria-label="Next" style={navBtn}><ChevronRight size={16} style={{ color: T.subtle }} /></button>
           <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-300)', color: T.text, marginLeft: 8 }}>{view === 'day' ? anchor.toLocaleDateString(undefined, { weekday: 'long', month: 'short', day: 'numeric' }) : `Week of ${startOfWeek(anchor).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}`}</span>
         </div>
@@ -181,6 +184,7 @@ export default function ExecutionCalendarPage() {
           ))}
         </div>
       )}
+      </div>
     </div>
   );
 }

@@ -8,13 +8,15 @@
  */
 import React, { useState } from 'react';
 import { format } from 'date-fns';
-import { CalendarOff, Plus, Trash2, AlertTriangle } from '@/lib/atlaskit-icons';
+import { CalendarOff, Plus, Trash2 } from '@/lib/atlaskit-icons';
 import { useFreezeWindowsList, useDeleteFreezeWindow, type FreezeWindowRow } from '@/hooks/useReleaseHub';
 import { EmptyState, ErrorState } from '@/components/releasehub/EmptyState';
 import { CreateFreezeWindowModal } from '@/components/releasehub/CreateFreezeWindowModal';
 import { catalystToast } from '@/lib/catalystToast';
 import { ConfirmDeleteDialog } from '@/components/catalyst-detail-views/shared/ConfirmDeleteDialog';
 import { RH } from '@/constants/releasehub.design';
+import { ChangeStatusLozenge } from '@/components/releasehub/shared/ReleaseOpsLozenges';
+import { Lozenge } from '@/components/ads/Lozenge';
 import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
 import { useReleaseOpsPermissions, PERMISSION_DENIED_TOOLTIP } from '@/hooks/useReleaseOpsPermissions';
 
@@ -34,19 +36,6 @@ function titleCase(v: string | null) {
   return v.charAt(0).toUpperCase() + v.slice(1).replace(/_/g, ' ');
 }
 
-/** Freeze status pill — active=blue, scheduled/ended=neutral (3-colour guardrail). */
-function StatusPill({ status }: { status: string }) {
-  const active = status === 'active';
-  return (
-    <span style={{
-      fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', fontWeight: 700, letterSpacing: '0.04em',
-      padding: '0 8px', borderRadius: 3, whiteSpace: 'nowrap',
-      color: active ? 'var(--ds-text-information)' : T.subtle,
-      background: active ? 'var(--ds-background-information)' : 'var(--ds-background-neutral)',
-    }}>{status.toUpperCase()}</span>
-  );
-}
-
 /** Artifact card layout: icon · name + status + conflict pill · reason · date range + env. */
 function FreezeCard({ w, canManage, onDelete }: { w: FreezeWindowRow; canManage: boolean; onDelete: () => void }) {
   const conflict = w.conflicts > 0;
@@ -62,11 +51,11 @@ function FreezeCard({ w, canManage, onDelete }: { w: FreezeWindowRow; canManage:
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
           <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: T.text }}>{w.name}</span>
-          <StatusPill status={w.status} />
+          <ChangeStatusLozenge status={w.status} />
           {conflict && (
-            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', fontWeight: 700, letterSpacing: '0.04em', color: T.danger, background: T.dangerBg, border: `1px solid var(--ds-border-danger)`, padding: '0 8px', borderRadius: 3 }}>
-              <AlertTriangle size={12} style={{ color: T.danger }} /> CONFLICT{w.conflicts > 1 ? ` ×${w.conflicts}` : ''}
-            </span>
+            <Lozenge appearance="removed">
+              {`Conflict${w.conflicts > 1 ? ` ×${w.conflicts}` : ''}`}
+            </Lozenge>
           )}
         </div>
         {w.reason && <div style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', color: T.subtlest, marginTop: 4 }}>{w.reason}</div>}

@@ -21,6 +21,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useRelease, useUpdateReleaseStatus } from '@/hooks/useReleaseHub';
 import { useReleaseConfig } from '@/hooks/releases/useReleaseConfig';
 import { StatusLozenge } from '@/components/shared/StatusLozenge';
+import { Lozenge } from '@/components/ads/Lozenge';
 import { ScopeTab, ChangesTab, SignoffsTab, NotifyList, ReadinessTab, ReleaseNotesTab, ProductionEventsTab, AuditTab } from '@/components/releasehub/detail/ReleaseDetailTabs';
 import { CreateReleaseModal } from '@/components/releasehub/CreateReleaseModal';
 import { useReleaseOpsPermissions, PERMISSION_DENIED_TOOLTIP } from '@/hooks/useReleaseOpsPermissions';
@@ -63,13 +64,13 @@ const TERMINAL: Record<string, string> = { rolled_back: 'Rolled back', cancelled
 
 function HealthPill({ health }: { health: string | null }) {
   if (!health) return null;
-  const map: Record<string, { label: string; fg: string; bg: string }> = {
-    at_risk: { label: 'At risk', fg: 'var(--ds-text-danger)', bg: 'var(--ds-background-danger)' },
-    on_track: { label: 'On track', fg: 'var(--ds-text-information)', bg: 'var(--ds-background-information)' },
-    done: { label: 'Done', fg: 'var(--ds-text-success)', bg: 'var(--ds-background-success)' },
+  const map: Record<string, { label: string; appearance: 'removed' | 'inprogress' | 'success' }> = {
+    at_risk: { label: 'At risk', appearance: 'removed' },
+    on_track: { label: 'On track', appearance: 'inprogress' },
+    done: { label: 'Done', appearance: 'success' },
   };
-  const m = map[health] ?? { label: health, fg: T.subtle, bg: T.sunken };
-  return <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: m.fg, background: m.bg, padding: '0 8px', borderRadius: 3 }}>{m.label}</span>;
+  const m = map[health] ?? { label: health.replace(/_/g, ' '), appearance: 'default' as const };
+  return <Lozenge appearance={m.appearance}>{m.label}</Lozenge>;
 }
 
 function Tracker({ status, stages }: { status: string; stages: { key: string; label: string }[] }) {
@@ -212,11 +213,11 @@ export function ReleaseDetailContent({ releaseId, hideChromeHeader = false }: { 
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16, marginBottom: 8 }}>
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-            <h1 style={{ fontFamily: RH.fontDisplay, fontSize: 'var(--ds-font-size-800)', fontWeight: 600, color: T.text, margin: 0 }}>
+            <div role="heading" aria-level={1} style={{ fontFamily: RH.fontDisplay, fontSize: 'var(--ds-font-size-800)', fontWeight: 600, color: T.text, margin: 0 }}>
               {r.name}{r.version ? <span style={{ color: T.subtlest, fontWeight: 400 }}> · {r.version}</span> : null}
-            </h1>
+            </div>
             {statusLabel ? (
-              <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: 'var(--ds-text-danger)', background: 'var(--ds-background-danger)', padding: '0 8px', borderRadius: 3 }}>{statusLabel}</span>
+              <Lozenge appearance="removed">{statusLabel}</Lozenge>
             ) : (
               <StatusLozenge status={r.status} />
             )}

@@ -45,6 +45,7 @@ export const RH = {
   sbW: 232,
   rowH: 36,
   drawerW: 560,
+  canvasMaxWidth: 1440,
 };
 
 // ── STATUS LOZENGE 3-COLOR GUARDRAIL ──────────────────────────────

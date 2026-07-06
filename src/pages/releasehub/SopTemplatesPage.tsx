@@ -12,6 +12,7 @@ import { Plus, ListChecks, Search } from '@/lib/atlaskit-icons';
 import { useSopTemplatesFull, useSetTemplateActive, type SopTemplateFull } from '@/hooks/useSopRunbook';
 import { JiraTable } from '@/components/shared/JiraTable';
 import type { Column } from '@/components/shared/JiraTable';
+import { Lozenge } from '@/components/ads/Lozenge';
 import { EmptyState, ErrorState } from '@/components/releasehub/EmptyState';
 import { CreateSopTemplateModal } from '@/components/releasehub/CreateSopTemplateModal';
 import { FacetFilterBar, type Facet } from '@/components/releasehub/FacetFilterBar';
@@ -66,7 +67,7 @@ export default function SopTemplatesPage() {
         <div style={{ display: 'flex', flexDirection: 'column' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: T.text }}>{row.name}</span>
-            {!row.isActive && <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-50)', fontWeight: 700, color: T.subtle, background: 'var(--ds-background-neutral)', padding: '0 6px', borderRadius: 3, textTransform: 'uppercase' }}>Inactive</span>}
+            {!row.isActive && <Lozenge appearance="default">Inactive</Lozenge>}
           </div>
           {row.description && <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', color: T.subtlest, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{row.description}</span>}
         </div>

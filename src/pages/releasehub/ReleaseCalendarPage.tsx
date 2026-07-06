@@ -215,6 +215,7 @@ export default function ReleaseCalendarPage() {
 
   return (
     <div style={{ padding: 24, background: T.surface, minHeight: '100%' }}>
+      <div style={{ maxWidth: RH.canvasMaxWidth, margin: '0 auto' }}>
       <div style={{ margin: '-24px -24px 0' }}>
         <ProjectPageHeader projectKey="RELEASES" hubType="release" />
       </div>
@@ -256,7 +257,7 @@ export default function ReleaseCalendarPage() {
             const m = addMonths(month, i);
             return (
               <div key={i}>
-                <div style={{ fontFamily: RH.fontDisplay, fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: T.text, marginBottom: 8 }}>{format(m, 'MMMM yyyy')}</div>
+                <div role="heading" aria-level={3} style={{ fontFamily: RH.fontDisplay, fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: T.text, marginBottom: 8 }}>{format(m, 'MMMM yyyy')}</div>
                 {renderMonthGrid(m, true)}
               </div>
             );
@@ -278,6 +279,7 @@ export default function ReleaseCalendarPage() {
           </>
         )}
       </Modal>
+      </div>
     </div>
   );
 }

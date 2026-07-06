@@ -111,9 +111,9 @@ export function CreateSopTemplateModal({ onClose, templateId }: Props) {
             {submitted && activeErr && <span style={err}>{activeErr}</span>}
           </div>
 
-          <h3 style={{ fontFamily: RH.fontDisplay, fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: 'var(--ds-text)', margin: '8px 0' }}>Steps *</h3>
+          <div role="heading" aria-level={3} style={{ fontFamily: RH.fontDisplay, fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: 'var(--ds-text)', margin: '8px 0' }}>Steps *</div>
           {steps.map((s, i) => (
-            <div key={i} style={{ border: `1px solid var(--ds-border)`, borderRadius: 6, padding: 10, marginBottom: 8, background: s.rollback ? 'var(--ds-background-warning)' : 'var(--ds-surface-raised)' }}>
+            <div key={i} style={{ border: `1px solid var(--ds-border)`, borderRadius: 8, padding: 12, marginBottom: 8, background: s.rollback ? 'var(--ds-background-warning)' : 'var(--ds-surface-raised)' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
                 <span style={{ fontFamily: 'var(--ds-font-family-code, monospace)', fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtlest)', minWidth: 16 }}>{i + 1}</span>
                 <div style={{ flex: 1 }}><Textfield value={s.title} onChange={(e) => update(i, { title: (e.target as HTMLInputElement).value })} placeholder="Step title" isCompact /></div>

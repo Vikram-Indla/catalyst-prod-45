@@ -14,6 +14,9 @@ import { ChevronRight, ChevronDown, ExternalLink, Copy } from '@/lib/atlaskit-ic
 import { useProductionEventReplay, type ReplayGate, type ReplayIssue } from '@/hooks/useProductionEventReplay';
 import type { SopStepFull } from '@/hooks/useSopRunbook';
 import { StatusLozenge } from '@/components/shared/StatusLozenge';
+import { Lozenge } from '@/components/ads/Lozenge';
+import { ChangeStatusLozenge, RiskLozenge, FlagLozenge } from '@/components/releasehub/shared/ReleaseOpsLozenges';
+import CatalystAvatar from '@/components/shared/CatalystAvatar';
 import { SectionMessage } from '@/components/ads/SectionMessage';
 import { catalystToast } from '@/lib/catalystToast';
 import { RH } from '@/constants/releasehub.design';
@@ -52,6 +55,16 @@ function Field({ label, value, tone, mono }: { label: string; value: React.React
   return <div><div style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-50)', color: T.subtlest }}>{label}</div><div style={{ fontFamily: mono ? T.mono : RH.fontBody, fontSize: 'var(--ds-font-size-200)', color: tone ?? T.text }}>{value ?? '—'}</div></div>;
 }
 const grid = (cols: number): React.CSSProperties => ({ display: 'grid', gridTemplateColumns: `repeat(${cols}, minmax(0,1fr))`, gap: 12 });
+// Canonical person cell: face avatar + name (falls back to em-dash when unknown).
+function Person({ name }: { name: string | null | undefined }) {
+  if (!name) return <>{'—'}</>;
+  return (
+    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
+      <CatalystAvatar name={name} size="xsmall" />
+      <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{name}</span>
+    </span>
+  );
+}
 
 function StepReplay({ step, issues }: { step: SopStepFull; issues: ReplayIssue[] }) {
   const [open, setOpen] = useState(false);
@@ -119,6 +132,7 @@ export default function ProductionEventReplayPage() {
 
   return (
     <div style={{ padding: 24, background: T.surface, minHeight: '100%' }}>
+      <div style={{ maxWidth: RH.canvasMaxWidth, margin: '0 auto' }}>
       <div style={{ margin: '-24px -24px 16px' }}>
         <ProjectPageHeader projectKey="RELEASES" hubType="release" hideTitle trail={[{ text: 'Production Events', href: '/release-hub/production-events' }, { text: r.eventKey ?? eventKey }]} />
       </div>
@@ -129,12 +143,12 @@ export default function ProductionEventReplayPage() {
           <span style={{ fontFamily: T.mono, fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: T.link }}>{r.eventKey ?? '—'}</span>
           <div role="heading" aria-level={1} style={{ fontFamily: RH.fontDisplay, fontSize: 'var(--ds-font-size-700)', fontWeight: 600, color: T.text, marginTop: 4 }}>{r.title ?? 'Deployment replay'}</div>
         </div>
-        <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: rt.fg, background: rt.bg, padding: '4px 12px', borderRadius: 4 }}>{tc(r.result)}</span>
+        <FlagLozenge label={tc(r.result)} />
         <button onClick={copySummary} style={{ display: 'flex', alignItems: 'center', gap: 4, height: 32, padding: '0 12px', borderRadius: 6, border: `1px solid ${T.border}`, background: 'transparent', color: T.text, cursor: 'pointer', fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', fontWeight: 600 }}><Copy size={14} style={{ color: T.subtle }} /> Copy summary</button>
       </div>
       <div style={{ ...grid(6), padding: '12px 0', borderBottom: `1px solid ${T.border}`, marginBottom: 16 }}>
         <Field label="Release" value={r.release?.name} /><Field label="Change" value={r.change?.chgNumber} /><Field label="Environment" value={tc(r.env)} />
-        <Field label="Actual window" value={`${fmt(r.actualStartAt)} → ${fmt(r.actualEndAt)}`} /><Field label="Duration" value={durBetween(r.actualStartAt, r.actualEndAt)} tone={r.overrunMinutes ? T.danger : undefined} /><Field label="Executed by" value={r.executedByName} />
+        <Field label="Actual window" value={`${fmt(r.actualStartAt)} → ${fmt(r.actualEndAt)}`} /><Field label="Duration" value={durBetween(r.actualStartAt, r.actualEndAt)} tone={r.overrunMinutes ? T.danger : undefined} /><Field label="Executed by" value={<Person name={r.executedByName} />} />
       </div>
       {(r.change?.isEmergency || r.freeze.conflict || r.change?.isUnlinkedProduction) && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 16 }}>
@@ -153,9 +167,9 @@ export default function ProductionEventReplayPage() {
         {!r.release && <SectionMessage appearance="warning" title="Traceability gap: no linked release"><span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)' }}>This event has no release — showing change-only lineage.</span></SectionMessage>}
         <div style={{ ...grid(4), marginTop: r.release ? 0 : 8 }}>
           <Field label="Release" value={r.release ? <button onClick={() => navigate(`/release-hub/${r.release!.slug ?? r.release!.id}`)} style={linkBtn}>{r.release.name}</button> : '—'} />
-          <Field label="Version" value={r.release?.version} /><Field label="Product" value={r.release?.productName} /><Field label="Release manager" value={r.release?.releaseManagerName} />
+          <Field label="Version" value={r.release?.version} /><Field label="Product" value={r.release?.productName} /><Field label="Release manager" value={<Person name={r.release?.releaseManagerName} />} />
           <Field label="Change" value={r.change ? <button onClick={() => navigate(`/release-hub/changes/${r.change!.slug ?? r.change!.id}`)} style={linkBtn}>{r.change.chgNumber}</button> : '—'} />
-          <Field label="Change manager" value={r.change?.changeManagerName} /><Field label="Risk" value={tc(r.change?.risk)} /><Field label="Category" value={tc(r.change?.deploymentCategory)} />
+          <Field label="Change manager" value={<Person name={r.change?.changeManagerName} />} /><Field label="Risk" value={<RiskLozenge risk={r.change?.risk ?? null} />} /><Field label="Category" value={tc(r.change?.deploymentCategory)} />
         </div>
       </Panel>
 
@@ -191,7 +205,7 @@ export default function ProductionEventReplayPage() {
         {r.override && (
           <div style={{ borderLeft: `2px dashed ${T.warning}`, background: 'var(--ds-background-warning)', borderRadius: 6, padding: '8px 12px', marginTop: 8 }}>
             <div style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: T.warning }}>⚡ Emergency override — {tc(r.override.status)}</div>
-            <div style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', color: T.subtle }}>Bypassed {r.override.bypassedGate ?? 'gate'} · {r.override.reason ?? ''}{r.override.requestedByName ? ` · requested by ${r.override.requestedByName}` : ''}{r.override.approvedByName ? ` · approved by ${r.override.approvedByName}` : ''}</div>
+            <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 8, fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', color: T.subtle }}><span>Bypassed {r.override.bypassedGate ?? 'gate'} · {r.override.reason ?? ''}</span>{r.override.requestedByName ? <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>· requested by <Person name={r.override.requestedByName} /></span> : null}{r.override.approvedByName ? <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>· approved by <Person name={r.override.approvedByName} /></span> : null}</div>
           </div>
         )}
       </Panel>
@@ -214,9 +228,9 @@ export default function ProductionEventReplayPage() {
             </div>
             {r.issues.map((i) => (
               <button key={i.id} onClick={() => navigate(i.kind === 'incident' ? `/incidents/${i.id}` : `/testhub/defects/${i.id}`)} style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', textAlign: 'left', background: T.sunken, border: `1px solid ${CRIT(i.severity) ? 'var(--ds-border-danger)' : T.border}`, borderRadius: 6, padding: '6px 10px', marginBottom: 6, cursor: 'pointer' }}>
-                <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: i.kind === 'incident' ? T.danger : T.subtle }}>{tc(i.kind)}</span>
+                <Lozenge appearance={i.kind === 'incident' ? 'removed' : 'default'}>{tc(i.kind)}</Lozenge>
                 <span style={{ flex: 1, minWidth: 0, fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-300)', color: T.text, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{i.key ? `${i.key} · ` : ''}{i.title ?? '—'}{i.sopStepId ? ' · from SOP step' : ''}</span>
-                {i.severity && <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-50)', fontWeight: 700, color: CRIT(i.severity) ? T.danger : T.subtle }}>{i.severity}</span>}
+                {i.severity && <Lozenge appearance={CRIT(i.severity) ? 'removed' : 'default'}>{i.severity}</Lozenge>}
                 {i.status && <StatusLozenge status={i.status} />}
               </button>
             ))}
@@ -228,12 +242,13 @@ export default function ProductionEventReplayPage() {
       <Panel title="Result & closure">
         <div style={{ ...grid(4), marginBottom: 8 }}>
           <Field label="Final result" value={tc(r.result)} tone={rt.fg} /><Field label="Open incidents" value={r.closure.openIncidents} tone={r.closure.openIncidents ? T.danger : undefined} />
-          <Field label="Open defects" value={r.closure.openDefects} tone={r.closure.openDefects ? T.warning : undefined} /><Field label="Change status after" value={tc(r.change?.status)} />
+          <Field label="Open defects" value={r.closure.openDefects} tone={r.closure.openDefects ? T.warning : undefined} /><Field label="Change status after" value={<ChangeStatusLozenge status={r.change?.status ?? null} />} />
         </div>
         <SectionMessage appearance={r.result === 'success' && r.closure.openIncidents === 0 ? 'success' : r.result === 'failed' || r.result === 'rollback' ? 'error' : 'warning'} title={r.closure.reason}>
           <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)' }}>{r.result === 'unknown' ? 'Record the deployment result to complete the audit trail.' : (r.closure.openIncidents + r.closure.openDefects > 0 ? 'Open follow-ups remain — resolve linked incidents/defects before closing out.' : 'Deployment closed out cleanly.')}</span>
         </SectionMessage>
       </Panel>
+      </div>
     </div>
   );
 }
@@ -256,8 +271,8 @@ function GateRow({ g }: { g: ReplayGate }) {
   const tone = g.status === 'rejected' || g.overdue ? T.danger : g.status === 'approved' || g.status === 'auto_approved' ? T.success : g.status === 'pending' ? T.warning : T.subtle;
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '6px 0', borderTop: `1px solid ${T.border}` }}>
-      <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-50)', fontWeight: 700, color: T.subtle, background: T.sunken, padding: '1px 6px', borderRadius: 3, minWidth: 52, textAlign: 'center' }}>{g.scope}</span>
-      <span style={{ flex: 1, fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', color: T.text }}>{tc(g.role)}{g.approverName ? ` · ${g.approverName}` : ''}</span>
+      <span style={{ minWidth: 52 }}><Lozenge appearance="default">{g.scope}</Lozenge></span>
+      <span style={{ flex: 1, minWidth: 0, display: 'inline-flex', alignItems: 'center', gap: 8, fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', color: T.text }}>{tc(g.role)}{g.approverName ? <Person name={g.approverName} /> : null}</span>
       {g.comment && <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-50)', color: T.subtlest, maxWidth: 280, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{g.comment}</span>}
       <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-50)', fontWeight: 700, color: tone, minWidth: 64, textAlign: 'right' }}>{g.overdue && g.status === 'pending' ? 'Overdue' : tc(g.status)}</span>
     </div>

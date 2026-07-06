@@ -14,6 +14,7 @@ import { useProductionEventsList, type ProductionEventRow } from '@/hooks/useRel
 import { JiraTable } from '@/components/shared/JiraTable';
 import type { Column } from '@/components/shared/JiraTable';
 import { Lozenge } from '@/components/ads';
+import CatalystAvatar from '@/components/shared/CatalystAvatar';
 import { EmptyState, ErrorState } from '@/components/releasehub/EmptyState';
 import { RH } from '@/constants/releasehub.design';
 import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
@@ -74,7 +75,12 @@ function EventDetailModal({ event, onClose }: { event: ProductionEventRow; onClo
           <DetailRow label="Release" value={event.releaseKey ?? '—'} />
           <DetailRow label="Change" value={event.changeKey ?? '—'} />
           <DetailRow label="Deployed" value={event.deployedAt ? format(new Date(event.deployedAt), 'MMM d, yyyy HH:mm') : '—'} />
-          <DetailRow label="Deployed by" value={event.deployedBy} />
+          <DetailRow label="Deployed by" value={event.deployedBy ? (
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+              <CatalystAvatar name={event.deployedBy} size="xsmall" />
+              {event.deployedBy}
+            </span>
+          ) : '—'} />
           <DetailRow label="Duration" value={event.durationMinutes != null ? `${event.durationMinutes} min` : '—'} />
           <DetailRow label="Work items snapshot" value={snapCount(event.workItemsSnapshot) != null ? `${snapCount(event.workItemsSnapshot)} items` : '—'} />
           <DetailRow label="Business requests" value={snapCount(event.businessRequestsSnapshot) != null ? `${snapCount(event.businessRequestsSnapshot)} items` : '—'} />
@@ -112,7 +118,14 @@ export default function ProductionEventsPage() {
       id: 'deployedAt', label: 'Deployed', width: 16, sortable: true, accessor: (r) => r.deployedAt,
       cell: ({ row }) => <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-300)', color: T.subtle }}>{row.deployedAt ? format(new Date(row.deployedAt), 'MMM d, yyyy HH:mm') : '—'}</span>,
     },
-    { id: 'deployedBy', label: 'By', width: 12, cell: ({ row }) => <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-300)', color: T.subtle, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{row.deployedBy}</span> },
+    { id: 'deployedBy', label: 'By', width: 12, cell: ({ row }) => (
+      row.deployedBy ? (
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
+          <CatalystAvatar name={row.deployedBy} size="small" />
+          <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-300)', color: T.text, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{row.deployedBy}</span>
+        </div>
+      ) : <span style={{ color: T.subtlest }}>—</span>
+    ) },
     { id: 'snap', label: 'Snapshot', width: 14, cell: ({ row }) => {
       const c = snapCount(row.commitsSnapshot), ev = snapCount(row.sopEvidenceSnapshot), ap = snapCount(row.approversSnapshot);
       return <span style={{ fontFamily: T.mono, fontSize: 'var(--ds-font-size-100)', color: T.subtle }}>{c ?? 0}c · {ev ?? 0}e · {ap ?? 0}a</span>;

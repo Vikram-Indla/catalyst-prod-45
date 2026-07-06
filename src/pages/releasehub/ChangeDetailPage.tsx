@@ -16,6 +16,8 @@ import { Check } from '@/lib/atlaskit-icons';
 import { useChange } from '@/hooks/useReleaseHub';
 import { useChangeCockpit } from '@/hooks/useChangeCockpit';
 import { StatusLozenge } from '@/components/shared/StatusLozenge';
+import { Lozenge } from '@/components/ads/Lozenge';
+import { RiskLozenge, FlagLozenge } from '@/components/releasehub/shared/ReleaseOpsLozenges';
 import { NotifyList } from '@/components/releasehub/detail/ReleaseDetailTabs';
 import { SopRunbook } from '@/components/releasehub/detail/SopRunbook';
 import { useReleaseOpsPermissions } from '@/hooks/useReleaseOpsPermissions';
@@ -58,18 +60,6 @@ const STAGES = [
 ];
 const LEGACY: Record<string, string> = { new: 'draft', in_uat: 'implementing', in_beta: 'validating', in_production: 'implemented', done: 'closed' };
 const TERMINAL: Record<string, string> = { failed: 'Failed', rolled_back: 'Rolled back', cancelled: 'Cancelled' };
-
-function RiskPill({ risk }: { risk: string | null }) {
-  if (!risk) return null;
-  const map: Record<string, { fg: string; bg: string }> = {
-    low: { fg: 'var(--ds-text-success)', bg: 'var(--ds-background-success)' },
-    medium: { fg: 'var(--ds-text-warning)', bg: 'var(--ds-background-warning)' },
-    high: { fg: 'var(--ds-text-danger)', bg: 'var(--ds-background-danger)' },
-    critical: { fg: 'var(--ds-text-danger)', bg: 'var(--ds-background-danger)' },
-  };
-  const m = map[risk.toLowerCase()] ?? { fg: T.subtle, bg: T.sunken };
-  return <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: m.fg, background: m.bg, padding: '0 8px', borderRadius: 3, textTransform: 'capitalize' }}>{risk}</span>;
-}
 
 function Tracker({ status }: { status: string }) {
   const isTerminal = !!TERMINAL[status];
@@ -169,6 +159,7 @@ export default function ChangeDetailPage() {
 
   return (
     <div style={{ padding: 24, background: T.surface, minHeight: '100%' }}>
+     <div style={{ maxWidth: RH.canvasMaxWidth, margin: '0 auto' }}>
       <div style={{ margin: '-24px -24px 16px' }}>
         <ProjectPageHeader
           hubType="release"
@@ -184,15 +175,15 @@ export default function ChangeDetailPage() {
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16, marginBottom: 8 }}>
         <div>
           <span style={{ fontFamily: T.mono, fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: T.link }}>{c.chg_number}</span>
-          <h1 style={{ fontFamily: RH.fontDisplay, fontSize: 'var(--ds-font-size-800)', fontWeight: 600, color: T.text, margin: '4px 0 0' }}>{c.title}</h1>
+          <div role="heading" aria-level={1} style={{ fontFamily: RH.fontDisplay, fontSize: 'var(--ds-font-size-800)', fontWeight: 600, color: T.text, margin: '4px 0 0' }}>{c.title}</div>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           {statusLabel ? (
-            <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: 'var(--ds-text-danger)', background: 'var(--ds-background-danger)', padding: '0 8px', borderRadius: 3 }}>{statusLabel}</span>
+            <FlagLozenge label={statusLabel} />
           ) : (
             <StatusLozenge status={c.status} />
           )}
-          <RiskPill risk={c.risk_level} />
+          <RiskLozenge risk={c.risk_level} />
           {canManage && (
             <>
               <button onClick={() => setSignoffOpen(true)} style={{ height: 30, padding: '0 12px', borderRadius: 6, border: '1px solid var(--ds-border)', background: 'transparent', color: 'var(--ds-text)', cursor: 'pointer', fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', fontWeight: 600 }}>Request sign-off</button>
@@ -296,7 +287,7 @@ export default function ChangeDetailPage() {
           <div style={{ width: '100%', padding: '8px 0' }}>
             {signoffs.length === 0 ? <Empty text="No sign-offs requested for this change." /> : signoffs.map((s) => (
               <div key={s.id} style={rowStyle}>
-                <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: T.subtle, background: T.sunken, padding: '0 8px', borderRadius: 3, whiteSpace: 'nowrap' }}>{s.signoff_role ?? s.stage ?? '—'}</span>
+                <Lozenge appearance="default">{s.signoff_role ?? s.stage ?? '—'}</Lozenge>
                 <span style={{ flex: 1, minWidth: 0, fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-300)', color: T.subtlest }}>{s.comment ?? ''}</span>
                 <StatusLozenge status={s.status} />
               </div>
@@ -320,6 +311,7 @@ export default function ChangeDetailPage() {
           </div>
         </TabPanel>
       </Tabs>
+     </div>
     </div>
   );
 }

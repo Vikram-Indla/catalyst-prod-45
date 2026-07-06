@@ -17,6 +17,8 @@ import { useSignoffGraph, useSignoffAction, useDecideOverride, type Gate } from 
 import { SignoffDependencyGraph } from '@/components/releasehub/signoff/SignoffDependencyGraph';
 import { RequestSignoffModal } from '@/components/releasehub/signoff/RequestSignoffModal';
 import CatalystAvatar from '@/components/shared/CatalystAvatar';
+import { Lozenge } from '@/components/ads/Lozenge';
+import { ChangeStatusLozenge, RiskLozenge } from '@/components/releasehub/shared/ReleaseOpsLozenges';
 import { ErrorState } from '@/components/releasehub/EmptyState';
 import { useReleaseOpsPermissions } from '@/hooks/useReleaseOpsPermissions';
 import { catalystToast } from '@/lib/catalystToast';
@@ -143,14 +145,14 @@ export default function SignOffQueuePage() {
       ) : (
         <div style={{ border: `1px solid ${T.border}`, borderRadius: 8, overflow: 'hidden' }}>
           {filtered.map((g) => {
-            const tone = g.status === 'rejected' || g.overdue ? T.danger : g.status === 'pending' ? T.warning : g.status === 'approved' || g.status === 'auto_approved' ? T.success : T.subtle;
             return (
-              <div key={g.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 14px', borderBottom: `1px solid ${T.border}` }}>
-                <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-50)', fontWeight: 700, color: T.subtle, background: T.sunken, padding: '1px 6px', borderRadius: 3, minWidth: 52, textAlign: 'center' }}>{g.scope}</span>
+              <div key={g.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 16px', borderBottom: `1px solid ${T.border}` }}>
+                <Lozenge appearance="default">{g.scope}</Lozenge>
                 <button onClick={() => navigate(`/release-hub/${g.changeId ? `changes/${g.slug ?? g.changeId}` : g.slug ?? ''}`)} style={{ flex: 1, minWidth: 0, textAlign: 'left', fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-300)', color: T.text, background: 'transparent', border: 'none', cursor: 'pointer', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{g.entityLabel}</button>
                 <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', color: T.subtle }}>{titleCase(g.role ?? g.stage)}</span>
-                {g.approverName ? <CatalystAvatar name={g.approverName} size="small" /> : <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', color: T.warning }}>Unassigned</span>}
-                <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-50)', fontWeight: 700, color: tone, minWidth: 68, textAlign: 'center' }}>{g.overdue && g.status === 'pending' ? 'Overdue' : titleCase(g.status)}</span>
+                {g.risk ? <RiskLozenge risk={g.risk} /> : null}
+                {g.approverName ? <CatalystAvatar name={g.approverName} size="small" /> : <Lozenge appearance="moved">Unassigned</Lozenge>}
+                {g.overdue && g.status === 'pending' ? <Lozenge appearance="removed">Overdue</Lozenge> : <ChangeStatusLozenge status={g.status} />}
                 {canManage && (g.status === 'pending' || g.overdue) && (
                   <div style={{ display: 'flex', gap: 6 }}>
                     <button onClick={() => doAction(g, 'approve')} style={aBtn(T.success)}>Approve</button>
