@@ -26,6 +26,14 @@ import { useWikiWorkspaces } from '@/hooks/useWiki';
 import { useThemeMode } from '@/providers/ThemeProvider';
 import { HUB_ICON_REGISTRY } from '@/components/icons';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
+import { catalystToast } from '@/lib/catalystToast';
+import {
+  runFolioAiSearch,
+  matchesFolioFilter,
+  isEmptyFilter,
+  type FolioSearchDoc,
+} from '@/components/wiki-hub/folioAiSearch';
+import { CatyPulseIcon } from '@/components/ui/CatyPulseIcon';
 
 const db = supabase as unknown as { from: (t: string) => any };
 
@@ -36,6 +44,8 @@ interface MapDoc {
   slug: string;
   icon: string | null;
   doc_key: string | null;
+  template_key: string | null;
+  content_text: string | null;
   parent_id: string | null;
   position: number;
   updated_at: string;
@@ -45,12 +55,12 @@ interface MapDoc {
 
 function useSiteMapDocs() {
   return useQuery({
-    queryKey: ['folio', 'sitemap', 'v3'],
+    queryKey: ['folio', 'sitemap', 'v4'],
     staleTime: 0,
     queryFn: async (): Promise<MapDoc[]> => {
       const { data, error } = await db
         .from('kb_documents')
-        .select('id, space_id, title, slug, icon, doc_key, parent_id, position, updated_at, published_at')
+        .select('id, space_id, title, slug, icon, doc_key, template_key, content_text, parent_id, position, updated_at, published_at')
         .eq('is_template', false)
         .order('position')
         .limit(1000);
@@ -200,7 +210,8 @@ export default function FolioSiteMapPage() {
     [workspaces, wsSlugParam],
   );
 
-  const matches = useMemo(() => {
+  // Literal text search (title / DOC-n / ticket key).
+  const textMatches = useMemo(() => {
     if (!q) return null;
     const set = new Set<string>();
     for (const d of docs ?? []) {
@@ -213,6 +224,53 @@ export default function FolioSiteMapPage() {
     }
     return set;
   }, [q, docs]);
+
+  // AI search (CAT-FOLIO-AISEARCH-20260706): NL → structured filter → match set.
+  const [aiInput, setAiInput] = useState('');
+  const [aiRunning, setAiRunning] = useState(false);
+  const [aiReason, setAiReason] = useState('');
+  const [aiMatchIds, setAiMatchIds] = useState<Set<string> | null>(null);
+  const runAi = async () => {
+    const query = aiInput.trim();
+    if (!query || aiRunning) return;
+    setAiRunning(true);
+    try {
+      const { filters, reason } = await runFolioAiSearch(query);
+      if (isEmptyFilter(filters)) {
+        catalystToast.info('Could not turn that into a filter — try naming a doc type or topic.');
+        setAiMatchIds(null);
+        setAiReason('');
+        return;
+      }
+      const set = new Set<string>();
+      for (const d of docs ?? []) {
+        const doc: FolioSearchDoc = {
+          title: d.title,
+          contentText: d.content_text,
+          templateKey: d.template_key,
+          publishedAt: d.published_at,
+          workspaceName: wsById.get(d.space_id)?.name ?? '',
+          linkedTypes: d.linked.map((l) => l.type),
+          hasChildren: (childCount.get(d.id) ?? 0) > 0,
+        };
+        if (matchesFolioFilter(doc, filters)) set.add(d.id);
+      }
+      setAiMatchIds(set);
+      setAiReason(reason || `${set.size} document${set.size === 1 ? '' : 's'} matched`);
+    } catch (e) {
+      catalystToast.error(`AI search failed: ${e instanceof Error ? e.message : String(e)}`);
+    } finally {
+      setAiRunning(false);
+    }
+  };
+  const clearAi = () => {
+    setAiInput('');
+    setAiMatchIds(null);
+    setAiReason('');
+  };
+
+  // AI results take precedence; otherwise literal text search.
+  const matches = aiMatchIds ?? textMatches;
 
   const lensFiltered = useMemo(() => {
     let list = docs ?? [];
@@ -421,6 +479,74 @@ export default function FolioSiteMapPage() {
   return (
     <div style={{ width: '100%', padding: '16px 32px 24px', display: 'flex', flexDirection: 'column', height: 'calc(100vh - 56px)' }}>
       <ProjectPageHeader hubType="folio" paddingX={0} title="Site map" />
+
+      {/* AI search bar (CAT-FOLIO-AISEARCH) — ask in plain language, e.g.
+          "show me all BRDs of license"; matches highlight on the map/list. */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, margin: '8px 0 0' }}>
+        <div
+          style={{
+            flex: 1,
+            display: 'flex',
+            alignItems: 'center',
+            gap: 8,
+            padding: '2px 6px 2px 12px',
+            border: '1px solid var(--ds-border)',
+            borderRadius: 8,
+            background: 'var(--ds-surface)',
+          }}
+        >
+          <CatyPulseIcon size={16} title="AI search" />
+          <input
+            value={aiInput}
+            onChange={(e) => setAiInput(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') void runAi();
+            }}
+            placeholder="Ask in plain language — e.g. “show me all BRDs of license”"
+            aria-label="AI search"
+            style={{
+              flex: 1,
+              border: 'none',
+              outline: 'none',
+              background: 'transparent',
+              color: 'var(--ds-text)',
+              font: 'var(--ds-font-body)',
+              height: 34,
+            }}
+          />
+          {aiMatchIds ? (
+            <button type="button" className="folio-toolbar-btn" onClick={clearAi} aria-label="Clear AI search">
+              Clear
+            </button>
+          ) : null}
+          <button
+            type="button"
+            onClick={() => void runAi()}
+            disabled={aiRunning || !aiInput.trim()}
+            style={{
+              padding: '6px 14px',
+              border: 'none',
+              borderRadius: 6,
+              background: 'var(--ds-background-brand-bold)',
+              color: 'var(--ds-text-inverse)',
+              font: 'var(--ds-font-body)',
+              fontWeight: 600,
+              cursor: aiRunning || !aiInput.trim() ? 'default' : 'pointer',
+              opacity: aiRunning || !aiInput.trim() ? 0.6 : 1,
+            }}
+          >
+            {aiRunning ? 'Searching…' : 'Ask AI'}
+          </button>
+        </div>
+      </div>
+      {aiReason ? (
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, margin: '6px 0 0' }}>
+          <Lozenge appearance="inprogress">AI</Lozenge>
+          <span style={{ color: 'var(--ds-text-subtle)', font: 'var(--ds-font-body-small)' }}>
+            {aiReason} · {aiMatchIds?.size ?? 0} matched
+          </span>
+        </div>
+      ) : null}
 
       {/* Toolbar — view tabs · workspace filter · search · lens · expand controls */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', margin: '8px 0' }}>
