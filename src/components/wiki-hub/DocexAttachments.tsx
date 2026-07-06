@@ -32,7 +32,7 @@ export function DocexAttachments({ documentId }: { documentId: string }) {
   };
 
   return (
-    <section className="wiki-no-print" aria-label="Attachments" style={{ marginTop: 32 }}>
+    <div className="wiki-no-print" role="group" aria-label="Attachments" style={{ marginTop: 32 }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
         <Paperclip style={{ width: 16, height: 16, color: 'var(--ds-icon)' }} />
         <h2 style={{ font: 'var(--ds-font-heading-small)', color: 'var(--ds-text)', margin: 0 }}>
@@ -121,6 +121,6 @@ export function DocexAttachments({ documentId }: { documentId: string }) {
           No attachments yet.
         </p>
       )}
-    </section>
+    </div>
   );
 }

@@ -1380,8 +1380,9 @@ export function WikiPageSurface({ workspace, page, treePages }: WikiPageSurfaceP
       </div>{/* /content column */}
 
       {treeOpen ? (
-        <aside
+        <div
           className="wiki-no-print"
+          role="complementary"
           aria-label="Page hierarchy"
           style={{
             width: 280,
@@ -1423,7 +1424,7 @@ export function WikiPageSurface({ workspace, page, treePages }: WikiPageSurfaceP
             }
             emptyHint="No pages yet."
           />
-        </aside>
+        </div>
       ) : null}
       </div>{/* /main row */}
 

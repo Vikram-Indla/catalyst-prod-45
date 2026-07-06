@@ -1,17 +1,17 @@
 /**
- * WikiHomePage — the Docex DOCUMENT HUB (CAT-DOCEX-DB-COEDIT-20260705-001
- * V1, Vikram 2026-07-06). The landing is a document manager, not a
- * workspace card grid: All/My tabs, search, workspace + status filters,
- * sort, and the canonical JiraTable listing every page the user can see.
- * Workspace navigation lives in the hub sidebar.
+ * WikiHomePage — the FOLIO DOCUMENT HUB (CAT-DOCEX-DB-COEDIT-20260705-001,
+ * design-critique F1/F2 2026-07-06). Canonical-only toolbar: @atlaskit/tabs,
+ * ads Textfield search, ads Select filters — no native selects, no
+ * hand-rolled tabs. Full-page-width JiraTable with Folio-icon keys and a
+ * Parent column (linked story/epic/BR via kb_document_links).
  */
 import { useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
+import Tabs, { Tab, TabList } from '@atlaskit/tabs';
 import { Search } from '@/lib/atlaskit-icons';
-import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
-import { DropdownMenu, Lozenge } from '@/components/ads';
+import { Breadcrumbs, DropdownMenu, Heading, Lozenge, Select, Textfield, type SelectOption } from '@/components/ads';
 import { JiraTable } from '@/components/shared/JiraTable';
 import type { Column } from '@/components/shared/JiraTable/types';
 import { supabase } from '@/integrations/supabase/client';
@@ -20,6 +20,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useWikiWorkspaces, useCreateWikiPage } from '@/hooks/useWiki';
 import { importDocumentFile } from '@/components/wiki-hub/editor/importDoc';
 import { catalystToast } from '@/lib/catalystToast';
+import { HUB_ICON_REGISTRY } from '@/components/icons';
 
 const db = supabase as unknown as { from: (t: string) => any };
 
@@ -33,6 +34,8 @@ interface DocRow {
   created_by: string | null;
   published_at: string | null;
   updated_at: string;
+  /** Display key of the first linked work item (story/epic/BR), if any. */
+  parent_key: string | null;
 }
 
 function relativeTime(iso: string): string {
@@ -52,10 +55,10 @@ export default function WikiHomePage() {
   const { data: workspaces } = useWikiWorkspaces();
   const createPage = useCreateWikiPage();
 
-  const [tab, setTab] = useState<'all' | 'mine'>('all');
+  const [tab, setTab] = useState(0); // 0 = All Docs, 1 = My Docs
   const [search, setSearch] = useState('');
-  const [wsFilter, setWsFilter] = useState<string>('');
-  const [statusFilter, setStatusFilter] = useState<'' | 'draft' | 'published'>('');
+  const [wsFilter, setWsFilter] = useState<SelectOption | null>(null);
+  const [statusFilter, setStatusFilter] = useState<SelectOption | null>(null);
   const [sortKey, setSortKey] = useState<string>('updated_at');
   const [sortOrder, setSortOrder] = useState<'ASC' | 'DESC'>('DESC');
 
@@ -72,27 +75,68 @@ export default function WikiHomePage() {
         .order('updated_at', { ascending: false })
         .limit(500);
       if (error) throw error;
-      return (data ?? []) as DocRow[];
+      const rows = (data ?? []) as DocRow[];
+      if (rows.length === 0) return rows;
+
+      // Parent traceability: first linked work item per doc → display key.
+      const { data: links } = await db
+        .from('kb_document_links')
+        .select('document_id, entity_type, entity_id')
+        .in('document_id', rows.map((r) => r.id));
+      const linkList = (links ?? []) as Array<{ document_id: string; entity_type: string; entity_id: string }>;
+      const issueIds = linkList.filter((l) => l.entity_type !== 'business_request').map((l) => l.entity_id);
+      const brIds = linkList.filter((l) => l.entity_type === 'business_request').map((l) => l.entity_id);
+      const [issues, brs] = await Promise.all([
+        issueIds.length
+          ? db.from('ph_issues').select('id, issue_key').in('id', issueIds)
+          : Promise.resolve({ data: [] }),
+        brIds.length
+          ? db.from('business_requests').select('id, request_key').in('id', brIds)
+          : Promise.resolve({ data: [] }),
+      ]);
+      const keyByEntity = new Map<string, string>();
+      for (const i of (issues.data ?? []) as Array<{ id: string; issue_key: string }>) keyByEntity.set(String(i.id), i.issue_key);
+      for (const b of (brs.data ?? []) as Array<{ id: string; request_key: string }>) keyByEntity.set(String(b.id), b.request_key);
+      const parentByDoc = new Map<string, string>();
+      for (const l of linkList) {
+        const key = keyByEntity.get(String(l.entity_id));
+        if (key && !parentByDoc.has(l.document_id)) parentByDoc.set(l.document_id, key);
+      }
+      return rows.map((r) => ({ ...r, parent_key: parentByDoc.get(r.id) ?? null }));
     },
   });
 
   const wsById = useMemo(() => new Map((workspaces ?? []).map((w) => [w.id, w])), [workspaces]);
+  const wsOptions: SelectOption[] = useMemo(
+    () => (workspaces ?? []).map((w) => ({ label: w.name, value: w.id })),
+    [workspaces],
+  );
+  const statusOptions: SelectOption[] = [
+    { label: 'Draft', value: 'draft' },
+    { label: 'Published', value: 'published' },
+  ];
 
   const rows = useMemo(() => {
     let list = docs ?? [];
-    if (tab === 'mine' && user?.id) list = list.filter((d) => d.created_by === user.id);
-    if (wsFilter) list = list.filter((d) => d.space_id === wsFilter);
+    if (tab === 1 && user?.id) list = list.filter((d) => d.created_by === user.id);
+    if (wsFilter) list = list.filter((d) => d.space_id === wsFilter.value);
     if (statusFilter) {
-      list = list.filter((d) => (statusFilter === 'published' ? !!d.published_at : !d.published_at));
+      list = list.filter((d) => (statusFilter.value === 'published' ? !!d.published_at : !d.published_at));
     }
     const q = search.trim().toLowerCase();
     if (q)
       list = list.filter(
-        (d) => (d.title || '').toLowerCase().includes(q) || (d.doc_key || '').toLowerCase().includes(q),
+        (d) =>
+          (d.title || '').toLowerCase().includes(q) ||
+          (d.doc_key || '').toLowerCase().includes(q) ||
+          (d.parent_key || '').toLowerCase().includes(q),
       );
     const dir = sortOrder === 'ASC' ? 1 : -1;
     return [...list].sort((a, b) => {
       if (sortKey === 'title') return (a.title || '').localeCompare(b.title || '') * dir;
+      if (sortKey === 'doc_key')
+        return ((parseInt(a.doc_key?.slice(4) ?? '0', 10) || 0) - (parseInt(b.doc_key?.slice(4) ?? '0', 10) || 0)) * dir;
+      if (sortKey === 'parent_key') return (a.parent_key ?? '').localeCompare(b.parent_key ?? '') * dir;
       if (sortKey === 'workspace')
         return (wsById.get(a.space_id)?.name ?? '').localeCompare(wsById.get(b.space_id)?.name ?? '') * dir;
       return (new Date(a.updated_at).getTime() - new Date(b.updated_at).getTime()) * dir;
@@ -101,7 +145,7 @@ export default function WikiHomePage() {
 
   const openDoc = (d: DocRow) => {
     const ws = wsById.get(d.space_id);
-    if (ws) navigate(Routes.docex.page(ws.slug, d.slug));
+    if (ws) navigate(Routes.folio.page(ws.slug, d.slug));
   };
 
   const createIn = (spaceId: string) => {
@@ -109,11 +153,11 @@ export default function WikiHomePage() {
     if (!ws) return;
     createPage.mutate(
       { spaceId, title: 'Untitled' },
-      { onSuccess: (created) => navigate(Routes.docex.page(ws.slug, created.slug)) },
+      { onSuccess: (created) => navigate(Routes.folio.page(ws.slug, created.slug)) },
     );
   };
 
-  // V5 — Import Word/PDF → converted (and translated) Docex page.
+  // Import Word/PDF → converted (and translated) Folio page (V5).
   const importInputRef = useRef<HTMLInputElement>(null);
   const importTargetWs = useRef<string | null>(null);
   const [importing, setImporting] = useState(false);
@@ -130,11 +174,9 @@ export default function WikiHomePage() {
         {
           onSuccess: (created) => {
             catalystToast.success(
-              imported.sourceLang !== 'en'
-                ? `Imported and translated (${imported.sourceLang} → en)`
-                : 'Imported',
+              imported.sourceLang !== 'en' ? `Imported and translated (${imported.sourceLang} → en)` : 'Imported',
             );
-            navigate(Routes.docex.page(ws.slug, created.slug));
+            navigate(Routes.folio.page(ws.slug, created.slug));
           },
           onSettled: () => setImporting(false),
         },
@@ -152,6 +194,7 @@ export default function WikiHomePage() {
         label: 'Doc name',
         flex: true,
         sortable: true,
+        alwaysVisible: true,
         cell: ({ row }) => (
           <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
             <span aria-hidden>{row.icon || '📄'}</span>
@@ -173,17 +216,41 @@ export default function WikiHomePage() {
       {
         id: 'doc_key',
         label: 'Key',
-        width: 8,
+        width: 9,
+        sortable: true,
         cell: ({ row }) => (
-          <span style={{ fontFamily: 'var(--ds-font-family-code)', color: 'var(--ds-text-subtle)' }}>
-            {row.doc_key ?? '—'}
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+            <img src={HUB_ICON_REGISTRY.docex} alt="" width={14} height={14} style={{ flexShrink: 0 }} />
+            <span style={{ fontFamily: 'var(--ds-font-family-code)', color: 'var(--ds-text-subtle)' }}>
+              {row.doc_key ?? '—'}
+            </span>
           </span>
         ),
       },
       {
+        id: 'parent_key',
+        label: 'Parent',
+        width: 10,
+        sortable: true,
+        cell: ({ row }) =>
+          row.parent_key ? (
+            <span
+              style={{
+                fontFamily: 'var(--ds-font-family-code)',
+                color: 'var(--ds-text-brand)',
+                font: 'var(--ds-font-body-small)',
+              }}
+            >
+              {row.parent_key}
+            </span>
+          ) : (
+            <span style={{ color: 'var(--ds-text-subtlest)' }}>—</span>
+          ),
+      },
+      {
         id: 'workspace',
         label: 'Workspace',
-        width: 18,
+        width: 14,
         sortable: true,
         cell: ({ row }) => (
           <span style={{ color: 'var(--ds-text-subtle)' }}>{wsById.get(row.space_id)?.name ?? '—'}</span>
@@ -192,7 +259,7 @@ export default function WikiHomePage() {
       {
         id: 'status',
         label: 'Status',
-        width: 12,
+        width: 9,
         cell: ({ row }) => (
           <Lozenge appearance={row.published_at ? 'success' : 'default'}>
             {row.published_at ? 'Published' : 'Draft'}
@@ -202,7 +269,7 @@ export default function WikiHomePage() {
       {
         id: 'updated_at',
         label: 'Updated',
-        width: 12,
+        width: 9,
         sortable: true,
         cell: ({ row }) => <span style={{ color: 'var(--ds-text-subtle)' }}>{relativeTime(row.updated_at)}</span>,
       },
@@ -210,84 +277,58 @@ export default function WikiHomePage() {
     [wsById],
   );
 
-  const tabBtn = (key: 'all' | 'mine', label: string) => (
-    <button
-      type="button"
-      role="tab"
-      aria-selected={tab === key}
-      onClick={() => setTab(key)}
-      style={{
-        border: 'none',
-        background: tab === key ? 'var(--ds-background-selected)' : 'transparent',
-        color: tab === key ? 'var(--ds-text-selected)' : 'var(--ds-text-subtle)',
-        font: 'var(--ds-font-body)',
-        fontWeight: tab === key ? 600 : 400,
-        padding: '6px 12px',
-        borderRadius: 6,
-        cursor: 'pointer',
-      }}
-    >
-      {label}
-    </button>
-  );
-
-  const selectStyle = {
-    font: 'var(--ds-font-body-small)',
-    background: 'var(--ds-surface)',
-    color: 'var(--ds-text)',
-    border: '1px solid var(--ds-border)',
-    borderRadius: 6,
-    height: 32,
-    padding: '0 8px',
-  } as const;
-
   return (
-    <div style={{ maxWidth: 1180, margin: 0, padding: '24px 40px 96px' }}>
-      <style>{`
-        .docex-hub-search { position: relative; width: 260px; }
-        .docex-hub-search svg { position: absolute; inset-inline-start: 10px; top: 50%; transform: translateY(-50%); width: 14px; height: 14px; color: var(--ds-icon-subtle); pointer-events: none; }
-        .docex-hub-search input { padding-inline-start: 32px; height: 32px; }
-      `}</style>
-
-      {/* Hub header — Notion Document Hub shape */}
-      <div style={{ marginBottom: 16 }}>
-        {/* ads-scanner:ignore-next-line — ADS heading token shorthand (font:) */}
-        <h1 style={{ font: 'var(--ds-font-heading-xlarge)', fontWeight: 700, letterSpacing: '-0.01em', color: 'var(--ds-text)', margin: 0 }}>
-          📄 Document Hub
-        </h1>
-        <p style={{ margin: '4px 0 0', color: 'var(--ds-text-subtle)', font: 'var(--ds-font-body)' }}>
+    <div style={{ width: '100%', padding: '16px 32px 96px' }}>
+      {/* Canonical hub header — same Breadcrumbs + Heading stack as Project Hub */}
+      <Breadcrumbs items={[{ key: 'folio', text: 'Folio', href: Routes.folio.root() }]} aria-label="Hub location" />
+      <div style={{ margin: '4px 0 12px' }}>
+        <Heading size="large">Document Hub</Heading>
+        <p style={{ margin: '2px 0 0', color: 'var(--ds-text-subtle)', font: 'var(--ds-font-body)' }}>
           Create and collaborate on documents in one place.
         </p>
       </div>
 
-      {/* Toolbar: tabs · search · filters · sort · New */}
+      {/* Toolbar — Atlaskit tabs · inline search · canonical Select filters */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', marginBottom: 12 }}>
-        <div role="tablist" aria-label="Document scope" style={{ display: 'flex', gap: 2 }}>
-          {tabBtn('all', 'All Docs')}
-          {tabBtn('mine', 'My Docs')}
+        <Tabs id="folio-hub-scope" selected={tab} onChange={setTab}>
+          <TabList>
+            <Tab>All Docs</Tab>
+            <Tab>My Docs</Tab>
+          </TabList>
+        </Tabs>
+        <div style={{ width: 260 }}>
+          <Textfield
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search docs, DOC-n, or work-item key"
+            aria-label="Search docs"
+            spacing="compact"
+            elemBeforeInput={
+              <Search style={{ width: 14, height: 14, color: 'var(--ds-icon-subtle)', marginInlineStart: 8 }} />
+            }
+          />
         </div>
-        <div className="docex-hub-search">
-          <Search />
-          <Input dir="auto" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search docs" aria-label="Search docs" />
+        <div style={{ width: 180 }}>
+          <Select
+            options={wsOptions}
+            value={wsFilter}
+            onChange={setWsFilter}
+            placeholder="Workspace"
+            isClearable
+            aria-label="Filter by workspace"
+          />
         </div>
-        <select value={wsFilter} onChange={(e) => setWsFilter(e.target.value)} aria-label="Filter by workspace" style={selectStyle}>
-          <option value="">All workspaces</option>
-          {(workspaces ?? []).map((w) => (
-            <option key={w.id} value={w.id}>
-              {w.name}
-            </option>
-          ))}
-        </select>
-        <select
-          value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value as '' | 'draft' | 'published')}
-          aria-label="Filter by status"
-          style={selectStyle}
-        >
-          <option value="">Any status</option>
-          <option value="draft">Draft</option>
-          <option value="published">Published</option>
-        </select>
+        <div style={{ width: 150 }}>
+          <Select
+            options={statusOptions}
+            value={statusFilter}
+            onChange={setStatusFilter}
+            placeholder="Status"
+            isClearable
+            isSearchable={false}
+            aria-label="Filter by status"
+          />
+        </div>
         <div style={{ flex: 1 }} />
         <input
           ref={importInputRef}
@@ -374,7 +415,7 @@ export default function WikiHomePage() {
         />
       </div>
 
-      {/* Document list — canonical JiraTable */}
+      {/* Document list — canonical JiraTable, full page width */}
       {isLoading ? (
         <Skeleton style={{ height: 320, borderRadius: 8 }} />
       ) : (

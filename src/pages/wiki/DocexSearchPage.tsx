@@ -90,7 +90,7 @@ export default function DocexSearchPage() {
       {grouped.map(([spaceId, rows]) => {
         const ws = wsById.get(spaceId);
         return (
-          <section key={spaceId} style={{ marginBottom: 24 }}>
+          <div key={spaceId} style={{ marginBottom: 24 }}>
             <h2
               style={{
                 font: 'var(--ds-font-heading-xsmall)',
@@ -126,7 +126,7 @@ export default function DocexSearchPage() {
                 )}
               </button>
             ))}
-          </section>
+          </div>
         );
       })}
     </div>
