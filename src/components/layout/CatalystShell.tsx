@@ -197,6 +197,10 @@ const ChatSidebar = lazyWithRetry(
     })),
   "ChatSidebar",
 );
+const WikiSidebar = lazyWithRetry(
+  () => import("./WikiSidebar").then((m) => ({ default: m.WikiSidebar })),
+  "WikiSidebar",
+);
 // C1 · Personal command center on / (Home). Replaces the empty 240px rail
 // users were seeing on Home with @atlaskit/side-navigation sections for
 // Pinned, Recent and Jump to. Atlaskit-only — see HomeSidebar.tsx.
@@ -693,6 +697,11 @@ function CatalystShellContent() {
     // ProjectHub V5 sidebar (/project-hub/*)
     if (isProjectHubRoute) {
       return <ProjectHubSidebar expanded={exp} onToggle={cycleSidebarState} />;
+    }
+
+    // Folio (Wiki) sidebar — /folio, /docex
+    if (isWikiRoute) {
+      return <WikiSidebar expanded={exp} onToggle={cycleSidebarState} />;
     }
 
     // ReleaseHub sidebar (new Release Management module)
