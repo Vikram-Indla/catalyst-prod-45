@@ -19,6 +19,12 @@ import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
 import CheckIcon from '@atlaskit/icon/glyph/check';
 import EditorCloseIcon from '@atlaskit/icon/glyph/editor/close';
 import { DatePicker } from '@atlaskit/datetime-picker';
+// CAT-TESTHUB-V2 correction 03: canonical waiver modal (replaces window.prompt)
+import ModalDialog, { ModalHeader, ModalTitle, ModalBody, ModalFooter } from '@atlaskit/modal-dialog';
+import Button from '@atlaskit/button/new';
+import Textarea from '@atlaskit/textarea';
+import Lozenge from '@atlaskit/lozenge';
+import SectionMessage from '@atlaskit/section-message';
 import { supabase } from '@/integrations/supabase/client';
 import { catalystFlag } from '@/lib/catalystFlag';
 import { ReleaseConfirmationModal } from '@/components/releases/ReleaseConfirmationModal';
@@ -427,41 +433,11 @@ function ApproversCard({
   // trigger (fn_sprint_check_approval) evaluates policy and, on rejection,
   // reopens the sprint to active. Sprint-only (config.approvers.table is
   // ph_sprint_approvers only when config.kind === 'sprint').
+  // G2/G4 (CAT-TESTHUB-V2): the write mutation itself. The blocked-gate waiver
+  // is enforced upstream in handleDecide (canonical modal), NOT here — this
+  // mutation only records the decision, with an optional waiver note.
   const decideApproval = useMutation({
-    mutationFn: async ({ rowId, decision }: { rowId: string; decision: 'approved' | 'rejected' }) => {
-      // G2/G4 (CAT-TESTHUB-V2): a blocked test gate cannot be approved
-      // silently — an approval requires a typed waiver reason, recorded on
-      // the approver row.
-      let waiverNote: string | null = null;
-      if (decision === 'approved') {
-        let gate: string | null = null;
-        try {
-          if (config.kind === 'sprint') {
-            const { data } = await (supabase as any)
-              .from('tm_sprint_test_health')
-              .select('gate_state')
-              .eq('sprint_id', releaseId)
-              .order('computed_at', { ascending: false })
-              .limit(1)
-              .maybeSingle();
-            gate = data?.gate_state ?? null;
-          } else if (config.kind === 'release') {
-            const { data } = await (supabase as any).rpc('tm_compute_ph_release_gate', { p_release_id: releaseId });
-            gate = data?.gate ?? null;
-          }
-        } catch {
-          gate = null; // gate unavailable ≠ gate blocked — approval proceeds
-        }
-        if (gate === 'block') {
-          const reason = window.prompt(
-            'The test gate is BLOCK (failed tests or open blocker defects). Approving anyway requires a waiver reason:',
-          );
-          if (!reason || !reason.trim()) {
-            throw new Error('Approval cancelled — a blocked test gate needs a waiver reason.');
-          }
-          waiverNote = `[TEST GATE WAIVER] ${reason.trim()}`;
-        }
-      }
+    mutationFn: async ({ rowId, decision, waiverNote }: { rowId: string; decision: 'approved' | 'rejected'; waiverNote?: string | null }) => {
       const patch: Record<string, unknown> = { status: decision, decided_at: new Date().toISOString() };
       if (waiverNote) {
         // ph_sprint_approvers carries decision_note; tm/ph release approvers carry description
@@ -481,6 +457,46 @@ function ApproversCard({
     },
     onError: (e: any) => catalystFlag.error(e?.message || 'Failed to record decision'),
   });
+
+  // Pending waiver modal state — set when an approve hits a BLOCK test gate.
+  const [waiverState, setWaiverState] = useState<{ rowId: string; reasons: string[] } | null>(null);
+
+  // G2/G4: read the test gate before an approve. On BLOCK, open the canonical
+  // waiver modal (no silent pass); otherwise record the decision directly.
+  // Gate-unavailable degrades open (unavailable ≠ blocked). Rejections never gated.
+  const handleDecide = async (rowId: string, decision: 'approved' | 'rejected') => {
+    if (decision === 'rejected') {
+      decideApproval.mutate({ rowId, decision });
+      return;
+    }
+    // Scope: this card only exposes approve/reject for SPRINTS (canDecide is
+    // gated on config.kind === 'sprint'), so the gate check is sprint-only.
+    // Release signoff enforcement is intentionally NOT wired here — it belongs
+    // on the real release signoff surface (rh_/tm_release_signoffs) and will be
+    // handled in a separate slice. ReleaseTestReadinessSection stays read-only.
+    let gate: string | null = null;
+    let reasons: string[] = [];
+    if (config.kind === 'sprint') {
+      try {
+        const { data } = await (supabase as any)
+          .from('tm_sprint_test_health')
+          .select('gate_state, gate_reasons')
+          .eq('sprint_id', releaseId)
+          .order('computed_at', { ascending: false })
+          .limit(1)
+          .maybeSingle();
+        gate = data?.gate_state ?? null;
+        reasons = Array.isArray(data?.gate_reasons) ? data.gate_reasons : [];
+      } catch {
+        gate = null; // gate unavailable ≠ gate blocked — approval proceeds
+      }
+    }
+    if (gate === 'block') {
+      setWaiverState({ rowId, reasons });
+      return;
+    }
+    decideApproval.mutate({ rowId, decision: 'approved' });
+  };
 
   useEffect(() => {
     if (!pickerOpen || !plusRef.current) return;
@@ -602,7 +618,7 @@ function ApproversCard({
                 onRemove={() => handleRemove(a.userId)}
                 onDescriptionSave={(next) => handleDescriptionSave(a.userId, next)}
                 canDecide={canDecide}
-                onDecide={(decision) => decideApproval.mutate({ rowId: a.rowId, decision })}
+                onDecide={(decision) => handleDecide(a.rowId, decision)}
               />
             );
           })}
@@ -618,7 +634,97 @@ function ApproversCard({
         />,
         document.body,
       )}
+
+      {/* G2/G4 correction 03: canonical test-gate waiver modal (was window.prompt) */}
+      {waiverState && (
+        <TestGateWaiverModal
+          reasons={waiverState.reasons}
+          isSubmitting={decideApproval.isPending}
+          onCancel={() => setWaiverState(null)}
+          onConfirm={(reason) => {
+            decideApproval.mutate(
+              { rowId: waiverState.rowId, decision: 'approved', waiverNote: `[TEST GATE WAIVER] ${reason.trim()}` },
+              { onSuccess: () => setWaiverState(null) },
+            );
+          }}
+        />
+      )}
     </div>
+  );
+}
+
+// ─── Test-gate waiver modal (CAT-TESTHUB-V2 correction 03) ───────────────────
+// Canonical ADS modal replacing the native window.prompt. A blocked test gate
+// cannot be approved without a typed reason; empty/whitespace is rejected
+// inline; Cancel aborts; Confirm records the waiver. dir="auto" for Arabic.
+function TestGateWaiverModal({
+  reasons,
+  isSubmitting,
+  onCancel,
+  onConfirm,
+}: {
+  reasons: string[];
+  isSubmitting: boolean;
+  onCancel: () => void;
+  onConfirm: (reason: string) => void;
+}) {
+  const [reason, setReason] = useState('');
+  // Only flag the empty-reason error after a confirm attempt — not on mount
+  // (ADS modal focus-trap can fire a spurious blur otherwise).
+  const [attempted, setAttempted] = useState(false);
+  const empty = reason.trim().length === 0;
+
+  return (
+    <ModalDialog onClose={onCancel} width="small" shouldScrollInViewport>
+      <ModalHeader>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <ModalTitle appearance="warning">Test gate waiver required</ModalTitle>
+          <Lozenge appearance="removed" isBold>Blocked</Lozenge>
+        </div>
+      </ModalHeader>
+      <ModalBody>
+        <p style={{ margin: '0 0 8px', color: 'var(--ds-text)', fontSize: 'var(--ds-font-size-300)' }}>
+          The test gate is blocking (failed tests or open blocker defects). Approving anyway
+          requires a waiver reason, recorded on the approval.
+        </p>
+        {reasons.length > 0 && (
+          <div style={{ marginBottom: 12 }}>
+            <SectionMessage appearance="warning" title="Blocking reasons">
+              <ul style={{ margin: 0, paddingLeft: 18 }}>
+                {reasons.map((r, i) => <li key={i}>{r}</li>)}
+              </ul>
+            </SectionMessage>
+          </div>
+        )}
+        <label style={{ display: 'block', fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--ds-text-subtle)', marginBottom: 4 }}>
+          Waiver reason <span style={{ color: 'var(--ds-text-danger)' }}>*</span>
+        </label>
+        <Textarea
+          dir="auto"
+          value={reason}
+          onChange={(e) => setReason((e.target as HTMLTextAreaElement).value)}
+          placeholder="Why is this blocked gate being waived? (e.g. failure is a known flaky test, fix verified in hotfix)"
+          minimumRows={3}
+          isInvalid={attempted && empty}
+        />
+        {attempted && empty && (
+          <div style={{ marginTop: 4, fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-danger)' }}>
+            A waiver reason is required to approve a blocked gate.
+          </div>
+        )}
+      </ModalBody>
+      <ModalFooter>
+        <Button appearance="subtle" onClick={onCancel} isDisabled={isSubmitting}>Cancel</Button>
+        <Button
+          appearance="warning"
+          isDisabled={empty || isSubmitting}
+          isLoading={isSubmitting}
+          onClick={() => { setAttempted(true); if (!empty) onConfirm(reason); }}
+        >
+          Approve with waiver
+        </Button>
+      </ModalFooter>
+    </ModalDialog>
   );
 }
 
