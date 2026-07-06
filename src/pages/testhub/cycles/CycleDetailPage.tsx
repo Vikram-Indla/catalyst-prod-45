@@ -24,6 +24,9 @@ import Textfield from '@atlaskit/textfield';
 import Tooltip from '@atlaskit/tooltip';
 import Button from '@atlaskit/button/standard-button';
 import { IconButton } from '@atlaskit/button/new';
+import SectionMessage from '@atlaskit/section-message';
+// F5 (CAT-TESTHUB-V2): snapshot-vs-repository variance + explicit pull-latest
+import { useCycleVariance, usePullLatestIntoScope } from '@/hooks/test-management/useCaseVariance';
 import ModalDialog, { ModalBody, ModalFooter, ModalHeader, ModalTitle } from '@atlaskit/modal-dialog';
 import Tabs, { Tab, TabList } from '@atlaskit/tabs';
 import BugIcon from '@atlaskit/icon/core/bug';
@@ -333,6 +336,10 @@ export default function CycleDetailPage() {
         <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-warning)' }}>{blocked} blocked</span>
       </div>
 
+      {/* F5 (CAT-TESTHUB-V2): variance banner — repository edits never silently
+          mutate an active cycle; pulling latest is an explicit per-case action. */}
+      <CycleVarianceBanner cycleId={cycleId ?? undefined} cycleStatus={cycle?.status} />
+
       {/* Tab bar */}
       <div style={{ marginBottom: 'var(--ds-space-200)' }}>
         <Tabs
@@ -610,6 +617,50 @@ function DueDateCell({ scopeId, cycleId, dueDate }: {
       isDisabled={saving}
       placeholder="Set date"
     />
+  );
+}
+
+// ── Variance banner (F5) ─────────────────────────────────────────────────────
+// Shows when any in-scope case's repository master moved past its snapshot.
+// Closed cycles never show it — they are immutable by definition.
+function CycleVarianceBanner({ cycleId, cycleStatus }: { cycleId: string | undefined; cycleStatus?: string }) {
+  const closed = ['completed', 'archived', 'COMPLETED', 'ARCHIVED'].includes(cycleStatus ?? '');
+  const { data: variance = [] } = useCycleVariance(closed ? undefined : cycleId);
+  const pullLatest = usePullLatestIntoScope(cycleId);
+  if (closed || variance.length === 0) return null;
+  return (
+    <div style={{ marginBottom: 'var(--ds-space-200)' }}>
+      <SectionMessage
+        appearance="warning"
+        title={`${variance.length} case${variance.length === 1 ? ' has' : 's have'} a newer repository version`}
+      >
+        <p style={{ margin: '0 0 8px' }}>
+          This cycle runs against snapshots. Keep them, or pull the latest published version per case — nothing updates silently.
+        </p>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+          {variance.slice(0, 5).map((v) => (
+            <div key={v.scopeId} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 'var(--ds-font-size-300)' }}>
+              <span style={{ color: 'var(--ds-text-subtle)', width: 70, flexShrink: 0 }}>{v.caseKey}</span>
+              <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{v.caseTitle}</span>
+              <span style={{ color: 'var(--ds-text-subtlest)', flexShrink: 0 }}>v{v.lockedVersion} → v{v.latestVersion}</span>
+              <Button
+                appearance="default"
+                spacing="compact"
+                isLoading={pullLatest.isPending}
+                onClick={() => pullLatest.mutate(v.scopeId)}
+              >
+                Pull latest
+              </Button>
+            </div>
+          ))}
+          {variance.length > 5 && (
+            <span style={{ color: 'var(--ds-text-subtlest)', fontSize: 'var(--ds-font-size-200)' }}>
+              +{variance.length - 5} more in scope
+            </span>
+          )}
+        </div>
+      </SectionMessage>
+    </div>
   );
 }
 

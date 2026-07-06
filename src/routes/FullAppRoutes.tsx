@@ -175,12 +175,10 @@ const TestHubCyclesPage = lazy(() => import("../pages/testhub/cycles/CyclesPage"
 const TestHubCycleDetailPage = lazy(() => import("../pages/testhub/cycles/CycleDetailPage"));
 const TestHubExecutionPage = lazy(() => import("../pages/testhub/cycles/ExecutionPage"));
 const TestHubCycleRunDetailPage = lazy(() => import("../pages/testhub/cycles/CycleRunDetailPage"));
-const TestHubSetsPage = lazy(() => import("../pages/testhub/sets/TestSetsPage"));
 const TestHubPlansPage = lazy(() => import("../pages/testhub/plans/TestPlansPage"));
 const TestHubPlanDetailPage = lazy(() => import("../pages/testhub/plans/TestPlanDetailPage"));
 const TestHubExecutionsPage = lazy(() => import("../pages/testhub/executions/ExecutionsPage"));
 const TestHubExecutionDetailPage = lazy(() => import("../pages/testhub/executions/ExecutionDetailPage"));
-const TestHubSetDetailPage = lazy(() => import("../pages/testhub/sets/SetDetailPage"));
 const TestHubTraceabilityPage = lazy(() => import("../pages/testhub/traceability/TraceabilityPage"));
 // Reports hub — single registry-driven surface (CAT-REPORTS-HUB-20260703-001 S1.2).
 // Old standalone report URLs redirect below; the legacy page files were deleted in
@@ -693,14 +691,16 @@ export default function FullAppRoutes() {
         <Route path="/testhub/cycles/:cycleKey/runs" element={<MG k="testhub" t="Test Hub"><S><TestHubCycleRunDetailPage /></S></MG>} />
         <Route path="/testhub/timeline" element={<MG k="testhub" t="Test Hub"><S><TestHubTimelinePage /></S></MG>} />
         <Route path="/testhub/dependencies" element={<MG k="testhub" t="Test Hub"><S><TestHubDependenciesPage /></S></MG>} />
-        <Route path="/testhub/sets" element={<MG k="testhub" t="Test Hub"><S><TestHubSetsPage /></S></MG>} />
+        {/* CAT-TESTHUB-V2 E7 (D-004): Test Sets retired — the V2 model has no
+            Sets concept; Plans are the curated reference sets. */}
+        <Route path="/testhub/sets" element={<Navigate to="/testhub/plans" replace />} />
         <Route path="/testhub/plans" element={<MG k="testhub" t="Test Hub"><S><TestHubPlansPage /></S></MG>} />
         {/* CAT-TESTHUB-V2 E2: full-page test plan detail (plan_key, no UUID) */}
         <Route path="/testhub/plans/:planKey" element={<MG k="testhub" t="Test Hub"><S><TestHubPlanDetailPage /></S></MG>} />
         {/* CAT-TESTHUB-V2 E3/E4: execution labs (execution_key, no UUID) */}
         <Route path="/testhub/executions" element={<MG k="testhub" t="Test Hub"><S><TestHubExecutionsPage /></S></MG>} />
         <Route path="/testhub/executions/:executionKey" element={<MG k="testhub" t="Test Hub"><S><TestHubExecutionDetailPage /></S></MG>} />
-        <Route path="/testhub/sets/:setKey" element={<MG k="testhub" t="Test Hub"><S><TestHubSetDetailPage /></S></MG>} />
+        <Route path="/testhub/sets/:setKey" element={<Navigate to="/testhub/plans" replace />} />
         <Route path="/testhub/traceability" element={<MG k="testhub" t="Test Hub"><S><TestHubTraceabilityPage /></S></MG>} />
         <Route path="/testhub/defects" element={<MG k="testhub" t="Test Hub"><S><TestHubDefectsPage /></S></MG>} />
         <Route path="/testhub/defects/:defectKey" element={<MG k="testhub" t="Test Hub"><S><TestHubDefectDetailPage /></S></MG>} />
