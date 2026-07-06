@@ -429,9 +429,47 @@ function ApproversCard({
   // ph_sprint_approvers only when config.kind === 'sprint').
   const decideApproval = useMutation({
     mutationFn: async ({ rowId, decision }: { rowId: string; decision: 'approved' | 'rejected' }) => {
+      // G2/G4 (CAT-TESTHUB-V2): a blocked test gate cannot be approved
+      // silently — an approval requires a typed waiver reason, recorded on
+      // the approver row.
+      let waiverNote: string | null = null;
+      if (decision === 'approved') {
+        let gate: string | null = null;
+        try {
+          if (config.kind === 'sprint') {
+            const { data } = await (supabase as any)
+              .from('tm_sprint_test_health')
+              .select('gate_state')
+              .eq('sprint_id', releaseId)
+              .order('computed_at', { ascending: false })
+              .limit(1)
+              .maybeSingle();
+            gate = data?.gate_state ?? null;
+          } else if (config.kind === 'release') {
+            const { data } = await (supabase as any).rpc('tm_compute_ph_release_gate', { p_release_id: releaseId });
+            gate = data?.gate ?? null;
+          }
+        } catch {
+          gate = null; // gate unavailable ≠ gate blocked — approval proceeds
+        }
+        if (gate === 'block') {
+          const reason = window.prompt(
+            'The test gate is BLOCK (failed tests or open blocker defects). Approving anyway requires a waiver reason:',
+          );
+          if (!reason || !reason.trim()) {
+            throw new Error('Approval cancelled — a blocked test gate needs a waiver reason.');
+          }
+          waiverNote = `[TEST GATE WAIVER] ${reason.trim()}`;
+        }
+      }
+      const patch: Record<string, unknown> = { status: decision, decided_at: new Date().toISOString() };
+      if (waiverNote) {
+        // ph_sprint_approvers carries decision_note; tm/ph release approvers carry description
+        patch[config.kind === 'sprint' ? 'decision_note' : 'description'] = waiverNote;
+      }
       const { error } = await (supabase as any)
         .from(approverTable)
-        .update({ status: decision, decided_at: new Date().toISOString() })
+        .update(patch)
         .eq('id', rowId);
       if (error) throw new Error(error.message);
     },
