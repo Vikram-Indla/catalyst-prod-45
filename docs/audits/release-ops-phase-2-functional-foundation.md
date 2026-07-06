@@ -2,7 +2,7 @@
 
 **Feature Work ID:** `CAT-RELEASE-OPS-DISCOVERY-BLUEPRINT-20260706-001` · Phase 2
 **Date:** 2026-07-06 · **DB:** staging cyij (`cyijbdeuehohvhnsywig`)
-**Migration:** `supabase/migrations/20260706120000_release_ops_phase2_foundation.sql`
+**Migration:** `supabase/migrations/20260706124500_release_ops_phase2_foundation.sql`
 **Build:** `tsc` clean · `npm run build` PASS. **No UI built** (data/service foundation only).
 
 ## 0. Baseline check (from P0)
@@ -51,7 +51,7 @@ Traceable chain now structurally supported end-to-end:
 - **BR/Sprint/Work Item scope**: join tables reconstruct release scope for timeline/calendar/replay.
 
 ## Required code updates delivered
-- `supabase/migrations/20260706120000_release_ops_phase2_foundation.sql` (applied to cyij).
+- `supabase/migrations/20260706124500_release_ops_phase2_foundation.sql` (applied to cyij).
 - `src/services/release-hub.service.ts`: `getById` slug-or-UUID; `create` writes m2m link on release select.
 - `src/hooks/useReleaseHub.ts`: `useChangeReleases` reverse-m2m hook + `ChangeLinkedRelease` interface.
 - `src/pages/releasehub/AllChangesPage.tsx`: row-click navigates by slug.
