@@ -21,6 +21,7 @@ import { SubtasksPanel } from '@/modules/project-work-hub/components/SubtasksPan
 import { LinkedWorkItemsSection } from '@/modules/project-work-hub/components/linked-work-items';
 import { DependenciesSection } from '@/modules/project-work-hub/components/dependencies';
 import { TestCoveragePanel } from '../story/TestCoveragePanel';
+import { TestCasesSection } from '@/modules/project-work-hub/components/story-test-cases';
 import { ImproveIssueDropdown, useImproveApplyHandlers } from '@/components/catalyst-detail-views/improve';
 import { MoveIssueDialog } from '../shared/MoveIssueDialog';
 import { ConfirmArchiveDialog } from '../shared/ConfirmArchiveDialog';
@@ -123,6 +124,16 @@ export default function CatalystViewEpic({
           coverage across the epic's child stories. */}
       {issue?.issue_key && (
         <TestCoveragePanel issueKey={issue.issue_key} statusCategory={issue.status_category} mode="epic" />
+      )}
+      {/* G5 (CAT-TESTHUB-V2): Add/Generate Test Case insertion point on Epic */}
+      {issue?.issue_key && (issue?.project_key || projectKey) && (
+        <TestCasesSection
+          storyKey={issue.issue_key}
+          storySummary={issue.summary ?? ''}
+          storyDescription={typeof issue.description === 'string' ? issue.description : issue.description ? JSON.stringify(issue.description) : ''}
+          projectKey={issue.project_key || projectKey || ''}
+          requirementType="epic"
+        />
       )}
       <CatalystActivitySection itemId={itemId} isOpen={isOpen} />
     </>

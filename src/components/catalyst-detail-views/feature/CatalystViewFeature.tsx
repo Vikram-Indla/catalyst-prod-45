@@ -18,6 +18,7 @@ import { SubtasksPanel } from '@/modules/project-work-hub/components/SubtasksPan
 import { LinkedWorkItemsSection } from '@/modules/project-work-hub/components/linked-work-items';
 import { DependenciesSection } from '@/modules/project-work-hub/components/dependencies';
 import { TestCoveragePanel } from '../story/TestCoveragePanel';
+import { TestCasesSection } from '@/modules/project-work-hub/components/story-test-cases';
 import { ImproveIssueDropdown, useImproveApplyHandlers } from '@/components/catalyst-detail-views/improve';
 import { MoveIssueDialog } from '../shared/MoveIssueDialog';
 import { ConfirmArchiveDialog } from '../shared/ConfirmArchiveDialog';
@@ -115,6 +116,16 @@ export default function CatalystViewFeature({
           coverage across the feature's child stories. */}
       {issue?.issue_key && (
         <TestCoveragePanel issueKey={issue.issue_key} statusCategory={issue.status_category} mode="feature" />
+      )}
+      {/* G5 (CAT-TESTHUB-V2): Add/Generate Test Case insertion point on Feature */}
+      {issue?.issue_key && (issue?.project_key || projectKey) && (
+        <TestCasesSection
+          storyKey={issue.issue_key}
+          storySummary={issue.summary ?? ''}
+          storyDescription={typeof issue.description === 'string' ? issue.description : issue.description ? JSON.stringify(issue.description) : ''}
+          projectKey={issue.project_key || projectKey || ''}
+          requirementType="feature"
+        />
       )}
       <CatalystActivitySection itemId={itemId} isOpen={isOpen} />
     </>

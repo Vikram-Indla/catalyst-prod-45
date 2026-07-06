@@ -185,6 +185,9 @@ export interface TestCasesSectionProps {
   /** Optional display name — used only when auto-creating the tm_projects row. */
   projectName?: string;
   onOpenCase?: (caseId: string) => void;
+  /** G5 (CAT-TESTHUB-V2): tm_requirement_links.requirement_type for this host
+   *  work item — the section mounts on Story/Epic/Feature/BR/Defect/Incident. */
+  requirementType?: 'story' | 'epic' | 'feature' | 'business_request' | 'defect' | 'incident' | 'task';
 }
 
 export function TestCasesSection({
@@ -195,6 +198,7 @@ export function TestCasesSection({
   projectKey,
   projectName,
   onOpenCase,
+  requirementType = 'story',
 }: TestCasesSectionProps) {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
@@ -216,14 +220,14 @@ export function TestCasesSection({
   // the same table+match TestCoveragePanel.tsx already reads — single link model,
   // not the disconnected tm_test_cases.linked_story_key column (D-009).
   const { data: rows = [], isLoading } = useQuery({
-    queryKey: ['storyTestCases', storyKey],
+    queryKey: ['storyTestCases', storyKey, requirementType],
     enabled: !!storyKey,
     queryFn: async (): Promise<StoryTestCaseRow[]> => {
       const { data: links, error: linksError } = await supabase
         .from('tm_requirement_links')
         .select('test_case_id')
         .eq('external_key', storyKey)
-        .eq('requirement_type', 'story');
+        .eq('requirement_type', requirementType);
       if (linksError) throw linksError;
       const caseIds = Array.from(new Set((links ?? []).map((l: { test_case_id: string }) => l.test_case_id)));
       if (caseIds.length === 0) return [];
@@ -355,7 +359,7 @@ export function TestCasesSection({
         // column set above.
         const { error: linkErr } = await supabase.rpc('tm_link_requirement', {
           p_case_id: insertedId,
-          p_requirement_type: 'story',
+          p_requirement_type: requirementType,
           p_requirement_id: storyIssueId,
           p_external_key: storyKey,
           p_external_title: storySummary,
