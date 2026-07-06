@@ -303,6 +303,39 @@ export const useMilestones = (projectCardId?: string) =>
   });
 export const useDependencies = () =>
   useQuery({ queryKey: ['strata', 'dependencies'], queryFn: executionApi.dependencies, staleTime: STALE });
+export const useProjectCardBySlug = (slug?: string) =>
+  useQuery({
+    queryKey: ['strata', 'project-card', slug],
+    queryFn: () => executionApi.projectCardBySlug(slug!),
+    enabled: !!slug,
+    staleTime: STALE,
+  });
+/** Project Objectives for a card — same strata_strategy_elements framework as Theme Objectives. */
+export const useProjectObjectives = (projectCardId?: string) =>
+  useQuery({
+    queryKey: ['strata', 'project-objectives', projectCardId],
+    queryFn: () => executionApi.projectObjectives(projectCardId!),
+    enabled: !!projectCardId,
+    staleTime: STALE,
+  });
+/** Project KPIs / Measures for a card — same strata_kpis framework as Theme KPIs. */
+export const useProjectKpis = (projectCardId?: string) =>
+  useQuery({
+    queryKey: ['strata', 'project-kpis', projectCardId],
+    queryFn: () => executionApi.projectKpis(projectCardId!),
+    enabled: !!projectCardId,
+    staleTime: STALE,
+  });
+
+// ── Project Card configuration engine ───────────────────────────────────────
+export const useProjectCardTabConfigs = (cardType?: string) =>
+  useQuery({ queryKey: ['strata', 'pc-tab-configs', cardType ?? 'all'], queryFn: () => configApi.projectCardTabConfigs(cardType), staleTime: STALE });
+export const useProjectCardSectionConfigs = (cardType?: string) =>
+  useQuery({ queryKey: ['strata', 'pc-section-configs', cardType ?? 'all'], queryFn: () => configApi.projectCardSectionConfigs(cardType), staleTime: STALE });
+export const useProjectCardFieldConfigs = (cardType?: string) =>
+  useQuery({ queryKey: ['strata', 'pc-field-configs', cardType ?? 'all'], queryFn: () => configApi.projectCardFieldConfigs(cardType), staleTime: STALE });
+export const useProjectCardPicklists = (picklistKey?: string) =>
+  useQuery({ queryKey: ['strata', 'pc-picklists', picklistKey ?? 'all'], queryFn: () => configApi.projectCardPicklists(picklistKey), staleTime: STALE });
 
 // ── Value / VMO ──────────────────────────────────────────────────────────────
 export const usePortfolioBySlug = (slug?: string) =>
@@ -362,6 +395,9 @@ export const useAssumptions = (benefitId?: string) =>
   });
 export const useGateInstances = () =>
   useQuery({ queryKey: ['strata', 'gates'], queryFn: valueApi.gateInstances, staleTime: STALE });
+/** Benefit ↔ Project Card attribution (Execution Reconciliation §K rule 19). */
+export const useBenefitProjectCards = () =>
+  useQuery({ queryKey: ['strata', 'benefit-project-cards'], queryFn: valueApi.benefitProjectCards, staleTime: STALE });
 export const useValueAtRisk = (portfolioId?: string) =>
   useQuery({
     queryKey: ['strata', 'var', portfolioId],

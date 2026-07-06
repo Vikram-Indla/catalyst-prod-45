@@ -17,6 +17,7 @@ const ScorecardDetailPage = lazy(() => import('./pages/StrataScorecardDetailPage
 const KpiLibraryPage = lazy(() => import('./pages/StrataKpiLibraryPage'));
 const KpiDetailPage = lazy(() => import('./pages/StrataKpiDetailPage'));
 const ExecutionPage = lazy(() => import('./pages/StrataExecutionPage'));
+const ExecutionImportPage = lazy(() => import('./pages/StrataExecutionImportPage'));
 const PortfolioVmoPage = lazy(() => import('./pages/StrataPortfolioVmoPage'));
 const DataPipelinePage = lazy(() => import('./pages/StrataDataPipelinePage'));
 const UploadWizardPage = lazy(() => import('./pages/StrataUploadWizardPage'));
@@ -64,6 +65,7 @@ export function StrataRoutesShell() {
         <Route path="kpis/:slug" element={<S><KpiDetailPage /></S>} />
         <Route path="kpis/:slug/evidence" element={<S><EvidencePage /></S>} />
         <Route path="execution" element={<S><ExecutionPage /></S>} />
+        <Route path="execution/import" element={<S><ExecutionImportPage /></S>} />
         <Route path="execution/:slug" element={<S><ExecutionPage /></S>} />
         <Route path="portfolio" element={<S><PortfolioVmoPage /></S>} />
         <Route path="portfolio/benefits/:slug" element={<S><PortfolioVmoPage /></S>} />

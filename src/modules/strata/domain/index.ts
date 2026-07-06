@@ -6,15 +6,17 @@
  */
 import { supabase, typedQuery, typedRpc } from '@/integrations/supabase/client';
 import type {
+  ExecutionImportDependencyRow, ExecutionImportMilestoneRow, ExecutionImportProjectCardRow, ExecutionImportResult,
   ScorecardCalcResult, StrataAction, StrataAiOutput, StrataAssumption, StrataBenefit,
-  StrataBenefitValue, StrataBoardPack, StrataCalculatedValue, StrataChangeRequest,
+  StrataBenefitProjectCard, StrataBenefitValue, StrataBoardPack, StrataCalculatedValue, StrataChangeRequest,
   StrataCycle, StrataDataSource, StrataDecision, StrataDependency, StrataGateInstance,
   StrataGateModel, StrataGateModelStage, StrataInitiative, StrataInitiativeProject,
   StrataKeyResult, StrataKpi, StrataKpiActual, StrataKpiFormulaVersion, StrataKpiTarget,
   StrataKpiTypeConfig, StrataMapEdge, StrataMilestone, StrataModelPerspective, StrataOkr,
   StrataPeriod, StrataPerspective, StrataPlayCharter, StrataPortfolio, StrataProjectCard,
-  StrataRole, StrataScorecardInstance, StrataScorecardLine, StrataScorecardModel,
-  StrataSnapshot, StrataStagingRow, StrataStrategyElement, StrataThresholdScheme,
+  StrataProjectCardFieldConfig, StrataProjectCardPicklist, StrataProjectCardSectionConfig,
+  StrataProjectCardTabConfig, StrataRole, StrataScorecardInstance, StrataScorecardLine,
+  StrataScorecardModel, StrataSnapshot, StrataStagingRow, StrataStrategyElement, StrataThresholdScheme,
   StrataUploadRun, StrataUploadTemplate, StrataValidationResult, StrataValueCategory,
   StrataWorkflowConfig,
 } from '../types';
@@ -68,6 +70,39 @@ export const configApi = {
     );
     return rows.map((r) => r.role);
   },
+  // ── Project Card configuration engine (Execution Reconciliation §G) ──────
+  // Direct table access under RLS (strategy_office | strata_admin write) —
+  // same lightweight pattern as the Demand module's tab/section configs this
+  // was modeled on, no governed-envelope workflow needed for UI layout config.
+  projectCardTabConfigs: (cardType?: string): Promise<StrataProjectCardTabConfig[]> => {
+    let q = typedQuery('strata_project_card_tab_configs').select('*').order('position');
+    if (cardType !== undefined) q = q.or(`card_type.eq.${cardType},card_type.is.null`);
+    return run(q);
+  },
+  projectCardSectionConfigs: (cardType?: string): Promise<StrataProjectCardSectionConfig[]> => {
+    let q = typedQuery('strata_project_card_section_configs').select('*').order('position');
+    if (cardType !== undefined) q = q.or(`card_type.eq.${cardType},card_type.is.null`);
+    return run(q);
+  },
+  projectCardFieldConfigs: (cardType?: string): Promise<StrataProjectCardFieldConfig[]> => {
+    let q = typedQuery('strata_project_card_field_configs').select('*').order('position');
+    if (cardType !== undefined) q = q.or(`card_type.eq.${cardType},card_type.is.null`);
+    return run(q);
+  },
+  projectCardPicklists: (picklistKey?: string): Promise<StrataProjectCardPicklist[]> => {
+    let q = typedQuery('strata_project_card_picklists').select('*').eq('is_active', true).order('position');
+    if (picklistKey) q = q.eq('picklist_key', picklistKey);
+    return run(q);
+  },
+  upsertTabConfig: (tab: Partial<StrataProjectCardTabConfig> & { tab_key: string }) =>
+    run(typedQuery('strata_project_card_tab_configs').upsert(tab, { onConflict: 'card_type,tab_key' }).select('*').single()),
+  upsertSectionConfig: (section: Partial<StrataProjectCardSectionConfig> & { tab_key: string; section_key: string }) =>
+    run(typedQuery('strata_project_card_section_configs').upsert(section, { onConflict: 'card_type,tab_key,section_key' }).select('*').single()),
+  upsertFieldConfig: (field: Partial<StrataProjectCardFieldConfig> & { field_key: string; tab_key: string }) =>
+    run(typedQuery('strata_project_card_field_configs').upsert(field, { onConflict: 'card_type,field_key' }).select('*').single()),
+  upsertPicklistValue: (entry: Partial<StrataProjectCardPicklist> & { picklist_key: string; value: string; label: string }) =>
+    run(typedQuery('strata_project_card_picklists').upsert(entry, { onConflict: 'picklist_key,value' }).select('*').single()),
+  deletePicklistValue: (id: string) => run(typedQuery('strata_project_card_picklists').delete().eq('id', id).select('id')),
 };
 
 // ── Strategy ─────────────────────────────────────────────────────────────────
@@ -357,6 +392,8 @@ export const executionApi = {
     run(typedQuery('strata_initiative_projects').select('*')),
   projectCards: (): Promise<StrataProjectCard[]> =>
     run(typedQuery('strata_project_cards').select('*').order('name')),
+  projectCardBySlug: (slug: string): Promise<StrataProjectCard | null> =>
+    run(typedQuery('strata_project_cards').select('*').eq('slug', slug).maybeSingle()),
   milestones: (projectCardId?: string): Promise<StrataMilestone[]> => {
     let q = typedQuery('strata_milestones').select('*').order('order_index');
     if (projectCardId) q = q.eq('project_card_id', projectCardId);
@@ -418,6 +455,11 @@ export const executionApi = {
     name: string; sourceSystem?: 'manual' | 'upload' | 'api' | 'jira'; sourceKey?: string;
     pmId?: string; sector?: string; budget?: number; baselineStart?: string;
     baselineEnd?: string; forecastEnd?: string; stage?: string; executionHealth?: string;
+    themeId?: string; cardType?: string; businessOwnerId?: string;
+    leadBusinessUnit?: string; deliveryTeam?: string; scopeDescription?: string;
+    targetOutcomes?: string; successCriteria?: string;
+    sponsorId?: string; businessCase?: string; valueHypothesis?: string;
+    optionalFields?: Record<string, unknown>;
   }): Promise<string> =>
     run(typedRpc('strata_create_project_card', {
       p_name: input.name, p_source_system: input.sourceSystem ?? 'manual',
@@ -426,12 +468,25 @@ export const executionApi = {
       p_baseline_start: input.baselineStart ?? null, p_baseline_end: input.baselineEnd ?? null,
       p_forecast_end: input.forecastEnd ?? null, p_stage: input.stage ?? 'planning',
       p_execution_health: input.executionHealth ?? null, p_sync_metadata: null,
+      p_theme: input.themeId ?? null, p_card_type: input.cardType ?? 'standard',
+      p_business_owner: input.businessOwnerId ?? null,
+      p_lead_business_unit: input.leadBusinessUnit ?? null, p_delivery_team: input.deliveryTeam ?? null,
+      p_scope_description: input.scopeDescription ?? null, p_target_outcomes: input.targetOutcomes ?? null,
+      p_success_criteria: input.successCriteria ?? null,
+      p_sponsor: input.sponsorId ?? null, p_business_case: input.businessCase ?? null,
+      p_value_hypothesis: input.valueHypothesis ?? null, p_optional_fields: input.optionalFields ?? null,
     })),
   updateProjectCard: (projectId: string, patch: {
     name?: string; pmId?: string; sector?: string; budget?: number;
     baselineStart?: string; baselineEnd?: string; forecastEnd?: string;
     stage?: string; executionHealth?: string; riskSummary?: string; dependencySummary?: string;
     clearPm?: boolean; clearExecutionHealth?: boolean;
+    themeId?: string; cardType?: string; businessOwnerId?: string;
+    leadBusinessUnit?: string; deliveryTeam?: string; scopeDescription?: string;
+    targetOutcomes?: string; successCriteria?: string;
+    sponsorId?: string; businessCase?: string; valueHypothesis?: string;
+    optionalFields?: Record<string, unknown>;
+    clearTheme?: boolean; clearSponsor?: boolean; clearBusinessOwner?: boolean;
   }) =>
     run(typedRpc('strata_update_project_card', {
       p_project: projectId, p_name: patch.name ?? null, p_pm: patch.pmId ?? null,
@@ -441,9 +496,66 @@ export const executionApi = {
       p_execution_health: patch.executionHealth ?? null,
       p_risk_summary: patch.riskSummary ?? null, p_dependency_summary: patch.dependencySummary ?? null,
       p_clear_pm: patch.clearPm ?? false, p_clear_execution_health: patch.clearExecutionHealth ?? false,
+      p_theme: patch.themeId ?? null, p_card_type: patch.cardType ?? null,
+      p_business_owner: patch.businessOwnerId ?? null,
+      p_lead_business_unit: patch.leadBusinessUnit ?? null, p_delivery_team: patch.deliveryTeam ?? null,
+      p_scope_description: patch.scopeDescription ?? null, p_target_outcomes: patch.targetOutcomes ?? null,
+      p_success_criteria: patch.successCriteria ?? null,
+      p_sponsor: patch.sponsorId ?? null, p_business_case: patch.businessCase ?? null,
+      p_value_hypothesis: patch.valueHypothesis ?? null, p_optional_fields: patch.optionalFields ?? null,
+      p_clear_theme: patch.clearTheme ?? false, p_clear_sponsor: patch.clearSponsor ?? false,
+      p_clear_business_owner: patch.clearBusinessOwner ?? false,
     })),
   archiveProjectCard: (projectId: string, reason: string) =>
     run(typedRpc('strata_archive_project_card', { p_project: projectId, p_reason: reason })),
+  /** Project Objectives (Execution Reconciliation §K rule 7) — same strata_strategy_elements
+   * framework as Theme Objectives (context='project'), linked to the card via strata_execution_links. */
+  createProjectObjective: (input: {
+    projectId: string; name: string; description?: string; parentThemeObjectiveId?: string; ownerId?: string;
+  }): Promise<string> =>
+    run(typedRpc('strata_create_project_objective', {
+      p_project: input.projectId, p_name: input.name, p_description: input.description ?? null,
+      p_parent_theme_objective: input.parentThemeObjectiveId ?? null, p_owner: input.ownerId ?? null,
+    })),
+  projectObjectives: async (projectId: string): Promise<StrataStrategyElement[]> => {
+    const links: Array<{ to_id: string }> = await run(
+      typedQuery('strata_execution_links').select('to_id')
+        .eq('from_type', 'project_card').eq('from_id', projectId)
+        .eq('to_type', 'element').eq('relationship_type', 'has_objective'),
+    );
+    if (links.length === 0) return [];
+    return run(typedQuery('strata_strategy_elements').select('*').in('id', links.map((l) => l.to_id)));
+  },
+  /** Project KPIs / Measures (Execution Reconciliation §K rule 8) — same strata_kpis
+   * framework as Theme KPIs, linked to the card + optionally rolled up to a Theme KPI. */
+  createProjectKpi: (input: {
+    projectId: string; name: string; unit?: string; direction?: string; frequency?: string;
+    entryMethod?: string; parentThemeKpiId?: string; accountableOwnerId?: string; validatorId?: string;
+  }): Promise<string> =>
+    run(typedRpc('strata_create_project_kpi', {
+      p_project: input.projectId, p_name: input.name, p_unit: input.unit ?? null,
+      p_direction: input.direction ?? 'higher_better', p_frequency: input.frequency ?? 'quarterly',
+      p_entry_method: input.entryMethod ?? 'manual', p_parent_theme_kpi: input.parentThemeKpiId ?? null,
+      p_accountable_owner: input.accountableOwnerId ?? null, p_validator: input.validatorId ?? null,
+    })),
+  projectKpis: async (projectId: string): Promise<StrataKpi[]> => {
+    const links: Array<{ to_id: string }> = await run(
+      typedQuery('strata_execution_links').select('to_id')
+        .eq('from_type', 'project_card').eq('from_id', projectId)
+        .eq('to_type', 'kpi').eq('relationship_type', 'measures'),
+    );
+    if (links.length === 0) return [];
+    return run(typedQuery('strata_kpis').select('*').in('id', links.map((l) => l.to_id)));
+  },
+  /** Theme KPI this Project KPI rolls up to, if any. */
+  parentThemeKpi: async (projectKpiId: string): Promise<string | null> => {
+    const links: Array<{ to_id: string }> = await run(
+      typedQuery('strata_execution_links').select('to_id')
+        .eq('from_type', 'kpi').eq('from_id', projectKpiId)
+        .eq('to_type', 'kpi').eq('relationship_type', 'rolls_up_to'),
+    );
+    return links[0]?.to_id ?? null;
+  },
   linkExecution: (input: {
     fromType: string; fromId: string; toType: string; toId: string;
     relationship?: string; confidence?: number;
@@ -460,6 +572,7 @@ export const executionApi = {
     projectId: string; name: string; ownerId?: string; baselineStart?: string;
     baselineEnd?: string; forecastDate?: string; actualDate?: string;
     status?: string; progress?: number; weight?: number;
+    sourceSystem?: string; sourceReferenceKey?: string; sourceIssueId?: string;
   }): Promise<string> =>
     run(typedRpc('strata_create_milestone', {
       p_project: input.projectId, p_name: input.name, p_owner: input.ownerId ?? null,
@@ -467,10 +580,13 @@ export const executionApi = {
       p_forecast_date: input.forecastDate ?? null, p_actual_date: input.actualDate ?? null,
       p_status: input.status ?? 'planned', p_progress: input.progress ?? 0,
       p_weight: input.weight ?? 1,
+      p_source_system: input.sourceSystem ?? null, p_source_reference_key: input.sourceReferenceKey ?? null,
+      p_source_issue_id: input.sourceIssueId ?? null,
     })),
   updateMilestone: (milestoneId: string, patch: {
     name?: string; ownerId?: string; baselineStart?: string; baselineEnd?: string;
     forecastDate?: string; actualDate?: string; status?: string; progress?: number; weight?: number;
+    sourceSystem?: string; sourceReferenceKey?: string; sourceIssueId?: string;
   }) =>
     run(typedRpc('strata_update_milestone', {
       p_milestone: milestoneId, p_name: patch.name ?? null, p_owner: patch.ownerId ?? null,
@@ -478,12 +594,16 @@ export const executionApi = {
       p_forecast_date: patch.forecastDate ?? null, p_actual_date: patch.actualDate ?? null,
       p_status: patch.status ?? null, p_progress: patch.progress ?? null,
       p_weight: patch.weight ?? null,
+      p_source_system: patch.sourceSystem ?? null, p_source_reference_key: patch.sourceReferenceKey ?? null,
+      p_source_issue_id: patch.sourceIssueId ?? null,
     })),
   createDependency: (input: {
     requestingType: 'initiative' | 'project_card'; requestingId: string;
     servingType: 'initiative' | 'project_card' | 'external'; servingId?: string; servingLabel?: string;
     dependencyType?: string; dueDate?: string; slaDays?: number; impact?: string;
     isBlocker?: boolean; status?: string;
+    description?: string; ownerId?: string; baselineStart?: string; baselineEnd?: string;
+    sourceSystem?: string; sourceReferenceKey?: string; sourceIssueId?: string;
   }): Promise<string> =>
     run(typedRpc('strata_create_dependency', {
       p_requesting_type: input.requestingType, p_requesting_id: input.requestingId,
@@ -493,16 +613,26 @@ export const executionApi = {
       p_due_date: input.dueDate ?? null, p_sla_days: input.slaDays ?? null,
       p_impact: input.impact ?? null, p_is_blocker: input.isBlocker ?? false,
       p_status: input.status ?? 'open',
+      p_description: input.description ?? null, p_owner: input.ownerId ?? null,
+      p_baseline_start: input.baselineStart ?? null, p_baseline_end: input.baselineEnd ?? null,
+      p_source_system: input.sourceSystem ?? null, p_source_reference_key: input.sourceReferenceKey ?? null,
+      p_source_issue_id: input.sourceIssueId ?? null,
     })),
   updateDependency: (dependencyId: string, patch: {
     status?: string; dueDate?: string; slaDays?: number; impact?: string;
     isBlocker?: boolean; servingLabel?: string;
+    description?: string; ownerId?: string; baselineStart?: string; baselineEnd?: string;
+    sourceSystem?: string; sourceReferenceKey?: string; sourceIssueId?: string; clearOwner?: boolean;
   }) =>
     run(typedRpc('strata_update_dependency', {
       p_dependency: dependencyId, p_status: patch.status ?? null,
       p_due_date: patch.dueDate ?? null, p_sla_days: patch.slaDays ?? null,
       p_impact: patch.impact ?? null, p_is_blocker: patch.isBlocker ?? null,
       p_serving_label: patch.servingLabel ?? null,
+      p_description: patch.description ?? null, p_owner: patch.ownerId ?? null,
+      p_baseline_start: patch.baselineStart ?? null, p_baseline_end: patch.baselineEnd ?? null,
+      p_source_system: patch.sourceSystem ?? null, p_source_reference_key: patch.sourceReferenceKey ?? null,
+      p_source_issue_id: patch.sourceIssueId ?? null, p_clear_owner: patch.clearOwner ?? false,
     })),
 };
 
@@ -528,6 +658,17 @@ export const valueApi = {
   attributionRules: (benefitId: string) =>
     run(typedQuery('strata_attribution_rules').select('*').eq('benefit_id', benefitId)),
   benefitInitiatives: () => run(typedQuery('strata_benefit_initiatives').select('*')),
+  /** Benefit ↔ Project Card attribution (Execution Reconciliation §K rule 19) — the
+   * primary attribution path going forward; Theme-level rollup derives via project_card.theme_id. */
+  benefitProjectCards: (): Promise<StrataBenefitProjectCard[]> =>
+    run(typedQuery('strata_benefit_project_cards').select('*')),
+  linkBenefitProjectCard: (benefitId: string, projectCardId: string, attributionShare?: number): Promise<StrataBenefitProjectCard> =>
+    run(typedQuery('strata_benefit_project_cards').insert({
+      benefit_id: benefitId, project_card_id: projectCardId, attribution_share: attributionShare ?? null,
+    }).select('*').single()),
+  unlinkBenefitProjectCard: (benefitId: string, projectCardId: string) =>
+    run(typedQuery('strata_benefit_project_cards').delete()
+      .eq('benefit_id', benefitId).eq('project_card_id', projectCardId).select('id')),
   gateInstances: (): Promise<StrataGateInstance[]> =>
     run(typedQuery('strata_gate_instances').select('*').order('scheduled_for')),
   gateEvidence: (gateInstanceId: string) =>
@@ -728,6 +869,29 @@ export const lineageApi = {
   /** Promote VALID rows of a completed run into canonical KPI actuals + lineage. */
   promoteRun: (runId: string): Promise<{ run_id: string; promoted: number; skipped: number }> =>
     run(typedRpc('strata_promote_run', { p_run: runId })),
+};
+
+// ── Execution manual Excel import (session 007) ─────────────────────────────
+export const importApi = {
+  /**
+   * One RPC, two modes: p_dry_run=true previews validation with zero writes;
+   * p_dry_run=false commits via the existing single-row create/update RPCs and
+   * writes strata_upload_runs/strata_lineage_records/strata_audit_events.
+   */
+  importExecutionBatch: (input: {
+    projectCards: ExecutionImportProjectCardRow[];
+    milestones: ExecutionImportMilestoneRow[];
+    dependencies: ExecutionImportDependencyRow[];
+    dryRun: boolean;
+    fileName: string | null;
+  }): Promise<ExecutionImportResult> =>
+    run(typedRpc('strata_import_execution_batch', {
+      p_project_cards: input.projectCards,
+      p_milestones: input.milestones,
+      p_dependencies: input.dependencies,
+      p_dry_run: input.dryRun,
+      p_file_name: input.fileName,
+    })),
 };
 
 // ── Governance ───────────────────────────────────────────────────────────────

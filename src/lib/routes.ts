@@ -274,7 +274,13 @@ export const strataRoutes = {
   kpi: (kpiSlug: string) => `/strata/kpis/${kpiSlug}`,
   kpiEvidence: (kpiSlug: string) => `/strata/kpis/${kpiSlug}/evidence`,
   execution: () => '/strata/execution',
-  initiative: (initiativeSlug: string) => `/strata/execution/${initiativeSlug}`,
+  // Manual Excel import wizard (session 007) — static slug-safe path, matched
+  // before execution/:slug by React Router's static-over-dynamic ranking.
+  executionImport: () => '/strata/execution/import',
+  // Execution Reconciliation §K rule 20: repointed from Initiative detail to
+  // Project Card detail — Project Card is the sole execution object. Same
+  // route slot (/strata/execution/:slug), no duplicate route created.
+  projectCard: (projectCardSlug: string) => `/strata/execution/${projectCardSlug}`,
   portfolio: () => '/strata/portfolio',
   portfolioEvidence: (slug: string) => `/strata/portfolio/${slug}/evidence`,
   benefit: (benefitSlug: string) => `/strata/portfolio/benefits/${benefitSlug}`,

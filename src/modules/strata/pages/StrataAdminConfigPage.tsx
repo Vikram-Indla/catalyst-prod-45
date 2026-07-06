@@ -20,19 +20,22 @@ import type { LozengeAppearance } from '@/components/shared/StatusLozenge';
 import { Routes } from '@/lib/routes';
 import {
   BarChart3, CheckCircle2, Clock, Gem, GitBranch, Layers, ListChecks,
-  MoveRight, Scale, ShieldCheck, Upload, Users,
+  MoveRight, Rocket, Scale, ShieldCheck, Upload, Users,
 } from '@/lib/atlaskit-icons';
 import { configApi, governanceApi } from '@/modules/strata/domain';
 import {
   useChangeRequests, useGateModels, useInvalidateStrata, useKpiTypes, useModelPerspectives,
-  usePerspectives, useProfileNames, useRoleAssignments, useScorecardModels, useStrataAudit,
-  useStrataRoles, useThresholdSchemes, useUploadTemplates, useValueCategories, useWorkflowConfigs,
+  usePerspectives, useProfileNames, useProjectCardFieldConfigs, useProjectCardPicklists,
+  useProjectCardSectionConfigs, useProjectCardTabConfigs, useRoleAssignments, useScorecardModels,
+  useStrataAudit, useStrataRoles, useThresholdSchemes, useUploadTemplates, useValueCategories,
+  useWorkflowConfigs,
 } from '@/modules/strata/hooks/useStrata';
 import { StrataPageShell, StrataPanel, T } from '@/modules/strata/components/shared';
 import { StrataFormModal } from '@/modules/strata/components/authoring';
 import { fmtDate, fmtDateTime, labelize } from '@/modules/strata/components/format';
 import type {
-  GovernedEnvelope, GovernedStatus, StrataChangeRequest, StrataRole, StrataScorecardModel,
+  GovernedEnvelope, GovernedStatus, StrataChangeRequest, StrataProjectCardFieldConfig,
+  StrataProjectCardPicklist, StrataRole, StrataScorecardModel,
 } from '@/modules/strata/types';
 
 type OnError = (msg: string | null) => void;
@@ -798,6 +801,229 @@ function ChangeLogSection() {
   );
 }
 
+// ── Project Card configuration (Execution Reconciliation §G/§N) ─────────────
+// Lightweight config engine — no governed envelope (matches the Demand
+// module's tab/section-config prior art, not the version/approval workflow
+// used by the config-engine tables above). Writes go direct under RLS
+// (strategy_office | strata_admin), same as strata_workflow_configs reads.
+type PcFormKey = 'new-field' | 'edit-field' | 'new-picklist' | null;
+
+const FIELD_TYPE_OPTIONS = ['text', 'longtext', 'number', 'currency', 'date', 'user', 'reference', 'picklist', 'picklist_multi', 'calculated', 'list'];
+
+function ProjectCardConfigSection({ onError }: { onError: OnError }) {
+  const invalidate = useInvalidateStrata();
+  const tabsQ = useProjectCardTabConfigs();
+  const sectionsQ = useProjectCardSectionConfigs();
+  const fieldsQ = useProjectCardFieldConfigs();
+  const picklistsQ = useProjectCardPicklists();
+  const [form, setForm] = useState<PcFormKey>(null);
+  const [editField, setEditField] = useState<StrataProjectCardFieldConfig | null>(null);
+  const [picklistKeyFilter, setPicklistKeyFilter] = useState<string | null>(null);
+
+  const tabs = tabsQ.data ?? [];
+  const sections = sectionsQ.data ?? [];
+  const fields = fieldsQ.data ?? [];
+  const picklistKeys = Array.from(new Set((picklistsQ.data ?? []).map((p) => p.picklist_key))).sort();
+  // Fall back to the first key that actually has rows — avoids a dropdown
+  // whose selected value silently has zero matching picklist values.
+  const effectivePicklistKey = picklistKeyFilter && picklistKeys.includes(picklistKeyFilter)
+    ? picklistKeyFilter
+    : picklistKeys[0] ?? '';
+  const picklists = (picklistsQ.data ?? []).filter((p) => p.picklist_key === effectivePicklistKey);
+
+  const toggleFieldVisible = async (f: StrataProjectCardFieldConfig) => {
+    onError(null);
+    try {
+      await configApi.upsertFieldConfig({ ...f, is_visible: !f.is_visible });
+      invalidate();
+    } catch (e) { onError(e instanceof Error ? e.message : String(e)); }
+  };
+  const togglePicklistActive = async (p: StrataProjectCardPicklist) => {
+    onError(null);
+    try {
+      await configApi.upsertPicklistValue({ ...p, is_active: !p.is_active });
+      invalidate();
+    } catch (e) { onError(e instanceof Error ? e.message : String(e)); }
+  };
+
+  const fieldColumns: Column<StrataProjectCardFieldConfig>[] = [
+    { id: 'display_name', label: 'Field', width: 22, cell: ({ row }) => <span style={{ ...bodyStyle, fontWeight: 600 }}>{row.display_name}</span> },
+    { id: 'tab_key', label: 'Tab', width: 14, cell: ({ row }) => <CatalystTag text={labelize(row.tab_key)} /> },
+    { id: 'field_type', label: 'Type', width: 12, cell: ({ row }) => <span style={metaStyle}>{labelize(row.field_type)}</span> },
+    {
+      id: 'visible', label: 'Visible', width: 12,
+      cell: ({ row }) => (
+        <Button spacing="compact" appearance={row.is_visible ? 'default' : 'subtle'} onClick={() => void toggleFieldVisible(row)} testId={`strata-pc-field-toggle-${row.field_key}`}>
+          {row.is_visible ? 'Visible' : 'Hidden'}
+        </Button>
+      ),
+    },
+    { id: 'required', label: 'Required', width: 12, cell: ({ row }) => (row.is_required ? <StatusLozenge status="required" label="Required" appearance="moved" /> : <span style={metaStyle}>Optional</span>) },
+    { id: 'readonly', label: 'Editable', width: 12, cell: ({ row }) => <span style={metaStyle}>{row.is_readonly ? 'Read-only' : 'Editable'}</span> },
+    { id: 'jira', label: 'Jira sync', width: 12, cell: ({ row }) => <span style={metaStyle}>{row.syncs_from_jira ? (row.editable_when_synced ? 'Synced · editable' : 'Synced · locked') : 'Manual only'}</span> },
+    {
+      id: 'actions', label: '', flex: true, align: 'end',
+      cell: ({ row }) => <Button appearance="subtle" spacing="compact" onClick={() => { setEditField(row); setForm('edit-field'); }}>Edit</Button>,
+    },
+  ];
+
+  const picklistColumns: Column<StrataProjectCardPicklist>[] = [
+    { id: 'label', label: 'Label', flex: true, cell: ({ row }) => <span style={{ ...bodyStyle, fontWeight: 600 }}>{row.label}</span> },
+    { id: 'value', label: 'Value', width: 20, cell: ({ row }) => <CatalystInlineCode>{row.value}</CatalystInlineCode> },
+    {
+      id: 'active', label: 'Status', width: 16,
+      cell: ({ row }) => (
+        <Button spacing="compact" appearance={row.is_active ? 'default' : 'subtle'} onClick={() => void togglePicklistActive(row)} testId={`strata-pc-picklist-toggle-${row.picklist_key}-${row.value}`}>
+          {row.is_active ? 'Active' : 'Inactive'}
+        </Button>
+      ),
+    },
+  ];
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+      <p style={captionStyle}>
+        Controls which tabs, sections, fields and dropdown values appear on every Project Card (Execution Reconciliation §G).
+        Default template applies when Card Type is left blank.
+      </p>
+
+      <StrataPanel title="Tabs" icon={<Layers size={16} />} count={tabs.length} testId="strata-admin-pc-tabs">
+        <SectionState query={tabsQ} empty={tabs.length === 0}>
+          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+            {tabs.map((t) => (
+              <CatalystTag key={t.id} text={`${t.display_name}${t.is_required ? ' · required' : ''}`} />
+            ))}
+          </div>
+        </SectionState>
+      </StrataPanel>
+
+      <StrataPanel title="Sections" icon={<Layers size={16} />} count={sections.length} testId="strata-admin-pc-sections">
+        <SectionState query={sectionsQ} empty={sections.length === 0}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {tabs.map((t) => {
+              const rows = sections.filter((s) => s.tab_key === t.tab_key);
+              if (rows.length === 0) return null;
+              return (
+                <div key={t.tab_key} style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
+                  <span style={{ ...metaStyle, fontWeight: 600, minWidth: 120 }}>{t.display_name}</span>
+                  {rows.map((s) => <CatalystTag key={s.id} text={s.name} />)}
+                </div>
+              );
+            })}
+          </div>
+        </SectionState>
+      </StrataPanel>
+
+      <StrataPanel
+        title="Fields"
+        icon={<Rocket size={16} />}
+        count={fields.length}
+        noPadding
+        actions={<Button spacing="compact" onClick={() => { setEditField(null); setForm('new-field'); }} testId="strata-pc-new-field">New field</Button>}
+        testId="strata-admin-pc-fields"
+      >
+        <SectionState query={fieldsQ} empty={fields.length === 0}>
+          <JiraTable<StrataProjectCardFieldConfig> columns={fieldColumns} data={fields} getRowId={(f) => f.id} density="compact" showRowCount={false} rowsPerPage={100} ariaLabel="Project Card field configuration" />
+        </SectionState>
+      </StrataPanel>
+
+      <StrataPanel
+        title="Picklists"
+        icon={<ListChecks size={16} />}
+        count={picklists.length}
+        noPadding
+        actions={(
+          <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+            <select
+              value={effectivePicklistKey}
+              onChange={(e) => setPicklistKeyFilter(e.target.value)}
+              aria-label="Picklist"
+              style={{ padding: '4px 8px', borderRadius: 4, border: `1px solid ${T.border}`, background: T.raised, color: T.text }}
+            >
+              {picklistKeys.map((k) => <option key={k} value={k}>{labelize(k)}</option>)}
+            </select>
+            <Button spacing="compact" onClick={() => setForm('new-picklist')} testId="strata-pc-new-picklist-value">New value</Button>
+          </div>
+        )}
+        testId="strata-admin-pc-picklists"
+      >
+        <SectionState query={picklistsQ} empty={picklists.length === 0}>
+          <JiraTable<StrataProjectCardPicklist> columns={picklistColumns} data={picklists} getRowId={(p) => p.id} density="compact" showRowCount={false} rowsPerPage={100} ariaLabel={`${labelize(effectivePicklistKey)} picklist values`} />
+        </SectionState>
+      </StrataPanel>
+
+      <StrataFormModal
+        open={form === 'new-field' || (form === 'edit-field' && editField != null)}
+        onClose={() => { setForm(null); setEditField(null); }}
+        title={editField ? 'Edit field' : 'New field'}
+        submitLabel="Save"
+        fields={[
+          { key: 'displayName', label: 'Display name', kind: 'text', required: true },
+          { key: 'fieldKey', label: 'Field key', kind: 'text', required: true, helper: 'Matches the Project Card column or optional_fields key' },
+          { key: 'tabKey', label: 'Tab', kind: 'select', required: true, options: tabs.map((t) => ({ value: t.tab_key, label: t.display_name })) },
+          { key: 'sectionKey', label: 'Section', kind: 'select', options: sections.map((s) => ({ value: s.section_key, label: s.name })) },
+          { key: 'fieldType', label: 'Field type', kind: 'select', options: FIELD_TYPE_OPTIONS.map((t) => ({ value: t, label: labelize(t) })) },
+          { key: 'isVisible', label: 'Visible', kind: 'checkbox', placeholder: 'Shown on the Project Card by default' },
+          { key: 'isRequired', label: 'Required', kind: 'checkbox' },
+          { key: 'isReadonly', label: 'Read-only', kind: 'checkbox' },
+          { key: 'syncsFromJira', label: 'Syncs from Jira', kind: 'checkbox' },
+        ]}
+        initial={editField ? {
+          displayName: editField.display_name, fieldKey: editField.field_key, tabKey: editField.tab_key,
+          sectionKey: editField.section_key, fieldType: editField.field_type, isVisible: editField.is_visible,
+          isRequired: editField.is_required, isReadonly: editField.is_readonly, syncsFromJira: editField.syncs_from_jira,
+        } : { fieldType: 'text', isVisible: true }}
+        onSubmit={async (v) => {
+          await configApi.upsertFieldConfig({
+            id: editField?.id, card_type: null,
+            field_key: String(v.fieldKey ?? editField?.field_key ?? '').trim(),
+            tab_key: String(v.tabKey ?? '').trim(),
+            section_key: (v.sectionKey as string) || null,
+            display_name: String(v.displayName ?? '').trim(),
+            field_type: (v.fieldType as string) || 'text',
+            is_visible: Boolean(v.isVisible),
+            is_required: Boolean(v.isRequired),
+            is_readonly: Boolean(v.isReadonly),
+            syncs_from_jira: Boolean(v.syncsFromJira),
+          });
+          invalidate();
+        }}
+        testId="strata-pc-field-form-modal"
+      />
+
+      <StrataFormModal
+        open={form === 'new-picklist'}
+        onClose={() => setForm(null)}
+        title="New picklist value"
+        submitLabel="Create"
+        fields={[
+          {
+            key: 'picklistKey', label: 'Picklist', kind: 'select', required: true,
+            options: [
+              'lead_business_unit', 'delivery_team', 'serving_department', 'delivery_status',
+              'strategic_impact', 'aop_mapping', 'benefit_category', 'enabling_team',
+              'support_function', 'dependency_status', 'milestone_status',
+            ].map((k) => ({ value: k, label: labelize(k) })),
+          },
+          { key: 'value', label: 'Value (stored)', kind: 'text', required: true },
+          { key: 'label', label: 'Label (displayed)', kind: 'text', required: true },
+        ]}
+        initial={{ picklistKey: effectivePicklistKey }}
+        onSubmit={async (v) => {
+          await configApi.upsertPicklistValue({
+            picklist_key: String(v.picklistKey ?? '').trim(),
+            value: String(v.value ?? '').trim(),
+            label: String(v.label ?? '').trim(),
+            is_active: true,
+          });
+          invalidate();
+        }}
+        testId="strata-pc-picklist-form-modal"
+      />
+    </div>
+  );
+}
+
 // ── Section registry + page ──────────────────────────────────────────────────
 const SECTIONS: Array<{
   key: string;
@@ -813,6 +1039,7 @@ const SECTIONS: Array<{
   { key: 'kpi-types', label: 'KPI types', icon: ListChecks, render: (e) => <KpiTypesSection onError={e} /> },
   { key: 'upload-templates', label: 'Upload templates', icon: Upload, render: (e) => <UploadTemplatesSection onError={e} /> },
   { key: 'workflows', label: 'Workflows', icon: GitBranch, render: (e) => <WorkflowsSection onError={e} /> },
+  { key: 'project-card', label: 'Project Card', icon: Rocket, render: (e) => <ProjectCardConfigSection onError={e} /> },
   { key: 'roles', label: 'Roles', icon: Users, render: (e) => <RolesSection onError={e} /> },
   { key: 'change-log', label: 'Change log', icon: Clock, render: () => <ChangeLogSection /> },
 ];
