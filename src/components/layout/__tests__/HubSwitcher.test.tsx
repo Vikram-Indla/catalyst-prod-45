@@ -4,9 +4,9 @@
  * Step 7.2 council-pass criteria:
  *   1. Grid-icon trigger opens a popover (no longer dispatches to global
  *      search — that's still on Cmd+K + the top-bar Search bar).
- *   2. Popover renders 11 hub rows in 3 sections:
+ *   2. Popover renders 10 hub rows in 3 sections:
  *        DISCOVER     → Home, Strategy, Ideation
- *        BUILD & SHIP → Product, Project, Release, Test, Incident, Task, Plan
+ *        BUILD & SHIP → Product, Project, Release, Test, Incident, Task
  *        KNOWLEDGE    → Folio
  *   3. Every row is an SPA-aware anchor with the correct href.
  *   4. Every row label is the bare hub name (no "Hub" suffix).
@@ -82,10 +82,10 @@ describe('HubSwitcher v2 — sectioned popover with bespoke tiles', () => {
     expect(screen.getByRole('button', { name: /switch hub/i })).toBeInTheDocument();
   });
 
-  it('renders 11 hub rows as anchors when the popover is open', () => {
+  it('renders 10 hub rows as anchors when the popover is open', () => {
     renderAt('/for-you');
     fireEvent.click(screen.getByRole('button', { name: /switch hub/i }));
-    expect(screen.getAllByRole('link')).toHaveLength(11);
+    expect(screen.getAllByRole('link')).toHaveLength(10);
   });
 
   it('renders three section headings: DISCOVER, BUILD & SHIP, KNOWLEDGE', () => {
@@ -110,7 +110,7 @@ describe('HubSwitcher v2 — sectioned popover with bespoke tiles', () => {
     fireEvent.click(screen.getByRole('button', { name: /switch hub/i }));
     const expected = [
       'home', 'strategy', 'ideation', 'product', 'project',
-      'release', 'test', 'incident', 'task', 'plan', 'docex',
+      'release', 'test', 'incident', 'task', 'docex',
     ];
     for (const key of expected) {
       const tile = container.querySelector(`[data-hub-tile="${key}"]`);
@@ -135,7 +135,6 @@ describe('HubSwitcher v2 — sectioned popover with bespoke tiles', () => {
     expect(hrefByLabel.Test).toBe('/testhub/dashboard');
     expect(hrefByLabel.Incident).toBe('/incident-hub');
     expect(hrefByLabel.Task).toBe('/tasks/overview');
-    expect(hrefByLabel.Plan).toBe('/planhub');
     expect(hrefByLabel.Folio).toBe('/folio');
   });
 
@@ -196,7 +195,7 @@ describe('HubSwitcher v2 — search-to-filter', () => {
   });
 });
 
-describe('HubSwitcher v2 — Step 7.4: ⌘1–⌘0 + ⌘- keyboard shortcuts', () => {
+describe('HubSwitcher v2 — Step 7.4: ⌘1–⌘9 + ⌘- keyboard shortcuts', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     window.localStorage.clear();
@@ -206,12 +205,12 @@ describe('HubSwitcher v2 — Step 7.4: ⌘1–⌘0 + ⌘- keyboard shortcuts', (
     const { container } = renderAt('/for-you');
     fireEvent.click(screen.getByRole('button', { name: /switch hub/i }));
     const chips = container.querySelectorAll('[data-hub-shortcut]');
-    expect(chips.length).toBe(11);
+    expect(chips.length).toBe(10);
     const chipTexts = Array.from(chips).map((c) => (c.textContent || '').trim());
     expect(chipTexts).toEqual(
       expect.arrayContaining([
         '⌘1', '⌘2', '⌘3', '⌘4', '⌘5',
-        '⌘6', '⌘7', '⌘8', '⌘9', '⌘0', '⌘-',
+        '⌘6', '⌘7', '⌘8', '⌘9', '⌘-',
       ]),
     );
   });
@@ -226,7 +225,6 @@ describe('HubSwitcher v2 — Step 7.4: ⌘1–⌘0 + ⌘- keyboard shortcuts', (
     ['7', '/testhub/dashboard'],
     ['8', '/incident-hub'],
     ['9', '/tasks/overview'],
-    ['0', '/planhub'],
     ['-', '/docex'],
   ])('Cmd+%s fires without error', (key, _expectedPath) => {
     renderAt('/for-you');

@@ -23,7 +23,6 @@ import ShipIcon from '@atlaskit/icon/glyph/ship';
 import CheckCircleIcon from '@atlaskit/icon/glyph/check-circle';
 import WarningIcon from '@atlaskit/icon/glyph/warning';
 import TaskIcon from '@atlaskit/icon/glyph/task';
-import CalendarIcon from '@atlaskit/icon/glyph/calendar';
 import BookIcon from '@atlaskit/icon/glyph/book';
 import { cn } from '@/lib/utils';
 import { Tooltip } from '@/components/ads';
@@ -49,7 +48,6 @@ const HUB_ITEMS = [
   { label: 'Test Hub',     href: '/testhub/dashboard',          Icon: CheckCircleIcon,     tone: 'var(--ds-icon-accent-green)' },
   { label: 'Incident Hub', href: '/incident-hub',               Icon: WarningIcon,         tone: 'var(--ds-icon-accent-red)' },
   { label: 'Tasks',     href: '/tasks/overview',          Icon: TaskIcon,            tone: 'var(--ds-icon-accent-yellow)' },
-  { label: 'Plan Hub',     href: '/planhub',                    Icon: CalendarIcon,        tone: 'var(--ds-icon-accent-magenta)' },
   { label: 'Folio',        href: '/folio',                      Icon: BookIcon,            tone: 'var(--ds-icon-accent-lime)' },
 ] as const;
 
@@ -63,7 +61,6 @@ const ROUTE_PREFETCH_MAP: Record<string, () => Promise<unknown>> = {
   '/admin/resources': () => import('../../pages/ResourceListingPage'),
   '/releasehub': () => import('../../pages/releasehub/AllReleasesPage'),
   '/testhub': () => import('../../pages/testhub/DashboardPage'),
-  '/planhub': () => import('../../components/planhub/PlanHubShell'),
   '/tasks': () => import('../../modules/tasks/PlannerPage'),
   '/incidenthub': () => import('../../pages/incidenthub/IncidentListPage'),
 };

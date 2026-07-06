@@ -9,7 +9,6 @@ import HomeSidebar from '@/components/layout/HomeSidebar';
 import { IdeationSidebar } from '@/components/layout/IdeationSidebar';
 import { IncidentHubSidebar } from '@/components/layout/IncidentHubSidebar';
 import { OperationsSidebar } from '@/components/layout/OperationsSidebar';
-import { PlanHubSidebar } from '@/components/layout/PlanHubSidebar';
 import { ProductHubSidebar } from '@/components/layout/ProductHubSidebar';
 import { ProductRoomSidebar } from '@/components/layout/ProductRoomSidebar';
 import { ProjectHubSidebar } from '@/components/layout/ProjectHubSidebar';
@@ -64,11 +63,6 @@ export const TestHubSidebarDefault: StoryObj = {
 export const TaskHubSidebarDefault: StoryObj = {
   name: 'TaskHubSidebar / Default',
   render: () => <Wrap><TaskHubSidebar expanded={false} onToggle={fn()} /></Wrap>,
-}
-
-export const PlanHubSidebarDefault: StoryObj = {
-  name: 'PlanHubSidebar / Default',
-  render: () => <Wrap><PlanHubSidebar expanded={false} onToggle={fn()} /></Wrap>,
 }
 
 export const WikiSidebarDefault: StoryObj = {

@@ -7,7 +7,7 @@
  *
  * Mapping:
  *   ⌘1 Home · ⌘2 Strategy · ⌘3 Ideation · ⌘4 Product · ⌘5 Project
- *   ⌘6 Release · ⌘7 Test · ⌘8 Incident · ⌘9 Task · ⌘0 Plan · ⌘- Folio
+ *   ⌘6 Release · ⌘7 Test · ⌘8 Incident · ⌘9 Task · ⌘- Folio
  *
  * Skips when an input/textarea/contenteditable element is focused so the
  * shortcut never collides with an in-flight edit. Ctrl is honoured as a

@@ -49,10 +49,9 @@ export const TRANSLATIONS: Record<Lang, Record<string, string>> = {
     'arch.s3.desc': 'AI-powered delivery metrics',
 
     'hubs.eyebrow': 'Platform Modules',
-    'hubs.title': 'One platform. Eight connected modules.',
+    'hubs.title': 'One platform. Seven connected modules.',
     'hubs.desc': 'Replace Jira + Confluence + Zephyr + ServiceNow + Planview + Excel with a single command center. One login, one data model, one source of truth.',
 
-    'hub.plan': 'Plan', 'hub.plan.desc': 'Capacity planner, budget, scenario planning, what-if models.',
     'hub.r360': 'Resource 360°', 'hub.r360.desc': '25-feature behavioral framework — capacity, pickup speed, cycle time, closure trends per person.',
 
     'stat.agents': 'AI Agents',
@@ -100,7 +99,6 @@ export const TRANSLATIONS: Record<Lang, Record<string, string>> = {
     'hub.05': 'Test',      'hub.05.desc': 'Test cases, cycles, coverage matrix, traceability.',
     'hub.06': 'Incident',  'hub.06.desc': 'SLA tracking, severity, aging pressure, committee escalation.',
     'hub.07': 'Task',      'hub.07.desc': 'Workstreams, boards, priority management, workload.',
-    'hub.08': 'Plan',      'hub.08.desc': 'Capacity planner, budget, scenario planning, what-if models.',
     'hub.09': 'Wiki',      'hub.09.desc': 'Knowledge domains, RAG semantic search, learning paths.',
 
     'r360.eyebrow': 'Resource 360°',
@@ -242,10 +240,9 @@ export const TRANSLATIONS: Record<Lang, Record<string, string>> = {
     'arch.s3.desc': 'مقاييس تسليم بالذكاء الاصطناعي',
 
     'hubs.eyebrow': 'وحدات المنصة',
-    'hubs.title': 'منصة واحدة. ثماني وحدات متصلة.',
+    'hubs.title': 'منصة واحدة. سبع وحدات متصلة.',
     'hubs.desc': 'استبدل Jira + Confluence + Zephyr + ServiceNow + Planview + Excel بمركز قيادة موحّد. تسجيل دخول واحد، نموذج بيانات واحد، مصدر حقيقة واحد.',
 
-    'hub.plan': 'التخطيط', 'hub.plan.desc': 'مخطط السعة، الميزانية، تخطيط السيناريوهات، نماذج «ماذا لو».',
     'hub.r360': 'Resource 360°', 'hub.r360.desc': 'إطار سلوكي من ٢٥ ميزة — السعة، سرعة الالتقاط، زمن الدورة، اتجاهات الإغلاق لكل فرد.',
 
     'stat.agents': 'وكلاء ذكاء',
@@ -293,7 +290,6 @@ export const TRANSLATIONS: Record<Lang, Record<string, string>> = {
     'hub.05': 'الاختبار',     'hub.05.desc': 'حالات الاختبار، الدورات، مصفوفة التغطية، التتبع.',
     'hub.06': 'الحوادث',      'hub.06.desc': 'تتبع اتفاقيات مستوى الخدمة، الخطورة، ضغط التقادم، تصعيد اللجنة.',
     'hub.07': 'المهام',       'hub.07.desc': 'تيارات العمل، اللوحات، إدارة الأولويات، عبء العمل.',
-    'hub.08': 'التخطيط',      'hub.08.desc': 'مخطط السعة، الميزانية، تخطيط السيناريوهات، نماذج «ماذا لو».',
     'hub.09': 'المعرفة',      'hub.09.desc': 'مجالات المعرفة، البحث الدلالي RAG، مسارات التعلم.',
 
     'r360.eyebrow': 'Resource 360°',
