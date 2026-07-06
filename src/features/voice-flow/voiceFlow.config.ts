@@ -3,8 +3,10 @@ import type { SourceLanguageCode } from './voiceFlow.types';
 export const VOICE_FLOW_CONFIG = {
   /** ms window for double-space detection. */
   doubleSpaceThresholdMs: 350,
-  /** Max recording duration before auto-stop (3 minutes). */
-  maxDurationMs: 180_000,
+  /** Max recording duration before auto-stop (15 minutes — CatyFlow spec,
+   *  CAT-VOICE-FLOW-20260704-001; silence auto-stop still ends an utterance
+   *  on a natural pause well before this ceiling). */
+  maxDurationMs: 900_000,
   /** Auto-stop after this much true silence (amplitude-based via AnalyserNode). */
   silenceAutoStopMs: 1800,
   /** Run Gemini cleanup/polish pass on final result. */

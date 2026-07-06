@@ -59,7 +59,7 @@ interface Props {
    * hubs with no entity — they render a 3-crumb breadcrumb
    * "Home / [Root] / [RouteWord]", skip the DB name lookup, and show no star.
    */
-  hubType?: "project" | "product" | "incident" | "release" | "test" | "strata";
+  hubType?: "project" | "product" | "incident" | "release" | "test" | "folio" | "strata";
   /**
    * Detail-page trail. When provided, the breadcrumb renders
    * "Home / [Root] / ...trail" instead of the auto-derived route word — so a
@@ -85,6 +85,7 @@ const HUB_ROOT: Record<
   incident: { label: "Incidents", href: "/incident-hub" },
   release: { label: "Releases", href: "/release-hub/overview" },
   test: { label: "Test Hub", href: "/testhub/dashboard" },
+  folio: { label: "Folio", href: "/folio" },
   strata: { label: "STRATA", href: "/strata" },
 };
 
@@ -112,7 +113,8 @@ export function ProjectPageHeader({
 }: Props) {
   const { pathname } = useLocation();
   const isGlobalHub =
-    hubType === "incident" || hubType === "release" || hubType === "test" || hubType === "strata";
+    hubType === "incident" || hubType === "release" || hubType === "test" ||
+    hubType === "folio" || hubType === "strata";
 
   const { data: project } = useQuery({
     queryKey: ["project-page-header", hubType, projectKey],

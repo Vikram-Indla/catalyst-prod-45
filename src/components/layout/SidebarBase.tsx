@@ -50,7 +50,7 @@ const HUB_ITEMS = [
   { label: 'Incident Hub', href: '/incident-hub',               Icon: WarningIcon,         tone: 'var(--ds-icon-accent-red)' },
   { label: 'Tasks',     href: '/tasks/overview',          Icon: TaskIcon,            tone: 'var(--ds-icon-accent-yellow)' },
   { label: 'Plan Hub',     href: '/planhub',                    Icon: CalendarIcon,        tone: 'var(--ds-icon-accent-magenta)' },
-  { label: 'Wiki Hub',     href: '/wiki',                       Icon: BookIcon,            tone: 'var(--ds-icon-accent-lime)' },
+  { label: 'Docex',        href: '/docex',                      Icon: BookIcon,            tone: 'var(--ds-icon-accent-lime)' },
 ] as const;
 
 /**
@@ -85,6 +85,15 @@ export interface SidebarMenuItem {
   path: string;
   activeMatchPaths?: string[];
   icon?: LucideIcon | React.ComponentType<{ className?: string; style?: React.CSSProperties }>;
+  /**
+   * Pre-rendered icon element — wins over `icon` when set. Used for rows
+   * that need a per-entity canonical icon (e.g. <ProjectIcon projectKey=.../>)
+   * rather than a single shared glyph component. Rendered at the same
+   * 20x20 box as `icon`. Added 2026-07-05 (Wiki workspace sidebar parity —
+   * project/product rows must show the SAME icon as ContextSwitcher/
+   * ProjectHub, not a generic per-container-type glyph).
+   */
+  iconNode?: React.ReactNode;
   exact?: boolean;
   badge?: number;
   badgeVariant?: 'info' | 'danger' | 'purple';
@@ -770,7 +779,9 @@ function renderMenuItem(
           transition: 'color 150ms cubic-bezier(0.15,1,0.3,1)',
         }}
       >
-        {CustomIcon && (
+        {item.iconNode ? (
+          item.iconNode
+        ) : CustomIcon ? (
           <CustomIcon
             className="h-[20px] w-[20px]"
             style={{
@@ -780,7 +791,7 @@ function renderMenuItem(
               strokeWidth: 2,
             }}
           />
-        )}
+        ) : null}
       </span>
       {/* Label — always rendered, crossfaded via opacity+max-width so it
           doesn't pop at the width animation midpoint. The max-width transition

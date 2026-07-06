@@ -114,7 +114,7 @@ const HUB_NAV_ITEMS = [
   { key: 'incident', label: 'Incident Hub', href: '/incident-hub' },
   { key: 'task', label: 'Tasks', href: '/tasks/overview' },
   { key: 'plan', label: 'Plan Hub', href: '/planhub' },
-  { key: 'wiki', label: 'Wiki', href: '/wiki' },
+  { key: 'docex', label: 'Folio', href: '/folio' },
 ] as const;
 
 /** Skeleton row — keeps row height stable while data lands. */

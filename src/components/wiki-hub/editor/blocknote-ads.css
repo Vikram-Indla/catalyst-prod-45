@@ -1,0 +1,268 @@
+/**
+ * BlockNote → ADS token mapping — the ONLY styling bridge file.
+ * Every --bn-* variable resolves to a var(--ds-*) token, so light/dark
+ * mode flips automatically with Catalyst's ThemeProvider. No literal
+ * colors in this file.
+ *
+ * CAT-DOCEX-DB-COEDIT-20260705-001 Q1 rewrite: the previous bridge scoped
+ * the tokens to .wiki-bn — but BlockNote portals its menus, toolbars and
+ * side menu to <body>, OUTSIDE .wiki-bn, so every popover fell back to
+ * unthemed defaults (white side-menu icons on a white page, shadowless
+ * toolbars, washed-out menu text). Tokens are now defined at :root AND on
+ * BlockNote's own scheme hooks so portaled UI resolves ADS tokens too.
+ */
+
+:root,
+.bn-container,
+[data-color-scheme],
+[data-color-scheme='light'],
+[data-color-scheme='dark'] {
+  --bn-colors-editor-text: var(--ds-text);
+  --bn-colors-editor-background: var(--ds-surface);
+  --bn-colors-menu-text: var(--ds-text);
+  --bn-colors-menu-background: var(--ds-surface-overlay);
+  /* NB: BlockNote uses the "tooltip" tokens for suggestion-item chips/labels
+     (a subtle chip, not a bold tooltip) — mapping these to inverse paints the
+     slash-menu text white-on-white. Keep them SUBTLE. */
+  --bn-colors-tooltip-text: var(--ds-text-subtle);
+  --bn-colors-tooltip-background: var(--ds-background-neutral);
+  --bn-colors-hovered-text: var(--ds-text);
+  --bn-colors-hovered-background: var(--ds-background-neutral-subtle-hovered);
+  --bn-colors-selected-text: var(--ds-text-selected);
+  --bn-colors-selected-background: var(--ds-background-selected);
+  --bn-colors-disabled-text: var(--ds-text-disabled);
+  --bn-colors-disabled-background: var(--ds-background-disabled);
+  --bn-colors-shadow: var(--ds-border);
+  --bn-colors-border: var(--ds-border);
+  --bn-colors-side-menu: var(--ds-icon-subtle);
+  --bn-shadow-light: var(--ds-shadow-raised);
+  --bn-shadow-medium: var(--ds-shadow-overlay);
+
+  --bn-colors-highlights-gray-text: var(--ds-text);
+  --bn-colors-highlights-gray-background: var(--ds-background-neutral);
+  --bn-colors-highlights-red-text: var(--ds-text-accent-red);
+  --bn-colors-highlights-red-background: var(--ds-background-accent-red-subtlest);
+  --bn-colors-highlights-orange-text: var(--ds-text-accent-orange);
+  --bn-colors-highlights-orange-background: var(--ds-background-accent-orange-subtlest);
+  --bn-colors-highlights-yellow-text: var(--ds-text-accent-yellow);
+  --bn-colors-highlights-yellow-background: var(--ds-background-accent-yellow-subtlest);
+  --bn-colors-highlights-green-text: var(--ds-text-accent-green);
+  --bn-colors-highlights-green-background: var(--ds-background-accent-green-subtlest);
+  --bn-colors-highlights-blue-text: var(--ds-text-accent-blue);
+  --bn-colors-highlights-blue-background: var(--ds-background-accent-blue-subtlest);
+  --bn-colors-highlights-purple-text: var(--ds-text-accent-purple);
+  --bn-colors-highlights-purple-background: var(--ds-background-accent-purple-subtlest);
+  --bn-colors-highlights-pink-text: var(--ds-text-accent-magenta);
+  --bn-colors-highlights-pink-background: var(--ds-background-accent-magenta-subtlest);
+  --bn-colors-highlights-brown-text: var(--ds-text-subtle);
+  --bn-colors-highlights-brown-background: var(--ds-background-neutral);
+
+  --bn-font-family: var(--ds-font-family-body, inherit);
+  --bn-border-radius: 6px;
+  --bn-border-radius-small: 4px;
+  --bn-border-radius-medium: 6px;
+  --bn-border-radius-large: 8px;
+}
+
+/* BlockNote's Mantine wrapper resolves its OWN text vars (portal menus were
+   rendering white-on-white labels in light mode). Pin them to ADS. */
+.bn-container,
+.bn-root,
+.bn-mantine {
+  --mantine-color-text: var(--ds-text);
+  --mantine-color-dimmed: var(--ds-text-subtle);
+  --mantine-color-body: var(--ds-surface-overlay);
+}
+
+/* ── Editor canvas: Notion reading scale ─────────────────────────────────
+   16px/1.6 long-form body (Notion parity; app chrome stays ADS density).
+   The left gutter hosts the hover side-menu (+ / drag handle) so the
+   affordances never overlap the text column. */
+.wiki-bn .bn-editor {
+  font-family: var(--bn-font-family);
+  font-size: 16px;
+  line-height: 1.6;
+  padding-inline-start: 54px;
+  padding-inline-end: 24px;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+.wiki-bn .bn-block-content {
+  line-height: 1.6;
+}
+/* Block rhythm: breathing room between blocks like Notion (3px flows,
+   larger before headings). */
+.wiki-bn .bn-block-outer {
+  margin-block: 2px;
+}
+.wiki-bn .bn-block-content[data-content-type='heading'] {
+  margin-top: 16px;
+}
+
+/* Notion heading scale — ABSOLUTE sizes (h1 30px / h2 24px / h3 20px).
+   BlockNote's own stylesheet already sizes the heading BLOCK WRAPPER
+   ([data-level] → up to 3em), so em units here COMPOUND on top of it:
+   1.875em × 48px wrapper = 90px headings (Vikram 2026-07-06 "what are
+   these headers"). Neutralize the wrapper and pin px on the h tags. */
+.wiki-bn .bn-editor .bn-block-content[data-content-type='heading'] {
+  font-size: 16px;
+}
+.wiki-bn .bn-editor h1 {
+  font-size: 30px;
+  font-weight: 700;
+  line-height: 1.3;
+  color: var(--ds-text);
+}
+.wiki-bn .bn-editor h2 {
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--ds-text);
+}
+.wiki-bn .bn-editor h3 {
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--ds-text);
+}
+.wiki-bn .bn-editor h4 {
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--ds-text);
+}
+.wiki-bn .bn-editor h5 {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--ds-text);
+}
+.wiki-bn .bn-editor h6 {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--ds-text-subtle);
+}
+
+/* Per-block bidirectional text: Arabic blocks lay out RTL, English LTR. */
+.wiki-bn .bn-block-content,
+.wiki-bn .bn-inline-content {
+  unicode-bidi: plaintext;
+}
+
+/* Empty-block placeholder ("Enter text or type / …") — BlockNote renders it
+   via ::after on the decorated block-content (live-verified); keep it quiet. */
+.bn-block-content[data-is-empty-and-focused]::after,
+.bn-block-content[data-is-only-empty-block]::after {
+  color: var(--ds-text-subtlest);
+}
+
+/* Mantine's mount-transition wrapper (an inline-styled div) wedges mid-fade
+   in this app (measured stuck at opacity 0.31), leaving every BlockNote
+   popover permanently translucent/washed-out. Popovers must never render
+   see-through — force the wrappers opaque. */
+div:has(> .bn-suggestion-menu),
+div:has(> .bn-formatting-toolbar),
+div:has(> .bn-side-menu),
+div:has(> .bn-drag-handle-menu),
+div:has(> .bn-link-toolbar),
+div:has(> [class*='tableHandle']) {
+  opacity: 1 !important;
+}
+
+/* ── Portaled chrome: menus, toolbars, side menu, table handles ──────────
+   These render OUTSIDE .wiki-bn, so style them globally. All colors flow
+   from the --bn tokens above; here we guarantee elevation + borders. */
+.bn-suggestion-menu,
+.bn-formatting-toolbar,
+.bn-link-toolbar,
+.bn-side-menu .mantine-Menu-dropdown,
+.bn-drag-handle-menu,
+.mantine-Menu-dropdown,
+.mantine-Popover-dropdown {
+  background: var(--ds-surface-overlay);
+  border: 1px solid var(--ds-border);
+  border-radius: 8px;
+  box-shadow: var(--ds-shadow-overlay);
+  color: var(--ds-text);
+}
+.bn-formatting-toolbar button,
+.bn-side-menu button {
+  color: var(--ds-icon-subtle);
+}
+.bn-formatting-toolbar button:hover,
+.bn-side-menu button:hover {
+  background: var(--ds-background-neutral-subtle-hovered);
+  color: var(--ds-icon);
+}
+.bn-side-menu button {
+  border-radius: 4px;
+  transition: opacity 140ms ease, background 140ms ease;
+}
+/* Suggestion (slash/@) menu rows: real text contrast + selected state */
+.bn-suggestion-menu {
+  padding: 4px;
+  min-width: 300px;
+}
+.bn-suggestion-menu-item,
+.bn-suggestion-menu [role='option'] {
+  border-radius: 6px;
+  color: var(--ds-text);
+}
+.bn-suggestion-menu-item[aria-selected='true'],
+.bn-suggestion-menu [role='option'][aria-selected='true'] {
+  background: var(--ds-background-neutral-subtle-hovered);
+}
+/* Item titles read at full strength; descriptions stay subtle (Notion) */
+.bn-mt-suggestion-menu-item-title {
+  color: var(--ds-text);
+  font-weight: 500;
+}
+.bn-mt-suggestion-menu-item-subtitle {
+  color: var(--ds-text-subtle);
+}
+
+/* Table affordances (add row/col widgets, handles) */
+.bn-table-handle,
+[class*='tableHandle'] {
+  background: var(--ds-surface-overlay);
+  border: 1px solid var(--ds-border);
+  border-radius: 4px;
+  box-shadow: var(--ds-shadow-raised);
+  color: var(--ds-icon-subtle);
+}
+.wiki-bn .bn-editor table {
+  border-color: var(--ds-border);
+}
+.wiki-bn .bn-editor th,
+.wiki-bn .bn-editor td {
+  border: 1px solid var(--ds-border);
+}
+
+/* Image/media resize handles */
+[class*='resizeHandle'],
+.bn-visual-media-resize-handle {
+  background: var(--ds-background-brand-bold);
+  border-radius: 4px;
+}
+
+/* Print / save-as-PDF: only the page article renders (exportPage.printPage) */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  .wiki-print-root,
+  .wiki-print-root * {
+    visibility: visible;
+  }
+  .wiki-print-root {
+    position: absolute;
+    inset: 0;
+    overflow: visible;
+  }
+  .wiki-no-print,
+  .wiki-no-print * {
+    visibility: hidden !important;
+    display: none !important;
+  }
+}

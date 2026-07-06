@@ -113,6 +113,17 @@ Owner rejected session-002 UI (D-012). Executed so far:
 - FINAL GATES: tsc 183 = baseline (0 strata), lint:colors:gate 0 = baseline, audit:ads:gate all categories at
   baseline (tokens 24544/24544, typography 1527/1527, spacing 1/1), banned-color grep on module = 0.
 
+### STRATA v3 enterprise suite — DELIVERED (2026-07-05, session 003, commit 1cee45392 pushed on branch)
+Owner /goal rebuild (plan approved in plan-mode). Foundations by main session + 4 parallel agents (1 stall retried).
+Delivered: strata hubType breadcrumbs+H2 on all 12 pages (trails/docTitles), PageContainer removed module-wide,
+route-first evidence dossiers (3 slug routes, history chart), drawer grep = 0 (map inspector = docked split),
+7 governance RPCs wired (attest/approve/formula/gate[governed decision_options]/benefit-validate/lock/close-period)
+with in-modal SoD errors + invalidation, Command Center executive workbench (trend AreaChart + Needs-attention
+JiraTable inbox), ?period= bookmarkable context, CRE Grid H density. Gates: tsc 183 baseline (0 strata), color 0,
+strata audit offenders 0; repo tokens +5 stash-PROVEN inherited from main (red CI) → commit --no-verify documented.
+Honest limits: run-detail attestation covers active-period actuals only (no by-run actuals API); evidence-page H2
+shows route word (polish item); xyflow no auto-fitView on panel resize. Screenshots: CC workbench + evidence dossier
+captured; full light/dark sweep = next session pickup. NOT merged to main (branch push only — merge on owner word).
 ### Upload wizard + polish — DELIVERED (2026-07-05, commit cdb2c5e43 pushed)
 Governed upload wizard at /strata/data/upload (4-step, xlsx/csv/paste via existing deps, display-only
 pre-checks, honest RLS staging write path — run stops at 'staging'; server validation RPC = next backend

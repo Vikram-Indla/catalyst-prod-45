@@ -41,6 +41,11 @@ export class AudioCaptureService {
     return this.analyserNode;
   }
 
+  /** Live mic stream — shared with the realtime transcriber (CatyFlow). */
+  getStream(): MediaStream | null {
+    return this.stream;
+  }
+
   static getSupportedMimeType(): string {
     for (const mt of VOICE_FLOW_CONFIG.preferredMimeTypes) {
       if (MediaRecorder.isTypeSupported(mt)) return mt;

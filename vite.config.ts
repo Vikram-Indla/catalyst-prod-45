@@ -501,6 +501,10 @@ export default defineConfig(({ mode, command }) => {
       'react',
       'react-dom',
       'react-is',
+      // BlockNote's Mantine UI wrapper — pin to a single React-18-safe
+      // instance (Mantine 9 renders <Context> directly = React 19 only).
+      '@mantine/core',
+      '@mantine/hooks',
       'relay-runtime',
       'react-relay',
       '@emotion/react',

@@ -246,7 +246,7 @@ const HUB_ROUTES: Record<string, string> = {
   incident: '/incident-hub',
   task: '/tasks/overview',
   plan: '/planhub',
-  wiki: '/wiki',
+  docex: '/folio',
 };
 
 function CatalystShellContent() {
@@ -539,7 +539,9 @@ function CatalystShellContent() {
     pageName: page,
   });
 
-  // Check if on Wiki route
+  // Check if on Folio route (renamed /wiki→/docex→/folio)
+  const isWikiRoute = location.pathname.startsWith("/folio") || location.pathname.startsWith("/docex");
+
   // Check if on IncidentHub route
   const isIncidentHubRoute = location.pathname.startsWith("/incident-hub");
   const isTestHubRoute = location.pathname.startsWith("/testhub");

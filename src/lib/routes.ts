@@ -215,6 +215,29 @@ export const knowledgeHubRoutes = {
 };
 
 // ---------------------------------------------------------------------------
+// Folio — Catalyst Pages (CAT-DOCS-NOTION-20260704-001)
+// Workspaces per project/product/organization; pages addressed by slug.
+// Renamed from /wiki 2026-07-05 (Vikram): /wiki belongs to the restored
+// knowledge-base hub on main. Renamed Docex → Folio 2026-07-06 (Vikram:
+// "Go for folio"). Legacy /docex/* URLs redirect in FullAppRoutes.
+// ---------------------------------------------------------------------------
+
+export const folioRoutes = {
+  root: () => '/folio',
+  search: () => '/folio/search',
+  sitemap: () => '/folio/sitemap',
+  workspace: (workspaceSlug: string) => `/folio/${workspaceSlug}`,
+  page: (workspaceSlug: string, pageSlug: string) => `/folio/${workspaceSlug}/${pageSlug}`,
+  database: (workspaceSlug: string, dbSlug: string) => `/folio/${workspaceSlug}/db/${dbSlug}`,
+};
+
+/** @deprecated alias — callsites migrating to Routes.folio */
+export const docexRoutes = folioRoutes;
+
+/** @deprecated alias — callsites migrating to Routes.folio */
+export const wikiRoutes = folioRoutes;
+
+// ---------------------------------------------------------------------------
 // Work items / Browse
 // ---------------------------------------------------------------------------
 
@@ -283,6 +306,11 @@ export const Routes = {
   portfolio: portfolioRoutes,
   tasks: tasksRoutes,
   knowledgeHub: knowledgeHubRoutes,
+  folio: folioRoutes,
+  /** @deprecated alias for folio */
+  docex: docexRoutes,
+  /** @deprecated alias for folio */
+  wiki: wikiRoutes,
   browse: browseRoutes,
   admin: adminRoutes,
   strata: strataRoutes,

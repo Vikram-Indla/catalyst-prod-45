@@ -8,6 +8,14 @@ import type { Database } from './types';
 // always boots even when VITE_SUPABASE_* env vars are absent (fresh container,
 // web preview, or a dev server started before .env existed). Env vars, when
 // present, always take precedence.
+// In dev, a missing env var must never silently retarget the PRODUCTION
+// project (real risk: local sessions writing to prod data).
+if (import.meta.env.DEV && !import.meta.env.VITE_SUPABASE_URL) {
+  throw new Error(
+    'VITE_SUPABASE_URL is not set — refusing to fall back to the production ' +
+      'Supabase project in dev. Add VITE_SUPABASE_URL to .env.local.',
+  );
+}
 const SUPABASE_URL =
   import.meta.env.VITE_SUPABASE_URL || 'https://lmqwtldpfacrrlvdnmld.supabase.co';
 const SUPABASE_PUBLISHABLE_KEY =

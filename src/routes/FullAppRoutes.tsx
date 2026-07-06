@@ -6,7 +6,13 @@ function IssueRedirectToBrowse() {
   return <Navigate to={`/browse/${issueKey ?? ''}`} replace />;
 }
 
-import { ENABLE_AI, ENABLE_KNOWLEDGE_HUB, ENABLE_HEAVY_EXPORTS } from '../lib/featureFlags';
+/** Legacy Docex URLs → Folio (module renamed 2026-07-06). */
+function DocexToFolioRedirect() {
+  const { pathname, search, hash } = useLocation();
+  return <Navigate to={pathname.replace(/^\/docex/, '/folio') + search + hash} replace />;
+}
+
+import { ENABLE_AI, ENABLE_HEAVY_EXPORTS } from '../lib/featureFlags';
 import { FeatureComingSoon } from '../components/common/FeatureComingSoon';
 import { ModuleGate } from '../components/common/ModuleGate';
 import { ModuleGuard } from '../components/guards/ModuleGuard';
@@ -359,9 +365,23 @@ const ProductRoomPage = lazy(() => import("../pages/ProductRoomPage"));
 const CapacityPlanningPage = lazy(() => import("../pages/CapacityPlanningPage"));
 const TeamComingSoon = lazy(() => import("../pages/team/ComingSoon"));
 const UnauthorizedPage = lazy(() => import("../pages/UnauthorizedPage"));
-const KnowledgeHubDocumentPage = ENABLE_KNOWLEDGE_HUB ? lazy(() => import("../pages/KnowledgeHubDocumentPage")) : () => <FeatureComingSoon title="Knowledge Hub" />;
-const KnowledgeHubPage = ENABLE_KNOWLEDGE_HUB ? lazy(() => import("../pages/KnowledgeHubPage")) : () => <FeatureComingSoon title="Knowledge Hub" />;
-const KnowledgeHubSpacePage = ENABLE_KNOWLEDGE_HUB ? lazy(() => import("../pages/KnowledgeHubSpacePage")) : () => <FeatureComingSoon title="Knowledge Hub" />;
+// Knowledge Hub absorbed into the Wiki hub (CAT-DOCS-NOTION-20260704-001):
+// legacy UUID URLs resolve to canonical /wiki slug routes.
+const LegacySpaceRedirect = lazy(() =>
+  import("../pages/wiki/LegacyKnowledgeHubRedirect").then(m => ({ default: m.LegacySpaceRedirect })));
+const LegacyDocumentRedirect = lazy(() =>
+  import("../pages/wiki/LegacyKnowledgeHubRedirect").then(m => ({ default: m.LegacyDocumentRedirect })));
+
+const WikiHomePage = lazy(() => import("../pages/wiki/WikiHomePage"));
+const FolioSiteMapPage = lazy(() => import("../pages/wiki/FolioSiteMapPage"));
+const DocexSearchPage = lazy(() => import("../pages/wiki/DocexSearchPage"));
+const DocexDatabasePage = lazy(() => import("../pages/wiki/DocexDatabasePage"));
+const WikiWorkspacePage = lazy(() => import("../pages/wiki/WikiWorkspacePage"));
+// DEV-only ternary keeps the sandbox chunk out of the production bundle
+// (the route below is also DEV-gated, but a bare lazy() would still ship it).
+const WikiSandboxPage = import.meta.env.DEV
+  ? lazy(() => import("../pages/wiki/WikiSandboxPage"))
+  : () => null;
 
 const IncidentAnalyticsPage = lazy(() => import("../modules/incidents/analytics/pages/IncidentAnalyticsPage"));
 const IncidentInsightsPage = lazy(() => import("../modules/incidents/analytics/pages/IncidentInsightsPage"));
@@ -812,6 +832,23 @@ export default function FullAppRoutes() {
         {/* Plan Hub deprecated 2026-06-25 — all routes removed */}
         <Route path="/planhub*" element={<Navigate to="/tasks/overview" replace />} />
 
+        {/* Folio — Catalyst Pages (CAT-DOCS-NOTION-20260704-001).
+            Renamed from /wiki 2026-07-05 (/wiki belongs to the restored
+            knowledge-base hub on main), then Docex → Folio 2026-07-06
+            (Vikram: "Go for folio"). */}
+        <Route path="/folio" element={<S><WikiHomePage /></S>} />
+        <Route path="/folio/search" element={<S><DocexSearchPage /></S>} />
+        <Route path="/folio/sitemap" element={<S><FolioSiteMapPage /></S>} />
+        {import.meta.env.DEV && (
+          <Route path="/folio/_sandbox" element={<S><WikiSandboxPage /></S>} />
+        )}
+        <Route path="/folio/:workspaceSlug" element={<S><WikiWorkspacePage /></S>} />
+        <Route path="/folio/:workspaceSlug/db/:dbSlug" element={<S><DocexDatabasePage /></S>} />
+        <Route path="/folio/:workspaceSlug/:pageSlug" element={<S><WikiWorkspacePage /></S>} />
+        {/* Legacy Docex URLs — permanent redirects into /folio */}
+        <Route path="/docex" element={<Navigate to="/folio" replace />} />
+        <Route path="/docex/*" element={<DocexToFolioRedirect />} />
+
         {/* Wiki routes commented 2026-07-05 — files deleted, imports fail.
             CAT-WIKI-RESTORE-20260705-001 added routes back but no frontend files.
             Uncomment when wiki pages are restored.
@@ -930,9 +967,10 @@ export default function FullAppRoutes() {
 
         <Route path="/unauthorized" element={<S><UnauthorizedPage /></S>} />
 
-        <Route path="/knowledge-hub" element={<S><KnowledgeHubPage /></S>} />
-        <Route path="/knowledge-hub/spaces/:spaceId" element={<S><KnowledgeHubSpacePage /></S>} />
-        <Route path="/knowledge-hub/documents/:documentId" element={<S><KnowledgeHubDocumentPage /></S>} />
+        {/* Knowledge Hub absorbed into Wiki — legacy UUID URLs redirect to slug routes */}
+        <Route path="/knowledge-hub" element={<Navigate to="/folio" replace />} />
+        <Route path="/knowledge-hub/spaces/:spaceId" element={<S><LegacySpaceRedirect /></S>} />
+        <Route path="/knowledge-hub/documents/:documentId" element={<S><LegacyDocumentRedirect /></S>} />
 
 
         <Route path="/insights/portfolio" element={<S><EnterpriseComingSoon /></S>} />
