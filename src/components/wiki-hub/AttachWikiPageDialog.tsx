@@ -96,11 +96,43 @@ export function AttachWikiPageDialog({
     );
   };
 
-  const createAndAttach = () => {
+  // "Convert" seeding (Vikram 2026-07-06): a page created FROM a work item
+  // starts with the item's summary + description, not blank.
+  const fetchSeedBlocks = async (): Promise<unknown[] | undefined> => {
+    try {
+      const source =
+        entityType === 'business_request'
+          ? await (supabase as any)
+              .from('business_requests')
+              .select('title, description, request_key')
+              .eq('id', entityId)
+              .maybeSingle()
+          : await (supabase as any)
+              .from('ph_issues')
+              .select('summary, description_text, issue_key')
+              .eq('id', entityId)
+              .maybeSingle();
+      const row = source.data;
+      if (!row) return undefined;
+      const summary: string = row.title ?? row.summary ?? '';
+      const body: string = row.description ?? row.description_text ?? '';
+      const blocks: unknown[] = [];
+      if (summary) blocks.push({ type: 'heading', props: { level: 2 }, content: summary });
+      for (const para of String(body).split(/\n{2,}/).map((s) => s.trim()).filter(Boolean)) {
+        blocks.push({ type: 'paragraph', content: para });
+      }
+      return blocks.length ? blocks : undefined;
+    } catch {
+      return undefined; // seeding is best-effort — a blank page still links
+    }
+  };
+
+  const createAndAttach = async () => {
     if (!effectiveWorkspaceId || !effectiveWorkspace) return;
     const title = search.trim() || (entityLabel ? `${entityLabel} — notes` : 'Untitled');
+    const seed = await fetchSeedBlocks();
     createPage.mutate(
-      { spaceId: effectiveWorkspaceId, title, parentId: null },
+      { spaceId: effectiveWorkspaceId, title, parentId: null, content: seed as never },
       {
         onSuccess: (page) => {
           linkPage.mutate(

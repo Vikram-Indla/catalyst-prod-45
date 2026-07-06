@@ -638,6 +638,36 @@ export function useDocexSearch(query: string) {
     enabled: q.length >= 2,
     queryFn: async (): Promise<DocexSearchHit[]> => {
       const cols = `${PAGE_SUMMARY_COLS}, content_text`;
+
+      // Key lane (Vikram 2026-07-06: "Can I search with the story key or any
+      // kind of a key?"). DOC-n resolves the page's own key; a work-item key
+      // (ICP-415, MIM-12, …) resolves pages LINKED to that item via
+      // kb_document_links. Key hits rank first.
+      let keyHits: DocexSearchHit[] = [];
+      if (/^[A-Za-z]{2,10}-\d+$/.test(q)) {
+        const K = q.toUpperCase();
+        const [docByKey, issue, br] = await Promise.all([
+          db.from('kb_documents').select(cols).eq('is_template', false).ilike('doc_key', K).limit(3),
+          db.from('ph_issues').select('id').eq('issue_key', K).limit(1),
+          db.from('business_requests').select('id').eq('request_key', K).limit(1),
+        ]);
+        const entityIds = [...(issue.data ?? []), ...(br.data ?? [])].map((r: { id: string }) => String(r.id));
+        let linked: DocexSearchHit[] = [];
+        if (entityIds.length) {
+          const { data: links } = await db
+            .from('kb_document_links')
+            .select('document_id')
+            .in('entity_id', entityIds)
+            .limit(20);
+          const docIds = [...new Set(((links ?? []) as Array<{ document_id: string }>).map((l) => l.document_id))];
+          if (docIds.length) {
+            const { data: docs } = await db.from('kb_documents').select(cols).in('id', docIds).limit(20);
+            linked = (docs ?? []) as DocexSearchHit[];
+          }
+        }
+        keyHits = [...((docByKey.data ?? []) as DocexSearchHit[]), ...linked];
+      }
+
       const [fts, ilike] = await Promise.all([
         db
           .from('kb_documents')
@@ -655,7 +685,7 @@ export function useDocexSearch(query: string) {
       ]);
       const seen = new Set<string>();
       const merged: DocexSearchHit[] = [];
-      for (const row of [...(fts.data ?? []), ...(ilike.data ?? [])]) {
+      for (const row of [...keyHits, ...(fts.data ?? []), ...(ilike.data ?? [])]) {
         if (!seen.has(row.id)) {
           seen.add(row.id);
           merged.push(row as DocexSearchHit);

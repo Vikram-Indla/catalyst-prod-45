@@ -72,7 +72,7 @@ export default function DocexSearchPage() {
         <Input
           autoFocus
           value={query}
-          placeholder="Search every page — titles and content"
+          placeholder="Search pages — title, content, DOC-n, or a work-item key (ICP-415)"
           onChange={(e) => {
             setQuery(e.target.value);
             setParams(e.target.value ? { q: e.target.value } : {}, { replace: true });

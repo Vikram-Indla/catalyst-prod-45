@@ -560,6 +560,36 @@ export function WikiPageSurface({ workspace, page, treePages }: WikiPageSurfaceP
     [flush, page.title, currentBlocks],
   );
 
+  // ---- Import a PDF/Word file INTO this page (Vikram 2026-07-06: "the
+  // document comes and sits straight on this page as a page") ----
+  const importFileRef = useRef<HTMLInputElement>(null);
+  const [importingDoc, setImportingDoc] = useState(false);
+  const onImportIntoPage = async (files: FileList | null) => {
+    const file = files?.[0];
+    if (importFileRef.current) importFileRef.current.value = '';
+    if (!file) return;
+    setImportingDoc(true);
+    try {
+      const { importDocumentFile } = await import('./editor/importDoc');
+      const imported = await importDocumentFile(file);
+      const ed = editorRef.current as unknown as {
+        document: Array<{ id: string }>;
+        insertBlocks: (blocks: unknown[], ref: { id: string }, placement: 'after' | 'before') => void;
+      } | null;
+      if (!ed || ed.document.length === 0) throw new Error('Editor not ready');
+      ed.insertBlocks(imported.blocks as unknown[], ed.document[ed.document.length - 1], 'after');
+      catalystToast.success(
+        imported.sourceLang !== 'en'
+          ? `Imported and translated (${imported.sourceLang} → en) into this page`
+          : 'Imported into this page',
+      );
+    } catch (e) {
+      catalystToast.error(`Import failed: ${e instanceof Error ? e.message : String(e)}`);
+    } finally {
+      setImportingDoc(false);
+    }
+  };
+
   // ---- Convert page → work item (V6): epic in project workspaces,
   // business request in product workspaces; page stays linked. ----
   const { data: pageContainerMeta } = useWorkspaceContainerMeta();
@@ -820,6 +850,12 @@ export function WikiPageSurface({ workspace, page, treePages }: WikiPageSurfaceP
                 { key: 'history', label: 'Version history', onClick: () => setHistoryOpen(true) },
                 { key: 'save-version', label: 'Save version now', onClick: () => snapshotNow('Manual save point') },
                 {
+                  key: 'import-into-page',
+                  label: importingDoc ? 'Importing…' : 'Import PDF/Word into page',
+                  isDisabled: importingDoc || page.content_format !== 'blocknote',
+                  onClick: () => importFileRef.current?.click(),
+                },
+                {
                   key: 'add-subpage',
                   label: 'Add sub-page',
                   onClick: () =>
@@ -872,6 +908,13 @@ export function WikiPageSurface({ workspace, page, treePages }: WikiPageSurfaceP
                 ]
               : []),
           ]}
+        />
+        <input
+          ref={importFileRef}
+          type="file"
+          accept=".pdf,.docx,.doc,application/pdf"
+          hidden
+          onChange={(e) => onImportIntoPage(e.target.files)}
         />
         <button
           type="button"
