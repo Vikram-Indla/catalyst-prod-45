@@ -68,3 +68,14 @@ RO-P6-07,P6,empty,Timeline/board/calendar empty-broken states,phase-6 §11,CLOSE
 RO-P6-08,P6,nav,Change Board + Execution nav + routes,phase-6,CLOSED,sidebar + FullAppRoutes,2026-07-06
 RO-P6-09,P6,build,tsc + build + color gate,acceptance,CLOSED,tsc clean; build PASS 57s; color clean,2026-07-06
 RO-P6-10,P6,planningcal,Dedicated hourly grid on planning calendar,phase-7,DEFERRED,execution calendar covers hourly; planning calendar retained as-is,
+RO-P7-01,P7,queue,Sign-off Queue visual + table + filters + search,phase-7 §3,CLOSED,SignOffQueuePage rewrite; verified live,2026-07-06
+RO-P7-02,P7,visual,Interactive sign-off dependency map (release→change→gate),phase-7 §4,CLOSED,SignoffDependencyGraph; states+override verified,2026-07-06
+RO-P7-03,P7,layers,Release-level + change-level sign-off UX,phase-7 §5/6,CLOSED,two linked layers + rollup,2026-07-06
+RO-P7-04,P7,actions,Approve/reject (both tables) + reject-comment gate,phase-7 §7,CLOSED,useSignoffAction; verified inline,2026-07-06
+RO-P7-05,P7,request,Request sign-off (duplicate-pending guard),phase-7 §8,CLOSED,RequestSignoffModal + useRequestSignoff,2026-07-06
+RO-P7-06,P7,override,Emergency override request/approve/reject,phase-7 §9,CLOSED,EmergencyOverrideModal + useRequestOverride/useDecideOverride; queue panel verified,2026-07-06
+RO-P7-07,P7,overdue,Overdue + blocking states + filters,phase-7 §10,CLOSED,red OVERDUE states + rollup; verified,2026-07-06
+RO-P7-08,P7,consistency,Sign-off truth consistent across views,phase-7 §11,CLOSED,shared rh_* rows + query invalidation,2026-07-06
+RO-P7-09,P7,empty,Sign-off empty/broken states,phase-7 §12,CLOSED,educational empties + unassigned/no-due/reason,2026-07-06
+RO-P7-10,P7,build,tsc + build + color + spacing,acceptance,CLOSED,tsc clean; build PASS 55s; 0 new offenders,2026-07-06
+RO-P7-11,P7,authz,Per-approver authorization rules,phase-8,DEFERRED,canManage-gated + honest approver identity; role-specific authz later,

@@ -22,6 +22,8 @@ import { useReleaseOpsPermissions } from '@/hooks/useReleaseOpsPermissions';
 import { ExecutionTimer } from '@/components/releasehub/detail/ExecutionTimer';
 import { ChangeCockpitSections } from '@/components/releasehub/detail/ChangeCockpitSections';
 import { SectionMessage } from '@/components/ads/SectionMessage';
+import { RequestSignoffModal } from '@/components/releasehub/signoff/RequestSignoffModal';
+import { EmergencyOverrideModal } from '@/components/releasehub/signoff/EmergencyOverrideModal';
 import { RH } from '@/constants/releasehub.design';
 import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
 
@@ -119,6 +121,8 @@ export default function ChangeDetailPage() {
   const c = change as any;
   const { canManage } = useReleaseOpsPermissions();
   const { data: cockpit } = useChangeCockpit(c ?? null);
+  const [signoffOpen, setSignoffOpen] = useState(false);
+  const [overrideOpen, setOverrideOpen] = useState(false);
   const statusLabel = useMemo(() => (c?.status && TERMINAL[c.status] ? TERMINAL[c.status] : null), [c?.status]);
 
   if (isLoading) {
@@ -164,8 +168,17 @@ export default function ChangeDetailPage() {
             <StatusLozenge status={c.status} />
           )}
           <RiskPill risk={c.risk_level} />
+          {canManage && (
+            <>
+              <button onClick={() => setSignoffOpen(true)} style={{ height: 30, padding: '0 12px', borderRadius: 6, border: '1px solid var(--ds-border)', background: 'transparent', color: 'var(--ds-text)', cursor: 'pointer', fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', fontWeight: 600 }}>Request sign-off</button>
+              <button onClick={() => setOverrideOpen(true)} style={{ height: 30, padding: '0 12px', borderRadius: 6, border: '1px solid var(--ds-border-danger)', background: 'transparent', color: 'var(--ds-text-warning)', cursor: 'pointer', fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', fontWeight: 600 }}>Request override</button>
+            </>
+          )}
         </div>
       </div>
+
+      {signoffOpen && <RequestSignoffModal onClose={() => setSignoffOpen(false)} presetScope="change" presetEntityId={c.id} />}
+      {overrideOpen && <EmergencyOverrideModal onClose={() => setOverrideOpen(false)} changeId={c.id} scope="change" />}
 
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 32, padding: '12px 0', borderBottom: `1px solid ${T.border}` }}>
         <MetaItem label="Type" value={titleCase(c.change_type)} />

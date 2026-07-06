@@ -60,3 +60,11 @@ No-drawer proof: section is inline cards + toasts; no side panel. Live page = Fo
 | P6-4 | Timeline expansion | /release-hub/timeline (expand 8 July) | ss_9888rozlz | BRs(0)/Sprints(0) educational empties + Changes(1) CHG8841 EMERGENCY/HIGH/SOP 2/9/SCHEDULED (clickable) |
 
 No-drawer proof: board/timeline/execution are inline surfaces; card/slot/release clicks route to full pages; only modal is the board terminal-reason ads/Modal (centered). Uses existing seed; no new demo data.
+
+## Phase 7 — Sign-off visual + emergency override (2026-07-06, cyij seeded)
+| # | Proof | Route | MCP ID | Result |
+|---|---|---|---|---|
+| P7-1 | Sign-off Queue visual + override requests | /release-hub/sign-off-queue | ss_3362qe1xx | Visual/Table + 8 filters + search + Request sign-off; ⚡ override-request panel (Approve/Reject); 8 July + Q3 release nodes with OVERDUE/APPROVED release gates; CHG8841 "6 gates · Rejected" |
+| P7-2 | Change node expanded to gates | /release-hub/sign-off-queue (expand CHG8841) | (scroll) | 6 gates: Change-mgr/Qa PENDING, Qa APPROVED, Change-mgr/Release-mgr OVERDUE, Uat REJECTED + reason; ⚡ EMERGENCY OVERRIDE — APPROVED bypass badge; inline Approve/Reject; approver avatars + Unassigned |
+
+No-drawer proof: graph expands inline; actions are inline buttons or centered ads/Modal. Demo gates/override (dddd0000-…-b3/b4/c2/c3/e2) are staging-only, documented in release-ops-phase-7-functional-proof.md.
