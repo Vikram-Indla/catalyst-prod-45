@@ -157,6 +157,8 @@ export interface StrataStrategyElement {
   id: string;
   cycle_id: string;
   element_type: string;
+  /** Execution Reconciliation §E: explicit scope discriminator — 'theme' = strategy-level, 'project' = owned by a Project Card. Same framework, no second model. */
+  context: 'theme' | 'project';
   name: string;
   slug: string | null;
   description: string | null;
@@ -364,9 +366,17 @@ export interface StrataProjectCard {
   id: string;
   name: string;
   slug: string | null;
+  /** Execution Reconciliation §K: stable business-facing code, auto-generated (PRJ-00001), distinct from slug/source_key. */
+  reference_id: string | null;
   source_system: 'jira' | 'manual' | 'upload' | 'api';
   source_key: string | null;
+  /** The single Strategic Theme this card belongs to by default. Must reference a strata_strategy_elements row with element_type='theme'. */
+  theme_id: string | null;
+  card_type: string;
   pm_id: string | null;
+  business_owner_id: string | null;
+  lead_business_unit: string | null;
+  delivery_team: string | null;
   sector: string | null;
   budget: number | null;
   baseline_start: string | null;
@@ -378,6 +388,31 @@ export interface StrataProjectCard {
   risk_summary: string | null;
   dependency_summary: string | null;
   last_synced_at: string | null;
+  /** Execution Health & Forecast Calculation — milestone-derived project baseline window (rule 1). Never the manual/import baseline_start/baseline_end above. */
+  calc_baseline_start: string | null;
+  calc_baseline_end: string | null;
+  /** Planned % complete today per the milestone-derived baseline window (rule 3). */
+  baseline_progress_pct: number | null;
+  /** baseline_progress_pct - actual_progress (rule 5). Positive = behind schedule. */
+  variance_pct: number | null;
+  /** Earned-schedule forecast end (rule 6) — never the crude variance% x duration shortcut. */
+  system_forecast_end: string | null;
+  /** Later of system_forecast_end and forecast_end (submitted), or whichever exists (rule 8). */
+  final_forecast_end: string | null;
+  /** final_forecast_end - calc_baseline_end, in days (rule 9). */
+  forecast_variance_days: number | null;
+  /** Fixed, server-calculated enum — never manually settable. on_hold | not_available | not_started | major_delay | minor_delay | on_track (rule 10). */
+  calculated_health: 'on_hold' | 'not_available' | 'not_started' | 'major_delay' | 'minor_delay' | 'on_track' | null;
+  health_reason: string | null;
+  scope_description: string | null;
+  target_outcomes: string | null;
+  success_criteria: string | null;
+  /** Optional, config-gated — migrated from the deprecated Initiative model. Never shown by default. */
+  sponsor_id: string | null;
+  business_case: string | null;
+  value_hypothesis: string | null;
+  /** Bag for admin-config-gated optional fields (strategic_pillar, aop_mapping, strategic_impact, stakeholders, enabling_teams, support_functions, risks). */
+  optional_fields: Record<string, unknown>;
 }
 
 export interface StrataMilestone {
@@ -393,21 +428,89 @@ export interface StrataMilestone {
   progress: number | null;
   weight: number;
   order_index: number;
+  source_system: string | null;
+  source_reference_key: string | null;
+  source_issue_id: string | null;
 }
 
 export interface StrataDependency {
   id: string;
+  /** Added for the Execution Excel import (D-014) — nullable: NULL on rows created before this column existed. */
+  name: string | null;
   requesting_type: 'initiative' | 'project_card';
   requesting_id: string;
   serving_type: 'initiative' | 'project_card' | 'external';
   serving_id: string | null;
   serving_label: string | null;
   dependency_type: string;
+  description: string | null;
+  owner_id: string | null;
+  baseline_start: string | null;
+  baseline_end: string | null;
   due_date: string | null;
   status: 'open' | 'at_risk' | 'blocked' | 'resolved' | 'cancelled';
   sla_days: number | null;
   impact: string | null;
   is_blocker: boolean;
+  source_system: string | null;
+  source_reference_key: string | null;
+  source_issue_id: string | null;
+}
+
+// ── Project Card configuration engine ───────────────────────────────────────
+export interface StrataProjectCardTabConfig {
+  id: string;
+  card_type: string | null;
+  tab_key: string;
+  display_name: string;
+  is_active: boolean;
+  is_required: boolean;
+  position: number;
+}
+
+export interface StrataProjectCardSectionConfig {
+  id: string;
+  card_type: string | null;
+  tab_key: string;
+  section_key: string;
+  name: string;
+  is_visible: boolean;
+  is_required: boolean;
+  collapsed_by_default: boolean;
+  position: number;
+}
+
+export interface StrataProjectCardFieldConfig {
+  id: string;
+  card_type: string | null;
+  tab_key: string;
+  section_key: string | null;
+  field_key: string;
+  display_name: string;
+  field_type: string;
+  is_visible: boolean;
+  is_required: boolean;
+  is_readonly: boolean;
+  syncs_from_jira: boolean;
+  editable_when_synced: boolean;
+  validation_rules: Record<string, unknown>;
+  position: number;
+}
+
+export interface StrataProjectCardPicklist {
+  id: string;
+  picklist_key: string;
+  value: string;
+  label: string;
+  is_active: boolean;
+  position: number;
+}
+
+export interface StrataBenefitProjectCard {
+  id: string;
+  benefit_id: string;
+  project_card_id: string;
+  attribution_share: number | null;
 }
 
 export interface StrataInitiativeProject {
@@ -621,4 +724,52 @@ export interface StrataAiOutput {
   model: string | null;
   generated_at: string;
   human_review_status: 'pending' | 'approved' | 'rejected';
+}
+
+// ── Execution manual Excel import (session 007) ─────────────────────────────
+export interface ExecutionImportProjectCardRow {
+  referenceId: string; name: string; strategicTheme: string; businessOwner: string;
+  projectManager: string; leadBusinessUnit: string; deliveryTeam: string; deliveryStatus: string;
+  baselineStart: string; baselineEnd: string; scopeDescription: string;
+  targetOutcomes: string; successCriteria: string;
+}
+
+export interface ExecutionImportMilestoneRow {
+  projectReferenceId: string; name: string; owner: string;
+  baselineStart: string; baselineEnd: string; forecastEnd: string; actualEnd: string;
+  status: string; progress: string; weight: string;
+}
+
+export interface ExecutionImportDependencyRow {
+  projectReferenceId: string; name: string; description: string;
+  requestingProjectOrTeam: string; servingDepartmentOrTeam: string;
+  baselineStart: string; baselineEnd: string; status: string; owner: string;
+  blocker: string; impactNote: string;
+}
+
+export interface ExecutionImportRowResult {
+  row_number: number;
+  reference_id?: string | null;
+  project_reference_id?: string | null;
+  name: string | null;
+  status: 'valid' | 'error';
+  action: 'create' | 'update' | null;
+  id?: string;
+  errors: string[];
+  warnings: string[];
+}
+
+export interface ExecutionImportSheetSummary { total: number; created: number; updated: number; rejected: number }
+
+export interface ExecutionImportResult {
+  run_id: string | null;
+  dry_run: boolean;
+  project_cards: ExecutionImportRowResult[];
+  milestones: ExecutionImportRowResult[];
+  dependencies: ExecutionImportRowResult[];
+  summary: {
+    project_cards: ExecutionImportSheetSummary;
+    milestones: ExecutionImportSheetSummary;
+    dependencies: ExecutionImportSheetSummary;
+  };
 }

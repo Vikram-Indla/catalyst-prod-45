@@ -52,6 +52,24 @@ export function StrataDataStateLozenge({ state }: { state: DataState | string | 
   return <Lozenge appearance={cfg.appearance} isBold={cfg.bold}>{cfg.label}</Lozenge>;
 }
 
+// ── Project Card execution health lozenge (Execution Health & Forecast Calc) ─
+// `calculated_health` is a FIXED server-calculated enum, NOT a governed
+// threshold-scheme band — it never resolves through useBandResolver(). See D-022.
+export type ExecutionHealthKey = 'on_hold' | 'not_available' | 'not_started' | 'major_delay' | 'minor_delay' | 'on_track';
+export const EXECUTION_HEALTH_LABEL: Record<ExecutionHealthKey, string> = {
+  on_track: 'On Track', minor_delay: 'Minor Delay', major_delay: 'Major Delay',
+  not_started: 'Not Started', not_available: 'Not Available', on_hold: 'On Hold',
+};
+const EXECUTION_HEALTH_APPEARANCE: Record<ExecutionHealthKey, React.ComponentProps<typeof Lozenge>['appearance']> = {
+  on_track: 'success', minor_delay: 'moved', major_delay: 'removed',
+  not_started: 'default', not_available: 'default', on_hold: 'default',
+};
+export function StrataExecutionHealthLozenge({ health }: { health: ExecutionHealthKey | string | null | undefined }) {
+  const key = (health ?? 'not_available') as ExecutionHealthKey;
+  const label = EXECUTION_HEALTH_LABEL[key] ?? String(health);
+  return <Lozenge appearance={EXECUTION_HEALTH_APPEARANCE[key] ?? 'default'}>{label}</Lozenge>;
+}
+
 // ── Band lozenge + band tone (governed config; zero-assumption when unknown) ─
 export function StrataBandLozenge({ bandKey, band }: { bandKey?: string | null; band?: ThresholdBand | null }) {
   const resolve = useBandResolver();

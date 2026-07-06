@@ -9,8 +9,10 @@
  * backward compatibility (RPCs + table untouched) but is no longer part of
  * the active Execution UI (rule 16).
  *
- * UI renders server-calculated values only: actual_progress / execution_health
- * come from the DB calc engine. Zero-assumption: '—' for unknowns.
+ * UI renders server-calculated values only: actual_progress / calculated_health /
+ * baseline_progress_pct / variance_pct / forecast fields all come from the DB
+ * calc engine (strata_calc_execution_progress — Execution Health & Forecast
+ * Calculation). Zero-assumption: '—' for unknowns.
  */
 import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
@@ -23,7 +25,7 @@ import { JiraTable } from '@/components/shared/JiraTable';
 import type { Column } from '@/components/shared/JiraTable';
 import { Routes } from '@/lib/routes';
 import {
-  StrataBandLozenge, StrataChipMenu, StrataPageShell, StrataPanel, StrataStatStrip, T,
+  EXECUTION_HEALTH_LABEL, StrataChipMenu, StrataExecutionHealthLozenge, StrataPageShell, StrataPanel, StrataStatStrip, T,
 } from '@/modules/strata/components/shared';
 import { StrataFormModal } from '@/modules/strata/components/authoring';
 import type { StrataFormValues } from '@/modules/strata/components/authoring';
@@ -33,13 +35,10 @@ import { fmtDate, fmtPct, fmtRatioPct, labelize } from '@/modules/strata/compone
 import {
   useDependencies, useInvalidateStrata, useMilestones, useProfileNames, useProjectCardBySlug,
   useProjectCardPicklists, useProjectCards, useStrataContext, useStrataRoles, useStrategyElements,
-  useThresholdSchemes,
 } from '@/modules/strata/hooks/useStrata';
 import type {
-  StrataDependency, StrataMilestone, StrataProjectCard, StrataRole, StrataStrategyElement, ThresholdBand,
+  StrataDependency, StrataMilestone, StrataProjectCard, StrataRole, StrataStrategyElement,
 } from '@/modules/strata/types';
-
-type LozengeAppearance = React.ComponentProps<typeof Lozenge>['appearance'];
 
 const MILESTONE_STATUS: Record<StrataMilestone['status'], 'default' | 'inprogress' | 'success' | 'removed' | 'moved' | 'new'> = {
   done: 'success', in_progress: 'inprogress', planned: 'default', missed: 'removed', descoped: 'default',
@@ -108,36 +107,22 @@ const EXECUTION_VIEW_LABEL: Record<ExecutionView, string> = Object.fromEntries(
 const isExecutionView = (v: string | null): v is ExecutionView =>
   !!v && EXECUTION_VIEW_OPTIONS.some((o) => o.key === v);
 
-// Delivery Health rollup buckets. `execution_health` is a governed band KEY
-// (strata_threshold_schemes.bands, org-defined — today's seed uses
-// green/amber/red, but keys/labels/count are config, never a fixed enum — D-018).
-// Buckets are resolved by RANK against the governed bands, never by literal
-// key-string comparison, so this holds under any org's band configuration.
-type HealthBucket = 'on_track' | 'minor_delay' | 'major_delay' | 'unknown';
-const HEALTH_BUCKET_LABEL: Record<HealthBucket, string> = {
-  on_track: 'On Track', minor_delay: 'Minor Delay', major_delay: 'Major Delay', unknown: 'Unknown health',
-};
+// Delivery Health — Execution Health & Forecast Calculation. `calculated_health`
+// is a FIXED, server-calculated enum (not a governed threshold-scheme band —
+// see D-022): on_hold | not_available | not_started | major_delay | minor_delay
+// | on_track. Read directly, never rank-resolved against strata_threshold_schemes
+// (that D-018 mechanism drove the PRIOR overdue-ratio health metric and no
+// longer applies to this one).
+type HealthBucket = NonNullable<StrataProjectCard['calculated_health']>;
+const HEALTH_BUCKET_LABEL = EXECUTION_HEALTH_LABEL;
 const HEALTH_BUCKET_TONE: Record<HealthBucket, string> = {
   on_track: 'var(--ds-text-success)', minor_delay: 'var(--ds-text-warning)',
-  major_delay: 'var(--ds-text-danger)', unknown: T.subtlest,
+  major_delay: 'var(--ds-text-danger)', not_started: T.subtle,
+  not_available: T.subtlest, on_hold: T.subtlest,
 };
 
-function useHealthBands(): ThresholdBand[] {
-  const schemesQ = useThresholdSchemes();
-  return useMemo(() => {
-    const map = new Map<string, ThresholdBand>();
-    (schemesQ.data ?? []).forEach((s) => (s.bands ?? []).forEach((b) => { if (!map.has(b.key)) map.set(b.key, b); }));
-    return Array.from(map.values()).sort((a, b) => b.min_score - a.min_score);
-  }, [schemesQ.data]);
-}
-
-function healthBucketOf(bandKey: string | null | undefined, bands: ThresholdBand[]): HealthBucket {
-  if (!bandKey || bands.length === 0) return 'unknown';
-  const idx = bands.findIndex((b) => b.key === bandKey);
-  if (idx === -1) return 'unknown';
-  if (idx === 0) return 'on_track';
-  if (idx === bands.length - 1) return 'major_delay';
-  return 'minor_delay';
+function healthBucketOf(card: StrataProjectCard): HealthBucket {
+  return card.calculated_health ?? 'not_available';
 }
 
 // Dependency status is a fixed DB CHECK enum (system state, not governed
@@ -148,24 +133,31 @@ const isOpenBlocker = (d: StrataDependency): boolean =>
 
 interface CardRollup {
   total: number;
+  onHold: number;
   onTrack: number;
   minorDelay: number;
   majorDelay: number;
-  unknownHealth: number;
+  notStarted: number;
+  notAvailable: number;
   avgProgress: number | null;
   blockedDependencies: number;
 }
 
-function computeCardRollup(cards: StrataProjectCard[], dependencies: StrataDependency[], bands: ThresholdBand[]): CardRollup {
+/** Rule 2/14: On Hold projects are counted separately and excluded from
+ * overall progress rollups and the on-track/minor/major/not-started/
+ * not-available counts. */
+function computeCardRollup(cards: StrataProjectCard[], dependencies: StrataDependency[]): CardRollup {
   const ids = new Set(cards.map((c) => c.id));
-  let onTrack = 0; let minorDelay = 0; let majorDelay = 0; let unknownHealth = 0;
+  let onHold = 0; let onTrack = 0; let minorDelay = 0; let majorDelay = 0; let notStarted = 0; let notAvailable = 0;
   let progressSum = 0; let progressCount = 0;
   cards.forEach((c) => {
-    const bucket = healthBucketOf(c.execution_health, bands);
+    const bucket = healthBucketOf(c);
+    if (bucket === 'on_hold') { onHold += 1; return; }
     if (bucket === 'on_track') onTrack += 1;
     else if (bucket === 'minor_delay') minorDelay += 1;
     else if (bucket === 'major_delay') majorDelay += 1;
-    else unknownHealth += 1;
+    else if (bucket === 'not_started') notStarted += 1;
+    else notAvailable += 1;
     const frac = asFraction(c.actual_progress);
     if (frac != null) { progressSum += frac; progressCount += 1; }
   });
@@ -174,7 +166,7 @@ function computeCardRollup(cards: StrataProjectCard[], dependencies: StrataDepen
     || (d.serving_type === 'project_card' && !!d.serving_id && ids.has(d.serving_id))
   )).length;
   return {
-    total: cards.length, onTrack, minorDelay, majorDelay, unknownHealth,
+    total: cards.length, onHold, onTrack, minorDelay, majorDelay, notStarted, notAvailable,
     avgProgress: progressCount > 0 ? progressSum / progressCount : null, blockedDependencies,
   };
 }
@@ -211,7 +203,9 @@ function GroupStatRow({ rollup, testId }: { rollup: CardRollup; testId?: string 
       <span style={{ ...captionStyle, color: HEALTH_BUCKET_TONE.on_track }}><strong>{rollup.onTrack}</strong> on track</span>
       <span style={{ ...captionStyle, color: HEALTH_BUCKET_TONE.minor_delay }}><strong>{rollup.minorDelay}</strong> minor delay</span>
       <span style={{ ...captionStyle, color: HEALTH_BUCKET_TONE.major_delay }}><strong>{rollup.majorDelay}</strong> major delay</span>
-      {rollup.unknownHealth > 0 ? <span style={captionStyle}><strong>{rollup.unknownHealth}</strong> unknown health</span> : null}
+      <span style={captionStyle}><strong>{rollup.notStarted}</strong> not started</span>
+      <span style={captionStyle}><strong>{rollup.notAvailable}</strong> not available</span>
+      {rollup.onHold > 0 ? <span style={captionStyle}><strong>{rollup.onHold}</strong> on hold (excluded above)</span> : null}
       <span style={captionStyle}>Avg progress <strong style={{ color: T.text }}>{rollup.avgProgress == null ? '—' : `${Math.round(rollup.avgProgress * 100)}%`}</strong></span>
       <span style={captionStyle}>Blocked deps <strong style={{ color: rollup.blockedDependencies > 0 ? HEALTH_BUCKET_TONE.major_delay : T.text }}>{rollup.blockedDependencies}</strong></span>
     </div>
@@ -271,10 +265,7 @@ function ProjectCardItem({ card, onOpenDetail }: { card: StrataProjectCard; onOp
   const frac = asFraction(card.actual_progress);
   const connectorFed = card.source_system === 'jira' || card.source_system === 'api';
   const synced = connectorFed ? relTime(card.last_synced_at) : null;
-  const forecastDelta =
-    card.baseline_end && card.forecast_end
-      ? Math.round((new Date(card.forecast_end).getTime() - new Date(card.baseline_end).getTime()) / 86_400_000)
-      : null;
+  const forecastDelta = card.forecast_variance_days;
   return (
     <div
       data-testid={`strata-project-card-${card.slug ?? card.id}`}
@@ -285,21 +276,23 @@ function ProjectCardItem({ card, onOpenDetail }: { card: StrataProjectCard; onOp
           <strong style={{ fontSize: 'var(--ds-font-size-200)', color: T.text, overflowWrap: 'anywhere' }}>{card.name}</strong>
           <CatalystTag text={`${SOURCE_LABEL[card.source_system] ?? labelize(card.source_system)}${card.source_key ? ` · ${card.source_key}` : ''}`} />
         </div>
-        <StrataBandLozenge bandKey={card.execution_health} />
+        <StrataExecutionHealthLozenge health={card.calculated_health} />
       </div>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
         {frac == null ? (
-          <span style={{ ...captionStyle, fontWeight: 600 }}>Progress —</span>
+          <span style={{ ...captionStyle, fontWeight: 600 }}>Actual progress —</span>
         ) : (
           <>
-            <div style={{ flex: 1, minWidth: 0 }}><ProgressBar value={frac} aria-label={`Execution progress ${Math.round(frac * 100)}%`} /></div>
+            <div style={{ flex: 1, minWidth: 0 }}><ProgressBar value={frac} aria-label={`Actual progress ${Math.round(frac * 100)}%`} /></div>
             <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: T.subtle, flexShrink: 0, fontVariantNumeric: 'tabular-nums' }}>{`${Math.round(frac * 100)}%`}</span>
           </>
         )}
       </div>
       <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
-        <span style={captionStyle}>Baseline end {fmtDate(card.baseline_end)}</span>
-        <span style={captionStyle}>Forecast end {fmtDate(card.forecast_end)}</span>
+        <span style={captionStyle}>Baseline progress {card.baseline_progress_pct == null ? '—' : `${Math.round(card.baseline_progress_pct)}%`}</span>
+        <span style={captionStyle}>Variance {card.variance_pct == null ? '—' : `${card.variance_pct > 0 ? '+' : ''}${Math.round(card.variance_pct)}%`}</span>
+        <span style={captionStyle}>Baseline end {fmtDate(card.calc_baseline_end)}</span>
+        <span style={captionStyle}>Final forecast end {fmtDate(card.final_forecast_end)}</span>
         {forecastDelta != null && forecastDelta !== 0 ? (
           <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: forecastDelta > 0 ? 'var(--ds-text-danger)' : 'var(--ds-text-success)' }}>
             {forecastDelta > 0 ? <TrendingDown size={14} color="var(--ds-icon-danger)" /> : <TrendingUp size={14} color="var(--ds-icon-success)" />}
@@ -308,6 +301,7 @@ function ProjectCardItem({ card, onOpenDetail }: { card: StrataProjectCard; onOp
         ) : null}
         {synced ? <span style={captionStyle}>Synced {synced}</span> : null}
       </div>
+      {card.health_reason ? <span style={{ ...captionStyle, fontStyle: 'italic' }}>{card.health_reason}</span> : null}
       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
         <Button appearance="subtle" spacing="compact" onClick={() => setExpanded((v) => !v)}>
           {`${expanded ? 'Hide' : 'Show'} milestones${milestoneCount != null ? ` (${milestoneCount})` : ''}`}
@@ -335,30 +329,42 @@ function CardGrid({ cards, isNarrow, onOpenDetail }: {
 
 /** Compact summary-table columns for the Enterprise view's "By Leading Business Unit" /
  * "By Strategic Theme" breakdown tables — same rollup math as GroupStatRow, one row per group. */
-function BREAKDOWN_COLUMNS(dependencies: StrataDependency[], bands: ThresholdBand[]): Column<CardGroup>[] {
+function BREAKDOWN_COLUMNS(dependencies: StrataDependency[]): Column<CardGroup>[] {
   return [
     { id: 'label', label: 'Group', flex: true, cell: ({ row }) => <span style={{ fontWeight: 600, color: T.text }}>{row.label}</span> },
     { id: 'total', label: 'Total', width: 10, align: 'end', cell: ({ row }) => <span style={{ fontVariantNumeric: 'tabular-nums' }}>{row.cards.length}</span> },
     {
       id: 'on_track', label: 'On Track', width: 12, align: 'end',
-      cell: ({ row }) => <span style={{ color: HEALTH_BUCKET_TONE.on_track, fontVariantNumeric: 'tabular-nums' }}>{computeCardRollup(row.cards, dependencies, bands).onTrack}</span>,
+      cell: ({ row }) => <span style={{ color: HEALTH_BUCKET_TONE.on_track, fontVariantNumeric: 'tabular-nums' }}>{computeCardRollup(row.cards, dependencies).onTrack}</span>,
     },
     {
       id: 'minor_delay', label: 'Minor Delay', width: 12, align: 'end',
-      cell: ({ row }) => <span style={{ color: HEALTH_BUCKET_TONE.minor_delay, fontVariantNumeric: 'tabular-nums' }}>{computeCardRollup(row.cards, dependencies, bands).minorDelay}</span>,
+      cell: ({ row }) => <span style={{ color: HEALTH_BUCKET_TONE.minor_delay, fontVariantNumeric: 'tabular-nums' }}>{computeCardRollup(row.cards, dependencies).minorDelay}</span>,
     },
     {
       id: 'major_delay', label: 'Major Delay', width: 12, align: 'end',
-      cell: ({ row }) => <span style={{ color: HEALTH_BUCKET_TONE.major_delay, fontVariantNumeric: 'tabular-nums' }}>{computeCardRollup(row.cards, dependencies, bands).majorDelay}</span>,
+      cell: ({ row }) => <span style={{ color: HEALTH_BUCKET_TONE.major_delay, fontVariantNumeric: 'tabular-nums' }}>{computeCardRollup(row.cards, dependencies).majorDelay}</span>,
+    },
+    {
+      id: 'not_started', label: 'Not Started', width: 12, align: 'end',
+      cell: ({ row }) => <span style={{ fontVariantNumeric: 'tabular-nums' }}>{computeCardRollup(row.cards, dependencies).notStarted}</span>,
+    },
+    {
+      id: 'not_available', label: 'Not Available', width: 12, align: 'end',
+      cell: ({ row }) => <span style={{ fontVariantNumeric: 'tabular-nums' }}>{computeCardRollup(row.cards, dependencies).notAvailable}</span>,
+    },
+    {
+      id: 'on_hold', label: 'On Hold', width: 12, align: 'end',
+      cell: ({ row }) => <span style={{ fontVariantNumeric: 'tabular-nums' }}>{computeCardRollup(row.cards, dependencies).onHold}</span>,
     },
     {
       id: 'blocked_deps', label: 'Blocked Deps', width: 12, align: 'end',
-      cell: ({ row }) => <span style={{ fontVariantNumeric: 'tabular-nums' }}>{computeCardRollup(row.cards, dependencies, bands).blockedDependencies}</span>,
+      cell: ({ row }) => <span style={{ fontVariantNumeric: 'tabular-nums' }}>{computeCardRollup(row.cards, dependencies).blockedDependencies}</span>,
     },
     {
       id: 'avg_progress', label: 'Avg Progress', width: 12, align: 'end',
       cell: ({ row }) => {
-        const p = computeCardRollup(row.cards, dependencies, bands).avgProgress;
+        const p = computeCardRollup(row.cards, dependencies).avgProgress;
         return <span style={{ fontVariantNumeric: 'tabular-nums' }}>{p == null ? '—' : `${Math.round(p * 100)}%`}</span>;
       },
     },
@@ -367,10 +373,9 @@ function BREAKDOWN_COLUMNS(dependencies: StrataDependency[], bands: ThresholdBan
 
 /** Shared group-panel renderer for the Leading Business Unit / Strategic Theme /
  * Project Manager / Delivery Team views — same panel shape, different grouping key. */
-function GroupedCardsSection({ groups, dependencies, bands, isNarrow, onOpenDetail, emptyDescription, testId }: {
+function GroupedCardsSection({ groups, dependencies, isNarrow, onOpenDetail, emptyDescription, testId }: {
   groups: CardGroup[];
   dependencies: StrataDependency[];
-  bands: ThresholdBand[];
   isNarrow: boolean;
   onOpenDetail: (card: StrataProjectCard) => void;
   emptyDescription: string;
@@ -382,7 +387,7 @@ function GroupedCardsSection({ groups, dependencies, bands, isNarrow, onOpenDeta
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }} data-testid={testId}>
       {groups.map((g) => {
-        const rollup = computeCardRollup(g.cards, dependencies, bands);
+        const rollup = computeCardRollup(g.cards, dependencies);
         return (
           <StrataPanel key={g.key} title={g.label} icon={<GitBranch size={16} />} count={g.cards.length || null} testId={`${testId}-${g.key}`}>
             <GroupStatRow rollup={rollup} testId={`${testId}-${g.key}-stats`} />
@@ -416,7 +421,6 @@ export default function StrataExecutionPage() {
   const lobPicklistQ = useProjectCardPicklists('lead_business_unit');
   const teamPicklistQ = useProjectCardPicklists('delivery_team');
   const profilesQ = useProfileNames();
-  const healthBands = useHealthBands();
   const [railFilter, setRailFilter] = useState('');
 
   // ── View switcher state (bookmarkable — same ?param= convention as ?period=) ──
@@ -474,7 +478,7 @@ export default function StrataExecutionPage() {
     if (themeFilter && c.theme_id !== themeFilter) return false;
     if (teamFilter && (c.delivery_team ?? '') !== teamFilter) return false;
     if (pmFilter && c.pm_id !== pmFilter) return false;
-    if (healthFilter && healthBucketOf(c.execution_health, healthBands) !== healthFilter) return false;
+    if (healthFilter && healthBucketOf(c) !== healthFilter) return false;
     if (deliveryStatusFilter && c.stage !== deliveryStatusFilter) return false;
     return true;
   });
@@ -540,7 +544,7 @@ export default function StrataExecutionPage() {
     ...(unassignedCards.length > 0 ? [{ key: '__unassigned__', label: 'Unassigned Strategic Theme', cards: unassignedCards }] : []),
   ];
 
-  const enterpriseRollup = computeCardRollup(filteredCards, filteredDependencies, healthBands);
+  const enterpriseRollup = computeCardRollup(filteredCards, filteredDependencies);
   const enterpriseMilestoneCompletion = filteredMilestones.length > 0
     ? filteredMilestones.filter((m) => m.status === 'done').length / filteredMilestones.length
     : null;
@@ -747,7 +751,7 @@ export default function StrataExecutionPage() {
               isClearable
               value={healthFilter ? { value: healthFilter, label: HEALTH_BUCKET_LABEL[healthFilter] } : null}
               onChange={(o) => setHealthFilter((o?.value as HealthBucket | undefined) ?? '')}
-              options={(['on_track', 'minor_delay', 'major_delay', 'unknown'] as HealthBucket[]).map((k) => ({ value: k, label: HEALTH_BUCKET_LABEL[k] }))}
+              options={(['on_track', 'minor_delay', 'major_delay', 'not_started', 'not_available', 'on_hold'] as HealthBucket[]).map((k) => ({ value: k, label: HEALTH_BUCKET_LABEL[k] }))}
             />
             <Select
               placeholder="Delivery Status"
@@ -797,7 +801,15 @@ export default function StrataExecutionPage() {
               <StrataStatStrip
                 testId="strata-enterprise-stats-2"
                 items={[
+                  { key: 'not_started', label: 'Not Started', value: enterpriseRollup.notStarted },
+                  { key: 'not_available', label: 'Not Available', value: enterpriseRollup.notAvailable },
+                  { key: 'on_hold', label: 'On Hold', value: enterpriseRollup.onHold },
                   { key: 'blocked_deps', label: 'Blocked Dependencies', value: enterpriseRollup.blockedDependencies },
+                ]}
+              />
+              <StrataStatStrip
+                testId="strata-enterprise-stats-3"
+                items={[
                   { key: 'avg_progress', label: 'Average Progress', value: enterpriseRollup.avgProgress == null ? '—' : `${Math.round(enterpriseRollup.avgProgress * 100)}%` },
                   { key: 'milestone_completion', label: 'Milestone Completion', value: enterpriseMilestoneCompletion == null ? '—' : `${Math.round(enterpriseMilestoneCompletion * 100)}%` },
                   { key: 'unassigned', label: 'Unassigned Projects', value: unassignedCards.length },
@@ -810,7 +822,7 @@ export default function StrataExecutionPage() {
                     <div style={{ padding: 16 }}><EmptyState size="compact" header="No project cards" /></div>
                   ) : (
                     <JiraTable<CardGroup>
-                      columns={BREAKDOWN_COLUMNS(filteredDependencies, healthBands)}
+                      columns={BREAKDOWN_COLUMNS(filteredDependencies)}
                       data={businessUnitGroups}
                       getRowId={(row) => row.key}
                       density="compact"
@@ -825,7 +837,7 @@ export default function StrataExecutionPage() {
                     <div style={{ padding: 16 }}><EmptyState size="compact" header="No strategic themes" /></div>
                   ) : (
                     <JiraTable<CardGroup>
-                      columns={BREAKDOWN_COLUMNS(filteredDependencies, healthBands)}
+                      columns={BREAKDOWN_COLUMNS(filteredDependencies)}
                       data={themeGroups}
                       getRowId={(row) => row.key}
                       density="compact"
@@ -840,8 +852,7 @@ export default function StrataExecutionPage() {
               <GroupedCardsSection
                 groups={themeGroups}
                 dependencies={filteredDependencies}
-                bands={healthBands}
-                isNarrow={isNarrow}
+                  isNarrow={isNarrow}
                 onOpenDetail={(card) => { if (card.slug) navigate(Routes.strata.projectCard(card.slug)); }}
                 emptyDescription="Adjust or clear filters to see project cards."
                 testId="strata-execution-theme-groups"
@@ -851,7 +862,6 @@ export default function StrataExecutionPage() {
             <GroupedCardsSection
               groups={businessUnitGroups}
               dependencies={filteredDependencies}
-              bands={healthBands}
               isNarrow={isNarrow}
               onOpenDetail={(card) => { if (card.slug) navigate(Routes.strata.projectCard(card.slug)); }}
               emptyDescription="Adjust or clear filters to see project cards."
@@ -861,7 +871,6 @@ export default function StrataExecutionPage() {
             <GroupedCardsSection
               groups={themeGroups}
               dependencies={filteredDependencies}
-              bands={healthBands}
               isNarrow={isNarrow}
               onOpenDetail={(card) => { if (card.slug) navigate(Routes.strata.projectCard(card.slug)); }}
               emptyDescription="Adjust or clear filters to see project cards."
@@ -871,7 +880,6 @@ export default function StrataExecutionPage() {
             <GroupedCardsSection
               groups={pmGroups}
               dependencies={filteredDependencies}
-              bands={healthBands}
               isNarrow={isNarrow}
               onOpenDetail={(card) => { if (card.slug) navigate(Routes.strata.projectCard(card.slug)); }}
               emptyDescription="Adjust or clear filters to see project cards."
@@ -881,7 +889,6 @@ export default function StrataExecutionPage() {
             <GroupedCardsSection
               groups={deliveryTeamGroups}
               dependencies={filteredDependencies}
-              bands={healthBands}
               isNarrow={isNarrow}
               onOpenDetail={(card) => { if (card.slug) navigate(Routes.strata.projectCard(card.slug)); }}
               emptyDescription="Adjust or clear filters to see project cards."

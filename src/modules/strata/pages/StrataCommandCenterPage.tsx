@@ -208,6 +208,9 @@ const ATTENTION_TYPE_LABEL: Record<string, string> = {
   broken_assumption: 'Assumption broken',
   missing_actual: 'Missing actual',
   upload_rejections: 'Upload rejections',
+  project_major_delay: 'Project major delay',
+  project_health_unavailable: 'Health unavailable',
+  project_blocked_dependency: 'Project blocked',
 };
 
 // ── AI advisory (F-GOV-009: draft → human review; reviewer ≠ author is DB-enforced) ─
