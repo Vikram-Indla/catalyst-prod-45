@@ -1,31 +1,35 @@
 # Handover — CAT-STRATA-ADS-UPLIFT-20260706-001
 
-**Checkpoint 2026-07-06, session 001.**
-Branch `feat/CAT-STRATA-ADS-UPLIFT-20260706` @ f2b123ae3 (base main 23eb46cd3). NOT pushed.
+**Checkpoint 2026-07-06, session 001 (slices 1+2 complete).**
+Branch `feat/CAT-STRATA-ADS-UPLIFT-20260706` @ 57487e37f (base main 23eb46cd3). NOT pushed.
 
 ## State
-Slice 1 (systemic ADS uplift) COMPLETE and live-verified on all 14 STRATA
-screens + 2 authoring modals via Chrome MCP. Before/after screenshot IDs in
-10_SCREENSHOT_CHECKLIST.md + 06_VALIDATION_EVIDENCE.md.
+- Slice 1: all 14 STRATA screens + modals uplifted and live-verified (breadcrumb
+  clip, lozenge/table chopping, detail titles, MiniMap).
+- Slice 2 (scope expansion D5): app-wide crawl of all primary hubs; 4 fixes:
+  atlaskit-icons className carrier (81 call sites — search fields repaired
+  app-wide), TasksPageHeader hub-standard header, Access status column,
+  Sprints column widths. Everything else audited compliant.
+- Evidence: 06_VALIDATION_EVIDENCE.md (both slices, before/after IDs).
+- Gates: tsc 183 = baseline · colors 0 = baseline · audit:ads spacing +3
+  inherited from main (D1).
 
-Key context for the next session:
-- STRATA was already Atlaskit/ADS-token based (recovery build) — the visible
-  "violations" were geometry bugs: negative-margin vs overflow:clip (breadcrumb),
-  JiraTable 640px flex floor (chopped trailing columns), missing title overrides,
-  blank MiniMap. All fixed surgically; no component rebuilds, no data changes.
-- audit:ads:gate spacing +3 is inherited from main (dock.css, stories file) —
-  pre-commit hook may block commits on this branch for the same reason;
-  this commit passed because ratchet compares repo state (verify on next commit).
+## Key learnings (for CLAUDE.md lesson candidates)
+- HubSurface content wrapper is overflow:clip — never overhang it with
+  negative margins.
+- JiraTable reserves a 640px sum-floor for flex columns → many-column tables
+  clip trailing columns; use fixed name-column widths on dense tables.
+- @atlaskit/icon components DROP className/style; the atlaskit-icons wrappers
+  now carry them on a span (fixed 81 broken call sites).
 
-## Open candidates for a slice 2 (not started)
-- Execution page "Linked elements" chips truncate at ~180px (CatalystTag maxWidth).
-- Admin tab row overflows on narrow viewports (11 tabs).
-- OKR empty state uses custom EmptyState already — fine; no action.
-- Dark-mode pass over STRATA screens (tokens should hold, unverified).
-- Modals after-screenshots (New cycle/New element unchanged — before IDs stand).
+## Open candidates (slice 3)
+- Ideation/ProgramDirectory Tailwind→ADS conversion (D7).
+- /docs blank content area (D6, routing/flag).
+- Products/Projects list dangling "/" crumb (cosmetic).
+- Execution "Linked elements" chip truncation; Admin 11-tab overflow; dark-mode pass.
 
 ## Next exact actions
-1. Owner review of before/after report; push + PR when approved.
-2. Optional slice 2 from candidates above.
+1. Owner review of before/after report → push + PR.
+2. Optional slice 3 from candidates.
 
 Next prompt: `continue feature CAT-STRATA-ADS-UPLIFT-20260706-001`

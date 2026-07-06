@@ -34,3 +34,29 @@
 
 Functionality note: screenshots prove layout only; no data paths were modified
 (zero RPC/hook/route changes — styling, labels, and column schema only).
+
+## Slice 2 — app-wide sweep evidence (2026-07-06)
+
+Gates after slice 2: tsc 183 = baseline · lint:colors:gate 0 = baseline.
+
+| Surface | Before | After | Verdict |
+|---|---|---|---|
+| Home / For you | ss_9769ku56d | — | compliant, no change |
+| Projects list | ss_553099zlt | — | compliant |
+| BAU Backlog | ss_6888w3bm9 | ss_2540mv6qd | compliant; pixel-identical after icon-wrapper fix (regression check) |
+| BAU Board | ss_2650tmi1s | — | compliant |
+| BAU Dashboard | ss_8696h4uon | — | compliant |
+| BAU Timeline | ss_460906jzw | — | compliant |
+| BAU Sprints | ss_9431siera (Release/Owner clipped, "O…" header) | ss_2443s79vd | FIXED |
+| Products list | ss_425177zab | — | compliant (dangling "/" noted D7-adjacent, minor) |
+| INV Product Backlog | ss_96329b50y | — | compliant |
+| Incident Hub | ss_5380wfbm5 | — | compliant |
+| Release Hub | ss_15461jq7w | — | compliant |
+| Test Hub | ss_5719tg3ca | — | compliant |
+| Tasks Dashboard | ss_1580zd85f ("Tasks /Dashboard" stacked header) | ss_76776b6lc | FIXED |
+| Ideation Backlog | ss_7614k8ayn (floating magnifier) | ss_4308b03yz | FIXED (icon); IDEAS/IDEAS crumb logged D7 |
+| Programs | ss_613365mx2 (floating magnifier) | ss_94113pmrp | FIXED |
+| Issue Navigator | ss_1046np7t7 (floating magnifier) | ss_86111u4fa | FIXED |
+| Admin Access | ss_5861yzjih ("PENDING SET…") | ss_73467628x | FIXED |
+| Docs | ss_4597drbrs (blank content) | — | finding D6, data-path |
+| Global Create modal | ss_6893p2xl0 | — | compliant |
