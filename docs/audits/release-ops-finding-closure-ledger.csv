@@ -79,3 +79,12 @@ RO-P7-08,P7,consistency,Sign-off truth consistent across views,phase-7 §11,CLOS
 RO-P7-09,P7,empty,Sign-off empty/broken states,phase-7 §12,CLOSED,educational empties + unassigned/no-due/reason,2026-07-06
 RO-P7-10,P7,build,tsc + build + color + spacing,acceptance,CLOSED,tsc clean; build PASS 55s; 0 new offenders,2026-07-06
 RO-P7-11,P7,authz,Per-approver authorization rules,phase-8,DEFERRED,canManage-gated + honest approver identity; role-specific authz later,
+RO-P8-01,P8,ledger,Change Detail incident/defect ledger (counts+rows+raise),phase-8 §5,CLOSED,IssueSummary upgrade; verified live CHG8841,2026-07-06
+RO-P8-02,P8,raise,Contextual raise reuses existing Create modals + lineage,phase-8 §3/4,CLOSED,RaiseIssue reuses CreateIncidentModal/useCreateIncident + CreateStoryModal(QA Bug); verified modal open,2026-07-06
+RO-P8-03,P8,steplink,SOP step issue linkage + quick-raise,phase-8 §6,CLOSED,SopRunbook step indicator + raise actions,2026-07-06
+RO-P8-04,P8,boardmark,Change Board card issue marker,phase-8 §9,CLOSED,useChangesList issueCount + board ⚠,2026-07-06
+RO-P8-05,P8,lineage,source_release/change/sop_step/prod_event + raised_during_execution,phase-8 §1,CLOSED,written on every contextual raise,2026-07-06
+RO-P8-06,P8,model,Incident-vs-defect functional model,phase-8 §2,CLOSED,defaultIssueKind + user choice,2026-07-06
+RO-P8-07,P8,build,tsc + build + gates,acceptance,CLOSED,tsc clean; build PASS; typo down; spacing flat; tokens noisy-ratchet,2026-07-06
+RO-P8-08,P8,calmark,Execution calendar + For-You issue-count badges,phase-9,DEFERRED,For-You via View-change; calendar badge deferred,
+RO-P8-09,P8,detailctx,Dedicated Release-Ops context panel on Incident/Defect detail,phase-9,DEFERRED,source_* written; panel deferred,

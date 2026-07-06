@@ -24,6 +24,7 @@ import { ChangeCockpitSections } from '@/components/releasehub/detail/ChangeCock
 import { SectionMessage } from '@/components/ads/SectionMessage';
 import { RequestSignoffModal } from '@/components/releasehub/signoff/RequestSignoffModal';
 import { EmergencyOverrideModal } from '@/components/releasehub/signoff/EmergencyOverrideModal';
+import { RaiseIssue, type IssueContext } from '@/components/releasehub/issues/RaiseIssue';
 import { RH } from '@/constants/releasehub.design';
 import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
 
@@ -123,7 +124,28 @@ export default function ChangeDetailPage() {
   const { data: cockpit } = useChangeCockpit(c ?? null);
   const [signoffOpen, setSignoffOpen] = useState(false);
   const [overrideOpen, setOverrideOpen] = useState(false);
+  const [raiseIssue, setRaiseIssue] = useState<{ kind: 'incident' | 'defect'; ctx: IssueContext } | null>(null);
+
+  const openRaise = (kind: 'incident' | 'defect', sopStepId?: string | null) => {
+    if (!c) return;
+    setRaiseIssue({ kind, ctx: {
+      changeId: c.id, changeNumber: c.chg_number,
+      releaseId: cockpit?.releases[0]?.id ?? c.release_id ?? null,
+      sopStepId: sopStepId ?? null, environment: c.target_env ?? null,
+      titleSeed: `${c.chg_number}: ${kind === 'incident' ? 'production issue' : 'validation defect'} during deployment`,
+    } });
+  };
   const statusLabel = useMemo(() => (c?.status && TERMINAL[c.status] ? TERMINAL[c.status] : null), [c?.status]);
+  const issuesByStep = useMemo(() => {
+    const m: Record<string, { incidents: number; defects: number; crit: boolean }> = {};
+    (cockpit?.issues ?? []).forEach((i) => {
+      if (!i.sopStepId) return;
+      const e = (m[i.sopStepId] ??= { incidents: 0, defects: 0, crit: false });
+      if (i.kind === 'incident') e.incidents += 1; else e.defects += 1;
+      if (i.severity && /^(sev1|sev2|critical|high|p1|p2)$/i.test(i.severity)) e.crit = true;
+    });
+    return m;
+  }, [cockpit?.issues]);
 
   if (isLoading) {
     return <div style={{ padding: 48, display: 'flex', justifyContent: 'center', background: T.surface, minHeight: '100%' }}><Spinner size="large" /></div>;
@@ -179,6 +201,7 @@ export default function ChangeDetailPage() {
 
       {signoffOpen && <RequestSignoffModal onClose={() => setSignoffOpen(false)} presetScope="change" presetEntityId={c.id} />}
       {overrideOpen && <EmergencyOverrideModal onClose={() => setOverrideOpen(false)} changeId={c.id} scope="change" />}
+      {raiseIssue && <RaiseIssue kind={raiseIssue.kind} ctx={raiseIssue.ctx} onClose={() => setRaiseIssue(null)} />}
 
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 32, padding: '12px 0', borderBottom: `1px solid ${T.border}` }}>
         <MetaItem label="Type" value={titleCase(c.change_type)} />
@@ -238,7 +261,7 @@ export default function ChangeDetailPage() {
         <TabPanel>
           <div style={{ width: '100%' }}>
             {cockpit
-              ? <ChangeCockpitSections cockpit={cockpit} onOpenSop={() => setSelectedTab(1)} />
+              ? <ChangeCockpitSections cockpit={cockpit} onOpenSop={() => setSelectedTab(1)} canManage={canManage} onRaiseIssue={openRaise} />
               : <div style={{ padding: 24, display: 'flex', justifyContent: 'center' }}><Spinner size="medium" /></div>}
             {c.description && (
               <div style={{ marginTop: 8, marginBottom: 16 }}>
@@ -249,7 +272,7 @@ export default function ChangeDetailPage() {
           </div>
         </TabPanel>
 
-        <TabPanel><div style={{ width: '100%' }}><SopRunbook changeId={c.id} change={c} canManage={canManage} /></div></TabPanel>
+        <TabPanel><div style={{ width: '100%' }}><SopRunbook changeId={c.id} change={c} canManage={canManage} onRaiseIssue={openRaise} issuesByStep={issuesByStep} /></div></TabPanel>
 
         <TabPanel>
           <div style={{ width: '100%', padding: '8px 0' }}>

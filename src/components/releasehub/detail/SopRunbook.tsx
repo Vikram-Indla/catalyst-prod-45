@@ -83,7 +83,7 @@ function ActionBtn({ label, tone, onClick, disabled }: { label: string; tone?: s
   );
 }
 
-function StepRow({ step, changeId, steps, canManage }: { step: SopStepFull; changeId: string; steps: SopStepFull[]; canManage: boolean }) {
+function StepRow({ step, changeId, steps, canManage, onRaiseIssue, issue }: { step: SopStepFull; changeId: string; steps: SopStepFull[]; canManage: boolean; onRaiseIssue?: (kind: 'incident' | 'defect', sopStepId: string) => void; issue?: { incidents: number; defects: number; crit: boolean } }) {
   const [expanded, setExpanded] = useState(false);
   const action = useSopStepAction();
   const assign = useAssignSopStep();
@@ -115,7 +115,8 @@ function StepRow({ step, changeId, steps, canManage }: { step: SopStepFull; chan
             {step.commitRequired && <Indicator label="Commit" tone={T.info} />}
             {step.evidenceRequired && <Indicator label="Evidence" tone={T.info} />}
             {!step.isMandatory && <Indicator label="Optional" tone={T.subtle} />}
-            {(step.incidentId || step.defectId) && <Indicator label="Issue" tone={T.danger} />}
+            {(issue && (issue.incidents + issue.defects > 0)) && <Indicator label={`${issue.incidents + issue.defects} issue${issue.incidents + issue.defects === 1 ? '' : 's'}`} tone={issue.crit ? T.danger : T.warning} />}
+            {(step.incidentId || step.defectId) && !issue && <Indicator label="Issue" tone={T.danger} />}
           </div>
           <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', color: T.subtlest }}>{titleCase(step.stepType)}{step.assignedRole ? ` · ${titleCase(step.assignedRole)}` : ''} · plan {fmt(step.plannedStartAt)}</span>
         </div>
@@ -202,6 +203,12 @@ function StepRow({ step, changeId, steps, canManage }: { step: SopStepFull; chan
                 <ActionBtn label="Reopen" onClick={() => { if (reason.trim()) run({ step, changeId, status: 'pending', blockerReason: reason }); else catalystToast.error('Reopen requires a reason'); }} />
               )}
               {/* reorder */}
+              {onRaiseIssue && (
+                <>
+                  <ActionBtn label="Raise incident" tone={T.danger} onClick={() => onRaiseIssue('incident', step.id)} />
+                  <ActionBtn label="Raise defect" tone={T.info} onClick={() => onRaiseIssue('defect', step.id)} />
+                </>
+              )}
               <div style={{ marginLeft: 'auto', display: 'flex', gap: 4 }}>
                 <ActionBtn label="↑" onClick={() => reorder.mutate({ changeId, stepId: step.id, stepNo: step.stepNo, dir: 'up', steps })} disabled={step.stepNo <= Math.min(...steps.map((s) => s.stepNo))} />
                 <ActionBtn label="↓" onClick={() => reorder.mutate({ changeId, stepId: step.id, stepNo: step.stepNo, dir: 'down', steps })} disabled={step.stepNo >= Math.max(...steps.map((s) => s.stepNo))} />
@@ -224,7 +231,8 @@ function Stat({ label, value, tone }: { label: string; value: React.ReactNode; t
   return <div><div style={{ fontFamily: RH.fontDisplay, fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: tone ?? T.text }}>{value}</div><div style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-50)', color: T.subtlest, textTransform: 'uppercase', letterSpacing: '.03em' }}>{label}</div></div>;
 }
 
-export function SopRunbook({ changeId, change, canManage }: { changeId: string; change: any; canManage: boolean }) {
+export interface StepIssueInfo { incidents: number; defects: number; crit: boolean }
+export function SopRunbook({ changeId, change, canManage, onRaiseIssue, issuesByStep }: { changeId: string; change: any; canManage: boolean; onRaiseIssue?: (kind: 'incident' | 'defect', sopStepId: string) => void; issuesByStep?: Record<string, StepIssueInfo> }) {
   const { data: steps = [], isLoading } = useSopRunbook(changeId);
   const [applyOpen, setApplyOpen] = useState(false);
 
@@ -285,7 +293,7 @@ export function SopRunbook({ changeId, change, canManage }: { changeId: string; 
 
           {/* steps */}
           <div>
-            {steps.map((s) => <StepRow key={s.id} step={s} changeId={changeId} steps={steps} canManage={canManage} />)}
+            {steps.map((s) => <StepRow key={s.id} step={s} changeId={changeId} steps={steps} canManage={canManage} onRaiseIssue={onRaiseIssue} issue={issuesByStep?.[s.id]} />)}
           </div>
         </>
       )}

@@ -68,3 +68,11 @@ No-drawer proof: board/timeline/execution are inline surfaces; card/slot/release
 | P7-2 | Change node expanded to gates | /release-hub/sign-off-queue (expand CHG8841) | (scroll) | 6 gates: Change-mgr/Qa PENDING, Qa APPROVED, Change-mgr/Release-mgr OVERDUE, Uat REJECTED + reason; ⚡ EMERGENCY OVERRIDE — APPROVED bypass badge; inline Approve/Reject; approver avatars + Unassigned |
 
 No-drawer proof: graph expands inline; actions are inline buttons or centered ads/Modal. Demo gates/override (dddd0000-…-b3/b4/c2/c3/e2) are staging-only, documented in release-ops-phase-7-functional-proof.md.
+
+## Phase 8 — Incident/Defect execution linkage (2026-07-06, cyij seeded)
+| # | Proof | Route | MCP ID | Result |
+|---|---|---|---|---|
+| P8-1 | Change Detail issue ledger | /release-hub/changes/chg8841 | (scroll of ss_5442mc7o2) | counts 1 Incidents/1 Defects/2 Open/1 Critical; INC-154 SEV3 OPEN + DEF-RO-8841 critical rows; Raise incident/Raise defect actions |
+| P8-2 | Contextual raise reuses existing modal | /release-hub/changes/chg8841 (Raise incident) | ss_5442mc7o2 | EXISTING global "Create Incident" modal (rich editor, Project/Release/Type, SEV1-4) — not rebuilt; RaiseIssue writes lineage post-create |
+
+No-drawer proof: ledger + SOP step indicators inline; raise reuses centered create modals. Demo issues (eeee0000-…-f1/f2 → source_change_id CHG8841, source_sop_step_id a2/a4) staging-only, documented in release-ops-phase-8-functional-proof.md.

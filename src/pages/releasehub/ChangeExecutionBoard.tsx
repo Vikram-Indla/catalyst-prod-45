@@ -81,6 +81,9 @@ function Card({ row }: { row: ChangeListRow }) {
       <div style={{ display: 'flex', gap: 10, fontFamily: T.mono, fontSize: 'var(--ds-font-size-100)', color: T.subtle }}>
         {row.sopProgress && <span>SOP {row.sopProgress.done}/{row.sopProgress.total}</span>}
         {row.apprProgress && <span>Appr {row.apprProgress.approved}/{row.apprProgress.total}</span>}
+        {row.issueCount && (row.issueCount.incidents + row.issueCount.defects > 0) && (
+          <span style={{ color: row.issueCount.incidents > 0 ? T.danger : T.warning, fontWeight: 700 }}>⚠ {row.issueCount.incidents + row.issueCount.defects}</span>
+        )}
       </div>
     </div>
   );
