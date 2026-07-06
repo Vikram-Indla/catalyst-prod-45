@@ -47,3 +47,14 @@ RO-P4-09,P4,audit,SOP step audit into rh_change_activity_log,phase-4 §15,CLOSED
 RO-P4-10,P4,integration,Change Detail SOP summary reflects live runbook,phase-4 §13,CLOSED,useChangeCockpit + Open execution jump,2026-07-06
 RO-P4-11,P4,build,tsc + build + color gate,acceptance,CLOSED,tsc clean; build PASS 57s; color clean,2026-07-06
 RO-P4-12,P4,dnd,Drag-and-drop template/step reorder (up/down shipped),phase-5,DEFERRED,up/down reorder shipped; @atlaskit pragmatic-dnd polish deferred,
+RO-P5-01,P5,foryou,For You Change-execution section (assignee + manager),phase-5 §2/9,CLOSED,ReleaseOpsForYouSection; verified live,2026-07-06
+RO-P5-02,P5,card,Assigned SOP step card (all fields + markers),phase-5 §3/10,CLOSED,4 cards live w/ risk chips,2026-07-06
+RO-P5-03,P5,timer,Personal step timer (upcoming/running/overdue/done),phase-5 §4,CLOSED,data-driven; "15m left"/"Overdue 30m"/"Starts in 35m",2026-07-06
+RO-P5-04,P5,actions,For You step actions + validation,phase-5 §5/6,CLOSED,useSopStepAction; commit-required toast verified live,2026-07-06
+RO-P5-05,P5,capture,Commit/evidence capture from For You,phase-5 §6,CLOSED,running-card inputs + Save,2026-07-06
+RO-P5-06,P5,prompts,Derived notification event model + in-app prompts,phase-5 §7,CLOSED,due-soon/overdue/next-up/missing-capture/emergency/freeze; deduped,2026-07-06
+RO-P5-07,P5,dayof,Day-of-change card,phase-5 §8,CLOSED,TODAY CHG8841 + CAT-CHG-21; verified,2026-07-06
+RO-P5-08,P5,manager,Manager vs assignee split,phase-5 §9,CLOSED,Changes-you-manage overview; verified,2026-07-06
+RO-P5-09,P5,sync,For You actions sync to Change Detail,phase-5 §12,CLOSED,shared useSopStepAction + query invalidation,2026-07-06
+RO-P5-10,P5,build,tsc + build + color gate,acceptance,CLOSED,tsc clean; build PASS 54s; color clean,2026-07-06
+RO-P5-11,P5,notify,Persisted/push notification delivery,phase-6,DEFERRED,event model + in-app prompts shipped; delivery deferred,

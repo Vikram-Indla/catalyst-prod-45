@@ -41,3 +41,12 @@ No-drawer proof: row click navigates to full-page detail (URL change); no drawer
 | P4-4 | Step expanded (actions) | (expand #51) | — | planned/actual + DB commit e4f5g6h, assignee picker, commit/evidence/actual capture, Mark done/Block/Fail, reorder ↑↓ |
 
 No-drawer proof: runbook is inline in the SOP tab; template create/edit + apply are ads/Modal (centered), no side panel. Demo (template cccc0000-…-01, steps dddd0000-…-a1..a4) is staging-only, documented in release-ops-phase-4-functional-proof.md.
+
+## Phase 5 — For You SOP cards + prompts (2026-07-06, cyij seeded, user vikramataol@gmail.com)
+| # | Proof | Route | MCP ID | Result |
+|---|---|---|---|---|
+| P5-1 | For You Change-execution section | /for-you | ss_3515q4rso | prompts (overdue/emergency/missing-capture) + day-of-change (CHG8841 running, CAT-CHG-21 CHANGE MANAGER) |
+| P5-2 | Assigned SOP step cards | /for-you (scroll) | (scroll of ss_3515q4rso) | #52 OVERDUE, #50 RUNNING 15m left + capture, #51/#53 UPCOMING; MISSING COMMIT/EVIDENCE chips; Changes-you-manage |
+| P5-3 | For You action validation | /for-you | ss_3692x7626 | "Mark done" on running step missing commit → toast "This step requires a commit ID before it can be marked done" |
+
+No-drawer proof: section is inline cards + toasts; no side panel. Live page = ForYouPage.atlaskit.tsx. Demo assignments (owner_id 6bbd0863 on 4 CHG8841 steps + CAT-CHG-21 manager) are staging-only, documented in release-ops-phase-5-functional-proof.md.
