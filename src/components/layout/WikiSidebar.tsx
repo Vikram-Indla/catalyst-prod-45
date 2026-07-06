@@ -6,13 +6,13 @@
  *  - inside a workspace (/wiki/:slug…): the workspace's live page tree,
  *    rendered as SidebarBase children via WikiTreeNav.
  */
-import { useMemo, type ReactNode } from 'react';
+import { useEffect, useMemo, useRef, type ReactNode } from 'react';
 import { useLocation } from 'react-router-dom';
-import { Home, Building2, Search } from '@/lib/atlaskit-icons';
+import { Home, Building2, Search, CircleUser } from '@/lib/atlaskit-icons';
 import { SidebarBase, SidebarConfig } from './SidebarBase';
 import { WikiTreeNav } from '@/components/wiki-hub/WikiTreeNav';
 import { parseWikiPath } from '@/components/wiki-hub/wikiPath';
-import { useWikiWorkspaces, useWorkspaceContainerMeta } from '@/hooks/useWiki';
+import { useWikiWorkspaces, useWorkspaceContainerMeta, useMySpace } from '@/hooks/useWiki';
 import { Routes } from '@/lib/routes';
 import { ProjectIcon } from '@/components/shared/ProjectIcon';
 import { getProductAvatarUrl, HUB_ICON_REGISTRY } from '@/components/icons';
@@ -30,6 +30,16 @@ export function WikiSidebar({ expanded, onToggle, className }: WikiSidebarProps)
   const { workspaceSlug } = parseWikiPath(pathname);
   const { data: workspaces } = useWikiWorkspaces();
   const { data: containerMeta } = useWorkspaceContainerMeta();
+
+  // My Space (V2) — self-provision the personal workspace once per user.
+  const { mySpace, ensure, isLoaded } = useMySpace();
+  const provisionTried = useRef(false);
+  useEffect(() => {
+    if (isLoaded && !mySpace && !provisionTried.current) {
+      provisionTried.current = true;
+      ensure.mutate();
+    }
+  }, [isLoaded, mySpace, ensure]);
 
   const inWorkspace = !!workspaceSlug;
 
@@ -90,6 +100,23 @@ export function WikiSidebar({ expanded, onToggle, className }: WikiSidebarProps)
             { id: 'search', title: 'Search', path: Routes.docex.search(), icon: Search, exact: true },
           ],
         },
+        // Personal pages live here and can be moved into any project/product
+        // workspace via the page Actions menu (Vikram 2026-07-06).
+        ...(mySpace
+          ? [
+              {
+                title: 'My Space',
+                items: [
+                  {
+                    id: mySpace.id,
+                    title: mySpace.name,
+                    path: Routes.wiki.workspace(mySpace.slug),
+                    icon: CircleUser,
+                  },
+                ],
+              },
+            ]
+          : []),
         ...(byType('project').length
           ? [{ title: 'Project workspaces', items: byType('project').map(item) }]
           : []),
@@ -101,7 +128,7 @@ export function WikiSidebar({ expanded, onToggle, className }: WikiSidebarProps)
           : []),
       ],
     };
-  }, [inWorkspace, workspaces, containerMeta]);
+  }, [inWorkspace, workspaces, containerMeta, mySpace]);
 
   return (
     <SidebarBase config={config} expanded={expanded} onToggle={onToggle} className={className}>

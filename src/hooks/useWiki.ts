@@ -20,7 +20,7 @@ export interface WikiWorkspace {
   name: string;
   description: string | null;
   slug: string;
-  container_type: 'project' | 'product' | 'organization';
+  container_type: 'project' | 'product' | 'organization' | 'personal';
   container_id: string | null;
   icon: string | null;
   created_at: string;
@@ -88,8 +88,108 @@ export function useWikiWorkspaces() {
         .order('container_type')
         .order('name');
       if (error) throw error;
-      return (data ?? []) as WikiWorkspace[];
+      // Personal spaces (V2 My Space) belong to one user. RLS on kb_doc_spaces
+      // is still permissive (D5 tightening batch pending) — hide other users'
+      // spaces client-side so they never appear in nav, filters, or New menus.
+      const { data: sess } = await supabase.auth.getSession();
+      const uid = sess.session?.user?.id;
+      return ((data ?? []) as WikiWorkspace[]).filter(
+        (w) => w.container_type !== 'personal' || w.container_id === uid,
+      );
     },
+  });
+}
+
+/**
+ * My Space (CAT-DOCEX-DB-COEDIT-20260705-001 V2) — the user's personal
+ * workspace, provisioned on demand. `mySpace` is null until it exists;
+ * `ensure` creates it (idempotent — the (container_type, container_id)
+ * unique index makes a cross-tab race resolve to the existing row).
+ */
+export function useMySpace() {
+  const queryClient = useQueryClient();
+  const { data: workspaces } = useWikiWorkspaces();
+  const mySpace = (workspaces ?? []).find((w) => w.container_type === 'personal') ?? null;
+
+  const ensure = useMutation({
+    mutationFn: async (): Promise<WikiWorkspace> => {
+      if (mySpace) return mySpace;
+      const { data: sess } = await supabase.auth.getSession();
+      const uid = sess.session?.user?.id;
+      if (!uid) throw new Error('Not signed in');
+      const { data, error } = await db
+        .from('kb_doc_spaces')
+        .insert({ name: 'My Space', container_type: 'personal', container_id: uid })
+        .select('*')
+        .single();
+      if (!error) return data as WikiWorkspace;
+      // Unique-index collision → another tab provisioned it first.
+      const { data: existing } = await db
+        .from('kb_doc_spaces')
+        .select('*')
+        .eq('container_type', 'personal')
+        .eq('container_id', uid)
+        .maybeSingle();
+      if (existing) return existing as WikiWorkspace;
+      throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['wiki', 'workspaces'] });
+    },
+  });
+
+  return { mySpace, ensure, isLoaded: workspaces !== undefined };
+}
+
+/**
+ * Move a page to another workspace (V2 — "create pages [in My Space] and then
+ * move them into projects"). Re-parents to the target's root; the slug is
+ * frozen so the destination URL is Routes.docex.page(targetWs.slug, slug).
+ */
+export function useMoveWikiPageToSpace() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (input: { pageId: string; targetSpaceId: string }) => {
+      type Moved = { id: string; slug: string; space_id: string };
+      const isSlugCollision = (e: { code?: string; message?: string } | null) =>
+        !!e && (e.code === '23505' || /space_slug_unique/.test(e.message ?? ''));
+      const attempt = async (slugOverride?: string) =>
+        db
+          .from('kb_documents')
+          .update({
+            space_id: input.targetSpaceId,
+            parent_id: null,
+            ...(slugOverride ? { slug: slugOverride } : {}),
+          })
+          .eq('id', input.pageId)
+          .select('id, slug, space_id')
+          .single();
+
+      const first = await attempt();
+      if (!first.error) return first.data as Moved;
+      if (!isSlugCollision(first.error)) throw first.error;
+      // Slugs are unique PER SPACE (kb_documents_space_slug_unique) — the
+      // frozen slug can collide in the destination (live-hit 2026-07-06:
+      // moving my-space/untitled into a space that already had "untitled").
+      // Dedupe with a numeric suffix, same policy as the insert trigger.
+      const { data: current } = await db
+        .from('kb_documents')
+        .select('slug')
+        .eq('id', input.pageId)
+        .single();
+      const base = (current as { slug: string } | null)?.slug ?? 'page';
+      for (let n = 2; n <= 20; n++) {
+        const retry = await attempt(`${base}-${n}`);
+        if (!retry.error) return retry.data as Moved;
+        if (!isSlugCollision(retry.error)) throw retry.error;
+      }
+      throw first.error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['wiki'] });
+      queryClient.invalidateQueries({ queryKey: ['docex'] });
+    },
+    onError: (e: Error) => catalystToast.error(`Move failed: ${e.message}`),
   });
 }
 

@@ -21,6 +21,8 @@ import {
   useSaveVersion,
   useDuplicatePage,
   useWorkspaceContainerMeta,
+  useWikiWorkspaces,
+  useMoveWikiPageToSpace,
   WIKI_CONFLICT,
   type WikiPage,
   type WikiPageSummary,
@@ -134,6 +136,21 @@ function WorkspaceCrumbIcon({ workspace }: { workspace: WikiWorkspace }) {
 
 export function WikiPageSurface({ workspace, page, treePages }: WikiPageSurfaceProps) {
   const navigate = useNavigate();
+
+  // V2 — move page to another workspace (My Space → project, or any pair).
+  const { data: allWorkspaces } = useWikiWorkspaces();
+  const movePage = useMoveWikiPageToSpace();
+  const moveTo = (target: WikiWorkspace) => {
+    movePage.mutate(
+      { pageId: page.id, targetSpaceId: target.id },
+      {
+        onSuccess: (moved) => {
+          catalystToast.success(`Moved to ${target.name}`);
+          navigate(Routes.wiki.page(target.slug, moved.slug));
+        },
+      },
+    );
+  };
   const updatePage = useUpdateWikiPage();
 
   // ---- Favorites / publish / versions / duplicate (Pass D) ----
@@ -727,6 +744,21 @@ export function WikiPageSurface({ workspace, page, treePages }: WikiPageSurfaceP
                 { key: 'save-version', label: 'Save version now', onClick: () => snapshotNow('Manual save point') },
               ],
             },
+            ...((allWorkspaces ?? []).filter((w) => w.id !== workspace.id).length
+              ? [
+                  {
+                    key: 'move',
+                    title: 'Move to workspace',
+                    items: (allWorkspaces ?? [])
+                      .filter((w) => w.id !== workspace.id)
+                      .map((w) => ({
+                        key: w.id,
+                        label: w.container_type === 'personal' ? `${w.name} (personal)` : w.name,
+                        onClick: () => moveTo(w),
+                      })),
+                  },
+                ]
+              : []),
           ]}
         />
       </div>
