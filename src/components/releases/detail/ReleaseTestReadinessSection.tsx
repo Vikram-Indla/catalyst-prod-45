@@ -16,6 +16,7 @@ import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
 import ChevronRightIcon from '@atlaskit/icon/glyph/chevron-right';
 import SectionMessage from '@atlaskit/section-message';
 import { Routes } from '@/lib/routes';
+import { GenerateTestCasesCTA } from '@/components/testhub/GenerateTestCasesCTA';
 import { useReleaseTestGate, type ReleaseGateState } from '@/hooks/releases/useReleaseTestGate';
 
 const TEXT = 'var(--ds-text)';
@@ -71,6 +72,8 @@ export function ReleaseTestReadinessSection({ releaseId }: { releaseId: string }
           </Lozenge>
         )}
         <span style={{ flex: 1 }} />
+        {/* G6: release-scoped AI generation entry (drafts only) */}
+        <GenerateTestCasesCTA label="Generate test cases for this release" />
         <Button appearance="subtle" spacing="compact" onClick={() => refetch()}>
           Recompute
         </Button>

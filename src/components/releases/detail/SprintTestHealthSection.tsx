@@ -17,6 +17,7 @@ import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
 import ChevronRightIcon from '@atlaskit/icon/glyph/chevron-right';
 import SectionMessage from '@atlaskit/section-message';
 import { Routes } from '@/lib/routes';
+import { GenerateTestCasesCTA } from '@/components/testhub/GenerateTestCasesCTA';
 import {
   useSprintTestHealth,
   useComputeSprintTestHealth,
@@ -92,6 +93,8 @@ export function SprintTestHealthSection({ sprintId }: { sprintId: string }) {
           </Lozenge>
         )}
         <span style={{ flex: 1 }} />
+        {/* G6: sprint-scoped AI generation entry (drafts only) */}
+        <GenerateTestCasesCTA label="Generate test cases for this sprint" />
         <Button
           appearance="subtle"
           spacing="compact"
