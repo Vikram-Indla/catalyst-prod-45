@@ -665,6 +665,35 @@ export const useReleaseChanges = (releaseId: string) =>
     },
   });
 
+// Phase 2 §5: reverse m2m — the releases a change deploys to. Prefers the
+// join table (forward truth); unions the legacy 1:1 rh_changes.release_id.
+export interface ChangeLinkedRelease {
+  id: string; name: string | null; status: string | null; slug: string | null;
+}
+
+export const useChangeReleases = (changeId: string) =>
+  useQuery({
+    queryKey: ['release-hub', 'changes', changeId, 'releases'],
+    enabled: !!changeId,
+    queryFn: async (): Promise<ChangeLinkedRelease[]> => {
+      const { data: links } = await supabase
+        .from('rh_change_release_links')
+        .select('rh_releases(id, name, status, slug)')
+        .eq('change_id', changeId)
+        .is('unlinked_at', null);
+      const { data: chg } = await supabase
+        .from('rh_changes').select('release_id').eq('id', changeId).maybeSingle();
+      const byId: Record<string, ChangeLinkedRelease> = {};
+      (links ?? []).forEach((l: any) => { const r = l.rh_releases; if (r) byId[r.id] = { id: r.id, name: r.name, status: r.status, slug: r.slug }; });
+      const legacyId = (chg as any)?.release_id;
+      if (legacyId && !byId[legacyId]) {
+        const { data: r } = await supabase.from('rh_releases').select('id, name, status, slug').eq('id', legacyId).maybeSingle();
+        if (r) byId[(r as any).id] = { id: (r as any).id, name: (r as any).name, status: (r as any).status, slug: (r as any).slug };
+      }
+      return Object.values(byId);
+    },
+  });
+
 export interface ReleaseSignoff {
   id: string; changeId: string; chgNumber: string | null; role: string | null; status: string;
   approverId: string | null; approverName: string | null;
@@ -830,8 +859,14 @@ export interface ChangeListRow {
   deployment_category: string | null;
   deployment_date: string | null;
   window_start: string | null;
+  planned_start_at: string | null;
+  slug: string | null;
   release_id: string | null;
   releaseName: string | null;
+  releaseCount: number;
+  isEmergency: boolean;
+  isUnlinkedProduction: boolean;
+  prod_no_release_justification: string | null;
   source: string;
   updated_at: string | null;
   sopProgress: { done: number; total: number } | null;
@@ -848,7 +883,7 @@ export const useChangesList = () =>
     queryFn: async (): Promise<ChangeListRow[]> => {
       const { data: rows, error } = await supabase
         .from('rh_changes')
-        .select('id, chg_number, title, status, risk_level, change_type, target_env, deployment_category, deployment_date, window_start, release_id, source, updated_at, change_manager_id')
+        .select('id, chg_number, slug, title, status, risk_level, change_type, target_env, deployment_category, deployment_date, window_start, planned_start_at, release_id, is_emergency_override, prod_no_release_justification, source, updated_at, change_manager_id')
         .order('updated_at', { ascending: false });
       if (error) throw error;
       const changes = (rows ?? []) as any[];
@@ -858,6 +893,13 @@ export const useChangesList = () =>
       if (relIds.length > 0) {
         const { data: rels } = await supabase.from('rh_releases').select('id, name').in('id', relIds);
         (rels ?? []).forEach((r: any) => { relMap[r.id] = r.name; });
+      }
+
+      // Linked-release count per change (m2m, forward truth) — batched.
+      const linkCount: Record<string, number> = {};
+      if (chgIds.length > 0) {
+        const { data: links } = await supabase.from('rh_change_release_links').select('change_id').in('change_id', chgIds).is('unlinked_at', null);
+        (links ?? []).forEach((l: any) => { linkCount[l.change_id] = (linkCount[l.change_id] ?? 0) + 1; });
       }
 
       // SOP progress (done/total) per change.
@@ -890,13 +932,19 @@ export const useChangesList = () =>
         (profs ?? []).forEach((p: any) => { mgrMap[p.id] = { name: p.full_name, avatarUrl: resolveAvatarUrl(p.full_name ?? null) ?? p.avatar_url ?? null }; });
       }
 
-      return changes.map((c) => ({
-        ...c,
-        releaseName: c.release_id ? (relMap[c.release_id] ?? null) : null,
-        sopProgress: sop[c.id] ?? null,
-        apprProgress: appr[c.id] ?? null,
-        manager: c.change_manager_id ? (mgrMap[c.change_manager_id] ?? null) : null,
-      })) as ChangeListRow[];
+      return changes.map((c) => {
+        const releaseCount = (linkCount[c.id] ?? 0) || (c.release_id ? 1 : 0);
+        return {
+          ...c,
+          releaseName: c.release_id ? (relMap[c.release_id] ?? null) : null,
+          releaseCount,
+          isEmergency: c.is_emergency_override === true || c.change_type === 'emergency',
+          isUnlinkedProduction: c.target_env === 'production' && releaseCount === 0,
+          sopProgress: sop[c.id] ?? null,
+          apprProgress: appr[c.id] ?? null,
+          manager: c.change_manager_id ? (mgrMap[c.change_manager_id] ?? null) : null,
+        };
+      }) as ChangeListRow[];
     },
   });
 

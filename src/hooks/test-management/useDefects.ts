@@ -306,6 +306,94 @@ export function useDefect(defectId: string | undefined) {
   });
 }
 
+// P1-S13: by-key lookup for the canonical defect detail route (/testhub/defects/:defectKey).
+export function useDefectByKey(defectKey: string | undefined) {
+  return useQuery({
+    queryKey: ['tm-defect-by-key', defectKey],
+    queryFn: async (): Promise<TMDefect | null> => {
+      if (!defectKey) return null;
+
+      const { data, error } = await supabase
+        .from('tm_defects')
+        .select(`
+          *,
+          assignee:profiles!tm_defects_assignee_id_fkey(id, full_name, avatar_url),
+          reporter:profiles!tm_defects_reporter_id_fkey(id, full_name, avatar_url)
+        `)
+        .eq('defect_key', defectKey)
+        .maybeSingle();
+
+      if (error) throw error;
+      if (!data) return null;
+
+      // Raw enum values alongside the (lossy for 'reopened') mapped TMDefect --
+      // the detail view's status/severity controls write the real db enum,
+      // not statusFromDb's re-labeled display value. source_* ids (D043) carry
+      // the originating test case / run so the detail view can link back; null
+      // when the defect wasn't raised from a test.
+      return {
+        ...mapDbRowToTMDefect(data),
+        raw_status: data.status,
+        raw_severity: data.severity,
+        source_test_case_id: data.source_test_case_id ?? null,
+        source_test_run_id: data.source_test_run_id ?? null,
+      } as TMDefect & {
+        raw_status: string;
+        raw_severity: string;
+        source_test_case_id: string | null;
+        source_test_run_id: string | null;
+      };
+    },
+    enabled: !!defectKey,
+  });
+}
+
+// D043 (CAT-TESTHUB-REBUILD-20260704-001): the originating test case a defect
+// was raised from (tm_defects.source_test_case_id). Zero-assumption: returns
+// null when the defect has no source case, so the detail view renders nothing
+// rather than a fabricated link.
+export function useDefectSourceCase(caseId: string | null | undefined) {
+  return useQuery({
+    queryKey: ['tm-defect-source-case', caseId],
+    queryFn: async (): Promise<{ id: string; case_key: string | null; title: string | null } | null> => {
+      if (!caseId) return null;
+      const { data, error } = await supabase
+        .from('tm_test_cases')
+        .select('id, case_key, title')
+        .eq('id', caseId)
+        .maybeSingle();
+      if (error) throw error;
+      return data ?? null;
+    },
+    enabled: !!caseId,
+  });
+}
+
+// P1-S13 (DEF-004/010): defect "history" = every test run linked to this
+// defect via tm_defect_links, real tm_test_runs rows — not a dead/legacy
+// table and not a hand-maintained log.
+export function useDefectHistory(defectId: string | undefined) {
+  return useQuery({
+    queryKey: ['tm-defect-history', defectId],
+    queryFn: async () => {
+      if (!defectId) return [];
+
+      const { data, error } = await supabase
+        .from('tm_defect_links')
+        .select(`
+          id, created_at,
+          test_run:tm_test_runs!test_run_id(id, run_number, status, completed_at, executed_by)
+        `)
+        .eq('defect_id', defectId)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      return (data ?? []).filter((r: any) => r.test_run);
+    },
+    enabled: !!defectId,
+  });
+}
+
 // ============================================================================
 // CREATE DEFECT
 // ============================================================================
@@ -833,14 +921,14 @@ export function useUploadAttachment() {
       const fileName = `${input.entity_type}/${input.entity_id}/${Date.now()}_${input.file.name}`;
       
       const { error: uploadError } = await supabase.storage
-        .from('tm-attachments')
+        .from('testhub-attachments')
         .upload(fileName, input.file);
 
       if (uploadError) throw uploadError;
 
       // Get public URL
       const { data: { publicUrl } } = supabase.storage
-        .from('tm-attachments')
+        .from('testhub-attachments')
         .getPublicUrl(fileName);
 
       // Create attachment record
@@ -901,7 +989,7 @@ export function useDeleteAttachment() {
       const storagePath = pathParts.slice(-3).join('/'); // Get last 3 parts
       
       const { error: storageError } = await supabase.storage
-        .from('tm-attachments')
+        .from('testhub-attachments')
         .remove([storagePath]);
 
       if (storageError) throw storageError;

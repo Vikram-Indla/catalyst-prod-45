@@ -59,7 +59,7 @@ interface Props {
    * hubs with no entity — they render a 3-crumb breadcrumb
    * "Home / [Root] / [RouteWord]", skip the DB name lookup, and show no star.
    */
-  hubType?: "project" | "product" | "incident" | "release" | "test" | "folio";
+  hubType?: "project" | "product" | "incident" | "release" | "test" | "folio" | "strata";
   /**
    * Detail-page trail. When provided, the breadcrumb renders
    * "Home / [Root] / ...trail" instead of the auto-derived route word — so a
@@ -86,6 +86,7 @@ const HUB_ROOT: Record<
   release: { label: "Releases", href: "/release-hub/overview" },
   test: { label: "Test Hub", href: "/testhub/dashboard" },
   folio: { label: "Folio", href: "/folio" },
+  strata: { label: "STRATA", href: "/strata" },
 };
 
 // Which project/product surfaces are starrable. Only these route words get a
@@ -112,7 +113,8 @@ export function ProjectPageHeader({
 }: Props) {
   const { pathname } = useLocation();
   const isGlobalHub =
-    hubType === "incident" || hubType === "release" || hubType === "test" || hubType === "folio";
+    hubType === "incident" || hubType === "release" || hubType === "test" ||
+    hubType === "folio" || hubType === "strata";
 
   const { data: project } = useQuery({
     queryKey: ["project-page-header", hubType, projectKey],
@@ -213,12 +215,14 @@ export function ProjectPageHeader({
         <Breadcrumbs items={breadcrumbItems.map(withEntityIcon)} LinkComponent={Link} />
       </div>
 
-      {!hideTitle && (
+      {/* No dangling "/" when there is no title to follow it (Products/Projects
+          index pages derive an empty route word). */}
+      {!hideTitle && (title ?? routeWord) && (
         <>
           <span
             aria-hidden
             style={{
-              color: "var(--ds-border-bold)",
+              color: "var(--ds-text-subtlest)",
               fontSize: 14,
               lineHeight: 1,
               flexShrink: 0,

@@ -24,7 +24,6 @@ const DependenciesPage = lazy(() => import("../pages/work/Dependencies"));
 const FeatureBacklogPage = lazy(() => import("../modules/feature-backlog/pages/FeatureBacklogPage"));
 const EpicBalancingPage = lazy(() => import("../modules/epic-balancing").then(m => ({ default: m.EpicBalancingPage })));
 const Stories = lazy(() => import("../pages/Stories"));
-const Tasks = lazy(() => import("../pages/Tasks"));
 const RisksGridPage = lazy(() => import("../pages/risks/RisksGridPage"));
 const Impediments = lazy(() => import("../pages/Impediments"));
 const Sprints = lazy(() => import("../pages/Sprints"));
@@ -63,7 +62,6 @@ export function ProgramsRoutes() {
       <Route path="dependencies" element={<S><DependenciesPage /></S>} />
       <Route path="increments" element={<S><PlaceholderPage /></S>} />
       <Route path="stories" element={<S><Stories /></S>} />
-      <Route path="tasks" element={<S><Tasks /></S>} />
       <Route path="risks" element={<S><RisksGridPage /></S>} />
       <Route path="impediments" element={<S><Impediments /></S>} />
       <Route path="sprints" element={<S><Sprints /></S>} />

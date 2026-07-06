@@ -137,6 +137,17 @@ function ProducthubLegacyRedirect() {
   return <Navigate to={newPath + location.search + location.hash} replace />;
 }
 
+/**
+ * CAT-STRATA-20260705-001 (D-009/Q1) — StrategyHub is decommissioned; STRATA
+ * owns the strategy surface at /strata. Legacy /strategyhub/* and
+ * /strategy-room bookmarks land on the STRATA Command Center. Mounted OUTSIDE
+ * CatalystShell because Navigate inside FullAppRoutes is swallowed.
+ */
+function StrategyhubLegacyRedirect() {
+  const location = useLocation();
+  return <Navigate to={'/strata' + location.search + location.hash} replace />;
+}
+
 function IssueRedirectToBrowse() {
   const location = useLocation();
   const newPath = location.pathname.replace(/^\/issue\//, '/browse/');
@@ -175,6 +186,10 @@ function App() {
             k0 === 'chat' || k0 === 'chat-v2' || k0 === 'caty-suggestions' ||
             k0 === 'profile-avatars-local' || k0 === 'profile-avatars-by-name-local'
           ) return false;
+          // STRATA role affordances must never be served stale from disk —
+          // a role grant would otherwise stay invisible until the 30-day
+          // buster or a manual cache clear (CAT-STRATA-20260705-001 s004).
+          if (k0 === 'strata' && q.queryKey[1] === 'my-roles') return false;
           return q.state.status === 'success';
         },
       },
@@ -224,6 +239,10 @@ function App() {
                     fire repeatedly without ever committing the URL change. */}
                 <Route path="/producthub" element={<ProducthubLegacyRedirect />} />
                 <Route path="/producthub/*" element={<ProducthubLegacyRedirect />} />
+                {/* CAT-STRATA-20260705-001: StrategyHub → STRATA */}
+                <Route path="/strategyhub" element={<StrategyhubLegacyRedirect />} />
+                <Route path="/strategyhub/*" element={<StrategyhubLegacyRedirect />} />
+                <Route path="/strategy-room" element={<StrategyhubLegacyRedirect />} />
 
                 {/* Block D (2026-05-01) — canonical /product-hub root lands on
                     /product-hub/products (the workstream listing). Mounted

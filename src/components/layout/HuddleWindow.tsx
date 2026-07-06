@@ -2,11 +2,14 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useHuddleStore, getHuddleRemoteScreen, getHuddleLocalScreen, sendHuddleMarker, onHuddleMarker } from '@/store/huddleStore';
 import { Avatar } from '@/components/ads';
-import { useActiveHuddle } from '@/hooks/chat/useHuddleData';
+import { useActiveHuddle, useHuddleActions } from '@/hooks/chat/useHuddleData';
 import { useMessages } from '@/hooks/chat/useMessages';
+import { useAuth } from '@/hooks/useAuth';
+import type { ChatConversation } from '@/types/chat';
 import { useThreadMessages } from '@/hooks/chat/useThreadMessages';
 import { Composer } from '@/features/chat-v2/components/Composer/Composer';
 import { MessageList } from '@/features/chat-v2/components/MessagePanel/MessageList';
+import { HuddleAddPeople } from './HuddleAddPeople';
 
 /**
  * HuddleWindow — large draggable + resizable Slack-style huddle surface.
@@ -16,8 +19,14 @@ import { MessageList } from '@/features/chat-v2/components/MessagePanel/MessageL
  * - windowState 'maximized' : full-viewport.
  * Mounted at app-shell scope (survives route changes), like the FAB.
  */
-const POS_KEY = 'huddle-window-pos';
+const POS_KEY = 'huddle-window-pos-br';
 const SIZE_KEY = 'huddle-window-size';
+const WIN_MARGIN = 24;
+function bottomRight(w: number, h: number): { top: number; left: number } {
+  const vw = typeof window !== 'undefined' ? window.innerWidth : 1440;
+  const vh = typeof window !== 'undefined' ? window.innerHeight : 900;
+  return { top: Math.max(8, vh - h - WIN_MARGIN), left: Math.max(8, vw - w - WIN_MARGIN) };
+}
 type Pos = { top: number; left: number };
 type Size = { w: number; h: number };
 function load<T>(key: string, fallback: T): T {
@@ -30,10 +39,28 @@ export function HuddleWindow() {
   const windowState = useHuddleStore((s) => s.windowState);
   const setWindowState = useHuddleStore((s) => s.setWindowState);
 
-  const [pos, setPos] = useState<Pos>(() => load(POS_KEY, { top: 48, left: 48 }));
   const [size] = useState<Size>(() => load(SIZE_KEY, { w: 900, h: 560 }));
+  const [pos, setPos] = useState<Pos>(() => {
+    const stored = load<Pos | null>(POS_KEY, null);
+    return stored ?? bottomRight(Math.max(size.w, 560), Math.max(size.h, 380));
+  });
   const wrapRef = useRef<HTMLDivElement>(null);
   const dragRef = useRef<{ sx: number; sy: number; ox: number; oy: number; moved: boolean } | null>(null);
+
+  // After the window mounts, clamp its position into the viewport using its REAL
+  // rendered size (min-width/height can make it larger than `size`), so it can
+  // never end up mostly off-screen in the bottom-right corner.
+  useEffect(() => {
+    if (!active || windowState !== 'open') return;
+    const el = wrapRef.current;
+    if (!el) return;
+    const w = el.offsetWidth || size.w;
+    const h = el.offsetHeight || size.h;
+    setPos((p) => ({
+      left: Math.max(8, Math.min(window.innerWidth - w - 8, p.left)),
+      top: Math.max(8, Math.min(window.innerHeight - h - 8, p.top)),
+    }));
+  }, [active?.huddleId, windowState]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const chatPanelOpen = useHuddleStore((s) => s.chatPanelOpen);
   // In-huddle messages thread under the "Huddle is happening" event row. They show
@@ -56,6 +83,11 @@ export function HuddleWindow() {
   const markerPen = useHuddleStore((s) => s.markerPen);
   const { huddle } = useActiveHuddle(active?.conversationId ?? null);
   const participants = huddle?.participants ?? [];
+  const HUDDLE_MAX = 4;
+  const canAddPeople = participants.length < HUDDLE_MAX;
+  const [addOpen, setAddOpen] = useState(false);
+  const { user } = useAuth();
+  const { startOrJoin } = useHuddleActions();
   const remoteSharing = !!active?.remoteSharing;
   const localSharing = !!active?.screenSharing;
   const showRemote = remoteSharing;
@@ -68,15 +100,16 @@ export function HuddleWindow() {
     const list = participants.length > 0
       ? participants
       : [{ userId: 'self', name: active!.conversationName, avatarUrl: '' }];
-    // Square tiles (aspect-ratio, not fixed height) so a portrait photo never
-    // stretches into a tall sliver when the window is narrow.
+    // Square tiles that SCALE with the window: aspect-ratio 1/1 + maxHeight:100%
+    // ties each tile to the available body height, so resizing the huddle window
+    // grows/shrinks the tiles instead of pinning them at a fixed 280px.
     const tileSize: React.CSSProperties = variant === 'stage'
-      ? { flex: '1 1 0', minWidth: 0, maxWidth: 280, aspectRatio: '1 / 1', maxHeight: 280 }
-      : { flex: 1, minWidth: 0, maxWidth: 160, aspectRatio: '1 / 1', maxHeight: 160 };
+      ? { flex: '1 1 220px', minWidth: 0, maxWidth: '100%', maxHeight: '100%', aspectRatio: '1 / 1' }
+      : { flex: '0 0 auto', width: 120, height: 120, minWidth: 0 };
     return (
       <div style={{
         display: 'flex', gap: 12, alignItems: 'center', justifyContent: 'center', flexWrap: 'wrap',
-        ...(variant === 'stage' ? { flex: 1, minWidth: 0, padding: 12 } : { padding: 12 }),
+        ...(variant === 'stage' ? { flex: 1, minWidth: 0, minHeight: 0, padding: 12 } : { padding: 12 }),
       }}>
         {list.map((p) => (
           <div key={p.userId} style={{
@@ -105,6 +138,14 @@ export function HuddleWindow() {
   const leave = useHuddleStore((s) => s.leave);
   const toggleChatPanel = useHuddleStore((s) => s.toggleChatPanel);
   const muted = !!active?.micMuted;
+
+  // Adding people to a 1:1 DM created a fresh group — leave this call and start
+  // the huddle in the new group (the other members get rung there).
+  const handleMovedToGroup = useCallback(async (newConvId: string, title: string) => {
+    setAddOpen(false);
+    leave();
+    await startOrJoin({ id: newConvId, title } as ChatConversation);
+  }, [leave, startOrJoin]);
   const sharing = !!active?.screenSharing;
 
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -383,11 +424,31 @@ export function HuddleWindow() {
             }} />
           )}
         </button>
+        <button type="button" data-huddle-btn onClick={() => canAddPeople && setAddOpen(true)}
+          disabled={!canAddPeople}
+          title={canAddPeople ? 'Add people to the call' : `Call is full (max ${HUDDLE_MAX})`}
+          style={{ ...ctrlBtn('var(--ds-surface-sunken)'),
+            opacity: canAddPeople ? 1 : 0.45, cursor: canAddPeople ? 'pointer' : 'not-allowed' }}>
+          Add people
+        </button>
         <button type="button" data-huddle-btn onClick={leave} title="Leave huddle"
-          style={{ ...ctrlBtn('var(--ds-background-danger-bold)'), color: '#FFFFFF' }}>
+          style={{ ...ctrlBtn('var(--ds-background-danger-bold)'), color: 'var(--ds-text-inverse)' }}>
           Leave
         </button>
       </div>
+
+      {addOpen && active && user && (
+        <HuddleAddPeople
+          conversationId={active.conversationId}
+          conversationName={active.conversationName}
+          currentUserId={user.id}
+          existingMemberIds={new Set(participants.map((p) => p.userId))}
+          remainingSlots={Math.max(0, HUDDLE_MAX - participants.length)}
+          onClose={() => setAddOpen(false)}
+          onAdded={() => setAddOpen(false)}
+          onMovedToGroup={handleMovedToGroup}
+        />
+      )}
     </div>
   );
 }

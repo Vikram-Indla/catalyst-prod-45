@@ -1,16 +1,18 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { createPortal } from 'react-dom';
+import React, { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { useProjects } from '@/hooks/test-management/useProjects';
+import { useTestHubProject } from '@/hooks/test-management/useTestHubProject';
 import Spinner from '@atlaskit/spinner';
 import Button from '@atlaskit/button/standard-button';
+import { IconButton } from '@atlaskit/button/new';
 import Textfield from '@atlaskit/textfield';
 import TextArea from '@atlaskit/textarea';
 import Select from '@atlaskit/select';
+import Lozenge from '@atlaskit/lozenge';
+import DropdownMenu, { DropdownItem, DropdownItemGroup } from '@atlaskit/dropdown-menu';
+import ShowMoreHorizontalIcon from '@atlaskit/icon/core/show-more-horizontal';
 import { catalystToast } from '@/lib/catalystToast';
-import { MoreHorizontal } from '@/lib/atlaskit-icons';
 import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
 
 type SetType = 'smoke' | 'regression' | 'sanity' | 'integration' | 'e2e' | 'performance' | 'security' | 'accessibility' | 'custom';
@@ -41,47 +43,22 @@ const SET_TYPE_LABELS: Record<SetType, string> = {
   custom: 'Custom',
 };
 
-const SET_TYPE_COLORS: Record<SetType, string> = {
-  smoke: 'var(--ds-background-accent-orange-subtler)',
-  regression: 'var(--ds-background-accent-blue-subtler)',
-  sanity: 'var(--ds-background-accent-green-subtler)',
-  integration: 'var(--ds-background-accent-purple-subtler)',
-  e2e: 'var(--ds-background-accent-teal-subtler)',
-  performance: 'var(--ds-background-accent-yellow-subtler)',
-  security: 'var(--ds-background-accent-red-subtler)',
-  accessibility: 'var(--ds-background-accent-magenta-subtler)',
-  custom: 'var(--ds-background-neutral)',
-};
-
+// D035: set type as an ADS Lozenge (component-owned color) instead of a
+// hand-rolled uppercase pill on a custom accent-color map.
 function SetTypePill({ type }: { type: SetType }) {
   return (
-    <span style={{
-      display: 'inline-block',
-      padding: '0px 8px',
-      borderRadius: 3,
-      fontSize: 'var(--ds-font-size-100)',
-      fontWeight: 600,
-      background: SET_TYPE_COLORS[type] ?? 'var(--ds-background-neutral)',
-      color: 'var(--ds-text)',
-      textTransform: 'uppercase',
-      letterSpacing: '0.04em',
-    }}>
+    <Lozenge appearance={type === 'smoke' ? 'new' : type === 'regression' ? 'inprogress' : 'default'}>
       {SET_TYPE_LABELS[type] ?? type}
-    </span>
+    </Lozenge>
   );
 }
 
+// D034: membership type as a Lozenge, no emoji glyph.
 function MembershipBadge({ type }: { type: MembershipType }) {
   return (
-    <span style={{
-      fontSize: 'var(--ds-font-size-100)',
-      fontWeight: 500,
-      color: type === 'dynamic'
-        ? 'var(--ds-text-accent-blue)'
-        : 'var(--ds-text-subtle)',
-    }}>
-      {type === 'dynamic' ? '⚡ Dynamic' : '📌 Static'}
-    </span>
+    <Lozenge appearance={type === 'dynamic' ? 'inprogress' : 'default'}>
+      {type === 'dynamic' ? 'Dynamic' : 'Static'}
+    </Lozenge>
   );
 }
 
@@ -99,28 +76,11 @@ const EMPTY_FORM: CreateSetForm = {
   membership_type: 'static',
 };
 
-// ── Row ⋯ menu ─────────────────────────────────────────────────────────────────
-function SetRowMenu({ set, projectId, onClose, onDeleted }: {
-  set: TmTestSet; projectId: string; onClose: () => void; onDeleted: () => void;
+// ── Row ⋯ menu (D035: canonical @atlaskit DropdownMenu, no hand-rolled portal) ──
+function SetRowMenu({ set, projectId, onDeleted }: {
+  set: TmTestSet; projectId: string; onDeleted: () => void;
 }) {
   const qc = useQueryClient();
-  const menuRef = useRef<HTMLDivElement>(null);
-  const trigRef = useRef<HTMLButtonElement | null>(null);
-  const [pos, setPos] = useState<{ top: number; left: number } | null>(null);
-
-  useEffect(() => {
-    if (trigRef.current) {
-      const r = trigRef.current.getBoundingClientRect();
-      setPos({ top: r.bottom + 4, left: r.right - 160 });
-    }
-    const down = (e: MouseEvent) => {
-      if (!menuRef.current?.contains(e.target as Node) && !trigRef.current?.contains(e.target as Node)) onClose();
-    };
-    const key = (e: KeyboardEvent) => { if (e.key === 'Escape') { e.stopPropagation(); onClose(); } };
-    document.addEventListener('mousedown', down);
-    document.addEventListener('keydown', key, true);
-    return () => { document.removeEventListener('mousedown', down); document.removeEventListener('keydown', key, true); };
-  }, [onClose]);
 
   const deleteMut = useMutation({
     mutationFn: async () => {
@@ -155,7 +115,6 @@ function SetRowMenu({ set, projectId, onClose, onDeleted }: {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['tm_test_sets', projectId] });
       catalystToast.success('Set copied');
-      onClose();
     },
     onError: (e: Error) => catalystToast.error(e.message),
   });
@@ -168,53 +127,30 @@ function SetRowMenu({ set, projectId, onClose, onDeleted }: {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['tm_test_sets', projectId] });
       catalystToast.success('Set archived');
-      onClose();
     },
     onError: (e: Error) => catalystToast.error(e.message),
   });
 
-  const item: React.CSSProperties = {
-    display: 'block', width: '100%', padding: '8px 16px', textAlign: 'left',
-    border: 'none', background: 'none', cursor: 'pointer', fontSize: 'var(--ds-font-size-300)',
-    color: 'var(--ds-text)',
-  };
-
   return (
-    <>
-      <button ref={trigRef} onClick={e => e.stopPropagation()}
-        style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, display: 'flex', color: 'var(--ds-text-subtlest)' }}>
-        <MoreHorizontal size={14} />
-      </button>
-      {pos && createPortal(
-        <div ref={menuRef} role="menu" style={{
-          position: 'fixed', top: pos.top, left: pos.left,
-          background: 'var(--ds-surface-overlay)',
-          border: '1px solid var(--ds-border)',
-          borderRadius: 6, boxShadow: 'var(--ds-shadow-overlay)',
-          padding: '4px 0', minWidth: 160, zIndex: 9999,
-        }}>
-          <button role="menuitem" style={item}
-            onClick={e => { e.stopPropagation(); copyMut.mutate(); }}
-            onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.04))'}
-            onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = 'none'}>
-            Copy set
-          </button>
-          <button role="menuitem" style={{ ...item, color: 'var(--ds-text-warning)' }}
-            onClick={e => { e.stopPropagation(); archiveMut.mutate(); }}
-            onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.04))'}
-            onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = 'none'}>
-            Archive set
-          </button>
-          <button role="menuitem" style={{ ...item, color: 'var(--ds-text-danger)' }}
-            onClick={e => { e.stopPropagation(); deleteMut.mutate(); }}
-            onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.04))'}
-            onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = 'none'}>
-            Delete set
-          </button>
-        </div>,
-        document.body
+    <DropdownMenu<HTMLButtonElement>
+      placement="bottom-end"
+      trigger={({ triggerRef, ...props }) => (
+        <IconButton
+          {...props}
+          ref={triggerRef}
+          icon={ShowMoreHorizontalIcon}
+          label="Set actions"
+          appearance="subtle"
+          spacing="compact"
+        />
       )}
-    </>
+    >
+      <DropdownItemGroup>
+        <DropdownItem onClick={() => copyMut.mutate()}>Copy set</DropdownItem>
+        <DropdownItem onClick={() => archiveMut.mutate()}>Archive set</DropdownItem>
+        <DropdownItem onClick={() => deleteMut.mutate()}>Delete set</DropdownItem>
+      </DropdownItemGroup>
+    </DropdownMenu>
   );
 }
 
@@ -222,15 +158,10 @@ export default function TestSetsPage() {
   const qc = useQueryClient();
   const navigate = useNavigate();
   const { projectKey = 'BAU' } = useParams<{ projectKey: string }>();
-  const { data: projects = [], isLoading: projectsLoading } = useProjects();
-  const projectId = projects[0]?.id;
+  const { projectId, isLoading: projectsLoading } = useTestHubProject();
 
   const [showCreate, setShowCreate] = useState(false);
   const [form, setForm] = useState<CreateSetForm>(EMPTY_FORM);
-  const [rowMenuId, setRowMenuId] = useState<string | null>(null);
-  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
-  const bulkBtnRef = useRef<HTMLButtonElement | null>(null);
-  const [bulkMenuOpen, setBulkMenuOpen] = useState(false);
 
   const { data: sets = [], isLoading } = useQuery({
     queryKey: ['tm_test_sets', projectId],
@@ -325,7 +256,7 @@ export default function TestSetsPage() {
           padding: 16,
           marginBottom: 24,
           background: 'var(--ds-surface-overlay)',
-          boxShadow: '0 4px 12px var(--ds-background-neutral-subtle-pressed, rgba(9,30,66,0.12))',
+          boxShadow: '0 4px 12px var(--ds-background-neutral-subtle-pressed)',
         }}>
           <h3 style={{ margin: '0 0 16px', fontSize: 'var(--ds-font-size-500)', fontWeight: 600, color: 'var(--ds-text)' }}>
             New Test Set
@@ -400,7 +331,6 @@ export default function TestSetsPage() {
           color: 'var(--ds-text-subtlest)', fontSize: 'var(--ds-font-size-400)',
           border: '1px dashed var(--ds-border)', borderRadius: 8,
         }}>
-          <div style={{ fontSize: 32, marginBottom: 12 }}>📋</div>
           <p style={{ margin: '0 0 16px', fontSize: 'var(--ds-font-size-500)', fontWeight: 500, color: 'var(--ds-text-subtle)' }}>
             No test sets yet
           </p>
@@ -432,7 +362,7 @@ export default function TestSetsPage() {
           {sets.map((set, idx) => (
             <div
               key={set.id}
-              onClick={() => navigate(`/testhub/sets/${set.id}`)}
+              onClick={() => navigate(`/testhub/sets/${set.set_key}`)}
               style={{
                 display: 'grid',
                 gridTemplateColumns: '48px 1fr 120px 120px 80px 80px 80px',
@@ -444,7 +374,7 @@ export default function TestSetsPage() {
                 borderRadius: idx === sets.length - 1 ? '0 0 6px 6px' : 0,
                 cursor: 'pointer',
               }}
-              onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))')}
+              onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered)')}
               onMouseLeave={e => (e.currentTarget.style.background = 'var(--ds-surface)')}
             >
               <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: 'var(--ds-text-subtlest)', fontFamily: 'var(--ds-font-family-code, monospace)' }}>
@@ -488,20 +418,11 @@ export default function TestSetsPage() {
                 </button>
               </div>
               <div onClick={e => e.stopPropagation()}>
-                {rowMenuId === set.id
-                  ? <SetRowMenu
-                      set={set}
-                      projectId={projectId!}
-                      onClose={() => setRowMenuId(null)}
-                      onDeleted={() => setRowMenuId(null)}
-                    />
-                  : <button
-                      onClick={e => { e.stopPropagation(); setRowMenuId(set.id); }}
-                      style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, display: 'flex', color: 'var(--ds-text-subtlest)' }}
-                    >
-                      <MoreHorizontal size={14} />
-                    </button>
-                }
+                <SetRowMenu
+                  set={set}
+                  projectId={projectId!}
+                  onDeleted={() => {}}
+                />
               </div>
             </div>
           ))}

@@ -148,8 +148,8 @@ export function IncidentStickyHeader(props: IncidentStickyHeaderProps) {
               Release
             </Link>
             <span className="text-muted-foreground/60">/</span>
-            <Link 
-              to="/release/incidents" 
+            <Link
+              to="/incident-hub"
               className="hover:text-foreground transition-colors"
             >
               Incidents
@@ -182,7 +182,7 @@ export function IncidentStickyHeader(props: IncidentStickyHeaderProps) {
                     className="h-8 w-8 p-0"
                     onClick={handleSaveTitle}
                   >
-                    <Check className="h-4 w-4 text-emerald-600" />
+                    <Check className="h-4 w-4 text-[var(--ds-text-success)]" />
                   </Button>
                   <Button
                     variant="ghost"
@@ -321,11 +321,11 @@ export function IncidentStickyHeader(props: IncidentStickyHeaderProps) {
                     // Ensure text is always visible with proper foreground color
                     'bg-background text-foreground',
                     // Apply status-specific background colors while keeping text visible
-                    status === 'open' && 'bg-gray-100 dark:bg-gray-900',
-                    status === 'triage' && 'bg-amber-50 dark:bg-amber-950/50',
-                    status === 'to_committee' && 'bg-amber-50 dark:bg-amber-950/50',
-                    status === 'in_progress' && 'bg-sky-50 dark:bg-sky-950/50',
-                    status === 'resolved' && 'bg-emerald-50 dark:bg-emerald-950/50',
+                    status === 'open' && 'bg-[var(--ds-background-neutral)] dark:bg-[var(--ds-background-neutral)]',
+                    status === 'triage' && 'bg-[var(--ds-background-warning)] dark:bg-[var(--ds-background-warning)]',
+                    status === 'to_committee' && 'bg-[var(--ds-background-warning)] dark:bg-[var(--ds-background-warning)]',
+                    status === 'in_progress' && 'bg-[var(--ds-background-information)] dark:bg-[var(--ds-background-information)]',
+                    status === 'resolved' && 'bg-[var(--ds-background-success)] dark:bg-[var(--ds-background-success)]',
                     (status === 'converted' || status === 'closed') && 'bg-muted'
                   )}
                 >

@@ -43,7 +43,11 @@ export const SubmenuItem: React.FC<{
   onCloseParentMenu?: () => void;
   children: (close: () => void) => React.ReactNode;
   minWidth?: number;
-}> = ({ label, ariaLabel, onCloseParentMenu, children, minWidth = 200 }) => {
+  /** Override the submenu portal's z-index. Needed when the parent
+   *  PortalMenu sits inside an @atlaskit/modal-dialog and both had to be
+   *  raised above the modal's z-index (~510) to be interactable. */
+  zIndex?: number;
+}> = ({ label, ariaLabel, onCloseParentMenu, children, minWidth = 200, zIndex }) => {
   const parentRef = useRef<HTMLButtonElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
   const [open, setOpen] = useState(false);
@@ -221,8 +225,8 @@ export const SubmenuItem: React.FC<{
           if (e.key === 'ArrowRight' || e.key === 'Enter') { e.preventDefault(); requestOpen(); }
         }}
         style={{
-          width: '100%', height: 32, padding: '8px 20px',
-          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          width: '100%', height: 32, padding: '0 12px',
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8,
           border: 'none',
           background: open
             ? token('color.background.selected', 'var(--ds-background-selected)')
@@ -267,7 +271,7 @@ export const SubmenuItem: React.FC<{
             minWidth,
             maxHeight: SIZES.DROPDOWN_MAX_HEIGHT,
             overflowY: 'auto',
-            zIndex: SIZES.Z_DROPDOWN + 1,
+            zIndex: zIndex ?? SIZES.Z_DROPDOWN + 1,
           }}
         >
           {children(requestClose)}

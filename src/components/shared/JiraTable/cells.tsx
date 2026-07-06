@@ -396,7 +396,11 @@ export function makeKeyCell(
         </span>
       );
     }
-    return wrapped;
+    // No icon (getIcon omitted or returned null — e.g. zero-assumption when the
+    // work-item type is unknown): render the bare key. Previously `return wrapped`
+    // referenced an undeclared variable → ReferenceError; only reachable when a
+    // caller passes a falsy icon, which the Dependencies section does.
+    return keyNode;
   };
 }
 

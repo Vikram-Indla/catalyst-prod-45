@@ -154,6 +154,7 @@ export default function TimelineView(props: TimelineViewProps) {
     enableCreateEpicRow = true,
     enableEmptyRowAdd = true,
     enableDetailPanel = true,
+    enableInlineEmptyOverlay = true,
     createTopLevelConfig = { label: "Create epic", iconType: "Epic" },
     childTypesOverride,
     childrenOnlyOnGroupRows = false,
@@ -451,7 +452,7 @@ export default function TimelineView(props: TimelineViewProps) {
   /* dependency mode (Show dependencies / saved-view "Dependencies") */
   const depBodyRef = useRef<HTMLDivElement>(null);
   const viewMenuBtnRef = useRef<HTMLButtonElement>(null);
-  const [depMode, setDepMode] = useState(false);
+  const [depMode, setDepMode] = useState(true);
   const [viewMenuOpen, setViewMenuOpen] = useState(false);
   const [depFilterKey, setDepFilterKey] = useState<string | null>(null);
   const [depCard, setDepCard] = useState<{
@@ -3349,7 +3350,7 @@ export default function TimelineView(props: TimelineViewProps) {
                     );
                   })}
 
-                {!hasAnyDates && !emptyOverlayDismissed && (
+                {enableInlineEmptyOverlay && !hasAnyDates && !emptyOverlayDismissed && (
                   <InlineEmptyOverlay
                     projectKey={hubLabel}
                     onDismiss={() => setEmptyOverlayDismissed(true)}

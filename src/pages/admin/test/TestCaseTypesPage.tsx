@@ -15,8 +15,39 @@ import {
 } from '@/hooks/test-management/useAdminConfig';
 import { useProjects } from '@/hooks/test-management/useProjects';
 import { TMCaseType } from '@/types/test-management';
+import {
+  Search, Zap, RefreshCw, Link as LinkIcon, Monitor, Lock, Globe,
+  Settings, CheckCircle, Box, type LucideIcon,
+} from '@/lib/atlaskit-icons';
 
-const ICONS = ['🔍', '⚡', '🔄', '🔗', '🖥️', '🔒', '♿', '🌐', '⚙️', '✅'];
+// D065: tm_case_types.icon stores an icon NAME (e.g. "shield", "zap", "code",
+// "box"), not an emoji. Map the stored name to a real @atlaskit-backed icon
+// component so the Icon column renders the icon — not the literal name string.
+const ICON_BY_NAME: Record<string, LucideIcon> = {
+  search: Search,
+  zap: Zap,
+  refresh: RefreshCw,
+  link: LinkIcon,
+  monitor: Monitor,
+  lock: Lock,
+  globe: Globe,
+  settings: Settings,
+  check: CheckCircle,
+  box: Box,
+  // Aliases for names seen in existing data / other seeds.
+  code: Box,
+  shield: Lock,
+};
+
+// Picker offers the named icons (no emoji, no bare color).
+const ICON_NAMES = ['search', 'zap', 'refresh', 'link', 'monitor', 'lock', 'globe', 'settings', 'check', 'box'];
+
+function CaseTypeIcon({ name, size = 18 }: { name: string | null | undefined; size?: number }) {
+  const Icon = name ? ICON_BY_NAME[name.toLowerCase()] : undefined;
+  // Zero-assumption: unknown / unmapped icon name renders nothing, not a guess.
+  if (!Icon) return null;
+  return <Icon size={size} />;
+}
 
 export default function TestCaseTypesPage() {
   const navigate = useNavigate();
@@ -30,7 +61,7 @@ export default function TestCaseTypesPage() {
 
   const [showAdd, setShowAdd] = useState(false);
   const [newName, setNewName] = useState('');
-  const [newIcon, setNewIcon] = useState(ICONS[0]);
+  const [newIcon, setNewIcon] = useState(ICON_NAMES[0]);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editName, setEditName] = useState('');
   const [editIcon, setEditIcon] = useState('');
@@ -46,7 +77,7 @@ export default function TestCaseTypesPage() {
         is_default: types.length === 0,
       });
       setNewName('');
-      setNewIcon(ICONS[0]);
+      setNewIcon(ICON_NAMES[0]);
       setShowAdd(false);
       catalystToast.success('Case type created');
     } catch (e: any) {
@@ -57,7 +88,7 @@ export default function TestCaseTypesPage() {
   const startEdit = (t: TMCaseType) => {
     setEditingId(t.id);
     setEditName(t.name);
-    setEditIcon(t.icon ?? ICONS[0]);
+    setEditIcon(t.icon ?? ICON_NAMES[0]);
   };
 
   const saveEdit = async (t: TMCaseType) => {
@@ -145,17 +176,21 @@ export default function TestCaseTypesPage() {
             <div>
               <label style={labelStyle}>Icon</label>
               <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
-                {ICONS.map(ic => (
+                {ICON_NAMES.map(ic => (
                   <button
                     key={ic}
                     onClick={() => setNewIcon(ic)}
+                    aria-label={ic}
+                    aria-pressed={newIcon === ic}
                     style={{
-                      width: 28, height: 28, borderRadius: 4, fontSize: 16,
+                      width: 28, height: 28, borderRadius: 4,
+                      display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                      color: 'var(--ds-text-subtle)',
                       border: newIcon === ic ? '1px solid var(--ds-border-focused)' : '1px solid transparent',
                       cursor: 'pointer', background: newIcon === ic ? 'var(--ds-background-selected)' : 'none',
                     }}
                   >
-                    {ic}
+                    <CaseTypeIcon name={ic} size={16} />
                   </button>
                 ))}
               </div>
@@ -191,22 +226,28 @@ export default function TestCaseTypesPage() {
                 <td style={{ padding: '8px 12px', width: 80 }}>
                   {editingId === t.id ? (
                     <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
-                      {ICONS.map(ic => (
+                      {ICON_NAMES.map(ic => (
                         <button
                           key={ic}
                           onClick={() => setEditIcon(ic)}
+                          aria-label={ic}
+                          aria-pressed={editIcon === ic}
                           style={{
-                            width: 24, height: 24, borderRadius: 4, fontSize: 14,
+                            width: 24, height: 24, borderRadius: 4,
+                            display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                            color: 'var(--ds-text-subtle)',
                             border: editIcon === ic ? '1px solid var(--ds-border-focused)' : '1px solid transparent',
                             cursor: 'pointer', background: editIcon === ic ? 'var(--ds-background-selected)' : 'none',
                           }}
                         >
-                          {ic}
+                          <CaseTypeIcon name={ic} size={14} />
                         </button>
                       ))}
                     </div>
                   ) : (
-                    <span style={{ fontSize: 20 }}>{t.icon ?? '⚙️'}</span>
+                    <span style={{ display: 'inline-flex', color: 'var(--ds-icon)' }}>
+                      <CaseTypeIcon name={t.icon} size={18} />
+                    </span>
                   )}
                 </td>
                 <td style={{ padding: '8px 12px' }}>

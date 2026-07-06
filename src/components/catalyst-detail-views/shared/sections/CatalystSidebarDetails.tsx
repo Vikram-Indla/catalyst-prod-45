@@ -236,33 +236,10 @@ import {
   CatalystIRDemoApprovedDisplay,
 } from './CatalystReadOnlyCustomFields';
 
-/**
- * Normalize a ph_issues.issue_type string to a canonical bucket.
- * Mirrors resolveItemType() in CatalystDetailRouter.tsx — kept inline
- * to avoid pulling in the router (which lazy-imports every CatalystView*).
- *
- * Source of truth for the BAU-project mappings:
- *   defect   ← bug | defect | qa bug
- *   incident ← *incident* | production incident | business gap
- *   task     ← task
- *   feature  ← feature | new feature
- *   epic     ← epic
- */
-function normalizeIssueTypeBucket(raw: string | undefined | null):
-  | 'epic' | 'feature' | 'defect' | 'incident' | 'task'
-  | 'story' | 'subtask' | 'business_request' | null {
-  if (!raw) return null;
-  const t = raw.toLowerCase().trim();
-  if (t === 'epic') return 'epic';
-  if (t === 'feature' || t === 'new feature') return 'feature';
-  if (t === 'bug' || t === 'defect' || t === 'qa bug') return 'defect';
-  if (t.includes('incident') || t === 'production incident' || t === 'business gap') return 'incident';
-  if (t === 'task') return 'task';
-  if (t === 'business request' || t === 'business_request' || t === 'demand') return 'business_request';
-  if (t === 'sub-task' || t === 'subtask' || t === 'backend' || t === 'frontend' || t === 'figma' || t === 'entity figma' || t === 'integration') return 'subtask';
-  if (t === 'story' || t === 'improvement') return 'story';
-  return null;
-}
+// normalizeIssueTypeBucket now lives in the shared normalization boundary
+// (src/lib/date-pulse/normalize.ts) so the date-pulse mappers reuse the exact
+// same Title-Case → bucket mapping. Imported below.
+import { normalizeIssueTypeBucket } from '@/lib/date-pulse/normalize';
 import {
   STATUS_OPTION_GROUPS,
 } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/constants';
@@ -720,7 +697,9 @@ export function CatalystSidebarDetails({
               was based on a BAU-5419 Lane A re-probe that misread the context items.
               Vikram approved 2026-05-10.
               Feature EXCLUDED: sprintRelease NOT in Feature scheme (type 10173). */}
-          {issue?.issue_type !== 'Feature' && issue?.issue_type !== 'Business Request' && (
+          {/* Test Case EXCLUDED: a test case is a reusable spec, not an execution —
+              sprint/iteration belongs to the run, not the case (CAT-TESTHUB-REPOSITORY-REDESIGN-20260705-001, S4). */}
+          {issue?.issue_type !== 'Feature' && issue?.issue_type !== 'Business Request' && issue?.issue_type !== 'Test Case' && (
             <FieldRow label="Sprint/Iteration" alignBlock="start">
               {issue && (
                 <EditableSprintRelease
@@ -768,7 +747,10 @@ export function CatalystSidebarDetails({
           )}
 
           {/* ── Reporter ──── Defect-2 Cycle 6 (2026-05-03): made editable.
-              D1: Tooltip "View profile" on hover per Jira parity. */}
+              D1: Tooltip "View profile" on hover per Jira parity.
+              Test Case EXCLUDED: tm_test_cases has no reporter column — rendering
+              it was a no-op field (CAT-TESTHUB-REPOSITORY-REDESIGN-20260705-001, S4). */}
+          {issue?.issue_type !== 'Test Case' && (
           <FieldRow label="Reporter" alignBlock="center">
             {issue && (
               <EditableReporter
@@ -781,6 +763,7 @@ export function CatalystSidebarDetails({
               />
             )}
           </FieldRow>
+          )}
 
           {/* ── Labels ──── Task + Story (jira-compare 2026-05-07 Fix J + 2026-05-10 Fix JC-3).
               Task: re-probe BAU-5538 confirmed Labels in scheme (10010).

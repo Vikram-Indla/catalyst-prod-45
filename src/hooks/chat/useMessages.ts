@@ -267,6 +267,29 @@ export function useMessages(conversationId: string | null): {
     return unsubscribe;
   }, [conversationId, queryClient]);
 
+  // Realtime: reactions live in their own table and never touch chat_messages
+  // rows, so message-channel events miss them. The reactions channel is
+  // app-wide (the table has no conversation_id to filter on); only invalidate
+  // when the reacted message is in this conversation's cache.
+  useEffect(() => {
+    if (!conversationId) return;
+    const unsubscribe = chatRealtime.subscribeReactions((payload) => {
+      const p = payload as { new?: { message_id?: string }; old?: { message_id?: string } };
+      const messageId = p?.new?.message_id ?? p?.old?.message_id;
+      if (!messageId) return;
+      const cached = queryClient.getQueryData<{
+        pages?: Array<{ messages: Array<{ id: string }> }>;
+      }>(['chat', 'messages', conversationId]);
+      const inThisConversation = cached?.pages?.some((page) =>
+        page.messages.some((m) => m.id === messageId),
+      );
+      if (inThisConversation) {
+        queryClient.invalidateQueries({ queryKey: ['chat', 'messages', conversationId] });
+      }
+    });
+    return unsubscribe;
+  }, [conversationId, queryClient]);
+
   // Older pages are appended after newer pages by the query; flatten so the
   // oldest messages render first (top) and newest last (bottom).
   const pages = query.data?.pages ?? [];
@@ -299,10 +322,25 @@ export function useMessages(conversationId: string | null): {
           row.scheduled_for = scheduledFor;
           row.created_at = scheduledFor;
         }
-        const { error: insertErr } = await db.from('chat_messages').insert(row);
+        const { data: inserted, error: insertErr } = await db
+          .from('chat_messages')
+          .insert(row)
+          .select('created_at')
+          .single();
         if (insertErr) {
           setError(insertErr);
           return;
+        }
+        // Sending is reading: bump my own last_read_at to the new message's
+        // server-side created_at, otherwise my own send flips the conversation
+        // back to unread in my sidebar. Skip for scheduled sends — they deliver
+        // later and SHOULD unread the conversation at delivery time.
+        if (!scheduledFor && inserted?.created_at) {
+          await db
+            .from('chat_conversation_members')
+            .update({ last_read_at: inserted.created_at })
+            .eq('conversation_id', conversationId)
+            .eq('user_id', myId);
         }
         await queryClient.invalidateQueries({ queryKey: ['chat', 'messages', conversationId] });
         await queryClient.invalidateQueries({ queryKey: ['chat', 'conversations'] });

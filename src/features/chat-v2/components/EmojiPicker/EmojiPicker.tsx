@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { SearchIcon, SmileyIcon } from '../shared/Icon';
 import { FREQUENTLY_USED, SECTIONS, searchEmojis } from './emojiData';
+import { useFocusTrap } from '../../hooks/useFocusTrap';
 
 interface EmojiPickerProps {
   /** Where to position the picker (relative to its anchor). */
@@ -16,6 +17,7 @@ const PICKER_HEIGHT = 460;
 
 export function EmojiPicker({ anchor = 'center', anchorRect, onPick, onClose }: EmojiPickerProps) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const trapRef = useFocusTrap<HTMLDivElement>();
   const [query, setQuery] = useState('');
   const [activeSection, setActiveSection] = useState<string>('frequent');
 
@@ -43,7 +45,10 @@ export function EmojiPicker({ anchor = 'center', anchorRect, onPick, onClose }: 
 
   return createPortal(
     <div
-      ref={containerRef}
+      ref={(node) => {
+        containerRef.current = node;
+        (trapRef as React.MutableRefObject<HTMLDivElement | null>).current = node;
+      }}
       role="dialog"
       aria-label="Emoji picker"
       style={{
@@ -252,7 +257,7 @@ function EmojiGroup({
               justifyContent: 'center',
               background: 'transparent',
               border: 'none',
-              borderRadius: 4,
+              borderRadius: 'var(--cv2-radius-sm)',
               font: 'var(--ds-font-heading-medium)',
               lineHeight: 1,
               cursor: 'pointer',

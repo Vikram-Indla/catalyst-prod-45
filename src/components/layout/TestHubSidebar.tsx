@@ -11,6 +11,7 @@ import {
   FolderOpen,
   Layers,
   Link2,
+  ClipboardList,
 } from '@/lib/atlaskit-icons';
 import {
   NavDashboardIcon,
@@ -37,6 +38,7 @@ const sections: SidebarSection[] = [
       { id: 'filters',      title: 'Filters',      path: '/testhub/filters',       icon: NavFiltersIcon,   exact: false },
       { id: 'repository',   title: 'Repository',   path: '/testhub/repository',    icon: FolderOpen,       exact: false },
       { id: 'sets',         title: 'Test Sets',    path: '/testhub/sets',          icon: Layers,           exact: false },
+      { id: 'plans',        title: 'Test Plans',   path: '/testhub/plans',         icon: ClipboardList,    exact: false },
       { id: 'cycles',       title: 'Cycles',       path: '/testhub/cycles',        icon: RefreshCw,        exact: false },
       { id: 'timeline',     title: 'Timeline',     path: '/testhub/timeline',      icon: NavTimelineIcon,  exact: false },
       { id: 'dependencies', title: 'Dependencies', path: '/testhub/dependencies',  icon: Link2,            exact: false },

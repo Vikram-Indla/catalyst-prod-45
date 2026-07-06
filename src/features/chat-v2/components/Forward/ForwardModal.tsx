@@ -7,6 +7,7 @@ import { ChevronDownIcon, CopyLinkIcon, XIcon } from '../shared/Icon';
 import { ScheduleSendMenu } from '../Schedule/ScheduleSendMenu';
 import { renderMarkdownInline } from '../../lib/markdown';
 import type { ChatMessage } from '@/types/chat';
+import { useFocusTrap } from '../../hooks/useFocusTrap';
 
 interface ForwardModalProps {
   message: ChatMessage;
@@ -72,6 +73,7 @@ export function ForwardModal({ message, onClose, onForward }: ForwardModalProps)
   const [scheduleOpen, setScheduleOpen] = useState(false);
   const scheduleAnchorRef = useRef<HTMLButtonElement>(null);
   const [showSuggest, setShowSuggest] = useState(true);
+  const trapRef = useFocusTrap<HTMLDivElement>();
 
   const candidates = useForwardCandidates(query);
 
@@ -107,6 +109,7 @@ export function ForwardModal({ message, onClose, onForward }: ForwardModalProps)
 
   return createPortal(
     <div
+      ref={trapRef}
       role="dialog"
       aria-modal="true"
       aria-label="Forward message"
@@ -354,7 +357,7 @@ function Chip({ recipient, onRemove }: { recipient: ForwardRecipient; onRemove: 
         height: 24, padding: '0 6px',
         background: 'var(--cv2-bg-row-active)',
         color: 'var(--cv2-text-strong)',
-        borderRadius: 4,
+        borderRadius: 'var(--cv2-radius-sm)',
         font: 'var(--ds-font-body-small)',
       }}
     >
@@ -424,11 +427,13 @@ function SourceMessagePreview({ message }: { message: ChatMessage }) {
           {message.authorName}
         </div>
         <div
+          dir="auto"
           style={{
             font: 'var(--ds-font-body-small)',
             color: 'var(--cv2-text)',
             wordBreak: 'break-word',
             whiteSpace: 'pre-wrap',
+            unicodeBidi: 'plaintext',
           }}
           dangerouslySetInnerHTML={{ __html: renderMarkdownInline(message.bodyText) }}
         />

@@ -1,31 +1,46 @@
 /**
  * usePushNotifications.test.ts — Test browser push notification integration
  */
+import { vi } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
 import { usePushNotifications } from '../usePushNotifications';
 import { notificationManager } from '@/lib/chat/NotificationManager';
 
 // Mock the NotificationManager
-jest.mock('@/lib/chat/NotificationManager', () => ({
+vi.mock('@/lib/chat/NotificationManager', () => ({
   notificationManager: {
-    requestPermission: jest.fn().mockResolvedValue(true),
-    isPermitted: jest.fn().mockReturnValue(true),
-    notify: jest.fn().mockResolvedValue({}),
-    playSoundIfEnabled: jest.fn(),
-    setSoundEnabled: jest.fn(),
-    isSoundEnabled: jest.fn().mockReturnValue(false),
-    getPermissionState: jest.fn().mockReturnValue('granted'),
+    requestPermission: vi.fn().mockResolvedValue(true),
+    isPermitted: vi.fn().mockReturnValue(true),
+    notify: vi.fn().mockResolvedValue({}),
+    playSoundIfEnabled: vi.fn(),
+    setSoundEnabled: vi.fn(),
+    isSoundEnabled: vi.fn().mockReturnValue(false),
+    getPermissionState: vi.fn().mockReturnValue('granted'),
   },
 }));
 
+/**
+ * jsdom defines `document.hidden` as a getter on Document.prototype, and a
+ * defineProperty without `configurable: true` makes later re-mocks throw
+ * "Cannot redefine property: hidden". isUserAway() reads `document.hidden`,
+ * so we shadow it with an own configurable getter and delete it afterEach to
+ * restore the prototype getter.
+ */
+function setDocumentHidden(hidden: boolean) {
+  Object.defineProperty(document, 'hidden', {
+    configurable: true,
+    get: () => hidden,
+  });
+}
+
 describe('usePushNotifications', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
-    // Mock document.hidden
-    Object.defineProperty(document, 'hidden', {
-      writable: true,
-      value: false,
-    });
+    vi.clearAllMocks();
+    setDocumentHidden(false);
+  });
+
+  afterEach(() => {
+    delete (document as any).hidden;
   });
 
   describe('requestPermission', () => {
@@ -41,7 +56,7 @@ describe('usePushNotifications', () => {
     });
 
     it('should call onPermissionRequested callback', async () => {
-      const onPermissionRequested = jest.fn();
+      const onPermissionRequested = vi.fn();
       const { result } = renderHook(() =>
         usePushNotifications({ onPermissionRequested }),
       );
@@ -73,20 +88,10 @@ describe('usePushNotifications', () => {
     });
 
     it('should return true when document is hidden', () => {
-      Object.defineProperty(document, 'hidden', {
-        writable: true,
-        value: true,
-        configurable: true,
-      });
+      setDocumentHidden(true);
 
       const { result } = renderHook(() => usePushNotifications());
       expect(result.current.isUserAway()).toBe(true);
-
-      Object.defineProperty(document, 'hidden', {
-        writable: true,
-        value: false,
-        configurable: true,
-      });
     });
   });
 
@@ -99,24 +104,27 @@ describe('usePushNotifications', () => {
       expect(result.current.hasMention('@everyone')).toBe(true);
     });
 
-    it('should return false for text without @mention', () => {
+    it('should return false for text without an @ token', () => {
       const { result } = renderHook(() => usePushNotifications());
 
       expect(result.current.hasMention('Hello there')).toBe(false);
-      expect(result.current.hasMention('Email: user@example.com')).toBe(false);
       expect(result.current.hasMention('')).toBe(false);
+    });
+
+    it('does not treat email addresses as mentions', () => {
+      // Regression guard: the old /@[\w]+/ regex matched "@example" inside
+      // "user@example.com" and fired a push for every email in a body.
+      const { result } = renderHook(() => usePushNotifications());
+
+      expect(result.current.hasMention('Email: user@example.com')).toBe(false);
+      expect(result.current.hasMention('ping @sara about user@example.com')).toBe(true);
     });
   });
 
   describe('notifyMention', () => {
     it('should send push notification when user is away', async () => {
-      Object.defineProperty(document, 'hidden', {
-        writable: true,
-        value: true,
-        configurable: true,
-      });
-
-      (notificationManager.isPermitted as jest.Mock).mockReturnValue(true);
+      setDocumentHidden(true);
+      vi.mocked(notificationManager.isPermitted).mockReturnValue(true);
 
       const { result } = renderHook(() => usePushNotifications());
 
@@ -130,12 +138,6 @@ describe('usePushNotifications', () => {
           title: '@mention from Alice',
         }),
       );
-
-      Object.defineProperty(document, 'hidden', {
-        writable: true,
-        value: false,
-        configurable: true,
-      });
     });
 
     it('should not send notification if user is not away', async () => {
@@ -149,13 +151,8 @@ describe('usePushNotifications', () => {
     });
 
     it('should not send notification if permission not granted', async () => {
-      Object.defineProperty(document, 'hidden', {
-        writable: true,
-        value: true,
-        configurable: true,
-      });
-
-      (notificationManager.isPermitted as jest.Mock).mockReturnValue(false);
+      setDocumentHidden(true);
+      vi.mocked(notificationManager.isPermitted).mockReturnValue(false);
 
       const { result } = renderHook(() => usePushNotifications());
 
@@ -164,22 +161,11 @@ describe('usePushNotifications', () => {
       });
 
       expect(notificationManager.notify).not.toHaveBeenCalled();
-
-      Object.defineProperty(document, 'hidden', {
-        writable: true,
-        value: false,
-        configurable: true,
-      });
     });
 
     it('should play sound after notification', async () => {
-      Object.defineProperty(document, 'hidden', {
-        writable: true,
-        value: true,
-        configurable: true,
-      });
-
-      (notificationManager.isPermitted as jest.Mock).mockReturnValue(true);
+      setDocumentHidden(true);
+      vi.mocked(notificationManager.isPermitted).mockReturnValue(true);
 
       const { result } = renderHook(() => usePushNotifications());
 
@@ -188,24 +174,13 @@ describe('usePushNotifications', () => {
       });
 
       expect(notificationManager.playSoundIfEnabled).toHaveBeenCalled();
-
-      Object.defineProperty(document, 'hidden', {
-        writable: true,
-        value: false,
-        configurable: true,
-      });
     });
   });
 
   describe('notifyDirectMessage', () => {
     it('should send push notification for direct message when away', async () => {
-      Object.defineProperty(document, 'hidden', {
-        writable: true,
-        value: true,
-        configurable: true,
-      });
-
-      (notificationManager.isPermitted as jest.Mock).mockReturnValue(true);
+      setDocumentHidden(true);
+      vi.mocked(notificationManager.isPermitted).mockReturnValue(true);
 
       const { result } = renderHook(() => usePushNotifications());
 
@@ -219,18 +194,12 @@ describe('usePushNotifications', () => {
           title: 'Message from Bob',
         }),
       );
-
-      Object.defineProperty(document, 'hidden', {
-        writable: true,
-        value: false,
-        configurable: true,
-      });
     });
   });
 
   describe('notifyReminder', () => {
     it('should send reminder notification regardless of away status', async () => {
-      (notificationManager.isPermitted as jest.Mock).mockReturnValue(true);
+      vi.mocked(notificationManager.isPermitted).mockReturnValue(true);
 
       const { result } = renderHook(() => usePushNotifications());
 
@@ -248,7 +217,7 @@ describe('usePushNotifications', () => {
     });
 
     it('should not send reminder if permission not granted', async () => {
-      (notificationManager.isPermitted as jest.Mock).mockReturnValue(false);
+      vi.mocked(notificationManager.isPermitted).mockReturnValue(false);
 
       const { result } = renderHook(() => usePushNotifications());
 

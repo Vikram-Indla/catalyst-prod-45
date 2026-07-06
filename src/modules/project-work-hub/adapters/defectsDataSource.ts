@@ -7,9 +7,12 @@
  * to no-op if route absent.
  */
 import { useMemo, useCallback } from 'react';
-import { useProjects } from '@/hooks/test-management/useProjects';
+import { useNavigate } from 'react-router-dom';
+import { useTestHubProject } from '@/hooks/test-management/useTestHubProject';
 import { useDefects, useCreateDefect, useUpdateDefect, useDeleteDefect } from '@/hooks/test-management/useDefects';
 import { useCanonicalIssueWorkflow } from '@/hooks/useCanonicalIssueWorkflow';
+import { filterCreatableTypes } from '@/lib/catalyst-rules';
+import { Routes } from '@/lib/routes';
 import type { BacklogStory } from '../types/backlog.types';
 import type { StatusOption, LozengeAppearance } from '@/components/shared/JiraTable';
 import { BIZ_SOURCE, type BacklogDataSource } from './backlogDataSource';
@@ -79,8 +82,11 @@ const DEFECT_PATCH_MAP: Record<string, string> = {
 };
 
 export function useDefectsSource(): BacklogDataSource | null {
-  const { data: projects = [], isLoading: pl } = useProjects();
-  const projectId = projects[0]?.id;
+  const navigate = useNavigate();
+  // D038/D051: scope to the real active Test Space (resolver), never the
+  // alphabetically-first tm_projects row (the "Demo Project" seed) that
+  // useProjects()[0] returned. Resolver ranks by test-case volume.
+  const { projectId, isLoading: pl } = useTestHubProject();
   const { data: defectsData, isLoading: dl } = useDefects(projectId);
   const updateMutation = useUpdateDefect();
   const deleteMutation = useDeleteDefect();
@@ -135,7 +141,13 @@ export function useDefectsSource(): BacklogDataSource | null {
   );
 
   return useMemo((): BacklogDataSource | null => {
-    const effectiveProjectId = projectId ?? 'TESTHUB';
+    // D041: BacklogPage stars this surface via useStarredItems with
+    // room_id = productId against starred_items.room_id (a uuid column).
+    // The prior 'TESTHUB' string fallback made that a non-UUID → 400 (the
+    // console error x2 at defect detail). Hold the surface (DefectsPage shows
+    // its Spinner) until the resolver yields a real tm_projects UUID.
+    if (!projectId) return null;
+    const effectiveProjectId = projectId;
     return {
       sourceTag: BIZ_SOURCE,
       extraStories,
@@ -145,11 +157,11 @@ export function useDefectsSource(): BacklogDataSource | null {
       statusAppearance: resolvedStatusAppearance,
       statusLabel: resolvedStatusLabel,
       allStatuses,
-      /* P0-S5: a full-page tm_defects view does not exist yet (P1 slice).
-         Previously this hard-navigated to unregistered /testhub/defects/:id
-         (guaranteed 404 + full reload). Until the detail surface ships, the
-         action is intentionally inert rather than a dead URL. */
-      onOpenItem: () => {},
+      /* P1-S13: the canonical detail surface now exists (CatalystViewTmDefect,
+         routed at /testhub/defects/:defectKey). key is the row's defect_key. */
+      onOpenItem: (key) => {
+        if (key) navigate(Routes.testHub.defect(key));
+      },
       onUpdate: async (id, patch) => {
         const mapped: Record<string, any> = {};
         let canonicalKey: string | null = null;
@@ -189,7 +201,10 @@ export function useDefectsSource(): BacklogDataSource | null {
       ],
       productId: effectiveProjectId,
       entityKind: 'defect',
-      creatableTypes: ['QA Bug'],
+      // CRE chokepoint (P1-S19, E4): TestHub owns 'QA Bug' per Grid A
+      // (MODULE_OWNED_TYPES.TESTHUB) — route through the filter rather than
+      // hardcoding, so ownership drift is caught automatically.
+      creatableTypes: filterCreatableTypes(['QA Bug'], 'TESTHUB'),
       defaultCreatableType: 'QA Bug',
       resolveItemType: () => 'QA Bug',
     };

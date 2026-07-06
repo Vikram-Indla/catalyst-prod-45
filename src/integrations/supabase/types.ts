@@ -33165,6 +33165,7 @@ export type Database = {
           is_starred: boolean | null
           name: string
           query: string | null
+          slug: string
           status: string | null
           type: string | null
           updated_at: string
@@ -33177,6 +33178,7 @@ export type Database = {
           is_starred?: boolean | null
           name: string
           query?: string | null
+          slug: string
           status?: string | null
           type?: string | null
           updated_at?: string
@@ -33189,6 +33191,7 @@ export type Database = {
           is_starred?: boolean | null
           name?: string
           query?: string | null
+          slug?: string
           status?: string | null
           type?: string | null
           updated_at?: string
@@ -44679,22 +44682,15 @@ export type Database = {
             foreignKeyName: "tm_release_gate_results_release_id_fkey"
             columns: ["release_id"]
             isOneToOne: false
-            referencedRelation: "releases"
+            referencedRelation: "ph_releases"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "tm_release_gate_results_release_id_fkey"
             columns: ["release_id"]
             isOneToOne: false
-            referencedRelation: "v_release_with_artifacts"
+            referencedRelation: "vw_ph_release_progress"
             referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "tm_release_gate_results_release_id_fkey"
-            columns: ["release_id"]
-            isOneToOne: false
-            referencedRelation: "vw_epic_stories"
-            referencedColumns: ["release_id"]
           },
         ]
       }
@@ -44813,22 +44809,15 @@ export type Database = {
             foreignKeyName: "tm_release_quality_gates_release_id_fkey"
             columns: ["release_id"]
             isOneToOne: false
-            referencedRelation: "releases"
+            referencedRelation: "ph_releases"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "tm_release_quality_gates_release_id_fkey"
             columns: ["release_id"]
             isOneToOne: false
-            referencedRelation: "v_release_with_artifacts"
+            referencedRelation: "vw_ph_release_progress"
             referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "tm_release_quality_gates_release_id_fkey"
-            columns: ["release_id"]
-            isOneToOne: false
-            referencedRelation: "vw_epic_stories"
-            referencedColumns: ["release_id"]
           },
         ]
       }
@@ -44990,22 +44979,15 @@ export type Database = {
             foreignKeyName: "tm_release_readiness_release_id_fkey"
             columns: ["release_id"]
             isOneToOne: false
-            referencedRelation: "releases"
+            referencedRelation: "ph_releases"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "tm_release_readiness_release_id_fkey"
             columns: ["release_id"]
             isOneToOne: false
-            referencedRelation: "v_release_with_artifacts"
+            referencedRelation: "vw_ph_release_progress"
             referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "tm_release_readiness_release_id_fkey"
-            columns: ["release_id"]
-            isOneToOne: false
-            referencedRelation: "vw_epic_stories"
-            referencedColumns: ["release_id"]
           },
         ]
       }
@@ -46609,22 +46591,15 @@ export type Database = {
             foreignKeyName: "tm_test_cases_release_id_fkey"
             columns: ["release_id"]
             isOneToOne: false
-            referencedRelation: "releases"
+            referencedRelation: "ph_releases"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "tm_test_cases_release_id_fkey"
             columns: ["release_id"]
             isOneToOne: false
-            referencedRelation: "v_release_with_artifacts"
+            referencedRelation: "vw_ph_release_progress"
             referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "tm_test_cases_release_id_fkey"
-            columns: ["release_id"]
-            isOneToOne: false
-            referencedRelation: "vw_epic_stories"
-            referencedColumns: ["release_id"]
           },
           {
             foreignKeyName: "tm_test_cases_release_version_id_fkey"
@@ -47021,22 +46996,15 @@ export type Database = {
             foreignKeyName: "tm_test_cycles_release_id_fkey"
             columns: ["release_id"]
             isOneToOne: false
-            referencedRelation: "releases"
+            referencedRelation: "ph_releases"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "tm_test_cycles_release_id_fkey"
             columns: ["release_id"]
             isOneToOne: false
-            referencedRelation: "v_release_with_artifacts"
+            referencedRelation: "vw_ph_release_progress"
             referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "tm_test_cycles_release_id_fkey"
-            columns: ["release_id"]
-            isOneToOne: false
-            referencedRelation: "vw_epic_stories"
-            referencedColumns: ["release_id"]
           },
           {
             foreignKeyName: "tm_test_cycles_sprint_id_fkey"
@@ -47407,22 +47375,15 @@ export type Database = {
             foreignKeyName: "tm_test_plans_release_id_fkey"
             columns: ["release_id"]
             isOneToOne: false
-            referencedRelation: "releases"
+            referencedRelation: "ph_releases"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "tm_test_plans_release_id_fkey"
             columns: ["release_id"]
             isOneToOne: false
-            referencedRelation: "v_release_with_artifacts"
+            referencedRelation: "vw_ph_release_progress"
             referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "tm_test_plans_release_id_fkey"
-            columns: ["release_id"]
-            isOneToOne: false
-            referencedRelation: "vw_epic_stories"
-            referencedColumns: ["release_id"]
           },
           {
             foreignKeyName: "tm_test_plans_sprint_id_fkey"
@@ -57442,22 +57403,15 @@ export type Database = {
             foreignKeyName: "tm_test_cycles_release_id_fkey"
             columns: ["release_id"]
             isOneToOne: false
-            referencedRelation: "releases"
+            referencedRelation: "ph_releases"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "tm_test_cycles_release_id_fkey"
             columns: ["release_id"]
             isOneToOne: false
-            referencedRelation: "v_release_with_artifacts"
+            referencedRelation: "vw_ph_release_progress"
             referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "tm_test_cycles_release_id_fkey"
-            columns: ["release_id"]
-            isOneToOne: false
-            referencedRelation: "vw_epic_stories"
-            referencedColumns: ["release_id"]
           },
         ]
       }

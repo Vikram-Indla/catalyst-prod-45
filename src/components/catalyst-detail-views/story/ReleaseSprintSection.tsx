@@ -82,27 +82,57 @@ function useStoryCurrentRelease(storyId: string) {
 }
 
 /**
- * Fetch sprints linked to a release
+ * Fetch the sprints for a story.
+ *
+ * L006 (CAT-TESTHUB-REBUILD-20260704-001 Phase C): the previous
+ * implementation read `rh_release_sprints → sprints`, both of which are
+ * dead (0 rows) — the sidebar always rendered nothing. The live source of
+ * a story's sprint is `ph_issues.sprint_release`, a JSONB array of sprint
+ * NAMES (same field the project module's sprint/iteration column reads).
+ * We resolve those names against `ph_jira_sprints` (name-join, the canonical
+ * sprint entity per the locked decision — `iterations` is an empty SAFe
+ * model and is never wired here) purely to surface a stable id + status.
+ * Zero-assumption: when the story carries no sprint, we render nothing.
  */
-function useReleaseSprints(releaseId: string | null | undefined) {
+function useStorySprints(storyId: string) {
   return useQuery({
-    queryKey: ['release-sprints-sidebar', releaseId],
-    queryFn: async () => {
-      if (!releaseId) return [];
-      const { data, error } = await supabase
-        .from('rh_release_sprints')
-        .select('sprint_id, sprints(id, name, status)')
-        .eq('release_id', releaseId);
+    queryKey: ['story-sprints-sidebar', storyId],
+    queryFn: async (): Promise<SprintChip[]> => {
+      if (!storyId) return [];
+
+      const { data: issue, error } = await supabase
+        .from('ph_issues')
+        .select('sprint_release')
+        .eq('id', storyId)
+        .maybeSingle();
       if (error) {
-        console.error('[useReleaseSprints] error:', error.message);
+        console.error('[useStorySprints] issue error:', error.message);
         return [];
       }
-      return (data ?? []).map(rs => ({
-        id: (rs as any).sprints?.id ?? rs.sprint_id,
-        name: (rs as any).sprints?.name ?? '?'
-      })) as SprintChip[];
+
+      const raw = issue?.sprint_release;
+      if (!Array.isArray(raw)) return [];
+      const names = (raw as { name?: string }[])
+        .map((e) => e?.name)
+        .filter((n): n is string => typeof n === 'string' && n.length > 0);
+      if (names.length === 0) return [];
+
+      // Enrich with canonical ph_jira_sprints (name-join) for a stable id.
+      // If a name has no matching sprint row, still render the name.
+      const { data: sprintRows, error: sprintErr } = await supabase
+        .from('ph_jira_sprints')
+        .select('id, name')
+        .in('name', names);
+      if (sprintErr) {
+        console.error('[useStorySprints] sprints error:', sprintErr.message);
+      }
+      const idByName = new Map(
+        ((sprintRows ?? []) as { id: string; name: string }[]).map((s) => [s.name, s.id]),
+      );
+
+      return names.map((name) => ({ id: idByName.get(name) ?? name, name }));
     },
-    enabled: !!releaseId,
+    enabled: !!storyId,
     staleTime: 1 * 60 * 1000,
   });
 }
@@ -132,8 +162,9 @@ export function ReleaseSprintSection({
     return release ? { value: release.id, label: release.name } : null;
   });
 
-  // Fetch current linked sprints
-  const { data: linkedSprints = [] } = useReleaseSprints(currentReleaseId);
+  // Fetch the story's own sprints (L006: from ph_issues.sprint_release, not
+  // the dead release→sprint link).
+  const { data: storySprints = [] } = useStorySprints(issueKey);
 
   // Update release mutation (uses linking table pattern)
   const updateReleaseMutation = useMutation({
@@ -170,7 +201,6 @@ export function ReleaseSprintSection({
     },
     onSuccess: (newReleaseId) => {
       queryClient.invalidateQueries({ queryKey: ['story-detail', issueKey] });
-      queryClient.invalidateQueries({ queryKey: ['release-sprints-sidebar'] });
       setIsEditing(false);
       flag.success('Release updated');
       onReleaseChange?.(newReleaseId ?? null);
@@ -273,14 +303,15 @@ export function ReleaseSprintSection({
         </button>
       </div>
 
-      {/* Sprints section — only show if release is linked */}
-      {currentReleaseId && linkedSprints.length > 0 && (
+      {/* Sprints section — the story's own sprints (L006). Zero-assumption:
+          nothing renders when the story carries no sprint. */}
+      {storySprints.length > 0 && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 4, padding: '4px 4px' }}>
           <div style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtle)' }}>
             Sprints
           </div>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
-            {linkedSprints.map(sprint => (
+            {storySprints.map(sprint => (
               <span
                 key={sprint.id}
                 style={{

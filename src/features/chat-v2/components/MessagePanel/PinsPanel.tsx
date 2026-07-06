@@ -281,16 +281,15 @@ function PinnedCard({
       {moreOpen && (
         <MessageMoreMenu
           anchorRect={moreBtnRef.current?.getBoundingClientRect() ?? null}
-          canEdit={canEditOrDelete && !!onEdit}
+          canEdit={false /* inline edit not supported in pins view — jump to the message to edit */}
           canDelete={canEditOrDelete && !!onRequestDelete}
           isPinned={true}
-          onEdit={() => { /* TODO: inline edit not yet supported in pins view */ }}
+          onEdit={() => {}}
           onMarkUnread={() => onMarkUnread?.(message.id)}
           onRemindMe={() => setReminderOpen(true)}
           onCopyLink={() => onCopyLink?.(message.id)}
           onCopyMessage={() => { void navigator.clipboard?.writeText(message.bodyText); }}
           onTogglePin={() => onTogglePin?.(message.id)}
-          onAddToList={() => {}}
           onDelete={() => onRequestDelete?.(message.id)}
           onClose={() => setMoreOpen(false)}
         />

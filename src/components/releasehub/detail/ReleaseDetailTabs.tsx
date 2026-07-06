@@ -37,7 +37,7 @@ import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import TextArea from '@atlaskit/textarea';
 import { Sparkles } from '@/lib/atlaskit-icons';
 import { StatusLozenge } from '@/components/shared/StatusLozenge';
-import { Avatar } from '@/components/ads/Avatar';
+import CatalystAvatar from '@/components/shared/CatalystAvatar';
 import { X, Plus } from '@/lib/atlaskit-icons';
 import { RH } from '@/constants/releasehub.design';
 
@@ -384,7 +384,7 @@ export function NotifyList({ itemType, itemId }: { itemType: 'release' | 'change
       <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: T.subtlest }}>Notify</span>
       {subscribers.map((s) => (
         <span key={s.id} style={{ display: 'inline-flex', alignItems: 'center', gap: 4, background: T.sunken, borderRadius: 12, padding: '0 8px 0 0' }}>
-          <Avatar name={s.name ?? 'Unknown'} src={s.avatarUrl ?? undefined} size="xsmall" />
+          <CatalystAvatar name={s.name ?? 'Unknown'} src={s.avatarUrl ?? undefined} size="xsmall" />
           <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', color: T.text }}>{s.name ?? 'Unknown'}</span>
           <button
             onClick={() => remove.mutate({ id: s.id, itemType, itemId })}
@@ -550,7 +550,7 @@ export function AuditTab({ releaseId }: { releaseId: string }) {
     <div style={{ padding: '8px 0' }}>
       {entries.map((a) => (
         <div key={a.id} style={rowStyle}>
-          <Avatar name={a.actorName || 'System'} size="small" />
+          <CatalystAvatar name={a.actorName || 'System'} size="small" />
           <div style={{ flex: 1, minWidth: 0 }}>
             <p style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-400)', color: T.text, margin: 0 }}>
               <span style={{ fontWeight: 600 }}>{a.actorName || 'System'}</span> {a.action}{a.detail ? ` — ${a.detail}` : ''}

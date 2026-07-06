@@ -65,7 +65,7 @@ async function logGovernance(params: {
     const service = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
     if (!url || !service) return;
     const sb = createClient(url, service, { auth: { persistSession: false } });
-    await sb.from("ai_governance_audit_log").insert({
+    await sb.from("ai_usage_log").insert({
       action: params.action,
       payload: params.payload,
       status: params.status,

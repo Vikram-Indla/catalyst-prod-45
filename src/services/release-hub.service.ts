@@ -103,11 +103,14 @@ export const changeService = {
     return data ?? [];
   },
 
-  getById: async (id: string) => {
+  // Resolve by slug (canonical) OR UUID (legacy deep links) — Phase 2 §4.
+  getById: async (idOrSlug: string) => {
+    const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    const column = UUID_RE.test(idOrSlug) ? 'id' : 'slug';
     const { data, error } = await supabase
       .from('rh_changes')
       .select('*, rh_change_work_items(*), rh_change_signoffs(*), rh_change_status_history(*)')
-      .eq('id', id)
+      .eq(column, idOrSlug)
       .single();
     if (error) throw error;
     return data;
@@ -138,6 +141,13 @@ export const changeService = {
       await supabase.from('rh_change_status_history').insert({
         change_id: data.id, to_status: data.status, changed_by: userId ?? undefined,
       });
+      // Phase 2 §5: when a release is selected, write the m2m link (forward
+      // source of truth). Legacy rh_changes.release_id stays for back-compat.
+      if (payload.release_id) {
+        await supabase.from('rh_change_release_links')
+          .upsert({ change_id: data.id, release_id: payload.release_id, linked_by: userId ?? undefined },
+                  { onConflict: 'change_id,release_id' });
+      }
     }
     return data;
   },

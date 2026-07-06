@@ -271,6 +271,7 @@ export function ReleaseConfirmationModal({ isOpen, release, onClose, onSuccess, 
             || q.queryKey[0] === 'ph_release_contributors'),
       });
       queryClient.invalidateQueries({ queryKey: ['projecthub', 'release-progress'] });
+      queryClient.invalidateQueries({ queryKey: ['projecthub', 'releases'] });
       queryClient.invalidateQueries({ queryKey: ['projecthub-sprints'] });
       queryClient.invalidateQueries({ queryKey: ['projecthub-releases'] });
       onSuccess?.(release);

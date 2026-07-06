@@ -4,12 +4,19 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import Spinner from '@atlaskit/spinner';
 import Lozenge from '@atlaskit/lozenge';
+import Button from '@atlaskit/button/standard-button';
+import { IconButton } from '@atlaskit/button/new';
+import Textfield from '@atlaskit/textfield';
+import ModalDialog, { ModalBody, ModalFooter, ModalHeader, ModalTitle } from '@atlaskit/modal-dialog';
 import { supabase } from '@/integrations/supabase/client';
 import { catalystToast } from '@/lib/catalystToast';
-import { useProjects } from '@/hooks/test-management/useProjects';
+import { useTestHubProject } from '@/hooks/test-management/useTestHubProject';
 import { useTestCases } from '@/hooks/test-management/useTestCases';
 import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
+import { EmptyState } from '@/components/ads';
 import { Trash2 } from '@/lib/atlaskit-icons';
+import { JiraTable } from '@/components/shared/JiraTable';
+import type { Column } from '@/components/shared/JiraTable/types';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -77,18 +84,6 @@ const CYCLE_STATUS_APPEARANCE: Record<string, 'default' | 'inprogress' | 'succes
   CANCELLED: 'removed',
 };
 
-// ── Shared table styles ───────────────────────────────────────────────────────
-
-const thStyle: React.CSSProperties = {
-  padding: '8px 12px',
-  textAlign: 'left',
-  fontSize: 'var(--ds-font-size-200)',
-  fontWeight: 600,
-  color: 'var(--ds-text-subtle)',
-};
-
-const tdStyle: React.CSSProperties = { padding: '8px 12px' };
-
 // ── Add Cases Modal ───────────────────────────────────────────────────────────
 
 function AddCasesModal({
@@ -148,64 +143,35 @@ function AddCasesModal({
     }
   };
 
-  return createPortal(
-    <>
-      <div
-        onClick={onClose}
-        style={{ position: 'fixed', inset: 0, background: 'var(--ds-blanket)', zIndex: 300 }}
-      />
-      <div style={{
-        position: 'fixed',
-        top: '50%',
-        left: '50%',
-        transform: 'translate(-50%, -50%)',
-        width: 560,
-        maxHeight: '80vh',
-        background: 'var(--ds-surface-overlay)',
-        borderRadius: 8,
-        boxShadow: 'var(--ds-shadow-overlay)',
-        zIndex: 301,
-        display: 'flex',
-        flexDirection: 'column',
-        fontFamily: 'var(--ds-font-family-body)',
-      }}>
-        <div style={{ padding: '16px 24px', borderBottom: '1px solid var(--ds-border)' }}>
-          <h2 style={{ margin: '0 0 12px', fontSize: 'var(--ds-font-size-600)', fontWeight: 600, color: 'var(--ds-text)' }}>
-            Add cases to set
-          </h2>
-          <input
+  return (
+    <ModalDialog onClose={onClose} width="medium">
+      <ModalHeader>
+        <ModalTitle>Add cases to set</ModalTitle>
+      </ModalHeader>
+      <ModalBody>
+        <div style={{ marginBottom: 'var(--ds-space-150)' }}>
+          <Textfield
             type="text"
             placeholder="Search by key or title…"
             value={search}
-            onChange={e => setSearch(e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearch(e.target.value)}
             autoFocus
-            style={{
-              width: '100%',
-              padding: '4px 10px',
-              border: '2px solid var(--ds-border)',
-              borderRadius: 4,
-              fontSize: 'var(--ds-font-size-300)',
-              fontFamily: 'var(--ds-font-family-body)',
-              boxSizing: 'border-box',
-              color: 'var(--ds-text)',
-              background: 'var(--ds-surface)',
-            }}
           />
         </div>
-        <div style={{ flex: 1, overflowY: 'auto', padding: '8px 24px' }}>
-          {filtered.length === 0 ? (
-            <p style={{ color: 'var(--ds-text-subtlest)', fontSize: 'var(--ds-font-size-400)', padding: '16px 0' }}>
-              {available.length === 0 ? 'All cases are already in this set.' : 'No cases match your search.'}
-            </p>
-          ) : (
-            filtered.map(c => (
+        {filtered.length === 0 ? (
+          <p style={{ color: 'var(--ds-text-subtlest)', fontSize: 'var(--ds-font-size-400)', padding: 'var(--ds-space-200) 0' }}>
+            {available.length === 0 ? 'All cases are already in this set.' : 'No cases match your search.'}
+          </p>
+        ) : (
+          <div style={{ maxHeight: 400, overflowY: 'auto' }}>
+            {filtered.map(c => (
               <label
                 key={c.id}
                 style={{
                   display: 'flex',
                   alignItems: 'center',
-                  gap: 12,
-                  padding: '8px 0',
+                  gap: 'var(--ds-space-150)',
+                  padding: 'var(--ds-space-100) 0',
                   cursor: 'pointer',
                   borderBottom: '1px solid var(--ds-border)',
                 }}
@@ -216,45 +182,21 @@ function AddCasesModal({
                 </span>
                 <span style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text)', flex: 1 }}>{c.title}</span>
               </label>
-            ))
-          )}
-        </div>
-        <div style={{ padding: '16px 24px', borderTop: '1px solid var(--ds-border)', display: 'flex', gap: 12, justifyContent: 'flex-end' }}>
-          <button
-            onClick={onClose}
-            style={{
-              padding: '8px 16px',
-              background: 'none',
-              border: '1px solid var(--ds-border)',
-              borderRadius: 4,
-              cursor: 'pointer',
-              fontSize: 'var(--ds-font-size-400)',
-              color: 'var(--ds-text)',
-            }}
-          >
-            Cancel
-          </button>
-          <button
-            onClick={handleAdd}
-            disabled={selected.size === 0 || saving}
-            style={{
-              padding: '8px 20px',
-              background: 'var(--ds-background-brand-bold)',
-              color: 'var(--ds-text-inverse)',
-              border: 'none',
-              borderRadius: 4,
-              cursor: selected.size === 0 || saving ? 'not-allowed' : 'pointer',
-              fontSize: 'var(--ds-font-size-400)',
-              fontWeight: 500,
-              opacity: selected.size === 0 ? 0.7 : 1,
-            }}
-          >
-            {saving ? 'Adding…' : selected.size > 0 ? `Add ${selected.size} case${selected.size > 1 ? 's' : ''}` : 'Add cases'}
-          </button>
-        </div>
-      </div>
-    </>,
-    document.body
+            ))}
+          </div>
+        )}
+      </ModalBody>
+      <ModalFooter>
+        <Button appearance="subtle" onClick={onClose}>Cancel</Button>
+        <Button
+          appearance="primary"
+          onClick={handleAdd}
+          isDisabled={selected.size === 0 || saving}
+        >
+          {saving ? 'Adding…' : selected.size > 0 ? `Add ${selected.size} case${selected.size > 1 ? 's' : ''}` : 'Add cases'}
+        </Button>
+      </ModalFooter>
+    </ModalDialog>
   );
 }
 
@@ -364,11 +306,16 @@ function AddToCycleDropdown({
 // ── Main page ─────────────────────────────────────────────────────────────────
 
 export default function SetDetailPage() {
-  const { id: setId, projectKey = 'BAU' } = useParams<{ id: string; projectKey: string }>();
+  // P1-S14 (slug contract): route param is the set's set_key, not its uuid.
+  // Resolve to the internal id below; every downstream query/FK write in
+  // this file already expects that internal id, so `setId` keeps its
+  // existing meaning once resolved.
+  const { setKey: routeSetKey, projectKey = 'BAU' } = useParams<{ setKey: string; projectKey: string }>();
   const navigate = useNavigate();
   const qc = useQueryClient();
-  const { data: projects = [] } = useProjects();
-  const projectId = projects[0]?.id;
+  const { projectId, project } = useTestHubProject();
+  // D023: cycle detail route requires the REAL project key, not the 'BAU' literal.
+  const cycleRouteKey = project?.key ?? projectKey;
 
   const [activeTab, setActiveTab] = useState<'cases' | 'cycles'>('cases');
   const [showAddCases, setShowAddCases] = useState(false);
@@ -377,18 +324,20 @@ export default function SetDetailPage() {
 
   // Query the set itself
   const { data: set, isLoading: setLoading } = useQuery({
-    queryKey: ['test-set', setId],
+    queryKey: ['test-set', routeSetKey],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('tm_test_sets')
         .select('id, name, description, set_type, membership_type, is_active, project_id, set_key')
-        .eq('id', setId!)
+        .eq('set_key', routeSetKey!)
         .single();
       if (error) throw error;
       return data as TmTestSet;
     },
-    enabled: !!setId,
+    enabled: !!routeSetKey,
   });
+
+  const setId = set?.id;
 
   // Query cases in this set
   const { data: setCases = [], isLoading: casesLoading } = useQuery({
@@ -416,6 +365,118 @@ export default function SetDetailPage() {
     },
     enabled: !!setId,
   });
+
+  // JiraTable columns for setCases
+  const setCasesTableColumns: Column<SetCase>[] = [
+    {
+      id: 'key',
+      label: 'Key',
+      width: 10,
+      cell: ({ row }) => (
+        <div style={{ fontFamily: 'var(--ds-font-family-code)', fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest)' }}>
+          {row.tm_test_cases?.case_key ?? '—'}
+        </div>
+      ),
+    },
+    {
+      id: 'title',
+      label: 'Title',
+      flex: true,
+      cell: ({ row }) => (
+        <div style={{ color: 'var(--ds-text)' }}>
+          {row.tm_test_cases?.title ?? '—'}
+        </div>
+      ),
+    },
+    {
+      id: 'status',
+      label: 'Status',
+      width: 12,
+      cell: ({ row }) => (
+        <>{row.tm_test_cases?.status ? <CaseStatusPill status={row.tm_test_cases.status} /> : '—'}</>
+      ),
+    },
+    {
+      id: 'remove',
+      label: '',
+      width: 10,
+      cell: ({ row }) => (
+        <IconButton
+          appearance="subtle"
+          spacing="compact"
+          icon={() => <Trash2 size={13} />}
+          label="Remove from set"
+          onClick={() => removeCaseMut.mutate(row.id)}
+        />
+      ),
+    },
+  ];
+
+  // JiraTable columns for cycleSets
+  const cyclesTableColumns: Column<CycleSet>[] = [
+    {
+      id: 'cycleName',
+      label: 'Cycle name',
+      flex: true,
+      cell: ({ row }) => (
+        <div style={{ color: 'var(--ds-text)', fontWeight: 500 }}>
+          {row.tm_test_cycles?.name ?? '—'}
+        </div>
+      ),
+    },
+    {
+      id: 'status',
+      label: 'Status',
+      width: 12,
+      cell: ({ row }) => (
+        <>
+          {row.tm_test_cycles?.status ? (
+            <Lozenge appearance={CYCLE_STATUS_APPEARANCE[row.tm_test_cycles.status] ?? 'default'}>
+              {row.tm_test_cycles.status.charAt(0) + row.tm_test_cycles.status.slice(1).toLowerCase().replace('_', ' ')}
+            </Lozenge>
+          ) : '—'}
+        </>
+      ),
+    },
+    {
+      id: 'startDate',
+      label: 'Start date',
+      width: 12,
+      cell: ({ row }) => (
+        <div style={{ color: 'var(--ds-text-subtle)', fontSize: 'var(--ds-font-size-200)' }}>
+          {row.tm_test_cycles?.sprint?.name ?? '—'}
+        </div>
+      ),
+    },
+    {
+      id: 'endDate',
+      label: 'End date',
+      width: 12,
+      cell: ({ row }) => (
+        <div style={{ color: 'var(--ds-text-subtle)' }}>
+          {row.tm_test_cycles?.planned_end ? formatDate(row.tm_test_cycles.planned_end) : '—'}
+        </div>
+      ),
+    },
+    {
+      id: 'actions',
+      label: '',
+      width: 10,
+      cell: ({ row }) => (
+        <>
+          {row.tm_test_cycles?.id && (
+            <Button
+              appearance="link"
+              spacing="none"
+              onClick={() => navigate(`/testhub/${cycleRouteKey}/cycles/${row.tm_test_cycles?.id}`)}
+            >
+              View cycle
+            </Button>
+          )}
+        </>
+      ),
+    },
+  ];
 
   // Query available cycles for "Add to cycle" dropdown
   const { data: availableCycles = [] } = useQuery({
@@ -479,36 +540,22 @@ export default function SetDetailPage() {
           title={set.name}
           actions={
             <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-              <button
+              <Button
+                appearance="default"
+                iconBefore={<Plus size={14} label="" />}
                 onClick={() => setShowAddCases(true)}
-                style={{
-                  padding: '8px 14px',
-                  background: 'none',
-                  border: '1px solid var(--ds-border)',
-                  borderRadius: 4,
-                  cursor: 'pointer',
-                  fontSize: 'var(--ds-font-size-300)',
-                  color: 'var(--ds-text)',
-                }}
               >
-                + Add cases
-              </button>
+                Add cases
+              </Button>
               <div style={{ position: 'relative' }}>
-                <button
+                <Button
                   ref={addToCycleBtnRef}
+                  appearance="default"
+                  iconAfter={<ChevronDown size={14} label="" />}
                   onClick={() => setAddToCycleOpen(v => !v)}
-                  style={{
-                    padding: '8px 14px',
-                    background: 'none',
-                    border: '1px solid var(--ds-border)',
-                    borderRadius: 4,
-                    cursor: 'pointer',
-                    fontSize: 'var(--ds-font-size-300)',
-                    color: 'var(--ds-text)',
-                  }}
                 >
-                  Add to cycle ▾
-                </button>
+                  Add to cycle
+                </Button>
                 {addToCycleOpen && (
                   <AddToCycleDropdown
                     setId={set.id}
@@ -518,20 +565,12 @@ export default function SetDetailPage() {
                   />
                 )}
               </div>
-              <button
+              <Button
+                appearance="default"
                 onClick={() => navigate(`/testhub/${projectKey}/sets`)}
-                style={{
-                  padding: '8px 14px',
-                  background: 'none',
-                  border: '1px solid var(--ds-border)',
-                  borderRadius: 4,
-                  cursor: 'pointer',
-                  fontSize: 'var(--ds-font-size-300)',
-                  color: 'var(--ds-text)',
-                }}
               >
                 Edit
-              </button>
+              </Button>
             </div>
           }
         />
@@ -541,7 +580,15 @@ export default function SetDetailPage() {
       <div style={{ display: 'flex', gap: 16, marginBottom: 24, flexWrap: 'wrap' }}>
         <SummaryCard label="Total cases" value={String(setCases.length)} />
         <SummaryCard label="Active cycles" value={String(cycleSets.length)} />
-        <SummaryCard label="Set type" value={setTypeLabel} />
+        {/* D036: set type as a Lozenge, not a giant H1-stat number. */}
+        <SummaryCard
+          label="Set type"
+          node={
+            <Lozenge appearance={set.set_type === 'smoke' ? 'new' : set.set_type === 'regression' ? 'inprogress' : 'default'}>
+              {setTypeLabel}
+            </Lozenge>
+          }
+        />
       </div>
 
       {/* Tabs */}
@@ -576,75 +623,20 @@ export default function SetDetailPage() {
             </div>
           ) : setCases.length === 0 ? (
             <EmptyState
-              message="No cases in this set. Add cases to get started."
-              action={
-                <button
-                  onClick={() => setShowAddCases(true)}
-                  style={{
-                    padding: '8px 16px',
-                    background: 'var(--ds-background-brand-bold)',
-                    color: 'var(--ds-text-inverse)',
-                    border: 'none',
-                    borderRadius: 4,
-                    cursor: 'pointer',
-                    fontSize: 'var(--ds-font-size-300)',
-                    fontWeight: 500,
-                  }}
-                >
+              header="No cases in this set"
+              description="Add cases to get started."
+              primaryAction={
+                <Button appearance="primary" onClick={() => setShowAddCases(true)}>
                   Add cases
-                </button>
+                </Button>
               }
             />
           ) : (
-            <div style={{ border: '1px solid var(--ds-border)', borderRadius: 8, overflow: 'hidden', background: 'var(--ds-surface)' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 'var(--ds-font-size-400)' }}>
-                <thead>
-                  <tr style={{ background: 'var(--ds-surface-sunken)', borderBottom: '1px solid var(--ds-border)' }}>
-                    <th style={thStyle}>Key</th>
-                    <th style={thStyle}>Title</th>
-                    <th style={thStyle}>Status</th>
-                    <th style={{ ...thStyle, width: 80 }}></th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {setCases.map(sc => {
-                    const tc = sc.tm_test_cases;
-                    return (
-                      <tr key={sc.id} style={{ borderBottom: '1px solid var(--ds-border)' }}>
-                        <td style={{ ...tdStyle, fontFamily: 'var(--ds-font-family-code)', fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest)' }}>
-                          {tc?.case_key ?? '—'}
-                        </td>
-                        <td style={{ ...tdStyle, color: 'var(--ds-text)' }}>
-                          {tc?.title ?? '—'}
-                        </td>
-                        <td style={tdStyle}>
-                          {tc?.status ? (
-                            <CaseStatusPill status={tc.status} />
-                          ) : '—'}
-                        </td>
-                        <td style={tdStyle}>
-                          <button
-                            onClick={() => removeCaseMut.mutate(sc.id)}
-                            title="Remove from set"
-                            style={{
-                              background: 'none',
-                              border: 'none',
-                              cursor: 'pointer',
-                              color: 'var(--ds-text-subtlest)',
-                              padding: 4,
-                              display: 'flex',
-                              alignItems: 'center',
-                            }}
-                          >
-                            <Trash2 size={13} />
-                          </button>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
+            <JiraTable
+              columns={setCasesTableColumns}
+              data={setCases}
+              getRowId={(row) => row.id}
+            />
           )}
         </>
       )}
@@ -657,66 +649,13 @@ export default function SetDetailPage() {
               <Spinner size="medium" />
             </div>
           ) : cycleSets.length === 0 ? (
-            <EmptyState message="This set has not been added to any cycles yet." />
+            <EmptyState header="This set has not been added to any cycles yet." />
           ) : (
-            <div style={{ border: '1px solid var(--ds-border)', borderRadius: 8, overflow: 'hidden', background: 'var(--ds-surface)' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 'var(--ds-font-size-400)' }}>
-                <thead>
-                  <tr style={{ background: 'var(--ds-surface-sunken)', borderBottom: '1px solid var(--ds-border)' }}>
-                    <th style={thStyle}>Cycle name</th>
-                    <th style={thStyle}>Status</th>
-                    <th style={thStyle}>Start date</th>
-                    <th style={thStyle}>End date</th>
-                    <th style={{ ...thStyle, width: 80 }}></th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {cycleSets.map(cs => {
-                    const cycle = cs.tm_test_cycles;
-                    return (
-                      <tr key={cs.id} style={{ borderBottom: '1px solid var(--ds-border)' }}>
-                        <td style={{ ...tdStyle, color: 'var(--ds-text)', fontWeight: 500 }}>
-                          {cycle?.name ?? '—'}
-                        </td>
-                        <td style={tdStyle}>
-                          {cycle?.status ? (
-                            <Lozenge appearance={CYCLE_STATUS_APPEARANCE[cycle.status] ?? 'default'}>
-                              {cycle.status.charAt(0) + cycle.status.slice(1).toLowerCase().replace('_', ' ')}
-                            </Lozenge>
-                          ) : '—'}
-                        </td>
-                        <td style={{ ...tdStyle, color: 'var(--ds-text-subtle)', fontSize: 'var(--ds-font-size-200)' }}>
-                          {cycle?.sprint?.name ?? '—'}
-                        </td>
-                        <td style={{ ...tdStyle, color: 'var(--ds-text-subtle)' }}>
-                          {cycle?.planned_start ? formatDate(cycle.planned_start) : '—'}
-                        </td>
-                        <td style={{ ...tdStyle, color: 'var(--ds-text-subtle)' }}>
-                          {cycle?.planned_end ? formatDate(cycle.planned_end) : '—'}
-                        </td>
-                        <td style={tdStyle}>
-                          {cycle?.id && (
-                            <button
-                              onClick={() => navigate(`/testhub/${projectKey}/cycles/${cycle.id}`)}
-                              style={{
-                                background: 'none',
-                                border: 'none',
-                                cursor: 'pointer',
-                                fontSize: 'var(--ds-font-size-200)',
-                                color: 'var(--ds-link)',
-                                padding: 0,
-                              }}
-                            >
-                              View cycle
-                            </button>
-                          )}
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
+            <JiraTable
+              columns={cyclesTableColumns}
+              data={cycleSets}
+              getRowId={(row) => row.id}
+            />
           )}
         </>
       )}
@@ -736,7 +675,7 @@ export default function SetDetailPage() {
 
 // ── Helper components ─────────────────────────────────────────────────────────
 
-function SummaryCard({ label, value }: { label: string; value: string }) {
+function SummaryCard({ label, value, node }: { label: string; value?: string; node?: React.ReactNode }) {
   return (
     <div style={{
       padding: '16px 20px',
@@ -745,28 +684,22 @@ function SummaryCard({ label, value }: { label: string; value: string }) {
       background: 'var(--ds-surface)',
       minWidth: 140,
     }}>
-      <div style={{ fontSize: 'var(--ds-font-size-800)', fontWeight: 600, color: 'var(--ds-text)', marginBottom: 4 }}>
-        {value}
+      <div style={{
+        // Numeric stats stay large; a node (e.g. a Lozenge) renders at its own
+        // intrinsic size so it doesn't read as an oversized H1 metric.
+        fontSize: node ? undefined : 'var(--ds-font-size-800)',
+        fontWeight: node ? undefined : 600,
+        color: 'var(--ds-text)',
+        marginBottom: 4,
+        minHeight: 32,
+        display: 'flex',
+        alignItems: 'center',
+      }}>
+        {node ?? value}
       </div>
       <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle)' }}>
         {label}
       </div>
-    </div>
-  );
-}
-
-function EmptyState({ message, action }: { message: string; action?: React.ReactNode }) {
-  return (
-    <div style={{
-      textAlign: 'center',
-      padding: '48px 32px',
-      color: 'var(--ds-text-subtlest)',
-      fontSize: 'var(--ds-font-size-400)',
-      border: '1px dashed var(--ds-border)',
-      borderRadius: 8,
-    }}>
-      <p style={{ margin: '0 0 16px', color: 'var(--ds-text-subtle)' }}>{message}</p>
-      {action}
     </div>
   );
 }

@@ -1,6 +1,6 @@
 // src/store/huddleStore.ts
 import { create } from 'zustand';
-import { HuddleConnection } from '@/lib/chat/huddle/HuddleConnection';
+import { HuddleMesh } from '@/lib/chat/huddle/HuddleMesh';
 import { supabase } from '@/integrations/supabase/client';
 const db = supabase as unknown as { from: (t: string) => any };
 
@@ -57,11 +57,16 @@ interface HuddleStore {
   _setConnectionState: (s: RTCPeerConnectionState) => void;
 }
 
-// Non-React module refs — the live peer + remote audio element must NOT live in
+// Non-React module refs — the live mesh + remote audio elements must NOT live in
 // store state (they are not serializable and must survive re-renders).
-let connection: HuddleConnection | null = null;
-let remoteAudioEl: HTMLAudioElement | null = null;
-let remoteStream: MediaStream | null = null;
+let mesh: HuddleMesh | null = null;
+// Per-remote audio: one <audio> element + MediaStream per participant id.
+const remoteAudioEls = new Map<string, HTMLAudioElement>();
+const remoteStreams = new Map<string, MediaStream>();
+// Per-remote connection state, used to aggregate an overall call state.
+const remoteStates = new Map<string, RTCPeerConnectionState>();
+// Which remote ids are currently sharing their screen.
+const remoteSharingIds = new Set<string>();
 let localScreenStream: MediaStream | null = null;
 let remoteScreenStream: MediaStream | null = null;
 let selfIdRef: string | null = null;
@@ -88,9 +93,10 @@ async function beat(huddleId: string | null, userId: string | null) {
 }
 
 /** Live remote MediaStream — used by HuddleFab to drive the audio-level equalizer.
- *  Kept as a module ref (not store state) since it changes outside React. */
+ *  With a mesh there can be several; return the first (any) live remote. */
 export function getHuddleRemoteStream(): MediaStream | null {
-  return remoteStream;
+  const first = remoteStreams.values().next();
+  return first.done ? null : first.value;
 }
 /** Screen-share streams (module refs — change outside React). */
 export function getHuddleLocalScreen(): MediaStream | null { return localScreenStream; }
@@ -102,27 +108,47 @@ export function onHuddleMarker(cb: (m: unknown) => void): () => void {
   markerListeners.add(cb);
   return () => { markerListeners.delete(cb); };
 }
-export function sendHuddleMarker(m: unknown): void { connection?.sendMarker(m); }
+export function sendHuddleMarker(m: unknown): void { mesh?.sendMarker(m); }
 
-function attachRemote(stream: MediaStream) {
-  remoteStream = stream;
+/** Attach one remote's audio: create a dedicated <audio> element per peer id. */
+function attachRemote(remoteId: string, stream: MediaStream) {
+  remoteStreams.set(remoteId, stream);
   if (typeof document === 'undefined') return;
-  if (!remoteAudioEl) {
-    remoteAudioEl = document.createElement('audio');
-    remoteAudioEl.autoplay = true;
-    remoteAudioEl.setAttribute('data-huddle-remote-audio', 'true');
-    document.body.appendChild(remoteAudioEl);
+  let el = remoteAudioEls.get(remoteId);
+  if (!el) {
+    el = document.createElement('audio');
+    el.autoplay = true;
+    el.setAttribute('data-huddle-remote-audio', remoteId);
+    document.body.appendChild(el);
+    remoteAudioEls.set(remoteId, el);
   }
-  remoteAudioEl.srcObject = stream;
+  el.srcObject = stream;
 }
 
-function detachRemote() {
-  remoteStream = null;
-  if (remoteAudioEl) {
-    remoteAudioEl.srcObject = null;
-    remoteAudioEl.remove();
-    remoteAudioEl = null;
-  }
+/** Detach ONE remote (they left/dropped). */
+function detachRemote(remoteId: string) {
+  remoteStreams.delete(remoteId);
+  const el = remoteAudioEls.get(remoteId);
+  if (el) { el.srcObject = null; el.remove(); remoteAudioEls.delete(remoteId); }
+}
+
+/** Detach ALL remotes (leaving the call). */
+function detachAllRemotes() {
+  remoteStreams.clear();
+  remoteStates.clear();
+  remoteSharingIds.clear();
+  remoteAudioEls.forEach((el) => { el.srcObject = null; el.remove(); });
+  remoteAudioEls.clear();
+}
+
+/** Aggregate the mesh into one call-level connection state for the UI. */
+function aggregateState(): RTCPeerConnectionState {
+  const states = [...remoteStates.values()];
+  if (states.length === 0) return 'connecting';
+  if (states.some((s) => s === 'connected' || s === 'completed')) return 'connected';
+  if (states.some((s) => s === 'connecting' || s === 'new')) return 'connecting';
+  if (states.some((s) => s === 'disconnected')) return 'disconnected';
+  return states[0];
 }
 
 /** Global on-call flag so a DM list elsewhere can show "X is on a huddle". */
@@ -194,11 +220,36 @@ async function finalizeHuddleSummary(
   if (!conversationId || !huddleId) return;
   const durationSeconds = startedAt ? Math.max(0, Math.round((Date.now() - startedAt) / 1000)) : 0;
   try {
+    // Snapshot who actually joined + who started, so the event row can render
+    // PER-VIEWER: participants see "You (and X) were in the huddle", non-joiners
+    // see "You missed a huddle — {caller} was in the huddle for …".
+    const [{ data: hud }, { data: parts }] = await Promise.all([
+      db.from('chat_huddles').select('started_by').eq('id', huddleId).maybeSingle(),
+      db.from('chat_huddle_participants').select('user_id').eq('huddle_id', huddleId),
+    ]);
+    const startedBy = (hud as { started_by: string } | null)?.started_by ?? null;
+    const partIds = [...new Set(((parts ?? []) as { user_id: string }[]).map((p) => p.user_id))];
+    let participants: { id: string; name: string }[] = [];
+    let callerName = withName;
+    if (partIds.length) {
+      const { data: profs } = await db.from('profiles').select('id, full_name').in('id', partIds);
+      const nameMap = Object.fromEntries(((profs ?? []) as { id: string; full_name: string | null }[])
+        .map((p) => [p.id, p.full_name || 'Someone']));
+      participants = partIds.map((id) => ({ id, name: nameMap[id] || 'Someone' }));
+      if (startedBy && nameMap[startedBy]) callerName = nameMap[startedBy];
+    }
     await db.from('chat_messages')
       .update({
         body_text: 'A huddle happened',
         event_type: 'huddle_summary',
-        event_meta: { huddle_id: huddleId, duration_seconds: durationSeconds, with_name: withName },
+        event_meta: {
+          huddle_id: huddleId,
+          duration_seconds: durationSeconds,
+          with_name: withName,
+          started_by: startedBy,
+          caller_name: callerName,
+          participants,
+        },
       })
       .eq('conversation_id', conversationId)
       .eq('event_type', 'huddle_live')
@@ -225,18 +276,31 @@ export const useHuddleStore = create<HuddleStore>((set, get) => ({
 
   enter: async ({ conversationId, huddleId, conversationName, selfId }) => {
     // Tear down any existing call first (one huddle at a time).
-    if (connection) { connection.close(); connection = null; detachRemote(); }
-    connection = new HuddleConnection({
+    if (mesh) { mesh.close(); mesh = null; detachAllRemotes(); }
+    mesh = new HuddleMesh({
       conversationId,
       selfId,
-      onRemoteStream: attachRemote,
-      onConnectionState: (s) => get()._setConnectionState(s),
-      onRemoteScreen: (stream) => {
-        remoteScreenStream = stream;
+      onRemoteStream: (remoteId, stream) => attachRemote(remoteId, stream),
+      onConnectionState: (remoteId, s) => {
+        remoteStates.set(remoteId, s);
+        get()._setConnectionState(aggregateState());
+      },
+      onPeerLeft: (remoteId) => {
+        detachRemote(remoteId);
+        remoteStates.delete(remoteId);
+        remoteSharingIds.delete(remoteId);
+        if (remoteSharingIds.size === 0) remoteScreenStream = null;
+        const a = get().active;
+        if (a) set({ active: { ...a, remoteSharing: remoteSharingIds.size > 0, connectionState: aggregateState() } });
+      },
+      onRemoteScreen: (remoteId, stream) => {
+        if (stream) { remoteSharingIds.add(remoteId); remoteScreenStream = stream; }
+        else { remoteSharingIds.delete(remoteId); if (remoteSharingIds.size === 0) remoteScreenStream = null; }
+        const anySharing = remoteSharingIds.size > 0;
         const a = get().active;
         // When a remote share arrives, pop the window open (normal) so it's seen.
         if (a) set({
-          active: { ...a, remoteSharing: !!stream },
+          active: { ...a, remoteSharing: anySharing },
           ...(stream ? { screenWindow: 'normal' as ScreenWindowMode } : {}),
           ...(stream && get().windowState === 'minimized' ? { windowState: 'open' as const } : {}),
         });
@@ -246,7 +310,7 @@ export const useHuddleStore = create<HuddleStore>((set, get) => ({
         const a = get().active;
         if (a) set({ active: { ...a, screenSharing: false } });
       },
-      onMarker: (m) => { markerListeners.forEach((l) => l(m)); },
+      onMarker: (_remoteId, m) => { markerListeners.forEach((l) => l(m)); },
     });
     selfIdRef = selfId;
     huddleIdRef = huddleId;
@@ -268,7 +332,7 @@ export const useHuddleStore = create<HuddleStore>((set, get) => ({
       const a = get().active;
       if (a && a.huddleId === huddleId) set({ active: { ...a, huddleEventId: eid } });
     });
-    await connection.start();
+    await mesh.start();
     void setOnCall(selfId, huddleId);
     // heartbeat: keep my participant row fresh so the huddle reads as live;
     // stopping (drop/leave) lets it go stale and clears the phantom Rejoin.
@@ -279,9 +343,9 @@ export const useHuddleStore = create<HuddleStore>((set, get) => ({
 
   leave: () => {
     if (heartbeatTimer) { clearInterval(heartbeatTimer); heartbeatTimer = null; }
-    connection?.close();
-    connection = null;
-    detachRemote();
+    mesh?.close();
+    mesh = null;
+    detachAllRemotes();
     localScreenStream = null;
     remoteScreenStream = null;
     const a = get().active;
@@ -299,21 +363,21 @@ export const useHuddleStore = create<HuddleStore>((set, get) => ({
     const a = get().active;
     if (!a) return;
     const next = !a.micMuted;
-    connection?.setMicMuted(next);
+    mesh?.setMicMuted(next);
     set({ active: { ...a, micMuted: next } });
   },
 
   startScreen: async () => {
-    if (!connection) return;
+    if (!mesh) return;
     try {
-      localScreenStream = await connection.startScreenShare();
+      localScreenStream = await mesh.startScreenShare();
       const a = get().active;
       if (a) set({ active: { ...a, screenSharing: true }, screenWindow: 'normal' });
     } catch { /* user cancelled the screen picker — no-op */ }
   },
 
   stopScreen: async () => {
-    await connection?.stopScreenShare();
+    await mesh?.stopScreenShare();
     localScreenStream = null;
     const a = get().active;
     if (a) set({ active: { ...a, screenSharing: false } });

@@ -11,6 +11,7 @@
  */
 
 import { supabase } from '@/integrations/supabase/client';
+import { Routes } from '@/lib/routes';
 import type { Dependency, DependencyType, IssueMeta, Hierarchy } from './types';
 
 /** Build issueMeta + hierarchy from tm_test_cycles for the given cycle ids. */
@@ -38,7 +39,16 @@ export async function fetchCycleMeta(ids: string[]): Promise<{ issueMeta: IssueM
     const readableKey = projectKey ? `${projectKey} ${c.cycle_key ?? ''}`.trim() : (c.cycle_key ?? '');
     issueMeta[c.id] = {
       issue_type: 'Test Cycle',
-      summary: c.name ? `${readableKey} — ${c.name}` : readableKey,
+      // Node id is the cycle UUID; the readable key ("<PROJECT> CY-001") drives
+      // the card title, and the cycle name stays as the summary/subtitle —
+      // mirroring how issue hubs render key + summary. Empty readableKey → null
+      // so the title falls back rather than showing a blank (zero-assumption).
+      displayKey: readableKey || null,
+      // Test cycles have no /browse/<key> route; the cycle detail page resolves a
+      // UUID param directly (useTestCycleByKey → isValidUUID branch), so link to
+      // the cycle route instead of a 404 /browse/<uuid>.
+      href: Routes.testHub.cycle(c.id),
+      summary: c.name ?? null,
       status: c.status ?? null,
       status_category: null,
       due_date: c.planned_end ?? null,

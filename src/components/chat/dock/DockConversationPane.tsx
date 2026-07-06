@@ -21,6 +21,7 @@ import {
 import type { ChatConversation, ChatMessage } from "@/types/chat";
 import { ConversationHeader } from "@/components/chat/main/ConversationHeader";
 import { ThreadPanel } from "@/components/chat/main/ThreadPanel";
+import { DmSummarizePanel } from "./DmSummarizePanel";
 import { MessageList } from "@/features/chat-v2/components/MessagePanel/MessageList";
 import { Composer } from "@/features/chat-v2/components/Composer/Composer";
 import { ComposerScheduledBanner } from "@/features/chat-v2/components/DraftsAndSent/ComposerScheduledBanner";
@@ -29,7 +30,6 @@ import { useConversationDraft } from "@/features/chat-v2/hooks/useConversationDr
 import { useMessageAttachments } from "@/features/chat-v2/hooks/useMessageAttachments";
 import { useMyScheduledCountByConversation } from "@/features/chat-v2/hooks/useMyScheduledMessages";
 import { useChatTheme } from "@/features/chat-v2/hooks/useChatTheme";
-import catyIcon from "@/assets/caty-icon.svg";
 // ads-scanner:ignore-next-line -- chat.css uses only ADS tokens; kept for ConversationHeader cc-* classes
 import "@/components/chat/chat.css";
 // ads-scanner:ignore-next-line -- chat-v2 tokens use ADS vars via --cv2-* indirection
@@ -112,8 +112,16 @@ export function DockConversationPane({
   const scheduledByConv = useMyScheduledCountByConversation();
   const scheduledForThisConv = scheduledByConv.get(conversation.id);
 
-  const [summaryDismissed, setSummaryDismissed] = useState(false);
   const [threadParent, setThreadParent] = useState<ChatMessage | null>(null);
+  const [jumpHighlightId, setJumpHighlightId] = useState<string | null>(null);
+
+  // DM-only "summarize" panel (shared work items). Reset when the pane
+  // switches to a different conversation.
+  const isDm = conversation.kind === "dm";
+  const [summarizeOpen, setSummarizeOpen] = useState(false);
+  useEffect(() => {
+    setSummarizeOpen(false);
+  }, [conversation.id]);
 
   const savedIds = useMemo(
     () =>
@@ -244,56 +252,15 @@ export function DockConversationPane({
       data-cv2-theme={theme}
       style={{ height: '100%', minHeight: 0 }}
     >
-      <button
-        type="button"
-        className="cc-conv-pane__back"
-        onClick={onBack}
-        aria-label="Back to directory"
-      >
-        <svg
-          width="14"
-          height="14"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          aria-hidden
-        >
-          <polyline points="15 18 9 12 15 6" />
-        </svg>
-        <span>All messages</span>
-      </button>
-
       <ConversationHeader
         conversation={conversation}
         currentUserMuted={conversation.isMuted ?? false}
         currentUserStarred={conversation.isStarred ?? false}
         onBack={onBack}
+        onSummarize={isDm ? () => setSummarizeOpen((v) => !v) : undefined}
+        summarizeActive={summarizeOpen}
       />
 
-      {/* Ticket summary pill — finding 52: Caty can summarize ticket threads */}
-      {conversation.kind === 'ticket' && !summaryDismissed && messages.length >= 3 && (
-        <div className="cc-conv-pane__ticket-summary">
-          <img src={catyIcon} alt="" width={16} height={16} />
-          <span className="cc-conv-pane__ticket-summary-text">
-            {messages.length} messages — summarize this thread?
-          </span>
-          <button
-            type="button"
-            className="cc-conv-pane__ticket-summary-cta"
-            onClick={() => window.dispatchEvent(new CustomEvent('catalyst:ask-caty', { detail: { prompt: `Summarize the discussion on ${conversation.ticketKey ?? 'this ticket'}` } }))}
-          >
-            Summarize
-          </button>
-          <button
-            type="button"
-            className="cc-conv-pane__ticket-summary-dismiss"
-            aria-label="Dismiss thread summary"
-            onClick={() => setSummaryDismissed(true)}
-          >×</button>
-        </div>
-      )}
 
       {threadParent ? (
         <ThreadPanel
@@ -305,12 +272,28 @@ export function DockConversationPane({
         />
       ) : (
         <div className="cc-conv-pane__body">
+          {summarizeOpen ? (
+            <DmSummarizePanel
+              conversation={conversation}
+              onSkip={() => setSummarizeOpen(false)}
+            />
+          ) : (
           <MessageList
             messages={messages}
             loading={isLoading}
             savedIds={savedIds}
             pinnedIds={pinnedIds}
             attachmentsByMessage={attachmentsByMessage}
+            jumpHighlightId={jumpHighlightId}
+            onJumpTo={(messageId) => {
+              setJumpHighlightId(messageId);
+              requestAnimationFrame(() => {
+                document
+                  .querySelector(`.cc-conv-pane [data-message-id="${messageId}"]`)
+                  ?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              });
+              window.setTimeout(() => setJumpHighlightId(null), 2400);
+            }}
             onOpenThread={handleOpenThread}
             onToggleReaction={toggleReaction}
             onEdit={(messageId, markdown) => {
@@ -320,6 +303,7 @@ export function DockConversationPane({
             onTogglePin={handleTogglePin}
             onRequestDelete={handleRequestDelete}
           />
+          )}
           <Composer
             key={conversation.id}
             placeholder={`Message ${

@@ -4,54 +4,69 @@
  * Tests Realtime subscriptions, RLS policies, multi-user scenarios.
  * Covers: Notifications (E2), Presence (E3), Reactions (E4).
  */
+import { vi } from 'vitest';
 import { renderHook, act, waitFor } from '@testing-library/react';
 import { useChatNotifications } from '../useChatNotifications';
 import { usePushNotifications } from '../usePushNotifications';
 import { notificationManager } from '@/lib/chat/NotificationManager';
 
 // Mock Supabase Realtime
-jest.mock('@supabase/supabase-js', () => ({
-  createClient: jest.fn(() => ({
-    channel: jest.fn((name: string) => ({
-      on: jest.fn((event: string, callback: (payload: any) => void) => {
+vi.mock('@supabase/supabase-js', () => ({
+  createClient: vi.fn(() => ({
+    channel: vi.fn((name: string) => ({
+      on: vi.fn((event: string, callback: (payload: any) => void) => {
         // Store callback for manual trigger in tests
         if (event === 'postgres_changes') {
           (global as any).__realtimeCallbacks = (global as any).__realtimeCallbacks || {};
           (global as any).__realtimeCallbacks[name] = callback;
         }
-        return { subscribe: jest.fn(() => Promise.resolve()) };
+        return { subscribe: vi.fn(() => Promise.resolve()) };
       }),
-      subscribe: jest.fn(() => Promise.resolve()),
-      unsubscribe: jest.fn(() => Promise.resolve()),
+      subscribe: vi.fn(() => Promise.resolve()),
+      unsubscribe: vi.fn(() => Promise.resolve()),
     })),
     auth: {
-      getUser: jest.fn(() => Promise.resolve({ data: { user: { id: 'user-1' } } })),
-      onAuthStateChange: jest.fn(() => jest.fn()),
+      getUser: vi.fn(() => Promise.resolve({ data: { user: { id: 'user-1' } } })),
+      onAuthStateChange: vi.fn(() => vi.fn()),
     },
   })),
 }));
 
-jest.mock('@/lib/chat/NotificationManager', () => ({
+vi.mock('@/lib/chat/NotificationManager', () => ({
   notificationManager: {
-    requestPermission: jest.fn().mockResolvedValue(true),
-    isPermitted: jest.fn().mockReturnValue(true),
-    notify: jest.fn().mockResolvedValue({}),
-    playSoundIfEnabled: jest.fn(),
-    setSoundEnabled: jest.fn(),
-    isSoundEnabled: jest.fn().mockReturnValue(false),
-    getPermissionState: jest.fn().mockReturnValue('granted'),
+    requestPermission: vi.fn().mockResolvedValue(true),
+    isPermitted: vi.fn().mockReturnValue(true),
+    notify: vi.fn().mockResolvedValue({}),
+    playSoundIfEnabled: vi.fn(),
+    setSoundEnabled: vi.fn(),
+    isSoundEnabled: vi.fn().mockReturnValue(false),
+    getPermissionState: vi.fn().mockReturnValue('granted'),
   },
 }));
 
+/**
+ * jsdom defines `document.hidden` as a getter on Document.prototype, and a
+ * defineProperty without `configurable: true` makes later re-mocks throw
+ * "Cannot redefine property: hidden". isUserAway() reads `document.hidden`,
+ * so we shadow it with an own configurable getter and delete it afterEach to
+ * restore the prototype getter.
+ */
+function setDocumentHidden(hidden: boolean) {
+  Object.defineProperty(document, 'hidden', {
+    configurable: true,
+    get: () => hidden,
+  });
+}
+
 describe('Chat Integration Tests (E2/E3/E4)', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     (global as any).__realtimeCallbacks = {};
-    Object.defineProperty(document, 'hidden', {
-      writable: true,
-      value: false,
-      configurable: true,
-    });
+    setDocumentHidden(false);
+  });
+
+  afterEach(() => {
+    delete (document as any).hidden;
   });
 
   // ────────────────────────────────────────────────
@@ -107,7 +122,7 @@ describe('Chat Integration Tests (E2/E3/E4)', () => {
     });
 
     it('should request notification permission on app load', async () => {
-      const onPermissionRequested = jest.fn();
+      const onPermissionRequested = vi.fn();
       const { result } = renderHook(() =>
         usePushNotifications({ onPermissionRequested }),
       );
@@ -121,13 +136,9 @@ describe('Chat Integration Tests (E2/E3/E4)', () => {
     });
 
     it('should send browser push on @mention when away', async () => {
-      Object.defineProperty(document, 'hidden', {
-        writable: true,
-        value: true,
-        configurable: true,
-      });
+      setDocumentHidden(true);
 
-      (notificationManager.isPermitted as jest.Mock).mockReturnValue(true);
+      vi.mocked(notificationManager.isPermitted).mockReturnValue(true);
       const { result } = renderHook(() => usePushNotifications());
 
       await act(async () => {
@@ -143,16 +154,10 @@ describe('Chat Integration Tests (E2/E3/E4)', () => {
       );
 
       expect(notificationManager.playSoundIfEnabled).toHaveBeenCalled();
-
-      Object.defineProperty(document, 'hidden', {
-        writable: true,
-        value: false,
-        configurable: true,
-      });
     });
 
     it('should NOT send browser push if user is focused', async () => {
-      (notificationManager.isPermitted as jest.Mock).mockReturnValue(true);
+      vi.mocked(notificationManager.isPermitted).mockReturnValue(true);
       const { result } = renderHook(() => usePushNotifications());
 
       await act(async () => {
@@ -164,13 +169,9 @@ describe('Chat Integration Tests (E2/E3/E4)', () => {
     });
 
     it('should NOT send push if permission not granted', async () => {
-      Object.defineProperty(document, 'hidden', {
-        writable: true,
-        value: true,
-        configurable: true,
-      });
+      setDocumentHidden(true);
 
-      (notificationManager.isPermitted as jest.Mock).mockReturnValue(false);
+      vi.mocked(notificationManager.isPermitted).mockReturnValue(false);
       const { result } = renderHook(() => usePushNotifications());
 
       await act(async () => {
@@ -178,12 +179,6 @@ describe('Chat Integration Tests (E2/E3/E4)', () => {
       });
 
       expect(notificationManager.notify).not.toHaveBeenCalled();
-
-      Object.defineProperty(document, 'hidden', {
-        writable: true,
-        value: false,
-        configurable: true,
-      });
     });
   });
 
@@ -196,6 +191,8 @@ describe('Chat Integration Tests (E2/E3/E4)', () => {
       const { result } = renderHook(() => usePushNotifications());
 
       expect(result.current.hasMention('Hey @alice')).toBe(true);
+      // Regression guard: emails must not read as mentions (old /@[\w]+/
+      // regex matched "@example" inside "alice@example.com").
       expect(result.current.hasMention('alice@example.com')).toBe(false);
     });
 
@@ -204,19 +201,9 @@ describe('Chat Integration Tests (E2/E3/E4)', () => {
 
       expect(result.current.isUserAway()).toBe(false);
 
-      Object.defineProperty(document, 'hidden', {
-        writable: true,
-        value: true,
-        configurable: true,
-      });
+      setDocumentHidden(true);
 
       expect(result.current.isUserAway()).toBe(true);
-
-      Object.defineProperty(document, 'hidden', {
-        writable: true,
-        value: false,
-        configurable: true,
-      });
     });
 
     it('should update last-seen on message send', async () => {
@@ -265,13 +252,13 @@ describe('Chat Integration Tests (E2/E3/E4)', () => {
       const { result } = renderHook(() => useChatNotifications());
 
       act(() => {
-        result.current.notifyReactionAdded();
+        result.current.notifyReactionAdded('👍');
       });
 
       expect(result.current.toasts).toHaveLength(1);
       expect(result.current.toasts[0]).toMatchObject({
         type: 'success',
-        title: 'Reaction added',
+        title: 'Reaction added: 👍',
       });
     });
 
@@ -280,19 +267,21 @@ describe('Chat Integration Tests (E2/E3/E4)', () => {
 
       // Simulate concurrent reaction clicks (conflict scenario)
       act(() => {
-        result.current.notifyReactionAdded();
-        result.current.notifyReactionAdded();
+        result.current.notifyReactionAdded('👍');
+        result.current.notifyReactionAdded('👍');
       });
 
       // Should handle both (or deduplicate)
       expect(result.current.toasts.length).toBeGreaterThanOrEqual(1);
     });
 
-    it('should notify reaction failure', async () => {
+    // useChatNotifications has no notifyReactionFailed(); reaction failures
+    // are surfaced through the generic addToast() API — test that real path.
+    it('should surface reaction failure via addToast', async () => {
       const { result } = renderHook(() => useChatNotifications());
 
       act(() => {
-        result.current.notifyReactionFailed('RLS policy blocked the operation');
+        result.current.addToast('error', 'Reaction failed', 'RLS policy blocked the operation');
       });
 
       expect(result.current.toasts).toHaveLength(1);
@@ -302,11 +291,13 @@ describe('Chat Integration Tests (E2/E3/E4)', () => {
       });
     });
 
-    it('should clear reactions on message delete', async () => {
+    // useChatNotifications has no notifyMessageDeleted(); message-delete
+    // warnings go through the generic addToast() API — test that real path.
+    it('should surface message-deleted warning via addToast', async () => {
       const { result } = renderHook(() => useChatNotifications());
 
       act(() => {
-        result.current.notifyMessageDeleted('All reactions will be deleted');
+        result.current.addToast('warning', 'Message deleted', 'All reactions will be deleted');
       });
 
       expect(result.current.toasts).toHaveLength(1);
@@ -324,12 +315,14 @@ describe('Chat Integration Tests (E2/E3/E4)', () => {
   describe('RLS Policy Enforcement', () => {
     it('should enforce RLS on ph_comment_reactions', async () => {
       // In real integration, this would test actual Supabase RLS
-      // Simulating: user who is NOT in the conversation cannot react
+      // Simulating: user who is NOT in the conversation cannot react.
+      // (No notifyReactionFailed() exists — the generic addToast() is the
+      // real API a caller would use to surface the RLS rejection.)
       const { result } = renderHook(() => useChatNotifications());
 
       act(() => {
         // RLS policy should reject this (simulated)
-        result.current.notifyReactionFailed('42501: RLS policy violation');
+        result.current.addToast('error', 'Reaction failed', '42501: RLS policy violation');
       });
 
       expect(result.current.toasts[0]).toMatchObject({
@@ -360,16 +353,11 @@ describe('Chat Integration Tests (E2/E3/E4)', () => {
 
   describe('Multi-User Scenarios', () => {
     it('should handle concurrent @mentions from 2 users', async () => {
-      const { result: notifications } = renderHook(() => useChatNotifications());
       const { result: push } = renderHook(() => usePushNotifications());
 
-      Object.defineProperty(document, 'hidden', {
-        writable: true,
-        value: true,
-        configurable: true,
-      });
+      setDocumentHidden(true);
 
-      (notificationManager.isPermitted as jest.Mock).mockReturnValue(true);
+      vi.mocked(notificationManager.isPermitted).mockReturnValue(true);
 
       // User A mentions current user
       await act(async () => {
@@ -382,12 +370,6 @@ describe('Chat Integration Tests (E2/E3/E4)', () => {
       });
 
       expect(notificationManager.notify).toHaveBeenCalledTimes(2);
-
-      Object.defineProperty(document, 'hidden', {
-        writable: true,
-        value: false,
-        configurable: true,
-      });
     });
 
     it('should sync reactions across multiple browsers (Realtime)', async () => {
@@ -396,7 +378,7 @@ describe('Chat Integration Tests (E2/E3/E4)', () => {
 
       act(() => {
         // Simulate User A's reaction
-        result.current.notifyReactionAdded();
+        result.current.notifyReactionAdded('👍');
       });
 
       // Realtime subscription would fire callback

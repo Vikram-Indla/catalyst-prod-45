@@ -171,8 +171,8 @@ export const ROUTE_META: Record<string, { sectionLabel: string; pageTitle: strin
   '/program/:programId/roadmaps': { sectionLabel: 'Program', pageTitle: 'Program Roadmap' },
   '/project/:projectKey': { sectionLabel: 'Project', pageTitle: 'Project' },
   '/releases': { sectionLabel: 'Release', pageTitle: 'Releases' },
-  '/release/incidents': { sectionLabel: 'Release', pageTitle: 'Incidents' },
-  '/release/incidents/reports': { sectionLabel: 'Release / Incidents', pageTitle: 'Reports' },
+  '/incident-hub': { sectionLabel: 'Incidents', pageTitle: 'Incident Hub' },
+  '/incident-hub/reports': { sectionLabel: 'Incidents', pageTitle: 'Reports' },
 };
 
 /**

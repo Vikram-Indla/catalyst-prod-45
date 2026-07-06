@@ -62,7 +62,7 @@ export function ProjectHubSidebar({ expanded, onToggle, className }: ProjectHubS
   const { pathname } = useLocation();
   const projectKey = extractProjectKey(pathname);
   const { data: favoriteIds = new Set<string>() } = useProjectFavorites();
-  const { data: projects = [] } = useProjects();
+  const { data: projects = [], isFetched: projectsFetched } = useProjects();
 
   preloadProjectHubChunks();
 
@@ -93,9 +93,16 @@ export function ProjectHubSidebar({ expanded, onToggle, className }: ProjectHubS
     };
   }, [projects, favoriteIds]);
 
-  if (projectKey) {
+  // 2026-07-06 RCA fix — projectKey comes straight off the URL regex with no
+  // existence check, so a nonexistent key (e.g. a typo, or a stale link)
+  // rendered a full fake "PLANNING" nav as if the project were real. Fall
+  // back to the module-level sidebar once the real project list has loaded
+  // and the key isn't in it. ProductHubSidebar already guards this way.
+  const project = projectKey ? projects.find(p => p.project_key === projectKey) : undefined;
+  const projectKeyIsGhost = !!projectKey && projectsFetched && !project;
+
+  if (projectKey && !projectKeyIsGhost) {
     const base = `/project-hub/${projectKey}`;
-    const project = projects.find(p => p.project_key === projectKey);
     const projectName = project?.name;
     const keyCode = padProjectKey(projectKey, projectName);
 

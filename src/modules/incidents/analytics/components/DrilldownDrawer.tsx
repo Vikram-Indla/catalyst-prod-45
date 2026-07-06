@@ -70,7 +70,7 @@ export function DrilldownDrawer({
 
   const handleOpenInList = () => {
     // Navigate to incident list with filter preserved
-    navigate('/release/incidents');
+    navigate('/incident-hub');
     onClose();
   };
 

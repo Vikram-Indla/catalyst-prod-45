@@ -1,6 +1,8 @@
 import * as React from 'react';
 import { useState, useMemo, useCallback } from 'react';
 import { MessageSquare } from '@/lib/atlaskit-icons';
+import FlagFilledIcon from '@atlaskit/icon/core/flag-filled';
+import { token } from '@atlaskit/tokens';
 import type { CdsComment, CdsSortOrder, CdsUser, CdsQuickReply } from '../types';
 import { Comment } from './Comment';
 import { CommentToolbar } from './CommentToolbar';
@@ -110,7 +112,9 @@ function CommentThread({
 
   const startEdit = (comment: CdsComment) => {
     setEditingId(comment.id);
-    setEditValue(comment.content);
+  };
+  const cancelEdit = () => {
+    setEditingId(null);
   };
 
   const handleReply = (commentId: string) => {
@@ -125,16 +129,17 @@ function CommentThread({
   const renderCommentBlock = useCallback(
     (comment: CdsComment) => {
       if (editingId === comment.id) {
+        const seed = seedFlagContent(comment);
         return (
           <div className="py-3">
             <CommentEditor
               currentUser={currentUser}
               mentionableUsers={mentionableUsers}
-              defaultValue={comment.content}
+              defaultValue={seed}
               autoFocus
               onSubmit={async (content) => {
                 if (!onEditComment) return;
-                await onEditComment(comment.id, content);
+                await onEditComment(comment.id, stripFlagPrefix(content, comment.commentType));
                 setEditingId(null);
               }}
               onCancel={cancelEdit}
@@ -291,6 +296,56 @@ function CommentThread({
       </div>
     </div>
   );
+}
+
+/** Editor seed / save-time stripper for flag audit comments. Builds
+ *  an ADF doc whose first paragraph is `[emoji :flag_on:] Flag added`
+ *  so the editor renders the identical Atlassian flag glyph the
+ *  read-only comment shows. See ActivityPanel.tsx for full docs — this
+ *  is a local copy so the Comments tab renders the same way without
+ *  cross-file coupling. */
+function seedFlagContent(c: CdsComment): string {
+  const variant = c.commentType;
+  const body = c.content ?? '';
+  if (variant !== 'flag_added' && variant !== 'flag_removed') return body;
+  const isAdded = variant === 'flag_added';
+  const emojiChar = isAdded ? '🚩' : '🏳️';
+  const label = isAdded ? 'Flag added' : 'Flag removed';
+  return body.length > 0
+    ? `${emojiChar} ${label}\n${body}`
+    : `${emojiChar} ${label}`;
+}
+function stripFlagPrefix(content: string, variant?: string): string {
+  if (variant !== 'flag_added' && variant !== 'flag_removed') return content;
+  const label = variant === 'flag_added' ? 'Flag added' : 'Flag removed';
+  const emojiChar = variant === 'flag_added' ? '🚩' : '🏳️';
+  const shortName = variant === 'flag_added' ? ':flag_on:' : ':flag_off:';
+  const trimmed = content.trim();
+  if (trimmed.startsWith('{')) {
+    try {
+      const doc = JSON.parse(trimmed);
+      if (doc?.type === 'doc' && Array.isArray(doc.content) && doc.content.length > 0) {
+        const first = doc.content[0];
+        const firstNodes = first?.content ?? [];
+        const isFlagPara = firstNodes.some(
+          (n: any) =>
+            (n?.type === 'emoji' && (n.attrs?.shortName === shortName || n.attrs?.text === emojiChar)) ||
+            (n?.type === 'text' && typeof n.text === 'string' && n.text.includes(label)),
+        );
+        if (isFlagPara) {
+          const remaining = doc.content.slice(1);
+          if (remaining.length === 0) return '';
+          return JSON.stringify({ ...doc, content: remaining });
+        }
+      }
+    } catch {
+      // fall through
+    }
+  }
+  return content
+    .replace(new RegExp(`^\\s*${emojiChar}\\s*${label}\\s*(\\n|$)`), '')
+    .replace(new RegExp(`^\\s*${shortName}\\s*${label}\\s*(\\n|$)`), '')
+    .trimStart();
 }
 
 export { CommentThread };

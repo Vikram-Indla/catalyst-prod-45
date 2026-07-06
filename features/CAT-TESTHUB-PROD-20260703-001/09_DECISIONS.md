@@ -22,8 +22,10 @@ Advisor verdicts (full reports in `council/`):
 Where council agrees: trust repair before features; reuse over rebuild (quality gates, Gemini fn, JiraTable, adapters); staging probes before any migration; enforcement ratchets in P1.
 Where council disagrees: A5 wants quality-gate lift early (P1), A2/A3 sequence it after the coverage-engine spine (P2 start). Plan Lock sides with A2/A3; gate lift = P2-S1.
 
-## D-003 (2026-07-03)
+## D-003 (2026-07-03, RESOLVED 2026-07-04 by Vikram)
 **Release id-space decision needed from Vikram (blocks PLN-025/TRC-012 cluster):** test↔release FKs point at legacy `releases`; live UX runs on `ph_releases`/`rh_releases`. Options in council/A4 §Corrected-schema-list. Plan Lock P2 assumes re-point to `ph_releases` — flagged PLACEHOLDER-07, not executed without approval.
+
+**Resolution: `ph_releases`.** Vikram confirmed via direct question at P2 kickoff — matches Plan Lock's own default assumption. `tm_test_cycles.release_id` FK re-points from legacy `releases` to `ph_releases` in P2-S1…S3. PLACEHOLDER-07 cleared.
 
 ## D-004 (2026-07-03, P0-S0 cyij probe batch — EXECUTED, rulings)
 Target verified: MCP → https://cyijbdeuehohvhnsywig.supabase.co (staging).
@@ -59,6 +61,248 @@ Write-probes (authed INSERT/UPDATE/DELETE per core table) deferred to P0-S11 see
 ## D-008 (2026-07-03, found during P1-S8)
 **The whole test-plans feature has zero routed UI — no `/testhub/plan*` route exists in `FullAppRoutes.tsx`.** P1-S8's target (`usePlanLinkedCycles`/`useLinkCycleToPlan`/`useUnlinkCycleFromPlan` in `useTestPlansG26.ts`) queried a plan-cycle join table that P0.1 already proved absent from the DB (D-001 ghost-relation list) and had zero callers anywhere in `src/` — unreachable dead code, not a live migration target. Deleted the 3 exports + `LinkedCycle` interface outright (grep=0 accept criterion met exactly) rather than rewriting them onto `tm_test_cycles.test_plan_id`, since nothing would ever call the rewritten version either. The real FK spine already works today, read-only, via `useDefects.ts` (defect plan provenance). **Scope note:** the rest of `useTestPlansG26.ts` (plan CRUD, scope, team, approvals, templates — ~20 more exports) was NOT audited this slice; it may share the same zero-route fate but that's a separate finding for a future gap slice, not P1-S8's mandate.
 
+## D-020 (2026-07-04, found live during P2-S1 — quality-gate/readiness stack had never run)
+**The entire quality-gate/release-readiness RPC stack (`tm_get_release_test_summary`,
+`tm_evaluate_quality_gates`, `tm_evaluate_release_gates`, `tm_create_readiness_snapshot`) had
+never executed successfully.** Live invocation surfaced four distinct 42703/22P02-class bugs,
+stacked (each fix uncovered the next): (1) `tm_get_release_test_summary` filtered
+`tm_cycle_scope` on a column called `status`, which doesn't exist (real column `current_status`)
+— Postgres silently resolved the unqualified name to the *outer* `tm_test_cycles.status` instead
+of erroring at parse time, so it looked plausible until executed; (2) `ORDER BY c.start_date` —
+`tm_test_cycles` has no such column (real: `planned_start`); (3) the defects sub-join read the
+dead legacy `defects` table (`d.test_case_id`, 0 rows confirmed) instead of live `tm_defects`,
+which has no `test_case_id` at all — provenance is `tm_defects.source_test_run_id →
+tm_test_runs.cycle_scope_id → tm_cycle_scope.cycle_id`; (4) the defects status filter used
+`'verified'`, not a member of `tm_defect_status` (real set: open/in_progress/resolved/closed/
+reopened). Separately, `tm_evaluate_quality_gates` read six *denormalized* columns off the
+legacy `releases` row (`test_cases_executed`, `test_cases_passed`, `defects_open`,
+`coverage_percent`, etc.) that no live trigger ever maintained — meaningless once release_id
+re-points to `ph_releases`, which has no such columns at all. And `tm_evaluate_release_gates`'s
+`coverage` gate type compared a raw case *count* against a percentage threshold (copy-paste bug,
+always nonsensical), and only wrote `tm_release_gate_results`, leaving
+`tm_release_quality_gates.current_value/status` stale after every readiness evaluation — a
+split-brain between the two gate-evaluation entrypoints (`useReleaseQualityGates`'s manual
+"Evaluate Now" vs `useReleaseReadiness`'s snapshot flow). All four RPCs rewritten to compute
+live from `tm_cycle_scope`/`tm_defects`/`v_tm_requirement_coverage` (P1-S11's view, reused not
+rebuilt); `tm_evaluate_release_gates` now also syncs the gate-list table. Live-proofed
+end-to-end on real Senaei BAU data (3 cycles re-pointed to `ph_releases` "Refactor-Senaei 3.3",
+4 real gates inserted): summary/evaluate/snapshot all returned consistent, correct numbers
+(58 cases, 69.2% pass, 89.7% exec, 1 open critical defect, readiness = not_ready). **Known
+follow-up, not fixed this slice:** `blocker_count` gate type has inconsistent semantics between
+the two evaluators (`tm_evaluate_quality_gates` counts blocker+critical severities combined;
+`tm_evaluate_release_gates` counts `blocker` severity only) — both are internally consistent
+and functional, but they disagree with each other on this one gate type. Pick one canonical
+definition in a future slice rather than silently picking one now.
+
+**Scope boundary (same slice):** `tm_release_signoffs` (3 live rows, read by the live
+`useApprovalAge.ts`/`ApprovalAgeBody.tsx` report) and `th_test_cycles` (6 rows, zero live
+readers — only in generated types) both still FK to legacy `releases` and were deliberately
+**not** re-pointed: `tm_release_signoffs`'s 3 rows share one legacy release id with no
+`ph_releases` counterpart to map onto, and the live report that reads it never touches
+`release_id`/`releases` at all (grep confirmed), so leaving it alone is zero-risk and in-scope
+work would require inventing a mapping — a zero-assumption violation. `th_test_cycles` is dead
+weight, out of the TestHub-live mandate, not touched. Fourteen other FKs to legacy `releases`
+exist across unrelated modules (`features`, `subtasks`, `milestones`, `work_item_versions`,
+etc.) — explicitly out of scope for a TestHub feature, not touched, not audited further here.
+
+## D-021 (2026-07-04, found live during P2-S4 — target already gone, tool caching bit me)
+**P2-S4's cited route (`/release/incidents/reports`, RPT-004) no longer exists at all** —
+confirmed via direct `grep`/`ls` (not the `rtk` proxy — see caveat below): no route registers
+it in `FullAppRoutes.tsx`, and the file it would have rendered
+(`src/pages/release/IncidentReportsPage.tsx`) doesn't exist on disk. It was already deleted,
+most likely by P0-S2's 135-file dead-code sweep, without anyone updating the barrel
+`src/pages/release/index.ts` that still re-exported it. **Asked Vikram to choose
+redirect-vs-delete for a route that turned out to already be gone** — the question itself was
+moot, based on a stale finding (see caveat). Closed it properly instead of just deleting one
+broken export line: the entire `src/pages/release/` folder (`index.ts` +
+`CAPCommitteeQueuePage.tsx`) had **zero live importers anywhere** — 5 of 6 barrel exports
+pointed at already-deleted files, and the barrel itself was never imported by anything (grep
+confirmed). Deleted the whole folder. `tsc`/build clean after; `audit:ads:gate`'s `tokens`
+count dropped 24743→24730 from the dead code's own debt — ratcheted the baseline down per
+CLAUDE.md's "ratchet down when a slice reduces counts" rule.
+
+**Tool-reliability caveat:** the first pass at this slice used `rtk proxy grep` (a token-saving
+CLI proxy this session has been using throughout) and it returned line-numbered matches for the
+dead route in `FullAppRoutes.tsx` that do not exist in the live file — a stale cache, not a
+present fact. Cross-checked with plain `grep`/`ls`/`cat` and the discrepancy was immediate and
+obvious. No other finding this session was sourced from `rtk proxy grep` without a direct
+cross-check, so nothing else is suspected — but any single-sourced `rtk`-only claim from earlier
+in this session that was never independently re-verified via a live SQL probe, `tsc`, or a
+direct `grep` carries a small residual risk and should be spot-checked before being relied on
+again. Flagging this to Vikram directly rather than quietly self-correcting.
+
+## D-024 (2026-07-04, P2-S9/S10/S11 — AI governance: a repo-wide silent-failure bug, quota, and a live-vs-dead correction on my own research)
+**Usage logging for the `ai-generate-story-test-cases` edge function had never worked, and the
+same bug pattern is copy-pasted into 10 other AI edge functions repo-wide.** Its `logGovernance()`
+helper inserted into `ai_governance_audit_log` with columns (`payload`/`status`/`error_message`/
+`source`) that don't exist on that table's real schema (`id`/`actor_id`/`contract_id`/`action`/
+`object_type`/`object_id`/`diff` — looks designed for a different, contract-based governance
+concept entirely). Every insert has silently failed since the function was written — confirmed
+live: `select count(*) from ai_governance_audit_log` → 0, and the same `catch (_e) { /* audit
+must never block inference */ }` swallow pattern exists in all 10 other functions
+(`ai-improve-story`, `ai-translate-field`, `ai-suggest-children`, `voice-transcribe`,
+`ai-translate-title`, `summarize-release`, `presence-backup-suggest`, `summarize-comments`,
+`generate-whatsapp-summary`, `ai-improve-comment`). **Fixed for this function only** (in scope for
+this feature) — replaced with a `logUsage()` helper writing to `tm_ai_usage_log` (the real
+usage-ledger table, already existed with correct RLS, 0 rows, zero prior code references —
+confirmed via grep before use). **The other 10 functions are out of scope** — flagged via
+`spawn_task` (task_b1ad6af3) rather than silently expanding this slice.
+
+**AI-004 (quota + cooldown)**: added server-side, in the same edge function, querying
+`tm_ai_usage_log` directly (no separate counter table) — 20/day per user, 10s cooldown between
+calls. New `quota_exceeded`/`cooldown` error codes surface as a distinct `isBlocked` state in
+`useAIGeneration.ts` (not just a generic error), disabling the Generate button in
+`AIGenerateTestCasesDialog.tsx` with "Generation limit reached". Deployed (version 5); live-
+verified the unauthenticated-401 path still works post-deploy (`curl` → 401 unauthorized). Full
+authenticated round-trip (quota/cooldown/ledger-row proof) needs a real user JWT — deferred to
+the browser-access backlog like every other live-UI proof this session.
+
+**AI-006 (delete dead `useCatyAI` layer) — a discovery agent's finding was wrong, caught before
+acting on it.** A research agent reported `useCatyAI.ts`'s consumers as "live, routed" — checked
+directly (this session's standing rule after the `rtk proxy grep` staleness incident) and found
+the *entire* `src/components/caty-ai-chat/` folder (8 files: `CatyAIChat`, `CatyGenerateTestsModal`,
+`CatyAICoverageAnalysis`, etc.) has **zero importers anywhere outside itself** — grep for each
+component name and for the folder path itself came back empty except the Storybook registry story
+and the generated usage-map doc (neither a live route). The *only* connection to a live file was
+`BacklogPage.atlaskit.tsx` calling `useCreateCatyConversation()` — but the returned
+`createConversation` mutation object was never actually invoked anywhere in that file either (one
+dead `const` declaration, no `.mutate(` call). Deleted the whole layer: `useCatyAI.ts`,
+`src/types/caty-ai.ts`, the entire `caty-ai-chat/` folder, and the dead hook call + import in
+`BacklogPage.atlaskit.tsx`. `caty_conversations`/`caty_messages` DB tables (0 rows) left alone —
+out of this slice's frontend-cleanup scope, no code references them anymore either way.
+
+## D-025 (2026-07-04, P2-S12..S15 — Collaboration: FK-blocked spine, plus real gap-register corrections)
+**COL-001/002 mounted, using the gap register's own recommended interim approach.**
+`CatalystActivitySection` (the ph_comments/ph_activity_log-backed component every other
+detail view uses) is **hard-FK'd to `ph_issues`** — confirmed by direct read: it resolves
+`itemId` to a `ph_issues` row before doing anything else, and both `ph_comments.work_item_id`
+and `ph_activity_log.work_item_id` have real `FOREIGN KEY ... REFERENCES ph_issues(id)`
+constraints (confirmed via `pg_constraint`). `tm_test_cases`/`tm_test_cycles` have no
+`ph_issues` row — mounting that component as-is would silently render empty forever, the exact
+"green screenshot over silent-empty query" trap this whole feature exists to eliminate. The gap
+register (G14 COL-001) already anticipated this and recommends the correct interim path
+verbatim: "backed by a tm_comments adapter (entity_type='test_case') **until the comment-spine
+unification (COL-003) lands**." Built exactly that — new `TmCommentsSection.tsx` uses the real
+canonical UI primitives (`@/components/catalyst-ds` `CommentThread`/`CommentEditor`, the same
+ones `CatalystActivitySection` uses), backed by `tm_comments` instead of `ph_comments`. Mounted
+as a new "Comments" tab on `CatalystViewTestCase.tsx` (entity_type='test_case') and a new section
+on `CatalystViewTestCycle.tsx` (entity_type='cycle', flat layout, no tabs there). Live-proofed the
+full round-trip for both entity types (insert → read with profile join → matches the shape the
+hook expects exactly) — no activity/audit timeline is included (TestHub has no `tm_activity_log`
+table — confirmed absent in the P0.1 ghost-relation probe — so this is comments-only, an honest,
+documented scope difference from the ph_issues view, not a silent gap).
+
+**COL-003 (comment-spine unification) — genuinely schema-blocked, not fixed this slice.** The gap
+register's own recommendation ("pick ph_comments, keyed by case_key/defect_key/cycle_key")
+doesn't match the CURRENT `ph_comments` schema — `work_item_id` is a `uuid` FK to `ph_issues(id)`,
+not a text key. Migrating `tm_comments` rows into `ph_comments` today would mean either (a)
+dropping that FK — touches the live Jira-comment-sync feature used by 7 detail views, or (b)
+fabricating `ph_issues` shadow rows for every test case/cycle — a zero-assumption violation that
+pollutes a table everything else in Catalyst reads. This needs its own dedicated decision (same
+class as D-003), not a unilateral call inside a compressed multi-slice batch. Documented, not
+forced.
+
+**COL-004 fixed — and it was the opposite of what the compressed Plan Lock line suggested.** The
+one-line Plan Lock text ("comment-before-first-run on scope items") reads like a validation GATE;
+the actual gap (checked against the gap register before writing anything) is the reverse: users
+were **blocked** from commenting on a cycle scope item until it had been executed at least once
+(`CommentsPanel` keyed on `item.last_run_id`, `enabled: !!runId`, `NO_RUN_MSG` otherwise —
+`CycleDetailPage.tsx`). Fixed by splitting into two independent threads: a scope-level thread
+(`entity_type='cycle_scope'`, always available) and the existing run-level thread
+(`entity_type='run'`, shown additionally once a run exists) — both render in the same panel,
+neither blocks the other. Live-proofed on a scope item with zero runs (insert succeeded,
+previously would have been unreachable in the UI).
+
+**COL-005/019 — one real, correctly-shaped notification wired; the rest deliberately not
+attempted.** `notificationTriggerService.ts` turned out to be a config/scheme-admin service, not
+an event-firing one — there is no single "fire this event" function to call, and grep found the
+one live INSERT-into-`notifications` example (`workItemRepo.ts`) uses column names
+(`user_id`/`type`/`title`/`body`/`is_read`) that **don't exist** on the real `notifications` table
+(confirmed live: real columns are `recipient_user_id`/`notification_type`/`entity_type`/
+`entity_id`/`hub_source`/`tab`/`is_dismissed`/etc.) — yet another silently-broken insert, same bug
+class as D-024's AI governance log and D-006's RPC. Wiring the full COL-005 registry (all
+TestHub event keys) would mean either fixing that broader break across other hubs too or
+re-inventing delivery from scratch — disproportionate for this slice. Instead, wrote ONE real,
+correctly-shaped notification (assignment, COL-019's suggested starting point) directly into
+`CycleDetailPage.tsx`'s scope-assign mutation, using the verified real schema. Live-proofed: the
+inserted row appears via the exact query `useNotificationsNew.ts` already reads
+(`recipient_user_id` + `entity_deleted=false` + `is_dismissed=false` + `tab='direct'`), alongside
+real ProjectHub notifications. (Also noted, not fixed: `notifications` has RLS disabled entirely
+— `relrowsecurity=false` — a pre-existing, repo-wide condition affecting every hub equally, well
+outside this feature's mandate.)
+
+## P2-S18 (saved filters) — mostly already satisfied; one dead import found+removed
+Investigated the Plan Lock's premise ("rides P1-S14 column") and found it doesn't hold: the
+`tm_saved_filters` table P1-S14 added a slug to has **zero code references anywhere** — TestHub's
+actual live "saved filters" UI (`FiltersListPage`/`FilterPreviewPage`, mode='test') runs entirely
+on the shared `ph_saved_filters` table, which already has its own `slug` column and an existing
+UUID-or-slug dual lookup (confirmed live: `FilterPreviewPage.tsx` resolves `:filterId` as either
+format). Checked a hypothesis that `/testhub/filters/:filterId` was mis-routed to the wrong
+component (it goes to `TestHubFilterPreviewPage`, not `TestHubFilterDetailPage`) — verified this
+is intentional, not a bug: `FilterPreviewPage.tsx` itself branches on the `:filterId` param to
+load an existing saved filter for view/edit, and the same routing shape is used identically by
+`/incident-hub/filters/:filterId`. The one real, confirmed-dead artifact: `src/pages/testhub/
+FilterDetailPage.tsx` (a thin wrapper around the canonical `FilterDetailPage`) had zero route
+references anywhere (only its own now-removed lazy import in `FullAppRoutes.tsx`) — deleted both.
+No TestHub-scoped `ph_saved_filters` rows exist yet (0 rows, confirmed live) so there's no
+existing UI to demo a deep-link against; not fabricated per zero-assumption discipline.
+
+## P2-S17 (cycle board/calendar rebuild) — DEFERRED
+Same call as P1-S17b (JiraTable adoption): a from-scratch UI build (board + calendar, no existing
+cycle-scoped base for either per discovery) with zero live-verification capability available
+(browser session logout, carried the whole session) is a bad risk/reward trade even under
+"proceed uninterrupted" authorization — this exact class of change is why CLAUDE.md's
+screenshot-mandatory rule exists. Not started. Carried forward alongside S17b and the
+live-verification backlog.
+
+## D-022 (2026-07-04, P2-S16 — target already fully satisfied)
+**Per-instance assignee/due-date on cycle scope already exists, live, working, no gaps.**
+`tm_cycle_scope.assigned_to`/`due_date` columns already exist; `CycleDetailPage.tsx`'s
+`AssigneeCell` (line ~552) and `DueDateCell` (line ~595) already render/write both per row,
+already wired into the scope table header (`Assignee`/`Due Date` columns). Confirmed by direct
+read, not just agent report (the P0-S2/S7 lesson about verifying before trusting held). No code
+change made — same shape as D-007 (target already resolved before the slice started).
+
+## D-023 (2026-07-04, P2-S19/S20 — RBAC reality: a real gap, and a real fail-closed fix on one path)
+**`tm_user_has_access()` (the function nearly every tm_* RLS policy calls) has a permissive
+fallback: if `tm_user_roles` has no row for a user+project, it returns `true` anyway** ("Allow
+authenticated users to access any project — permissive for development" per its own comment).
+`tm_user_roles` has 0 rows for every project on staging. **Net effect: every tm_* RLS policy
+gated by this function currently provides no real tenant isolation — any authenticated user can
+read/write any project's TestHub data.** This is the actual substance of ADM-007.
+
+**Deliberately not touched this slice**: tightening the fallback (removing the `RETURN TRUE`
+permissive branch) would instantly lock out every current user on every tm_* table, since no
+project has any `tm_user_roles` rows to fall back TO. That's the textbook regression-red-flag
+shape CLAUDE.md exists to catch — stopped rather than patched over. Real fix needs a dedicated,
+carefully-sequenced future slice: backfill `tm_user_roles` for every current project member
+first (from existing project-membership signal, not invented), THEN remove the permissive
+fallback, with live verification that no one gets locked out. Plan Lock's own S20 text already
+anticipated this ("implementation may slip to P3") — this decision makes the reasoning explicit
+rather than leaving it as an unexplained deferral.
+
+**What WAS built this slice** (P2-S19, real and additive): `tm_user_roles` had zero live
+consumers anywhere (confirmed via grep) despite having full RLS. First consumer built:
+- New `src/hooks/test-management/useTmUserRoles.ts` (assign/remove/list roles per project).
+- New "Team & roles" tab on `/admin/test-ops` (`TestOpsPage.tsx`) — real CRUD against
+  `tm_user_roles`, not decorative (the actually-decorative matrix, `PermissionsMatrix.tsx`, is a
+  completely separate product-level permission system unrelated to `tm_user_roles` — confirmed
+  it never references that table at all).
+- `tm_approve_release_readiness` rewritten to **require** an `admin`/`test_lead` role in
+  `tm_user_roles` for the release's project before approving — additive, fail-closed on this ONE
+  action only, doesn't touch the broad `tm_user_has_access()` fallback. Live-proofed: approval
+  attempt with no role assigned → rejected ("Only admin or test_lead roles may approve release
+  readiness"); assigned a real `test_lead` row → same call succeeded, `tm_release_readiness.
+  overall_status` flipped to `approved` with `approved_by`/`approved_at` set correctly.
+- Also widened `tm_requirement_links.requirement_type` CHECK to include `defect`/`incident`
+  (A4 E4) — was `story|epic|feature|business_request|external` only.
+- Set-membership consolidation (A2 S6): `trigger_update_test_set_count` was firing on
+  `tm_test_set_cases` (dead legacy twin, 0 rows, zero live code references — confirmed via grep)
+  instead of `tm_set_cases` (canonical, live, 3 rows) — proven drift live
+  (`tm_test_sets.test_count` stored 0, actual 3). Backfilled the correct count, moved the
+  trigger, live-proofed with a scratch insert/delete (count went 3→4→3 correctly), then dropped
+  the dead twin outright (0 rows, 0 references, no snapshot table needed — nothing to lose).
+
 ## D-009 (2026-07-03, found live during P1-S10b — self-correction of my own P1-S9 work)
 **The P1-S9 backfill migration (`20260703410000`) set `requirement_id` on its 16 rows but never `external_key`/`external_title`.** Both `TestCoveragePanel.tsx` and (after S10b) `TestCasesSection.tsx` filter `tm_requirement_links` by `external_key`, not `requirement_id` — so all 16 backfilled rows were invisible to both readers despite having a technically-correct FK. Caught by live testing (story BAU-2668 showed "Test cases 2" instead of the expected 18), not by re-reading my own migration SQL. Fixed with a follow-up data-repair migration (`20260703430000`) rather than amending the original — the original already ran and is committed; a second additive migration is the correct fix per the migration-ledger discipline (never alter an applied migration's file after the fact). Lesson: when a migration sets one column that participates in a join/filter used elsewhere, grep every reader's filter column before declaring the backfill's job done — count equality (16=16) on the wrong column silently proves nothing.
 
@@ -70,3 +314,21 @@ Write-probes (authed INSERT/UPDATE/DELETE per core table) deferred to P0-S11 see
 
 ## D-012 (2026-07-03, found during P1-S12)
 **The canonical `get_defect_stats(p_project_id)` RPC — the one `useDefectStats` (the CORRECT, non-G25 hook) actually calls — was itself fundamentally broken, not just duplicated by the G25 stack.** It queried `th_defects` (a dead legacy table, confirmed 0 rows) instead of `tm_defects`; its project filter was `(p_project_id IS NULL OR TRUE)` — a tautology that's always true, meaning **the parameter was accepted but silently never used to scope anything**; and its status/severity `WHERE` clauses referenced enum literals (`'new'`, `'fixed'`, `'verified'`, `'deferred'` for status; `'high'`, `'medium'`, `'low'` for severity) that don't exist in the real `tm_defect_status`/`tm_defect_severity` enums. All of this was invisible until I tried to actually prove this slice's own accept condition ("stats change when switching project") and got all-zero for every project. Fixed in migration `20260703460000` — same JSON output keys, correct source table/columns/enum values/filter. Separately found: `useDefectStats` has **zero live consumers anywhere in the routed app** — no dashboard or defects-page surface calls it, so there's no UI to screenshot even now that the RPC is honest. Wiring a stats widget is a real feature, out of scope for this slice's file list; proved via SQL instead (same discipline as D-011). Lesson: "the G25 duplicate is broken, the canonical one is fine" was an assumption worth checking — it wasn't.
+
+## D-013 (2026-07-03, found during P1-S13)
+**`CatalystViewDefect` (the existing detail component the router's default type-resolution already pointed "defect" at) cannot render a `tm_defects` row — it's built for `ph_issues`.** TestHub's entire defect surface (`/testhub/defects`, `CreateStoryModal`'s QA Bug branch, P1-S12's sprint/stats work) writes to `tm_defects`, a completely separate table. Built a new sibling component (`CatalystViewTmDefect.tsx`) rather than forking or bending the existing one — same pattern this codebase already uses for `tm_test_cases`/`tasks`/`tm_test_cycles` (each gets its own `CatalystView*` + `entityKind` short-circuit, never a shared component juggling two source tables). The two "defect" concepts (`ph_issues` QA Bug rows, presumably Jira-synced, vs `tm_defects` rows, TestHub-native) remain genuinely separate — unifying them is out of scope for this slice and probably a much larger future decision, not a wiring fix.
+
+## D-014 (2026-07-03, found during P1-S13)
+**Wiring `defectsDataSource.ts`'s `onOpenItem` callback was necessary but not sufficient — `BacklogPage.atlaskit.tsx`'s own `openDetail`/`openModal` functions hard-coded a redirect back to the defects list for `entityKind === 'defect'`, intercepting every row-click before `onOpenItem` was ever called.** This was an explicit P0-S5 placeholder ("no registered defect detail route — stay on the list instead of a dead URL") that simply never got revisited once the P0-S5 comment's own precondition (a real detail route) became true in this slice. Fixed both call sites to navigate to the real route, matching the already-correct `test_case`/`release` entityKind branches in the same two functions. Lesson: a stub comment referencing "when P1 ships this" is a live tripwire, not documentation — grep for it, don't assume the caller you just fixed is the only gate.
+
+## D-015 (2026-07-03, found during P1-S14)
+**`saved_filters` — a table SHARED across every hub's filter surface — had a dormant, never-reachable code branch that would have errored the moment anyone tried to use it.** `FilterDetailPage.tsx` already read `.eq(isUuid ? 'id' : 'slug', filterId)`, correctly anticipating a future slug-based URL — but the `slug` column never existed, so that branch would `42703` if a real slug were ever passed. It stayed invisible because nothing in the app has ever generated a non-uuid `filterId`. Added the column + a `generate_slug()` trigger (migration `20260703470000`, mirroring the repo's existing `sprints_generate_slug()` pattern and its shared `catalyst_slugify()` helper) — table was confirmed empty, so no backfill/dual-read window was needed, just forward-correctness. Deliberately did **not** touch the dozen+ other files that build filter URLs off `.id` — out of this slice's scope (Files list: migration + routes.ts + testhub block only) and the existing `isUuid` fallback means nothing breaks either way.
+
+## D-016 (2026-07-03, found during P1-S16)
+**Two parallel admin sidebars existed — one dead, one live — and the Plan Lock's "11 dead links" ADM-001 finding was about the dead one.** `src/pages/admin/AdminSidebar.tsx` had 16 TestHub entries with 11 pointing nowhere; `src/components/admin/AdminSidebarV2.tsx` (the one `CatalystShell.tsx` actually renders, confirmed by trace) has 5 entries, all real, and is protected by its own parity test. The old file had zero importers — genuinely orphaned, never mounted, so its 11 dead links were never clickable by any real user, but they were still real rot sitting in the repo. Deleted the whole file rather than patch a component nobody sees. Separately: `TestRunStatusesPage.tsx` managed `test_run_statuses`, a legacy table with 0 rows and 0 readers anywhere else — disconnected from the real `tm_execution_status` enum that drives execution, and there's no way to "reconnect" it since Postgres enum values aren't per-row customizable like the table pretended. Deleted per the Plan Lock's own "or removed" alternative. Also found and fixed (drive-by, unrelated to TestHub): the admin-sidebar parity test was red on 2 stale `REGISTERED_ADMIN_ROUTES` entries for the Workflows pocket — both real routes, just missing from a manually-maintained set.
+
+## D-017 (2026-07-03, found during P1-S18)
+**None of the 7 report bodies (or the report shell) render an error state at all — "forced failure → error card" is not achievable within this slice's allowed scope.** Grepped every file in `src/components/testhub/reports/bodies/` and `src/pages/testhub/reports/` for `isError`: zero matches anywhere. The hooks now correctly throw on a Supabase error (previously: silent `data: null` → `?? []`/`?? 0` → a "successful" empty/zero result, no error ever surfaced), but nothing downstream reads that error yet. Wiring an actual error-card UI would mean touching a report body or the report shell — both explicitly forbidden by this slice's VETO-8 boundary. Did not cross that boundary to force the accept condition green; documented the gap instead. The real fix (give every report body a shared error-state renderer) is separate, future, additive work — likely its own slice once P1's scope reopens report bodies.
+
+## D-018 (2026-07-03, found during P1-S19)
+**TestHub's two create surfaces (`testCasesDataSource.ts`, `defectsDataSource.ts`) hardcoded their `creatableTypes` as literal arrays, completely bypassing the CRE chokepoint filter — confirmed live that `BacklogPage.atlaskit.tsx` uses a data source's `creatableTypes` override as-is with zero call to `filterCreatableTypes()`.** This is exactly the "hardcoded type list" class of drift the CRE gate exists to catch, and it had zero registered chokepoint coverage (Plan Lock's "currently ZERO TestHub entries" claim confirmed accurate). Fixed by routing both through `filterCreatableTypes(types, 'TESTHUB')` — not a cosmetic no-op: `TESTHUB` is already a real CRE module owning exactly `['QA Bug', 'Test Case', 'Test Cycle']` (`MODULE_OWNED_TYPES.TESTHUB`), so this is genuine live wiring that will catch any future ownership-rule drift automatically instead of silently going stale like the two hardcoded arrays would have.

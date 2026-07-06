@@ -217,9 +217,9 @@ export function StepDetails({ data, onChange, isValid, onValidChange }: StepDeta
           {PRIORITY_OPTIONS.map(opt => {
             const selected = data.priority === opt.value;
             const colorMap: Record<string, { bg: string; text: string; border: string }> = {
-              critical: { bg: 'var(--ds-background-danger)', text: 'var(--ds-text-danger)', border: '#FECDD3' },
+              critical: { bg: 'var(--ds-background-danger)', text: 'var(--ds-text-danger)', border: 'var(--ds-border-danger)' },
               high:     { bg: 'var(--ds-background-warning)', text: 'var(--ds-text-danger)', border: 'var(--ds-background-warning)' },
-              medium:   { bg: '#FEFCE8', text: 'var(--ds-text-warning)', border: '#FEF08A' },
+              medium:   { bg: 'var(--ds-background-warning-subtle)', text: 'var(--ds-text-warning)', border: 'var(--ds-border-warning)' },
               low:      { bg: 'var(--ds-background-success)', text: 'var(--ds-background-success-bold)', border: 'var(--ds-background-success)' },
             };
             const c = colorMap[opt.value];

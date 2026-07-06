@@ -173,7 +173,7 @@ export function IncidentModalMain({ incident, onFieldChange }: IncidentModalMain
             <div className="w-36 text-sm text-muted-foreground">{att.uploadedAt}</div>
             <div className="w-20 flex justify-end gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
               <button 
-                className="w-7 h-7 flex items-center justify-center rounded hover:bg-red-50 dark:hover:bg-red-900/30 text-muted-foreground hover:text-red-600"
+                className="w-7 h-7 flex items-center justify-center rounded hover:bg-[var(--ds-background-danger)] dark:hover:bg-[var(--ds-background-danger)] text-muted-foreground hover:text-[var(--ds-text-danger)]"
                 onClick={() => deleteAttachment(att.id)}
               >
                 <Trash2 className="w-4 h-4" />

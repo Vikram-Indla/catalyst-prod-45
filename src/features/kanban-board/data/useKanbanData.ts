@@ -18,6 +18,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { fetchAllPages } from '@/components/testhub/reports/hooks/fetchAllPages';
 import { useTypeWorkflow } from '@/hooks/useTypeWorkflow';
 import { useApprovedProfiles } from '@/hooks/useApprovedProfiles';
+import { useTestHubProject } from '@/hooks/test-management/useTestHubProject';
 import { translate } from '@/lib/jql/translator';
 import { applyJqlToQuery } from '@/lib/jql';
 import type { BoardConfig, BoardIssue, BoardOption, KanbanColumn, StatusCategory } from '../types';
@@ -28,14 +29,21 @@ export type KanbanMode = 'project' | 'product' | 'incident' | 'tasks' | 'release
 /* 2026-06-21: TestHub board columns — 4-stage case lifecycle. Mirrors the
    CASE_STATUSES in releasesDataSource/testCasesDataSource so table, board,
    and dashboard agree. */
+/* tm_test_cases.status is stored lowercase (draft/ready/approved/deprecated).
+   indexColumns()/resolveColumnId() lowercase both sides, so listing the
+   canonical statuses here matches regardless of case. 'ready' is the DB's
+   in-review status (there is no 'review' value), so IN REVIEW carries both. */
 export const TEST_BOARD_COLUMNS: KanbanColumn[] = [
-  { id: 'col-draft',      name: 'DRAFT',      category: 'todo',        statuses: ['DRAFT'],      max: null },
-  { id: 'col-review',     name: 'IN REVIEW',  category: 'in_progress', statuses: ['REVIEW'],     max: null },
-  { id: 'col-approved',   name: 'APPROVED',   category: 'done',        statuses: ['APPROVED'],   max: null },
-  { id: 'col-deprecated', name: 'DEPRECATED', category: 'done',        statuses: ['DEPRECATED'], max: null },
+  { id: 'col-draft',      name: 'DRAFT',      category: 'todo',        statuses: ['draft'],             max: null },
+  { id: 'col-review',     name: 'IN REVIEW',  category: 'in_progress', statuses: ['ready', 'review'],   max: null },
+  { id: 'col-approved',   name: 'APPROVED',   category: 'done',        statuses: ['approved'],          max: null },
+  { id: 'col-deprecated', name: 'DEPRECATED', category: 'done',        statuses: ['deprecated'],        max: null },
 ];
 
-const TEST_CASE_SELECT = 'id, key, title, status, project_id, folder_id, priority_id, type_id, assigned_to, is_flagged, cover, created_at, updated_at';
+/* tm_test_cases has no `key`/`type_id` columns — the real columns are
+   `case_key`/`case_type_id`. Selecting the wrong names returned a PostgREST
+   400 that threw and rendered the board empty (D057). */
+const TEST_CASE_SELECT = 'id, case_key, title, status, project_id, folder_id, priority_id, case_type_id, assigned_to, is_flagged, cover, created_at, updated_at';
 
 /* 2026-06-19: release-mode columns mirror the 9-stage release lifecycle the
    legacy releaseBoardAdapter used. Defined here (not imported from the legacy
@@ -199,7 +207,7 @@ export function useKanbanData(
   );
 
   /* ── PROJECT meta ─────────────────────────────────────────────────────── */
-  const { data: projMeta } = useQuery({
+  const { data: projMeta, isLoading: projMetaLoading } = useQuery({
     queryKey: ['kb-project-meta', key],
     queryFn: async () => {
       if (!key) return null;
@@ -212,7 +220,7 @@ export function useKanbanData(
   });
 
   /* ── PRODUCT meta ─────────────────────────────────────────────────────── */
-  const { data: productMeta } = useQuery({
+  const { data: productMeta, isLoading: productMetaLoading } = useQuery({
     queryKey: ['kb-product-meta', key],
     queryFn: async () => {
       if (!key) return null;
@@ -332,23 +340,13 @@ export function useKanbanData(
     return m;
   }, [releaseManagerIds, approvedProfileMap]);
 
-  /* ── TEST rows (mode='test'): tm_test_cases scoped to first TM project ── */
-  const { data: testProjectsRow = [] } = useQuery({
-    queryKey: ['kb-test-projects'],
-    queryFn: async () => {
-      const { data, error } = await (supabase as any)
-        .from('tm_projects')
-        .select('id, key, name, is_active')
-        .eq('is_active', true)
-        .order('created_at', { ascending: true })
-        .limit(1);
-      if (error) throw error;
-      return data ?? [];
-    },
-    enabled: isTest,
-    staleTime: 5 * 60_000,
-  });
-  const testProjectId = (testProjectsRow as any[])[0]?.id ?? null;
+  /* ── TEST rows (mode='test'): tm_test_cases scoped to the ACTIVE Test Space ──
+     Use the canonical resolver (persisted selection → active project with the
+     most cases → first active) instead of "first active by created_at", which
+     resolved to the alphabetically/chronologically first row (the Demo seed)
+     and rendered the wrong project's cases / an empty board (D057). */
+  const { projectId: resolvedTestProjectId } = useTestHubProject();
+  const testProjectId = isTest ? (resolvedTestProjectId ?? null) : null;
 
   const { data: testRows = [], isLoading: testLoading, refetch: refetchTest, error: testError } = useQuery({
     queryKey: ['kb-test-rows', testProjectId],
@@ -382,14 +380,15 @@ export function useKanbanData(
   }, [testAssigneeIds, approvedProfileMap]);
 
   function mapTestRow(r: any): BoardIssue {
-    const status = (r.status ?? 'DRAFT').toString();
+    const status = (r.status ?? 'draft').toString();
+    const statusLc = status.toLowerCase();
     const statusCategory: string =
-      status === 'APPROVED' || status === 'DEPRECATED' ? 'done'
-      : status === 'REVIEW' ? 'in_progress'
+      statusLc === 'approved' || statusLc === 'deprecated' ? 'done'
+      : statusLc === 'ready' || statusLc === 'review' ? 'in_progress'
       : 'todo';
     return {
       id: r.id,
-      issueKey: r.key || r.id,
+      issueKey: r.case_key || r.id,
       summary: r.title ?? '',
       issueType: 'Test Case',
       priority: '',
@@ -403,8 +402,7 @@ export function useKanbanData(
       parentSummary: null,
       sprintRelease: null,
       isFlagged: !!r.is_flagged,
-        cover: r.cover ?? null,
-    cover: r.cover ?? null,
+      cover: r.cover ?? null,
       updatedAt: r.updated_at ?? null,
       createdAt: r.created_at ?? null,
       statusChangedAt: null,
@@ -437,8 +435,7 @@ export function useKanbanData(
       // Prefer the explicit is_flagged column now that rh_releases has one;
       // fall back to at_risk health as legacy signal for older data.
       isFlagged: !!r.is_flagged || r.health === 'at_risk',
-        cover: r.cover ?? null,
-    cover: r.cover ?? null,
+      cover: r.cover ?? null,
       updatedAt: r.updated_at ?? null,
       createdAt: r.created_at ?? null,
       statusChangedAt: null,
@@ -710,8 +707,7 @@ export function useKanbanData(
       parentSummary: null,
       sprintRelease: null,
       isFlagged: !!r.is_flagged,
-        cover: r.cover ?? null,
-    cover: r.cover ?? null,
+      cover: r.cover ?? null,
       updatedAt: r.updated_at ?? null,
       createdAt: r.created_at ?? null,
       statusChangedAt: null,
@@ -773,8 +769,15 @@ export function useKanbanData(
     boardConfig,
     boards: (isProduct || isIncident || isTasks || isRelease || isTest) ? [] : boards,
     issues,
+    /* 2026-07-06 RCA fix — product mode's issues query is `enabled: !!productId`,
+       so it resolves isLoading=false immediately (never fetches) when the key
+       doesn't match a real product, before productMeta itself has settled.
+       Fold the meta query's own loading state in so callers can't observe a
+       false "not found" flash while existence is still being checked. Project
+       mode gets the same treatment for symmetry/future-proofing even though
+       its issues query isn't gated on projMeta today. */
     isLoading: isProduct
-      ? productLoading
+      ? (productMetaLoading || productLoading)
       : isIncident
         ? incidentLoading
         : isTasks
@@ -783,7 +786,7 @@ export function useKanbanData(
             ? releaseLoading
             : isTest
               ? testLoading
-              : projectLoading,
+              : (projMetaLoading || projectLoading),
     /* Primary issues-query failure for the active mode. Surfaced so the page
        can render a real error state instead of an empty board — a failed
        query with `?? []` defaults is otherwise indistinguishable from a

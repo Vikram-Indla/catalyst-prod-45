@@ -9,18 +9,48 @@ function escape(s: string): string {
 
 /**
  * Inline-only markdown → HTML. Supports **bold**, _italic_, ~~strike~~,
- * <u>underline</u>, [text](url), `code`, @mention, ordered/unordered lists,
- * and newlines. Output is escaped first, then markdown tokens are transformed.
+ * <u>underline</u>, [text](url), `code`, ```fenced blocks```, @mention,
+ * ordered/unordered lists, and newlines. Output is escaped first, then
+ * markdown tokens are transformed.
  *
  * Pass selfToken (current user's name with whitespace removed) to colour
  * self-mentions differently from mentions of others.
  */
+const CODE_BLOCK_STYLE = [
+  'font-family:var(--ds-font-family-code,monospace)',
+  'background:var(--cv2-bg-row-active)',
+  'border:1px solid var(--cv2-border)',
+  'border-radius:var(--cv2-radius-sm,4px)',
+  'padding:var(--ds-space-100)',
+  'margin:var(--ds-space-050) 0',
+  'overflow-x:auto',
+  'white-space:pre',
+  'font-size:var(--ds-font-size-100,12px)',
+  'line-height:1.5',
+].join(';');
+
+// Slack-style blockquote. Tokens only — no bare colors (COLOR LAW).
+// Logical properties so the accent bar sits on the leading edge in BOTH
+// directions: left for LTR (English) messages, right for RTL (Arabic) — the
+// message carries dir="auto", so each blockquote follows its own text.
+const QUOTE_STYLE = [
+  'border-inline-start:4px solid var(--cv2-border-strong)',
+  'padding-block:0',
+  'padding-inline:var(--ds-space-150)',
+  'margin:var(--ds-space-050) 0',
+  'color:var(--cv2-text)',
+].join(';');
+
 export function renderMarkdownInline(md: string, selfToken?: string): string {
   if (!md) return '';
   const lines = md.split('\n');
   const out: string[] = [];
   let inUl = false;
   let inOl = false;
+  let inFence = false;
+  let fenceBuf: string[] = [];
+  let inQuote = false;
+  let quoteBuf: string[] = [];
   const self = (selfToken ?? '').trim().toLowerCase();
 
   const closeLists = () => {
@@ -34,7 +64,58 @@ export function renderMarkdownInline(md: string, selfToken?: string): string {
     }
   };
 
+  // One <blockquote> per contiguous run of "> " lines, inner lines joined
+  // with <br/>. Buffer entries are already transformed inline HTML.
+  const flushQuote = () => {
+    out.push(`<blockquote style="${QUOTE_STYLE}">${quoteBuf.join('<br/>')}</blockquote>`);
+    quoteBuf = [];
+    inQuote = false;
+  };
+
+  // Code is always LTR regardless of the surrounding message direction.
+  const flushFence = () => {
+    out.push(`<pre dir="ltr" style="${CODE_BLOCK_STYLE}"><code>${escape(fenceBuf.join('\n'))}</code></pre>`);
+    fenceBuf = [];
+    inFence = false;
+  };
+
   for (const raw of lines) {
+    if (inFence) {
+      const trailing = /^(.*?)```\s*$/.exec(raw);
+      if (trailing) {
+        if (trailing[1]) fenceBuf.push(trailing[1]);
+        flushFence();
+      } else {
+        fenceBuf.push(raw);
+      }
+      continue;
+    }
+    // Blockquote line: "> content" or a bare ">". Quotes hold inline content
+    // only — a fence opener inside a quote is NOT special. Checked before the
+    // fence opener so "> ```" stays quote text.
+    const quote = /^>(?: (.*))?$/.exec(raw);
+    if (quote) {
+      closeLists();
+      inQuote = true;
+      quoteBuf.push(transformInline(quote[1] ?? '', self));
+      continue;
+    }
+    if (inQuote) flushQuote();
+    // Opening fence. Slack-tolerant: content may share the opening line
+    // ("```const x = 1;"), and a short word token is treated as a language
+    // tag (dropped — no highlighting). One-line blocks ("```x = 1```") close
+    // immediately.
+    const open = /^```(.*)$/.exec(raw);
+    if (open) {
+      closeLists();
+      inFence = true;
+      let rest = open[1];
+      const oneLine = /^(.*?)```\s*$/.exec(rest);
+      if (oneLine) rest = oneLine[1];
+      if (rest && !/^[A-Za-z0-9+#-]{1,15}$/.test(rest)) fenceBuf.push(rest);
+      if (oneLine) flushFence();
+      continue;
+    }
     const ulMatch = /^- (.+)$/.exec(raw);
     const olMatch = /^\d+\. (.+)$/.exec(raw);
     if (ulMatch) {
@@ -69,7 +150,11 @@ export function renderMarkdownInline(md: string, selfToken?: string): string {
       out.push('<br/>');
     }
   }
+  if (inQuote) flushQuote();
   closeLists();
+  // Unterminated fence at EOF still renders as a block — a lie-free
+  // best-effort beats silently dropping the user's code.
+  if (inFence) flushFence();
 
   let html = out.join('');
   if (html.endsWith('<br/>')) html = html.slice(0, -5);
@@ -187,7 +272,20 @@ function walk(node: Node): string {
     return token ? `@${token}` : '';
   }
 
-  const inner = Array.from(el.childNodes).map(walk).join('');
+  // Block-boundary-aware join: contentEditable keeps the FIRST line as a bare
+  // text node and wraps subsequent lines in <div>s. A plain join('') glues
+  // line 1 onto line 2 (the lost-first-newline bug — bit fences AND quotes).
+  // Insert the missing newline whenever a block child follows inline content.
+  const BLOCK_TAGS = new Set(['div', 'p', 'ul', 'ol', 'blockquote', 'pre']);
+  let inner = '';
+  for (const child of Array.from(el.childNodes)) {
+    const childTag =
+      child.nodeType === Node.ELEMENT_NODE ? (child as HTMLElement).tagName.toLowerCase() : '';
+    if (BLOCK_TAGS.has(childTag) && inner.length > 0 && !inner.endsWith('\n')) {
+      inner += '\n';
+    }
+    inner += walk(child);
+  }
 
   switch (tag) {
     case 'br':
@@ -211,7 +309,15 @@ function walk(node: Node): string {
       const href = el.getAttribute('href') ?? '';
       return `[${inner}](${href})`;
     }
+    case 'pre':
+      return inner ? `\`\`\`\n${inner.replace(/\n$/, '')}\n\`\`\`\n` : '';
+    case 'blockquote':
+      return inner
+        ? inner.replace(/\n$/, '').split('\n').map(line => `> ${line}`).join('\n') + '\n'
+        : '';
     case 'code':
+      // <code> inside <pre> is handled by the pre case (inner passes through).
+      if (el.parentElement?.tagName.toLowerCase() === 'pre') return inner;
       return inner ? `\`${inner}\`` : '';
     case 'ul':
       return Array.from(el.children)

@@ -118,6 +118,7 @@ export function ReleaseMergeDialog({ isOpen, release, onClose, onSuccess, config
             || q.queryKey[0] === 'ph_release_contributors'),
       });
       queryClient.invalidateQueries({ queryKey: ['projecthub', 'release-progress'] });
+      queryClient.invalidateQueries({ queryKey: ['projecthub', 'releases'] });
       queryClient.invalidateQueries({ queryKey: ['projecthub-sprints'] });
       queryClient.invalidateQueries({ queryKey: ['projecthub-releases'] });
       const target = options.find((o) => o.id === targetId);

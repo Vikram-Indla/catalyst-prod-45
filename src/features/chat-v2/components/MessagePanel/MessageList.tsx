@@ -3,18 +3,26 @@ import { MessageBubble } from './MessageBubble';
 import { DateSeparator } from './DateSeparator';
 import { HuddleEventRow } from './HuddleEventRow';
 import { dayKey } from '../../lib/formatTimestamp';
+import type { SeenCaption } from './seenReceipts';
 import type { ChatMessage } from '@/types/chat';
 import type { AttachmentMap } from '../../hooks/useMessageAttachments';
 
 interface MessageListProps {
   messages: ChatMessage[];
   loading?: boolean;
+  /** Unread watermark (ISO). The "New messages" divider renders before the
+   *  first message from another author created after this instant. */
+  unreadSince?: string | null;
+  currentUserId?: string | null;
   savedIds?: Set<string>;
   pinnedIds?: Set<string>;
   pinnedByMap?: Record<string, { name: string | null; isMe: boolean }>;
   attachmentsByMessage?: AttachmentMap;
   removingIds?: Set<string>;
   jumpHighlightId?: string | null;
+  /** "Seen" receipt caption rendered directly under the matching message
+   *  (DM/group-DM only — computed by the parent via computeSeenCaption). */
+  seenCaption?: SeenCaption | null;
   onOpenThread: (messageId: string) => void;
   onToggleReaction: (messageId: string, emoji: string) => void;
   onJumpTo?: (messageId: string) => void;
@@ -33,20 +41,39 @@ interface MessageListProps {
 const SAME_AUTHOR_WINDOW_MS = 5 * 60 * 1000;
 
 interface RenderItem {
-  kind: 'date' | 'message';
+  kind: 'date' | 'message' | 'unread';
   key: string;
   date?: string;
   message?: ChatMessage;
   showHeader?: boolean;
 }
 
-function buildRenderList(messages: ChatMessage[]): RenderItem[] {
+export function buildRenderList(
+  messages: ChatMessage[],
+  unreadSince?: string | null,
+  currentUserId?: string | null,
+): RenderItem[] {
   const out: RenderItem[] = [];
   let lastDay = '';
   let lastAuthor: string | null = null;
   let lastTime = 0;
+  const unreadCutoff = unreadSince ? new Date(unreadSince).getTime() : null;
+  let unreadPlaced = false;
   for (const m of messages) {
     const dk = dayKey(m.createdAt);
+    if (
+      unreadCutoff !== null &&
+      !unreadPlaced &&
+      m.authorId !== currentUserId &&
+      new Date(m.createdAt).getTime() > unreadCutoff
+    ) {
+      out.push({ kind: 'unread', key: 'unread-divider' });
+      unreadPlaced = true;
+      // The divider breaks author grouping — the first unread message
+      // always shows its full header.
+      lastAuthor = null;
+      lastTime = 0;
+    }
     if (dk !== lastDay) {
       out.push({ kind: 'date', key: `date-${dk}`, date: m.createdAt });
       lastDay = dk;
@@ -77,12 +104,15 @@ function buildRenderList(messages: ChatMessage[]): RenderItem[] {
 export function MessageList({
   messages,
   loading,
+  unreadSince,
+  currentUserId,
   savedIds,
   pinnedIds,
   pinnedByMap,
   attachmentsByMessage,
   removingIds,
   jumpHighlightId,
+  seenCaption,
   onOpenThread,
   onToggleReaction,
   onJumpTo,
@@ -97,7 +127,10 @@ export function MessageList({
   followLatest = true,
 }: MessageListProps) {
   const scrollerRef = useRef<HTMLDivElement>(null);
-  const renderList = useMemo(() => buildRenderList(messages), [messages]);
+  const renderList = useMemo(
+    () => buildRenderList(messages, unreadSince, currentUserId),
+    [messages, unreadSince, currentUserId],
+  );
 
   useEffect(() => {
     if (!followLatest) return;
@@ -171,7 +204,32 @@ export function MessageList({
         </div>
       ) : (
         renderList.map(item =>
-          item.kind === 'date' ? (
+          item.kind === 'unread' ? (
+            <div
+              key={item.key}
+              role="separator"
+              aria-label="New messages"
+              data-cv2-unread-divider
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 'var(--ds-space-100)',
+                padding: 'var(--ds-space-050) var(--ds-space-250)',
+              }}
+            >
+              <span style={{ flex: 1, height: 1, background: 'var(--cv2-danger)' }} />
+              <span
+                style={{
+                  font: 'var(--ds-font-body-small)',
+                  fontWeight: 600,
+                  color: 'var(--cv2-danger)',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                New messages
+              </span>
+            </div>
+          ) : item.kind === 'date' ? (
             <DateSeparator
               key={item.key}
               iso={item.date!}
@@ -182,28 +240,46 @@ export function MessageList({
           ) : item.message!.eventType === 'huddle_summary' || item.message!.eventType === 'huddle_live' ? (
             <HuddleEventRow key={item.key} message={item.message!} onOpenThread={onOpenThread} />
           ) : (
-            <MessageBubble
-              key={item.key}
-              message={item.message!}
-              showHeader={!!item.showHeader}
-              isSaved={savedIds?.has(item.message!.id)}
-              isPinned={pinnedIds?.has(item.message!.id)}
-              pinnedByName={pinnedByMap?.[item.message!.id]?.name ?? null}
-              pinnedByMe={pinnedByMap?.[item.message!.id]?.isMe ?? false}
-              attachments={attachmentsByMessage?.get(item.message!.id)}
-              removing={removingIds?.has(item.message!.id)}
-              jumpHighlight={jumpHighlightId === item.message!.id}
-              onOpenThread={onOpenThread}
-              onToggleReaction={onToggleReaction}
-              onSaveLater={onSaveLater}
-              onShare={onShare}
-              onEdit={onEdit}
-              onRequestDelete={onRequestDelete}
-              onTogglePin={onTogglePin}
-              onCopyLink={onCopyLink}
-              onMarkUnread={onMarkUnread}
-              onOpenForwardSource={onOpenForwardSource}
-            />
+            <React.Fragment key={item.key}>
+              <MessageBubble
+                message={item.message!}
+                showHeader={!!item.showHeader}
+                isSaved={savedIds?.has(item.message!.id)}
+                isPinned={pinnedIds?.has(item.message!.id)}
+                pinnedByName={pinnedByMap?.[item.message!.id]?.name ?? null}
+                pinnedByMe={pinnedByMap?.[item.message!.id]?.isMe ?? false}
+                attachments={attachmentsByMessage?.get(item.message!.id)}
+                removing={removingIds?.has(item.message!.id)}
+                jumpHighlight={jumpHighlightId === item.message!.id}
+                onOpenThread={onOpenThread}
+                onToggleReaction={onToggleReaction}
+                onSaveLater={onSaveLater}
+                onShare={onShare}
+                onEdit={onEdit}
+                onRequestDelete={onRequestDelete}
+                onTogglePin={onTogglePin}
+                onCopyLink={onCopyLink}
+                onMarkUnread={onMarkUnread}
+                onOpenForwardSource={onOpenForwardSource}
+              />
+              {seenCaption?.messageId === item.message!.id && (
+                <div
+                  aria-label={seenCaption.text}
+                  data-cv2-seen-caption
+                  style={{
+                    // Align with the message body: MessageBubble's 3px transparent
+                    // borderLeft + 16px paddingLeft + 44px avatar column + 8px columnGap.
+                    // ads-scanner:ignore-next-line — 71px gutter alignment derived from MessageBubble geometry (2026-07-05)
+                    paddingLeft: 3 + 16 + 44 + 8,
+                    marginTop: 'var(--ds-space-025)',
+                    font: 'var(--ds-font-body-small)',
+                    color: 'var(--cv2-text-muted)',
+                  }}
+                >
+                  {seenCaption.text}
+                </div>
+              )}
+            </React.Fragment>
           ),
         )
       )}

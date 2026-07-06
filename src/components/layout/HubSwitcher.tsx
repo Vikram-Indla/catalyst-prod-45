@@ -68,7 +68,7 @@ interface DeprecatedHubEntry extends HubEntry {
 
 const HUBS: DeprecatedHubEntry[] = [
   { key: 'home',     label: 'Home',     href: '/for-you',                    section: 'discover',   tone: 'blue',    shortcut: '1', moduleKey: 'home' },
-  { key: 'strategy', label: 'Strategy', href: '/strategyhub',                section: 'discover',   tone: 'gray',    shortcut: '2', moduleKey: 'enterprise', deprecated: true },
+  { key: 'strategy', label: 'Strategy', href: '/strategyhub',                section: 'discover',   tone: 'purple',  shortcut: '2', moduleKey: 'enterprise' },
   { key: 'ideation', label: 'Ideation', href: '/ideation/backlog',           section: 'discover',   tone: 'gray',    shortcut: '3', moduleKey: 'product', deprecated: true },
   { key: 'product',  label: 'Product',  href: '/product-hub',                section: 'build_ship', tone: 'teal',    shortcut: '4', moduleKey: 'product' },
   { key: 'project',  label: 'Project',  href: '/project-hub',                section: 'build_ship', tone: 'green',   shortcut: '5', moduleKey: 'workhub' },
@@ -78,6 +78,7 @@ const HUBS: DeprecatedHubEntry[] = [
   { key: 'task',     label: 'Tasks',    href: '/tasks/overview',             section: 'build_ship', tone: 'yellow',  shortcut: '9', moduleKey: 'planner' },
   { key: 'plan',     label: 'Plan',     href: '/planhub',                    section: 'build_ship', tone: 'gray',    shortcut: '0', moduleKey: 'planner', deprecated: true },
   { key: 'docex',    label: 'Folio',    href: '/folio',                      section: 'knowledge',  tone: 'blue',    shortcut: '-', moduleKey: 'docex' },
+  { key: 'wiki',     label: 'Wiki',     href: '/wiki',                       section: 'knowledge',  tone: 'lime',    shortcut: '-', moduleKey: 'wiki', deprecated: true },
 ];
 
 const SECTIONS: { key: SectionKey; title: string }[] = [

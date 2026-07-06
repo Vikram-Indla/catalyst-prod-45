@@ -140,6 +140,7 @@ export function Sidebar({
             overflowX: 'hidden',
             minHeight: 0,
             paddingBottom: 12,
+            paddingInline: 'var(--ds-space-100)',
           }}
         >
           {dmsForDmTab.length === 0 ? (
@@ -193,12 +194,13 @@ export function Sidebar({
           overflowX: 'hidden',
           minHeight: 0,
           paddingBottom: 12,
+          paddingInline: 'var(--ds-space-100)',
           display: 'flex',
           flexDirection: 'column',
           gap: 12,
         }}
       >
-        <div style={{ padding: '0 4px' }}>
+        <div>
           <SidebarNavLink
             icon={<DraftsClockIcon size={16} />}
             label="Drafts & sent"
@@ -374,7 +376,7 @@ function EmptySection({ label }: { label: string }) {
   return (
     <div
       style={{
-        padding: '8px 12px 8px 32px',
+        padding: '8px 4px 8px 24px',
         fontFamily: 'var(--cv2-font)',
         font: 'var(--ds-font-body-small)',
         color: 'var(--cv2-text-muted)',

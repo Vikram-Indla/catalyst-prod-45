@@ -490,7 +490,7 @@ export default function TimeInStatusFullscreenModal({
                                   )}
                                 </Tooltip>
                               ) : (
-                                <span style={{ color: token('color.text.disabled', '#B3B9C4') }}>—</span>
+                                <span style={{ color: token('color.text.disabled') }}>—</span>
                               )}
                             </td>
                           );
@@ -522,7 +522,7 @@ export default function TimeInStatusFullscreenModal({
             <span
               style={{
                 ...SMALL,
-                color: token('color.text.subtle', '#505258'),
+                color: token('color.text.subtle'),
                 marginRight: 'auto',
               }}
             >

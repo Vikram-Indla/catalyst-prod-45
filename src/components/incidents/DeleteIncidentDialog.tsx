@@ -62,8 +62,8 @@ export function DeleteIncidentDialog({
       <AlertDialogContent>
         <AlertDialogHeader>
           <div className="flex items-center gap-3 mb-2">
-            <div className="h-10 w-10 rounded-full bg-rose-100 dark:bg-rose-950/30 flex items-center justify-center">
-              <AlertTriangle className="h-5 w-5 text-rose-600 dark:text-rose-400" />
+            <div className="h-10 w-10 rounded-full bg-[var(--ds-background-danger)] dark:bg-[var(--ds-background-danger)] flex items-center justify-center">
+              <AlertTriangle className="h-5 w-5 text-[var(--ds-text-danger)] dark:text-[var(--ds-text-danger)]" />
             </div>
             <AlertDialogTitle className="text-lg">Delete {incidentKey}?</AlertDialogTitle>
           </div>

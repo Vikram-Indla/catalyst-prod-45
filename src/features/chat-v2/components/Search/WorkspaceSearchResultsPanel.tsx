@@ -174,7 +174,7 @@ export function WorkspaceSearchResultsPanel({
                         textOverflow: 'ellipsis',
                       }}
                     >
-                      in {hit.conversationTitle}
+                      in <span dir="auto">{hit.conversationTitle}</span>
                     </div>
                     <Snippet body={hit.body} query={query} />
                   </div>
@@ -193,6 +193,7 @@ function Snippet({ body, query }: { body: string; query: string }) {
   if (idx < 0) {
     return (
       <p
+        dir="auto"
         style={{
           margin: '4px 0 0',
           font: 'var(--ds-font-body-small)',
@@ -213,6 +214,7 @@ function Snippet({ body, query }: { body: string; query: string }) {
   const after = body.slice(idx + query.length, idx + query.length + 80);
   return (
     <p
+      dir="auto"
       style={{
         margin: '4px 0 0',
         font: 'var(--ds-font-body-small)',

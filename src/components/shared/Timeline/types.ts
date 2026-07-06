@@ -194,6 +194,11 @@ export interface TimelineViewProps {
   enableCreateEpicRow?: boolean;
   enableEmptyRowAdd?: boolean;
   enableDetailPanel?: boolean;
+  /** Shows the centered "No issues with dates" overlay when rows exist but none
+   *  carry start/due dates. Default true (Project/Product Hub prompt). Surfaces
+   *  where date-less rows are a normal populated state (e.g. TestHub cycles) set
+   *  this false so the overlay never covers real rows. */
+  enableInlineEmptyOverlay?: boolean;
 
   /** Configures the bottom "Create" row in the sidebar. Defaults to the
    *  project-hub epic. Product hub overrides with a Business Request label. */

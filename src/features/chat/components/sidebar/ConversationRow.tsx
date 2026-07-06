@@ -1,5 +1,5 @@
 import React from 'react';
-import { Avatar } from '@/components/ads/Avatar';
+import CatalystAvatar from '@/components/shared/CatalystAvatar';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { ProjectIcon } from '@/components/shared/ProjectIcon';
 import type { ChatConversation } from '@/types/chat';
@@ -87,7 +87,7 @@ export function ConversationRow({
       <div className={`c-sb-row__icon${isCustomChannel ? ' c-sb-row__icon--hash' : ''}`}>
         {isDM && (
           <div style={{ position: 'relative' }}>
-            <Avatar
+            <CatalystAvatar
               src={otherPartyAvatarUrl ?? undefined}
               name={otherPartyName ?? conv.title}
               size="xsmall"

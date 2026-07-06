@@ -50,6 +50,16 @@ const CHECKS = [
     needles: ['@/lib/catalyst-rules', 'canLinkTo'],
     why: 'Link picker candidates must pass the CRE Grid C filter',
   },
+  {
+    file: 'src/modules/project-work-hub/adapters/testCasesDataSource.ts',
+    needles: ['@/lib/catalyst-rules', 'filterCreatableTypes'],
+    why: "TestHub Test Case create catalogue must pass the CRE Grid A filter (P1-S19, E4)",
+  },
+  {
+    file: 'src/modules/project-work-hub/adapters/defectsDataSource.ts',
+    needles: ['@/lib/catalyst-rules', 'filterCreatableTypes'],
+    why: "TestHub QA Bug create catalogue must pass the CRE Grid A filter (P1-S19, E4)",
+  },
 ];
 
 let failed = false;

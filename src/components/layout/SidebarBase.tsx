@@ -66,7 +66,6 @@ const ROUTE_PREFETCH_MAP: Record<string, () => Promise<unknown>> = {
   '/planhub': () => import('../../components/planhub/PlanHubShell'),
   '/tasks': () => import('../../modules/tasks/PlannerPage'),
   '/incidenthub': () => import('../../pages/incidenthub/IncidentListPage'),
-  '/strategyhub': () => import('../../modules-dormant/strategyhub/StrategicThemesPage'),
 };
 
 const prefetchedRoutes = new Set<string>();

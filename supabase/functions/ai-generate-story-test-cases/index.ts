@@ -33,23 +33,36 @@ interface GeneratedCase {
   steps: GeneratedStep[];
 }
 
-async function logGovernance(params: {
-  action: string;
-  payload: Record<string, unknown>;
-  status: "ok" | "error";
-  error_message?: string;
+// P2-S9 (AI-003): the repo-wide `logGovernance()` pattern (also used by ~10 other
+// AI edge functions) inserted into `ai_governance_audit_log` with columns
+// (payload/status/error_message/source) that don't exist on that table's real
+// schema (id/actor_id/contract_id/action/object_type/object_id/diff, FK'd to
+// ai_contracts — a contract-approval concept). Every call silently failed
+// (0 rows, ever) behind the "audit must never block inference" catch. This
+// function writes to `tm_ai_usage_log` (TestHub's usage ledger). The other ~10
+// functions were retargeted to the new shared `ai_usage_log` table, which
+// mirrors their existing (source/action/status/error_message/payload) shape.
+async function logUsage(params: {
+  userId: string | null;
+  projectId: string | null;
+  model: string;
+  tokensUsed: number | null;
+  requestData: Record<string, unknown>;
+  responseSummary: string;
 }) {
   try {
     const url = Deno.env.get("SUPABASE_URL");
     const service = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
     if (!url || !service) return;
     const sb = createClient(url, service, { auth: { persistSession: false } });
-    await sb.from("ai_governance_audit_log").insert({
-      action: params.action,
-      payload: params.payload,
-      status: params.status,
-      error_message: params.error_message ?? null,
-      source: "ai-generate-story-test-cases",
+    await sb.from("tm_ai_usage_log").insert({
+      user_id: params.userId,
+      project_id: params.projectId,
+      feature: "test_case_generation",
+      model: params.model,
+      tokens_used: params.tokensUsed,
+      request_data: params.requestData,
+      response_summary: params.responseSummary,
     } as never);
   } catch (_e) {
     /* audit must never block inference */
@@ -94,6 +107,59 @@ serve(async (req) => {
           headers: { ...corsHeaders, "Content-Type": "application/json" },
         },
       );
+    }
+
+    // ── P2-S10 (AI-004): per-user daily quota + short cooldown, enforced
+    //    server-side against the same tm_ai_usage_log ledger S9 now writes
+    //    to (no separate counter table — the ledger already has every row
+    //    needed to compute both checks).
+    const DAILY_LIMIT = 20;
+    const COOLDOWN_SECONDS = 10;
+    {
+      const url = Deno.env.get("SUPABASE_URL");
+      const service = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+      if (url && service) {
+        const sbAdmin = createClient(url, service, { auth: { persistSession: false } });
+        const dayStart = new Date();
+        dayStart.setUTCHours(0, 0, 0, 0);
+        const { count: usedToday } = await sbAdmin
+          .from("tm_ai_usage_log")
+          .select("id", { count: "exact", head: true })
+          .eq("user_id", user.id)
+          .eq("feature", "test_case_generation")
+          .gte("created_at", dayStart.toISOString());
+        if ((usedToday ?? 0) >= DAILY_LIMIT) {
+          return new Response(
+            JSON.stringify({
+              error: "quota_exceeded",
+              message: `Daily AI test-case generation limit (${DAILY_LIMIT}) reached. Try again tomorrow.`,
+              test_cases: [],
+            }),
+            { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+          );
+        }
+        const { data: lastRow } = await sbAdmin
+          .from("tm_ai_usage_log")
+          .select("created_at")
+          .eq("user_id", user.id)
+          .eq("feature", "test_case_generation")
+          .order("created_at", { ascending: false })
+          .limit(1)
+          .maybeSingle();
+        if (lastRow?.created_at) {
+          const elapsedMs = Date.now() - new Date(lastRow.created_at).getTime();
+          if (elapsedMs < COOLDOWN_SECONDS * 1000) {
+            return new Response(
+              JSON.stringify({
+                error: "cooldown",
+                message: `Please wait ${Math.ceil((COOLDOWN_SECONDS * 1000 - elapsedMs) / 1000)}s before generating again.`,
+                test_cases: [],
+              }),
+              { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+            );
+          }
+        }
+      }
     }
 
     const body = await req.json();
@@ -251,18 +317,16 @@ ${sharedRulesAndShape}`;
       const status = aiResp.status;
       const errBody = await aiResp.text().catch(() => "");
       console.error("ai-generate-story-test-cases gateway error:", status, errBody);
-      await logGovernance({
-        action: "ai_generate_story_test_cases",
-        payload: {
-          mode,
-          story_key: storyKey,
-          summary_len: storySummary.length,
-          prompt_len: freePrompt.length,
-          project_id: projectId,
-          folder_id: folderId,
+      await logUsage({
+        userId: user.id,
+        projectId: projectId || null,
+        model: DEFAULT_MODEL,
+        tokensUsed: null,
+        requestData: {
+          mode, story_key: storyKey, summary_len: storySummary.length,
+          prompt_len: freePrompt.length, folder_id: folderId,
         },
-        status: "error",
-        error_message: `gateway_${status}`,
+        responseSummary: `error: gateway_${status}`,
       });
       const code =
         status === 429
@@ -310,11 +374,13 @@ ${sharedRulesAndShape}`;
     }
 
     if (!parsed || !Array.isArray(parsed.test_cases)) {
-      await logGovernance({
-        action: "ai_generate_story_test_cases",
-        payload: { mode, story_key: storyKey, parse_error: parseError ?? "unknown" },
-        status: "error",
-        error_message: parseError ?? "unparseable",
+      await logUsage({
+        userId: user.id,
+        projectId: projectId || null,
+        model: DEFAULT_MODEL,
+        tokensUsed: aiData?.usage?.total_tokens ?? null,
+        requestData: { mode, story_key: storyKey },
+        responseSummary: `error: parse_error (${parseError ?? "unknown"})`,
       });
       return new Response(
         JSON.stringify({
@@ -376,18 +442,16 @@ ${sharedRulesAndShape}`;
       });
     }
 
-    await logGovernance({
-      action: "ai_generate_story_test_cases",
-      payload: {
-        mode,
-        story_key: storyKey,
-        count: cleaned.length,
-        summary_len: storySummary.length,
-        prompt_len: freePrompt.length,
-        project_id: projectId,
-        folder_id: folderId,
+    await logUsage({
+      userId: user.id,
+      projectId: projectId || null,
+      model: DEFAULT_MODEL,
+      tokensUsed: aiData?.usage?.total_tokens ?? null,
+      requestData: {
+        mode, story_key: storyKey, summary_len: storySummary.length,
+        prompt_len: freePrompt.length, folder_id: folderId,
       },
-      status: "ok",
+      responseSummary: `generated ${cleaned.length} test case(s)`,
     });
 
     return new Response(

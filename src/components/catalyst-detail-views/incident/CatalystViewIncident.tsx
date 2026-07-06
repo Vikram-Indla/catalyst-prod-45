@@ -3,7 +3,9 @@
  */
 import React, { useMemo } from 'react';
 import { catalystToast } from '@/lib/catalystToast';
-import { cloneIssue, archiveIssue } from '@/modules/project-work-hub/lib/workItemRepo';
+import { archiveIssue } from '@/modules/project-work-hub/lib/workItemRepo';
+import { cloneWorkItemWithFlags } from '@/lib/cloneWorkItemWithFlags';
+import type { ClonePatch } from '../shared/ConfirmCloneDialog';
 import { CatalystViewBase } from '../shared/CatalystViewBase';
 import { useCatalystIssue, useCatalystIssueMutations } from '../shared/hooks';
 import {
@@ -17,6 +19,10 @@ import { ImproveIssueDropdown, useImproveApplyHandlers } from '@/components/cata
 import { CatalystSeverityField } from '../shared/sections/CatalystSeverityField';
 import { KeyDetailsFieldRow } from '../shared/sections';
 import { useQueryClient } from '@tanstack/react-query';
+import { useIncidentSlaByPhIssueId } from '@/hooks/useIncidentHub';
+import { SlaBadge } from '@/components/incidents/badges/IncidentBadges';
+import { getIncidentSlaBadgeStatus } from '@/utils/incidentSla';
+import type { IncidentStatus } from '@/types/incident';
 import { MoveIssueDialog } from '../shared/MoveIssueDialog';
 import { ConfirmArchiveDialog } from '../shared/ConfirmArchiveDialog';
 import { ConfirmCloneDialog } from '../shared/ConfirmCloneDialog';
@@ -30,6 +36,8 @@ export default function CatalystViewIncident({
 }: CatalystViewBaseProps) {
 
   const { data: issue, isLoading, isError, error, refetch } = useCatalystIssue(itemId, isOpen);
+  const { data: gov } = useIncidentSlaByPhIssueId(issue?.id);
+  const slaStatus = gov ? getIncidentSlaBadgeStatus(gov.sla_records?.[0] ?? null, gov.status as IncidentStatus) : null;
   const mutations = useCatalystIssueMutations(itemId, onClose);
   const improveHandlers = useImproveApplyHandlers(issue ?? null);
   const [showMoveDialog, setShowMoveDialog] = React.useState(false);
@@ -37,16 +45,15 @@ export default function CatalystViewIncident({
   const [showArchiveDialog, setShowArchiveDialog] = React.useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = React.useState(false);
 
-  const handleClone = React.useCallback(() => {
+  const handleClone = React.useCallback((patch?: ClonePatch) => {
     if (!issue?.issue_key) return;
-    cloneIssue(issue.issue_key)
-      .then((newKey) => {
-        catalystToast.success(`Cloned as ${newKey}`, undefined, { label: 'Open', onClick: () => onOpenItem?.(newKey) });
-      })
-      .catch((e: unknown) => {
-        catalystToast.error('Clone failed', e instanceof Error ? e.message : (e as any)?.message ?? 'Unknown error');
-      });
-  }, [issue?.issue_key, onOpenItem]);
+    void cloneWorkItemWithFlags({
+      sourceKey: issue.issue_key,
+      sourceType: issue.issue_type,
+      projectKey: issue.project_key ?? projectKey,
+      patch,
+    });
+  }, [issue?.issue_key, issue?.issue_type, issue?.project_key, projectKey]);
   const queryClient = useQueryClient();
 
   // Memoize leftContent / rightContent / moreMenuItems so that opening a
@@ -70,12 +77,20 @@ export default function CatalystViewIncident({
         issue={issue ?? null} itemId={itemId} itemType="incident"
         projectKey={projectKey} onOpenItem={onOpenItem} showParent={false}
         extraRows={
-          <KeyDetailsFieldRow label="Severity" alignBlock="center">
-            <CatalystSeverityField
-              issue={issue ?? null}
-              onUpdate={() => queryClient.invalidateQueries({ queryKey: ['cv-issue-detail', itemId] })}
-            />
-          </KeyDetailsFieldRow>
+          <>
+            <KeyDetailsFieldRow label="Severity" alignBlock="center">
+              <CatalystSeverityField
+                issue={issue ?? null}
+                onUpdate={() => queryClient.invalidateQueries({ queryKey: ['cv-issue-detail', itemId] })}
+              />
+            </KeyDetailsFieldRow>
+            {/* CAT-0009: live SLA breach status, previously only visible in the list table. */}
+            {slaStatus && (
+              <KeyDetailsFieldRow label="SLA" alignBlock="center">
+                <SlaBadge status={slaStatus} />
+              </KeyDetailsFieldRow>
+            )}
+          </>
         }
         afterBody={<Description issue={issue ?? null} />}
       />
@@ -154,13 +169,20 @@ export default function CatalystViewIncident({
       }}
       /* onShare removed 2026-05-10 — canonical handleShare owns ticket URL */
       moreMenuItems={useMemo(() => [
-        { label: 'Print', onClick: () => window.print() },
         { label: 'Clone', onClick: () => { if (!issue?.issue_key) return; setShowCloneDialog(true); } },
-        { label: 'Move to project…', onClick: () => setShowMoveDialog(true) },
+        { label: 'Move', onClick: () => setShowMoveDialog(true) },
         { label: 'Archive', onClick: () => { if (!issue?.issue_key) return; setShowArchiveDialog(true); } },
         { label: 'Delete incident', onClick: () => setShowDeleteDialog(true), danger: true },
       // eslint-disable-next-line react-hooks/exhaustive-deps
       ], [issue?.issue_key])}
+      flagContext={issue?.id && issue?.issue_key ? {
+        issueId: issue.id,
+        issueKey: issue.issue_key,
+        isFlagged: !!(issue as any).is_flagged,
+        issueTitle: issue.summary,
+        issueType: issue.issue_type,
+        tableName: 'ph_issues',
+      } : undefined}
       onTogglePanelMode={onTogglePanelMode} navigationItems={navigationItems} currentItemId={itemId} onNavigate={onNavigate}
       leftContent={leftContent} rightContent={rightContent}
       cover={(issue as any)?.cover ?? null}
@@ -177,6 +199,12 @@ export default function CatalystViewIncident({
         onClose={() => setShowCloneDialog(false)}
         issueKey={issue?.issue_key}
         issueSummary={issue?.summary}
+        issueId={issue?.id}
+        projectId={projectId}
+        currentAssigneeId={issue?.assignee_account_id}
+        currentAssigneeName={issue?.assignee_display_name}
+        currentReporterId={issue?.reporter_account_id}
+        currentReporterName={issue?.reporter_display_name}
         onConfirm={handleClone}
       />
       {showMoveDialog && issue?.issue_key && (

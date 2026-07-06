@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { useProjects } from '@/hooks/test-management/useProjects';
+import { useTestHubProject } from '@/hooks/test-management/useTestHubProject';
 import { useSprintsByProject } from '@/hooks/test-management/useSprintsByProject';
 import { useTestCases } from '@/hooks/test-management/useTestCases';
 import {
@@ -13,6 +13,10 @@ import Lozenge from '@atlaskit/lozenge';
 import Button from '@atlaskit/button/standard-button';
 import Textfield from '@atlaskit/textfield';
 import TextArea from '@atlaskit/textarea';
+// D019/D020/D021 (Phase C, Wave 2) — native <select>/<input type=date> replaced
+// with canonical ADS controls (@/components/ads Select + @atlaskit datetime-picker).
+import { Select } from '@/components/ads';
+import { DatePicker } from '@atlaskit/datetime-picker';
 import ModalDialog, { ModalBody, ModalFooter, ModalHeader, ModalTitle } from '@atlaskit/modal-dialog';
 import DropdownMenu, { DropdownItem, DropdownItemGroup } from '@atlaskit/dropdown-menu';
 import Tabs, { Tab, TabList, TabPanel } from '@atlaskit/tabs';
@@ -96,8 +100,10 @@ const columns: Column<TMCycle>[] = [
 
 export default function CyclesPage() {
   const { projectKey = 'TESTHUB' } = useParams<{ projectKey: string }>();
-  const { data: projects = [] } = useProjects();
-  const projectId = projects[0]?.id;
+  const { projectId, project } = useTestHubProject();
+  // D023: cycle detail/execute routes require the REAL project key
+  // (`/testhub/:projectKey/cycles/:cycleKey`), not the 'TESTHUB' hub literal.
+  const cycleRouteKey = project?.key ?? projectKey;
   const { data: cycles = [], isLoading } = useTestCycles(projectId);
   const [showCreate, setShowCreate] = useState(false);
   const navigate = useNavigate();
@@ -178,7 +184,7 @@ export default function CyclesPage() {
           columns={columns}
           data={cycles}
           getRowId={row => row.id}
-          onRowClick={row => navigate(`/testhub/${projectKey}/cycles/${(row as any).key ?? row.id}`)}
+          onRowClick={row => navigate(`/testhub/${cycleRouteKey}/cycles/${(row as any).key ?? row.id}`)}
           selectable
           selection={selectedIds}
           onSelectionChange={next => setSelectedIds(new Set(next))}
@@ -279,6 +285,20 @@ function CreateCycleModal({ projectId, onClose }: { projectId: string; onClose: 
     !caseSearch || c.title?.toLowerCase().includes(caseSearch.toLowerCase()) || c.key?.toLowerCase().includes(caseSearch.toLowerCase())
   );
 
+  // ADS Select option sets (D019/D020). Sprint query left as-is per Plan Lock —
+  // another agent standardizes the sprint source; only the control is swapped.
+  const sprintOptions = [
+    { value: '', label: '— No sprint —' },
+    ...sprints.map(s => ({ value: s.id, label: s.name })),
+  ];
+  const ownerOptions = [
+    { value: '', label: '— Unassigned —' },
+    ...(profiles as Array<{ id: string; full_name: string | null; email: string | null }>).map(p => ({
+      value: p.id,
+      label: p.full_name || p.email || p.id,
+    })),
+  ];
+
   const handleCreateCycle = async () => {
     if (!name.trim()) return;
     const cycle = await createCycle.mutateAsync({
@@ -346,35 +366,45 @@ function CreateCycleModal({ projectId, onClose }: { projectId: string; onClose: 
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
                 <div>
                   <label style={labelStyle}>Sprint</label>
-                  <select value={sprintId} onChange={e => setSprintId(e.target.value)} style={fieldStyle}>
-                    <option value="">— No sprint —</option>
-                    {sprints.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
-                  </select>
+                  <Select
+                    options={sprintOptions}
+                    value={sprintOptions.find(o => o.value === sprintId) ?? null}
+                    onChange={opt => setSprintId(opt?.value ?? '')}
+                    placeholder="— No sprint —"
+                    isSearchable
+                  />
                 </div>
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
                 <div>
                   <label style={labelStyle}>Owner</label>
-                  <select value={ownerId} onChange={e => setOwnerId(e.target.value)} style={fieldStyle}>
-                    <option value="">— Unassigned —</option>
-                    {(profiles as Array<{ id: string; full_name: string | null; email: string | null }>).map(p => (
-                      <option key={p.id} value={p.id}>{p.full_name || p.email || p.id}</option>
-                    ))}
-                  </select>
+                  <Select
+                    options={ownerOptions}
+                    value={ownerOptions.find(o => o.value === ownerId) ?? null}
+                    onChange={opt => setOwnerId(opt?.value ?? '')}
+                    placeholder="— Unassigned —"
+                    isSearchable
+                  />
                 </div>
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
                 <div>
                   <label style={labelStyle}>Start date</label>
-                  <input type="date" value={startDate}
-                    onChange={e => { setStartDate(e.target.value); if (endDate && e.target.value > endDate) setEndDate(''); }}
-                    max={endDate || undefined} style={fieldStyle} />
+                  <DatePicker
+                    value={startDate}
+                    onChange={v => { setStartDate(v || ''); if (endDate && v && v > endDate) setEndDate(''); }}
+                    maxDate={endDate || undefined}
+                    placeholder="Select start date"
+                  />
                 </div>
                 <div>
                   <label style={labelStyle}>End date</label>
-                  <input type="date" value={endDate}
-                    onChange={e => setEndDate(e.target.value)}
-                    min={startDate || undefined} style={fieldStyle} />
+                  <DatePicker
+                    value={endDate}
+                    onChange={v => setEndDate(v || '')}
+                    minDate={startDate || undefined}
+                    placeholder="Select end date"
+                  />
                 </div>
               </div>
             </div>
@@ -409,6 +439,11 @@ function CreateCycleModal({ projectId, onClose }: { projectId: string; onClose: 
                 <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtle)' }}>
                   Select all ({filteredCases.length} cases)
                 </span>
+                {selectedCaseIds.size === 0 && (
+                  <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest)', marginLeft: 'auto' }}>
+                    Add at least one test case to make this cycle executable
+                  </span>
+                )}
                 {selectedCaseIds.size > 0 && (
                   <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-link)', marginLeft: 'auto' }}>
                     {selectedCaseIds.size} selected
@@ -454,7 +489,7 @@ function CreateCycleModal({ projectId, onClose }: { projectId: string; onClose: 
         <Button appearance="subtle" onClick={onClose}>Cancel</Button>
         <Button
           appearance="primary"
-          isDisabled={!name.trim() || createCycle.isPending || addCases.isPending}
+          isDisabled={!name.trim() || selectedCaseIds.size === 0 || createCycle.isPending || addCases.isPending}
           onClick={handleCreateCycle}
         >
           {createCycle.isPending || addCases.isPending ? 'Creating…' : 'Create Cycle'}

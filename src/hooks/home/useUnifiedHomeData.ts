@@ -115,8 +115,8 @@ function generateNavigation(
   // Operations (Incidents)
   if (domain === 'operations' || type === 'defect') {
     return {
-      path: `/release/incidents/${id}`,
-      fallbackPath: '/release/incidents',
+      path: `/incident-hub/view/${key}`,
+      fallbackPath: '/incident-hub',
       openBehavior: 'push',
     };
   }

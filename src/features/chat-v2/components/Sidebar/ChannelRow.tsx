@@ -23,9 +23,10 @@ export function ChannelRow({ conversation, isActive, onClick, hasHuddle = false 
         alignItems: 'center',
         gap: 8,
         width: '100%',
-        padding: '4px 12px 5px 30px',
+        padding: '4px 4px 5px 22px',
         background: isActive ? 'var(--cv2-bg-row-active)' : 'transparent',
         border: 'none',
+        borderRadius: 'var(--cv2-radius-md)',
         textAlign: 'left',
         cursor: 'pointer',
         transition: 'background var(--cv2-transition-fast)',
@@ -38,7 +39,12 @@ export function ChannelRow({ conversation, isActive, onClick, hasHuddle = false 
         font: 'var(--ds-font-body)',
         fontWeight: hasUnread || isActive ? 700 : 400,
         lineHeight: '24px',
-        ...(hasHuddle ? { boxShadow: 'inset 3px 0 0 0 var(--ds-icon-success)' } : null),
+        // Huddle bar (success) wins over the active accent bar — never both.
+        ...(hasHuddle
+          ? { boxShadow: 'inset 3px 0 0 0 var(--ds-icon-success)' }
+          : isActive
+          ? { boxShadow: 'inset 3px 0 0 0 var(--cv2-accent)' }
+          : null),
       }}
       onMouseEnter={e => {
         if (!isActive) {

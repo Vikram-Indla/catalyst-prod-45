@@ -4,6 +4,12 @@
  */
 import React, { useMemo, useState, useCallback, useRef } from 'react';
 import { ConfirmDeleteDialog } from '@/components/catalyst-detail-views/shared/ConfirmDeleteDialog';
+import { ConfirmCloneDialog, type ClonePatch } from '@/components/catalyst-detail-views/shared/ConfirmCloneDialog';
+import { cloneWorkItemWithFlags } from '@/lib/cloneWorkItemWithFlags';
+import AddDependencyModal from '@/components/shared/dependencies/AddDependencyModal';
+import { createPhDependency } from '@/components/shared/dependencies/phDependencyData';
+import type { DependencyCandidate, DependencyType } from '@/components/shared/dependencies/types';
+import { supabase } from '@/integrations/supabase/client';
 import { AddFlagModal } from '@/components/workhub/issue-view/IssueActionDialogs';
 import ModalDialog, { ModalBody, ModalFooter, ModalHeader, ModalTitle } from '@atlaskit/modal-dialog';
 import Button from '@atlaskit/button/new';
@@ -98,6 +104,10 @@ export default function KanbanPage({ mode = 'project', keyOverride }: KanbanPage
   const [deleteTarget, setDeleteTarget] = useState<{ id: string; issueKey: string } | null>(null);
   const [flagTarget, setFlagTarget] = useState<BoardIssue | null>(null);
   const [linkTarget, setLinkTarget] = useState<BoardIssue | null>(null);
+  /* Detail-panel-parity actions (project mode only) — Clone dialog + Add
+     Dependency modal targets. Convert/Move navigate to project-hub routes. */
+  const [cloneTarget, setCloneTarget] = useState<BoardIssue | null>(null);
+  const [depTarget, setDepTarget] = useState<BoardIssue | null>(null);
   const [showLabelModal, setShowLabelModal] = useState(false);
   const [labelModalIssue, setLabelModalIssue] = useState<BoardIssue | null>(null);
   /* Tracks which column currently has the inline create form expanded. Only
@@ -211,6 +221,51 @@ export default function KanbanPage({ mode = 'project', keyOverride }: KanbanPage
     setLinkTarget(issue);
   }, []);
 
+  /* Detail-panel-parity actions — wired into the card ⋯ menu for project mode.
+     Convert to Subtask + Move reuse the existing project-hub routes (same
+     targets CatalystViewStory navigates to); Clone opens ConfirmCloneDialog;
+     Add Dependency opens the canonical blocks / is-blocked-by modal. */
+  const onConvertToSubtask = useCallback((issue: BoardIssue) => {
+    if (!key) return;
+    navigate(`/project-hub/${key}/issue/${issue.issueKey}/convert-to-subtask`);
+  }, [key, navigate]);
+  const onMoveIssue = useCallback((issue: BoardIssue) => {
+    if (!key) return;
+    navigate(`/project-hub/${key}/issue/${issue.issueKey}/move`);
+  }, [key, navigate]);
+  const onClone = useCallback((issue: BoardIssue) => setCloneTarget(issue), []);
+  const onAddDependency = useCallback((issue: BoardIssue) => setDepTarget(issue), []);
+  const handleClone = useCallback((patch?: ClonePatch) => {
+    if (!cloneTarget) return;
+    void cloneWorkItemWithFlags({
+      sourceKey: cloneTarget.issueKey,
+      sourceType: cloneTarget.issueType,
+      projectKey: key ?? '',
+      patch,
+    });
+  }, [cloneTarget, key]);
+  /* Dependency candidates + write — project scope (ph_issues / ph_issue_dependencies),
+     mirrors the project DependenciesPage adapter. */
+  const depFetchCandidates = useCallback(async (): Promise<DependencyCandidate[]> => {
+    const { data: rows } = await supabase
+      .from('ph_issues')
+      .select('issue_key, summary, issue_type')
+      .eq('project_key', key ?? '')
+      .in('source', ['jira', 'jira_parent_ref'])
+      .order('issue_key');
+    return (rows || []).map((r: any) => ({
+      value: r.issue_key,
+      label: `${r.issue_key} — ${r.summary || '(no summary)'}`,
+      issueType: r.issue_type ?? null,
+      projectKey: key ?? null,
+    }));
+  }, [key]);
+  const depOnCreate = useCallback(
+    (s: DependencyCandidate, t: DependencyCandidate, type: DependencyType) =>
+      createPhDependency(s.projectKey ?? (key ?? ''), s.value, t.value, type),
+    [key],
+  );
+
   /* Per-column ordered id lists — used by the "Move work item" submenu to
      compute disabled bounds and to tell the RPC which neighbour to swap with.
      `issues` is already sorted by the data query (board_position asc nullsLast,
@@ -272,9 +327,13 @@ export default function KanbanPage({ mode = 'project', keyOverride }: KanbanPage
                   : mode === 'test'    ? 'tm_test_cases'
                   :                      'ph_issues'}
         onArchive={onArchive} onDelete={onDelete}
+        onConvertToSubtask={mode === 'project' ? onConvertToSubtask : undefined}
+        onClone={mode === 'project' ? onClone : undefined}
+        onMoveIssue={mode === 'project' ? onMoveIssue : undefined}
+        onAddDependency={mode === 'project' ? onAddDependency : undefined}
       />
     );
-  }, [issues, boardConfig.columns, boardConfig.colPrimaryStatus, columnIdx, columnIssueIdsByCol, onMove, onReorder, onCopyLink, onCopyKey, onFlag, onAddLabel, onSetParent, onLinkOpen, onSetCover, onArchive, onDelete]);
+  }, [issues, boardConfig.columns, boardConfig.colPrimaryStatus, columnIdx, columnIssueIdsByCol, onMove, onReorder, onCopyLink, onCopyKey, onFlag, onAddLabel, onSetParent, onLinkOpen, onSetCover, onArchive, onDelete, mode, onConvertToSubtask, onClone, onMoveIssue, onAddDependency]);
 
   /* 2026-06-15: swapped the project-board's bespoke InlineCreate (broken type
      dropdown + native showPicker date input) for the canonical InlineCreateCard
@@ -293,7 +352,10 @@ export default function KanbanPage({ mode = 'project', keyOverride }: KanbanPage
       return (
         <div style={{ margin: '0px 8px 4px' }}>
           <InlineCreateCard
-            projectKey={key.toUpperCase()}
+            /* Test mode inserts into tm_test_cases.project_id (a UUID), so the
+               resolved Test Space id must flow through — not the 'TESTHUB'
+               keyOverride, which is not a valid project UUID (D057). */
+            projectKey={mode === 'test' ? (projectId ?? '') : key.toUpperCase()}
             columnId={colId}
             status={status}
             mode={mode}
@@ -392,6 +454,20 @@ export default function KanbanPage({ mode = 'project', keyOverride }: KanbanPage
     const issueKey = idToKey.get(id);
     if (issueKey) useGlobalSearchStore.getState().openDetail({ id: issueKey });
   }, [idToKey, mode, navigate]);
+
+  // 2026-07-06 RCA fix — project/product modes take the :key straight off the
+  // URL with no existence check, so a nonexistent key rendered a full board
+  // shell (header + toolbar + empty-board state) indistinguishable from a
+  // real board with zero issues. incident/release/test/tasks modes use a
+  // fixed keyOverride sentinel, not a user-controlled param, so they're not
+  // exposed to this. Matches the guard in ProjectDashboardPage.tsx.
+  if ((mode === 'project' || mode === 'product') && !isLoading && !projectId) {
+    return (
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 400, padding: 32, color: 'var(--ds-text-subtlest)' }}>
+        {mode === 'product' ? 'Product not found' : 'Project not found'}
+      </div>
+    );
+  }
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', minHeight: 0, overflow: 'hidden', background: token('elevation.surface', 'var(--ds-surface)') }}>
@@ -581,6 +657,36 @@ export default function KanbanPage({ mode = 'project', keyOverride }: KanbanPage
           projectId={mode === 'project' ? projectId : null}
           projectKey={mode === 'project' ? (key ?? null) : null}
           onClose={() => setLinkTarget(null)}
+        />
+      )}
+
+      {cloneTarget && (
+        <ConfirmCloneDialog
+          isOpen
+          onClose={() => setCloneTarget(null)}
+          issueKey={cloneTarget.issueKey}
+          issueSummary={cloneTarget.summary}
+          issueId={cloneTarget.id}
+          projectId={projectId}
+          currentAssigneeName={cloneTarget.assigneeName}
+          onConfirm={handleClone}
+        />
+      )}
+
+      {depTarget && (
+        <AddDependencyModal
+          isOpen
+          onClose={() => setDepTarget(null)}
+          onSuccess={() => { setDepTarget(null); catalystFlag.success('Dependency added'); }}
+          scopeKey={key ?? ''}
+          fetchCandidates={depFetchCandidates}
+          onCreate={depOnCreate}
+          initialSource={{
+            value: depTarget.issueKey,
+            label: `${depTarget.issueKey} — ${depTarget.summary}`,
+            issueType: depTarget.issueType,
+            projectKey: key ?? null,
+          }}
         />
       )}
     </div>

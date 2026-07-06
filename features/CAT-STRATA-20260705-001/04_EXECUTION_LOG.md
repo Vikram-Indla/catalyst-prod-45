@@ -124,3 +124,18 @@ strata audit offenders 0; repo tokens +5 stash-PROVEN inherited from main (red C
 Honest limits: run-detail attestation covers active-period actuals only (no by-run actuals API); evidence-page H2
 shows route word (polish item); xyflow no auto-fitView on panel resize. Screenshots: CC workbench + evidence dossier
 captured; full light/dark sweep = next session pickup. NOT merged to main (branch push only — merge on owner word).
+### Upload wizard + polish — DELIVERED (2026-07-05, commit cdb2c5e43 pushed)
+Governed upload wizard at /strata/data/upload (4-step, xlsx/csv/paste via existing deps, display-only
+pre-checks, honest RLS staging write path — run stops at 'staging'; server validation RPC = next backend
+slice, stated in-UI). Caught+fixed live: @atlaskit/progress-tracker not installed (ads wrapper story-only)
+→ token-pure stepper, barrel export reverted. Evidence H2 = entity name; map fitView wired. Verified live.
+tsc 183 baseline. Feature folder recovered from wiki-branch commit 9ee841b4f (had been swept there) and is
+now versioned ON THIS BRANCH. Remaining backlog (backend/own Plan Lock): upload validation/promote RPC,
+Jira adapter, board-pack + AI engines, create flows, SoD grants, PR #322, dark-mode full sweep.
+
+### Final closure sweep (2026-07-05): dark-mode verification of new surfaces COMPLETE (Command Center
+workbench + upload wizard captured via data-color-mode toggle — flawless token flip, attribute restored);
+PR #322 disposition analysis posted as PR comment (recommend close-as-superseded or rebase — owner's call);
+PR #323 open with board packs + migration artifacts. Session-reachable backlog = EMPTY. Owner-gated:
+PR #323 merge click, staging credential (migrations+SoD grants apply via runbook), Jira/AI service
+credentials, PR #322 decision.

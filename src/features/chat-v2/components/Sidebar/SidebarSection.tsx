@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ChevronDownIcon, ChevronRightIcon } from '../shared/Icon';
+import { ChevronDownIcon } from '../shared/Icon';
 
 interface SidebarSectionProps {
   title: string;
@@ -28,8 +28,9 @@ export function SidebarSection({
           display: 'flex',
           alignItems: 'center',
           gap: 4,
-          padding: '8px 8px 8px 12px',
-          color: 'var(--cv2-text-subtle)',
+          minHeight: 26,
+          padding: '4px 0 4px 4px',
+          color: 'var(--cv2-text-muted)',
           fontFamily: 'var(--cv2-font)',
           font: 'var(--ds-font-body-small)',
           fontWeight: 700,
@@ -55,7 +56,16 @@ export function SidebarSection({
             borderRadius: 3,
           }}
         >
-          {open ? <ChevronDownIcon size={12} /> : <ChevronRightIcon size={12} />}
+          <span
+            aria-hidden="true"
+            style={{
+              display: 'inline-flex',
+              transform: open ? 'rotate(0deg)' : 'rotate(-90deg)',
+              transition: 'transform var(--cv2-transition-fast)',
+            }}
+          >
+            <ChevronDownIcon size={12} />
+          </span>
         </button>
         <span style={{ flex: 1 }}>{title}</span>
         <span

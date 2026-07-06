@@ -214,7 +214,7 @@ export function IncidentDetailsPanel({
               {isEditMode && (
                 <button
                   onClick={() => handleRemoveLabel(label)}
-                  className="hover:text-red-500"
+                  className="hover:text-[var(--ds-text-danger)]"
                 >
                   <X className="w-3 h-3" />
                 </button>

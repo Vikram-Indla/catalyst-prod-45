@@ -95,13 +95,13 @@ export default function ReportsHubPage() {
         background: 'var(--ds-surface-sunken)',
       }}
     >
+      {/* D047: ProjectPageHeader already renders the "Test Hub" root crumb and the
+          "Reports" H2 title. Passing a trail of Test Hub / Reports duplicated both
+          ("Test Hub / Test Hub / Reports / Reports"). Drop the trail — the header's
+          root crumb + title are the single source. */}
       <ProjectPageHeader
         hubType="test"
         title="Reports"
-        trail={[
-          { text: 'Test Hub', href: '/testhub/dashboard' },
-          { text: 'Reports' },
-        ]}
       />
 
       {/* main body */}

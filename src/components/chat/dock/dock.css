@@ -23,20 +23,16 @@
   z-index: 600;
   font-family: inherit;
 
-  /* ── Dock type scale — single source for all dock typography ──────
-     One ramp for size + weight so no surface hand-picks a bespoke px.
-     Sizes map 1:1 to the pre-existing values (no visual change). */
-  --cc-fs-title: 16px;   /* wordmark */
-  --cc-fs-name: 14px;    /* row name, mode tab */
-  --cc-fs-body: 13px;    /* preview, search, empties */
-  --cc-fs-sub: 12px;     /* section-level hints */
-  --cc-fs-sm: 11px;      /* labels, meta, badges, counts, time */
+  /* ── Dock typography = ADS font tokens ───────────────────────────
+     Size + line-height + family come from the ADS body ramp:
+       --ds-font-body-large  16px  (wordmark)
+       --ds-font-body        14px  (row name, mode tab)
+       --ds-font-body-small  12px  (preview, search, labels, meta, badges)
+     Weight is the only local override, via --cc-fw-* (ADS weight steps). */
   --cc-fw-regular: 400;
   --cc-fw-medium: 500;
   --cc-fw-semibold: 600;
   --cc-fw-bold: 700;
-  --cc-lh-tight: 1.3;
-  --cc-lh-base: 1.4;
 }
 
 /* Stop wheel/touch scroll from chaining to the page behind the dock at
@@ -100,14 +96,14 @@
 }
 
 .cc-dock__wordmark {
-  font-size: var(--cc-fs-title);
+  font: var(--ds-font-body-large);
   font-weight: var(--cc-fw-semibold);
   letter-spacing: -0.01em;
   color: var(--ds-text);
 }
 
 .cc-dock__status {
-  font-size: var(--cc-fs-sm);
+  font: var(--ds-font-body-small);
   color: var(--ds-text-success);
   display: flex;
   align-items: center;
@@ -155,9 +151,6 @@
 /* Dual-mode underline tabs — row 2 of the header (Slack/Jira nav style) */
 .cc-mode-tabs {
   flex: 0 0 auto;
-  display: flex;
-  align-items: stretch;
-  gap: 0;
   min-width: 0;
   padding: 0 12px;
 }
@@ -172,7 +165,7 @@
   border: none;
   border-bottom: 0px solid transparent;
   background: transparent;
-  font-size: var(--cc-fs-name);
+  font: var(--ds-font-body);
   font-weight: var(--cc-fw-medium);
   color: var(--ds-text-subtle);
   cursor: pointer;
@@ -207,7 +200,7 @@
   border-radius: 8px;
   background: var(--ds-background-brand-bold);
   color: var(--ds-text-inverse);
-  font-size: var(--cc-fs-sm);
+  font: var(--ds-font-body-small);
   font-weight: var(--cc-fw-bold);
   line-height: 16px;
   text-align: center;
@@ -446,6 +439,52 @@
   .cc-fab.cmf-earsback .cmf-body, .cc-fab.cmf-snap .cmf-body { animation: none; }
 }
 
+/* Incoming huddle — magenta emphasis. Vibrate + expanding ring are driven by
+   rAF inline transforms (ChatDock), NOT CSS animation, because index.css has a
+   global prefers-reduced-motion reset that force-kills all CSS animation. */
+.cc-fab--ringing .cc-wake-disc {
+  border-color: var(--ds-icon-accent-magenta);
+  transform-origin: center;
+}
+/* expanding "ringing" pulse — scale/opacity set each frame by rAF */
+.cc-fab__ring {
+  position: absolute;
+  inset: -3px;
+  border-radius: 50%;
+  border: 2px solid var(--ds-icon-accent-magenta);
+  transform-origin: center;
+  pointer-events: none;
+  opacity: 0;
+}
+/* Snoozed call — muted, no vibrate. Static clock badge marks a callable call. */
+.cc-fab--snoozed .cc-wake-disc {
+  border-color: var(--ds-border-bold);
+}
+.cc-fab__snooze-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--ds-background-neutral-bold);
+  color: var(--ds-text-inverse);
+  border: 2px solid var(--ds-surface);
+  box-sizing: border-box;
+}
+
+/* hover fan swings into place (rotate-in driven by rAF in DockCallRing) */
+.cc-ring-fan {
+  position: absolute;
+  left: 0;
+  top: 0;
+  transform-origin: 0 0;
+  pointer-events: none;
+}
+
 .cc-fab__presence {
   position: absolute;
   bottom: -2px;
@@ -536,9 +575,8 @@
   border: none;
   outline: none;
   background: transparent;
-  font-size: var(--cc-fs-body);
+  font: var(--ds-font-body-small);
   color: var(--ds-text);
-  font-family: inherit;
 }
 
 .cc-dir__search-input::placeholder {
@@ -571,18 +609,19 @@
   display: flex;
   align-items: center;
   gap: 4px;
-  padding: 8px 16px 2px;
-  font-size: var(--cc-fs-sm);
-  font-weight: var(--cc-fw-semibold);
+  padding: 8px 16px 4px;
+  font: var(--ds-font-body-small);
+  font-weight: var(--cc-fw-bold);
   letter-spacing: 0;
   text-transform: none;
-  color: var(--ds-text-subtlest);
+  /* Stronger than subtlest — the old value read as barely-there ghost text. */
+  color: var(--ds-text-subtle);
 }
 
 .cc-dir__section-count {
   background: var(--ds-background-neutral);
   color: var(--ds-text-subtle);
-  font-size: var(--cc-fs-sm);
+  font: var(--ds-font-body-small);
   font-weight: var(--cc-fw-semibold);
   letter-spacing: 0;
   text-transform: none;
@@ -595,8 +634,13 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  width: 100%;
+  /* Rounded inset pill — matches the chat-v2 sidebar craft (2026-07-05).
+     8px side margin + 12px inner padding keeps text start at 20px, aligned
+     with the section labels (also bumped to 20px). */
+  width: calc(100% - 16px);
+  margin-inline: 8px;
   padding: 8px 12px;
+  border-radius: 6px;
   background: transparent;
   border: none;
   cursor: pointer;
@@ -610,6 +654,7 @@
 
 .cc-dir__row--active {
   background: var(--ds-background-selected);
+  box-shadow: inset 3px 0 0 0 var(--ds-text-brand);
 }
 
 .cc-dir__row:disabled {
@@ -631,6 +676,18 @@
   gap: 0px;
 }
 
+/* Right meta column — timestamp on top, unread badge beneath, right-aligned,
+   anchored to the name line so the two never sit on different baselines. */
+.cc-dir__meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--ds-space-050);
+  flex: 0 0 auto;
+  align-self: flex-start;
+  padding-top: var(--ds-space-025);
+}
+
 .cc-dir__top {
   display: flex;
   align-items: center;
@@ -638,9 +695,8 @@
 }
 
 .cc-dir__name {
-  font-size: var(--cc-fs-name);
+  font: var(--ds-font-body);
   font-weight: var(--cc-fw-medium);
-  line-height: var(--cc-lh-tight);
   color: var(--ds-text);
   flex: 1;
   white-space: nowrap;
@@ -649,14 +705,13 @@
 }
 
 .cc-dir__time {
-  font-size: var(--cc-fs-sm);
+  font: var(--ds-font-body-small);
   color: var(--ds-text-subtlest);
   flex: 0 0 auto;
 }
 
 .cc-dir__preview {
-  font-size: var(--cc-fs-body);
-  line-height: var(--cc-lh-base);
+  font: var(--ds-font-body-small);
   color: var(--ds-text-subtle);
   white-space: nowrap;
   overflow: hidden;
@@ -670,7 +725,7 @@
   border-radius: 8px;
   background: var(--ds-background-danger-bold);
   color: var(--ds-text-inverse);
-  font-size: var(--cc-fs-sm);
+  font: var(--ds-font-body-small);
   font-weight: var(--cc-fw-bold);
   line-height: 16px;
   text-align: center;
@@ -678,7 +733,7 @@
 }
 
 .cc-dir__msg-cta {
-  font-size: var(--cc-fs-sm);
+  font: var(--ds-font-body-small);
   font-weight: var(--cc-fw-semibold);
   color: var(--ds-text-subtle);
   background: transparent;
@@ -700,7 +755,7 @@
 .cc-dir__empty {
   padding: 32px 16px;
   text-align: center;
-  font-size: var(--cc-fs-body);
+  font: var(--ds-font-body-small);
   color: var(--ds-text-subtlest);
 }
 
@@ -736,6 +791,58 @@
   overflow: hidden;
 }
 
+/* Dock-only date-pill restyle. chat-v2's DateSeparator is shared with /chat and
+   must NOT be edited, so its INLINE styles are overridden here with !important,
+   scoped to .cc-conv-pane (which exists only in the dock). Makes the pill small,
+   light, and subtle so it recedes behind message content. /chat is untouched. */
+.cc-conv-pane [role="separator"] button,
+.cc-conv-pane [role="separator"] > span:not([aria-hidden="true"]) {
+  /* ads-scanner:ignore-next-line — dock date-pill sits below the ADS 11px floor; intentional dock density (probed 2026-07-02) */
+  font-size: 10px !important;
+  font-weight: 600 !important;                       /* kept per request */
+  color: var(--ds-text) !important;                  /* ADS primary text token */
+  padding: var(--ds-space-025) var(--ds-space-100) !important;  /* 2px 8px, was 4px 12px */
+}
+
+/* Dock-only message-row density. chat-v2 MessageBubble is shared with /chat and
+   not editable, so its inline styles are overridden here (avatar + name-weight
+   via !important), scoped to .cc-conv-pane (dock-only). Message name/body keep
+   the chat-v2 15px default. /chat is untouched. */
+.cc-conv-pane [data-message-id] {
+  grid-template-columns: 32px 1fr !important;    /* was 44px — tighter avatar column */
+}
+.cc-conv-pane [data-message-id] > div:first-child span[aria-label],
+.cc-conv-pane [data-message-id] > div:first-child span[aria-label] img,
+.cc-conv-pane [data-message-id] > div:first-child span[aria-label] > span {
+  width: 28px !important;                         /* avatar 36 → 28 */
+  height: 28px !important;
+}
+.cc-conv-pane [data-message-id] div[style*="baseline"] > span:first-child {
+  font-weight: 600 !important;                    /* author name 700 → 600 */
+}
+
+/* Dock-only: push the Close (X) button to the END (rightmost) of the header
+   icon row via flex `order`, scoped to the dock pane. ConversationHeader is
+   shared, but this button is gated on onBack (dock-only) so /chat is unaffected. */
+.cc-conv-pane .cc-conv-head [aria-label="Close conversation"] {
+  order: 99;
+}
+
+/* Dock-only: shrink the message hover toolbar (shared MessageHoverActions,
+   role="toolbar") so the action strip + its icons are smaller in the dock. */
+.cc-conv-pane [data-message-id] [role="toolbar"] {
+  height: 28px !important;                 /* was 36 */
+}
+.cc-conv-pane [data-message-id] [role="toolbar"] button {
+  width: 24px !important;                  /* was 32 */
+  height: 24px !important;
+  font-size: 14px !important;              /* emoji buttons */
+}
+.cc-conv-pane [data-message-id] [role="toolbar"] button svg {
+  width: 16px !important;
+  height: 16px !important;
+}
+
 .cc-conv-pane__back {
   flex: 0 0 auto;
   display: flex;
@@ -751,6 +858,103 @@
   font-weight: 500;
   cursor: pointer;
   text-align: left;
+}
+
+/* ── DM Summarize panel (shared work items) ──────────────── */
+.cc-sum-panel {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--ds-surface);
+}
+
+.cc-sum-panel__bar {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+}
+
+.cc-sum-panel__title {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ds-text-subtle);
+}
+
+.cc-sum-panel__skip {
+  margin-left: auto;
+  padding: 4px 12px;
+  background: transparent;
+  border: 1px solid var(--ds-border);
+  border-radius: 3px;
+  color: var(--ds-text-subtle);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+}
+.cc-sum-panel__skip:hover {
+  background: var(--ds-background-neutral-subtle-hovered);
+  color: var(--ds-text);
+}
+
+.cc-sum-panel__controls {
+  flex: 0 0 auto;
+  display: flex;
+  gap: 8px;
+  padding: 0 12px 8px;
+}
+.cc-sum-panel__search {
+  flex: 1;
+  min-width: 0;
+}
+.cc-sum-panel__type {
+  flex: 0 0 auto;
+  width: 130px;
+}
+
+.cc-sum-panel__table {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  border-top: 1px solid var(--ds-border);
+}
+
+.cc-sum-panel__empty {
+  padding: 24px 16px;
+  text-align: center;
+  color: var(--ds-text-subtlest);
+  font-size: 13px;
+}
+
+/* Skeleton shimmer while the shared-items query is in flight */
+.cc-sum-skel {
+  display: flex;
+  flex-direction: column;
+}
+.cc-sum-skel__row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 12px;
+  border-bottom: 1px solid var(--ds-border);
+}
+.cc-sum-skel__bar {
+  height: 10px;
+  border-radius: 4px;
+  background: linear-gradient(
+    90deg,
+    var(--ds-background-neutral) 25%,
+    var(--ds-background-neutral-hovered) 37%,
+    var(--ds-background-neutral) 63%
+  );
+  background-size: 400% 100%;
+  animation: cc-sum-shimmer 1.3s ease infinite;
+}
+@keyframes cc-sum-shimmer {
+  0% { background-position: 100% 0; }
+  100% { background-position: 0 0; }
 }
 
 /* ── Dock pane child component compaction ──────────────────
@@ -920,7 +1124,7 @@
   display: flex;
   align-items: center;
   gap: 0;
-  padding: 8px 12px 2px;
+  padding: 8px 16px 4px;
 }
 
 .cc-dir__section-toggle {
@@ -930,18 +1134,18 @@
   flex: 1;
   background: transparent;
   border: none;
-  font-size: var(--cc-fs-sm);
-  font-weight: var(--cc-fw-semibold);
+  font: var(--ds-font-body-small);
+  font-weight: var(--cc-fw-bold);
   letter-spacing: 0;
   text-transform: none;
-  color: var(--ds-text-subtlest);
+  color: var(--ds-text-subtle);
   cursor: pointer;
   text-align: left;
   padding: 0;
 }
 
 .cc-dir__section-toggle:hover {
-  color: var(--ds-text-subtle);
+  color: var(--ds-text);
 }
 
 .cc-dir__section-add {
@@ -970,7 +1174,7 @@
   border-radius: 8px;
   background: var(--ds-background-danger-bold);
   color: var(--ds-text-inverse);
-  font-size: var(--cc-fs-sm);
+  font: var(--ds-font-body-small);
   font-weight: var(--cc-fw-bold);
   line-height: 16px;
   text-align: center;
@@ -1195,7 +1399,7 @@
 /* Section-level empty state hint */
 .cc-dir__section-empty {
   padding: 4px 16px 8px;
-  font-size: var(--cc-fs-sub);
+  font: var(--ds-font-body-small);
   color: var(--ds-text-subtlest);
   line-height: 1.5;
 }
@@ -1550,7 +1754,9 @@
 .cc-dir__chevron--collapsed { transform: rotate(-90deg); }
 
 /* ── Muted icon inline with name ────────────────────────────── */
-.cc-dir__muted-icon { margin-left: 4px; vertical-align: middle; flex-shrink: 0; }
+/* display:inline-block overrides Tailwind Preflight's `svg { display:block }`,
+   which otherwise drops the bell onto its own line under the name. */
+.cc-dir__muted-icon { display: inline-block; margin-left: 4px; vertical-align: -1px; flex-shrink: 0; }
 
 /* ── Archive suggest icon ───────────────────────────────────── */
 .cc-dir__archive-suggest-icon { color: var(--ds-text-subtlest); flex-shrink: 0; }
@@ -1622,4 +1828,70 @@
   border-top-color: var(--ds-border-brand);
   border-radius: 50%;
   animation: cc-dock-spin 0.8s linear infinite;
+}
+
+/* ── In-dock slide-over panel (replaces viewport-centered modals in the dock) ── */
+.cc-dock-panel {
+  position: absolute;
+  inset: 0;
+  z-index: 40;
+  background: var(--ds-surface);
+  display: flex;
+  flex-direction: column;
+  border-radius: 12px;
+  overflow: hidden;
+}
+.cc-dock-panel__head {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 48px;
+  padding: 0 8px 0 12px;
+  border-bottom: 1px solid var(--ds-border);
+}
+.cc-dock-panel__back {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  border-radius: 4px;
+  color: var(--ds-text-subtle);
+  cursor: pointer;
+  flex: 0 0 auto;
+}
+.cc-dock-panel__back:hover {
+  background: var(--ds-background-neutral-subtle-hovered);
+  color: var(--ds-text);
+}
+.cc-dock-panel__back:focus-visible {
+  outline: 1px solid var(--ds-border-focused);
+  outline-offset: 1px;
+}
+.cc-dock-panel__title {
+  font: var(--ds-font-body);
+  font-weight: var(--cc-fw-semibold);
+  color: var(--ds-text);
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.cc-dock-panel__body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 16px;
+}
+.cc-dock-panel__foot {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 12px 16px;
+  border-top: 1px solid var(--ds-border);
 }

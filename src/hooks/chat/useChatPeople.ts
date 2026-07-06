@@ -57,6 +57,7 @@ async function fetchPeople(): Promise<ChatPeopleGroup[]> {
       .not('profile_id', 'is', null)
       .order('name', { ascending: true });
 
+    if (error) console.warn('[chat] people lookup failed — returning empty list:', error);
     if (error || !resources) return [];
 
     const rows = resources as ResourceRow[];
@@ -124,6 +125,7 @@ async function fetchPeopleByDepartment(): Promise<ChatDepartmentGroup[]> {
       .in('department_name', ['Product', 'Delivery'])
       .order('name', { ascending: true });
 
+    if (error) console.warn('[chat] people lookup failed — returning empty list:', error);
     if (error || !resources) return [];
 
     const rows = resources as ResourceRow[];

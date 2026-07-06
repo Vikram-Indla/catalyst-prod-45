@@ -109,7 +109,27 @@ function sentenceCaseSegment(seg: string): string {
  * Returns null when the pathname is not a hub route or has no segment
  * after the key/hub (e.g. the bare `/project-hub/:key` or `/incident-hub`).
  */
+
+/** STRATA hub route words — /strata/<segment> (no :key). */
+const STRATA_ROUTE_WORD_MAP: Record<string, string> = {
+  strategy: 'Strategy room',
+  scorecards: 'Scorecards',
+  kpis: 'KPI library',
+  execution: 'Execution',
+  portfolio: 'Portfolio & VMO',
+  data: 'Data pipeline',
+  reviews: 'Reviews & decisions',
+  admin: 'Administration',
+};
+
 export function deriveRouteWord(pathname: string): string | null {
+  // STRATA global hub — /strata root is "Command center"; /strata/<seg> maps.
+  if (pathname === '/strata' || pathname === '/strata/') return 'Command center';
+  const st = pathname.match(/\/strata\/([^/?#]+)/);
+  if (st) {
+    const seg = st[1].toLowerCase();
+    return STRATA_ROUTE_WORD_MAP[seg] ?? sentenceCaseSegment(seg);
+  }
   // Global hubs first — no :key segment between hub and route word.
   const g = pathname.match(/\/(?:(incident|release)-hub|(testhub))\/([^/?#]+)/);
   if (g) {

@@ -227,7 +227,7 @@ export const projectItems: ItemConfig[] = [
   { label: 'Features', icon: 'Box', color: 'text-workitem-feature', path: '/features' },
   { label: 'Stories', icon: 'FileText', color: 'text-workitem-story', path: '/stories' },
   { label: 'Defects', icon: 'Bug', color: 'text-workitem-defect', path: '/items/defects' },
-  { label: 'Incidents', icon: 'AlertOctagon', color: 'text-destructive', path: '/release/incidents' },
+  { label: 'Incidents', icon: 'AlertOctagon', color: 'text-destructive', path: '/incident-hub' },
   { label: 'Risks', icon: 'AlertTriangle', color: 'text-destructive', path: '/enterprise/risks' },
   { label: 'Dependencies', icon: 'GitBranch', color: 'text-warning', path: '/dependencies' },
   { label: 'Quarters', icon: 'Calendar', color: 'text-info', path: '/quarters' },

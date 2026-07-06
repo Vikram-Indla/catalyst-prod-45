@@ -112,6 +112,13 @@ export default function ChatDockMount() {
     return () => window.removeEventListener(CHAT_OPEN_CONVERSATION_EVENT, onOpen);
   }, [handleSelect]);
 
+  // Bridge: the snoozed-call FAB opens the dock on click.
+  useEffect(() => {
+    const onOpenDock = () => openDock();
+    window.addEventListener('catalyst:open-chat-dock', onOpenDock);
+    return () => window.removeEventListener('catalyst:open-chat-dock', onOpenDock);
+  }, [openDock]);
+
   return (
     <ChatRealtimeProvider>
       <ChatGlobalRealtime />

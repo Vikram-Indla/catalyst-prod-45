@@ -12,6 +12,7 @@ import DeleteIcon from '@atlaskit/icon/core/delete';
 import { catalystToast } from '@/lib/catalystToast';
 import { supabase } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
+import { writeFlagActivity } from '@/components/workhub/issue-view/IssueActionDialogs';
 
 interface StoryActionMenuProps {
   storyId: string;
@@ -28,11 +29,14 @@ export function StoryActionMenu({ storyId, storyKey, onClose }: StoryActionMenuP
     try {
       const { error } = await supabase
         .from('ph_issues')
-        .update({ is_flagged: true })
+        .update({ is_flagged: true, flag_reason: 'Impediment' })
         .eq('id', storyId);
       if (error) throw error;
+      await writeFlagActivity({ workItemId: storyId, newFlagged: true, note: '' });
       queryClient.invalidateQueries({ queryKey: ['story-drawer-detail', storyId] });
       queryClient.invalidateQueries({ queryKey: ['backlog-stories'] });
+      queryClient.invalidateQueries({ queryKey: ['cv-comments', storyId] });
+      queryClient.invalidateQueries({ queryKey: ['cv-activity', storyId] });
       catalystToast.success('Flag added');
     } catch {
       catalystToast.error('Failed to add flag');

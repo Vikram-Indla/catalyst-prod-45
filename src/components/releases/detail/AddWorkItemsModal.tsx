@@ -223,6 +223,7 @@ export function AddWorkItemsModal({ isOpen, release, onClose, onSuccess, config 
                 && q.queryKey[1] === 'work-nav-linked-keys')),
       });
       queryClient.invalidateQueries({ queryKey: ['projecthub', 'release-progress'] });
+      queryClient.invalidateQueries({ queryKey: ['projecthub', 'releases'] });
       queryClient.invalidateQueries({ queryKey: ['projecthub-sprints'] });
       queryClient.invalidateQueries({ queryKey: ['projecthub-releases'] });
       catalystFlag.success(`Added ${updatedCount} work item${updatedCount === 1 ? '' : 's'} to "${release.name}".`);

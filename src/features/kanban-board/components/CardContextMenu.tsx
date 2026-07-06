@@ -40,6 +40,13 @@ interface Props {
   coverTable: WorkItemTable;
   onArchive: (issue: BoardIssue) => void;
   onDelete: (issue: BoardIssue) => void;
+  /* Detail-panel-parity actions (project mode only). Rendered only when the
+     host supplies the callback — non-project boards leave these undefined so
+     the items hide (their routes / dependency candidates are project-scoped). */
+  onConvertToSubtask?: (issue: BoardIssue) => void;
+  onClone?: (issue: BoardIssue) => void;
+  onMoveIssue?: (issue: BoardIssue) => void;
+  onAddDependency?: (issue: BoardIssue) => void;
 }
 
 const Divider = () => <div style={{ height: 1, background: token('color.border', '#091E4224'), margin: '4px 0' }} />;
@@ -213,6 +220,9 @@ export const CardContextMenu: React.FC<Props> = (p) => {
               <MenuItem variant="plain" onClick={() => { p.onFlag(issue); close(); }}>{issue.isFlagged ? 'Remove flag' : 'Add flag'}</MenuItem>
               <MenuItem variant="plain" onClick={() => { p.onAddLabel(issue); close(); }}>Add label</MenuItem>
               <MenuItem variant="plain" onClick={() => { p.onLinkOpen(issue); close(); }}>Link work item</MenuItem>
+              {p.onAddDependency && (
+                <MenuItem variant="plain" onClick={() => { p.onAddDependency!(issue); close(); }}>Add Dependency</MenuItem>
+              )}
               <SubmenuItem
                 label="Add parent"
                 ariaLabel="Add parent"
@@ -245,6 +255,16 @@ export const CardContextMenu: React.FC<Props> = (p) => {
                   />
                 )}
               </SubmenuItem>
+              {(p.onConvertToSubtask || p.onClone || p.onMoveIssue) && <Divider />}
+              {p.onConvertToSubtask && (
+                <MenuItem variant="plain" onClick={() => { p.onConvertToSubtask!(issue); close(); }}>Convert to Subtask</MenuItem>
+              )}
+              {p.onClone && (
+                <MenuItem variant="plain" onClick={() => { p.onClone!(issue); close(); }}>Clone</MenuItem>
+              )}
+              {p.onMoveIssue && (
+                <MenuItem variant="plain" onClick={() => { p.onMoveIssue!(issue); close(); }}>Move</MenuItem>
+              )}
               <Divider />
               <MenuItem variant="plain" onClick={() => { p.onArchive(issue); close(); }}>Archive</MenuItem>
               <button role="menuitem" onClick={() => { p.onDelete(issue); close(); }}

@@ -153,7 +153,7 @@ export default function IdeasBacklogPage() {
             {(['Q1', 'Q2', 'Q3', 'Q4'] as const).map(q => (
               <div key={q} style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                 <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', height: '20px', minWidth: '26px', padding: '0 4px', borderRadius: '4px', fontSize: 'var(--ds-font-size-100)', fontWeight: 700, background: QUARTER_BADGE[q].bg, color: QUARTER_BADGE[q].text }}>{q}</span>
-                <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 'var(--ds-font-size-500)', fontWeight: 700, color: dk.t1 }}>{qCounts[q] || 0}</span>
+                <span style={{ fontFamily: 'var(--ds-font-family-heading)', fontVariantNumeric: 'tabular-nums', fontSize: 'var(--ds-font-size-500)', fontWeight: 700, color: dk.t1 }}>{qCounts[q] || 0}</span>
               </div>
             ))}
           </div>
@@ -207,7 +207,10 @@ export default function IdeasBacklogPage() {
             projectKey={IDEAS_SENTINEL_KEY}
             displayName="Ideas"
             baseUrl="/product-hub/ideas"
-            dataSource={adapter}
+            /* Null ChromeHeader: the Ideas page renders its own header above;
+               the fallback ProjectPageHeader duplicated the sentinel key as
+               a redundant "IDEAS / IDEAS" crumb row. */
+            dataSource={{ ...adapter, ChromeHeader: () => null }}
           />
         )}
       </div>

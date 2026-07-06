@@ -28,6 +28,11 @@ import { TicketBreadcrumbs } from '@/modules/project-work-hub/components/TicketB
 import { AddParentPicker } from '@/components/shared/AddParentPicker';
 import { WorkItemTraceabilityPanel } from '@/components/releasehub/WorkItemTraceabilityPanel';
 import { CoverStrap } from './CoverStrap';
+import { AddFlagModal } from '@/components/workhub/issue-view/IssueActionDialogs';
+import { SelectCoverPanel } from '@/features/kanban-board/components/SelectCoverPanel';
+import { PortalMenu, MenuItem as KanbanMenuItem } from '@/features/kanban-board/components/PortalMenu';
+import { SubmenuItem } from '@/features/kanban-board/components/SubmenuItem';
+import { token } from '@atlaskit/tokens';
 import { IssueNavChevrons } from '@/components/shared/IssueNavChevrons';
 import { useStartTicketThread } from '@/hooks/chat/useStartTicketThread';
 import { openConversationInDock } from '@/lib/chat-dock-bridge';
@@ -128,6 +133,17 @@ export interface CatalystViewBaseLayoutProps {
 
   /* Actions */
   moreMenuItems?: { label: string; onClick: () => void; danger?: boolean }[];
+  /** When supplied, injects an "Add flag" / "Remove flag" item into the
+   *  more-actions dropdown that opens the canonical AddFlagModal (same
+   *  one the kanban card menu uses). */
+  flagContext?: {
+    issueId: string;
+    issueKey: string;
+    isFlagged: boolean;
+    issueTitle?: string;
+    issueType?: string;
+    tableName?: 'ph_issues' | 'business_requests' | 'tasks' | 'rh_releases' | 'tm_test_cases';
+  };
 
   /* Panel navigation */
   onTogglePanelMode?: () => void;
@@ -180,6 +196,7 @@ export function CatalystViewBase({
   itemType, itemKey, projectKey, projectName, parentKey, parentType, onParentClick, breadcrumbExtra,
   onParentChange, parentSource,
   moreMenuItems,
+  flagContext,
   onTogglePanelMode, navigationItems, currentItemId, onNavigate,
   leftContent, rightContent,
   cover, onCoverChange, coverItemId, coverItemTable,
@@ -224,10 +241,11 @@ export function CatalystViewBase({
       console.error('Discuss failed:', e);
     }
   }, [itemKey, startThread]);
-  const effectiveMoreMenuItems = [
-    ...(itemKey ? [{ label: 'Discuss', onClick: handleDiscuss }] : []),
-    ...(moreMenuItems ?? []),
-  ];
+  /* State for the shared menu-injected dialogs (Add flag + Select cover).
+     Kept in CatalystViewBase so every detail view — modal, side panel, full
+     page — surfaces the same affordances without repeating wiring. */
+  const [showFlagModal, setShowFlagModal] = useState(false);
+  const effectiveMoreMenuItems = moreMenuItems ?? [];
 
   /* G4: Track recently visited issues in localStorage (catalyst-recent-issues).
      Push when the issue key changes and the panel is open. */
@@ -352,6 +370,18 @@ export function CatalystViewBase({
     document.addEventListener('keydown', handleEscape);
     return () => document.removeEventListener('keydown', handleEscape);
   }, [isOpen, panelMode, onClose]);
+
+  /* ── Scroll lock for panel mode ─────────── */
+  useEffect(() => {
+    if (!isOpen || !panelMode) return;
+
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+
+    return () => {
+      document.body.style.overflow = originalOverflow;
+    };
+  }, [isOpen, panelMode]);
 
   /* ── Navigation (full-page back) ─────────── */
   const navigate = useNavigate();
@@ -553,80 +583,92 @@ export function CatalystViewBase({
               />
             </Tooltip>
 
-            {effectiveMoreMenuItems.length > 0 && (
-              <>
-                <button
-                  ref={moreTriggerRef}
-                  aria-label="More actions"
-                  aria-haspopup="true"
-                  aria-expanded={moreOpen}
-                  onClick={() => {
-                    const rect = moreTriggerRef.current?.getBoundingClientRect() ?? null;
-                    setMoreAnchor(rect);
-                    setMoreOpen(v => !v);
-                  }}
-                  style={{
-                    background: 'none', border: 'none', cursor: 'pointer',
-                    padding: 4, borderRadius: 4, width: 32, height: 32,
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    color: 'var(--ds-text-subtle)',
-                  }}
-                  onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,.06))')}
-                  onMouseLeave={e => (e.currentTarget.style.background = 'none')}
-                >
-                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                    <circle cx="8" cy="3.5" r="1.25" fill="currentColor"/>
-                    <circle cx="8" cy="8" r="1.25" fill="currentColor"/>
-                    <circle cx="8" cy="12.5" r="1.25" fill="currentColor"/>
-                  </svg>
-                </button>
-                {moreOpen && moreAnchor && createPortal(
-                  <div
-                    data-cv-more-portal
+            {(effectiveMoreMenuItems.length > 0 || flagContext || onCoverChange) && (
+              <PortalMenu
+                align="right"
+                minWidth={200}
+                zIndex={10010}
+                ariaLabel="More actions"
+                trigger={({ open }) => (
+                  <button
+                    ref={moreTriggerRef}
+                    aria-label="More actions"
+                    aria-haspopup="true"
+                    aria-expanded={open}
                     style={{
-                      position: 'fixed',
-                      top: moreAnchor.bottom + 4,
-                      right: window.innerWidth - moreAnchor.right,
-                      zIndex: 10000,
-                      background: 'var(--ds-surface-overlay)',
-                      borderRadius: 4,
-                      boxShadow: 'var(--ds-shadow-overlay, 0 4px 8px rgba(9,30,66,.25))',
-                      minWidth: 180,
-                      padding: '4px 0',
-                      border: '1px solid var(--ds-border)',
+                      background: 'none', border: 'none', cursor: 'pointer',
+                      padding: 4, borderRadius: 4, width: 32, height: 32,
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      color: 'var(--ds-text-subtle)',
                     }}
+                    onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,.06))')}
+                    onMouseLeave={e => (e.currentTarget.style.background = 'none')}
                   >
-                    {effectiveMoreMenuItems.filter(item => !item.danger).map((item, i) => (
-                      <button key={i} onClick={() => { item.onClick(); setMoreOpen(false); }}
-                        style={{
-                          display: 'block', width: '100%', textAlign: 'left',
-                          padding: '8px 16px', background: 'none', border: 'none', cursor: 'pointer',
-                          fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text)', fontFamily: 'inherit',
-                        }}
-                        onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,.06))')}
-                        onMouseLeave={e => (e.currentTarget.style.background = 'none')}
-                      >{item.label}</button>
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                      <circle cx="8" cy="3.5" r="1.25" fill="currentColor"/>
+                      <circle cx="8" cy="8" r="1.25" fill="currentColor"/>
+                      <circle cx="8" cy="12.5" r="1.25" fill="currentColor"/>
+                    </svg>
+                  </button>
+                )}
+              >
+                {(close) => (
+                  <>
+                    {flagContext && (
+                      <KanbanMenuItem variant="plain" onClick={() => { setShowFlagModal(true); close(); }}>
+                        {flagContext.isFlagged ? 'Remove flag' : 'Add flag'}
+                      </KanbanMenuItem>
+                    )}
+                    {onCoverChange && (
+                      <SubmenuItem
+                        label="Select cover"
+                        ariaLabel="Select cover"
+                        onCloseParentMenu={close}
+                        minWidth={380}
+                        zIndex={10020}
+                      >
+                        {(closeSub) => (
+                          <SelectCoverPanel
+                            currentCover={cover ?? null}
+                            workItemId={coverItemId ?? null}
+                            workItemTable={coverItemTable ?? 'ph_issues'}
+                            onSelect={(bg) => { onCoverChange(bg); closeSub(); close(); }}
+                            onRemove={() => { onCoverChange(null); closeSub(); close(); }}
+                            onClose={() => { closeSub(); close(); }}
+                          />
+                        )}
+                      </SubmenuItem>
+                    )}
+                    {(moreMenuItems ?? []).filter((item) => !item.danger).map((item, i) => (
+                      <KanbanMenuItem key={`plain-${i}`} variant="plain" onClick={() => { item.onClick(); close(); }}>
+                        {item.label}
+                      </KanbanMenuItem>
                     ))}
-                    {effectiveMoreMenuItems.some(item => item.danger) && (
+                    {(moreMenuItems ?? []).some((item) => item.danger) && (
                       <>
                         <div style={{ height: 1, background: 'var(--ds-border)', margin: '4px 0' }} />
-                        {effectiveMoreMenuItems.filter(item => item.danger).map((item, i) => (
-                          <button key={i} onClick={() => { item.onClick(); setMoreOpen(false); }}
+                        {(moreMenuItems ?? []).filter((item) => item.danger).map((item, i) => (
+                          <button
+                            key={`danger-${i}`}
+                            role="menuitem"
+                            onClick={() => { item.onClick(); close(); }}
                             style={{
-                              display: 'block', width: '100%', textAlign: 'left',
-                              padding: '8px 16px', background: 'none', border: 'none', cursor: 'pointer',
-                              fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text-danger)', fontFamily: 'inherit',
+                              width: '100%', height: 32, padding: '0 12px', display: 'flex', alignItems: 'center',
+                              border: 'none', background: 'transparent',
+                              color: token('color.text.danger', 'var(--ds-text-danger)'),
+                              fontSize: 'var(--ds-font-size-400)', fontFamily: 'inherit', cursor: 'pointer', textAlign: 'left',
                             }}
-                            onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,.06))')}
-                            onMouseLeave={e => (e.currentTarget.style.background = 'none')}
-                          >{item.label}</button>
+                            onMouseEnter={(e) => { e.currentTarget.style.background = token('color.background.danger', 'var(--ds-background-danger)'); }}
+                            onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
+                          >
+                            {item.label}
+                          </button>
                         ))}
                       </>
                     )}
-                  </div>,
-                  document.body
+                  </>
                 )}
-              </>
+              </PortalMenu>
             )}
 
             {/* Open in full page — panel mode only */}
@@ -793,13 +835,29 @@ export function CatalystViewBase({
     // top bar (modal header overlap). The modal dialog owns its own sizing; our wrapper just
     // needs flex layout. Each column (left/right) independently scrolls via overflowY:'auto'.
     return (
-      <Modal onClose={onClose} width={1280} shouldScrollInViewport={false}>
-        <div data-cv-scope style={{
-          minHeight: 600, display: 'flex', flexDirection: 'column',
-        }}>
-          {cardContents}
-        </div>
-      </Modal>
+      <>
+        <Modal onClose={onClose} width={1280} shouldScrollInViewport={false}>
+          <div data-cv-scope style={{
+            minHeight: 600, display: 'flex', flexDirection: 'column',
+          }}>
+            {cardContents}
+          </div>
+        </Modal>
+        {/* 2026-07-04: menu-injected dialogs (Add flag, etc.) previously
+            only rendered in the panel/fullpage branch — invisible in modal
+            mode. Repeat here so the ⋯ menu works on the modal too. */}
+        {showFlagModal && flagContext && (
+          <AddFlagModal
+            issueId={flagContext.issueId}
+            issueKey={flagContext.issueKey}
+            issueTitle={flagContext.issueTitle}
+            issueType={flagContext.issueType}
+            flagged={flagContext.isFlagged}
+            tableName={flagContext.tableName ?? 'ph_issues'}
+            onClose={() => setShowFlagModal(false)}
+          />
+        )}
+      </>
     );
   }
 
@@ -818,7 +876,7 @@ export function CatalystViewBase({
         <div
           data-cv-scope
           role={fullPageMode ? undefined : 'dialog'}
-          aria-modal={fullPageMode ? undefined : panelMode ? 'false' : 'true'}
+          aria-modal={fullPageMode ? undefined : 'true'}
           aria-label={fullPageMode ? undefined : ariaLabel}
           style={MODAL}
           onClick={e => e.stopPropagation()}
@@ -854,6 +912,17 @@ export function CatalystViewBase({
           )}
         </div>
       </div>
+      {showFlagModal && flagContext && (
+        <AddFlagModal
+          issueId={flagContext.issueId}
+          issueKey={flagContext.issueKey}
+          issueTitle={flagContext.issueTitle}
+          issueType={flagContext.issueType}
+          flagged={flagContext.isFlagged}
+          tableName={flagContext.tableName ?? 'ph_issues'}
+          onClose={() => setShowFlagModal(false)}
+        />
+      )}
     </>
   );
 }

@@ -214,17 +214,34 @@ function toAkSize(n?: number): 'small' | 'medium' | 'large' {
   return 'large';
 }
 
+/**
+ * @atlaskit/icon core/glyph components silently DROP className/style — they are
+ * not part of the Ak icon API. Call sites written for lucide-react rely on them
+ * (81 sites use `className="absolute left-3 top-1/2 …"` to position a search
+ * icon inside an input; the icon rendered detached above the field). Carry the
+ * caller's className/style on a wrapper span so the authored layout applies.
+ * When neither is passed the Ak icon renders bare — zero DOM change.
+ */
+function carryClassAndStyle(
+  icon: React.ReactElement,
+  className?: string,
+  style?: React.CSSProperties
+): React.ReactElement {
+  if (!className && !style) return icon;
+  return (
+    <span className={className} style={{ display: 'inline-flex', lineHeight: 0, ...style }}>
+      {icon}
+    </span>
+  );
+}
+
 /** Wrap an @atlaskit/icon/core/* component */
 function mkCore(Comp: React.ComponentType<any>): React.FC<LucideProps> {
   return function AtlaskitCoreIcon({ size, color, className, style }: LucideProps) {
-    return (
-      <Comp
-        size={toAkSize(size)}
-        color={color || 'currentColor'}
-        label=""
-        className={className}
-        style={style}
-      />
+    return carryClassAndStyle(
+      <Comp size={toAkSize(size)} color={color || 'currentColor'} label="" />,
+      className,
+      style
     );
   };
 }
@@ -232,14 +249,10 @@ function mkCore(Comp: React.ComponentType<any>): React.FC<LucideProps> {
 /** Wrap an @atlaskit/icon/glyph/* component (uses primaryColor not color) */
 function mkGlyph(Comp: React.ComponentType<any>): React.FC<LucideProps> {
   return function AtlaskitGlyphIcon({ size, color, className, style }: LucideProps) {
-    return (
-      <Comp
-        size={toAkSize(size)}
-        primaryColor={color || 'currentColor'}
-        label=""
-        className={className}
-        style={style}
-      />
+    return carryClassAndStyle(
+      <Comp size={toAkSize(size)} primaryColor={color || 'currentColor'} label="" />,
+      className,
+      style
     );
   };
 }

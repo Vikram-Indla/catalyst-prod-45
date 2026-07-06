@@ -1,5 +1,5 @@
 import React from 'react';
-import { Avatar } from '@/components/ads/Avatar';
+import CatalystAvatar from '@/components/shared/CatalystAvatar';
 import type { ChatView } from '../hooks/useShellState';
 // ads-scanner:ignore-next-line -- CSS file uses only var(--c-chat-*) tokens
 import './app-rail.css';
@@ -85,7 +85,7 @@ export function AppRail({
       })}
 
       <div className="c-rail__avatar-wrap">
-        <Avatar src={userAvatarUrl ?? undefined} name={userName} size="small" />
+        <CatalystAvatar src={userAvatarUrl ?? undefined} name={userName} size="small" />
       </div>
     </nav>
   );

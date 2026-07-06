@@ -26,8 +26,9 @@ const S = ({ children }: { children: React.ReactNode }) => (
 export function EnterpriseRoutes() {
   return (
     <Routes>
-      <Route path="roadmaps" element={<Navigate to="/strategyhub/risks" replace />} />
-      <Route path="risks" element={<Navigate to="/strategyhub/risks" replace />} />
+      {/* CAT-STRATA-20260705-001: StrategyHub decommissioned → STRATA */}
+      <Route path="roadmaps" element={<Navigate to="/strata" replace />} />
+      <Route path="risks" element={<Navigate to="/strata" replace />} />
       <Route path="work-tree" element={<S><WorkTreePage /></S>} />
       <Route path="kanban-boards" element={<S><EnterpriseComingSoon /></S>} />
       <Route path="epics" element={<S><EnterpriseEpics /></S>} />

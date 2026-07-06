@@ -42,7 +42,9 @@ const renderIcon = (Icon: React.ComponentType<any>, label: string) => createElem
 // `/product-hub` (not `/producthub`). Legacy `/producthub` stays in
 // routeAliases below for back-compat; App.tsx adds a top-level redirect.
 export const HUBS: Hub[] = [
-  { id: 'enterprise', label: 'Strategy Hub', path: '/strategyhub', tileColor: 'purple', glyph: renderIcon(OfficeBuildingIcon, 'StrategyHub') },
+  // CAT-STRATA-20260705-001 (D-009/Q1): Strategy Hub tile repurposed to STRATA.
+  // Legacy /strategyhub redirects to /strata (mounted in App.tsx OUTSIDE the shell).
+  { id: 'enterprise', label: 'STRATA', path: '/strata', tileColor: 'purple', glyph: renderIcon(OfficeBuildingIcon, 'STRATA') },
   { id: 'product', label: 'Product Hub', path: '/product-hub', tileColor: 'blue', glyph: renderIcon(PortfolioIcon, 'ProductHub') },
   { id: 'project', label: 'Project Hub', path: '/project-hub', tileColor: 'teal', glyph: renderIcon(FolderIcon, 'ProjectHub') },
   { id: 'release', label: 'Release Hub', path: '/release-hub/overview', tileColor: 'orange', glyph: renderIcon(ShipIcon, 'ReleaseHub') },
@@ -54,7 +56,7 @@ export const HUBS: Hub[] = [
 ];
 
 const routeAliases: Record<string, string[]> = {
-  enterprise: ['/enterprise', '/strategyhub'],
+  enterprise: ['/strata', '/enterprise', '/strategyhub'],
   product: ['/product', '/producthub'],
   project: ['/project', '/project-hub'],
   release: ['/release', '/release-hub'],

@@ -38,6 +38,7 @@ import {
 import { catalystToast as toast } from '@/lib/catalystToast';
 import { useUpdateIncident } from '@/hooks/useIncidents';
 import type { Incident } from '@/types/incident';
+import { getIncidentSlaBadgeStatus } from '@/utils/incidentSla';
 import type { ColumnConfig, TableDensity } from '@/hooks/useIncidentColumns';
 import { cn } from '@/lib/utils';
 import { StatusPill, SeverityPill, SlaPill } from './TablePill';
@@ -305,12 +306,11 @@ export function IncidentListTable({
     }
   };
 
-  const getSlaStatus = (incident: Incident) => {
-    const breached = incident.sla?.response_breached || incident.sla?.resolution_breached;
-    if (breached) return 'breached';
-    if (incident.sla) return 'on_track';
-    return null;
-  };
+  // Live breach state via the authoritative computation (mirrors the
+  // incident_sla_live_status view). Do NOT read sla.*_breached directly — those
+  // default false until *_met_at is stamped, so a past-due unmet incident would
+  // read "on track". See src/utils/incidentSla.ts.
+  const getSlaStatus = (incident: Incident) => getIncidentSlaBadgeStatus(incident.sla, incident.status);
 
   return (
     <>

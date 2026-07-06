@@ -28,6 +28,11 @@ import { useEffect, useState, type RefObject } from 'react';
 export interface AnchoredPosition {
   top: number;
   left: number;
+  /** Right-edge coordinate — populated only when align='end'. Caller
+   *  can position the popup via `right: window.innerWidth - anchor.right`
+   *  so the popup's right edge stays glued to the trigger's right edge
+   *  regardless of the popup's actual rendered width. */
+  right?: number;
   /** Direction the popup ended up opening — useful when the caller
    *  wants to flip its own internal layout (e.g. reverse menu item
    *  order when opening upward). */
@@ -45,6 +50,13 @@ export interface UseAnchoredPositionOptions {
   gap?: number;
   /** Minimum margin from the viewport edge. Default 8. */
   edgePadding?: number;
+  /** Horizontal alignment relative to the trigger.
+   *  'start' → menu's left edge aligns with trigger's left edge (default).
+   *  'end'   → menu's right edge aligns with trigger's right edge — right
+   *            useful when the trigger sits at the far right of a row
+   *            (e.g. a `⋯` more-actions button) so the popup opens
+   *            leftward instead of running off screen. */
+  align?: 'start' | 'end';
 }
 
 export function useAnchoredPosition(
@@ -57,6 +69,7 @@ export function useAnchoredPosition(
     menuHeight,
     gap = 4,
     edgePadding = 8,
+    align = 'start',
   } = options;
   const [pos, setPos] = useState<AnchoredPosition | null>(null);
 
@@ -76,10 +89,14 @@ export function useAnchoredPosition(
       const top = needsFlip
         ? Math.max(edgePadding, rect.top - menuHeight - gap)
         : rect.bottom + gap;
-      let left = rect.left;
+      let left = align === 'end' ? rect.right - menuWidth : rect.left;
       const maxLeft = window.innerWidth - menuWidth - edgePadding;
       if (left > maxLeft) left = Math.max(edgePadding, maxLeft);
-      setPos({ top, left, placement: needsFlip ? 'top' : 'bottom' });
+      if (left < edgePadding) left = edgePadding;
+      const rightCoord = align === 'end'
+        ? Math.max(edgePadding, window.innerWidth - rect.right)
+        : undefined;
+      setPos({ top, left, right: rightCoord, placement: needsFlip ? 'top' : 'bottom' });
     };
     place();
     window.addEventListener('scroll', place, true);
@@ -88,7 +105,7 @@ export function useAnchoredPosition(
       window.removeEventListener('scroll', place, true);
       window.removeEventListener('resize', place);
     };
-  }, [open, menuHeight, menuWidth, gap, edgePadding, triggerRef]);
+  }, [open, menuHeight, menuWidth, gap, edgePadding, align, triggerRef]);
 
   return pos;
 }

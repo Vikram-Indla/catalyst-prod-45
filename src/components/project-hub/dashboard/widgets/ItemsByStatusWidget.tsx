@@ -257,7 +257,7 @@ function KpiHeadline({
         style={{
           ...H_NUM,
           lineHeight: 1.1,
-          color: accent ?? token('color.text', '#292A2E'),
+          color: accent ?? token('color.text'),
         }}
       >
         {value}
@@ -302,7 +302,7 @@ function KpiHeadline({
             color:
               blocked > 0
                 ? 'var(--ds-text-accent-red-bolder)'
-                : token('color.text', '#292A2E'),
+                : token('color.text'),
           }}
         >
           {blocked}
@@ -393,7 +393,7 @@ function BarRow({ bucket: b, total, onClick }: { bucket: Bucket; total: number; 
           fontVariantNumeric: 'tabular-nums',
         }}
       >
-        {b.count > 0 ? b.count : <span style={{ color: token('color.text.disabled', '#B3B9C4'), fontWeight: 400 }}>—</span>}
+        {b.count > 0 ? b.count : <span style={{ color: token('color.text.disabled'), fontWeight: 400 }}>—</span>}
       </span>
       <span
         style={{

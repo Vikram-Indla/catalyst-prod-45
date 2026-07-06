@@ -10,7 +10,7 @@
  * Validation: Source ≠ Target; create errors surfaced inline.
  */
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { ModalTransition } from '@atlaskit/modal-dialog';
 import Modal, { ModalBody, ModalHeader, ModalFooter, ModalTitle } from '@atlaskit/modal-dialog';
@@ -56,14 +56,29 @@ interface AddDependencyModalProps {
   fetchCandidates: () => Promise<DependencyCandidate[]>;
   /** Hub-supplied write — inserts into ph_issue_dependencies. Throws on error. */
   onCreate: (source: DependencyCandidate, target: DependencyCandidate, type: DependencyType) => Promise<void>;
+  /** Optional preselected source — set when the modal is opened from a specific
+   *  work item (e.g. a board card ⋯ menu) so the clicked item is the source. */
+  initialSource?: IssueOption | null;
 }
 
-export default function AddDependencyModal({ isOpen, onClose, onSuccess, scopeKey, fetchCandidates, onCreate }: AddDependencyModalProps) {
-  const [sourceKey, setSourceKey] = useState<IssueOption | null>(null);
+export default function AddDependencyModal({ isOpen, onClose, onSuccess, scopeKey, fetchCandidates, onCreate, initialSource = null }: AddDependencyModalProps) {
+  const [sourceKey, setSourceKey] = useState<IssueOption | null>(initialSource);
   const [targetKey, setTargetKey] = useState<IssueOption | null>(null);
   const [depType, setDepType] = useState<DependencyType>('blocks');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // On each open, seed the source from initialSource (and clear target) so a
+  // card-scoped open preselects the clicked item; standalone opens start blank.
+  useEffect(() => {
+    if (isOpen) {
+      setSourceKey(initialSource);
+      setTargetKey(null);
+      setDepType('blocks');
+      setError(null);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen]);
 
   const { data: candidates = [], isLoading: issuesLoading } = useQuery({
     queryKey: ['dep-candidates', scopeKey],

@@ -20,8 +20,8 @@ import { useGlobalSearchStore } from "@/store/globalSearchStore";
 import { useNavBreakpoint } from "@/hooks/useNavBreakpoint";
 import { GlobalMobileDrawer } from "./GlobalMobileDrawer";
 import { HuddleFab } from "./HuddleFab";
-import { HuddleIncoming } from "./HuddleIncoming";
 import { HuddleWindow } from "./HuddleWindow";
+import { IncomingHuddleFab } from "@/components/chat/IncomingHuddleFab";
 import { HuddleAutoFilters } from "./HuddleAutoFilters";
 
 /**
@@ -197,10 +197,6 @@ const ChatSidebar = lazyWithRetry(
     })),
   "ChatSidebar",
 );
-const WikiSidebar = lazyWithRetry(
-  () => import("./WikiSidebar").then((m) => ({ default: m.WikiSidebar })),
-  "WikiSidebar",
-);
 // C1 · Personal command center on / (Home). Replaces the empty 240px rail
 // users were seeing on Home with @atlaskit/side-navigation sections for
 // Pinned, Recent and Jump to. Atlaskit-only — see HomeSidebar.tsx.
@@ -242,7 +238,7 @@ const JIRA_CANVAS_BG =
 
 const HUB_ROUTES: Record<string, string> = {
   home: '/for-you',
-  strategy: '/strategyhub',
+  strategy: '/strata',
   ideation: '/ideation/backlog',
   product: '/product-hub',
   project: '/project-hub',
@@ -551,8 +547,9 @@ function CatalystShellContent() {
   const isTestHubRoute = location.pathname.startsWith("/testhub");
 
   // Decision A (Apr 2026): Jira blue canvas (var(--ds-background-selected)) + white panel on all
-  // hub routes. /for-you, Home, Wiki, Admin are intentionally excluded.
+  // hub routes. /for-you, Home, Admin are intentionally excluded.
   const isHubSurfaceRoute =
+    location.pathname.startsWith("/strata") ||
     location.pathname.startsWith("/strategyhub") ||
     location.pathname.startsWith("/producthub") ||
     location.pathname.startsWith("/product/") || // /product/ideas/*, /product/room, etc.
@@ -684,11 +681,6 @@ function CatalystShellContent() {
     // Full-screen issue view: show ProjectHub sidebar forced-collapsed
     if (isIssueFullPageRoute) {
       return <ProjectHubSidebar expanded={exp} onToggle={cycleSidebarState} />;
-    }
-
-    // Wiki sidebar
-    if (isWikiRoute) {
-      return <WikiSidebar expanded={exp} onToggle={cycleSidebarState} />;
     }
 
     // ProductHub V5 sidebar (/product-hub/*) — checked before isProductRoute so
@@ -879,8 +871,8 @@ function CatalystShellContent() {
         )}
       </div>
       <HuddleFab />
-      <HuddleIncoming />
       <HuddleWindow />
+      <IncomingHuddleFab />
       <HuddleAutoFilters />
 
       {/* Main Content with Context Panel - Conditional Sidebar Based on workspaceType */}

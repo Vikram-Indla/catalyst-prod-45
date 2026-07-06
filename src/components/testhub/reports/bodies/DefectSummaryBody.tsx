@@ -2,7 +2,8 @@
  * DefectSummaryBody — project-scoped hybrid defect report body (registry: defect-summary).
  * Feature: CAT-REPORTS-HUB-20260703-001 (Phase 2 Lane A port from DefectsIncidentsPage,
  * merge per disposition matrix #9).
- * ph_issues QA Bug/Defect (real volume) + tm_defects (test-linked).
+ * Source: tm_defects (the only defect source — ph_issues carries no QA
+ * Bug/Defect rows). Open = tm_defect_status 'open' only (D052).
  *
  * Phase 2 Lane C (CAT-REPORTS-HUB-20260703-001): the incident half (metric cards,
  * open-incidents table, regression gap) moved to /incident-hub/reports. This body
@@ -48,6 +49,7 @@ function catAppearance(c: string): ThemeAppearance {
   switch (c) {
     case 'Done': return 'success';
     case 'In Progress': return 'inprogress';
+    case 'To Do': return 'new';
     default: return 'default';
   }
 }
@@ -70,8 +72,11 @@ export function DefectSummaryBody() {
 
   const insight = useMemo(() => {
     if (!data) return null;
-    const parts = [`${data.defectsOpen} open defects of ${data.defectsTotal}.`];
-    if (data.tmDefects > 0) parts.push(`${data.tmDefects} defect(s) linked to a test.`);
+    const parts = [
+      `${data.defectsOpen} open, ${data.defectsInProgress} in progress, ` +
+        `${data.defectsResolved} resolved, ${data.defectsClosed} closed ` +
+        `of ${data.defectsTotal} total.`,
+    ];
     return parts.join(' ');
   }, [data]);
 
@@ -94,21 +99,36 @@ export function DefectSummaryBody() {
       report_id: 'defect-summary',
       defects_total: data.defectsTotal,
       defects_open: data.defectsOpen,
-      defects_closed: data.defectsTotal - data.defectsOpen,
-      test_linked_defects: data.tmDefects,
+      defects_in_progress: data.defectsInProgress,
+      defects_resolved: data.defectsResolved,
+      defects_closed: data.defectsClosed,
       open_defects_listed: data.openDefects.length,
     };
   }, [data]);
 
-  // Defects-by-status — real counts already fetched (open vs closed of total).
+  // Defects-by-status — one bar per tm_defect_status bucket (open, in
+  // progress, resolved, closed). Open counts ONLY status='open' — closed and
+  // resolved are their own terminal bars, never folded into open (D052).
   // Zero-assumption law: no defects at all → no chart rendered.
   const defectBars = useMemo(() => {
     if (!data || data.defectsTotal === 0) return [];
     return [
       { status: `Open (${data.defectsOpen})`, key: 'open', count: data.defectsOpen },
-      { status: `Closed (${data.defectsTotal - data.defectsOpen})`, key: 'closed', count: data.defectsTotal - data.defectsOpen },
-    ];
+      { status: `In progress (${data.defectsInProgress})`, key: 'in_progress', count: data.defectsInProgress },
+      { status: `Resolved (${data.defectsResolved})`, key: 'resolved', count: data.defectsResolved },
+      { status: `Closed (${data.defectsClosed})`, key: 'closed', count: data.defectsClosed },
+    ].filter((b) => b.count > 0);
   }, [data]);
+
+  const barColor = (key: string): string => {
+    switch (key) {
+      case 'open': return ADS_CHART.danger;
+      case 'in_progress': return ADS_CHART.warning;
+      case 'resolved': return ADS_CHART.success;
+      case 'closed': return ADS_CHART.neutral;
+      default: return ADS_CHART.neutral;
+    }
+  };
 
   return (
     <div style={{ flex: 1, padding: 'var(--ds-space-250) var(--ds-space-300) var(--ds-space-600)', width: '100%', boxSizing: 'border-box' }}>
@@ -159,8 +179,10 @@ export function DefectSummaryBody() {
             />
             <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginBottom: 16 }}>
               <div style={cardStyle}><div style={metricValue}>{data.defectsTotal}</div><div style={metricLabel}>Total defects</div></div>
-              <div style={cardStyle}><div style={{ ...metricValue, color: data.defectsOpen ? 'var(--ds-text-danger)' : 'var(--ds-text)' }}>{data.defectsOpen}</div><div style={metricLabel}>Open defects</div></div>
-              <div style={cardStyle}><div style={metricValue}>{data.tmDefects}</div><div style={metricLabel}>Test-linked</div></div>
+              <div style={cardStyle}><div style={{ ...metricValue, color: data.defectsOpen ? 'var(--ds-text-danger)' : 'var(--ds-text)' }}>{data.defectsOpen}</div><div style={metricLabel}>Open</div></div>
+              <div style={cardStyle}><div style={{ ...metricValue, color: data.defectsInProgress ? 'var(--ds-text-warning)' : 'var(--ds-text)' }}>{data.defectsInProgress}</div><div style={metricLabel}>In progress</div></div>
+              <div style={cardStyle}><div style={{ ...metricValue, color: data.defectsResolved ? 'var(--ds-text-success)' : 'var(--ds-text)' }}>{data.defectsResolved}</div><div style={metricLabel}>Resolved</div></div>
+              <div style={cardStyle}><div style={metricValue}>{data.defectsClosed}</div><div style={metricLabel}>Closed</div></div>
             </div>
 
             {insight && (
@@ -181,14 +203,14 @@ export function DefectSummaryBody() {
                   series={[{ dataKey: 'count', name: 'Defects' }]}
                   xKey="status"
                   showLegend={false}
-                  getBarColor={(d) => ((d as { key: string }).key === 'open' ? ADS_CHART.danger : ADS_CHART.success)}
+                  getBarColor={(d) => barColor((d as { key: string }).key)}
                 />
               </div>
             )}
 
             <div style={sectionH}><Heading size="small">Open defects ({data.openDefects.length})</Heading></div>
             <div style={{ marginBottom: 'var(--ds-space-300)' }}>
-              <JiraTable<IssueRow> columns={cols} data={data.openDefects} getRowId={(r) => r.issue_key} onRowClick={(r) => navigate(`/browse/${r.issue_key}`)} isLoading={false} ariaLabel="Open defects"
+              <JiraTable<IssueRow> columns={cols} data={data.openDefects} getRowId={(r) => r.issue_key} onRowClick={(r) => { if (r.issue_key && r.issue_key !== '—') navigate(Routes.testHub.defect(r.issue_key)); }} isLoading={false} ariaLabel="Open defects"
                 emptyView={<div style={{ padding: 'var(--ds-space-250)', color: 'var(--ds-text-subtle)' }}>No open defects.</div>} />
             </div>
 

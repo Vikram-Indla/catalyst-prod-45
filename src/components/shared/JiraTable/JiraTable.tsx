@@ -2960,19 +2960,22 @@ function ColumnManagerTrigger<TRow>({
     };
   }, [isOpen]);
 
-  const toggleable = columns.filter((c) => !c.alwaysVisible && !c.id.startsWith('__'));
   // 2026-05-12 Jira parity: My defaults tab filters to defaultVisible:true cols.
   // System tab shows the full toggleable set. Search applies on top.
-  const tabFiltered = activeTab === 'my-defaults'
-    ? toggleable.filter((c) => c.defaultVisible)
-    : toggleable;
-  const q = search.trim().toLowerCase();
-  const filtered = q
-    ? tabFiltered.filter((c) => (c.label || c.id).toLowerCase().includes(q))
-    : tabFiltered;
-  // Jira parity "X of Y" count display at bottom: visible-after-search / total-in-tab.
-  const totalInTab = tabFiltered.length;
-  const matchCount = filtered.length;
+  // Memoized so the three chained filters don't recompute on every unrelated
+  // re-render (only when columns/tab/search actually change).
+  const { toggleable, tabFiltered, filtered, totalInTab, matchCount } = useMemo(() => {
+    const toggleable = columns.filter((c) => !c.alwaysVisible && !c.id.startsWith('__'));
+    const tabFiltered = activeTab === 'my-defaults'
+      ? toggleable.filter((c) => c.defaultVisible)
+      : toggleable;
+    const q = search.trim().toLowerCase();
+    const filtered = q
+      ? tabFiltered.filter((c) => (c.label || c.id).toLowerCase().includes(q))
+      : tabFiltered;
+    // Jira parity "X of Y" count display: visible-after-search / total-in-tab.
+    return { toggleable, tabFiltered, filtered, totalInTab: tabFiltered.length, matchCount: filtered.length };
+  }, [columns, activeTab, search]);
 
   const toggle = (id: string, next: boolean) => {
     const out = new Set(visibility);

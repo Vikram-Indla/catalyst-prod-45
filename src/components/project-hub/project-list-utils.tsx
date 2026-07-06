@@ -63,7 +63,7 @@ export function StatusBadge({ status }: { status: string }) {
  */
 const HEALTH_STYLES: Record<string, { bg: string; color: string; dot: string }> = {
   on_track:  { bg: 'var(--ds-background-success)', color: 'var(--ds-text-success)', dot: 'var(--ds-text-success)' },
-  at_risk:   { bg: '#FFF7E6', color: 'var(--ds-text-warning)', dot: 'var(--ds-text-warning)' },
+  at_risk:   { bg: 'var(--ds-background-warning-subtle)', color: 'var(--ds-text-warning)', dot: 'var(--ds-text-warning)' },
   off_track: { bg: 'var(--ds-background-danger)', color: 'var(--ds-text-danger)', dot: 'var(--ds-text-danger)' },
 };
 
@@ -95,7 +95,7 @@ export function HealthBadge({ health }: { health: string | null }) {
     </span>
   );
 }
-const AVATAR_COLORS = ['var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', 'var(--cp-teal-60)', 'var(--ds-text-danger, var(--cp-danger))', 'var(--cp-purple-60)', 'var(--ds-text-warning, var(--cp-warning))', 'var(--quality-high)', '#0369A1', 'var(--ds-background-accent-magenta-bolder)'];
+const AVATAR_COLORS = ['var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', 'var(--cp-teal-60)', 'var(--ds-text-danger, var(--cp-danger))', 'var(--cp-purple-60)', 'var(--ds-text-warning, var(--cp-warning))', 'var(--quality-high)', 'var(--ds-text-information, var(--cp-workstream-catalyst-primary))', 'var(--ds-background-accent-magenta-bolder)'];
 
 function getInitials(name: string): string {
   const parts = name.trim().split(/\s+/);

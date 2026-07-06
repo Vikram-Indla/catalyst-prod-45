@@ -84,6 +84,11 @@ jobs:
         # see .claude/skills/cre/SKILL.md and src/lib/catalyst-rules/RULE_TABLE.md.
         run: npm run lint:cre
 
+      - name: TestHub strict color gate (zero-tolerance, no ratchet)
+        # P1-S19, CAT-TESTHUB-PROD-20260703-001 — src/pages/testhub + src/components/testhub
+        # must stay color-pure; no baseline, any bare color or dark: twin fails the build.
+        run: npm run lint:colors:testhub
+
       - name: Build
         run: npx vite build
         env:

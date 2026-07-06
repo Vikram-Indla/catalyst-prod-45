@@ -16,7 +16,7 @@ export function ReleaseDropdown({ onClose }: ReleaseDropdownProps) {
   const { isAdmin } = useUserRole();
 
   const handleIncidentRoom = useCallback(() => {
-    navigate('/release/incidents');
+    navigate('/incident-hub');
     onClose();
   }, [navigate, onClose]);
 

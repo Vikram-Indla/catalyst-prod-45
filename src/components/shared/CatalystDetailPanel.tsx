@@ -32,12 +32,20 @@ import LinkIcon from '@atlaskit/icon/core/link';
 import LinkExternalIcon from '@atlaskit/icon/core/link-external';
 import MaximizeIcon from '@atlaskit/icon/core/maximize';
 import MoreIcon from '@atlaskit/icon/glyph/more';
+import { PortalMenu, MenuItem as KanbanMenuItem } from '@/features/kanban-board/components/PortalMenu';
+import { SubmenuItem } from '@/features/kanban-board/components/SubmenuItem';
+import { AddFlagModal } from '@/components/workhub/issue-view/IssueActionDialogs';
+import { SelectCoverPanel } from '@/features/kanban-board/components/SelectCoverPanel';
+import { CoverStrap } from '@/components/catalyst-detail-views/shared/CoverStrap';
+import { token } from '@atlaskit/tokens';
 import { AddParentPicker } from '@/components/shared/AddParentPicker';
 import { ConfirmCloneDialog } from '@/components/catalyst-detail-views/shared/ConfirmCloneDialog';
 import { ConfirmArchiveDialog } from '@/components/catalyst-detail-views/shared/ConfirmArchiveDialog';
 import { ConfirmDeleteDialog } from '@/components/catalyst-detail-views/shared/ConfirmDeleteDialog';
 import { MoveIssueDialog } from '@/components/catalyst-detail-views/shared/MoveIssueDialog';
 import { catalystToast } from '@/lib/catalystToast';
+import { cloneWorkItemWithFlags } from '@/lib/cloneWorkItemWithFlags';
+import type { ClonePatch } from '@/components/catalyst-detail-views/shared/ConfirmCloneDialog';
 import { useCatalystIssue, useCatalystIssueMutations } from '@/components/catalyst-detail-views/shared/hooks';
 import {
   CatalystTitleEditor,
@@ -54,6 +62,7 @@ import { AttachmentsSection } from '@/modules/project-work-hub/components/dialog
 import type { PhAttachment } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/types';
 import { SubtasksPanel } from '@/modules/project-work-hub/components/SubtasksPanel';
 import { LinkedWorkItemsSection } from '@/modules/project-work-hub/components/linked-work-items';
+import { DependenciesSection } from '@/modules/project-work-hub/components/dependencies';
 import { TestCasesSection } from '@/modules/project-work-hub/components/story-test-cases';
 import { useAuth } from '@/hooks/useAuth';
 import { useQuery } from '@tanstack/react-query';
@@ -250,6 +259,7 @@ function PhIssuePanelBody({
   const [showArchiveDialog, setShowArchiveDialog] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showMoveDialog, setShowMoveDialog] = useState(false);
+  const [showFlagModal, setShowFlagModal] = useState(false);
 
   const [moreOpen, setMoreOpen] = useState(false);
   const [morePos, setMorePos] = useState<{ top: number; right: number } | null>(null);
@@ -290,10 +300,15 @@ function PhIssuePanelBody({
     };
   }, [moreOpen]);
 
-  const handleClone = () => {
+  const handleClone = (patch?: ClonePatch) => {
     if (!issue?.issue_key) return;
     setShowCloneDialog(false);
-    catalystToast.success(`Cloned ${issue.issue_key}`);
+    void cloneWorkItemWithFlags({
+      sourceKey: issue.issue_key,
+      sourceType: issue.issue_type,
+      projectKey: issue.project_key ?? projectKey,
+      patch,
+    });
   };
 
   const parentSource = (() => {
@@ -366,25 +381,81 @@ function PhIssuePanelBody({
         <IconButton ariaLabel="Copy link" onClick={handleCopyLink}>
           <LinkIcon label="" color="currentColor" />
         </IconButton>
-        <button
-          ref={moreTriggerRef}
-          type="button"
-          aria-label="More actions"
-          aria-expanded={moreOpen}
-          onClick={() => setMoreOpen((v) => !v)}
-          style={{
-            display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-            width: 28, height: 28,
-            border: `1px solid ${moreOpen ? 'var(--ds-border-selected)' : 'transparent'}`,
-            borderRadius: 3,
-            background: moreOpen ? 'var(--ds-background-selected)' : 'transparent',
-            cursor: 'pointer', padding: 0, flexShrink: 0, color: SUBTLE,
-          }}
-          onMouseEnter={(e) => { if (!moreOpen) (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral, var(--ds-background-neutral))'; }}
-          onMouseLeave={(e) => { if (!moreOpen) (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
+        <PortalMenu
+          align="right"
+          minWidth={200}
+          zIndex={10010}
+          ariaLabel="More actions"
+          trigger={({ open }) => (
+            <button
+              type="button"
+              aria-label="More actions"
+              aria-expanded={open}
+              style={{
+                display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                width: 28, height: 28,
+                border: `1px solid ${open ? 'var(--ds-border-selected)' : 'transparent'}`,
+                borderRadius: 3,
+                background: open ? 'var(--ds-background-selected)' : 'transparent',
+                cursor: 'pointer', padding: 0, flexShrink: 0, color: SUBTLE,
+              }}
+              onMouseEnter={(e) => { if (!open) (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral, var(--ds-background-neutral))'; }}
+              onMouseLeave={(e) => { if (!open) (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
+            >
+              <MoreIcon label="" size="small" primaryColor="currentColor" />
+            </button>
+          )}
         >
-          <MoreIcon label="" size="small" primaryColor="currentColor" />
-        </button>
+          {(close) => {
+            const isFlagged = !!(issue as any)?.is_flagged;
+            return (
+              <>
+                {issue?.id && issue?.issue_key && (
+                  <KanbanMenuItem variant="plain" onClick={() => { setShowFlagModal(true); close(); }}>
+                    {isFlagged ? 'Remove flag' : 'Add flag'}
+                  </KanbanMenuItem>
+                )}
+                <SubmenuItem
+                  label="Select cover"
+                  ariaLabel="Select cover"
+                  onCloseParentMenu={close}
+                  minWidth={380}
+                  zIndex={10020}
+                >
+                  {(closeSub) => (
+                    <SelectCoverPanel
+                      currentCover={(issue as any)?.cover ?? null}
+                      workItemId={(issue as any)?.id ?? null}
+                      workItemTable="ph_issues"
+                      onSelect={(bg) => { mutations.updateField.mutate({ field: 'cover', value: bg, oldValue: (issue as any)?.cover ?? null }); closeSub(); close(); }}
+                      onRemove={() => { mutations.updateField.mutate({ field: 'cover', value: null, oldValue: (issue as any)?.cover ?? null }); closeSub(); close(); }}
+                      onClose={() => { closeSub(); close(); }}
+                    />
+                  )}
+                </SubmenuItem>
+                <KanbanMenuItem variant="plain" onClick={() => { catalystToast.info('Coming soon'); close(); }}>Convert to Subtask</KanbanMenuItem>
+                <KanbanMenuItem variant="plain" onClick={() => { close(); if (issue?.issue_key) setShowCloneDialog(true); }}>Clone</KanbanMenuItem>
+                <KanbanMenuItem variant="plain" onClick={() => { close(); setShowMoveDialog(true); }}>Move</KanbanMenuItem>
+                <KanbanMenuItem variant="plain" onClick={() => { close(); if (issue?.issue_key) setShowArchiveDialog(true); }}>Archive</KanbanMenuItem>
+                <div style={{ height: 1, background: BORDER, margin: '4px 0' }} />
+                <button
+                  role="menuitem"
+                  onClick={() => { close(); setShowDeleteDialog(true); }}
+                  style={{
+                    width: '100%', height: 32, padding: '0 12px', display: 'flex', alignItems: 'center',
+                    border: 'none', background: 'transparent',
+                    color: token('color.text.danger', 'var(--ds-text-danger)'),
+                    fontSize: 'var(--ds-font-size-400)', fontFamily: 'inherit', cursor: 'pointer', textAlign: 'left',
+                  }}
+                  onMouseEnter={(e) => { e.currentTarget.style.background = token('color.background.danger', 'var(--ds-background-danger)'); }}
+                  onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
+                >
+                  Delete {(effectiveType || 'item').toLowerCase()}
+                </button>
+              </>
+            );
+          }}
+        </PortalMenu>
         <IconButton ariaLabel="Expand panel" onClick={handleExpandFullPage}>
           <MaximizeIcon label="" color="currentColor" />
         </IconButton>
@@ -465,6 +536,19 @@ function PhIssuePanelBody({
               projectKey={issue?.project_key || projectKey}
             />
 
+            {/* Dependencies — same canonical section the full detail views mount.
+                Without it the "+" → Add Dependency quick action fires
+                emitAddDependency() into a bus with no listener (dead on
+                Timeline side panel). Mounting it here registers the listener
+                and shows the blocks / is-blocked-by toolbar, matching Linked
+                work items. */}
+            {issue?.issue_key && (
+              <DependenciesSection
+                issueKey={issue.issue_key}
+                projectKey={issue.project_key || projectKey}
+              />
+            )}
+
             {/* Story-scoped AI-generated test cases — same section that lives
                 on CatalystViewStory. Sits below Linked work items so the
                 side-panel order (Attachments → Subtasks → Linked → Tests)
@@ -516,27 +600,16 @@ function PhIssuePanelBody({
         )}
       </div>
 
-      {/* More-menu portal */}
-      {moreOpen && morePos && createPortal(
-        <div
-          ref={moreMenuRef}
-          role="menu"
-          style={{
-            position: 'fixed', top: morePos.top, right: morePos.right, zIndex: 10010,
-            minWidth: 200, background: 'var(--ds-surface-overlay)',
-            border: `1px solid ${BORDER}`, borderRadius: 4,
-            boxShadow: 'var(--ds-shadow-overlay)',
-            padding: '4px 0',
-          }}
-        >
-          <MenuItem label="Print" onClick={() => { setMoreOpen(false); window.print(); }} />
-          <MenuItem label="Clone" onClick={() => { setMoreOpen(false); if (issue?.issue_key) setShowCloneDialog(true); }} />
-          <MenuItem label="Move to project…" onClick={() => { setMoreOpen(false); setShowMoveDialog(true); }} />
-          <MenuItem label="Archive" onClick={() => { setMoreOpen(false); if (issue?.issue_key) setShowArchiveDialog(true); }} />
-          <div style={{ height: 1, background: BORDER, margin: '4px 0' }} />
-          <MenuItem label={`Delete ${(effectiveType || 'item').toLowerCase()}`} danger onClick={() => { setMoreOpen(false); setShowDeleteDialog(true); }} />
-        </div>,
-        document.body,
+      {showFlagModal && issue?.id && issue?.issue_key && (
+        <AddFlagModal
+          issueId={issue.id}
+          issueKey={issue.issue_key}
+          issueTitle={issue.summary}
+          issueType={issue.issue_type}
+          flagged={!!(issue as any).is_flagged}
+          tableName="ph_issues"
+          onClose={() => setShowFlagModal(false)}
+        />
       )}
 
       <ConfirmCloneDialog
@@ -544,6 +617,12 @@ function PhIssuePanelBody({
         onClose={() => setShowCloneDialog(false)}
         issueKey={issue?.issue_key}
         issueSummary={issue?.summary}
+        issueId={issue?.id}
+        projectId={projectId}
+        currentAssigneeId={issue?.assignee_account_id}
+        currentAssigneeName={issue?.assignee_display_name}
+        currentReporterId={issue?.reporter_account_id}
+        currentReporterName={issue?.reporter_display_name}
         onConfirm={handleClone}
       />
       <ConfirmArchiveDialog

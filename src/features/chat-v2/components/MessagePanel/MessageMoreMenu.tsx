@@ -1,12 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import {
-  BellOffIcon,
   ChevronRightIcon,
-  ConnectAppsIcon,
   CopyLinkIcon,
   CopyTextIcon,
-  ListAddIcon,
   MarkUnreadIcon,
   OrganizeIcon,
   PencilEditIcon,
@@ -26,7 +23,6 @@ interface MessageMoreMenuProps {
   onCopyLink: () => void;
   onCopyMessage: () => void;
   onTogglePin: () => void;
-  onAddToList: () => void;
   onDelete: () => void;
   onClose: () => void;
 }
@@ -44,7 +40,6 @@ export function MessageMoreMenu({
   onCopyLink,
   onCopyMessage,
   onTogglePin,
-  onAddToList,
   onDelete,
   onClose,
 }: MessageMoreMenuProps) {
@@ -63,10 +58,27 @@ export function MessageMoreMenu({
       onClose();
     };
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') { e.stopPropagation(); onClose(); }
+      if (e.key === 'Escape') { e.stopPropagation(); onClose(); return; }
+      if (e.key !== 'ArrowDown' && e.key !== 'ArrowUp' && e.key !== 'Home' && e.key !== 'End') return;
+      const root = menuRef.current;
+      if (!root) return;
+      const items = Array.from(root.querySelectorAll<HTMLButtonElement>('[role="menuitem"]'));
+      if (items.length === 0) return;
+      e.preventDefault();
+      const current = items.indexOf(document.activeElement as HTMLButtonElement);
+      const next =
+        e.key === 'Home' ? 0
+        : e.key === 'End' ? items.length - 1
+        : e.key === 'ArrowDown' ? (current + 1) % items.length
+        : (current - 1 + items.length) % items.length;
+      items[next]?.focus();
     };
     document.addEventListener('mousedown', onDown);
     document.addEventListener('keydown', onKey, true);
+    // Move focus into the menu so arrow keys work immediately.
+    requestAnimationFrame(() => {
+      menuRef.current?.querySelector<HTMLButtonElement>('[role="menuitem"]')?.focus();
+    });
     return () => {
       document.removeEventListener('mousedown', onDown);
       document.removeEventListener('keydown', onKey, true);
@@ -125,11 +137,6 @@ export function MessageMoreMenu({
         label="Remind me"
         onClick={() => { onRemindMe(); onClose(); }}
       />
-      <Item
-        icon={<BellOffIcon size={16} />}
-        label="Turn off notifications for replies"
-        onClick={() => { /* TODO */ onClose(); }}
-      />
       <Divider />
       <Item
         icon={<CopyLinkIcon size={16} />}
@@ -150,13 +157,9 @@ export function MessageMoreMenu({
         label="Organize"
         trailingArrow
         active={organizeOpen}
+        ariaHasPopup
+        ariaExpanded={organizeOpen}
         onClick={() => setOrganizeOpen(v => !v)}
-      />
-      <Item
-        icon={<ConnectAppsIcon size={16} />}
-        label="Connect to apps"
-        trailingArrow
-        onClick={() => { /* TODO */ }}
       />
       {canDelete && (
         <>
@@ -175,7 +178,6 @@ export function MessageMoreMenu({
           anchorRect={organizeRef.current?.getBoundingClientRect() ?? null}
           isPinned={isPinned}
           onPin={() => { onTogglePin(); setOrganizeOpen(false); onClose(); }}
-          onAddToList={() => { onAddToList(); setOrganizeOpen(false); onClose(); }}
           onClose={() => setOrganizeOpen(false)}
         />
       )}
@@ -191,13 +193,17 @@ const Item = React.forwardRef<HTMLButtonElement, {
   trailingArrow?: boolean;
   active?: boolean;
   danger?: boolean;
+  ariaHasPopup?: boolean;
+  ariaExpanded?: boolean;
   onClick: () => void;
-}>(function Item({ icon, label, shortcut, trailingArrow, active, danger, onClick }, ref) {
+}>(function Item({ icon, label, shortcut, trailingArrow, active, danger, ariaHasPopup, ariaExpanded, onClick }, ref) {
   return (
     <button
       ref={ref}
       type="button"
       role="menuitem"
+      aria-haspopup={ariaHasPopup ? 'menu' : undefined}
+      aria-expanded={ariaHasPopup ? ariaExpanded : undefined}
       onClick={onClick}
       style={{
         display: 'flex',
@@ -255,13 +261,11 @@ function OrganizeSubmenu({
   anchorRect,
   isPinned,
   onPin,
-  onAddToList,
   onClose,
 }: {
   anchorRect: DOMRect | null;
   isPinned: boolean;
   onPin: () => void;
-  onAddToList: () => void;
   onClose: () => void;
 }) {
   const popRef = useRef<HTMLDivElement>(null);
@@ -297,12 +301,6 @@ function OrganizeSubmenu({
         label={isPinned ? 'Unpin from conversation' : 'Pin to this conversation'}
         shortcut="P"
         onClick={onPin}
-      />
-      <Item
-        icon={<ListAddIcon size={16} />}
-        label="Add to list…"
-        shortcut="V"
-        onClick={onAddToList}
       />
     </div>,
     document.body,

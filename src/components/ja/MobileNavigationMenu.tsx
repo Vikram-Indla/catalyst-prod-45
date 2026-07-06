@@ -18,7 +18,7 @@ import catalystWordmark3Dark from "@/assets/catalyst-wordmark-3-dark.svg";
 /* Hub items — canonical list matching CatalystHeader */
 const HUB_ITEMS = [
   { label: "Home", path: "/for-you", moduleKey: "home", featureFlagKey: null as string | null, requiresEnterpriseAccess: false, visibleToProductOwner: true },
-  { label: "Strategy", path: "/strategyhub", moduleKey: "enterprise", featureFlagKey: "strategy_hub", requiresEnterpriseAccess: true, visibleToProductOwner: true },
+  { label: "STRATA", path: "/strata", moduleKey: "enterprise", featureFlagKey: "strategy_hub", requiresEnterpriseAccess: true, visibleToProductOwner: true },
   { label: "Products", path: "/producthub", moduleKey: "product", featureFlagKey: "product_hub", requiresEnterpriseAccess: false, visibleToProductOwner: true },
   { label: "Projects", path: "/project-hub", moduleKey: "workhub", featureFlagKey: "project_hub", requiresEnterpriseAccess: false, visibleToProductOwner: true },
   { label: "Releases", path: "/release-hub/overview", moduleKey: "releases", featureFlagKey: "release_hub", requiresEnterpriseAccess: false, visibleToProductOwner: false },

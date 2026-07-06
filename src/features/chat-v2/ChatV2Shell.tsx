@@ -54,7 +54,9 @@ import type { SummarizePreset } from './components/Summarize/SummarizeMenu';
 import { useRecentSearches } from './hooks/useRecentSearches';
 import { useActivityFeed, type ActivityItem } from './hooks/useActivityFeed';
 import { useResizableSplit } from './hooks/useResizableSplit';
+import { useMediaQuery } from './hooks/useMediaQuery';
 import { useChatTheme } from './hooks/useChatTheme';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { installActivityHoverTracker } from './lib/activityHoverTracker';
 import './tokens.css';
 
@@ -148,6 +150,13 @@ function ChatV2Inner() {
   const { user } = useAuth();
   const selfProfile = useSelfProfile();
   const { theme } = useChatTheme();
+  // RTL mirroring: when the user's display language is Arabic, mirror the whole
+  // chat shell. dir="rtl" flips the CSS grid named-area layout (nav rail +
+  // sidebar move to the right, panel to the left), reverses flex rows, and
+  // right-aligns text automatically. English (the default) stays dir="ltr" —
+  // byte-identical, zero regression. Per-message text already rides dir="auto".
+  const { displayLang } = useLanguage();
+  const shellDir: 'rtl' | 'ltr' = displayLang === 'ar' ? 'rtl' : 'ltr';
   const createChannelMut = useCreateChannel();
   const startDmMut = useStartDm();
   const summarizeMut = useChatSummarize();
@@ -179,7 +188,7 @@ function ChatV2Inner() {
   const unreadDMs = useMemo(
     () =>
       conversations.filter(
-        c => (c.kind === 'dm' || c.kind === 'group_dm') && c.unreadCount > 0,
+        c => (c.kind === 'dm' || c.kind === 'group_dm') && c.unreadCount > 0 && !c.isMuted,
       ).length,
     [conversations],
   );
@@ -188,6 +197,11 @@ function ChatV2Inner() {
     () => conversations.find(c => c.id === activeConversationId),
     [conversations, activeConversationId],
   );
+
+  // Unread watermark snapshot for the "New messages" divider. Set on select
+  // (before mark-read), cleared when switching to a conversation with no
+  // unreads. Keyed by conversation so stale markers never leak across.
+  const [unreadMarker, setUnreadMarker] = useState<{ convId: string; since: string } | null>(null);
 
   const { messages: activeMessages } = useMessages(activeConversationId ?? null);
   const { data: activeMembers } = useConversationMembers(activeConversationId ?? null);
@@ -199,6 +213,15 @@ function ChatV2Inner() {
 
   const handleSelect = (id: string) => {
     setActiveConversationId(id);
+    // Capture the unread watermark BEFORE mark-read resets last_read_at —
+    // the "New messages" divider anchors to this snapshot until the user
+    // switches conversations.
+    const selected = conversations.find(c => c.id === id);
+    setUnreadMarker(
+      selected && selected.unreadCount > 0
+        ? { convId: id, since: selected.lastReadAt ?? '1970-01-01T00:00:00.000Z' }
+        : null,
+    );
     // Mark read on open so the unread red dot clears immediately. Best-effort:
     // failure must never block opening the conversation.
     if (user?.id) {
@@ -517,12 +540,38 @@ function ChatV2Inner() {
 
   // Layout — nav rail + (resizable) sidebar + splitter + main panel + (optional thread/search/summary column).
   // Sidebar holds Sidebar / ActivityPanel / LaterPanel based on active view.
-  const gridTemplateColumns = showRightColumn
-    ? `${navRailW}px ${sidebarWidth}px 5px 1fr minmax(360px, 420px)`
-    : `${navRailW}px ${sidebarWidth}px 5px 1fr`;
-  const gridTemplateAreas = showRightColumn
-    ? '"navrail sidebar splitter panel thread"'
-    : '"navrail sidebar splitter panel"';
+  //
+  // Narrow (<1024px) — Slack-class single-column stacking: exactly ONE content
+  // column renders next to the nav rail. Priority: right column (thread /
+  // search / summary) → main panel (a detail is selected) → sidebar list.
+  // The splitter never renders when narrow. Desktop (>=1024px) is untouched.
+  const isNarrow = useMediaQuery('(max-width: 1023px)');
+  // "Something is selected" per view — determines list vs detail on narrow.
+  const narrowHasDetail =
+    inDraftsMode ||
+    showNewMessagePanel ||
+    (inActivityMode
+      ? !!(selectedActivityId && activeConversation)
+      : inLaterMode
+        ? !!(selectedLaterId && activeConversation)
+        : !!activeConversationId);
+  const narrowShowsRight = isNarrow && showRightColumn;
+  const narrowShowsPanel = isNarrow && !narrowShowsRight && narrowHasDetail;
+  const narrowShowsSidebar = isNarrow && !narrowShowsRight && !narrowShowsPanel;
+  const gridTemplateColumns = isNarrow
+    ? `${navRailW}px 1fr`
+    : showRightColumn
+      ? `${navRailW}px ${sidebarWidth}px 5px 1fr minmax(360px, 420px)`
+      : `${navRailW}px ${sidebarWidth}px 5px 1fr`;
+  const gridTemplateAreas = isNarrow
+    ? narrowShowsRight
+      ? '"navrail thread"'
+      : narrowShowsPanel
+        ? '"navrail panel"'
+        : '"navrail sidebar"'
+    : showRightColumn
+      ? '"navrail sidebar splitter panel thread"'
+      : '"navrail sidebar splitter panel"';
 
   const handleSelectSearchHit = (hit: { id: string; conversationId: string; parentId?: string | null }) => {
     setActiveConversationId(hit.conversationId);
@@ -634,7 +683,12 @@ function ChatV2Inner() {
           />
         );
       }
-      return <EmptyPanel />;
+      return (
+        <EmptyPanel
+          onNewMessage={handleOpenNewMessagePanel}
+          onNewChannel={() => setShowCreateChannelModal(true)}
+        />
+      );
     }
     if (inLaterMode) {
       if (selectedLaterId && activeConversation) {
@@ -668,7 +722,12 @@ function ChatV2Inner() {
           />
         );
       }
-      return <EmptyPanel />;
+      return (
+        <EmptyPanel
+          onNewMessage={handleOpenNewMessagePanel}
+          onNewChannel={() => setShowCreateChannelModal(true)}
+        />
+      );
     }
     if (showNewMessagePanel) {
       return (
@@ -687,6 +746,7 @@ function ChatV2Inner() {
           conversation={activeConversation}
           onOpenThread={shell.openThread}
           onClose={() => setActiveConversationId(undefined)}
+          unreadSince={unreadMarker?.convId === activeConversation.id ? unreadMarker.since : null}
           initialJumpMessageId={activityJumpMessageId}
           onSummarize={handleSummarizePreset}
           onOpenForwardSource={(conversationId, messageId) =>
@@ -706,7 +766,12 @@ function ChatV2Inner() {
         />
       );
     }
-    return <EmptyPanel />;
+    return (
+      <EmptyPanel
+        onNewMessage={handleOpenNewMessagePanel}
+        onNewChannel={() => setShowCreateChannelModal(true)}
+      />
+    );
   };
 
   // Right column content. Priority: Search → Summary → Thread (non-wide-mode).
@@ -815,6 +880,7 @@ function ChatV2Inner() {
       <div
         className="cv2-chat-shell"
         data-cv2-theme={theme}
+        dir={shellDir}
         style={{
           position: 'relative',
           display: 'grid',
@@ -836,10 +902,12 @@ function ChatV2Inner() {
           unreadActivity={unreadActivity}
           collapsed={navRailCollapsed}
         />
-        {renderSidebarSlot()}
-        <SidebarSplitter onMouseDown={startSidebarResize} isResizing={sidebarResizing} />
-        {renderMainPanel()}
-        {renderRightColumn()}
+        {(!isNarrow || narrowShowsSidebar) && renderSidebarSlot()}
+        {!isNarrow && (
+          <SidebarSplitter onMouseDown={startSidebarResize} isResizing={sidebarResizing} />
+        )}
+        {(!isNarrow || narrowShowsPanel) && renderMainPanel()}
+        {(!isNarrow || narrowShowsRight) && renderRightColumn()}
         <MinimizeButton onClick={handleMinimize} />
       </div>
     </>

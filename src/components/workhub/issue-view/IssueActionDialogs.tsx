@@ -11,6 +11,7 @@ import { X, Search, Loader2, AlertTriangle, Flag, Copy, ArrowRight, Archive, Tra
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
+import { StatusLozenge } from '@/components/shared/StatusLozenge/StatusLozenge';
 import { catalystToast } from '@/lib/catalystToast';
 import { STATUS_OPTION_GROUPS } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/constants';
 import { resolveStatusCategory } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/helpers';
@@ -97,6 +98,54 @@ function hasCanonicalFlagValue(value: unknown): boolean {
   if (typeof value === 'string') return value.trim().length > 0;
   if (Array.isArray(value)) return value.length > 0;
   return typeof value === 'object';
+}
+
+/**
+ * Paired activity write for a flag toggle. Inserts one ph_comments row
+ * (surfaces in Comments + All tabs of ActivityFeed) and one ph_activity_log
+ * row (surfaces in History + All tabs). Body is the raw user note — the
+ * renderer suppresses the body line when it is empty.
+ *
+ * Failures are swallowed by design: the primary flag write on ph_issues has
+ * already succeeded, and we do not want a missing activity row to fail the
+ * user-visible action. Console.warn keeps the signal for local debugging.
+ */
+export async function writeFlagActivity({
+  workItemId,
+  newFlagged,
+  note,
+}: {
+  workItemId: string;
+  newFlagged: boolean;
+  note: string;
+}): Promise<void> {
+  try {
+    const { data: { user } } = await supabase.auth.getUser();
+    const userId = user?.id ?? null;
+    const body = (note ?? '').trim();
+
+    const commentInsert = supabase.from('ph_comments').insert({
+      work_item_id: workItemId,
+      author_id: userId,
+      body,
+      comment_type: newFlagged ? 'flag_added' : 'flag_removed',
+    } as any);
+
+    const activityInsert = supabase.from('ph_activity_log').insert({
+      work_item_id: workItemId,
+      ...(userId ? { user_id: userId } : {}),
+      action: 'field_updated',
+      field_name: 'Flagged',
+      old_value: newFlagged ? 'None' : FLAG_VALUE,
+      new_value: newFlagged ? FLAG_VALUE : 'None',
+    } as any);
+
+    const [commentRes, activityRes] = await Promise.all([commentInsert, activityInsert]);
+    if (commentRes.error) console.warn('Flag comment insert skipped:', commentRes.error.message);
+    if (activityRes.error) console.warn('Flag activity insert skipped:', activityRes.error.message);
+  } catch (e) {
+    console.warn('Flag activity write skipped:', e);
+  }
 }
 
 export function isFlagged(item: any): boolean {
@@ -186,27 +235,14 @@ export function FlagPopover({ issueId, issueKey, flagged, anchorRef, onClose, ta
       }).eq('issue_key', issueKey);
       if (error) throw error;
 
-      // Build Jira-format comment text
-      const commentNote = newFlagged
-        ? normalizeNote(note, DEFAULT_ADD_FLAG_NOTE)
-        : normalizeNote(note, DEFAULT_REMOVE_FLAG_NOTE);
-      const commentText = newFlagged
-        ? `:flag_on: Flag added\n${commentNote}`
-        : `:flag_off: Flag removed\n${commentNote}`;
-
-      try {
-        const { error: activityError } = await supabase.from('activity_logs').insert({
-          entity_id: issueId, entity_type: 'ph_issue',
-          action: newFlagged ? 'flag_added' : 'flag_removed',
-          after_json: { is_flagged: newFlagged, flag_reason: nextFlagReason, comment: commentText },
-        });
-
-        if (activityError) {
-          console.warn('Flag activity log skipped:', activityError.message);
-        }
-      } catch (activityError) {
-        console.warn('Flag activity log skipped:', activityError);
-      }
+      // Paired activity write: ph_comments + ph_activity_log. Both are read
+      // by useWorkItemActivity → ActivityFeed. Body is the raw optional note
+      // (may be empty string — renderer suppresses the body line then).
+      await writeFlagActivity({
+        workItemId: issueId,
+        newFlagged,
+        note,
+      });
 
       return { newFlagged, nextFlagReason };
     },
@@ -308,24 +344,13 @@ export function AddFlagModal({
       if (error) throw error;
 
       if (tableName === 'ph_issues') {
-        // Activity log only wired for ph_issues today — other tables have their
-        // own activity streams if any.
-        const commentNote = newFlagged
-          ? normalizeNote(noteText, DEFAULT_ADD_FLAG_NOTE)
-          : normalizeNote(noteText, DEFAULT_REMOVE_FLAG_NOTE);
-        const commentText = newFlagged
-          ? `:flag_on: Flag added\n${commentNote}`
-          : `:flag_off: Flag removed\n${commentNote}`;
-
-        try {
-          await supabase.from('activity_logs').insert({
-            entity_id: issueId, entity_type: 'ph_issue',
-            action: newFlagged ? 'flag_added' : 'flag_removed',
-            after_json: { is_flagged: newFlagged, flag_reason: nextFlagReason, comment: commentText },
-          });
-        } catch (e) {
-          console.warn('Flag activity log skipped:', e);
-        }
+        // Paired activity write: ph_comments + ph_activity_log. Both are
+        // read by useWorkItemActivity → ActivityFeed.
+        await writeFlagActivity({
+          workItemId: issueId,
+          newFlagged,
+          note: noteText,
+        });
       }
 
       return { newFlagged, nextFlagReason };
@@ -688,7 +713,7 @@ export function MoveWizard({ issueId, issueKey, item, projectKey, onClose }: {
             <div>
               <label style={labelStyle}>Select New Status</label>
               <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12 }}>
-                <span style={{ padding: '4px 10px', borderRadius: 3, background: 'var(--ds-background-warning)', border: '1px solid var(--ds-border-warning)', fontSize: 'var(--ds-font-size-200)', fontWeight: 700, textTransform: 'uppercase' as const }}>{item?.status}</span>
+                <StatusLozenge status={item?.status || 'Unknown'} size="sm" />
                 <span style={{ color: 'var(--ds-text-subtlest, var(--cp-text-secondary))' }}>→</span>
                 <select value={newStatus} onChange={e => setNewStatus(e.target.value)} style={{ ...inputStyle, width: 'auto', minWidth: 180, cursor: 'pointer' }}>
                   {moveStatusGroups.map(g => (

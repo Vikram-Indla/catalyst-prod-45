@@ -84,6 +84,7 @@ export function SuggestChildIssuesDialog({
       setCreating(false);
       return;
     }
+    let cancelled = false;
     (async () => {
       setLoading(true);
       setError(null);
@@ -96,6 +97,7 @@ export function SuggestChildIssuesDialog({
             parent_description: parentDescription || '',
           },
         });
+        if (cancelled) return;
         if (fnError) throw fnError;
         if (!data || (typeof data === 'object' && 'error' in data && data.error)) {
           throw new Error((data as { error?: string })?.error || 'AI gateway error');
@@ -105,11 +107,15 @@ export function SuggestChildIssuesDialog({
         // Default: pre-check all
         setChecked(new Set(list.map((_, i) => i)));
       } catch (e) {
+        if (cancelled) return;
         setError(e instanceof Error ? e.message : 'AI features temporarily unavailable. Try again.');
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
     })();
+    return () => {
+      cancelled = true;
+    };
   }, [isOpen, issueType, issueSummary, parentDescription]);
 
   // Esc to close (CLAUDE.md L1 pattern).

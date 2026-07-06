@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import { ConfirmDeleteDialog } from '@/components/catalyst-detail-views/shared/ConfirmDeleteDialog';
 import { useNavigate } from 'react-router-dom';
 import Button from '@atlaskit/button/standard-button';
+import { IconButton } from '@atlaskit/button/new';
+import EditIcon from '@atlaskit/icon/core/edit';
+import Tooltip from '@atlaskit/tooltip';
 import Spinner from '@atlaskit/spinner';
 import Textfield from '@atlaskit/textfield';
 import { PageHeader } from '@/components/ads/PageHeader';
@@ -242,8 +245,18 @@ export default function TestPrioritiesPage() {
                       <Button appearance="subtle" spacing="compact" onClick={() => setEditingId(null)}>Cancel</Button>
                     </div>
                   ) : (
-                    <div style={{ display: 'flex', gap: 4 }}>
-                      <Button appearance="subtle" spacing="compact" onClick={() => startEdit(p)}>Edit</Button>
+                    <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
+                      {/* D063: edit as an @atlaskit IconButton; delete as a Button
+                          that opens the confirm dialog (no plain-text links). */}
+                      <Tooltip content="Edit priority">
+                        <IconButton
+                          icon={EditIcon}
+                          label="Edit priority"
+                          appearance="subtle"
+                          spacing="compact"
+                          onClick={() => startEdit(p)}
+                        />
+                      </Tooltip>
                       <Button appearance="subtle" spacing="compact" onClick={() => setDeleteTarget(p)}>Delete</Button>
                     </div>
                   )}

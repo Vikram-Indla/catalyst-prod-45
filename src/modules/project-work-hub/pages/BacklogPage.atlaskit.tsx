@@ -34,7 +34,6 @@ import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
 import { useQueryClient, useMutation, useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/lib/auth';
-import { useCreateCatyConversation } from '@/hooks/useCatyAI';
 
 import EmptyState from '@atlaskit/empty-state';
 import { SectionMessage } from '@/components/ads';
@@ -1077,9 +1076,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
   // into the same downstream filter logic so the column picker, the table
   // columns, and the URL-cols cleanup all behave consistently.
   const effectiveAllowedColumnIds = dataSource?.allowedColumnIds ?? allowedColumnIds;
-  // May 12, 2026 (Phase 1.3): CATY hooks for Ask CATY toolbar button.
   const { user } = useAuth();
-  const createConversation = useCreateCatyConversation();
 
   // Apr 27, 2026 (L50): canonical Project Hub page-title pattern is
   // `{Project Name} {Hub Function}` — e.g. "Senaei BAU Backlog". Falls
@@ -2684,11 +2681,10 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
       navigate(`/testhub/repository?case=${it.id}`);
       return;
     }
-    /* 2026-07-03 (P0-S5): /testhub/defects/:id was never registered — the
-       old navigate() here hard-404'd. tm_defects has no detail surface yet
-       (P1 slice); keep the user on the list instead of a dead URL. */
+    /* P1-S13: canonical defect detail now exists (CatalystViewTmDefect,
+       routed at /testhub/defects/:defectKey) — navigate there. */
     if (dataSource?.entityKind === 'defect') {
-      navigate(`/testhub/defects`);
+      navigate(`/testhub/defects/${it.key ?? it.id}`);
       return;
     }
     writeTicketOrigin({
@@ -2737,8 +2733,8 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
       return;
     }
     if (dataSource?.entityKind === 'defect') {
-      // P0-S5: no registered defect detail route — stay on the list (see openDetail).
-      navigate(`/testhub/defects`);
+      // P1-S13: canonical defect detail now exists — see openDetail.
+      navigate(`/testhub/defects/${it.key ?? it.id}`);
       return;
     }
     const sourceIsBiz = dataSource && (it as any).source === BIZ_SOURCE;

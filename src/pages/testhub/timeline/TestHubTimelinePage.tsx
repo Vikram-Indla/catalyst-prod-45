@@ -94,6 +94,7 @@ export default function TestHubTimelinePage() {
       enableInlineCreate={false}
       enableCreateEpicRow={false}
       enableEmptyRowAdd={false}
+      enableInlineEmptyOverlay={false}
       locatedKey={locateKey ?? undefined}
     />
   );

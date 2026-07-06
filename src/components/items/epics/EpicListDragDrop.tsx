@@ -60,18 +60,22 @@ export function EpicListDragDrop({
       fromRank: number;
       toRank: number;
     }) => {
-      const updates = reorderedEpics.map((epic, index) => ({
-        id: epic.id,
-        global_rank: index + 1
-      }));
+      // Only the epics between the source and destination positions change
+      // rank on a drag — update just that range instead of renumbering the
+      // whole list (N writes -> drag-distance writes). fromRank/toRank are
+      // 1-based; convert to 0-based indices into reorderedEpics.
+      const startIndex = Math.min(fromRank, toRank) - 1;
+      const endIndex = Math.max(fromRank, toRank) - 1;
 
-      // Update all ranks in parallel for much faster performance
-      const updatePromises = updates.map(update =>
-        supabase
-          .from('epics')
-          .update({ global_rank: update.global_rank })
-          .eq('id', update.id)
-      );
+      const updatePromises = [];
+      for (let i = startIndex; i <= endIndex; i++) {
+        updatePromises.push(
+          supabase
+            .from('epics')
+            .update({ global_rank: i + 1 })
+            .eq('id', reorderedEpics[i].id)
+        );
+      }
 
       const results = await Promise.all(updatePromises);
       

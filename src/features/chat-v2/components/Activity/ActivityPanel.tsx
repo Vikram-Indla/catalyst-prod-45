@@ -395,12 +395,11 @@ export function ActivityPanel({ onSelectActivity, selectedItemId, showRightBorde
       {moreAnchor && (
         <ActivityMoreMenu
           anchorRect={moreAnchor.rect}
-          canEdit={moreAnchor.item.authorId === user?.id}
-          onEdit={() => { /* edit lives in MessagePanel; just close */ }}
+          canEdit={false /* editing happens in the message panel — activity rows only navigate */}
+          onEdit={() => {}}
           onMarkUnread={() => { void handleMarkUnread(moreAnchor.item); }}
           onRemindMe={iso => handleRemindMe(moreAnchor.item, iso)}
           onRemindMeCustom={() => setCustomReminderItem(moreAnchor.item)}
-          onTurnOffReplies={() => { /* TODO turn off replies for this thread */ }}
           onCopyLink={() => handleCopyLink(moreAnchor.item)}
           onCopyMessage={() => handleCopyMessage(moreAnchor.item)}
           onClose={() => setMoreAnchor(null)}

@@ -23,6 +23,7 @@ import { catalystFlag } from '@/lib/catalystFlag';
 import { ShareFeedbackModal } from '@/components/releases/ShareFeedbackModal';
 import { EditableSectionName } from '@/components/releases/detail/EditableSectionName';
 import { WorkItemsSection } from '@/components/releases/detail/WorkItemsSection';
+import { QualityGatesSection } from '@/components/releases/detail/QualityGatesSection';
 import { ReleaseSidePanel } from '@/components/releases/detail/ReleaseSidePanel';
 import { Description } from '@/components/catalyst-detail-views/shared/sections/Description';
 import type { AdfDoc } from '@/components/catalyst-detail-views/shared/sections/Description';
@@ -494,6 +495,8 @@ export function ReleaseDetailPage({
         onOpenItem={(it) => { setHealthOpen(false); setSelectedItem(it); }}
         config={config}
       />
+
+      <QualityGatesSection releaseId={release.id} />
 
       <ShareFeedbackModal isOpen={isFeedbackOpen} onClose={() => setIsFeedbackOpen(false)} />
       </div>

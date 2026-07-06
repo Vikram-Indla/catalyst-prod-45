@@ -470,8 +470,10 @@ export function ActiveInitiativesWidget() {
     return { rangeStart: rs, totalMs: tm, todayPct: tp };
   }, [sections]);
 
-  const totalBrs = sections?.reduce((a, s) => a + s.brs.length, 0) ?? 0;
-  const blockedCount = sections?.flatMap(s => s.brs).filter(b => b.status === 'Blocked').length ?? 0;
+  const { totalBrs, blockedCount } = useMemo(() => ({
+    totalBrs: sections?.reduce((a, s) => a + s.brs.length, 0) ?? 0,
+    blockedCount: sections?.flatMap(s => s.brs).filter(b => b.status === 'Blocked').length ?? 0,
+  }), [sections]);
 
   const LABEL_STYLE: React.CSSProperties = {
     fontSize: 'var(--ds-font-size-100)',

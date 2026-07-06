@@ -65,6 +65,7 @@ export function Resource360Drawer({ resourceId, onClose }: Resource360DrawerProp
         )}
         role="dialog"
         aria-modal="true"
+        aria-label="Resource 360 Drawer"
       >
         {/* Close Button */}
         <button

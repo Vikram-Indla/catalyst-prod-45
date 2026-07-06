@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useRef, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { useProjects } from '@/hooks/test-management/useProjects';
+import { useTestHubProject } from '@/hooks/test-management/useTestHubProject';
 import { WorkItemTypeIcon } from '@/components/icons';
 import {
   useFolderTree,
@@ -22,8 +22,11 @@ import { AIGenerateTestCasesDialog } from '@/components/testhub/AIGenerateTestCa
 import type { GeneratedTestCase } from '@/hooks/test-management/useAIGeneration';
 import { catalystToast } from '@/lib/catalystToast';
 import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
-import { JiraTable } from '@/components/shared/JiraTable';
+import { JiraTable, makeKeyCell, makeSummaryCell } from '@/components/shared/JiraTable';
 import type { Column } from '@/components/shared/JiraTable/types';
+import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from '@/components/ui/resizable';
+import type { ImperativePanelHandle } from 'react-resizable-panels';
+import { PanelLeftClose, PanelLeftOpen } from '@/lib/atlaskit-icons';
 import ModalDialog, { ModalBody, ModalFooter, ModalHeader, ModalTitle } from '@atlaskit/modal-dialog';
 import DropdownMenu, { DropdownItem, DropdownItemGroup } from '@atlaskit/dropdown-menu';
 import Spinner from '@atlaskit/spinner';
@@ -40,10 +43,19 @@ import {
   Edit2,
 } from '@/lib/atlaskit-icons';
 import type { TMFolder, TMTestCase, CaseStatus, TMCasePriority, CaseFilters } from '@/types/test-management';
-import { CaseDrawer } from './CaseDrawer';
+import { formatTestKey } from '@/lib/test-management/formatTestKey';
+import { useCaseCoverage } from '@/hooks/test-management/useCaseCoverage';
+import type { CoverageVerdict, CaseRunStatus } from '@/hooks/test-management/useCaseCoverage';
+import { AddToCycleSetSheet } from './AddToCycleSetSheet';
+import type { LinkTarget } from './AddToCycleSetSheet';
+import { useCaseStatusConfig } from '@/hooks/test-management/useCaseStatusConfig';
 // D4 (2026-06-27) — view/edit a case via the canonical CatalystViewBase shell
-// (entityKind='test_case'). Create still uses CaseDrawer (coexist).
+// (entityKind='test_case'). Router wires query params to detail panel.
 import CatalystDetailRouter from '@/components/catalyst-detail-views/CatalystDetailRouter';
+// Phase C, Wave 2 — "+ Create case" opens the canonical CreateStoryModal
+// (defaultWorkType='Test Case' → tm_test_cases), unifying all TestHub CREATE
+// flows through the single canonical modal.
+import { CreateStoryModal } from '@/components/workhub/create-story/CreateStoryModal';
 
 // ── Folder modal (ADS modal-dialog) ──────────────────────────────────────────
 
@@ -505,12 +517,34 @@ function FolderTreeView({
 
 // ── Status / Priority cells ───────────────────────────────────────────────────
 
-function CaseStatusPill({ status }: { status: CaseStatus }) {
-  const map: Record<CaseStatus, { appearance: 'success' | 'moved' | 'removed' | 'inprogress' | 'default'; label: string }> = {
-    APPROVED:   { appearance: 'success',  label: 'Approved' },
-    REVIEW:     { appearance: 'moved',    label: 'Review' },
-    DEPRECATED: { appearance: 'removed',  label: 'Deprecated' },
-    DRAFT:      { appearance: 'default',  label: 'Draft' },
+// Maps the UI status vocabulary (DRAFT/REVIEW/APPROVED/DEPRECATED) back to the
+// tm_case_status enum key used by tm_case_status_config (S6b).
+const UI_STATUS_TO_KEY: Record<string, string> = {
+  DRAFT: 'draft', REVIEW: 'ready', APPROVED: 'approved', DEPRECATED: 'deprecated',
+  draft: 'draft', ready: 'ready', approved: 'approved', deprecated: 'deprecated',
+};
+
+function CaseStatusPill({ status, override }: {
+  status: CaseStatus;
+  // S6b: when the project has a saved workflow, the label + ADS category come
+  // from tm_case_status_config; otherwise this is undefined and the hardcoded
+  // canonical map below is used verbatim (unconfigured = unchanged behaviour).
+  override?: { label: string; appearance: 'success' | 'removed' | 'inprogress' | 'default' };
+}) {
+  if (override) return <Lozenge appearance={override.appearance}>{override.label}</Lozenge>;
+  // D032: useTestCases normalises the tm_case_status enum to the UI vocabulary
+  // DRAFT/REVIEW/APPROVED/DEPRECATED, so rows arrive uppercase. @atlaskit/lozenge
+  // owns its dark-mode-correct colour via `appearance` — no hardcoded pastel.
+  const map: Record<string, { appearance: 'success' | 'moved' | 'removed' | 'inprogress' | 'default'; label: string }> = {
+    DRAFT:      { appearance: 'default',    label: 'Draft' },
+    REVIEW:     { appearance: 'inprogress', label: 'Review' },
+    APPROVED:   { appearance: 'success',    label: 'Approved' },
+    DEPRECATED: { appearance: 'removed',    label: 'Deprecated' },
+    // raw tm_case_status enum aliases (lowercase)
+    draft:      { appearance: 'default',    label: 'Draft' },
+    ready:      { appearance: 'inprogress', label: 'Review' },
+    approved:   { appearance: 'success',    label: 'Approved' },
+    deprecated: { appearance: 'removed',    label: 'Deprecated' },
   };
   const cfg = map[status] ?? { appearance: 'default' as const, label: status };
   return <Lozenge appearance={cfg.appearance}>{cfg.label}</Lozenge>;
@@ -525,6 +559,53 @@ function PriorityChip({ priority }: { priority: TMCasePriority }) {
     }}>
       {priority.name}
     </span>
+  );
+}
+
+// ── S3: inline quick-create row (sticky footer) ───────────────────────────────
+// Type-and-Enter case authoring. Status defaults to DRAFT, folder is inherited
+// from the active repository folder. Only ever creates a Test Case (TESTHUB-owned
+// per CRE A11/D4), so no type catalogue is presented. Full CreateStoryModal stays
+// available behind "Create case" for the rare case needing every field.
+function TestCaseInlineCreateRow({
+  folderLabel, submitting, onSubmit, onCancel,
+}: {
+  folderLabel: string;
+  submitting: boolean;
+  onSubmit: (title: string) => void;
+  onCancel: () => void;
+}) {
+  const [title, setTitle] = useState('');
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--ds-space-100)', width: '100%', padding: '0 var(--ds-space-100)' }}>
+      <WorkItemTypeIcon type="test-case" size={16} />
+      <input
+        autoFocus
+        value={title}
+        placeholder="What should this case verify? Press Enter to save."
+        onChange={e => setTitle(e.target.value)}
+        onKeyDown={e => {
+          if (e.key === 'Enter' && title.trim() && !submitting) onSubmit(title.trim());
+          if (e.key === 'Escape') onCancel();
+        }}
+        style={{
+          flex: 1, border: 'none', background: 'transparent', outline: 'none',
+          fontSize: 'var(--ds-font-size-400)', lineHeight: 'var(--ds-line-height-body)',
+          color: 'var(--ds-text)',
+        }}
+      />
+      <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest)', whiteSpace: 'nowrap' }}>
+        Draft · {folderLabel}
+      </span>
+      <button
+        onClick={() => { if (title.trim() && !submitting) onSubmit(title.trim()); }}
+        disabled={!title.trim() || submitting}
+        style={primaryBtnStyle(!title.trim() || submitting)}
+      >
+        {submitting ? 'Saving…' : 'Create'}
+      </button>
+      <button onClick={onCancel} style={cancelBtnStyle}>Cancel</button>
+    </div>
   );
 }
 
@@ -568,15 +649,28 @@ const primaryBtnStyle = (disabled: boolean): React.CSSProperties => ({
 
 export default function RepositoryPage() {
   const { projectKey = 'TESTHUB' } = useParams<{ projectKey: string }>();
-  const { data: projects = [] } = useProjects();
-  const projectId = projects[0]?.id;
+  const { projectId, project } = useTestHubProject();
 
   const [selectedFolderId, setSelectedFolderId] = useState<string | null | 'unfiled'>(null);
   const [search, setSearch] = useState('');
-  const [drawerOpen, setDrawerOpen] = useState(false);
-  const [editingCase, setEditingCase] = useState<TMTestCase | null>(null);
+  // Phase C, Wave 2 — canonical CreateStoryModal (Test Case type) for new cases.
+  const [createOpen, setCreateOpen] = useState(false);
   // D4: row-click opens the case in the canonical detail panel (not CaseDrawer).
   const [selectedCaseId, setSelectedCaseId] = useState<string | null>(null);
+
+  // S1 (rail redesign): the folders rail is a collapsible ResizablePanel, not a
+  // hardcoded 240px div. Collapse state persists per user so the choice survives
+  // reloads. The imperative handle drives collapse/expand from the header toggle.
+  const folderPanelRef = useRef<ImperativePanelHandle>(null);
+  const [railCollapsed, setRailCollapsed] = useState<boolean>(() => {
+    try { return localStorage.getItem('testhub.repo.railCollapsed') === '1'; } catch { return false; }
+  });
+  const toggleRail = useCallback(() => {
+    const panel = folderPanelRef.current;
+    if (!panel) return;
+    if (panel.isCollapsed()) panel.expand();
+    else panel.collapse();
+  }, []);
 
   const [selectMode, setSelectMode] = useState(false);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
@@ -585,6 +679,8 @@ export default function RepositoryPage() {
   const [folderModalParentId, setFolderModalParentId] = useState<string | null>(null);
   const [archiveModalOpen, setArchiveModalOpen] = useState(false);
   const [copyModalOpen, setCopyModalOpen] = useState(false);
+  // S5: link selected cases to a cycle or set from the repository.
+  const [linkTarget, setLinkTarget] = useState<LinkTarget | null>(null);
   // P1-S4: row-level hard delete replaced with archive (VER-004) — a case
   // and its history are never destructible from the repository UI.
   const [caseToArchive, setCaseToArchive] = useState<{ id: string; case_key?: string; title?: string } | null>(null);
@@ -595,6 +691,22 @@ export default function RepositoryPage() {
   const archiveCases = useBulkArchiveTestCases();
   const copyCases = useBulkCopyTestCases();
   const createCase = useCreateTestCase({ silent: true });
+  // S2: real project-hub traceability (ph_issues links + latest run) per case.
+  const { data: coverageMap } = useCaseCoverage(projectId);
+  // S6b: per-project status workflow — drives the status pill label + category
+  // when configured. Falls back to the canonical hardcoded pill otherwise.
+  const { data: statusCfg } = useCaseStatusConfig(projectId);
+  const statusOverride = useMemo(() => {
+    if (!statusCfg?.isCustom) return undefined;
+    const byKey = new Map(statusCfg.config.map(c => [c.status_key, c]));
+    return (uiStatus: string) => {
+      const c = byKey.get(UI_STATUS_TO_KEY[uiStatus] ?? '');
+      return c ? { label: c.display_label, appearance: c.category } : undefined;
+    };
+  }, [statusCfg]);
+  // S3: inline quick-create footer state.
+  const [footerCreateActive, setFooterCreateActive] = useState(false);
+  const [inlineSubmitting, setInlineSubmitting] = useState(false);
 
   const handleAIGeneratedTestCases = useCallback((generatedTestCases: GeneratedTestCase[]) => {
     if (!projectId) {
@@ -652,6 +764,28 @@ export default function RepositoryPage() {
   const activeFolderId =
     selectedFolderId === null || selectedFolderId === 'unfiled' ? null : selectedFolderId;
 
+  // S3: label shown in the inline-create row so the author sees where it lands.
+  const activeFolderLabel = useMemo(() => {
+    if (selectedFolderId === null) return 'All';
+    if (selectedFolderId === 'unfiled') return 'Not Assigned';
+    const flat = flattenFolders(allFolders);
+    return flat.find(f => f.id === selectedFolderId)?.name ?? 'Folder';
+  }, [selectedFolderId, allFolders]);
+
+  const handleInlineCreate = useCallback((title: string) => {
+    if (!projectId) return;
+    setInlineSubmitting(true);
+    createCase.mutateAsync({
+      project_id: projectId,
+      title,
+      status: 'DRAFT',
+      folder_id: activeFolderId ?? undefined,
+    })
+      .then(() => { catalystToast.success('Case created', title); setFooterCreateActive(false); })
+      .catch((e: unknown) => catalystToast.error(e instanceof Error ? e.message : 'Create failed'))
+      .finally(() => setInlineSubmitting(false));
+  }, [projectId, activeFolderId, createCase]);
+
   const exitSelectMode = useCallback(() => {
     setSelectMode(false);
     setSelectedIds(new Set());
@@ -681,23 +815,22 @@ export default function RepositoryPage() {
     );
   };
 
+  // Canonical typography parity with the Project Backlog: key text renders via
+  // makeKeyCell (13px link, --ds-line-height-body) and title via makeSummaryCell
+  // (14px subtle) — Grid H (RULE_TABLE.md). The type glyph rides in the key cell
+  // via getIcon, exactly like Backlog's Work column, so we retire the standalone
+  // inline key span. onOpen opens the canonical detail panel.
   const columns: Column<TMTestCase>[] = [
     {
       id: 'key',
       label: 'Key',
-      width: 8,
+      width: 10,
       alwaysVisible: true,
-      cell: ({ row }) => (
-        <span style={{ display: 'flex', alignItems: 'center', gap: 4, whiteSpace: 'nowrap' }}>
-          <WorkItemTypeIcon type="test-case" size={14} />
-          <span style={{
-            fontFamily: 'var(--ds-font-family-code, monospace)',
-            color: 'var(--ds-text-subtlest)',
-            fontSize: 'var(--ds-font-size-200)',
-          }}>
-            {row.key ?? '—'}
-          </span>
-        </span>
+      cell: makeKeyCell(
+        (row: TMTestCase) => formatTestKey(row.key) ?? '—',
+        (row: TMTestCase) => { if (!selectMode) setSelectedCaseId(row.id); },
+        undefined,
+        () => <WorkItemTypeIcon type="test-case" size={16} />,
       ),
     },
     {
@@ -705,17 +838,13 @@ export default function RepositoryPage() {
       label: 'Title',
       flex: true,
       alwaysVisible: true,
-      cell: ({ row }) => (
-        <span style={{ color: 'var(--ds-text)', fontWeight: 500 }}>
-          {row.title}
-        </span>
-      ),
+      cell: makeSummaryCell((row: TMTestCase) => row.title),
     },
     {
       id: 'status',
       label: 'Status',
       width: 12,
-      cell: ({ row }) => <CaseStatusPill status={row.status} />,
+      cell: ({ row }) => <CaseStatusPill status={row.status} override={statusOverride?.(row.status)} />,
     },
     {
       id: 'priority',
@@ -724,7 +853,7 @@ export default function RepositoryPage() {
       cell: ({ row }) => {
         if (row.priority_ref) {
           return (
-            <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 'var(--ds-font-size-200)' }}>
+            <span style={{ display: 'flex', alignItems: 'center', gap: 'var(--ds-space-075)', fontSize: 'var(--ds-font-size-300)', lineHeight: 'var(--ds-line-height-body)', color: 'var(--ds-text-subtle)' }}>
               <span style={{
                 width: 8, height: 8, borderRadius: '50%',
                 background: row.priority_ref.color ?? 'var(--ds-background-neutral)',
@@ -741,9 +870,60 @@ export default function RepositoryPage() {
       },
     },
     {
+      id: 'coverage',
+      label: 'Coverage',
+      width: 16,
+      cell: ({ row }) => {
+        const cov = coverageMap?.get(row.id);
+        if (!cov || cov.requirementKeys.length === 0) {
+          // Zero-assumption: no linked requirement → no fabricated state.
+          return <span style={{ color: 'var(--ds-text-subtlest)' }}>—</span>;
+        }
+        const verdictAppearance: Record<CoverageVerdict, 'success' | 'removed' | 'default'> = {
+          ok: 'success', nok: 'removed', not_run: 'default',
+        };
+        const first = cov.requirementKeys[0];
+        const extra = cov.requirementKeys.length - 1;
+        return (
+          <span style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
+            <Lozenge appearance={verdictAppearance[cov.verdict]}>
+              {cov.verdict === 'ok' ? 'Covered' : cov.verdict === 'nok' ? 'At risk' : 'Not run'}
+            </Lozenge>
+            <span style={{
+              fontSize: 'var(--ds-font-size-300)', lineHeight: 'var(--ds-line-height-body)',
+              color: 'var(--ds-text-subtle)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+            }} title={cov.requirementKeys.join(', ')}>
+              {first}{extra > 0 ? ` +${extra}` : ''}
+            </span>
+          </span>
+        );
+      },
+    },
+    {
+      id: 'lastRun',
+      label: 'Last run',
+      width: 12,
+      cell: ({ row }) => {
+        const cov = coverageMap?.get(row.id);
+        const status = cov?.latestRun ?? null;
+        if (!status || status === 'not_run') {
+          return <Lozenge appearance="default">Not run</Lozenge>;
+        }
+        const map: Record<Exclude<CaseRunStatus, 'not_run'>, { appearance: 'success' | 'removed' | 'moved' | 'inprogress'; label: string }> = {
+          passed: { appearance: 'success', label: 'Passed' },
+          failed: { appearance: 'removed', label: 'Failed' },
+          blocked: { appearance: 'moved', label: 'Blocked' },
+          in_progress: { appearance: 'inprogress', label: 'In progress' },
+        };
+        const cfg = map[status as Exclude<CaseRunStatus, 'not_run'>];
+        return <Lozenge appearance={cfg.appearance}>{cfg.label}</Lozenge>;
+      },
+    },
+    {
       id: 'actions',
       label: '',
-      width: 4,
+      width: 5,
+      align: 'end',
       cell: ({ row }) => (
         <button
           onClick={e => {
@@ -779,6 +959,8 @@ export default function RepositoryPage() {
           </span>
           <DropdownMenu trigger="Bulk actions" placement="bottom-start">
             <DropdownItemGroup>
+              <DropdownItem onClick={() => setLinkTarget('cycle')}>Add to cycle…</DropdownItem>
+              <DropdownItem onClick={() => setLinkTarget('set')}>Add to set…</DropdownItem>
               <DropdownItem onClick={() => setCopyModalOpen(true)}>Copy cases</DropdownItem>
               <DropdownItem onClick={() => setArchiveModalOpen(true)}>Archive cases</DropdownItem>
             </DropdownItemGroup>
@@ -786,149 +968,226 @@ export default function RepositoryPage() {
         </div>
       )}
 
-      <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
-        {/* Folder tree sidebar */}
-        <div style={{
-          width: 240, minWidth: 240,
-          borderRight: '1px solid var(--ds-border)',
-          background: 'var(--ds-surface-sunken)',
-          overflowY: 'auto', padding: '12px 0',
-        }}>
+      <div style={{ display: 'flex', flex: 1, minHeight: 0, overflow: 'hidden' }}>
+        {/* S1: full-viewport, resizable two-pane layout. The folders rail is a
+            collapsible ResizablePanel (localStorage-persisted), the case list
+            fills the rest of the viewport generously. When the rail is
+            collapsed a slim expand strip keeps the affordance visible. */}
+        {railCollapsed && (
           <div style={{
-            padding: '0 12px', marginBottom: 4,
-            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+            width: 44, minWidth: 44, flexShrink: 0,
+            borderRight: '1px solid var(--ds-border)',
+            background: 'var(--ds-surface-sunken)',
+            display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: 12, gap: 8,
           }}>
-            <span style={{
-              fontSize: 'var(--ds-font-size-100)', fontWeight: 600,
-              color: 'var(--ds-text-subtlest)',
-              textTransform: 'uppercase', letterSpacing: '0.5px',
-            }}>
-              Folders
-            </span>
             <button
-              onClick={() => { setFolderModalParentId(null); setFolderModalOpen(true); }}
-              title="Add new folder"
+              onClick={toggleRail}
+              title="Expand folders"
               style={{
                 background: 'none', border: 'none', cursor: 'pointer',
-                color: 'var(--ds-text-subtlest)',
-                padding: 0, display: 'flex', alignItems: 'center',
+                color: 'var(--ds-text-subtle)', padding: 'var(--ds-space-075)', display: 'flex', borderRadius: 'var(--ds-border-radius)',
               }}
             >
-              <Plus size={13} />
+              <PanelLeftOpen size={18} />
             </button>
           </div>
-
-          <SystemFolderItem
-            label="All"
-            selected={selectedFolderId === null}
-            onClick={() => setSelectedFolderId(null)}
-          />
-          <SystemFolderItem
-            label="Not Assigned"
-            selected={selectedFolderId === 'unfiled'}
-            onClick={() => setSelectedFolderId('unfiled')}
-          />
-          <FolderTreeView
-            projectId={projectId}
-            selectedId={selectedFolderId as string | null}
-            onSelect={id => setSelectedFolderId(id)}
-            onNewSubfolder={parentId => { setFolderModalParentId(parentId); setFolderModalOpen(true); }}
-          />
-        </div>
-
-        {/* Case list */}
-        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-          {/* Search + actions bar */}
-          <div style={{
-            padding: '8px 16px',
-            borderBottom: '1px solid var(--ds-border)',
-            display: 'flex', alignItems: 'center', gap: 12,
-            background: 'var(--ds-surface)',
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, flex: 1, maxWidth: 320 }}>
-              <Search size={14} style={{ color: 'var(--ds-text-subtlest)', flexShrink: 0 }} />
-              <input
-                type="text"
-                placeholder="Search cases..."
-                value={search}
-                onChange={e => setSearch(e.target.value)}
-                style={{
-                  flex: 1, border: '1px solid var(--ds-border)',
-                  borderRadius: 4, padding: '4px 8px', fontSize: 'var(--ds-font-size-300)',
-                  background: 'var(--ds-surface)',
-                  color: 'var(--ds-text)', outline: 'none',
-                }}
-              />
-            </div>
-
-            <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginLeft: 'auto' }}>
-              <CatyIconCTA
-                tooltip="Generate test cases with Caty"
-                onClick={() => setAIDialogOpen(true)}
-                size={20}
-              />
-              <button
-                onClick={() => { setSelectMode(s => !s); setSelectedIds(new Set()); }}
-                style={{
-                  padding: '4px 10px',
-                  background: selectMode ? 'var(--ds-background-selected)' : 'var(--ds-surface)',
-                  color: selectMode ? 'var(--ds-text-selected)' : 'var(--ds-text-subtle)',
-                  border: '1px solid var(--ds-border)',
-                  borderRadius: 4, fontSize: 'var(--ds-font-size-300)', fontWeight: 500, cursor: 'pointer',
-                  display: 'flex', alignItems: 'center', gap: 4,
-                }}
-              >
-                <Edit2 size={13} />
-                {selectMode ? 'Cancel' : 'Select'}
-              </button>
-              <button
-                onClick={() => { setEditingCase(null); setDrawerOpen(true); }}
-                style={{
-                  padding: '4px 12px',
-                  background: 'var(--ds-background-brand-bold)',
-                  color: 'var(--ds-text-inverse)', border: 'none', borderRadius: 4,
-                  fontSize: 'var(--ds-font-size-300)', fontWeight: 500, cursor: 'pointer',
-                  display: 'flex', alignItems: 'center', gap: 4,
-                }}
-              >
-                <Plus size={14} />
-                Create case
-              </button>
-            </div>
-          </div>
-
-          {casesLoading ? (
-            <div style={{ padding: 32, display: 'flex', justifyContent: 'center' }}>
-              <Spinner size="large" />
-            </div>
-          ) : (
-            <JiraTable<TMTestCase>
-              columns={columns}
-              data={cases}
-              getRowId={row => row.id}
-              onRowClick={row => {
-                if (selectMode) return;
-                setSelectedCaseId(row.id);
-              }}
-              selectable={selectMode}
-              selection={selectedIds}
-              onSelectionChange={next => setSelectedIds(new Set(next))}
-              showRowCount
-              totalRowCount={casesResult?.total}
-            />
-          )}
-        </div>
-
-        {drawerOpen && projectId && (
-          <CaseDrawer
-            projectId={projectId}
-            folderId={activeFolderId}
-            existingCase={editingCase}
-            onClose={() => { setDrawerOpen(false); setEditingCase(null); }}
-          />
         )}
 
-        {/* D4: canonical detail panel for view/edit (coexists with CaseDrawer). */}
+        <ResizablePanelGroup
+          direction="horizontal"
+          style={{ flex: 1, minHeight: 0 }}
+        >
+          {/* Folders rail */}
+          <ResizablePanel
+            ref={folderPanelRef}
+            order={1}
+            collapsible
+            collapsedSize={0}
+            defaultSize={railCollapsed ? 0 : 18}
+            minSize={12}
+            maxSize={28}
+            onCollapse={() => { setRailCollapsed(true); try { localStorage.setItem('testhub.repo.railCollapsed', '1'); } catch { /* ignore */ } }}
+            onExpand={() => { setRailCollapsed(false); try { localStorage.setItem('testhub.repo.railCollapsed', '0'); } catch { /* ignore */ } }}
+            style={{
+              borderRight: '1px solid var(--ds-border)',
+              background: 'var(--ds-surface-sunken)',
+              overflowY: 'auto',
+              display: railCollapsed ? 'none' : 'block',
+            }}
+          >
+            <div style={{ padding: 'var(--ds-space-200) 0' }}>
+              <div style={{
+                padding: '0 var(--ds-space-200)', marginBottom: 8,
+                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+              }}>
+                <span style={{
+                  fontSize: 'var(--ds-font-size-100)', fontWeight: 700,
+                  color: 'var(--ds-text-subtlest)',
+                  textTransform: 'uppercase', letterSpacing: '0.08em',
+                }}>
+                  Folders
+                </span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                  <button
+                    onClick={() => { setFolderModalParentId(null); setFolderModalOpen(true); }}
+                    title="Add new folder"
+                    style={{
+                      background: 'none', border: 'none', cursor: 'pointer',
+                      color: 'var(--ds-text-subtle)', padding: 4, display: 'flex', borderRadius: 4,
+                    }}
+                  >
+                    <Plus size={15} />
+                  </button>
+                  <button
+                    onClick={toggleRail}
+                    title="Collapse folders"
+                    style={{
+                      background: 'none', border: 'none', cursor: 'pointer',
+                      color: 'var(--ds-text-subtle)', padding: 4, display: 'flex', borderRadius: 4,
+                    }}
+                  >
+                    <PanelLeftClose size={16} />
+                  </button>
+                </div>
+              </div>
+
+              <SystemFolderItem
+                label="All"
+                selected={selectedFolderId === null}
+                onClick={() => setSelectedFolderId(null)}
+              />
+              <SystemFolderItem
+                label="Not Assigned"
+                selected={selectedFolderId === 'unfiled'}
+                onClick={() => setSelectedFolderId('unfiled')}
+              />
+              <FolderTreeView
+                projectId={projectId}
+                selectedId={selectedFolderId as string | null}
+                onSelect={id => setSelectedFolderId(id)}
+                onNewSubfolder={parentId => { setFolderModalParentId(parentId); setFolderModalOpen(true); }}
+              />
+            </div>
+          </ResizablePanel>
+
+          {!railCollapsed && <ResizableHandle withHandle />}
+
+          {/* Case list — fills the viewport */}
+          <ResizablePanel order={2} minSize={40} style={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>
+            {/* Search + actions bar — generous height and spacing */}
+            <div style={{
+              padding: 'var(--ds-space-200) var(--ds-space-300)',
+              borderBottom: '1px solid var(--ds-border)',
+              display: 'flex', alignItems: 'center', gap: 16,
+              background: 'var(--ds-surface)',
+            }}>
+              {railCollapsed && (
+                <button
+                  onClick={toggleRail}
+                  title="Show folders"
+                  style={{
+                    background: 'none', border: '1px solid var(--ds-border)', cursor: 'pointer',
+                    color: 'var(--ds-text-subtle)', padding: 'var(--ds-space-075)', display: 'flex', borderRadius: 'var(--ds-border-radius)',
+                  }}
+                >
+                  <PanelLeftOpen size={16} />
+                </button>
+              )}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, flex: 1, maxWidth: 420 }}>
+                <Search size={16} style={{ color: 'var(--ds-text-subtlest)', flexShrink: 0 }} />
+                <input
+                  type="text"
+                  placeholder="Search cases…"
+                  value={search}
+                  onChange={e => setSearch(e.target.value)}
+                  style={{
+                    flex: 1, border: '1px solid var(--ds-border)',
+                    borderRadius: 6, padding: 'var(--ds-space-075) var(--ds-space-150)', fontSize: 'var(--ds-font-size-300)',
+                    lineHeight: 'var(--ds-line-height-body)',
+                    background: 'var(--ds-surface)',
+                    color: 'var(--ds-text)', outline: 'none',
+                  }}
+                />
+              </div>
+
+              <div style={{ display: 'flex', gap: 12, alignItems: 'center', marginLeft: 'auto' }}>
+                <CatyIconCTA
+                  tooltip="Generate test cases with Caty"
+                  onClick={() => setAIDialogOpen(true)}
+                  size={22}
+                />
+                <button
+                  onClick={() => { setSelectMode(s => !s); setSelectedIds(new Set()); }}
+                  style={{
+                    padding: 'var(--ds-space-075) var(--ds-space-150)',
+                    background: selectMode ? 'var(--ds-background-selected)' : 'var(--ds-surface)',
+                    color: selectMode ? 'var(--ds-text-selected)' : 'var(--ds-text-subtle)',
+                    border: '1px solid var(--ds-border)',
+                    borderRadius: 6, fontSize: 'var(--ds-font-size-300)', lineHeight: 'var(--ds-line-height-body)',
+                    fontWeight: 500, cursor: 'pointer',
+                    display: 'flex', alignItems: 'center', gap: 'var(--ds-space-075)',
+                  }}
+                >
+                  <Edit2 size={14} />
+                  {selectMode ? 'Cancel' : 'Select'}
+                </button>
+                <button
+                  onClick={() => setCreateOpen(true)}
+                  style={{
+                    padding: 'var(--ds-space-075) var(--ds-space-200)',
+                    background: 'var(--ds-background-brand-bold)',
+                    color: 'var(--ds-text-inverse)', border: 'none', borderRadius: 6,
+                    fontSize: 'var(--ds-font-size-300)', lineHeight: 'var(--ds-line-height-body)',
+                    fontWeight: 600, cursor: 'pointer',
+                    display: 'flex', alignItems: 'center', gap: 'var(--ds-space-075)',
+                  }}
+                >
+                  <Plus size={16} />
+                  Create case
+                </button>
+              </div>
+            </div>
+
+            <div style={{ flex: 1, minHeight: 0, overflow: 'auto', padding: 'var(--ds-space-050) var(--ds-space-150) var(--ds-space-300)' }}>
+              {casesLoading ? (
+                <div style={{ padding: 48, display: 'flex', justifyContent: 'center' }}>
+                  <Spinner size="large" />
+                </div>
+              ) : (
+                <JiraTable<TMTestCase>
+                  columns={columns}
+                  data={cases}
+                  getRowId={row => row.id}
+                  onRowClick={row => {
+                    if (selectMode) return;
+                    setSelectedCaseId(row.id);
+                  }}
+                  selectable={selectMode}
+                  selection={selectedIds}
+                  onSelectionChange={next => setSelectedIds(new Set(next))}
+                  focusedRowId={selectedCaseId ?? undefined}
+                  showRowCount
+                  totalRowCount={casesResult?.total}
+                  enableStickyCreateFooter
+                  stickyCreateFooter={{
+                    placeholder: 'Create case',
+                    onActivate: () => setFooterCreateActive(true),
+                    active: footerCreateActive ? (
+                      <TestCaseInlineCreateRow
+                        folderLabel={activeFolderLabel}
+                        submitting={inlineSubmitting}
+                        onSubmit={handleInlineCreate}
+                        onCancel={() => setFooterCreateActive(false)}
+                      />
+                    ) : null,
+                  }}
+                />
+              )}
+            </div>
+          </ResizablePanel>
+        </ResizablePanelGroup>
+
+        {/* D4: canonical detail panel for view/edit. */}
         {selectedCaseId && (
           <CatalystDetailRouter
             entityKind="test_case"
@@ -1003,10 +1262,32 @@ export default function RepositoryPage() {
         />
       )}
 
+      {linkTarget && (
+        <AddToCycleSetSheet
+          mode={linkTarget}
+          projectId={projectId}
+          caseIds={Array.from(selectedIds)}
+          onClose={() => setLinkTarget(null)}
+          onDone={exitSelectMode}
+        />
+      )}
+
       <AIGenerateTestCasesDialog
         open={aiDialogOpen}
         onOpenChange={setAIDialogOpen}
         onTestCasesGenerated={handleAIGeneratedTestCases}
+      />
+
+      {/* Phase C, Wave 2 — canonical create flow. Opens on 'Test Case' with the
+          currently-selected repository folder pre-filled. The modal resolves
+          the canonical project to its tm_projects mirror internally. */}
+      <CreateStoryModal
+        open={createOpen}
+        onClose={() => setCreateOpen(false)}
+        projectKey={project?.key ?? undefined}
+        defaultWorkType="Test Case"
+        initialFolderId={activeFolderId}
+        onSuccess={() => setCreateOpen(false)}
       />
     </>
   );

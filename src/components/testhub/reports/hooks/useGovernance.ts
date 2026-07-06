@@ -37,11 +37,12 @@ export function useGovernance(projectName?: string, projectId?: string) {
       const byKey = new Map(stories.map((s) => [s.issue_key, s]));
 
       // links for this project's cases → story → case ids
-      const { data: links } = await supabase
+      const { data: links, error: linksError } = await supabase
         .from('tm_requirement_links')
         .select('external_key, test_case_id, tm_test_cases!inner(project_id)')
         .eq('requirement_type', 'story')
         .eq('tm_test_cases.project_id', projectId!);
+      if (linksError) throw linksError;
       const storyCases = new Map<string, string[]>();
       for (const l of links ?? []) {
         const row = l as { external_key: string; test_case_id: string };
@@ -54,7 +55,8 @@ export function useGovernance(projectName?: string, projectId?: string) {
       // per-case worst status
       const caseStatus = new Map<string, string>();
       if (allCaseIds.length) {
-        const { data: scope } = await supabase.from('tm_cycle_scope').select('test_case_id, current_status').in('test_case_id', allCaseIds);
+        const { data: scope, error: scopeError } = await supabase.from('tm_cycle_scope').select('test_case_id, current_status').in('test_case_id', allCaseIds);
+        if (scopeError) throw scopeError;
         const sev: Record<string, number> = { failed: 5, blocked: 4, not_run: 3, in_progress: 2, passed: 1, skipped: 0 };
         for (const s of scope ?? []) {
           const row = s as { test_case_id: string; current_status: string };

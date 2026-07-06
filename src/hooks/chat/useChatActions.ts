@@ -43,7 +43,22 @@ export function useChatSetMute() {
       });
       if (error) throw error;
     },
-    onSuccess: () => invalidateChat(qc),
+    // Flip conversation.isMuted in the cache immediately so the bell icon
+    // updates on click (the header reads it from the conversations query).
+    onMutate: async ({ convId, muted }: { convId: string; muted: boolean }) => {
+      await qc.cancelQueries({ queryKey: ['chat', 'conversations'] });
+      const prev = qc.getQueriesData({ queryKey: ['chat', 'conversations'] });
+      qc.setQueriesData({ queryKey: ['chat', 'conversations'] }, (old: any) =>
+        Array.isArray(old)
+          ? old.map((c: any) => (c.id === convId ? { ...c, isMuted: muted } : c))
+          : old,
+      );
+      return { prev };
+    },
+    onError: (_e: unknown, _v: unknown, ctx: any) => {
+      ctx?.prev?.forEach(([key, data]: [unknown, unknown]) => qc.setQueryData(key as any, data));
+    },
+    onSettled: () => invalidateChat(qc),
   });
 }
 

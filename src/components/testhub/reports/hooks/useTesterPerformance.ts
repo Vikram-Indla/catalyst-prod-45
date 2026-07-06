@@ -34,10 +34,11 @@ export function useTesterPerformance(testerId?: string) {
     enabled: !!testerId,
     queryFn: async (): Promise<TesterPerformance> => {
       // 1) Cases assigned to this tester
-      const { data: cases } = await supabase
+      const { data: cases, error: casesError } = await supabase
         .from('tm_test_cases')
         .select('id, case_key, title')
         .eq('assigned_to', testerId!);
+      if (casesError) throw casesError;
       const caseList = cases ?? [];
       const caseIds = caseList.map((c: { id: string }) => c.id);
 
@@ -46,10 +47,11 @@ export function useTesterPerformance(testerId?: string) {
       const storyByCase = new Map<string, string>();
       const exec: ExecBreakdown = { ...EMPTY_EXEC };
       if (caseIds.length) {
-        const { data: scope } = await supabase
+        const { data: scope, error: scopeError } = await supabase
           .from('tm_cycle_scope')
           .select('test_case_id, current_status')
           .in('test_case_id', caseIds);
+        if (scopeError) throw scopeError;
         for (const s of scope ?? []) {
           const row = s as { test_case_id: string; current_status: string };
           statusByCase.set(row.test_case_id, row.current_status);
@@ -57,10 +59,11 @@ export function useTesterPerformance(testerId?: string) {
           if (k in exec && k !== 'total') exec[k] += 1;
           exec.total += 1;
         }
-        const { data: links } = await supabase
+        const { data: links, error: linksError } = await supabase
           .from('tm_requirement_links')
           .select('test_case_id, external_key')
           .in('test_case_id', caseIds);
+        if (linksError) throw linksError;
         for (const l of links ?? []) {
           const row = l as { test_case_id: string; external_key: string };
           if (!storyByCase.has(row.test_case_id)) storyByCase.set(row.test_case_id, row.external_key);
@@ -72,6 +75,7 @@ export function useTesterPerformance(testerId?: string) {
         .from('tm_defects')
         .select('id', { count: 'exact', head: true })
         .eq('reporter_id', testerId!);
+      if (d.error) throw d.error;
 
       const rows: TesterCaseRow[] = caseList.map((c: { id: string; case_key: string; title: string }) => ({
         caseKey: c.case_key,

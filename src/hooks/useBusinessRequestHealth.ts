@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { computeDatePulseViolations } from '@/lib/date-pulse/DatePulseEngine';
 import { computeHealthStatus } from '@/lib/date-pulse/HealthStatusEngine';
+import { fetchLinkedWorkForBRs } from '@/lib/date-pulse/normalizeLinkedWork';
 import type {
   BusinessRequest,
   WorkItem,
@@ -50,32 +51,15 @@ export function useBusinessRequestHealth(brId: string | undefined | null) {
 
       if (brErr || !br) return null;
 
-      // 2. Fetch linked work via business_request_id FK on ph_issues.
-      //    Fall back to matching by request_key if the FK is missing.
-      const { data: linkedRows } = await (supabase as any)
-        .from('ph_issues')
-        .select('id, issue_key, issue_type, project_key, summary, status, status_category, due_date, created_at, updated_at, parent_key, assignee_account_id, severity')
-        .eq('business_request_id', br.id)
-        .limit(100);
-
-      const linkedWork: WorkItem[] = (linkedRows ?? []).map((r: any) => ({
-        id: r.id,
-        issue_key: r.issue_key,
-        issue_type: r.issue_type ?? null,
-        project_key: r.project_key ?? '',
-        // Zero-assumption: null status is "unscorable" — HealthStatusEngine
-        // excludes it from in-progress/done/blocked bucketing rather than
-        // counting it as 'todo' (not-started), which would skew health
-        // verdicts toward Uncommitted/At Risk (CLAUDE.md).
-        status: r.status ?? null,
-        due_date: r.due_date ?? null,
-        severity: r.severity ?? null,
-        parent_key: r.parent_key ?? null,
-        sprint_id: null,
-        business_request_id: br.id,
-        created_at: r.created_at,
-        updated_at: r.updated_at,
-      }));
+      // 2. Fetch linked work via the app's real link model:
+      //    business_request_links (kind='implementation') → features/stories
+      //    (epics excluded as grouping containers). Items arrive already
+      //    normalized to engine buckets. Throws on query error so the failure
+      //    surfaces instead of silently degrading to empty linked work →
+      //    permanent 'Uncommitted' (the prior ph_issues.business_request_id
+      //    bug — that FK never existed).
+      const linkedByBR = await fetchLinkedWorkForBRs([br.id]);
+      const linkedWork: WorkItem[] = linkedByBR.get(br.id) ?? [];
 
       // 3. Build BR model for engines (must match BusinessRequest interface)
       const effectiveEndDate = br.end_date ?? null;

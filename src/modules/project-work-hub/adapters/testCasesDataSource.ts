@@ -20,13 +20,20 @@ import { useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useProjects } from '@/hooks/test-management/useProjects';
 import { useTestCases, useUpdateTestCase, useDeleteTestCase, useCreateTestCase } from '@/hooks/test-management/useTestCases';
+import { filterCreatableTypes } from '@/lib/catalyst-rules';
 import type { BacklogStory } from '../types/backlog.types';
 import type { StatusOption, LozengeAppearance } from '@/components/shared/JiraTable';
 import { BIZ_SOURCE, type BacklogDataSource } from './backlogDataSource';
+import { formatTestKey } from '@/lib/test-management/formatTestKey';
 
+// D032: useTestCases normalises the DB enum (draft/ready/approved/deprecated)
+// to the UI lifecycle vocabulary DRAFT/REVIEW/APPROVED/DEPRECATED (see
+// statusFromDb). Rows reaching this adapter already carry the UI values, so the
+// options must key on those. The prior 'In review' label was the D032 outlier —
+// Repository and the test-case detail both label REVIEW as 'Review'; aligned.
 const CASE_STATUSES: Array<{ value: string; label: string; appearance: LozengeAppearance }> = [
   { value: 'DRAFT',      label: 'Draft',      appearance: 'default'    },
-  { value: 'REVIEW',     label: 'In review',  appearance: 'inprogress' },
+  { value: 'REVIEW',     label: 'Review',     appearance: 'inprogress' },
   { value: 'APPROVED',   label: 'Approved',   appearance: 'success'    },
   { value: 'DEPRECATED', label: 'Deprecated', appearance: 'moved'      },
 ];
@@ -35,7 +42,7 @@ const STATUS_BY_VALUE = new Map(CASE_STATUSES.map((s) => [s.value, s]));
 function caseToBacklogStory(c: any): BacklogStory {
   return {
     id: c.id,
-    story_key: c.key ?? c.id,
+    story_key: formatTestKey(c.key) ?? c.id,
     title: c.title ?? '',
     name: c.title ?? null,
     description: c.objective ?? null,
@@ -77,11 +84,25 @@ const CASE_PATCH_MAP: Record<string, string> = {
   status: 'status',
 };
 
-export function useTestCasesSource(): BacklogDataSource | null {
+export interface TestCasesSourceOptions {
+  /**
+   * D031: when set, only cases assigned to this user are returned. My Work
+   * passes the current auth user id so the surface shows *my* cases, not the
+   * whole repository. Column name on tm_test_cases is `assigned_to`
+   * (see useTestCases' assigned_to filter).
+   */
+  assigneeId?: string;
+}
+
+export function useTestCasesSource(options?: TestCasesSourceOptions): BacklogDataSource | null {
   const qc = useQueryClient();
   const { data: projects = [], isLoading: pl } = useProjects();
   const projectId = projects[0]?.id;
-  const { data: casesData, isLoading: cl } = useTestCases(projectId);
+  const assigneeId = options?.assigneeId;
+  const { data: casesData, isLoading: cl } = useTestCases(
+    projectId,
+    assigneeId ? { assigned_to: assigneeId } : undefined,
+  );
   const updateMutation = useUpdateTestCase();
   const deleteMutation = useDeleteTestCase();
   const createMutation = useCreateTestCase();
@@ -168,7 +189,10 @@ export function useTestCasesSource(): BacklogDataSource | null {
          BIZ_SOURCE row. Override returns 'Test Case' so JiraIssueTypeIcon
          resolves to the flask icon registered above. */
       resolveItemType: () => 'Test Case',
-      creatableTypes: ['Test Case'],
+      // CRE chokepoint (P1-S19, E4): TestHub owns 'Test Case' per Grid A
+      // (MODULE_OWNED_TYPES.TESTHUB) — route through the filter rather than
+      // hardcoding, so ownership drift is caught automatically.
+      creatableTypes: filterCreatableTypes(['Test Case'], 'TESTHUB'),
       defaultCreatableType: 'Test Case',
     };
   }, [

@@ -16,7 +16,7 @@ import { useChangesList, type ChangeListRow } from '@/hooks/useReleaseHub';
 import { JiraTable } from '@/components/shared/JiraTable';
 import type { Column } from '@/components/shared/JiraTable';
 import { StatusLozenge } from '@/components/shared/StatusLozenge';
-import { Avatar } from '@/components/ads/Avatar';
+import CatalystAvatar from '@/components/shared/CatalystAvatar';
 import { EmptyState, ErrorState } from '@/components/releasehub/EmptyState';
 import { CreateChgModal } from '@/components/releasehub/CreateChgModal';
 import { FacetFilterBar, type Facet } from '@/components/releasehub/FacetFilterBar';
@@ -125,18 +125,46 @@ export default function AllChangesPage() {
     },
     { id: 'status', label: 'Status', width: 12, sortable: true, cell: ({ row }) => <StatusLozenge status={row.status} /> },
     { id: 'risk', label: 'Risk', width: 9, cell: ({ row }) => <RiskPill risk={row.risk_level} /> },
+    {
+      id: 'flags', label: 'Flags', width: 13,
+      cell: ({ row }) => {
+        const flags: Array<{ text: string; fg: string; bg: string }> = [];
+        if (row.isUnlinkedProduction) flags.push({ text: 'Unlinked prod', fg: 'var(--ds-text-danger)', bg: 'var(--ds-background-danger)' });
+        if (row.isEmergency) flags.push({ text: 'Emergency', fg: 'var(--ds-text-warning)', bg: 'var(--ds-background-warning)' });
+        if (row.status === 'failed' || row.status === 'blocked') flags.push({ text: titleCase(row.status), fg: 'var(--ds-text-danger)', bg: 'var(--ds-background-danger)' });
+        if (flags.length === 0) return <span style={{ color: T.subtlest }}>—</span>;
+        return (
+          <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
+            {flags.map((f) => (
+              <span key={f.text} style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: f.fg, background: f.bg, padding: '0 6px', borderRadius: 3, whiteSpace: 'nowrap' }}>{f.text}</span>
+            ))}
+          </div>
+        );
+      },
+    },
     { id: 'change_type', label: 'Type', width: 9, cell: ({ row }) => <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-300)', color: T.subtle }}>{titleCase(row.change_type)}</span> },
     { id: 'target_env', label: 'Env', width: 9, cell: ({ row }) => <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-300)', color: T.subtle }}>{titleCase(row.target_env)}</span> },
     { id: 'deployment_category', label: 'Category', width: 11, cell: ({ row }) => <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-300)', color: T.subtle }}>{titleCase(row.deployment_category)}</span> },
     {
-      id: 'window', label: 'Window', width: 10, sortable: true,
-      accessor: (row) => row.window_start ?? row.deployment_date,
+      id: 'window', label: 'Planned', width: 11, sortable: true,
+      accessor: (row) => row.planned_start_at ?? row.window_start ?? row.deployment_date,
       cell: ({ row }) => {
-        const d = row.window_start ?? row.deployment_date;
-        return <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-300)', color: T.subtle }}>{d ? format(new Date(d), 'MMM d, yyyy') : '—'}</span>;
+        const d = row.planned_start_at ?? row.window_start ?? row.deployment_date;
+        return <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-300)', color: T.subtle }}>{d ? format(new Date(d), row.planned_start_at ? 'MMM d, HH:mm' : 'MMM d, yyyy') : '—'}</span>;
       },
     },
-    { id: 'release', label: 'Release', width: 12, cell: ({ row }) => <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-300)', color: row.releaseName ? T.text : T.subtlest, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{row.releaseName ?? 'Unassigned'}</span> },
+    {
+      id: 'release', label: 'Releases', width: 12,
+      cell: ({ row }) => {
+        if (row.releaseCount === 0) {
+          return <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-300)', color: row.target_env === 'production' ? 'var(--ds-text-danger)' : T.subtlest, whiteSpace: 'nowrap' }}>{row.target_env === 'production' ? 'None (prod!)' : 'Unassigned'}</span>;
+        }
+        if (row.releaseCount === 1) {
+          return <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-300)', color: T.text, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{row.releaseName ?? '1 release'}</span>;
+        }
+        return <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-300)', color: T.text }}>{row.releaseCount} releases</span>;
+      },
+    },
     {
       id: 'sop', label: 'SOP', width: 8, align: 'end',
       cell: ({ row }) => row.sopProgress ? <span style={{ fontFamily: T.mono, fontSize: 'var(--ds-font-size-300)', color: T.subtle }}>{row.sopProgress.done}/{row.sopProgress.total}</span> : <span style={{ color: T.subtlest }}>—</span>,
@@ -149,7 +177,7 @@ export default function AllChangesPage() {
       id: 'manager', label: 'Manager', width: 11,
       cell: ({ row }) => row.manager ? (
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
-          <Avatar name={row.manager.name} src={row.manager.avatarUrl ?? undefined} size="small" />
+          <CatalystAvatar name={row.manager.name} src={row.manager.avatarUrl ?? undefined} size="small" />
           <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-300)', color: T.text, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{row.manager.name}</span>
         </div>
       ) : <span style={{ color: T.subtlest }}>—</span>,
@@ -204,7 +232,7 @@ export default function AllChangesPage() {
       {error ? (
         <ErrorState message={(error as Error).message} onRetry={() => refetch()} />
       ) : !isLoading && changes.length === 0 ? (
-        <EmptyState icon={Package} title="No change records yet" subtitle="Changes capture what ships, how, and who approves it." actions={[{ label: '+ New change', onClick: () => setShowCreate(true), variant: 'primary' }]} />
+        <EmptyState icon={Package} title="No change records yet" subtitle="A Change Record is the deployment vehicle in Release Ops — it captures what ships, to which environment, which release(s) it supports, who executes each stream, the SOP runbook, sign-offs, freeze checks, and the production event it generates." actions={[{ label: '+ New change', onClick: () => setShowCreate(true), variant: 'primary' }]} />
       ) : !isLoading && filtered.length === 0 ? (
         <EmptyState icon={Search} title="No changes match your filters" subtitle="Try adjusting your search or filters." actions={[{ label: 'Clear filters', onClick: () => { setSearch(''); clearFacets(); }, variant: 'ghost' }]} />
       ) : (
@@ -212,7 +240,7 @@ export default function AllChangesPage() {
           columns={columns}
           data={filtered}
           getRowId={(r) => r.id}
-          onRowClick={(r) => navigate(`/release-hub/changes/${r.id}`)}
+          onRowClick={(r) => navigate(`/release-hub/changes/${(r as any).slug ?? r.id}`)}
           selectable
           selection={selection}
           onSelectionChange={setSelection}

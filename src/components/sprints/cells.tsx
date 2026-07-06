@@ -69,8 +69,10 @@ export function makeSprintNameCell(
   return {
     id: 'sprint',
     label: 'Sprint',
-    width: 20,
-    flex: true,
+    /* Fixed 30 units (360px), not flex: JiraTable reserves a 640px sum-floor
+     * for flex columns, which pushed the trailing Release/Owner columns past
+     * the viewport edge (header rendered as "O…"). */
+    width: 30,
     alwaysVisible: true,
     cell: ({ row }: CellProps<SprintRow>) => (
       <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
@@ -223,7 +225,8 @@ export function makeSprintOwnerCell(
   return {
     id: 'owner',
     label: 'Owner',
-    width: 4,
+    /* 48px clipped the header to "O…" — 5 units (60px) fits the label. */
+    width: 5,
     cell: ({ row }: CellProps<SprintRow>) => {
       const owner = getOwner(row);
       if (!owner || !owner.name) return <>—</>;

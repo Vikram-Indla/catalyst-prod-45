@@ -1,0 +1,150 @@
+╔════════════════════════════════════════════════════════════════════════════╗
+║                    MOBILE QUICK REFERENCE CARD                             ║
+║              CAT-CONVERGENCE-UI-FIX-20260703-001 Execution                 ║
+╚════════════════════════════════════════════════════════════════════════════╝
+
+📋 WHAT IS THIS?
+  UI convergence fix. Release/Test/Incident hubs must match Project Hub canon.
+  312 gaps found (P0=21 critical, P1=118, P2=173).
+  Execution via parallel agents, 3 phases, ~40hr wall-clock, 2-3M tokens.
+
+🎯 YOUR JOB (mobile session):
+  1. Copy-paste startup script (below)
+  2. Get Vikram approval on 5 decisions (below)
+  3. Report "Ready" + agents spin up automatically
+
+───────────────────────────────────────────────────────────────────────────────
+
+⚡ COPY-PASTE STARTUP SCRIPT
+
+/caveman full
+rtk gain
+pwd && git branch && git status --short
+ls -lh docs/catalyst-ui-convergence/ | head -5
+ls -lh ~/catalyst/features/CAT-CONVERGENCE-UI-FIX-20260703-001/
+continue feature CAT-CONVERGENCE-UI-FIX-20260703-001
+
+───────────────────────────────────────────────────────────────────────────────
+
+✅ 5 APPROVALS NEEDED (text to Vikram)
+
+DL-1: Converge incidents → ph_issues? [Y/N]
+DL-2: Delete legacy /release/incidents? [Y/N]
+DL-4: Unify test-case detail? [Y/N]
+DL-5: Wire /testhub/defects/:key? [Y/N]
+DL-7: Fix aria-modal=false panels? [Y/N]
+
+───────────────────────────────────────────────────────────────────────────────
+
+🏗️ 3 PHASES
+
+Phase P0 (6 agents, 12hr): Critical fixes
+  - Defect detail wiring
+  - Test-case detail unification
+  - aria-modal fix
+  - testhub/board crash
+  - Incident creation unification
+  - Legacy incident retirement
+
+Phase P1 (8 agents, 16hr): Delete + structure
+  - Delete src/pages/releases/* (12 files)
+  - Delete releases defects (8 files)
+  - Raw tables → JiraTable
+  - Pills → StatusLozenge
+  - Avatars → CatalystAvatar
+  - Modals → ADS
+  - Release detail consolidation
+  - Dashboard canonicalization
+
+Phase P2 (6 agents, 12hr): Token cleanup
+  - Borders → --ds-border
+  - Subtle text → --ds-text-subtle
+  - Tailwind colors → --ds-* (per hub)
+  - Bare hex → --ds-* (Project Hub)
+
+───────────────────────────────────────────────────────────────────────────────
+
+📊 GAPS BY HUB
+
+Release Hub: 118 gaps (D grade)
+  Top file: DefectDetailPage.tsx (130 ADS violations)
+  Delete src/pages/releases/* frees 7 of top-20 worst ADS files
+
+Test Hub: 58 gaps (C+ grade)
+  Raw tables + dead detail clicks + board crash
+
+Incident Hub: 74 gaps (B grade, strongest new-gen)
+  Create fork + legacy stack + a11y panels
+
+Defects: 17 gaps (C live / F dead)
+Project Hub: 28 gaps (bare hex)
+Cross-hub/a11y: 17 gaps (critical)
+
+───────────────────────────────────────────────────────────────────────────────
+
+📍 FOLDER LOCATIONS
+
+Discovery docs: docs/catalyst-ui-convergence/
+Feature folder: ~/catalyst/features/CAT-CONVERGENCE-UI-FIX-20260703-001/
+Session logs: ~/catalyst/features/CAT-CONVERGENCE-UI-FIX-20260703-001/sessions/
+
+Key files:
+  README.md — quick nav
+  HANDOVER.md — full plan
+  MOBILE_COPY_PASTE_COMPLETE_HANDOVER.md — complete copy-paste
+  00-DISCOVERY-CONSOLIDATED.md — summary
+  agents/ — 10 specialist reports
+
+───────────────────────────────────────────────────────────────────────────────
+
+⚙️ TOOLS ACTIVATED
+
+RTK (Rust Token Killer):
+  rtk gain — show token savings
+  Reduces CLI token spend 60-90%
+
+Caveman mode (full):
+  Terse output, drops articles/filler
+  Reduces narrative overhead 30-40%
+
+Combined: 2-3M tokens (vs 4-5M without optimization)
+
+───────────────────────────────────────────────────────────────────────────────
+
+🎓 KEY TERMS
+
+Canonical = Project Hub source-of-truth (JiraTable, CatalystDetailRouter, etc.)
+Fork = Destination hand-rolled alternative (NewIncidentModal vs CreateStoryModal)
+Dead = Unreachable code/routes/interactions (defect row-click inert)
+P0 = Critical (blocks a11y, breaks UX, data-inconsistent)
+P1 = Important (technical debt, gaps vs canonical)
+P2 = Polish (tokens, dark-mode, consistency)
+ADS = Atlassian Design System (--ds-* tokens, @atlaskit/* components)
+
+───────────────────────────────────────────────────────────────────────────────
+
+✋ THINGS TO AVOID
+
+1. Don't merge delete slices (P1-S1 and P1-S2) — run sequentially
+2. Don't forget ADS ratchet after deletion — `npm run lint:colors:gate --update`
+3. Don't assume screenshots exist — discovery captured IDs only (re-capture live)
+4. Don't skip approvals — DL-1/2/4/5/7 must be approved first
+5. Don't branch — work on main + feature folder
+
+───────────────────────────────────────────────────────────────────────────────
+
+📱 NEXT STEPS
+
+1. Copy startup script (above) into Claude Code on mobile
+2. Read: docs/catalyst-ui-convergence/README.md
+3. Text Vikram the 5 approval questions (above)
+4. Once approved, paste: "Approved DL-1/2/4/5/7, activate agents"
+5. Watch agents execute P0 → P1 → P2
+
+───────────────────────────────────────────────────────────────────────────────
+
+Full execution time: ~40 hours (parallelized wall-clock)
+Total tokens: ~2-3M (optimized)
+Status: Ready for mobile session
+
+GO.

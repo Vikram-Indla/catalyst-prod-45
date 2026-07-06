@@ -13,7 +13,7 @@ import AkDropdownMenu, {
   DropdownItem as AkDropdownItem,
   DropdownItemGroup as AkDropdownItemGroup,
 } from '@atlaskit/dropdown-menu';
-import { useRef, type ReactNode } from 'react';
+import { type ReactNode, type Ref } from 'react';
 
 export interface DropdownMenuItem {
   key: string;
@@ -41,14 +41,6 @@ export interface DropdownMenuProps {
   /** Advanced — direct JSX composition. Use groups first. */
   children?: ReactNode;
   placement?: 'bottom-start' | 'bottom-end' | 'top-start' | 'top-end';
-  /**
-   * Default true (renders into the trigger's parent). Set FALSE when the
-   * trigger lives inside a `position: sticky` ancestor — popper's transform
-   * never applies there and the menu paints at viewport (0,0) (live-debugged
-   * 2026-07-06 on the Docex page header). Portaling to body positions
-   * correctly regardless of the ancestor chain.
-   */
-  shouldRenderToParent?: boolean;
   /** Minimum width of the menu. */
   minWidth?: number;
   isLoading?: boolean;
@@ -61,71 +53,34 @@ export function DropdownMenu({
   groups,
   children,
   placement = 'bottom-start',
-  shouldRenderToParent = true,
   minWidth,
   isLoading,
   testId,
   ...rest
 }: DropdownMenuProps) {
-  const triggerWrapRef = useRef<HTMLSpanElement>(null);
-
-  // Popper-dormancy rescue (live-debugged 2026-07-06 on the Docex page):
-  // in some mounts @atlaskit/popper's update loop never runs — the popup
-  // keeps its pre-position inline style (`position: fixed; left: 0; top: 0`,
-  // NO transform) and paints at the viewport origin. Two frames after open,
-  // if that exact dormancy signature is present, position the popup from
-  // the trigger rect ourselves. When popper is alive (transform present)
-  // this is a no-op, so healthy consumers are untouched.
-  const rescueDormantPopper = (attempt = 0) => {
-    // Re-assert a few times: Atlaskit re-renders the popup right after open,
-    // which can recreate the fixed element and drop a one-shot transform.
-    if (attempt > 4) return;
-    requestAnimationFrame(() =>
-      requestAnimationFrame(() => {
-        // String triggers render Atlaskit's own button, which holds focus
-        // when the menu opens — use it when no custom-trigger ref exists.
-        // Anchor priority: the ref'd trigger wrapper (function triggers) —
-        // string triggers should migrate to the function form to be
-        // rescue-eligible with a precise anchor.
-        const anchor = triggerWrapRef.current?.firstElementChild ?? triggerWrapRef.current;
-        const menu = document.querySelector<HTMLElement>('[role="menu"]');
-        const popEl = menu?.closest<HTMLElement>('[style*="position: fixed"]');
-        if (!anchor || !menu || !popEl) {
-          rescueDormantPopper(attempt + 1);
-          return;
-        }
-        if (popEl.style.transform) return; // popper alive — never interfere
-        const rect = anchor.getBoundingClientRect();
-        if (!rect.width && !rect.height) return;
-        const menuWidth = popEl.getBoundingClientRect().width || 220;
-        const alignEnd = placement.endsWith('end');
-        const x = Math.max(8, Math.round(alignEnd ? rect.right - menuWidth : rect.left));
-        const y = Math.round(placement.startsWith('top') ? rect.top - 8 : rect.bottom + 4);
-        popEl.style.transform = `translate(${x}px, ${y}px)`;
-        rescueDormantPopper(attempt + 1);
-      }),
-    );
-  };
-
   return (
     <AkDropdownMenu
       trigger={
         typeof trigger === 'function'
           ? (triggerProps) => {
-              const isSelected = Boolean((triggerProps as { isSelected?: boolean })?.isSelected);
+              // triggerRef must land on the span (popper anchor); the non-DOM
+              // props must not leak onto it as attributes.
+              const { triggerRef, isSelected, testId: triggerTestId, ...domProps } =
+                (triggerProps ?? {}) as {
+                  triggerRef?: Ref<HTMLElement>;
+                  isSelected?: boolean;
+                  testId?: string;
+                } & Record<string, unknown>;
               return (
-                <span ref={triggerWrapRef} style={{ display: 'inline-block' }} {...(triggerProps as object)}>
-                  {(trigger as (p: { isSelected: boolean }) => ReactNode)({ isSelected })}
+                <span ref={triggerRef} data-testid={triggerTestId} {...domProps}>
+                  {(trigger as (p: { isSelected: boolean }) => ReactNode)({ isSelected: Boolean(isSelected) })}
                 </span>
               );
             }
           : trigger
       }
-      onOpenChange={({ isOpen }) => {
-        if (isOpen) rescueDormantPopper();
-      }}
       placement={placement}
-      shouldRenderToParent={shouldRenderToParent}
+      shouldRenderToParent
       spacing="compact"
       isLoading={isLoading}
       testId={testId}
