@@ -221,6 +221,7 @@ export const knowledgeHubRoutes = {
 export const folioRoutes = {
   root: () => '/folio',
   search: () => '/folio/search',
+  sitemap: () => '/folio/sitemap',
   workspace: (workspaceSlug: string) => `/folio/${workspaceSlug}`,
   page: (workspaceSlug: string, pageSlug: string) => `/folio/${workspaceSlug}/${pageSlug}`,
   database: (workspaceSlug: string, dbSlug: string) => `/folio/${workspaceSlug}/db/${dbSlug}`,

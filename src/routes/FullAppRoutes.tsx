@@ -355,6 +355,7 @@ const LegacyDocumentRedirect = lazy(() =>
   import("../pages/wiki/LegacyKnowledgeHubRedirect").then(m => ({ default: m.LegacyDocumentRedirect })));
 
 const WikiHomePage = lazy(() => import("../pages/wiki/WikiHomePage"));
+const FolioSiteMapPage = lazy(() => import("../pages/wiki/FolioSiteMapPage"));
 const DocexSearchPage = lazy(() => import("../pages/wiki/DocexSearchPage"));
 const DocexDatabasePage = lazy(() => import("../pages/wiki/DocexDatabasePage"));
 const WikiWorkspacePage = lazy(() => import("../pages/wiki/WikiWorkspacePage"));
@@ -828,6 +829,7 @@ export default function FullAppRoutes() {
             (Vikram: "Go for folio"). */}
         <Route path="/folio" element={<S><WikiHomePage /></S>} />
         <Route path="/folio/search" element={<S><DocexSearchPage /></S>} />
+        <Route path="/folio/sitemap" element={<S><FolioSiteMapPage /></S>} />
         {import.meta.env.DEV && (
           <Route path="/folio/_sandbox" element={<S><WikiSandboxPage /></S>} />
         )}

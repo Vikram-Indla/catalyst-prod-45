@@ -8,7 +8,7 @@
  */
 import { useEffect, useMemo, useRef, type ReactNode } from 'react';
 import { useLocation } from 'react-router-dom';
-import { Home, Building2, Search, CircleUser } from '@/lib/atlaskit-icons';
+import { Home, Building2, Search, CircleUser, Network } from '@/lib/atlaskit-icons';
 import { SidebarBase, SidebarConfig } from './SidebarBase';
 import { WikiTreeNav } from '@/components/wiki-hub/WikiTreeNav';
 import { parseWikiPath } from '@/components/wiki-hub/wikiPath';
@@ -98,6 +98,7 @@ export function WikiSidebar({ expanded, onToggle, className }: WikiSidebarProps)
           items: [
             { id: 'home', title: 'Home', path: Routes.docex.root(), icon: Home, exact: true },
             { id: 'search', title: 'Search', path: Routes.docex.search(), icon: Search, exact: true },
+            { id: 'sitemap', title: 'Site map', path: Routes.folio.sitemap(), icon: Network, exact: true },
           ],
         },
         // Personal pages live here and can be moved into any project/product
