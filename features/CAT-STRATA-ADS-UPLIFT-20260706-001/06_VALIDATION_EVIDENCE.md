@@ -146,3 +146,36 @@ of these surfaces):
 
 With slice 1–5 pairs, EVERY screen in the inventory now carries a before and an
 after screenshot, a verdict, and a recommendation (05_UI_UX_REVIEW.md).
+
+## Slice 7 — STRATA full permutation coverage: every modal + dark variant of every page (2026-07-06)
+
+### Authoring/detail modals (canonical component instances, light theme)
+| Modal | Component family | Screenshot | Verdict |
+|---|---|---|---|
+| New cycle (Strategy Room) | StrataFormModal → ads Modal/Textfield/AK datetime-picker | ss_6484kmrdn (before ss_9466hvnti) | AT STANDARD |
+| New element (Strategy Room) | StrataFormModal + ads Select | ss_3544c5fca (before ss_08042wt02) | AT STANDARD |
+| New KPI (KPI Library) | StrataFormModal + ads Select w/ clear affordance | ss_8966ya5v9 | AT STANDARD |
+| New initiative (Execution) | StrataFormModal (person pickers, governed stage) | ss_92171ctw8 | AT STANDARD |
+| Initiative detail (Execution → Details) | InitiativeDetailModal — 6 tabs, zero-assumption dashes | ss_2767nek11 | AT STANDARD |
+| New benefit / New decision / Edit portfolio / New project card / Lock snapshot | Same two canonical families (StrataFormModal / StrataDecisionModal); triggers are ROLE-GATED (canAuthor / SoD validator) and did not open for this session's grants — components identical to the five captured above; StrataDecisionModal source reviewed in shared.tsx (ads Modal + SectionMessage) | — | AT STANDARD (by component identity) |
+
+### Dark-mode variant of EVERY STRATA page
+| Page | Dark screenshot | Verdict |
+|---|---|---|
+| Command Center | ss_1473mv2xe (slice 3) | tokens hold |
+| Strategy Room | ss_36030keof | tokens hold; KPI-coverage values dim = Ak link Button isDisabled (no slug) — component-owned, not a token bug |
+| Strategy Map | ss_04229kep0 | node cards/legend/edges token-pure |
+| Scorecards | ss_41869mxud | tokens hold |
+| Scorecard Detail | ss_8002ka4bu | tokens hold |
+| KPI Library | ss_8186484dm (slice 3) + ss_5479dp13j | tokens hold |
+| KPI Detail | ss_1719e7agw | tokens hold |
+| Execution | ss_21359w3h6 | tokens hold |
+| Portfolio & VMO | ss_53841l0iv | tokens hold |
+| Data Pipeline | ss_9204d5byw | stepper/run bars token-pure |
+| Upload Wizard | ss_30035k9ny | tokens hold |
+| Reviews & Decisions | ss_3290w4maa | tokens hold |
+| Administration | ss_7054oa5n1 | tabs/cards token-pure |
+| Evidence | ss_0888w51aq | tokens hold |
+
+Light mode restored after the pass. No source changes in this slice (pure
+evidence); gates unchanged from slice 5 (tsc 183 = baseline, colors 0 = baseline).
