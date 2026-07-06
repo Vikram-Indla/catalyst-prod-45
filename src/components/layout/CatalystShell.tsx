@@ -168,10 +168,6 @@ const TestHubSidebar = lazyWithRetry(
     })),
   "TestHubSidebar",
 );
-const PlanHubSidebar = lazyWithRetry(
-  () => import("./PlanHubSidebar").then((m) => ({ default: m.PlanHubSidebar })),
-  "PlanHubSidebar",
-);
 const TasksSidebar = lazyWithRetry(
   () => import("./TasksSidebar").then((m) => ({ default: m.TasksSidebar })),
   "TasksSidebar",
@@ -249,7 +245,6 @@ const HUB_ROUTES: Record<string, string> = {
   release: '/release-hub/overview',
   incident: '/incident-hub',
   task: '/tasks/overview',
-  plan: '/planhub',
   docex: '/folio',
 };
 
@@ -440,9 +435,6 @@ function CatalystShellContent() {
     location.pathname.startsWith("/releasehub");
 
   // Check if on test management route
-
-  // Check if on PlanHub route
-  const isPlanHubRoute = location.pathname.startsWith("/planhub");
 
   // Check if on TaskHub route (includes /priorities which is part of TaskHub)
   const isTaskHubRoute =
@@ -749,11 +741,6 @@ function CatalystShellContent() {
       return (
         <ProductRoomSidebar expanded={exp} onToggle={cycleSidebarState} />
       );
-    }
-
-    // PlanHub sidebar
-    if (isPlanHubRoute) {
-      return <PlanHubSidebar expanded={exp} onToggle={cycleSidebarState} />;
     }
 
     // TaskHub sidebar

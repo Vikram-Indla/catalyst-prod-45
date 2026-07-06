@@ -30,8 +30,6 @@ export const ROUTE_REGISTRY: Record<string, RouteConfig> = {
   '/strata/reviews': { section: '', pageTitle: 'Reviews & Decisions' },
   '/strata/reviews/:snapshotKey': { section: '', pageTitle: 'Snapshot' },
   '/strata/admin': { section: '', pageTitle: 'STRATA Configuration' },
-  '/planhub/capacity': { section: '', pageTitle: 'Capacity Planner' },
-  '/planhub/budget-planner': { section: '', pageTitle: 'Budget Planner' },
   '/enterprise/work-tree': { section: '', pageTitle: 'Work Tree' },
   '/enterprise/kanban-boards': { section: '', pageTitle: 'Kanban Boards' },
   

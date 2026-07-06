@@ -56,7 +56,7 @@ export interface WorkItemAssignee {
   avatarUrl?: string;
 }
 
-export type HubType = 'ProductHub' | 'ProjectHub' | 'ReleaseHub' | 'TestHub' | 'IncidentHub' | 'Tasks' | 'StrategyHub' | 'PlanHub';
+export type HubType = 'ProductHub' | 'ProjectHub' | 'ReleaseHub' | 'TestHub' | 'IncidentHub' | 'Tasks' | 'StrategyHub';
 
 export interface WorkItem {
   id: string;
@@ -248,7 +248,7 @@ function inferHub(issueType: string, projectKey: string): HubType {
 const HUB_LABEL_MAP: Record<HubType, string> = {
   ProductHub: 'Product', ProjectHub: 'Project', ReleaseHub: 'Release',
   TestHub: 'Test', IncidentHub: 'Incident', Tasks: 'Task',
-  StrategyHub: 'Strategy', PlanHub: 'Plan',
+  StrategyHub: 'Strategy',
 };
 
 function priorityToLevel(priority: string | null): number | null {

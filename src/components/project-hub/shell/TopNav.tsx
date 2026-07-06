@@ -12,7 +12,6 @@ const HUB_TABS = [
   { label: 'TestHub', path: '/testhub' },
   { label: 'IncidentHub', path: '/release' },
   { label: 'Tasks', path: '/tasks' },
-  { label: 'PlanHub', path: '/planhub' },
 ];
 
 interface TopNavProps {
