@@ -50,8 +50,7 @@ const MODULES = [
   { no: '04', key: 'hub.04', desc: 'hub.04.desc', tag: 'ai.tag.esc' },
   { no: '05', key: 'hub.05', desc: 'hub.05.desc', tag: 'ai.tag.caty' },
   { no: '06', key: 'hub.06', desc: 'hub.06.desc', tag: 'ai.tag.pm' },
-  { no: '07', key: 'hub.plan', desc: 'hub.plan.desc', tag: 'ai.tag.cap' },
-  { no: '08', key: 'hub.r360', desc: 'hub.r360.desc', tag: 'ai.tag.beh' },
+  { no: '07', key: 'hub.r360', desc: 'hub.r360.desc', tag: 'ai.tag.beh' },
 ] as const;
 
 const AGENTS = ['ag.1', 'ag.2', 'ag.3', 'ag.4', 'ag.5', 'ag.6'] as const;

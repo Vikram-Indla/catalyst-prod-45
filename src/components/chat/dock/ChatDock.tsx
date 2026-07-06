@@ -272,6 +272,8 @@ export function ChatDock({
       onPointerDown={dragHandlers.onPointerDown}
       onPointerMove={dragHandlers.onPointerMove}
       onPointerUp={dragHandlers.onPointerUp}
+      onPointerEnter={dragHandlers.onPointerEnter}
+      onPointerLeave={dragHandlers.onPointerLeave}
       aria-label={totalUnread > 0
         ? `Caty online, ${totalUnread > 99 ? '99+' : totalUnread} unread. Open messages.`
         : 'Caty online. Open messages.'}

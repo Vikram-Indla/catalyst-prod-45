@@ -47,3 +47,71 @@ RO-P4-09,P4,audit,SOP step audit into rh_change_activity_log,phase-4 §15,CLOSED
 RO-P4-10,P4,integration,Change Detail SOP summary reflects live runbook,phase-4 §13,CLOSED,useChangeCockpit + Open execution jump,2026-07-06
 RO-P4-11,P4,build,tsc + build + color gate,acceptance,CLOSED,tsc clean; build PASS 57s; color clean,2026-07-06
 RO-P4-12,P4,dnd,Drag-and-drop template/step reorder (up/down shipped),phase-5,DEFERRED,up/down reorder shipped; @atlaskit pragmatic-dnd polish deferred,
+RO-P5-01,P5,foryou,For You Change-execution section (assignee + manager),phase-5 §2/9,CLOSED,ReleaseOpsForYouSection; verified live,2026-07-06
+RO-P5-02,P5,card,Assigned SOP step card (all fields + markers),phase-5 §3/10,CLOSED,4 cards live w/ risk chips,2026-07-06
+RO-P5-03,P5,timer,Personal step timer (upcoming/running/overdue/done),phase-5 §4,CLOSED,data-driven; "15m left"/"Overdue 30m"/"Starts in 35m",2026-07-06
+RO-P5-04,P5,actions,For You step actions + validation,phase-5 §5/6,CLOSED,useSopStepAction; commit-required toast verified live,2026-07-06
+RO-P5-05,P5,capture,Commit/evidence capture from For You,phase-5 §6,CLOSED,running-card inputs + Save,2026-07-06
+RO-P5-06,P5,prompts,Derived notification event model + in-app prompts,phase-5 §7,CLOSED,due-soon/overdue/next-up/missing-capture/emergency/freeze; deduped,2026-07-06
+RO-P5-07,P5,dayof,Day-of-change card,phase-5 §8,CLOSED,TODAY CHG8841 + CAT-CHG-21; verified,2026-07-06
+RO-P5-08,P5,manager,Manager vs assignee split,phase-5 §9,CLOSED,Changes-you-manage overview; verified,2026-07-06
+RO-P5-09,P5,sync,For You actions sync to Change Detail,phase-5 §12,CLOSED,shared useSopStepAction + query invalidation,2026-07-06
+RO-P5-10,P5,build,tsc + build + color gate,acceptance,CLOSED,tsc clean; build PASS 54s; color clean,2026-07-06
+RO-P5-11,P5,notify,Persisted/push notification delivery,phase-6,DEFERRED,event model + in-app prompts shipped; delivery deferred,
+RO-P6-01,P6,timeline,Rich expandable release timeline + markers,phase-6 §2/3,CLOSED,ReleaseTimelineOps + useReleaseTimeline; verified live,2026-07-06
+RO-P6-02,P6,timeline,Timeline lenses (product/env/status + risk + search),phase-6 §4,CLOSED,group-by + risk-only + search,2026-07-06
+RO-P6-03,P6,execcal,Execution calendar hourly SOP slots (day/week/scope),phase-6 §6/7,CLOSED,ExecutionCalendarPage; LIVE/LATE verified,2026-07-06
+RO-P6-04,P6,board,Change execution board (lifecycle lanes + rich cards),phase-6 §8,CLOSED,ChangeExecutionBoard; verified live,2026-07-06
+RO-P6-05,P6,board,Board drag transition validation + terminal reason,phase-6 §9,CLOSED,useUpdateChangeStatus/validateChangeTransition + reason modal,2026-07-06
+RO-P6-06,P6,consistency,Cross-view consistency (timeline/calendar/board/detail/foryou),phase-6 §10,CLOSED,shared rh_* tables + query keys,2026-07-06
+RO-P6-07,P6,empty,Timeline/board/calendar empty-broken states,phase-6 §11,CLOSED,educational empties everywhere,2026-07-06
+RO-P6-08,P6,nav,Change Board + Execution nav + routes,phase-6,CLOSED,sidebar + FullAppRoutes,2026-07-06
+RO-P6-09,P6,build,tsc + build + color gate,acceptance,CLOSED,tsc clean; build PASS 57s; color clean,2026-07-06
+RO-P6-10,P6,planningcal,Dedicated hourly grid on planning calendar,phase-7,DEFERRED,execution calendar covers hourly; planning calendar retained as-is,
+RO-P7-01,P7,queue,Sign-off Queue visual + table + filters + search,phase-7 §3,CLOSED,SignOffQueuePage rewrite; verified live,2026-07-06
+RO-P7-02,P7,visual,Interactive sign-off dependency map (release→change→gate),phase-7 §4,CLOSED,SignoffDependencyGraph; states+override verified,2026-07-06
+RO-P7-03,P7,layers,Release-level + change-level sign-off UX,phase-7 §5/6,CLOSED,two linked layers + rollup,2026-07-06
+RO-P7-04,P7,actions,Approve/reject (both tables) + reject-comment gate,phase-7 §7,CLOSED,useSignoffAction; verified inline,2026-07-06
+RO-P7-05,P7,request,Request sign-off (duplicate-pending guard),phase-7 §8,CLOSED,RequestSignoffModal + useRequestSignoff,2026-07-06
+RO-P7-06,P7,override,Emergency override request/approve/reject,phase-7 §9,CLOSED,EmergencyOverrideModal + useRequestOverride/useDecideOverride; queue panel verified,2026-07-06
+RO-P7-07,P7,overdue,Overdue + blocking states + filters,phase-7 §10,CLOSED,red OVERDUE states + rollup; verified,2026-07-06
+RO-P7-08,P7,consistency,Sign-off truth consistent across views,phase-7 §11,CLOSED,shared rh_* rows + query invalidation,2026-07-06
+RO-P7-09,P7,empty,Sign-off empty/broken states,phase-7 §12,CLOSED,educational empties + unassigned/no-due/reason,2026-07-06
+RO-P7-10,P7,build,tsc + build + color + spacing,acceptance,CLOSED,tsc clean; build PASS 55s; 0 new offenders,2026-07-06
+RO-P7-11,P7,authz,Per-approver authorization rules,phase-8,DEFERRED,canManage-gated + honest approver identity; role-specific authz later,
+RO-P8-01,P8,ledger,Change Detail incident/defect ledger (counts+rows+raise),phase-8 §5,CLOSED,IssueSummary upgrade; verified live CHG8841,2026-07-06
+RO-P8-02,P8,raise,Contextual raise reuses existing Create modals + lineage,phase-8 §3/4,CLOSED,RaiseIssue reuses CreateIncidentModal/useCreateIncident + CreateStoryModal(QA Bug); verified modal open,2026-07-06
+RO-P8-03,P8,steplink,SOP step issue linkage + quick-raise,phase-8 §6,CLOSED,SopRunbook step indicator + raise actions,2026-07-06
+RO-P8-04,P8,boardmark,Change Board card issue marker,phase-8 §9,CLOSED,useChangesList issueCount + board ⚠,2026-07-06
+RO-P8-05,P8,lineage,source_release/change/sop_step/prod_event + raised_during_execution,phase-8 §1,CLOSED,written on every contextual raise,2026-07-06
+RO-P8-06,P8,model,Incident-vs-defect functional model,phase-8 §2,CLOSED,defaultIssueKind + user choice,2026-07-06
+RO-P8-07,P8,build,tsc + build + gates,acceptance,CLOSED,tsc clean; build PASS; typo down; spacing flat; tokens noisy-ratchet,2026-07-06
+RO-P8-08,P8,calmark,Execution calendar + For-You issue-count badges,phase-9,DEFERRED,For-You via View-change; calendar badge deferred,
+RO-P8-09,P8,detailctx,Dedicated Release-Ops context panel on Incident/Defect detail,phase-9,DEFERRED,source_* written; panel deferred,
+RO-P9-01,P9,list,Production Events list → full-page replay + result/snapshot cols,phase-9 §2,CLOSED,ProductionEventsPage; verified,2026-07-06
+RO-P9-02,P9,route,Full-page replay route /production-events/:eventKey (key→id fallback),phase-9 §3,CLOSED,ProductionEventReplayPage; breadcrumb compliant,2026-07-06
+RO-P9-03,P9,summary,Deterministic executive summary (honestly labelled),phase-9 §4,CLOSED,buildSummary; no faked AI; verified live,2026-07-06
+RO-P9-04,P9,timeline,SOP execution replay timeline (planned vs actual + issues),phase-9 §7,CLOSED,StepReplay; verified 9 steps,2026-07-06
+RO-P9-05,P9,ledgers,Commit + evidence ledgers with audit gaps,phase-9 §8/9,CLOSED,verified 2 commit / 3 evidence gaps,2026-07-06
+RO-P9-06,P9,trails,Sign-off + override + freeze trails,phase-9 §10/11,CLOSED,gates all-states + override bypass + clean freeze; verified,2026-07-06
+RO-P9-07,P9,issues,Incident/defect trail by prod-event/change/SOP lineage,phase-9 §12,CLOSED,INC-154+DEF-RO-8841; verified,2026-07-06
+RO-P9-08,P9,closure,Result & closure (success cannot hide open critical),phase-9 §13,CLOSED,closure logic; verified,2026-07-06
+RO-P9-09,P9,integration,Change Detail Open-replay link,phase-9 §15,CLOSED,cockpit prod-event card,2026-07-06
+RO-P9-10,P9,copy,Copy deployment summary,phase-9 §16,CLOSED,clipboard; no hallucination,2026-07-06
+RO-P9-11,P9,build,tsc+build+gates,acceptance,CLOSED,green; typo+tokens dropped; no baseline bump,2026-07-06
+RO-P9-12,P9,gen,Change-level auto-gen + richer stored snapshots + release roll-up,phase-10,DEFERRED,replay reconstructs live; auto-gen deferred,
+RO-P10-01,P10,e2e,End-to-end deployment scenario proof,phase-10 §3,CLOSED,CHG8841 full chain verified across all surfaces,2026-07-06
+RO-P10-02,P10,consistency,Cross-view consistency audit,phase-10 §4,CLOSED,shared rh_* + query keys; one truth,2026-07-06
+RO-P10-03,P10,routes,Navigation/route audit (slug+UUID; no dead route),phase-10 §5,CLOSED,all critical routes verified; Project breadcrumbs,2026-07-06
+RO-P10-04,P10,persona,Persona coverage,phase-10 §6,CLOSED,canManage-gated; read-only safe; documented,2026-07-06
+RO-P10-05,P10,broken,Broken/data-quality state audit,phase-10 §7,CLOSED,all broken states explain what/why/next,2026-07-06
+RO-P10-06,P10,prodgen,Change-level production-event generate/refresh,phase-10 §2.1-2.2,CLOSED,useGenerateProductionEvent dup-safe + snapshots,2026-07-06
+RO-P10-07,P10,calbadge,Execution Calendar issue-count badges,phase-10 §2.5,CLOSED,slot ⚠N; verified ss_16317rbmo,2026-07-06
+RO-P10-08,P10,foryoubadge,For-You issue indicator,phase-10 §2.6,CLOSED,reachable via View change → ledger/raise (documented),2026-07-06
+RO-P10-09,P10,export,Replay copy/export summary,phase-10 §2.9,CLOSED,Copy summary (P9); PDF deferred,2026-07-06
+RO-P10-10,P10,usermanual,User training manual,phase-10 §10,CLOSED,docs/training/release-ops-user-manual.md,2026-07-06
+RO-P10-11,P10,adminmanual,Admin manual,phase-10 §11,CLOSED,docs/training/release-ops-admin-manual.md,2026-07-06
+RO-P10-12,P10,acceptance,Final acceptance report,phase-10 §12,CLOSED,release-ops-phase-10-final-acceptance-report.md; GO for pilot,2026-07-06
+RO-P10-13,P10,nodrawer,No-drawer confirmation (all phases),phase-10 §8,CLOSED,full-page/ads-Modal only; verified,2026-07-06
+RO-P10-14,P10,gates,All ADS/CRE/TestHub gates pass,phase-10 §8,CLOSED,tsc/build/color/audit/CRE/testhub/self-test green,2026-07-06
+RO-P10-15,P10,deferred,Remaining deferred items (owner: future Release-Ops phase),phase-11,DEFERRED,release roll-up / stored snapshots / incident-defect detail panel / per-approver authz / PDF,

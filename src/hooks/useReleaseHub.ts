@@ -866,6 +866,7 @@ export interface ChangeListRow {
   releaseCount: number;
   isEmergency: boolean;
   isUnlinkedProduction: boolean;
+  issueCount: { incidents: number; defects: number } | null;
   prod_no_release_justification: string | null;
   source: string;
   updated_at: string | null;
@@ -900,6 +901,17 @@ export const useChangesList = () =>
       if (chgIds.length > 0) {
         const { data: links } = await supabase.from('rh_change_release_links').select('change_id').in('change_id', chgIds).is('unlinked_at', null);
         (links ?? []).forEach((l: any) => { linkCount[l.change_id] = (linkCount[l.change_id] ?? 0) + 1; });
+      }
+
+      // Incident/defect counts per change (source_change_id) — batched.
+      const issueCount: Record<string, { incidents: number; defects: number }> = {};
+      if (chgIds.length > 0) {
+        const [{ data: incs }, { data: defs }] = await Promise.all([
+          supabase.from('incidents').select('source_change_id').in('source_change_id', chgIds),
+          supabase.from('tm_defects').select('source_change_id').in('source_change_id', chgIds),
+        ]);
+        (incs ?? []).forEach((r: any) => { (issueCount[r.source_change_id] ??= { incidents: 0, defects: 0 }).incidents += 1; });
+        (defs ?? []).forEach((r: any) => { (issueCount[r.source_change_id] ??= { incidents: 0, defects: 0 }).defects += 1; });
       }
 
       // SOP progress (done/total) per change.
@@ -940,6 +952,7 @@ export const useChangesList = () =>
           releaseCount,
           isEmergency: c.is_emergency_override === true || c.change_type === 'emergency',
           isUnlinkedProduction: c.target_env === 'production' && releaseCount === 0,
+          issueCount: issueCount[c.id] ?? null,
           sopProgress: sop[c.id] ?? null,
           apprProgress: appr[c.id] ?? null,
           manager: c.change_manager_id ? (mgrMap[c.change_manager_id] ?? null) : null,
@@ -1084,7 +1097,7 @@ export const useApplySopTemplate = () => {
 
 // ── Production Events list + detail (Phase 10) ───────────────────────
 export interface ProductionEventRow {
-  id: string; title: string; eventType: string; targetEnv: string | null;
+  id: string; eventKey: string | null; title: string; eventType: string; targetEnv: string | null;
   releaseId: string | null; releaseKey: string | null; changeId: string | null; changeKey: string | null;
   deployedAt: string | null; producedAt: string | null; deployedBy: string;
   result: string | null; deploymentStatus: string | null; durationMinutes: number | null; notes: string | null;
@@ -1104,7 +1117,7 @@ export const useProductionEventsList = () =>
         .order('deployed_at', { ascending: false });
       if (error) throw error;
       return (data ?? []).map((e: any) => ({
-        id: e.id, title: e.title, eventType: e.event_type, targetEnv: e.target_env ?? null,
+        id: e.id, eventKey: e.event_key ?? null, title: e.title, eventType: e.event_type, targetEnv: e.target_env ?? null,
         releaseId: e.release_id ?? null, releaseKey: e.release_key ?? null, changeId: e.change_id ?? null, changeKey: e.change_key ?? null,
         deployedAt: e.deployed_at ?? null, producedAt: e.produced_at ?? null, deployedBy: e.deployed_by,
         result: e.deployment_result ?? null, deploymentStatus: e.deployment_status ?? null, durationMinutes: e.duration_minutes ?? null, notes: e.notes ?? null,

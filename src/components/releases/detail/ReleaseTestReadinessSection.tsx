@@ -63,9 +63,9 @@ export function ReleaseTestReadinessSection({ releaseId }: { releaseId: string }
             ? <ChevronDownIcon label="Collapse test readiness" />
             : <ChevronRightIcon label="Expand test readiness" />}
         </button>
-        <h3 style={{ margin: 0, fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: TEXT }}>
+        <div role="heading" aria-level={3} style={{ margin: 0, fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: TEXT }}>
           Test readiness
-        </h3>
+        </div>
         {gate && (
           <Lozenge appearance={GATE_APPEARANCE[gate.gate]} isBold>
             {gate.gate === 'pass' ? 'Pass' : gate.gate === 'warn' ? 'Warn' : 'Block'}

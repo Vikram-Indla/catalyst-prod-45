@@ -55,6 +55,7 @@ import AgeingPanel from '@/components/for-you/atlaskit/AgeingPanel';
 import R360Panel from '@/components/for-you/atlaskit/R360Panel';
 import BoardPanel from '@/components/for-you/atlaskit/BoardPanel';
 import { CatyButton } from '@/components/for-you/atlaskit/CatyButton';
+import { ReleaseOpsForYouSection } from '@/components/releasehub/foryou/ReleaseOpsForYouSection';
 
 import { useGlobalSearchStore } from '@/store/globalSearchStore';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
@@ -326,6 +327,11 @@ export default function ForYouPageAtlaskit() {
       >
         For you
       </h1>
+
+      {/* Phase 5: personal Release-Ops execution feed (assigned SOP steps + prompts) */}
+      <div style={{ marginBlockStart: 16 }}>
+        <ReleaseOpsForYouSection />
+      </div>
 
       {/* Tab strip — sticky, always at the same vertical position regardless of active tab */}
       <div

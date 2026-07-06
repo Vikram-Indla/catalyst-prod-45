@@ -50,9 +50,9 @@ export interface RecentLocation {
  * Hub kinds tracked by the Home rail.
  *   - Space-scoped (have a per-space key/code): 'project', 'product'.
  *   - Global single hubs (no per-space key — type word only in the rail):
- *     'task', 'incident', 'release', 'plan'.
+ *     'task', 'incident', 'release'.
  */
-export type HubType = 'project' | 'product' | 'task' | 'incident' | 'release' | 'plan';
+export type HubType = 'project' | 'product' | 'task' | 'incident' | 'release';
 
 export interface StoredEntry {
   projectKey: string;
@@ -148,31 +148,15 @@ const RELEASE_NAV_SECTIONS = new Set([
   'production-events',
   'freeze-windows',
 ]);
-const PLAN_NAV_SECTIONS = new Set([
-  'library',
-  'compare',
-  'master',
-  'resources',
-  'ai',
-  'reports',
-  'capacity',
-  'budget-planner',
-]);
-
 /** Synthesized header label per global hub (type word only — no key). */
-const GLOBAL_HUB_LABEL: Record<'task' | 'incident' | 'release' | 'plan', string> = {
+const GLOBAL_HUB_LABEL: Record<'task' | 'incident' | 'release', string> = {
   task: 'Tasks',
   incident: 'Incident',
   release: 'Release',
-  plan: 'Plan',
 };
 
-function globalHubSections(hub: 'incident' | 'release' | 'plan'): Set<string> {
-  return hub === 'incident'
-    ? INCIDENT_NAV_SECTIONS
-    : hub === 'release'
-    ? RELEASE_NAV_SECTIONS
-    : PLAN_NAV_SECTIONS;
+function globalHubSections(hub: 'incident' | 'release'): Set<string> {
+  return hub === 'incident' ? INCIDENT_NAV_SECTIONS : RELEASE_NAV_SECTIONS;
 }
 
 /**
@@ -318,10 +302,6 @@ export function recordLocationVisit(input: {
       ? `/incident-hub/${section}`
       : hub === 'release'
       ? `/release-hub/${section}`
-      : hub === 'plan'
-      ? section === 'library'
-        ? '/planhub'
-        : `/planhub/${section}`
       : hub === 'product'
       ? `/product-hub/${projectKey}/${section}`
       : `/project-hub/${projectKey}/${section}`;
@@ -378,15 +358,6 @@ export function useRecordProjectVisit() {
       }
       return;
     }
-    const planMatch = location.pathname.match(/^\/planhub(?:\/([^/]+))?/);
-    if (planMatch) {
-      const sec = planMatch[1] ?? 'library';
-      if (PLAN_NAV_SECTIONS.has(sec)) {
-        recordLocationVisit({ projectKey: 'plan', path: location.pathname, section: sec, hub: 'plan' });
-      }
-      return;
-    }
-
     let match = location.pathname.match(/^\/project-hub\/([^/]+)(?:\/([^/]+))?/);
     let hub: 'project' | 'product' = 'project';
 
@@ -426,7 +397,7 @@ export function useRecentProjects(limit = 8) {
   const allEntries = readStore().filter((e) => {
     const hub = e.hub ?? 'project';
     if (hub === 'task') return TASK_NAV_SECTIONS.has(e.section);
-    if (hub === 'incident' || hub === 'release' || hub === 'plan') {
+    if (hub === 'incident' || hub === 'release') {
       return globalHubSections(hub).has(e.section);
     }
     return CANONICAL_NAV_SECTIONS.has(e.section);
@@ -466,7 +437,7 @@ export function useRecentProjects(limit = 8) {
       return entries
         .map<RecentLocation | null>((e) => {
           const hub = e.hub ?? 'project';
-          if (hub === 'task' || hub === 'incident' || hub === 'release' || hub === 'plan') {
+          if (hub === 'task' || hub === 'incident' || hub === 'release') {
             // Global single hub — no DB row to hydrate. Synthesize directly.
             // Header is a type word only; no per-space key, no icon/color
             // (HomeSidebar renders the hub icon from its own registry).

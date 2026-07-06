@@ -32,6 +32,7 @@ import ArrowRightIcon from '@atlaskit/icon/glyph/arrow-right';
 import { catalystToast } from '@/lib/catalystToast';
 import { UnassignedAvatar } from '@/components/ads';
 import { useIdeaByKey, useUpdateIdea, useProfiles, type IdeaRow } from '@/hooks/useIdeasHub';
+import { CatalystPagesSection } from '../shared/sections';
 import { QUARTER_BADGE } from '@/modules-dormant/ideation/ideation-data';
 import type { CatalystViewBaseProps } from '../shared/types';
 import { RichTextEditor } from '@/components/catalyst-detail-views/shared/sections/Description/RichTextEditor';
@@ -585,6 +586,8 @@ export default function CatalystViewIdea({
                     </div>
                   ))}
                 </div>
+
+                <CatalystPagesSection entityType="idea" entityId={rawIdea.id} entityLabel={rawIdea.idea_key} isOpen={isOpen} />
 
                 {!isConverted && localStatus !== 'Draft' && onConvert && rawIdea && (
                   <div style={{

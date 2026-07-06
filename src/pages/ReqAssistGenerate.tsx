@@ -663,7 +663,6 @@ function CatalystTopNav() {
     { label: 'TestHub', path: '/testhub' },
     { label: 'IncidentHub', path: '/incidents' },
     { label: 'Tasks', path: '/tasks' },
-    { label: 'PlanHub', path: '/planhub' },
     { label: 'WikiHub', path: '/wikihub' },
   ];
   return (

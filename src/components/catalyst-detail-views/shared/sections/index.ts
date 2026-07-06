@@ -17,3 +17,4 @@ export { CatalystKeyDetails, KeyDetailsFieldRow } from './CatalystKeyDetails';
 export { StatusLozengeDropdown } from '@/components/shared/StatusLozenge';
 export { CatalystAttachmentsPanel } from './CatalystAttachmentsPanel';
 
+export { CatalystPagesSection } from './CatalystPagesSection';

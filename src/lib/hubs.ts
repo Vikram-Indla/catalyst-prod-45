@@ -5,7 +5,6 @@ import ShipIcon from '@atlaskit/icon/glyph/ship';
 import TaskIcon from '@atlaskit/icon/glyph/task';
 import WarningIcon from '@atlaskit/icon/glyph/warning';
 import CheckCircleIcon from '@atlaskit/icon/glyph/check-circle';
-import CalendarIcon from '@atlaskit/icon/glyph/calendar';
 import BookIcon from '@atlaskit/icon/glyph/book';
 import PortfolioIcon from '@atlaskit/icon/glyph/portfolio';
 
@@ -51,8 +50,7 @@ export const HUBS: Hub[] = [
   { id: 'test', label: 'Test Hub', path: '/testhub/dashboard', tileColor: 'green', glyph: renderIcon(TaskIcon, 'TestHub') },
   { id: 'incident', label: 'Incident Hub', path: '/incident-hub', tileColor: 'red', glyph: renderIcon(WarningIcon, 'IncidentHub') },
   { id: 'task', label: 'Tasks', path: '/tasks/overview', tileColor: 'yellow', glyph: renderIcon(CheckCircleIcon, 'Tasks') },
-  { id: 'plan', label: 'Plan Hub', path: '/planhub', tileColor: 'magenta', glyph: renderIcon(CalendarIcon, 'PlanHub') },
-  { id: 'wiki', label: 'Wiki Hub', path: '/wiki', tileColor: 'lime', glyph: renderIcon(BookIcon, 'WikiHub') },
+  { id: 'docex', label: 'Folio', path: '/folio', tileColor: 'lime', glyph: renderIcon(BookIcon, 'Folio') },
 ];
 
 const routeAliases: Record<string, string[]> = {
@@ -63,8 +61,7 @@ const routeAliases: Record<string, string[]> = {
   test: ['/test', '/testhub'],
   incident: ['/incident', '/incident-hub'],
   task: ['/task', '/tasks', '/priorities'],
-  plan: ['/plan', '/planhub'],
-  wiki: ['/wiki'],
+  docex: ['/folio', '/docex'],
 };
 
 export function getActiveHub(pathname: string): Hub | null {

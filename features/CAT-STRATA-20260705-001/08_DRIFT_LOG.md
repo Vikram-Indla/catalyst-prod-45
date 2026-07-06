@@ -29,3 +29,13 @@ Interactive session ran the visual pass: all 10 surfaces verified against stagin
 before final acceptance: full 7-PNG sets per surface (empty/loading/error/responsive variants) and the
 deferred defect list (U-003, U-006…U-011) in 04_EXECUTION_LOG. DRIFT-001 stays open but downgraded:
 core executive paths are visually verified in light + dark.
+
+### DRIFT-004 (2026-07-05) — Shell cwd reset caused a merge commit on the wiki session's branch (RECOVERED, zero loss)
+**What:** During merge-to-main work, the Bash shell cwd silently reset from the STRATA worktree to the shared
+checkout (feat/CAT-WIKI-CATYFLOW-20260704); `git merge origin/main` + patches + a `git add -u` commit (2568ad631)
+landed on the wiki session's branch — the exact incident class the CONCURRENT SESSIONS contract exists for.
+**Recovery:** Nothing pushed. `git merge-tree --write-tree` diff proved the commit contained ONLY the 9
+STRATA-owned nav files (the wiki session's edits were already inside their own tip 9ee841b4f "biggestcommit");
+`git reset --hard 9ee841b4f` restored their branch exactly. Abandoned merge remains in reflog (2568ad631).
+**Lesson enforced going forward:** every git/db command in this session now runs with an explicit
+`cd <worktree> &&` prefix; `git add -u` is treated as banned alongside `git add -A`.

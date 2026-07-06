@@ -1,0 +1,273 @@
+/**
+ * WikiEditor — Catalyst Wiki's block editor (CAT-DOCS-NOTION-20260704-001).
+ *
+ * BlockNote (MPL-2.0 core, pinned 0.51.4) themed entirely through ADS
+ * tokens (see blocknote-ads.css — the only styling bridge). Loaded ONLY
+ * via React.lazy from wiki routes so the editor stays out of the main
+ * bundle, mirroring the AtlaskitEditor lazy-load discipline.
+ *
+ * Content contract:
+ *   - `initialContent` IN  — BlockNote Block[] (kb_documents.content with
+ *     content_format = 'blocknote'), or undefined for a new page.
+ *   - `onChange` OUT — debounce lives with the caller (autosave owner);
+ *     this component emits every document change.
+ *
+ * Schema: wikiSchema (defaults + workItemMention/pageLink inline chips).
+ * The `@` suggestion menu searches wiki pages in the current workspace and
+ * catalyst_issues work items, inserting the matching inline chip.
+ */
+import { useCallback, useEffect, useMemo } from 'react';
+import { BlockNoteView } from '@blocknote/mantine';
+import {
+  SuggestionMenuController,
+  getDefaultReactSlashMenuItems,
+  useCreateBlockNote,
+  type DefaultReactSuggestionItem,
+} from '@blocknote/react';
+import { filterSuggestionItems, type Block, type BlockNoteEditor, type PartialBlock } from '@blocknote/core';
+import { supabase } from '@/integrations/supabase/client';
+import { useThemeMode } from '@/providers/ThemeProvider';
+import { useCreateDocexDatabase } from '@/hooks/useDocexDatabase';
+import { wikiSchema } from './wikiSchema';
+import { wikiPasteHandler } from './pasteNormalizer';
+import type { SupabaseYjsProvider } from './SupabaseYjsProvider';
+import '@blocknote/core/fonts/inter.css';
+import '@blocknote/mantine/style.css';
+import './blocknote-ads.css';
+
+// kb_* tables postdate the generated Supabase types (same escape hatch as useWiki.ts).
+const db = supabase as unknown as {
+  from: (table: string) => any;
+};
+
+/** catalyst_issues.issue_type → kb_document_links.entity_type. */
+function toEntityType(issueType: string | null | undefined): string {
+  const t = (issueType ?? '').toLowerCase();
+  if (t === 'bug' || t === 'defect') return 'defect';
+  if (t === 'story' || t === 'epic' || t === 'task') return t;
+  return 'issue';
+}
+
+export interface WikiEditorProps {
+  initialContent?: Block[];
+  editable?: boolean;
+  onChange?: (editor: BlockNoteEditor) => void;
+  onReady?: (editor: BlockNoteEditor) => void;
+  /** Register tag consumed by CatyFlow dictation for tone matching. */
+  dictationStyle?: string;
+  uploadFile?: (file: File) => Promise<string>;
+  /** Scope for the `@` page-mention search; omit to disable page results. */
+  workspaceId?: string;
+  /** Used to build hrefs for inserted page-link chips. */
+  workspaceSlug?: string;
+  /** Real-time co-editing (C1): when set, Yjs owns the document —
+   *  initialContent is ignored and remote cursors render natively. */
+  collab?: {
+    provider: SupabaseYjsProvider;
+    user: { name: string; color: string };
+  };
+}
+
+export default function WikiEditor({
+  initialContent,
+  editable = true,
+  onChange,
+  onReady,
+  dictationStyle = 'brd-page',
+  uploadFile,
+  workspaceId,
+  workspaceSlug,
+  collab,
+}: WikiEditorProps) {
+  const { resolvedTheme } = useThemeMode();
+  const createDatabase = useCreateDocexDatabase();
+
+  const editor = useCreateBlockNote(
+    {
+      schema: wikiSchema,
+      // In collab mode Yjs owns the document; seeding initialContent would
+      // duplicate blocks on every join.
+      initialContent:
+        !collab && initialContent && initialContent.length > 0
+          ? (initialContent as never)
+          : undefined,
+      uploadFile,
+      // GDocs/Word paste lands as semantic HTML (bold/italic/lists survive);
+      // everything else keeps the default markdown-priority behavior.
+      pasteHandler: wikiPasteHandler as never,
+      ...(collab
+        ? {
+            collaboration: {
+              fragment: collab.provider.fragment,
+              user: collab.user,
+              provider: { awareness: collab.provider.awareness },
+            },
+          }
+        : {}),
+    },
+    // Re-create only when switching documents, never on theme changes.
+    [initialContent, collab],
+  );
+
+  // useEffect, NOT useMemo: onReady triggers parent setState — calling it
+  // during render throws "Cannot update a component while rendering" and
+  // can corrupt other render-phase state applications (live-debugged
+  // 2026-07-06 alongside the Actions-popover positioning failure).
+  useEffect(() => {
+    if (editor && onReady) onReady(editor as unknown as BlockNoteEditor);
+  }, [editor, onReady]);
+
+  // `@` menu — wiki pages in this workspace + work items, server-filtered.
+  const getMentionItems = useCallback(
+    async (query: string): Promise<DefaultReactSuggestionItem[]> => {
+      const q = query.trim();
+
+      // ph_issues is the app's issue spine (catalyst_issues is empty on
+      // staging — live-probed 2026-07-05). Column is `summary`, not title.
+      let issuesQuery = db
+        .from('ph_issues')
+        .select('id, issue_key, summary, issue_type')
+        .limit(6);
+      issuesQuery = q
+        ? issuesQuery.or(`issue_key.ilike.${q}%,summary.ilike.%${q}%`)
+        : issuesQuery.order('jira_updated_at', { ascending: false, nullsFirst: false });
+
+      const [pagesRes, issuesRes] = await Promise.all([
+        workspaceId
+          ? db
+              .from('kb_documents')
+              .select('id, title, slug, icon, space_id')
+              .eq('space_id', workspaceId)
+              .eq('is_template', false)
+              .ilike('title', `%${q}%`)
+              .limit(6)
+          : Promise.resolve({ data: [] }),
+        issuesQuery,
+      ]);
+
+      const pageItems: DefaultReactSuggestionItem[] = (pagesRes.data ?? []).map(
+        (p: { id: string; title: string | null; slug: string; icon: string | null }) => ({
+          title: p.title || 'Untitled',
+          subtext: 'Wiki page',
+          group: 'Pages',
+          icon: <span aria-hidden>{p.icon || '📄'}</span>,
+          onItemClick: () => {
+            editor.insertInlineContent([
+              {
+                type: 'pageLink',
+                props: {
+                  pageId: p.id,
+                  slug: p.slug,
+                  workspaceSlug: workspaceSlug ?? '',
+                  title: p.title || 'Untitled',
+                  icon: p.icon ?? '',
+                },
+              },
+              ' ',
+            ]);
+          },
+        }),
+      );
+
+      const issueItems: DefaultReactSuggestionItem[] = (issuesRes.data ?? []).map(
+        (r: { id: string; issue_key: string; summary: string | null; issue_type: string | null }) => ({
+          title: r.issue_key,
+          subtext: r.summary ?? undefined,
+          group: 'Work items',
+          onItemClick: () => {
+            editor.insertInlineContent([
+              {
+                type: 'workItemMention',
+                props: {
+                  entityType: toEntityType(r.issue_type),
+                  entityId: r.id,
+                  label: r.issue_key,
+                  title: r.summary ?? '',
+                },
+              },
+              ' ',
+            ]);
+          },
+        }),
+      );
+
+      return [...pageItems, ...issueItems];
+    },
+    [editor, workspaceId, workspaceSlug],
+  );
+
+  // `/` menu — default blocks + Callout.
+  const getSlashItems = useCallback(
+    async (query: string): Promise<DefaultReactSuggestionItem[]> => {
+      const calloutItem: DefaultReactSuggestionItem = {
+        title: 'Callout',
+        subtext: 'Highlight important information',
+        group: 'Basic blocks',
+        aliases: ['callout', 'note', 'info', 'panel', 'warning'],
+        onItemClick: () => {
+          // Notion behavior: replace the current empty paragraph, otherwise
+          // insert below and move the caret in.
+          const cursor = editor.getTextCursorPosition();
+          const current = cursor.block as Block;
+          const isEmptyParagraph =
+            current.type === 'paragraph' &&
+            (!Array.isArray(current.content) || current.content.length === 0);
+          if (isEmptyParagraph) {
+            editor.updateBlock(current, { type: 'callout' } as PartialBlock as never);
+          } else {
+            const inserted = editor.insertBlocks(
+              [{ type: 'callout' } as PartialBlock as never],
+              current,
+              'after',
+            );
+            if (inserted[0]) editor.setTextCursorPosition(inserted[0], 'start');
+          }
+        },
+      };
+      const databaseItem: DefaultReactSuggestionItem = {
+        title: 'Database',
+        subtext: 'Table, board, list, gallery or calendar',
+        group: 'Basic blocks',
+        aliases: ['database', 'table', 'board', 'kanban', 'grid'],
+        onItemClick: () => {
+          if (!workspaceId) return;
+          const cursor = editor.getTextCursorPosition();
+          const current = cursor.block as Block;
+          void createDatabase
+            .mutateAsync({ spaceId: workspaceId, name: 'Untitled database' })
+            .then((created) => {
+              editor.insertBlocks(
+                [{ type: 'databaseEmbed', props: { databaseId: created.id } } as PartialBlock as never],
+                current,
+                'after',
+              );
+            });
+        },
+      };
+      return filterSuggestionItems(
+        [
+          ...getDefaultReactSlashMenuItems(editor as never),
+          calloutItem,
+          ...(workspaceId ? [databaseItem] : []),
+        ],
+        query,
+      );
+    },
+    [editor, workspaceId, createDatabase],
+  );
+
+  return (
+    <div className="wiki-bn" data-dictation-style={dictationStyle} dir="auto">
+      <BlockNoteView
+        editor={editor}
+        editable={editable}
+        theme={resolvedTheme}
+        slashMenu={false}
+        onChange={() => onChange?.(editor as unknown as BlockNoteEditor)}
+      >
+        <SuggestionMenuController triggerCharacter="/" getItems={getSlashItems} />
+        <SuggestionMenuController triggerCharacter="@" getItems={getMentionItems} />
+      </BlockNoteView>
+    </div>
+  );
+}

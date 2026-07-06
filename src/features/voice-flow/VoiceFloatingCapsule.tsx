@@ -15,6 +15,8 @@ interface Props {
   analyserNode?: AnalyserNode | null;
   /** Partial streaming text during processing state */
   partialText?: string | null;
+  /** True when a text selection was active at start — spoken words are an instruction. */
+  commandMode?: boolean;
 }
 
 interface Pos { top: number; left: number }
@@ -42,8 +44,8 @@ if (typeof document !== 'undefined' && !document.getElementById(CAPSULE_STYLE_ID
       align-items: center;
       gap: 8px;
       background: rgba(16, 20, 36, 0.82); // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
-      border: 1px solid var(--ds-surface, rgba(255, 255, 255, 0.18));
-      box-shadow: inset 0 0 0 1px var(--ds-surface, rgba(255, 255, 255, 0.06)), 0 4px 24px var(--ds-shadow-raised, rgba(0, 0, 0, 0.28));
+      border: 1px solid rgba(255, 255, 255, 0.18); /* ads-scanner:ignore-line — always-dark Wispr overlay */
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06), 0 4px 24px var(--ds-shadow-raised, rgba(0, 0, 0, 0.28));
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
       border-radius: 999px;
@@ -103,8 +105,8 @@ if (typeof document !== 'undefined' && !document.getElementById(CAPSULE_STYLE_ID
     /* Spinner for processing */
     .vf-spinner {
       width: 14px; height: 14px;
-      border: 2px solid var(--ds-surface, rgba(255,255,255,0.2));
-      border-top-color: var(--ds-surface, rgba(255,255,255,0.8));
+      border: 2px solid rgba(255,255,255,0.2); /* ads-scanner:ignore-line — always-dark Wispr overlay */
+      border-top-color: rgba(255,255,255,0.8); /* ads-scanner:ignore-line — always-dark Wispr overlay */
       border-radius: 50%;
       animation: vf-spin 0.7s linear infinite;
       flex-shrink: 0;
@@ -122,7 +124,7 @@ if (typeof document !== 'undefined' && !document.getElementById(CAPSULE_STYLE_ID
     .vf-label {
       font-size: 12px;
       font-weight: 500;
-      color: var(--ds-surface, rgba(255,255,255,0.88));
+      color: rgba(255,255,255,0.88); /* ads-scanner:ignore-line — always-dark Wispr overlay */
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -130,18 +132,53 @@ if (typeof document !== 'undefined' && !document.getElementById(CAPSULE_STYLE_ID
       flex: 1;
     }
     .vf-label--muted {
-      color: var(--ds-surface, rgba(255,255,255,0.88));
+      color: rgba(255,255,255,0.88); /* ads-scanner:ignore-line — always-dark Wispr overlay */
       font-weight: 400;
     }
     .vf-label--result {
-      color: var(--ds-surface, rgba(255,255,255,0.88));
+      color: rgba(255,255,255,0.88); /* ads-scanner:ignore-line — always-dark Wispr overlay */
       font-weight: 400;
     }
     .vf-label--partial {
-      color: var(--ds-surface, rgba(255,255,255,0.55));
+      color: rgba(255,255,255,0.55); /* ads-scanner:ignore-line — always-dark Wispr overlay */
       font-weight: 400;
       font-style: italic;
     }
+
+    /* Live caption panel — CatyFlow "see what I'm saying" (CAT-VOICE-FLOW-
+       20260704-001). Multi-line, formal, per-line bidi so Arabic lays out
+       RTL and English LTR from the content itself. */
+    .vf-caption {
+      width: min(440px, calc(100vw - 48px));
+      max-height: 132px;
+      overflow-y: auto;
+      padding: 8px 12px;
+      margin-bottom: 8px;
+      border-radius: 10px;
+      background: rgba(16, 20, 36, 0.92); /* ads-scanner:ignore-line — always-dark Wispr overlay, matches capsule row */
+      border: 1px solid rgba(255, 255, 255, 0.12); /* ads-scanner:ignore-line — always-dark Wispr overlay */
+      box-shadow: 0 4px 24px var(--ds-shadow-raised, rgba(0, 0, 0, 0.28));
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      color: rgba(255,255,255,0.92); /* ads-scanner:ignore-line — always-dark Wispr overlay */
+      // ads-scanner:ignore-next-line — bespoke Wispr caption overlay, no ADS surface token
+      font-size: 14px;
+      line-height: 1.55;
+      white-space: pre-wrap;
+      word-break: break-word;
+      unicode-bidi: plaintext;
+      text-align: start;
+    }
+    .vf-caption__cursor {
+      display: inline-block;
+      width: 2px;
+      height: 1em;
+      vertical-align: -0.15em;
+      margin-inline-start: 4px;
+      background: #CD519D; // ads-scanner:ignore-line — CatyPulse signature magenta, canonical AI color
+      animation: vf-blink 1s steps(1) infinite;
+    }
+    @keyframes vf-blink { 50% { opacity: 0; } }
     .vf-label--error {
       color: #F87168; // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
     }
@@ -154,7 +191,7 @@ if (typeof document !== 'undefined' && !document.getElementById(CAPSULE_STYLE_ID
     .vf-timer {
       font-size: 12px;
       font-weight: 400;
-      color: var(--ds-surface, rgba(255,255,255,0.4));
+      color: rgba(255,255,255,0.4); /* ads-scanner:ignore-line — always-dark Wispr overlay */
       font-variant-numeric: tabular-nums;
       letter-spacing: 0.02em;
       flex-shrink: 0;
@@ -180,13 +217,13 @@ if (typeof document !== 'undefined' && !document.getElementById(CAPSULE_STYLE_ID
     .vf-hint-badge {
       display: inline-flex;
       align-items: center;
-      background: var(--ds-surface, rgba(255,255,255,0.06));
-      border: 1px solid var(--ds-surface, rgba(255,255,255,0.12));
+      background: rgba(255,255,255,0.06); /* ads-scanner:ignore-line — always-dark Wispr overlay */
+      border: 1px solid rgba(255,255,255,0.12); /* ads-scanner:ignore-line — always-dark Wispr overlay */
       border-radius: 999px;
       padding: 0px 8px;
       font-size: 10px;
       font-weight: 500;
-      color: var(--ds-surface, rgba(255,255,255,0.35));
+      color: rgba(255,255,255,0.35); /* ads-scanner:ignore-line — always-dark Wispr overlay */
       animation: vf-fade-in 250ms ease forwards;
       align-self: flex-start;
       margin-left: 12px;
@@ -208,10 +245,10 @@ if (typeof document !== 'undefined' && !document.getElementById(CAPSULE_STYLE_ID
       transition: background 100ms;
     }
     .vf-btn--cancel {
-      background: var(--ds-surface, rgba(255,255,255,0.12));
-      color: var(--ds-surface, rgba(255,255,255,0.7));
+      background: rgba(255,255,255,0.12); /* ads-scanner:ignore-line — always-dark Wispr overlay */
+      color: rgba(255,255,255,0.7); /* ads-scanner:ignore-line — always-dark Wispr overlay */
     }
-    .vf-btn--cancel:hover { background: var(--ds-surface, rgba(255,255,255,0.22)); }
+    .vf-btn--cancel:hover { background: rgba(255,255,255,0.22); }
     .vf-btn--commit {
       background: var(--ds-link);
       color: var(--ds-text-inverse);
@@ -307,6 +344,7 @@ export function VoiceFloatingCapsule({
   detectedLanguage,
   analyserNode,
   partialText,
+  commandMode,
 }: Props) {
   const [pos, setPos] = useState<Pos | null>(null);
   const posRef = useRef<Pos | null>(null);
@@ -361,7 +399,9 @@ export function VoiceFloatingCapsule({
         return (
           <>
             <WaveformBars analyserNode={analyserNode} />
-            <span className="vf-label vf-label--muted">Listening… (Space to finish)</span>
+            <span className="vf-label vf-label--muted">
+              {commandMode ? 'Command — say the change to apply' : 'Listening… (Space to finish)'}
+            </span>
             {remainingMs !== undefined && (
               <span className="vf-timer" aria-label={`${formatMs(remainingMs)} remaining`}>
                 {formatMs(remainingMs)}
@@ -434,6 +474,19 @@ export function VoiceFloatingCapsule({
       className="vf-capsule vf-capsule--entering"
       style={{ top: pos.top, left: pos.left }}
     >
+      {(status === 'listening' || status === 'processing') && partialText ? (
+        <div
+          className="vf-caption"
+          dir="auto"
+          aria-label="Live transcript"
+          ref={(el) => {
+            if (el) el.scrollTop = el.scrollHeight;
+          }}
+        >
+          {partialText}
+          <span className="vf-caption__cursor" aria-hidden="true" />
+        </div>
+      ) : null}
       <div className={`vf-capsule__row${isReview ? ' vf-capsule__row--review' : ''}`}>
         {content}
       </div>

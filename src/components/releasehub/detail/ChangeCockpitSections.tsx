@@ -203,22 +203,43 @@ function FreezeSummary({ cockpit }: { cockpit: ChangeCockpit }) {
 }
 
 // ── Incidents & defects ────────────────────────────────────────────
-function IssueSummary({ issues }: { issues: CockpitIssue[] }) {
+const OPEN_ISSUE = (s: string | null) => !!s && !/^(resolved|closed|done|cancelled)$/i.test(s);
+const CRIT_ISSUE = (s: string | null) => !!s && /^(sev1|sev2|critical|high|p1|p2)$/i.test(s);
+function kindLabel(k: string) { return k.charAt(0).toUpperCase() + k.slice(1); }
+
+function IssueSummary({ issues, canManage, onRaiseIssue }: { issues: CockpitIssue[]; canManage: boolean; onRaiseIssue?: (kind: 'incident' | 'defect', sopStepId?: string | null) => void }) {
   const navigate = useNavigate();
   const incidents = issues.filter((i) => i.kind === 'incident');
   const defects = issues.filter((i) => i.kind === 'defect');
+  const open = issues.filter((i) => OPEN_ISSUE(i.status)).length;
+  const crit = issues.filter((i) => CRIT_ISSUE(i.severity)).length;
+  const raiseBtns = canManage && onRaiseIssue ? (
+    <div style={{ display: 'flex', gap: 6 }}>
+      <button onClick={() => onRaiseIssue('incident')} style={raiseBtn('var(--ds-text-danger)')}>Raise incident</button>
+      <button onClick={() => onRaiseIssue('defect')} style={raiseBtn('var(--ds-text-information)')}>Raise defect</button>
+    </div>
+  ) : undefined;
   return (
-    <Section title="Incidents & defects" count={issues.length}>
+    <Section title="Incidents & defects" count={issues.length} action={raiseBtns}>
       {issues.length === 0 ? (
-        <div style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-300)', color: T.success }}>✓ No incidents or defects raised during this change.</div>
+        <div style={{ background: T.sunken, borderRadius: 6, padding: 12 }}>
+          <p style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: T.success, margin: 0 }}>✓ No incidents or defects raised during this change</p>
+          <p style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', color: T.subtle, margin: '4px 0 0' }}>If deployment breaks something operationally, raise an incident; if a validation or test check fails, raise a defect. Both stay linked to this change and its SOP step.</p>
+        </div>
       ) : (
         <>
-          <div style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', color: T.danger }}>{incidents.length} incident(s) · {defects.length} defect(s) raised during execution</div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12 }}>
+            <Stat label="Incidents" value={incidents.length} tone={incidents.length ? T.danger : undefined} />
+            <Stat label="Defects" value={defects.length} tone={defects.length ? T.warning : undefined} />
+            <Stat label="Open" value={open} tone={open ? T.danger : undefined} />
+            <Stat label="Critical" value={crit} tone={crit ? T.danger : undefined} />
+          </div>
           {issues.map((i) => (
             <button key={i.id} onClick={() => navigate(i.kind === 'incident' ? `/incidents/${i.id}` : `/testhub/defects/${i.id}`)}
-              style={{ display: 'flex', alignItems: 'center', gap: 10, textAlign: 'left', width: '100%', background: T.sunken, border: `1px solid ${T.border}`, borderRadius: 6, padding: '8px 12px', cursor: 'pointer' }}>
-              <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: T.subtle, textTransform: 'uppercase' }}>{i.kind}</span>
-              <span style={{ flex: 1, minWidth: 0, fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-300)', color: T.text, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{i.key ? `${i.key} · ` : ''}{i.title ?? '—'}</span>
+              style={{ display: 'flex', alignItems: 'center', gap: 10, textAlign: 'left', width: '100%', background: T.sunken, border: `1px solid ${CRIT_ISSUE(i.severity) ? 'var(--ds-border-danger)' : T.border}`, borderRadius: 6, padding: '8px 12px', cursor: 'pointer' }}>
+              <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: i.kind === 'incident' ? T.danger : T.subtle }}>{kindLabel(i.kind)}</span>
+              <span style={{ flex: 1, minWidth: 0, fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-300)', color: T.text, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{i.key ? `${i.key} · ` : ''}{i.title ?? '—'}{i.sopStepId ? ' · from SOP step' : ''}</span>
+              {i.severity && <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-50)', fontWeight: 700, color: CRIT_ISSUE(i.severity) ? T.danger : T.subtle }}>{i.severity}</span>}
               {i.status && <StatusLozenge status={i.status} />}
             </button>
           ))}
@@ -247,8 +268,8 @@ function ProdEventSummary({ cockpit }: { cockpit: ChangeCockpit }) {
             {pe.executedBy ? ` · by ${pe.executedBy}` : ''}
           </div>
           <div style={{ display: 'flex', gap: 8 }}>
-            <button onClick={() => navigate('/release-hub/production-events')} style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', color: T.link, background: 'transparent', border: 'none', cursor: 'pointer', padding: 0 }}>View event →</button>
-            <span title="Replay is built in a later phase" style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', color: T.subtlest, cursor: 'not-allowed' }}>Replay (coming soon)</span>
+            <button onClick={() => navigate(`/release-hub/production-events/${pe.eventKey ?? pe.id}`)} style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: T.link, background: 'transparent', border: 'none', cursor: 'pointer', padding: 0 }}>Open replay →</button>
+            <button onClick={() => navigate('/release-hub/production-events')} style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', color: T.subtle, background: 'transparent', border: 'none', cursor: 'pointer', padding: 0 }}>All events</button>
           </div>
         </>
       )}
@@ -256,7 +277,9 @@ function ProdEventSummary({ cockpit }: { cockpit: ChangeCockpit }) {
   );
 }
 
-export function ChangeCockpitSections({ cockpit, onOpenSop }: { cockpit: ChangeCockpit; onOpenSop: () => void }) {
+const raiseBtn = (tone: string): React.CSSProperties => ({ height: 26, padding: '0 8px', borderRadius: 6, border: `1px solid ${tone}`, background: 'transparent', color: tone, cursor: 'pointer', fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', fontWeight: 600 });
+
+export function ChangeCockpitSections({ cockpit, onOpenSop, canManage = false, onRaiseIssue }: { cockpit: ChangeCockpit; onOpenSop: () => void; canManage?: boolean; onRaiseIssue?: (kind: 'incident' | 'defect', sopStepId?: string | null) => void }) {
   return (
     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 16, padding: '16px 0' }}>
       <LinkedReleases releases={cockpit.releases} isUnlinkedProduction={cockpit.isUnlinkedProduction} />
@@ -264,7 +287,7 @@ export function ChangeCockpitSections({ cockpit, onOpenSop }: { cockpit: ChangeC
       <SopSummary cockpit={cockpit} onOpenSop={onOpenSop} />
       <SignoffSummary cockpit={cockpit} />
       <FreezeSummary cockpit={cockpit} />
-      <IssueSummary issues={cockpit.issues} />
+      <IssueSummary issues={cockpit.issues} canManage={canManage} onRaiseIssue={onRaiseIssue} />
       <ProdEventSummary cockpit={cockpit} />
     </div>
   );

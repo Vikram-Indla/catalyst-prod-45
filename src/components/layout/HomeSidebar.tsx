@@ -113,8 +113,7 @@ const HUB_NAV_ITEMS = [
   { key: 'test', label: 'Test Hub', href: '/testhub/dashboard' },
   { key: 'incident', label: 'Incident Hub', href: '/incident-hub' },
   { key: 'task', label: 'Tasks', href: '/tasks/overview' },
-  { key: 'plan', label: 'Plan Hub', href: '/planhub' },
-  { key: 'wiki', label: 'Wiki', href: '/wiki' },
+  { key: 'docex', label: 'Folio', href: '/folio' },
 ] as const;
 
 /** Skeleton row — keeps row height stable while data lands. */
@@ -487,7 +486,6 @@ export default function HomeSidebar({
         test:     'var(--ds-background-success-bold)',
         incident: 'var(--ds-background-danger-bold)',
         task:     'var(--ds-background-warning-bold)',
-        plan:     'var(--ds-background-discovery-bold)',
         wiki:     'var(--ds-text-subtle)',
       };
 

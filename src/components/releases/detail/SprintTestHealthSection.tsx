@@ -84,9 +84,9 @@ export function SprintTestHealthSection({ sprintId }: { sprintId: string }) {
             ? <ChevronDownIcon label="Collapse test health" />
             : <ChevronRightIcon label="Expand test health" />}
         </button>
-        <h3 style={{ margin: 0, fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: TEXT }}>
+        <div role="heading" aria-level={3} style={{ margin: 0, fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: TEXT }}>
           Test health
-        </h3>
+        </div>
         {health && (
           <Lozenge appearance={GATE_APPEARANCE[health.gate]} isBold>
             {GATE_LABEL[health.gate]}

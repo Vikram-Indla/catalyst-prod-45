@@ -39,8 +39,7 @@ const PATH_TO_TONE: Array<{ prefix: string; tone: HubTone }> = [
   { prefix: '/testhub',                tone: 'lime'    },
   { prefix: '/incident-hub',           tone: 'red'     },
   { prefix: '/tasks',                tone: 'yellow'  },
-  { prefix: '/planhub',                tone: 'gray'    },
-  { prefix: '/wiki',                   tone: 'gray'    },
+  { prefix: '/docex',                  tone: 'gray'    },
 ];
 
 /**

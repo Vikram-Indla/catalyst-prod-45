@@ -41,3 +41,53 @@ No-drawer proof: row click navigates to full-page detail (URL change); no drawer
 | P4-4 | Step expanded (actions) | (expand #51) | — | planned/actual + DB commit e4f5g6h, assignee picker, commit/evidence/actual capture, Mark done/Block/Fail, reorder ↑↓ |
 
 No-drawer proof: runbook is inline in the SOP tab; template create/edit + apply are ads/Modal (centered), no side panel. Demo (template cccc0000-…-01, steps dddd0000-…-a1..a4) is staging-only, documented in release-ops-phase-4-functional-proof.md.
+
+## Phase 5 — For You SOP cards + prompts (2026-07-06, cyij seeded, user vikramataol@gmail.com)
+| # | Proof | Route | MCP ID | Result |
+|---|---|---|---|---|
+| P5-1 | For You Change-execution section | /for-you | ss_3515q4rso | prompts (overdue/emergency/missing-capture) + day-of-change (CHG8841 running, CAT-CHG-21 CHANGE MANAGER) |
+| P5-2 | Assigned SOP step cards | /for-you (scroll) | (scroll of ss_3515q4rso) | #52 OVERDUE, #50 RUNNING 15m left + capture, #51/#53 UPCOMING; MISSING COMMIT/EVIDENCE chips; Changes-you-manage |
+| P5-3 | For You action validation | /for-you | ss_3692x7626 | "Mark done" on running step missing commit → toast "This step requires a commit ID before it can be marked done" |
+
+No-drawer proof: section is inline cards + toasts; no side panel. Live page = ForYouPage.atlaskit.tsx. Demo assignments (owner_id 6bbd0863 on 4 CHG8841 steps + CAT-CHG-21 manager) are staging-only, documented in release-ops-phase-5-functional-proof.md.
+
+## Phase 6 — Timeline / Execution Calendar / Change Board (2026-07-06, cyij)
+| # | Proof | Route | MCP ID | Result |
+|---|---|---|---|---|
+| P6-1 | Change execution board | /release-hub/change-board | ss_3942892t3 | lanes Draft…Implementing; CHG8841 SCHEDULED (EMERGENCY, 2 releases, SOP 2/9), CAT-CHG-21 Implementing (Unlinked prod); empty-lane states |
+| P6-2 | Execution calendar (day) | /release-hub/execution | ss_248455dd3 | hourly slots 06:00 #52 LATE + #50 ● LIVE, 07:00 #51, 08:00 #53; emergency ⚡, commit/ev markers; Day/Week + scope lens |
+| P6-3 | Release timeline | /release-hub/timeline | ss_624886294 | 8 July + Q3 Platform; NO PRODUCT/EMERGENCY/EMPTY SCOPE markers; scope counts; group-by + risk-only + search |
+| P6-4 | Timeline expansion | /release-hub/timeline (expand 8 July) | ss_9888rozlz | BRs(0)/Sprints(0) educational empties + Changes(1) CHG8841 EMERGENCY/HIGH/SOP 2/9/SCHEDULED (clickable) |
+
+No-drawer proof: board/timeline/execution are inline surfaces; card/slot/release clicks route to full pages; only modal is the board terminal-reason ads/Modal (centered). Uses existing seed; no new demo data.
+
+## Phase 7 — Sign-off visual + emergency override (2026-07-06, cyij seeded)
+| # | Proof | Route | MCP ID | Result |
+|---|---|---|---|---|
+| P7-1 | Sign-off Queue visual + override requests | /release-hub/sign-off-queue | ss_3362qe1xx | Visual/Table + 8 filters + search + Request sign-off; ⚡ override-request panel (Approve/Reject); 8 July + Q3 release nodes with OVERDUE/APPROVED release gates; CHG8841 "6 gates · Rejected" |
+| P7-2 | Change node expanded to gates | /release-hub/sign-off-queue (expand CHG8841) | (scroll) | 6 gates: Change-mgr/Qa PENDING, Qa APPROVED, Change-mgr/Release-mgr OVERDUE, Uat REJECTED + reason; ⚡ EMERGENCY OVERRIDE — APPROVED bypass badge; inline Approve/Reject; approver avatars + Unassigned |
+
+No-drawer proof: graph expands inline; actions are inline buttons or centered ads/Modal. Demo gates/override (dddd0000-…-b3/b4/c2/c3/e2) are staging-only, documented in release-ops-phase-7-functional-proof.md.
+
+## Phase 8 — Incident/Defect execution linkage (2026-07-06, cyij seeded)
+| # | Proof | Route | MCP ID | Result |
+|---|---|---|---|---|
+| P8-1 | Change Detail issue ledger | /release-hub/changes/chg8841 | (scroll of ss_5442mc7o2) | counts 1 Incidents/1 Defects/2 Open/1 Critical; INC-154 SEV3 OPEN + DEF-RO-8841 critical rows; Raise incident/Raise defect actions |
+| P8-2 | Contextual raise reuses existing modal | /release-hub/changes/chg8841 (Raise incident) | ss_5442mc7o2 | EXISTING global "Create Incident" modal (rich editor, Project/Release/Type, SEV1-4) — not rebuilt; RaiseIssue writes lineage post-create |
+
+No-drawer proof: ledger + SOP step indicators inline; raise reuses centered create modals. Demo issues (eeee0000-…-f1/f2 → source_change_id CHG8841, source_sop_step_id a2/a4) staging-only, documented in release-ops-phase-8-functional-proof.md.
+
+## Phase 9 — Production event full replay (2026-07-06, cyij seeded)
+| # | Proof | Route | MCP ID | Result |
+|---|---|---|---|---|
+| P9-1 | Replay full page (top) | /release-hub/production-events/PE-8841 | ss_3717pu8jx | breadcrumb + Success + Copy summary + header(2h12m overrun) + Emergency-override marker + deterministic exec summary + context + reconstructed scope + SOP timeline |
+| P9-2 | Replay trails | (scroll) | (scroll of ss_3717pu8jx) | SOP step issue markers; Commit ledger (2-missing audit gap + db e4f5g6h); Evidence ledger (3-missing); Sign-off trail (Overdue/Approved/Pending/Rejected+reason) + ⚡ override bypass; Freeze trail clean |
+
+No-drawer proof: full-page replay; list modal is quick-preview only. Demo (PE-8841 event_key, 12min overrun) staging-only, documented in release-ops-phase-9-functional-proof.md.
+
+## Phase 10 — Closeout / E2E (2026-07-06, cyij seeded)
+| # | Proof | Route | MCP ID | Result |
+|---|---|---|---|---|
+| P10-1 | Execution Calendar issue badges | /release-hub/execution | ss_16317rbmo | #51 Run DB migration ⚠1 + #53 Smoke test ⚠1 (steps with linked INC-154/DEF-RO-8841); LIVE/LATE markers |
+
+Evidence index: the full Release-Ops screenshot pack spans P0–P10 above (each row maps to an acceptance criterion). Phase-10 closures also build-verified (generate/refresh prod-event button; the E2E chain reuses P3–P9 surfaces already screenshotted). No drawer opened on any interaction; no Folio/wiki touched.

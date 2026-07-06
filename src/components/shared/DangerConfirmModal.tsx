@@ -217,7 +217,11 @@ export function DangerConfirmModal({
       style={{
         position: 'fixed',
         inset: 0,
-        background: 'var(--ds-shadow-raised, rgba(9, 30, 66, 0.54))',
+        // --ds-blanket is Atlaskit's modal-backdrop COLOR. The previous value
+        // (--ds-shadow-raised) is a box-shadow LIST — invalid as a background,
+        // so the backdrop rendered fully transparent and the dialog read as a
+        // floating inline panel (Vikram 2026-07-06, Docex delete confirm).
+        background: 'var(--ds-blanket)',
         zIndex: 9999,
         display: 'flex',
         alignItems: 'flex-start',

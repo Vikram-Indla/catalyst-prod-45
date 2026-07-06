@@ -10,7 +10,7 @@ import { CatalystViewBase } from '../shared/CatalystViewBase';
 import { useCatalystIssue, useCatalystIssueMutations } from '../shared/hooks';
 import {
   CatalystTitleEditor, CatalystQuickActions, Description, CatalystAcceptanceCriteria,
-  CatalystActivitySection, CatalystAttachmentsPanel, CatalystSidebarDetails, CatalystKeyDetails, StatusLozengeDropdown,
+  CatalystActivitySection, CatalystAttachmentsPanel, CatalystPagesSection, CatalystSidebarDetails, CatalystKeyDetails, StatusLozengeDropdown,
 } from '../shared/sections';
 import { LinkedWorkItemsSection } from '@/modules/project-work-hub/components/linked-work-items';
 import { TestCoveragePanel } from '../story/TestCoveragePanel';
@@ -100,6 +100,7 @@ export default function CatalystViewIncident({
       {/* Canonical section order across all CatalystView*: Attachments
           → Child work items → Linked work items → Activity. */}
       <CatalystAttachmentsPanel issueId={issue?.id} projectKey={issue?.project_key || projectKey} isOpen={isOpen} />
+      <CatalystPagesSection entityType="incident" entityId={issue?.id} entityLabel={issue?.issue_key} isOpen={isOpen} />
 
       {issue?.issue_key && (
         <SubtasksPanel

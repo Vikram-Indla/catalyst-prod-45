@@ -152,7 +152,6 @@ import hubReleaseUrl from '@/assets/icons/hubs/release.svg?url';
 import hubTestUrl from '@/assets/icons/hubs/test.svg?url';
 import hubIncidentUrl from '@/assets/icons/hubs/incident.svg?url';
 import hubTaskUrl from '@/assets/icons/hubs/tasks.svg?url';
-import hubPlanUrl from '@/assets/icons/hubs/plan.svg?url';
 import hubWikiUrl from '@/assets/icons/hubs/wiki.svg?url';
 
 import hubHomeOutlineUrl from '@/assets/icons/hubs/home-outline.svg?url';
@@ -164,7 +163,6 @@ import hubReleaseOutlineUrl from '@/assets/icons/hubs/release-outline.svg?url';
 import hubTestOutlineUrl from '@/assets/icons/hubs/test-outline.svg?url';
 import hubIncidentOutlineUrl from '@/assets/icons/hubs/incident-outline.svg?url';
 import hubTasksOutlineUrl from '@/assets/icons/hubs/tasks-outline.svg?url';
-import hubPlanOutlineUrl from '@/assets/icons/hubs/plan-outline.svg?url';
 import hubWikiOutlineUrl from '@/assets/icons/hubs/wiki-outline.svg?url';
 
 // ═══════════════════════════════════════════════════════════════════════
@@ -371,7 +369,7 @@ export function pickStockAvatarForKey(projectKey: string): StockAvatarId {
 
 export type HubKey =
   | 'home' | 'strategy' | 'ideation' | 'product' | 'project'
-  | 'release' | 'test' | 'incident' | 'task' | 'plan' | 'wiki';
+  | 'release' | 'test' | 'incident' | 'task' | 'wiki' | 'docex';
 
 export const HUB_ICON_REGISTRY: Record<HubKey, string> = {
   home:     hubHomeUrl,
@@ -383,8 +381,9 @@ export const HUB_ICON_REGISTRY: Record<HubKey, string> = {
   test:     hubTestUrl,
   incident: hubIncidentUrl,
   task:     hubTaskUrl,
-  plan:     hubPlanUrl,
   wiki:     hubWikiUrl,
+  // Docex reuses the wiki glyph until a dedicated asset lands (rename 2026-07-05)
+  docex:    hubWikiUrl,
 };
 
 export const HUB_ICON_OUTLINE_REGISTRY: Record<HubKey, string> = {
@@ -397,8 +396,8 @@ export const HUB_ICON_OUTLINE_REGISTRY: Record<HubKey, string> = {
   test:     hubTestOutlineUrl,
   incident: hubIncidentOutlineUrl,
   task:     hubTasksOutlineUrl,
-  plan:     hubPlanOutlineUrl,
   wiki:     hubWikiOutlineUrl,
+  docex:    hubWikiOutlineUrl,
 };
 
 // ═══════════════════════════════════════════════════════════════════════

@@ -29,6 +29,10 @@ export interface VoiceResult {
   confidence?: 'high' | 'low';
   durationMs: number;
   geminiLatencyMs?: number;
+  /** Raw ASR transcript before the CatyFlow cleanup pass (show-original/undo). */
+  rawText?: string;
+  /** Which provider produced the cleanup, when the pass ran. */
+  cleanupProvider?: string;
 }
 
 export interface VoiceFlowContextValue {

@@ -1,11 +1,16 @@
 import React, { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useFeatureFlags } from '@/contexts/FeatureFlagContext';
+import { useAuth } from '@/hooks/useAuth';
 import { VOICE_FLOW_CONFIG, getPreferredLanguage, setPreferredLanguage } from './voiceFlow.config';
 import { AudioCaptureService } from './AudioCaptureService';
 import { insertTextIntoTarget } from './insertTextIntoTarget';
+import { cleanupTranscript } from './cleanupTranscript';
+import { RealtimeTranscriber, realtimeAvailable } from './RealtimeTranscriber';
+import { armCorrectionLearner, getActiveTerms } from './dictionary';
 import { useVoiceHotkey } from './useVoiceHotkey';
 import { VoiceFloatingCapsule } from './VoiceFloatingCapsule';
+import { DictationCTA } from './DictationCTA';
 import type { ActiveField, VoiceFlowContextValue, VoiceResult, VoiceStatus } from './voiceFlow.types';
 
 const VoiceFlowContext = createContext<VoiceFlowContextValue>({
@@ -28,9 +33,16 @@ const VOICE_FN_URL = `${SUPABASE_URL}/functions/v1/voice-transcribe`;
 
 export function VoiceFlowProvider({ children }: Props) {
   const { isModuleEnabled } = useFeatureFlags();
+  const { isAuthenticated, loading: authLoading } = useAuth();
+  // CatyFlow is a signed-in feature ONLY: the login page (and every other
+  // public surface) must never show the mic. Every dictation lane needs the
+  // user's JWT anyway, so signed-out dictation could never work. While auth
+  // state is still resolving we stay OFF (public-safe default).
   const featureEnabled =
     import.meta.env.VITE_VOICE_DICTATION_ENABLED === 'true' &&
-    isModuleEnabled('voice_dictation');
+    isModuleEnabled('voice_dictation') &&
+    !authLoading &&
+    isAuthenticated;
 
   // One-time migration: remove stale localStorage language key that caused
   // Urdu/Arabic/Hindi sessions to bypass Groq and use native SpeechRecognition.
@@ -50,6 +62,9 @@ export function VoiceFlowProvider({ children }: Props) {
 
   const statusRef         = useRef<VoiceStatus>('idle');
   const captureRef        = useRef<AudioCaptureService>(new AudioCaptureService());
+  const realtimeRef       = useRef<RealtimeTranscriber | null>(null);
+  const commandRef        = useRef<{ selectedText: string } | null>(null);
+  const [commandMode, setCommandMode] = useState(false);
   const fieldRef          = useRef<ActiveField | null>(null);
   const sessionIdRef      = useRef<string | null>(null);
   const stopAndProcessRef = useRef<() => Promise<void>>(() => Promise.resolve());
@@ -63,6 +78,10 @@ export function VoiceFlowProvider({ children }: Props) {
   };
 
   const reset = useCallback(() => {
+    realtimeRef.current?.dispose();
+    realtimeRef.current = null;
+    commandRef.current = null;
+    setCommandMode(false);
     if (nativeModeRef.current) {
       recognitionRef.current?.abort();
       recognitionRef.current = null;
@@ -104,6 +123,30 @@ export function VoiceFlowProvider({ children }: Props) {
     if (!captureRef.current.isRecording && statusRef.current !== 'listening') return;
     setStatusBoth('processing');
     setAnalyserNode(null); // stop waveform; mic stops below
+
+    // ── CatyFlow realtime shortcut ─────────────────────────────────────
+    // If the live WebRTC lane produced a transcript, it IS the result —
+    // no batch round-trip. Small grace wait lets the final delta land.
+    const rt = realtimeRef.current;
+    if (rt?.hasTranscript) {
+      const rtStart = Date.now();
+      await new Promise((r) => setTimeout(r, 350));
+      const transcript = rt.transcript;
+      rt.dispose();
+      realtimeRef.current = null;
+      let durationRt = 0;
+      try {
+        ({ durationMs: durationRt } = await captureRef.current.stop());
+      } catch { /* recording stop failure is irrelevant on this lane */ }
+      if (transcript) {
+        setPartialText(null);
+        await handleResult(transcript, undefined, 'high', durationRt, rtStart);
+        return;
+      }
+    } else if (rt) {
+      rt.dispose();
+      realtimeRef.current = null;
+    }
 
     let blob: Blob;
     let durationMs: number;
@@ -276,8 +319,71 @@ export function VoiceFlowProvider({ children }: Props) {
     durationMs: number,
     geminiStart: number,
   ) => {
+    // Command mode: the transcript is an INSTRUCTION applied to the text
+    // that was selected at activation. The rewrite replaces the selection
+    // (insertTextIntoTarget writes over the saved range). ~1.5s is
+    // acceptable here, so no deadline race — failure is surfaced.
+    const command = commandRef.current;
+    if (command) {
+      commandRef.current = null;
+      setCommandMode(false);
+      try {
+        const { data, error } = await supabase.functions.invoke('catyflow-clean', {
+          body: { mode: 'command', text: englishText, selected_text: command.selectedText },
+        });
+        const rewritten = (data as { cleaned?: string } | null)?.cleaned?.trim();
+        if (error || !rewritten) throw new Error('command rewrite failed');
+        const voiceResultCmd: VoiceResult = {
+          englishText: rewritten,
+          rawText: command.selectedText,
+          detectedLanguage: detectedLang,
+          confidence: 'high',
+          durationMs,
+          geminiLatencyMs: Date.now() - geminiStart,
+        };
+        setResult(voiceResultCmd);
+        if (VOICE_FLOW_CONFIG.autoCommit && fieldRef.current) {
+          setStatusBoth('committing');
+          try {
+            insertTextIntoTarget(fieldRef.current, rewritten);
+          } catch (insertErr) {
+            console.warn('[VoiceFlow] command insert failed:', insertErr);
+          }
+          void updateSession('completed', voiceResultCmd);
+          scheduleReset(200);
+        } else {
+          setStatusBoth('ready');
+        }
+      } catch {
+        setErrorMessage('Could not apply the change — selection left untouched');
+        setStatusBoth('error');
+        scheduleReset(4000);
+      }
+      return;
+    }
+
+    // CatyFlow polish pass (CAT-VOICE-FLOW-20260704-001): register-aware
+    // cleanup raced against a deadline — a late/failed cleanup silently
+    // falls back to the raw transcript, dictation never blocks on it.
+    let finalText = englishText;
+    let rawText: string | undefined;
+    let cleanupProvider: string | undefined;
+    if (VOICE_FLOW_CONFIG.cleanupEnabled) {
+      try {
+        const dictionary = await getActiveTerms().catch(() => [] as string[]);
+        const outcome = await cleanupTranscript(englishText, fieldRef.current?.element, { dictionary });
+        if (outcome && outcome.cleaned !== englishText) {
+          rawText = englishText;
+          finalText = outcome.cleaned;
+          cleanupProvider = outcome.provider;
+        }
+      } catch { /* raw transcript stands */ }
+    }
+
     const voiceResult: VoiceResult = {
-      englishText,
+      englishText: finalText,
+      rawText,
+      cleanupProvider,
       detectedLanguage: detectedLang,
       confidence,
       durationMs,
@@ -302,7 +408,10 @@ export function VoiceFlowProvider({ children }: Props) {
     if (VOICE_FLOW_CONFIG.autoCommit && fieldRef.current) {
       setStatusBoth('committing');
       try {
-        insertTextIntoTarget(fieldRef.current, englishText);
+        insertTextIntoTarget(fieldRef.current, finalText);
+        // Dictionary learning: if the user types over what we inserted,
+        // the correction becomes vocabulary (fires on blur / 45s).
+        armCorrectionLearner(fieldRef.current.element);
       } catch (insertErr) {
         console.warn('[VoiceFlow] auto-commit insert failed:', insertErr);
       }
@@ -331,6 +440,8 @@ export function VoiceFlowProvider({ children }: Props) {
   // ─── Cancel ──────────────────────────────────────────────────────────
   const cancel = useCallback(() => {
     if (statusRef.current === 'idle') return;
+    realtimeRef.current?.dispose();
+    realtimeRef.current = null;
     if (nativeModeRef.current) {
       recognitionRef.current?.abort();
       recognitionRef.current = null;
@@ -376,6 +487,25 @@ export function VoiceFlowProvider({ children }: Props) {
     }
 
     fieldRef.current = field;
+
+    // Command mode (Wispr parity): a non-collapsed selection at activation
+    // means "apply my spoken instruction to this text" instead of dictation.
+    let selectedText = '';
+    if (field.kind === 'contenteditable') {
+      selectedText = field.savedRange?.toString() ?? '';
+    } else {
+      const el = field.element as HTMLInputElement | HTMLTextAreaElement;
+      if (
+        typeof el.value === 'string' &&
+        field.savedStart >= 0 &&
+        field.savedEnd > field.savedStart
+      ) {
+        selectedText = el.value.slice(field.savedStart, field.savedEnd);
+      }
+    }
+    commandRef.current = selectedText.trim() ? { selectedText } : null;
+    setCommandMode(!!commandRef.current);
+
     setStatusBoth('arming');
 
     const sessId = crypto.randomUUID();
@@ -408,7 +538,12 @@ export function VoiceFlowProvider({ children }: Props) {
           if (event.results[i].isFinal) finalTranscript += t;
           else interim += t;
         }
-        if (interim && statusRef.current === 'listening') setPartialText(interim);
+        // Live caption accumulates finals + interim so the speaker sees the
+        // whole utterance build up, not just the trailing fragment.
+        if (statusRef.current === 'listening') {
+          const live = (finalTranscript + interim).trim();
+          if (live) setPartialText(live);
+        }
       };
 
       recognition.onend = async () => {
@@ -471,6 +606,39 @@ export function VoiceFlowProvider({ children }: Props) {
       const node = captureRef.current.getAnalyserNode();
       setAnalyserNode(node);
 
+      // CatyFlow realtime lane: when the AI gateway is configured, stream
+      // live transcription over WebRTC in parallel with the recording —
+      // Arabic/English words appear on screen while speaking, and the
+      // final transcript replaces the batch round-trip on stop. The
+      // MediaRecorder keeps recording regardless, so a realtime failure
+      // costs nothing: stopAndProcess falls back to the batch path.
+      realtimeRef.current?.dispose();
+      realtimeRef.current = null;
+      const micStream = captureRef.current.getStream();
+      if (micStream) {
+        void realtimeAvailable().then((ok) => {
+          if (!ok || (statusRef.current !== 'listening' && statusRef.current !== 'arming')) return;
+          const rt = new RealtimeTranscriber();
+          realtimeRef.current = rt;
+          void getActiveTerms()
+            .catch(() => [] as string[])
+            .then((vocabulary) =>
+              rt.start(
+                micStream,
+                {
+                  onLive: (text) => {
+                    if (statusRef.current === 'listening' && text) setPartialText(text);
+                  },
+                },
+                vocabulary,
+              ),
+            )
+            .then((started) => {
+              if (!started && realtimeRef.current === rt) realtimeRef.current = null;
+            });
+        });
+      }
+
       setStatusBoth('listening');
     } catch (e) {
       const msg = e instanceof Error ? e.message : 'Microphone access denied';
@@ -530,6 +698,9 @@ export function VoiceFlowProvider({ children }: Props) {
     <VoiceFlowContext.Provider value={contextValue}>
       {children}
       {featureEnabled && (
+        <DictationCTA sessionActive={status !== 'idle'} onActivate={handleActivate} />
+      )}
+      {featureEnabled && (
         <VoiceFloatingCapsule
           status={status}
           anchorElement={fieldRef.current?.element ?? null}
@@ -541,6 +712,7 @@ export function VoiceFlowProvider({ children }: Props) {
           detectedLanguage={detectedLanguage}
           analyserNode={analyserNode}
           partialText={partialText}
+          commandMode={commandMode}
         />
       )}
     </VoiceFlowContext.Provider>
