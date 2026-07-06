@@ -107,3 +107,42 @@ Gates after slice 3: tsc 183 = baseline · lint:colors:gate 0 = baseline.
 | /admin unmatched deep link | ss_1292gwa18 (silent blank) | ss_4727k6ahl | FIXED — 404 catch-all |
 
 Gates after slice 4: tsc 183 = baseline · lint:colors:gate 0 = baseline.
+
+## Slice 6 — after-pairs completed for EVERY screen (2026-07-06)
+
+Every previously "—" after-cell now has a final-state screenshot documenting the
+screen post-sweep (the cross-cutting fixes — icon className carrier, header
+geometry, global 404, canonical lozenges — run through shared components on all
+of these surfaces):
+
+| Surface | Before | After (final state) |
+|---|---|---|
+| Home / For you | ss_9769ku56d | ss_9017q8tn3 |
+| BAU Board | ss_2650tmi1s | ss_3805h15mx |
+| BAU Dashboard | ss_8696h4uon | ss_8600owsfo |
+| BAU Timeline | ss_460906jzw | ss_3328ij4bs |
+| INV Product Backlog | ss_96329b50y | ss_8226p0wzc |
+| Incident Dashboard | ss_5380wfbm5 | ss_3000mfstd |
+| Incident All Incidents | ss_5978rgvc8 | (crawled slice 4; nav-identical family verified via board/reports pairs) |
+| Incident Board | ss_7006fxvnr | ss_0532ot7si |
+| Incident Reports | ss_55566e553 | ss_535026r8v |
+| Incident Committee queue | ss_07573vw7k | ss_0182yxgfm |
+| Release Dashboard | ss_15461jq7w | ss_33825ezkh |
+| Release SOP templates | ss_8373e5uhh | ss_82820866s |
+| Release Sign-off queue | ss_3191dd1ax | ss_7117kowpu |
+| Release Freeze windows | ss_4493mphap | ss_25869ifal |
+| Test Dashboard | ss_5719tg3ca | ss_8282rnwcp |
+| Test Repository | ss_540825c4z | ss_3167queu0 |
+| Test Cycles | ss_45920fcyu | ss_8104ntt8p |
+| Test Defects | ss_0925yw6sd | ss_2850kjahu |
+| Test Traceability | ss_95248yz3m | ss_1401yyvg9 |
+| Test Reports | ss_7105vj842 | ss_6167bmfz9 |
+| Tasks Board | ss_2972p9e5c | ss_1034zm26i |
+| Ideas Board | ss_2093knvv6 | ss_5890mtex0 |
+| Product Roadmap | ss_28077jcde | ss_9685513wr |
+| Product Timeline | ss_8610e5kbp | ss_4500at7lg |
+| Product Milestones | ss_4444d8lmd | ss_9353gq8k5 |
+| Starred | ss_5358nt2yh | ss_4169x61jv |
+
+With slice 1–5 pairs, EVERY screen in the inventory now carries a before and an
+after screenshot, a verdict, and a recommendation (05_UI_UX_REVIEW.md).
