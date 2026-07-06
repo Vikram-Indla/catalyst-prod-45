@@ -347,7 +347,8 @@ export default function StrataKpiDetailPage() {
 
   return (
     <StrataPageShell
-      trail={[{ text: 'KPI library', href: Routes.strata.kpis() }, { text: kpi.name }]}
+      trail={[{ text: 'KPI library', href: Routes.strata.kpis() }]}
+      title={kpi.name}
       docTitle={kpi.name}
       testId="strata-kpi-detail-chrome"
       headerActions={

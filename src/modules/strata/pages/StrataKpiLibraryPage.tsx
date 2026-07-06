@@ -76,9 +76,11 @@ export function StrataGovernedStatusLozenge({ status }: { status: GovernedStatus
   return <Lozenge appearance={cfg.appearance}>{cfg.label}</Lozenge>;
 }
 
+/** Short labels — the arrow icon already carries the "is better" semantics;
+ *  the long phrasing ellipsized inside the 10-unit column. */
 const DIRECTION_LABEL: Record<StrataKpi['direction'], string> = {
-  higher_better: 'Higher is better',
-  lower_better: 'Lower is better',
+  higher_better: 'Higher',
+  lower_better: 'Lower',
   band: 'Band',
   manual: 'Manual',
 };
@@ -523,7 +525,11 @@ export default function StrataKpiLibraryPage() {
     {
       id: 'name',
       label: 'KPI',
-      flex: true,
+      /* Fixed 32 units (384px) instead of flex: JiraTable reserves a hard 640px
+       * floor for flex columns, which forces horizontal scroll and visually
+       * "chops" the trailing columns on a 9-column dictionary. table-layout
+       * fixed still distributes any spare width across all columns. */
+      width: 32,
       sortable: true,
       alwaysVisible: true,
       cell: ({ row }) => (
@@ -533,54 +539,58 @@ export default function StrataKpiLibraryPage() {
     {
       id: 'unit',
       label: 'Unit',
-      width: 7,
+      width: 5,
       cell: ({ row }) => (row.unit ? <span style={{ color: T.subtle }}>{row.unit}</span> : <Dash />),
     },
     {
       id: 'direction',
       label: 'Direction',
-      width: 13,
+      width: 10,
       cell: ({ row }) => (row.direction ? <DirectionCell direction={row.direction} /> : <Dash />),
     },
     {
       id: 'frequency',
       label: 'Frequency',
-      width: 9,
+      width: 8,
       sortable: true,
       cell: ({ row }) => (row.frequency ? <span style={{ color: T.subtle }}>{labelize(row.frequency)}</span> : <Dash />),
     },
     {
       id: 'entry_method',
       label: 'Entry',
-      width: 9,
+      width: 8,
       cell: ({ row }) => (row.entry_method ? <CatalystTag text={labelize(row.entry_method)} /> : <Dash />),
     },
     {
       id: 'status',
       label: 'Status',
-      width: 12,
+      width: 9,
       sortable: true,
       cell: ({ row }) => <StrataGovernedStatusLozenge status={row.status} />,
     },
     {
       id: 'achievement',
       label: 'Achievement',
-      width: 14,
+      width: 13,
       cell: ({ row }) => <KpiAchievementCell kpiId={row.id} />,
     },
     {
       id: 'validator',
       label: 'Validator',
-      width: 12,
+      width: 9,
       cell: ({ row }) => <ValidatorCell validatorId={row.validator_id} profiles={profilesQ.data} />,
     },
     {
       id: 'data_source',
       label: 'Data source',
-      width: 12,
+      width: 9,
       cell: ({ row }) =>
         row.data_source_id
-          ? <span style={{ color: T.subtle }}>{dataSourceNameById.get(row.data_source_id) ?? '—'}</span>
+          ? (
+            <span style={{ color: T.subtle, display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              {dataSourceNameById.get(row.data_source_id) ?? '—'}
+            </span>
+          )
           : <Dash />,
     },
   ], [navigate, dataSourceNameById, profilesQ.data]);

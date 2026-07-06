@@ -7,7 +7,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  Background, BackgroundVariant, Controls, MiniMap, ReactFlow,
+  Background, BackgroundVariant, Controls, ReactFlow,
   useEdgesState, useNodesState, useReactFlow,
 } from '@xyflow/react';
 import type { Connection, Edge, FitViewOptions, Node } from '@xyflow/react';
@@ -70,13 +70,6 @@ const FLOW_CSS = `
 }
 .strata-flow .react-flow__controls-button:hover { background: var(--ds-surface-sunken); }
 .strata-flow .react-flow__controls-button svg { fill: var(--ds-icon); }
-.strata-flow .react-flow__minimap {
-  background: var(--ds-surface-raised);
-  border: 1px solid var(--ds-border);
-  border-radius: 6px;
-}
-.strata-flow .react-flow__minimap-mask { fill: var(--ds-surface-sunken); fill-opacity: 0.7; }
-.strata-flow .react-flow__minimap-node { fill: var(--ds-background-neutral); }
 .strata-flow .react-flow__edge-path { stroke: var(--ds-text-subtlest); }
 .strata-flow .react-flow__edge-text { fill: var(--ds-text-subtle); }
 .strata-flow .react-flow__edge-textbg { fill: var(--ds-surface-raised); }
@@ -483,7 +476,9 @@ export default function StrataStrategyMapPage() {
             >
               <Background variant={BackgroundVariant.Dots} />
               <Controls />
-              <MiniMap />
+              {/* MiniMap removed (CAT-STRATA-ADS-UPLIFT-20260706-001): custom
+                * node types render it as a blank white panel that overlapped the
+                * rightmost node card; a single-digit-node map needs no minimap. */}
               <FlowFitter fitViewRef={fitViewRef} inspectorOpen={selected != null} />
             </ReactFlow>
             {visibleElements.length === 0 ? (

@@ -196,6 +196,20 @@ const SEVERITY_LOZENGE: Record<string, React.ComponentProps<typeof Lozenge>['app
   warning: 'moved',
 };
 
+/** Short lozenge labels per rule key — the raw keys labelize into strings too
+ *  long for a lozenge in a 16% column ("PENDING BENEFIT VALIDATION" clipped).
+ *  Unknown keys fall back to labelize (zero-assumption; nothing invented). */
+const ATTENTION_TYPE_LABEL: Record<string, string> = {
+  pending_attestation: 'Attestation',
+  pending_benefit_validation: 'Benefit validation',
+  blocked_dependency: 'Blocked dependency',
+  overdue_action: 'Overdue action',
+  overdue_gate: 'Overdue gate',
+  broken_assumption: 'Assumption broken',
+  missing_actual: 'Missing actual',
+  upload_rejections: 'Upload rejections',
+};
+
 // ── AI advisory (F-GOV-009: draft → human review; reviewer ≠ author is DB-enforced) ─
 /** UI affordance gating only — the edge function / DB enforce the real rules. */
 const ADVISORY_ROLES: readonly string[] = ['strategy_office', 'executive_viewer', 'vmo_validator', 'strata_admin'];
@@ -366,7 +380,7 @@ export default function StrataCommandCenterPage() {
       id: 'type', label: 'Type', width: 16,
       cell: ({ row }) => (
         <Lozenge appearance={SEVERITY_LOZENGE[row.severity] ?? 'default'}>
-          {labelize(row.itemType)}
+          {ATTENTION_TYPE_LABEL[row.itemType] ?? labelize(row.itemType)}
         </Lozenge>
       ),
     },
