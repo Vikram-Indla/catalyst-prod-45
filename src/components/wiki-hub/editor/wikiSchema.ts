@@ -5,12 +5,14 @@
  */
 import { BlockNoteSchema, defaultBlockSpecs, defaultInlineContentSpecs } from '@blocknote/core';
 import { callout } from './CalloutBlock';
+import { databaseEmbed } from './DatabaseEmbedBlock';
 import { pageLink, workItemMention } from './inlineSpecs';
 
 export const wikiSchema = BlockNoteSchema.create({
   blockSpecs: {
     ...defaultBlockSpecs,
     callout: callout(),
+    databaseEmbed: databaseEmbed(),
   },
   inlineContentSpecs: {
     ...defaultInlineContentSpecs,

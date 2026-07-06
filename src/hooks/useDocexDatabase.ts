@@ -110,6 +110,19 @@ export function useDocexDatabaseBySlug(spaceId: string | undefined, slug: string
   });
 }
 
+export function useDocexDatabaseById(id: string | undefined) {
+  return useQuery({
+    queryKey: ['docex-db', 'by-id', id],
+    enabled: !!id,
+    staleTime: 0,
+    queryFn: async (): Promise<DocexDatabase | null> => {
+      const { data, error } = await db.from('kb_databases').select('*').eq('id', id).maybeSingle();
+      if (error) throw error;
+      return (data as DocexDatabase) ?? null;
+    },
+  });
+}
+
 export function useDocexFields(databaseId: string | undefined) {
   return useQuery({
     queryKey: ['docex-db', 'fields', databaseId],
