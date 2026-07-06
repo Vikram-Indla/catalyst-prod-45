@@ -189,7 +189,8 @@ export function TestCaseAiCluster({
 
 function CaseEditPreview({ edit }: { edit: TmAssistCaseEdit }) {
   return (
-    <div style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text)' }}>
+    // dir="auto" so Arabic AI output renders RTL within the LTR shell (I6)
+    <div dir="auto" style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text)' }}>
       <div style={{ fontWeight: 600, marginBottom: 4 }}>{edit.updated_case.title}</div>
       {edit.updated_case.objective && (
         <div style={{ color: 'var(--ds-text-subtle)', marginBottom: 8 }}>{edit.updated_case.objective}</div>
@@ -225,7 +226,7 @@ function AnalysisPreview({ analysis }: { analysis: TmAssistAnalysis }) {
     ) : null
   );
   return (
-    <div>
+    <div dir="auto">
       <Section title="Covered" items={analysis.covered} color="var(--ds-text-success)" />
       <Section title="Gaps" items={analysis.gaps} color="var(--ds-text-danger)" />
       <Section title="Suggested cases" items={analysis.suggestions} color="var(--ds-text-information)" />

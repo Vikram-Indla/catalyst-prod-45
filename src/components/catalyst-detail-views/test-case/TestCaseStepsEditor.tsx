@@ -148,6 +148,7 @@ function StepCard({
         <div>
           <label style={labelStyle}>Action</label>
           <textarea
+            dir="auto"
             value={action}
             onChange={e => setAction(e.target.value)}
             onBlur={() => commit('action', action)}
@@ -158,6 +159,7 @@ function StepCard({
         <div>
           <label style={labelStyle}>Expected result</label>
           <textarea
+            dir="auto"
             value={expected}
             onChange={e => setExpected(e.target.value)}
             onBlur={() => commit('expected_result', expected)}
@@ -170,6 +172,7 @@ function StepCard({
         <label style={labelStyle}>Test data (optional)</label>
         <input
           type="text"
+          dir="auto"
           value={testData}
           onChange={e => setTestData(e.target.value)}
           onBlur={() => commit('test_data', testData)}
