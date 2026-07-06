@@ -542,6 +542,46 @@ export function WikiPageSurface({ workspace, page, treePages }: WikiPageSurfaceP
     [flush, page.title, currentBlocks],
   );
 
+  // ---- Convert page → work item (V6): epic in project workspaces,
+  // business request in product workspaces; page stays linked. ----
+  const { data: pageContainerMeta } = useWorkspaceContainerMeta();
+  const [converting, setConverting] = useState(false);
+  const convertToWorkItem = useCallback(
+    async (kind: 'epic' | 'business_request') => {
+      if (converting) return;
+      setConverting(true);
+      try {
+        const { convertPageToEpic, convertPageToBusinessRequest } = await import('./convertPage');
+        if (kind === 'epic') {
+          const projectKey = workspace.container_id
+            ? pageContainerMeta?.projectKeyById.get(workspace.container_id)
+            : undefined;
+          if (!projectKey) throw new Error('This workspace has no linked project');
+          const { key } = await convertPageToEpic({
+            pageId: page.id,
+            title: page.title,
+            bodyText: blocksToText(currentBlocks()),
+            projectKey,
+          });
+          catalystToast.success(`Created epic ${key} — this page is linked to it`);
+        } else {
+          if (!workspace.container_id) throw new Error('This workspace has no linked product');
+          const { key } = await convertPageToBusinessRequest({
+            pageId: page.id,
+            title: page.title,
+            productId: workspace.container_id,
+          });
+          catalystToast.success(`Created business request ${key} — this page is linked to it`);
+        }
+      } catch (e) {
+        catalystToast.error(`Convert failed: ${e instanceof Error ? e.message : String(e)}`);
+      } finally {
+        setConverting(false);
+      }
+    },
+    [converting, workspace.container_id, pageContainerMeta, page.id, page.title, currentBlocks],
+  );
+
   // ---- Publish / duplicate / manual snapshot (Pass D) ----
   const qc = useQueryClient();
   const togglePublish = useCallback(() => {
@@ -760,6 +800,32 @@ export function WikiPageSurface({ workspace, page, treePages }: WikiPageSurfaceP
                 { key: 'save-version', label: 'Save version now', onClick: () => snapshotNow('Manual save point') },
               ],
             },
+            ...(workspace.container_type === 'project' || workspace.container_type === 'product'
+              ? [
+                  {
+                    key: 'convert',
+                    title: 'Convert',
+                    items:
+                      workspace.container_type === 'project'
+                        ? [
+                            {
+                              key: 'to-epic',
+                              label: converting ? 'Creating epic…' : 'Create epic from page',
+                              isDisabled: converting,
+                              onClick: () => void convertToWorkItem('epic'),
+                            },
+                          ]
+                        : [
+                            {
+                              key: 'to-br',
+                              label: converting ? 'Creating request…' : 'Create business request from page',
+                              isDisabled: converting,
+                              onClick: () => void convertToWorkItem('business_request'),
+                            },
+                          ],
+                  },
+                ]
+              : []),
             ...((allWorkspaces ?? []).filter((w) => w.id !== workspace.id).length
               ? [
                   {
