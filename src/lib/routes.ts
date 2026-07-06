@@ -117,6 +117,18 @@ export const testHubRoutes = {
   myWork: () => '/testhub/my-work',
   board: () => '/testhub/board',
   repository: () => '/testhub/repository',
+  // Full-page test case authoring (CAT-TESTHUB-V2 slice C1). caseKey is the
+  // display key, e.g. "TC-0012" — no UUID in URL.
+  repositoryCase: (caseKey: string) => `/testhub/repository/case/${caseKey}`,
+  plans: () => '/testhub/plans',
+  // planKey is tm_test_plans.plan_key (e.g. "PL-001")
+  plan: (planKey: string) => `/testhub/plans/${planKey}`,
+  executions: () => '/testhub/executions',
+  // executionKey is tm_test_executions.execution_key (e.g. "EX-001")
+  execution: (executionKey: string) => `/testhub/executions/${executionKey}`,
+  // runKey routes to the run player scoped by cycle (cycle_key + run number)
+  run: (cycleKey: string, runNumber: number | string) =>
+    `/testhub/cycles/${cycleKey}/runs/${runNumber}`,
   cycles: () => '/testhub/cycles',
   cycle: (cycleSlug: string) => `/testhub/cycles/${cycleSlug}`,
   cycleExecute: (cycleSlug: string) => `/testhub/cycles/${cycleSlug}/execute`,

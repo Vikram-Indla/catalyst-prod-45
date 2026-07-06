@@ -167,6 +167,7 @@ const AiAccessPageLazy         = lazy(() => import("../pages/admin/AiAccessPage"
 const TestHubDashboardPage = lazy(() => import("../pages/testhub/DashboardPage"));
 const TestHubMyWorkPage = lazy(() => import("../pages/testhub/MyWorkPage"));
 const TestHubRepositoryPage = lazy(() => import("../pages/testhub/repository/RepositoryPage"));
+const TestHubTestCaseDetailPage = lazy(() => import("../pages/testhub/repository/TestCaseDetailPage"));
 const TestHubBoardPage = lazy(() => import("../pages/testhub/BoardPage"));
 const TestHubFiltersListPage = lazy(() => import("../pages/testhub/FiltersListPage"));
 const TestHubFilterPreviewPage = lazy(() => import("../pages/testhub/FilterPreviewPage"));
@@ -677,6 +678,8 @@ export default function FullAppRoutes() {
         <Route path="/testhub/my-work" element={<MG k="testhub" t="Test Hub"><S><TestHubMyWorkPage /></S></MG>} />
         <Route path="/testhub/board" element={<MG k="testhub" t="Test Hub"><S><TestHubBoardPage /></S></MG>} />
         <Route path="/testhub/repository" element={<MG k="testhub" t="Test Hub"><S><TestHubRepositoryPage /></S></MG>} />
+        {/* CAT-TESTHUB-V2 C1/D1: full-page test case authoring (key-based, no UUID) */}
+        <Route path="/testhub/repository/case/:caseKey" element={<MG k="testhub" t="Test Hub"><S><TestHubTestCaseDetailPage /></S></MG>} />
         <Route path="/testhub/cycles" element={<MG k="testhub" t="Test Hub"><S><TestHubCyclesPage /></S></MG>} />
         <Route path="/testhub/:projectKey/cycles/:cycleKey" element={<MG k="testhub" t="Test Hub"><S><TestHubCycleDetailPage /></S></MG>} />
         <Route path="/testhub/:projectKey/cycles/:cycleKey/execute" element={<MG k="testhub" t="Test Hub"><S><TestHubExecutionPage /></S></MG>} />

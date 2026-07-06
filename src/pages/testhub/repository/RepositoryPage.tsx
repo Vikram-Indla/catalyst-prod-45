@@ -1,5 +1,6 @@
 import React, { useState, useCallback, useRef, useMemo } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
+import { Routes } from '@/lib/routes';
 import { useQuery } from '@tanstack/react-query';
 import { useTestHubProject } from '@/hooks/test-management/useTestHubProject';
 import { WorkItemTypeIcon } from '@/components/icons';
@@ -46,6 +47,10 @@ import type { TMFolder, TMTestCase, CaseStatus, TMCasePriority, CaseFilters } fr
 import { formatTestKey } from '@/lib/test-management/formatTestKey';
 import { useCaseCoverage } from '@/hooks/test-management/useCaseCoverage';
 import type { CoverageVerdict, CaseRunStatus } from '@/hooks/test-management/useCaseCoverage';
+// C2 (CAT-TESTHUB-V2): 13-column repository table — type/origin/health/sprint/
+// release/designer/updated/open-defects come from the tm_case_table_v2 view.
+import { useCaseTableV2 } from '@/hooks/test-management/useCaseTableV2';
+import CatalystAvatar from '@/components/shared/CatalystAvatar';
 import { AddToCycleSetSheet } from './AddToCycleSetSheet';
 import type { LinkTarget } from './AddToCycleSetSheet';
 import { useCaseStatusConfig } from '@/hooks/test-management/useCaseStatusConfig';
@@ -650,6 +655,31 @@ const primaryBtnStyle = (disabled: boolean): React.CSSProperties => ({
 export default function RepositoryPage() {
   const { projectKey = 'TESTHUB' } = useParams<{ projectKey: string }>();
   const { projectId, project } = useTestHubProject();
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+
+  // C1 (CAT-TESTHUB-V2): Board/My Work deep-link `?case=<uuid>` was dead —
+  // RepositoryPage never read it. Resolve uuid → case_key and forward to the
+  // full-page authoring route.
+  const deepLinkCaseId = searchParams.get('case');
+  React.useEffect(() => {
+    if (!deepLinkCaseId) return;
+    let cancelled = false;
+    (async () => {
+      const { data, error } = await supabase
+        .from('tm_test_cases')
+        .select('case_key')
+        .eq('id', deepLinkCaseId)
+        .maybeSingle();
+      if (cancelled) return;
+      if (!error && data?.case_key) {
+        navigate(Routes.testHub.repositoryCase(data.case_key), { replace: true });
+      } else {
+        navigate(Routes.testHub.repository(), { replace: true });
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [deepLinkCaseId, navigate]);
 
   const [selectedFolderId, setSelectedFolderId] = useState<string | null | 'unfiled'>(null);
   const [search, setSearch] = useState('');
@@ -693,6 +723,8 @@ export default function RepositoryPage() {
   const createCase = useCreateTestCase({ silent: true });
   // S2: real project-hub traceability (ph_issues links + latest run) per case.
   const { data: coverageMap } = useCaseCoverage(projectId);
+  // C2: single-query enrichment for the 13-column table (no per-row fetches).
+  const { data: tableV2Map } = useCaseTableV2(projectId);
   // S6b: per-project status workflow — drives the status pill label + category
   // when configured. Falls back to the canonical hardcoded pill otherwise.
   const { data: statusCfg } = useCaseStatusConfig(projectId);
@@ -828,7 +860,13 @@ export default function RepositoryPage() {
       alwaysVisible: true,
       cell: makeKeyCell(
         (row: TMTestCase) => formatTestKey(row.key) ?? '—',
-        (row: TMTestCase) => { if (!selectMode) setSelectedCaseId(row.id); },
+        // C6 (CAT-TESTHUB-V2): key click = full-page authoring; row click keeps
+        // the inline peek panel.
+        (row: TMTestCase) => {
+          if (selectMode) return;
+          const key = row.case_key ?? formatTestKey(row.key);
+          if (key) navigate(Routes.testHub.repositoryCase(key));
+        },
         undefined,
         () => <WorkItemTypeIcon type="test-case" size={16} />,
       ),
@@ -854,9 +892,10 @@ export default function RepositoryPage() {
         if (row.priority_ref) {
           return (
             <span style={{ display: 'flex', alignItems: 'center', gap: 'var(--ds-space-075)', fontSize: 'var(--ds-font-size-300)', lineHeight: 'var(--ds-line-height-body)', color: 'var(--ds-text-subtle)' }}>
+              {/* ADS: DB color strings are not design tokens — dot stays neutral */}
               <span style={{
                 width: 8, height: 8, borderRadius: '50%',
-                background: row.priority_ref.color ?? 'var(--ds-background-neutral)',
+                background: 'var(--ds-background-neutral-bold, var(--ds-background-neutral))',
                 flexShrink: 0,
               }} />
               {row.priority_ref.name}
@@ -870,8 +909,114 @@ export default function RepositoryPage() {
       },
     },
     {
+      id: 'type',
+      label: 'Type',
+      width: 10,
+      cell: ({ row }) => {
+        const v2 = tableV2Map?.get(row.id);
+        return v2?.case_type
+          ? <span style={{ fontSize: 'var(--ds-font-size-300)', lineHeight: 'var(--ds-line-height-body)', color: 'var(--ds-text-subtle)' }}>{v2.case_type}</span>
+          : <span style={{ color: 'var(--ds-text-subtlest)' }}>—</span>;
+      },
+    },
+    {
+      id: 'origin',
+      label: 'Origin',
+      width: 8,
+      cell: ({ row }) => {
+        const v2 = tableV2Map?.get(row.id);
+        if (!v2?.origin) return <span style={{ color: 'var(--ds-text-subtlest)' }}>—</span>;
+        const label = v2.origin === 'ai' ? 'AI' : v2.origin === 'hybrid' ? 'Hybrid' : 'Manual';
+        return <Lozenge appearance={v2.origin === 'manual' ? 'default' : 'new'}>{label}</Lozenge>;
+      },
+    },
+    {
+      id: 'health',
+      label: 'Health',
+      width: 10,
+      cell: ({ row }) => {
+        const v2 = tableV2Map?.get(row.id);
+        // Zero-assumption: never run + no defects → no fabricated health.
+        if (!v2 || (v2.latest_run_status == null && v2.open_defects === 0)) {
+          return <span style={{ color: 'var(--ds-text-subtlest)' }}>—</span>;
+        }
+        const atRisk = v2.open_defects > 0 || v2.latest_run_status === 'failed' || v2.latest_run_status === 'blocked';
+        if (atRisk) return <Lozenge appearance="removed">At risk</Lozenge>;
+        if (v2.latest_run_status === 'passed') return <Lozenge appearance="success">Healthy</Lozenge>;
+        return <Lozenge appearance="default">Unproven</Lozenge>;
+      },
+    },
+    {
+      id: 'sprint',
+      label: 'Sprint',
+      width: 12,
+      cell: ({ row }) => {
+        const v2 = tableV2Map?.get(row.id);
+        return v2?.sprint_name
+          ? <span style={{ fontSize: 'var(--ds-font-size-300)', lineHeight: 'var(--ds-line-height-body)', color: 'var(--ds-text-subtle)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={v2.sprint_name}>{v2.sprint_name}</span>
+          : <span style={{ color: 'var(--ds-text-subtlest)' }}>—</span>;
+      },
+    },
+    {
+      id: 'release',
+      label: 'Release',
+      width: 12,
+      cell: ({ row }) => {
+        const v2 = tableV2Map?.get(row.id);
+        return v2?.release_name
+          ? <span style={{ fontSize: 'var(--ds-font-size-300)', lineHeight: 'var(--ds-line-height-body)', color: 'var(--ds-text-subtle)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={v2.release_name}>{v2.release_name}</span>
+          : <span style={{ color: 'var(--ds-text-subtlest)' }}>—</span>;
+      },
+    },
+    {
+      id: 'designer',
+      label: 'Designer',
+      width: 12,
+      cell: ({ row }) => {
+        const v2 = tableV2Map?.get(row.id);
+        if (!v2?.designer_name) return <span style={{ color: 'var(--ds-text-subtlest)' }}>—</span>;
+        return (
+          <span style={{ display: 'flex', alignItems: 'center', gap: 'var(--ds-space-075)', minWidth: 0 }}>
+            <CatalystAvatar name={v2.designer_name} src={v2.designer_avatar} size="xsmall" />
+            <span style={{ fontSize: 'var(--ds-font-size-300)', lineHeight: 'var(--ds-line-height-body)', color: 'var(--ds-text-subtle)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              {v2.designer_name}
+            </span>
+          </span>
+        );
+      },
+    },
+    {
+      id: 'updated',
+      label: 'Updated',
+      width: 10,
+      cell: ({ row }) => {
+        const v2 = tableV2Map?.get(row.id);
+        if (!v2?.updated_at) return <span style={{ color: 'var(--ds-text-subtlest)' }}>—</span>;
+        return (
+          <span style={{ fontSize: 'var(--ds-font-size-300)', lineHeight: 'var(--ds-line-height-body)', color: 'var(--ds-text-subtle)' }}>
+            {new Date(v2.updated_at).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' })}
+          </span>
+        );
+      },
+    },
+    {
+      id: 'openDefects',
+      label: 'Open defects',
+      width: 9,
+      align: 'end',
+      cell: ({ row }) => {
+        const v2 = tableV2Map?.get(row.id);
+        if (!v2 || v2.open_defects === 0) return <span style={{ color: 'var(--ds-text-subtlest)' }}>—</span>;
+        return (
+          <span style={{ fontSize: 'var(--ds-font-size-300)', lineHeight: 'var(--ds-line-height-body)', color: 'var(--ds-text-danger)', fontWeight: 'var(--ds-font-weight-medium)' as never }}>
+            {v2.open_defects}
+          </span>
+        );
+      },
+    },
+    {
       id: 'coverage',
-      label: 'Coverage',
+      label: 'Parent',
       width: 16,
       cell: ({ row }) => {
         const cov = coverageMap?.get(row.id);
