@@ -18,9 +18,10 @@ export interface ChangeCtx {
   risk: string | null; deploymentCategory: string | null; status: string;
   plannedStartAt: string | null; plannedEndAt: string | null;
   isEmergency: boolean; isProduction: boolean; releaseCount: number; releaseNames: string[];
+  releases: { name: string; number: string | null }[];
   isUnlinkedProduction: boolean; freezeConflict: boolean; freezeOverrideApproved: boolean;
   managerRole: string | null; // set for manager view
-  sopTotal: number; sopDone: number; running: SopStepFull | null;
+  sopTotal: number; sopDone: number; running: SopStepFull | null; runningOwnerAvatarUrl: string | null;
 }
 export interface ExecCard { step: SopStepFull; change: ChangeCtx }
 export type PromptKind = 'due_soon' | 'overdue' | 'next_up' | 'missing_capture' | 'blocked_upstream' | 'emergency' | 'freeze' | 'multiple_running';
@@ -69,16 +70,28 @@ export const useMyExecutionWork = () =>
         supabase.from('rh_sop_steps').select('*').in('change_id', changeIds).order('step_no'),
       ]);
       const changeRows = (changesRes.data ?? []) as any[];
+      const allSteps = (allStepsRes.data ?? []) as any[];
       const stepsByChange: Record<string, any[]> = {};
-      ((allStepsRes.data ?? []) as any[]).forEach((s) => { (stepsByChange[s.change_id] ??= []).push(s); });
+      allSteps.forEach((s) => { (stepsByChange[s.change_id] ??= []).push(s); });
       const relNames: Record<string, string[]> = {};
+      const releasesByChange: Record<string, { name: string; number: string | null }[]> = {};
       ((linksRes.data ?? []) as any[]).forEach((l: any) => {
         const r = l.rh_releases;
         if (!r?.name) return;
         // Surface the linked release NUMBER (version, else jira key) next to its name.
         const num = r.version || r.jira_key;
         (relNames[l.change_id] ??= []).push(num ? `${r.name} (${num})` : r.name);
+        (releasesByChange[l.change_id] ??= []).push({ name: r.name, number: num ?? null });
       });
+
+      // resolve step owners (name + avatar) for the "running" step surfaced per change
+      const stepOwnerIds = [...new Set(allSteps.map((s) => s.owner_id).filter(Boolean))] as string[];
+      const ownerNameById: Record<string, string> = {};
+      const ownerAvatarById: Record<string, string | null> = {};
+      if (stepOwnerIds.length) {
+        const { data: profs } = await supabase.from('profiles').select('id, full_name, email, avatar_url').in('id', stepOwnerIds);
+        (profs ?? []).forEach((p: any) => { ownerNameById[p.id] = p.full_name || p.email || 'Unknown'; ownerAvatarById[p.id] = p.avatar_url ?? null; });
+      }
 
       const freezeFor = (c: any) => {
         const winStart = c.window_start ?? c.planned_start_at;
@@ -94,20 +107,22 @@ export const useMyExecutionWork = () =>
       };
 
       const ctxOf = (c: any, managerRole: string | null): ChangeCtx => {
-        const steps = (stepsByChange[c.id] ?? []).map((s) => mapSopStep(s, null));
+        const steps = (stepsByChange[c.id] ?? []).map((s) => mapSopStep(s, s.owner_id ? (ownerNameById[s.owner_id] ?? null) : null));
         const rels = relNames[c.id] ?? [];
         const releaseCount = rels.length || (c.release_id ? 1 : 0);
+        const running = steps.find((s) => s.status === 'in_progress') ?? null;
         return {
           id: c.id, chgNumber: c.chg_number, title: c.title, slug: c.slug, targetEnv: c.target_env,
           risk: c.risk_level, deploymentCategory: c.deployment_category, status: c.status,
           plannedStartAt: c.planned_start_at ?? c.window_start, plannedEndAt: c.planned_end_at ?? c.window_end,
           isEmergency: c.is_emergency_override === true || c.change_type === 'emergency',
           isProduction: c.target_env === 'production', releaseCount, releaseNames: rels,
+          releases: releasesByChange[c.id] ?? [],
           isUnlinkedProduction: c.target_env === 'production' && releaseCount === 0,
           freezeConflict: !!freezeFor(c), freezeOverrideApproved: c.is_emergency_override === true,
           managerRole,
           sopTotal: steps.length, sopDone: steps.filter((s) => s.status === 'done').length,
-          running: steps.find((s) => s.status === 'in_progress') ?? null,
+          running, runningOwnerAvatarUrl: running?.ownerId ? (ownerAvatarById[running.ownerId] ?? null) : null,
         };
       };
       const ctxById: Record<string, ChangeCtx> = {};

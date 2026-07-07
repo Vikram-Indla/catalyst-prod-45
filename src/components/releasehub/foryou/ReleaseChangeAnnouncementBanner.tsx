@@ -1,32 +1,40 @@
 /**
  * ReleaseChangeAnnouncementBanner — the change that matters most to the current
- * user. Two time-driven surfaces PLUS manual controls on the full banner:
+ * user, rendered at one of three sizes depending on time + an explicit dismiss:
  *
- *   • ReleaseTimerNavChip  — the DEFAULT. A persistent live-countdown chip in the
- *     global top nav, visible on every page whenever the user has a relevant
- *     change (compact dot-only variant on narrow viewports — never fully hidden).
- *   • The full banner       — auto-appears on the For-You page inside the
- *     "hero window" (1h before planned start through the live window), UNLESS
- *     manually collapsed or snoozed (both below). Collapsing/snoozing only
- *     affects the on-page banner — the nav chip keeps showing regardless, so
- *     the SLA signal never fully disappears ("collapse into the top nav bar").
+ *   • On the For-You page, size is TIME-DRIVEN and automatic:
+ *       - outside the "hero window" → compact on-page pill (key + truncated title)
+ *       - inside the hero window (1h before planned start through live/overrun)
+ *         → full card (badges, labeled Release/Release#/Env fields, running-step
+ *         owner avatar, SOP + Open change actions, countdown)
+ *   • Dismissing (collapse icon on either on-page state, or the Remind panel's
+ *     "Collapse to timer" row) hides the on-page element entirely and hands the
+ *     signal to ReleaseTimerNavChip, the persistent chip in the global top nav
+ *     (compact dot-only variant on narrow viewports). Clicking the nav chip
+ *     while dismissed and already on the For-You page un-dismisses back to the
+ *     time-correct on-page size instead of navigating away.
+ *   • Snoozing (via the Remind panel) hides the on-page element for a duration
+ *     regardless of window/dismiss state; the nav chip keeps showing regardless
+ *     of any of the above, so the SLA signal never fully disappears.
  *
- * Manual controls (persisted in localStorage, per change):
- *   • Collapse → inline mini-timer pill on the page (Expand restores the card)
- *   • Stopwatch icon → Remind panel: quick presets + an Atlassian date-time
- *     chooser (DateTimePicker) for a custom remind-at, plus Collapse / Dismiss.
+ * The banner and nav chip are separate mounts (page vs header) that only share
+ * localStorage, so the dismiss flag is synced same-tab via a custom event.
  *
- * Magenta (Catalyst brand) border; status-toned accent rail; canonical lozenges.
- * ADS tokens only. Countdown text is a throttled aria-live region (state word,
- * not the ticking digits) so assistive tech isn't spammed every second.
+ * Real @atlaskit/button (Button/IconButton) + canonical lozenges/avatar only —
+ * no hand-rolled buttons, no gradients. Magenta (Catalyst brand) border; flat
+ * ADS surface; status-toned accent rail. Countdown text is a throttled
+ * aria-live region (state word, not the ticking digits) so assistive tech
+ * isn't spammed every second.
  */
 import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import ArrowRightIcon from '@atlaskit/icon/glyph/arrow-right';
 import StopwatchIcon from '@atlaskit/icon/core/stopwatch';
+import Button, { IconButton } from '@atlaskit/button/new';
 import { DateTimePicker } from '@atlaskit/datetime-picker';
-import { ListChecks, Minimize2, Maximize2, X } from '@/lib/atlaskit-icons';
+import { ListChecks, Minimize2, X, Calendar, ChevronDown, ChevronUp } from '@/lib/atlaskit-icons';
 import { ChangeStatusLozenge, RiskLozenge } from '@/components/releasehub/shared/ReleaseOpsLozenges';
+import { CatalystOwnerAvatar } from '@/components/ui/catalyst';
 import { RH } from '@/constants/releasehub.design';
 import { useMyExecutionWork, type ChangeCtx, type ExecCard, type MyExecutionWork } from '@/hooks/useMyExecutionWork';
 
@@ -34,12 +42,19 @@ const T = {
   text: 'var(--ds-text)', subtle: 'var(--ds-text-subtle)', subtlest: 'var(--ds-text-subtlest)',
   link: 'var(--ds-text-brand)', icon: 'var(--ds-icon-subtle)', danger: 'var(--ds-text-danger)',
   success: 'var(--ds-text-success)', info: 'var(--ds-text-information)', border: 'var(--ds-border)',
-  magenta: 'var(--ds-border-accent-magenta)', raised: 'var(--ds-surface-raised)', hover: 'var(--ds-background-neutral-subtle-hovered)',
-  mono: 'var(--ds-font-family-code, monospace)',
+  magenta: 'var(--ds-border-accent-magenta)', raised: 'var(--ds-surface-raised)',
 };
 const HERO_LEAD_MS = 3600_000; // banner surfaces 1h before planned start
 const TERMINAL = ['implemented', 'closed', 'done', 'cancelled'];
-const COLLAPSE_KEY = 'rb:collapsed';
+// "Dismissed" sends the on-page presence (pill or full card) up to the global
+// nav chip entirely — distinct from the time-driven pill/card size choice.
+const DISMISS_KEY = 'rb:dismissed';
+const DISMISS_EVENT = 'rb:dismissed-changed';
+const readDismissed = (): boolean => localStorage.getItem(DISMISS_KEY) === '1';
+const writeDismissed = (v: boolean) => {
+  localStorage.setItem(DISMISS_KEY, v ? '1' : '0');
+  window.dispatchEvent(new Event(DISMISS_EVENT));
+};
 const snoozeKey = (id: string) => `rb:snooze:${id}`;
 const readSnooze = (id: string): number => {
   const v = Number(localStorage.getItem(snoozeKey(id)) ?? 0);
@@ -81,8 +96,10 @@ function nextActionText(c: ChangeCtx, cards: ExecCard[]): string {
   return `SOP ${c.sopDone}/${c.sopTotal} complete`;
 }
 
-/** Self-ticking timer — owns its own 1s interval so parents never re-render on the tick. */
-function LiveCountdown({ change, variant }: { change: ChangeCtx; variant: 'full' | 'pill' | 'dot' }) {
+/** Self-ticking timer — owns its own 1s interval so parents never re-render on the tick.
+ *  One font family throughout (tabular numerals, no monospace) so the digits sit in the
+ *  same type system as the rest of the card. */
+function LiveCountdown({ change, variant }: { change: ChangeCtx; variant: 'full' | 'card' | 'pill' | 'dot' }) {
   const [now, setNow] = useState(() => Date.now());
   useEffect(() => {
     const id = window.setInterval(() => setNow(Date.now()), 1000);
@@ -103,18 +120,31 @@ function LiveCountdown({ change, variant }: { change: ChangeCtx; variant: 'full'
     return (
       <span role="status" aria-live="polite" aria-label={`${change.chgNumber}: ${timer.eyebrow}`} style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
         {timer.pulse && <span aria-hidden style={{ width: 8, height: 8, borderRadius: '50%', background: timer.tone, flexShrink: 0 }} />}
-        <span aria-hidden style={{ fontFamily: T.mono, fontSize: 'var(--ds-font-size-300)', fontWeight: 700, color: timer.tone, fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap' }}>{timer.big}</span>
+        <span aria-hidden style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: timer.tone, fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap' }}>{timer.big}</span>
       </span>
     );
   }
+  // 'card' = compact on-page card (smaller digits); 'full' = expanded card.
+  const bigSize = variant === 'card' ? 'var(--ds-font-size-300)' : 'var(--ds-font-size-400)';
   return (
-    <span role="status" aria-live="polite" aria-label={timer.eyebrow} style={{ display: 'inline-flex', flexDirection: 'column', alignItems: 'flex-end', gap: 4 }}>
-      <span aria-hidden style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-050)', fontWeight: 600, color: T.subtle, whiteSpace: 'nowrap' }}>
-        {timer.pulse && <span style={{ width: 7, height: 7, borderRadius: '50%', background: timer.tone, display: 'inline-block' }} />}{timer.eyebrow}
+    <span role="status" aria-live="polite" aria-label={timer.eyebrow} style={{ display: 'inline-flex', flexDirection: 'column', alignItems: 'flex-end', gap: 2 }}>
+      <span aria-hidden style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-050)', fontWeight: 500, color: timer.tone, whiteSpace: 'nowrap' }}>
+        {timer.pulse && <span style={{ width: 6, height: 6, borderRadius: '50%', background: timer.tone, display: 'inline-block' }} />}{timer.eyebrow}
       </span>
-      <span aria-hidden style={{ fontFamily: T.mono, fontSize: 'var(--ds-font-size-500)', fontWeight: 600, color: timer.tone, fontVariantNumeric: 'tabular-nums', lineHeight: 1.1, whiteSpace: 'nowrap' }}>{timer.big}</span>
+      <span aria-hidden style={{ fontFamily: RH.fontBody, fontSize: bigSize, fontWeight: 600, color: timer.tone, fontVariantNumeric: 'tabular-nums', lineHeight: 1.1, whiteSpace: 'nowrap' }}>{timer.big}</span>
     </span>
   );
+}
+
+/** "Tue 8 Jul · 14:00–16:00" from the planned window — the execution date, first-class. */
+function fmtWindow(startIso: string | null, endIso: string | null): string | null {
+  if (!startIso) return null;
+  const s = new Date(startIso);
+  if (Number.isNaN(s.getTime())) return null;
+  const day = s.toLocaleDateString([], { weekday: 'short', day: 'numeric', month: 'short' });
+  const hm = (d: Date) => d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
+  const e = endIso ? new Date(endIso) : null;
+  return `${day} · ${hm(s)}${e && !Number.isNaN(e.getTime()) ? `–${hm(e)}` : ''}`;
 }
 
 /** Rank every change the user touches → the single most urgent (running first, else soonest start). */
@@ -132,40 +162,19 @@ export function pickPrimaryChange(data: MyExecutionWork): { primary: ChangeCtx |
 
 const isForYouRoute = (path: string) => path === '/' || path === '/for-you' || path.startsWith('/for-you/');
 
-const iconBtn: React.CSSProperties = {
-  display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 32, height: 32,
-  borderRadius: 8, border: 'none', background: 'transparent', cursor: 'pointer', color: T.icon, padding: 0,
-};
-
-function MenuRow({ icon, label, danger, onClick }: { icon: React.ReactNode; label: string; danger?: boolean; onClick: () => void }) {
-  const [hover, setHover] = useState(false);
+/** Field-grid cell: muted label over value — the memo layout of the expanded card. */
+function GridField({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <button
-      onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)} onClick={onClick}
-      style={{
-        display: 'flex', alignItems: 'center', gap: 12, width: '100%', textAlign: 'left',
-        padding: '8px 12px', borderRadius: 6, border: 'none', cursor: 'pointer',
-        background: hover ? T.hover : 'transparent', color: danger ? T.danger : T.text,
-        fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', fontWeight: 500,
-      }}
-    >
-      <span style={{ display: 'inline-flex', color: danger ? T.danger : T.icon }}>{icon}</span>{label}
-    </button>
+    <span style={{ display: 'flex', flexDirection: 'column', gap: 2, minWidth: 0 }}>
+      <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-050)', color: T.subtlest, whiteSpace: 'nowrap' }}>{label}</span>
+      <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: T.text, minWidth: 0 }}>{children}</span>
+    </span>
   );
 }
 
-function PresetChip({ label, onClick }: { label: string; onClick: () => void }) {
-  const [hover, setHover] = useState(false);
-  return (
-    <button
-      onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)} onClick={onClick}
-      style={{
-        flex: 1, height: 32, borderRadius: 8, border: `1px solid ${T.border}`, cursor: 'pointer',
-        background: hover ? T.hover : 'transparent', color: T.text,
-        fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', fontWeight: 600, whiteSpace: 'nowrap',
-      }}
-    >{label}</button>
-  );
+/** Executor face avatar — canonical CatalystOwnerAvatar at its "lg" (32px) size. */
+function ExecutorAvatar({ name, avatarUrl }: { name: string | null; avatarUrl: string | null }) {
+  return <CatalystOwnerAvatar type="human" name={name ?? undefined} avatarUrl={avatarUrl ?? undefined} size="lg" showTooltip />;
 }
 
 /**
@@ -177,13 +186,23 @@ export function ReleaseChangeAnnouncementBanner({
   change, assignedCards, moreCount,
 }: { change: ChangeCtx; assignedCards: ExecCard[]; moreCount: number }) {
   const navigate = useNavigate();
-  const [collapsed, setCollapsed] = useState<boolean>(() => localStorage.getItem(COLLAPSE_KEY) === '1');
+  const [dismissed, setDismissedState] = useState<boolean>(() => readDismissed());
   const [snoozedUntil, setSnoozedUntil] = useState<number>(() => readSnooze(change.id));
   const [remindOpen, setRemindOpen] = useState(false);
+  // Session-only manual size override — chevron toggles; time decides when null.
+  const [sizeOverride, setSizeOverride] = useState<'expanded' | 'compact' | null>(null);
   const [pickIso, setPickIso] = useState<string>(() => new Date(Date.now() + 3600_000).toISOString());
   const remindRef = useRef<HTMLSpanElement>(null);
 
   useEffect(() => { setSnoozedUntil(readSnooze(change.id)); }, [change.id]);
+  // Nav chip and banner are separate mounts (header vs page) sharing only
+  // localStorage — sync via a same-tab custom event (storage events don't fire
+  // in the tab that wrote the value).
+  useEffect(() => {
+    const onDismissChange = () => setDismissedState(readDismissed());
+    window.addEventListener(DISMISS_EVENT, onDismissChange);
+    return () => window.removeEventListener(DISMISS_EVENT, onDismissChange);
+  }, []);
   // Close the reminders panel on outside click — but ignore clicks inside the
   // DateTimePicker's own portal (its calendar/time menus render to body).
   useEffect(() => {
@@ -198,13 +217,14 @@ export function ReleaseChangeAnnouncementBanner({
     return () => document.removeEventListener('mousedown', onDoc);
   }, [remindOpen]);
 
-  if (!inHeroWindow(change, Date.now())) return null;
+  if (dismissed) return null;
   if (snoozedUntil && Date.now() < snoozedUntil) return null;
 
+  const inWindow = inHeroWindow(change, Date.now());
   const tone = computeTimer(change, Date.now()).tone;
   const open = () => navigate(`/release-hub/changes/${change.slug ?? change.id}`);
   const openSop = () => navigate(`/release-hub/changes/${change.slug ?? change.id}?tab=sop`);
-  const setCollapse = (v: boolean) => { setCollapsed(v); localStorage.setItem(COLLAPSE_KEY, v ? '1' : '0'); };
+  const dismiss = () => { writeDismissed(true); setDismissedState(true); };
   const snoozeUntil = (until: number) => {
     if (!until || until <= Date.now()) return;
     localStorage.setItem(snoozeKey(change.id), String(until));
@@ -215,13 +235,13 @@ export function ReleaseChangeAnnouncementBanner({
 
   const remindPopup = (
     <span ref={remindRef} style={{ position: 'relative', display: 'inline-flex' }}>
-      <button
-        aria-label="Reminders and options"
+      <IconButton
+        label="Reminders and options"
+        appearance="subtle"
+        isSelected={remindOpen}
+        icon={(p) => <StopwatchIcon {...p} label="" />}
         onClick={(e) => { e.stopPropagation(); setRemindOpen((o) => !o); }}
-        style={{ ...iconBtn, background: remindOpen ? T.hover : 'transparent', color: remindOpen ? T.text : T.icon }}
-      >
-        <StopwatchIcon label="" color="currentColor" />
-      </button>
+      />
       {remindOpen && (
         <div
           onClick={(e) => e.stopPropagation()}
@@ -231,131 +251,181 @@ export function ReleaseChangeAnnouncementBanner({
             border: `1px solid ${T.border}`, borderRadius: 12, boxShadow: 'var(--ds-shadow-overlay)',
           }}
         >
-          <div role="heading" aria-level={3} style={{ fontFamily: RH.fontDisplay, fontSize: 'var(--ds-font-size-200)', fontWeight: 700, color: T.text, padding: '0 4px' }}>Remind me</div>
+          <div role="heading" aria-level={3} style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: T.text, padding: '0 4px' }}>Remind me</div>
           <div style={{ display: 'flex', gap: 8 }}>
-            <PresetChip label="1 hour" onClick={() => snoozeUntil(Date.now() + HOUR)} />
-            <PresetChip label="4 hours" onClick={() => snoozeUntil(Date.now() + 4 * HOUR)} />
-            <PresetChip label="Tomorrow" onClick={() => snoozeUntil(tomorrow9())} />
+            <span style={{ flex: 1 }}><Button shouldFitContainer appearance="default" onClick={() => snoozeUntil(Date.now() + HOUR)}>1 hour</Button></span>
+            <span style={{ flex: 1 }}><Button shouldFitContainer appearance="default" onClick={() => snoozeUntil(Date.now() + 4 * HOUR)}>4 hours</Button></span>
+            <span style={{ flex: 1 }}><Button shouldFitContainer appearance="default" onClick={() => snoozeUntil(tomorrow9())}>Tomorrow</Button></span>
           </div>
           <div style={{ height: 1, background: T.border, margin: '4px 0' }} />
           <div style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', color: T.subtle, padding: '0 4px' }}>Or pick a date &amp; time</div>
           <DateTimePicker defaultValue={pickIso} onChange={(v: string) => setPickIso(v)} />
-          <button
-            onClick={() => pickIso && snoozeUntil(new Date(pickIso).getTime())}
-            disabled={!pickIso}
-            style={{ height: 36, borderRadius: 8, border: 'none', cursor: pickIso ? 'pointer' : 'not-allowed', background: 'var(--ds-background-brand-bold)', color: 'var(--ds-text-inverse)', fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', fontWeight: 600, opacity: pickIso ? 1 : 0.5 }}
-          >Set reminder</button>
+          <Button shouldFitContainer appearance="primary" isDisabled={!pickIso} onClick={() => pickIso && snoozeUntil(new Date(pickIso).getTime())}>Set reminder</Button>
           <div style={{ height: 1, background: T.border, margin: '4px 0' }} />
-          <MenuRow icon={<Minimize2 size={16} />} label="Collapse to timer" onClick={() => { setRemindOpen(false); setCollapse(true); }} />
-          <MenuRow icon={<X size={16} />} label="Dismiss for this change" danger onClick={() => snoozeUntil(Date.now() + 365 * 24 * HOUR)} />
+          <Button shouldFitContainer appearance="subtle" iconBefore={(p) => <Minimize2 {...p} size={16} />} onClick={() => { setRemindOpen(false); dismiss(); }}>Collapse to timer</Button>
+          <Button shouldFitContainer appearance="subtle" iconBefore={(p) => <X {...p} size={16} />} onClick={() => snoozeUntil(Date.now() + 365 * 24 * HOUR)}>Dismiss for this change</Button>
         </div>
       )}
     </span>
   );
 
-  // ── Collapsed: premium mini-timer pill (inline, on-page). The nav chip
-  // keeps showing regardless — collapsing "sends" the SLA signal up to the
-  // top nav bar rather than hiding it outright.
-  if (collapsed) {
+  // Time drives the default size (compact outside the window, expanded inside);
+  // the chevron is a manual session-only override in either direction.
+  const showFull = sizeOverride ? sizeOverride === 'expanded' : inWindow;
+  const action = nextActionText(change, assignedCards);
+  const primaryRelease = change.releases[0];
+  const windowText = fmtWindow(change.plannedStartAt, change.plannedEndAt);
+  const releaseText = primaryRelease?.name ?? (change.isUnlinkedProduction ? 'Unlinked production' : 'No release');
+
+  const shell: React.CSSProperties = {
+    width: '100%', textAlign: 'left', cursor: 'pointer', display: 'flex', alignItems: 'stretch',
+    borderRadius: 8, border: `1px solid ${T.border}`, background: T.raised, boxShadow: 'var(--ds-shadow-raised)', overflow: 'hidden',
+  };
+  const rail = <span style={{ width: 3, flexShrink: 0, background: tone }} aria-hidden />;
+  const keyEl = <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', fontWeight: 500, color: T.link, flexShrink: 0 }}>{change.chgNumber}</span>;
+
+  // ── Compact (default): one row, everything present — date, release, env,
+  // executor avatar, live countdown. Half the vertical cost of the full card. ──
+  if (!showFull) {
     return (
-      <div
-        role="button" tabIndex={0} onClick={open} onKeyDown={(e) => { if (e.key === 'Enter') open(); }}
-        style={{
-          display: 'inline-flex', alignItems: 'center', gap: 12, cursor: 'pointer', padding: '8px 8px 8px 12px', borderRadius: 999,
-          border: `1px solid ${T.magenta}`,
-          background: 'linear-gradient(90deg, var(--ds-surface-raised) 0%, var(--ds-background-information) 100%)',
-          boxShadow: 'var(--ds-shadow-raised)',
-        }}
-      >
-        <LiveCountdown change={change} variant="pill" />
-        <span aria-hidden style={{ fontFamily: T.mono, fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: T.link, whiteSpace: 'nowrap' }}>{change.chgNumber}</span>
-        <span aria-hidden style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', color: T.subtle, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 220 }}>{change.title}</span>
-        <button aria-label="Expand banner" style={iconBtn} onClick={(e) => { e.stopPropagation(); setCollapse(false); }}><Maximize2 size={15} /></button>
+      <div role="button" tabIndex={0} onClick={open} onKeyDown={(e) => { if (e.key === 'Enter') open(); }} style={shell}>
+        {rail}
+        <span style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '8px 16px', minWidth: 0, flex: 1 }}>
+          <ExecutorAvatar name={change.running?.ownerName ?? null} avatarUrl={change.runningOwnerAvatarUrl} />
+          <span style={{ display: 'flex', flexDirection: 'column', gap: 3, minWidth: 0, flex: 1 }}>
+            <span style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
+              {keyEl}
+              <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: T.text, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{change.title}</span>
+              <ChangeStatusLozenge status={change.status} />
+              <RiskLozenge risk={change.risk} />
+            </span>
+            <span style={{ display: 'flex', alignItems: 'center', gap: 6, fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', color: T.subtle, whiteSpace: 'nowrap', overflow: 'hidden', minWidth: 0 }}>
+              {windowText && (
+                <>
+                  <span style={{ display: 'inline-flex', color: T.icon, flexShrink: 0 }}><Calendar size={14} /></span>
+                  <span style={{ color: T.text, fontWeight: 600 }}>{windowText}</span>
+                  <span>·</span>
+                </>
+              )}
+              <span>{releaseText}{primaryRelease?.number ? ` (${primaryRelease.number})` : ''}</span>
+              <span>·</span><span>{change.targetEnv ?? '—'}</span>
+              <span>·</span>
+              <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{action}{moreCount > 0 ? ` · +${moreCount} more` : ''}</span>
+            </span>
+          </span>
+          <LiveCountdown change={change} variant="card" />
+        </span>
+        <span onClick={(e) => e.stopPropagation()} style={{ display: 'flex', alignItems: 'center', paddingRight: 8 }}>
+          <IconButton label="Expand change card" appearance="subtle" icon={(p) => <ChevronDown {...p} size={16} />} onClick={() => setSizeOverride('expanded')} />
+        </span>
       </div>
     );
   }
 
-  // ── Expanded: full banner ──
-  const action = nextActionText(change, assignedCards);
+  // ── Expanded (auto during the change window): header + labeled field grid +
+  // SOP progress and actions. ──
   return (
-    <div
-      role="button" tabIndex={0} onClick={open} onKeyDown={(e) => { if (e.key === 'Enter') open(); }}
-      style={{
-        width: '100%', textAlign: 'left', cursor: 'pointer', display: 'flex', alignItems: 'stretch', borderRadius: 12,
-        border: `1px solid ${T.magenta}`,
-        background: 'linear-gradient(90deg, var(--ds-surface-raised) 0%, var(--ds-background-information) 100%)',
-        boxShadow: 'var(--ds-shadow-raised)',
-      }}
-    >
-      <span style={{ width: 4, flexShrink: 0, background: tone, borderRadius: '11px 0 0 11px' }} aria-hidden />
-
-      {/* identity */}
-      <span style={{ display: 'flex', flexDirection: 'column', gap: 4, padding: '16px 16px', minWidth: 0, flex: 1 }}>
-        <span style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-          <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-050)', fontWeight: 700, letterSpacing: '.08em', color: T.subtlest, textTransform: 'uppercase' as const }}>Change execution</span>
+    <div role="button" tabIndex={0} onClick={open} onKeyDown={(e) => { if (e.key === 'Enter') open(); }} style={shell}>
+      {rail}
+      <span style={{ display: 'flex', flexDirection: 'column', padding: '12px 16px', minWidth: 0, flex: 1 }}>
+        {/* header: key · title · lozenges ·· countdown */}
+        <span style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
+          {keyEl}
+          <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: T.text, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{change.title}</span>
           <ChangeStatusLozenge status={change.status} />
           <RiskLozenge risk={change.risk} />
+          <span style={{ flex: 1 }} />
+          <LiveCountdown change={change} variant="full" />
         </span>
-        <span style={{ display: 'flex', alignItems: 'baseline', gap: 8, minWidth: 0 }}>
-          <span style={{ fontFamily: T.mono, fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: T.link, flexShrink: 0 }}>{change.chgNumber}</span>
-          <span style={{ fontFamily: RH.fontDisplay, fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: T.text, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{change.title}</span>
-        </span>
-        <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', color: T.subtle, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-          {(change.releaseNames[0] ?? (change.isUnlinkedProduction ? 'Unlinked production' : 'No release'))} · {change.targetEnv ?? '—'} · {action}{moreCount > 0 ? ` · +${moreCount} more` : ''}
-        </span>
-      </span>
 
-      {/* countdown */}
-      <span style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'center', gap: 4, padding: '16px 24px', flexShrink: 0, borderLeft: `1px solid ${T.border}` }}>
-        <LiveCountdown change={change} variant="full" />
-      </span>
+        {/* labeled field grid — the memo */}
+        <span style={{ display: 'grid', gridTemplateColumns: 'repeat(4, minmax(0, 1fr))', gap: 12, margin: '12px 0', padding: '12px 0', borderTop: `1px solid ${T.border}`, borderBottom: `1px solid ${T.border}` }}>
+          <GridField label="Window">{windowText ?? '—'}</GridField>
+          <GridField label="Release">
+            {releaseText}
+            {primaryRelease?.number && <span style={{ color: T.subtle, fontWeight: 400 }}> {primaryRelease.number}</span>}
+          </GridField>
+          <GridField label="Environment">{change.targetEnv ?? '—'}</GridField>
+          <GridField label={change.running ? 'Executing now' : 'Next up'}>
+            {change.running ? (
+              <span style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
+                <ExecutorAvatar name={change.running.ownerName} avatarUrl={change.runningOwnerAvatarUrl} />
+                <span style={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>
+                  <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{change.running.ownerName ?? 'Unassigned'}</span>
+                  <span style={{ color: T.subtle, fontWeight: 400, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>#{change.running.stepNo} {change.running.title}</span>
+                </span>
+              </span>
+            ) : (
+              <span style={{ color: T.subtle, fontWeight: 400 }}>{action}</span>
+            )}
+          </GridField>
+        </span>
 
-      {/* actions */}
-      <span onClick={(e) => e.stopPropagation()} style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '0 12px', flexShrink: 0, borderLeft: `1px solid ${T.border}` }}>
-        <button onClick={openSop} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, height: 32, padding: '0 12px', borderRadius: 8, border: `1px solid ${T.border}`, background: T.raised, cursor: 'pointer', color: T.text, fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', fontWeight: 600 }}>
-          <ListChecks size={16} /> SOP
-        </button>
-        <button onClick={open} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, height: 32, padding: '0 12px', borderRadius: 8, border: 'none', background: 'transparent', cursor: 'pointer', color: T.link, fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', fontWeight: 600 }}>
-          Open change <ArrowRightIcon label="" size="small" />
-        </button>
-        {remindPopup}
-        <button aria-label="Collapse to timer" style={iconBtn} onClick={() => setCollapse(true)}><Minimize2 size={16} /></button>
+        {/* footer: SOP progress + actions */}
+        <span onClick={(e) => e.stopPropagation()} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <span style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 8, fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', color: T.subtle, minWidth: 0 }}>
+            <span style={{ whiteSpace: 'nowrap' }}>SOP {change.sopDone} of {change.sopTotal}</span>
+            <span aria-hidden style={{ flex: 1, maxWidth: 160, height: 4, background: 'var(--ds-background-neutral)', borderRadius: 2, overflow: 'hidden' }}>
+              <span style={{ display: 'block', width: `${change.sopTotal > 0 ? Math.round((change.sopDone / change.sopTotal) * 100) : 0}%`, height: '100%', background: 'var(--ds-background-brand-bold)' }} />
+            </span>
+            {moreCount > 0 && <span style={{ whiteSpace: 'nowrap' }}>+{moreCount} more</span>}
+          </span>
+          <Button appearance="default" iconBefore={(p) => <ListChecks {...p} size={16} />} onClick={openSop}>View SOP</Button>
+          <Button appearance="subtle" iconAfter={ArrowRightIcon} onClick={open}>Open change</Button>
+          {remindPopup}
+          <IconButton label="Send to top bar" appearance="subtle" icon={(p) => <Minimize2 {...p} size={16} />} onClick={dismiss} />
+          <IconButton label="Collapse change card" appearance="subtle" icon={(p) => <ChevronUp {...p} size={16} />} onClick={() => setSizeOverride('compact')} />
+        </span>
       </span>
     </div>
   );
 }
 
 /**
- * ReleaseTimerNavChip — the persistent global top-nav timer (default state).
- * Shows on every page whenever the user has a relevant change, EXCEPT on the
- * For-You page during the hero window (where the full banner takes over, so we
- * avoid a duplicate timer). Click → change detail. On narrow viewports renders
- * a compact dot-only variant instead of disappearing.
+ * ReleaseTimerNavChip — the persistent global top-nav timer. Shows on every
+ * page whenever the user has a relevant change, EXCEPT on the For-You page
+ * while the on-page pill/full-card is showing there (avoids a duplicate
+ * timer) — unless the user has explicitly dismissed the on-page element, in
+ * which case the chip is the only remaining surface and must show there too.
+ * Clicking it normally opens the change; on the For-You page while dismissed,
+ * it instead un-dismisses back to the time-correct on-page size. On narrow
+ * viewports renders a compact dot-only variant instead of disappearing.
  */
 export function ReleaseTimerNavChip({ compact = false }: { compact?: boolean } = {}) {
   const navigate = useNavigate();
   const location = useLocation();
   const { data } = useMyExecutionWork();
+  const [dismissed, setDismissedState] = useState<boolean>(() => readDismissed());
+
+  useEffect(() => {
+    const onDismissChange = () => setDismissedState(readDismissed());
+    window.addEventListener(DISMISS_EVENT, onDismissChange);
+    return () => window.removeEventListener(DISMISS_EVENT, onDismissChange);
+  }, []);
+
   if (!data) return null;
   const { primary } = pickPrimaryChange(data);
   if (!primary) return null;
-  if (isForYouRoute(location.pathname) && inHeroWindow(primary, Date.now())) return null;
+  const onForYou = isForYouRoute(location.pathname);
+  if (onForYou && !dismissed) return null;
 
-  const open = () => navigate(`/release-hub/changes/${primary.slug ?? primary.id}`);
   const label = `${primary.chgNumber} · ${primary.title}`;
+  const handleClick = () => {
+    if (onForYou && dismissed) { writeDismissed(false); setDismissedState(false); return; }
+    navigate(`/release-hub/changes/${primary.slug ?? primary.id}`);
+  };
 
   // Narrow viewports (mobile/on-call): shed the text, keep a compact dot so the
   // SLA signal is never fully invisible to the audience that most needs it.
   if (compact) {
     return (
       <button
-        onClick={open}
+        onClick={handleClick}
         aria-label={label}
         title={label}
         style={{
           display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 32, height: 32, flexShrink: 0,
-          borderRadius: '50%', border: `1px solid ${T.magenta}`, cursor: 'pointer', padding: 0,
-          background: 'linear-gradient(135deg, var(--ds-surface-raised) 0%, var(--ds-background-information) 100%)',
+          borderRadius: '50%', border: `1px solid ${T.magenta}`, cursor: 'pointer', padding: 0, background: T.raised,
         }}
       >
         <LiveCountdown change={primary} variant="dot" />
@@ -365,17 +435,16 @@ export function ReleaseTimerNavChip({ compact = false }: { compact?: boolean } =
 
   return (
     <button
-      onClick={open}
+      onClick={handleClick}
       title={label}
       style={{
         display: 'inline-flex', alignItems: 'center', gap: 8, height: 32, padding: '0 12px', borderRadius: 999,
-        border: `1px solid ${T.magenta}`, cursor: 'pointer', maxWidth: 260,
-        background: 'linear-gradient(90deg, var(--ds-surface-raised) 0%, var(--ds-background-information) 100%)',
+        border: `1px solid ${T.magenta}`, cursor: 'pointer', maxWidth: 260, background: T.raised,
         boxShadow: 'var(--ds-shadow-raised)',
       }}
     >
       <LiveCountdown change={primary} variant="pill" />
-      <span aria-hidden style={{ fontFamily: T.mono, fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: T.link, whiteSpace: 'nowrap' }}>{primary.chgNumber}</span>
+      <span aria-hidden style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', fontWeight: 500, color: T.link, whiteSpace: 'nowrap' }}>{primary.chgNumber}</span>
     </button>
   );
 }
