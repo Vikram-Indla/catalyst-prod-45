@@ -210,6 +210,83 @@ If you run the app with invalid `APP_PRODUCT`:
 5. **Delete or rename `.env.example.catalyst` / `.env.example.strata`**
    - Developers depend on these templates
 
+6. **Push `strata-standalone` to origin without confirmation**
+   - Pre-push hook requires explicit `yes` confirmation
+   - Prevents accidental upstream pushes
+   - See [Push Protection](#push-protection) below
+
+---
+
+## Push Protection
+
+The `strata-standalone` branch is **protected from accidental pushes** to origin via a pre-push Git hook.
+
+### How It Works
+
+**When you try to push from `strata-standalone`:**
+
+```bash
+git push origin strata-standalone
+```
+
+The pre-push hook (`.husky/pre-push`) will:
+1. Detect you're on `strata-standalone`
+2. Display a warning banner
+3. Ask for explicit confirmation: `Do you want to continue? (yes/no)`
+4. Only allow push if you type `yes`
+
+**Example output:**
+```
+╔════════════════════════════════════════════════════════════════╗
+║  ⚠️  STRATA BRANCH PUSH PROTECTION ACTIVE                      ║
+╚════════════════════════════════════════════════════════════════╝
+
+You are attempting to push from the strata-standalone branch.
+
+This branch is isolated and requires explicit confirmation before
+pushing to origin to prevent accidental code contamination.
+
+To proceed, run:
+  git push origin strata-standalone --force-with-lease
+
+Do you want to continue pushing to strata-standalone? (yes/no) 
+```
+
+### To Push from `strata-standalone`:
+
+1. **Normal push (with confirmation):**
+   ```bash
+   git push origin strata-standalone
+   # When prompted: type "yes" and press Enter
+   ```
+
+2. **Bypass hook (not recommended):**
+   ```bash
+   git push --no-verify
+   ```
+
+3. **Force push (be careful):**
+   ```bash
+   git push origin strata-standalone --force-with-lease
+   # Still requires confirmation
+   ```
+
+### Pushes from Other Branches
+
+Pushes from `main`, `develop`, or feature branches are **not blocked**:
+```bash
+git checkout main
+git push origin main  # No protection, pushes normally
+```
+
+### Why This Protection?
+
+This prevents:
+- ❌ Accidentally pushing STRATA code to origin while on wrong branch
+- ❌ Automated CI/CD pushing incomplete STRATA work
+- ❌ Team members mixing up branch context during fast commits
+- ✅ Ensures pushes are deliberate and intentional
+
 ---
 
 ## Merge Safety Checklist

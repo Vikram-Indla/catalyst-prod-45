@@ -1,0 +1,42 @@
+#!/bin/sh
+# Pre-push hook for STRATA isolation protection
+# Prevents accidental pushes from strata-standalone branch to origin
+# CAT-STRATA-ISOLATE-20260707-001
+
+current_branch=$(git rev-parse --abbrev-ref HEAD)
+
+if [ "$current_branch" = "strata-standalone" ]; then
+  echo ""
+  echo "╔════════════════════════════════════════════════════════════════╗"
+  echo "║  ⚠️  STRATA BRANCH PUSH PROTECTION ACTIVE                      ║"
+  echo "╚════════════════════════════════════════════════════════════════╝"
+  echo ""
+  echo "You are attempting to push from the strata-standalone branch."
+  echo ""
+  echo "This branch is isolated and requires explicit confirmation before"
+  echo "pushing to origin to prevent accidental code contamination."
+  echo ""
+  echo "To proceed, run:"
+  echo "  git push origin strata-standalone --force-with-lease"
+  echo ""
+  echo "Or to bypass this check (not recommended):"
+  echo "  git push --no-verify"
+  echo ""
+  echo "To abort this push:"
+  echo "  Press Ctrl+C or run: exit 1"
+  echo ""
+
+  read -p "Do you want to continue pushing to strata-standalone? (yes/no) " -r
+  echo ""
+
+  if [[ ! $REPLY =~ ^[Yy][Ee][Ss]$ ]]; then
+    echo "❌ Push aborted."
+    exit 1
+  fi
+
+  echo "✅ Continuing push... (this is a deliberate action)"
+  exit 0
+fi
+
+# Allow pushes from other branches (main, develop, feature branches)
+exit 0
