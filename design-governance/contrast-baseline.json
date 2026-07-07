@@ -1,7 +1,7 @@
 {
-  "total": 689,
+  "total": 683,
   "byId": {
-    "bg-token-as-color": 651,
+    "bg-token-as-color": 645,
     "text-role-bg-token": 33,
     "low-alpha-text": 5
   },
@@ -682,13 +682,7 @@
     "bg-token-as-color::src/styles/request-detail-panel.css::color: var(--ds-surface);",
     "bg-token-as-color::src/styles/resource-allocation-enterprise.css::border-color: var(--ds-background-success) !important;",
     "bg-token-as-color::src/styles/task-detail-modal-enterprise.css::border-color: var(--ds-background-danger);",
-    "bg-token-as-color::src/styles/task-detail-modal-enterprise.css::.dark .task-modal-v3 , [data-theme=\"dark\"] .task-modal-v3 { background: var(--bg-2, var(--cp-bg-surface, var(--cp-ink-1,",
-    "bg-token-as-color::src/styles/task-detail-modal-enterprise.css::.dark .task-modal-v3__icon-btn:hover , [data-theme=\"dark\"] .task-modal-v3__icon-btn:hover { background: var(--ds-border,",
     "bg-token-as-color::src/styles/task-detail-modal-enterprise.css::.dark .task-modal-v3__icon-btn--close:hover , [data-theme=\"dark\"] .task-modal-v3__icon-btn--close:hover { background: va",
-    "bg-token-as-color::src/styles/task-detail-modal-enterprise.css::.dark .task-modal-v3__title , [data-theme=\"dark\"] .task-modal-v3__title { color: var(--fg-1, var(--cp-bg-neutral, var(--",
-    "bg-token-as-color::src/styles/task-detail-modal-enterprise.css::.dark .task-modal-v3__field-value , [data-theme=\"dark\"] .task-modal-v3__field-value { background: var(--bg-2, var(--cp-b",
-    "bg-token-as-color::src/styles/task-detail-modal-enterprise.css::.dark .task-modal-v3__timestamp-value , [data-theme=\"dark\"] .task-modal-v3__timestamp-value { color: var(--fg-1, var(--c",
-    "bg-token-as-color::src/styles/task-detail-modal-enterprise.css::.dark .task-modal-v3__footer-btn:hover , [data-theme=\"dark\"] .task-modal-v3__footer-btn:hover { background: var(--ds-bor",
     "bg-token-as-color::src/styles/task-detail-modal-enterprise.css::.dark .task-modal-v3__footer-btn--danger:hover , [data-theme=\"dark\"] .task-modal-v3__footer-btn--danger:hover { backgrou",
     "bg-token-as-color::src/styles/taskhub-responsive.css::background-color: var(--ws-bg-tertiary, var(--ds-surface-sunken)) !important;",
     "text-role-bg-token::src/styles/theme-tokens.css::--status-todo-text:       var(--ds-background-neutral-hovered);",

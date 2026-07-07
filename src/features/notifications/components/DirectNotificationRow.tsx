@@ -48,6 +48,7 @@ export default function DirectNotificationRow({
   const navigate = useNavigate();
   const [hovered, setHovered] = useState(false);
   const [pressed, setPressed] = useState(false);
+  const [focused, setFocused] = useState(false);
 
   const { target, aggregation, thread } = notification;
   const actorName = notification.actor?.displayName ?? null;
@@ -90,7 +91,7 @@ export default function DirectNotificationRow({
   const rowBg = pressed ? pressBg : hovered ? hoverBg : idleBg;
 
   const text1 = isDark
-    ? "var(--ds-text, var(--cp-bg-neutral))"
+    ? "var(--ds-text)"
     : token("color.text", "#292A2E");
   const text2 = isDark
     ? "var(--ds-text-subtlest)"
@@ -99,7 +100,7 @@ export default function DirectNotificationRow({
     ? "var(--ds-text-subtlest, var(--cp-text-secondary))"
     : token("color.text.subtlest", "var(--ds-text-disabled)");
   const linkClr = isDark
-    ? "#6698FF" // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
+    ? "var(--ds-link)"
     : token("color.link", "var(--ds-link)");
   const dotColor =
     "var(--ds-text-brand, var(--cp-workstream-catalyst-primary))";
@@ -172,14 +173,15 @@ export default function DirectNotificationRow({
         cursor: "pointer",
         textAlign: "left",
         transition: "background 100ms ease",
-        outline: "none",
+        outline: focused ? "2px solid var(--ds-border-focused)" : "none",
+        outlineOffset: "-2px",
         gap: 8,
         alignItems: "flex-start",
         opacity: isRead ? 0.8 : 1,
         marginBottom: 0,
       }}
-      onFocus={() => setHovered(true)}
-      onBlur={() => setHovered(false)}
+      onFocus={() => { setHovered(true); setFocused(true); }}
+      onBlur={() => { setHovered(false); setFocused(false); }}
     >
       {/* Avatar slot:
           - 'user': CatalystAvatar with initials/photo
