@@ -482,6 +482,7 @@ export function useCreateDefect() {
           linked_id: input.source_test_case_id,
           entity_label: input.title || null,
           link_source: 'auto_execution',
+          non_test_origin: false,
           created_by: user.id,
         });
       }
@@ -520,6 +521,7 @@ export function useCreateDefect() {
             linked_id: cycleRow.id,
             entity_label: cycleRow.name || null,
             link_source: 'auto_execution',
+            non_test_origin: false,
             created_by: user.id,
           });
 
@@ -534,6 +536,7 @@ export function useCreateDefect() {
               linked_id: planRow.id,
               entity_label: planRow.name || null,
               link_source: 'auto_execution',
+              non_test_origin: false,
               created_by: user.id,
             });
 
@@ -546,6 +549,7 @@ export function useCreateDefect() {
                 linked_id: planRow.release_id,
                 entity_label: null,
                 link_source: 'auto_execution',
+                non_test_origin: false,
                 created_by: user.id,
               });
             }
@@ -573,6 +577,7 @@ export function useCreateDefect() {
             linked_id: reqLink.requirement_id,
             entity_label: reqLink.external_title || null,
             link_source: 'auto_execution',
+            non_test_origin: false,
             created_by: user.id,
           });
         }

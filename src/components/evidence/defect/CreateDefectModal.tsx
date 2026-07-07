@@ -157,6 +157,7 @@ export const CreateDefectModal: React.FC<CreateDefectModalProps> = ({
         entity_label: string | null;
         link_source: string;
         step_result_id?: string | null;
+        non_test_origin: boolean;
         created_by: string;
       }> = [];
 
@@ -168,6 +169,7 @@ export const CreateDefectModal: React.FC<CreateDefectModalProps> = ({
           entity_label: null,
           link_source: 'auto_execution',
           step_result_id: linkedEvidence.stepResultId,
+          non_test_origin: false,
           created_by: user.id,
         });
       }
@@ -179,6 +181,7 @@ export const CreateDefectModal: React.FC<CreateDefectModalProps> = ({
           linked_id: testCaseId,
           entity_label: testCaseName || null,
           link_source: 'auto_execution',
+          non_test_origin: false,
           created_by: user.id,
         });
       }
