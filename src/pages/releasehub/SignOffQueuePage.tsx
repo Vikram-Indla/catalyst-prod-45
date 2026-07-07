@@ -153,7 +153,7 @@ export default function SignOffQueuePage() {
         <div style={{ border: `1px solid ${T.border}`, borderRadius: 8, overflow: 'hidden' }}>
           {/* Column header — scope pill/entity/release/role/risk/approver/status previously had
               no labels, reading as unlabeled data. Widths mirror the row cells below for alignment. */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 16px', background: T.sunken, borderBottom: `1px solid ${T.border}` }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '8px 16px', background: T.sunken, borderBottom: `1px solid ${T.border}` }}>
             <span style={{ width: 64, flexShrink: 0, fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: T.subtlest }}>Scope</span>
             <span style={{ flex: 1, minWidth: 0, fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: T.subtlest }}>Change / release</span>
             <span style={{ width: 170, flexShrink: 0, fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: T.subtlest }}>Linked release</span>

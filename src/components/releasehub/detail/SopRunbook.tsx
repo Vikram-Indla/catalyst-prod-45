@@ -103,7 +103,7 @@ function StepRow({ step, changeId, steps, canManage, onRaiseIssue, issue }: { st
 
   return (
     <div style={{ borderBottom: `1px solid ${T.border}`, background: step.isRollback ? 'var(--ds-background-warning)' : undefined }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 8px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 8px' }}>
         <button onClick={() => setExpanded((v) => !v)} aria-label={expanded ? 'Collapse' : 'Expand'} style={{ display: 'flex', background: 'transparent', border: 'none', cursor: 'pointer', padding: 0, color: T.subtlest }}>
           {expanded ? <ChevronDown size={16} style={{ color: T.subtlest }} /> : <ChevronRight size={16} style={{ color: T.subtlest }} />}
         </button>

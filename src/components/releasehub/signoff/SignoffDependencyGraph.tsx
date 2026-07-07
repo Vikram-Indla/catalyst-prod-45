@@ -90,7 +90,7 @@ function GateNode({ gate, canManage }: { gate: Gate; canManage: boolean }) {
 function OverrideBadge({ o }: { o: OverrideRow }) {
   const approved = o.status === 'approved';
   return (
-    <div style={{ borderLeft: `2px dashed ${approved ? T.warning : T.subtle}`, background: 'var(--ds-background-warning)', borderRadius: 6, padding: '6px 10px' }}>
+    <div style={{ borderLeft: `2px dashed ${approved ? T.warning : T.subtle}`, background: 'var(--ds-background-warning)', borderRadius: 6, padding: '4px 8px' }}>
       <div style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: T.warning }}>⚡ Emergency override — {titleCase(o.status)}</div>
       <div style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', color: T.subtle }}>Bypasses {o.bypassedGate ?? 'gate'} · {o.reason ?? ''}{o.requestedByName ? ` · requested by ${o.requestedByName}` : ''}{o.approvedByName ? ` · approved by ${o.approvedByName}` : ''}</div>
     </div>
