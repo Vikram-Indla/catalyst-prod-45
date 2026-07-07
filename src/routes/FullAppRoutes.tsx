@@ -197,24 +197,6 @@ const TestHubDefectDetailPage = lazy(() => import("../pages/testhub/defects/Defe
 const TestHubTimelinePage = lazy(() => import("../pages/testhub/timeline/TestHubTimelinePage"));
 const TestHubDependenciesPage = lazy(() => import("../pages/testhub/TestHubDependenciesPage"));
 
-// Wiki module — RESTORED 2026-07-05 (CAT-WIKI-RESTORE-20260705-001).
-// Routes re-added, but frontend pages remain deleted in git.
-// Backend (tables/RPCs/kb-query) intact. Uncomment when files are restored.
-/*
-const WikiHomePage = lazy(() => import("../modules-dormant/wiki/WikiHomePage"));
-const WikiSearchPage = lazy(() => import("../modules-dormant/wiki/WikiSearchPage"));
-const WikiArticlePage = lazy(() => import("../modules-dormant/wiki/WikiArticlePage"));
-const WikiCategoryPage = lazy(() => import("../modules-dormant/wiki/WikiCategoryPage"));
-const WikiAllArticlesPage = lazy(() => import("../modules-dormant/wiki/WikiAllArticlesPage"));
-const WikiWhatsNewPage = lazy(() => import("../modules-dormant/wiki/WikiWhatsNewPage"));
-const WikiLearningPathsPage = lazy(() => import("../modules-dormant/wiki/WikiLearningPathsPage"));
-const WikiLearningPathDetailPage = lazy(() => import("../modules-dormant/wiki/WikiLearningPathDetailPage"));
-const WikiSubscriptionsPage = lazy(() => import("../modules-dormant/wiki/WikiSubscriptionsPage"));
-const WikiVerificationPage = lazy(() => import("../modules-dormant/wiki/WikiVerificationPage"));
-const WikiAnalyticsPage = lazy(() => import("../modules-dormant/wiki/WikiAnalyticsPage"));
-const WikiTemplatesPage = lazy(() => import("../modules-dormant/wiki/WikiTemplatesPage"));
-*/
-
 const KnowledgeAssistFabLazy = ENABLE_AI ? lazy(() => import("../components/kb/KAFab").then(m => ({ default: m.KAFab }))) : () => null;
 
 const ChatPageLazy = lazy(() => import("../pages/chat/ChatPage"));
@@ -862,25 +844,6 @@ export default function FullAppRoutes() {
         {/* Legacy Docex URLs — permanent redirects into /folio */}
         <Route path="/docex" element={<Navigate to="/folio" replace />} />
         <Route path="/docex/*" element={<DocexToFolioRedirect />} />
-
-        {/* Wiki routes commented 2026-07-05 — files deleted, imports fail.
-            CAT-WIKI-RESTORE-20260705-001 added routes back but no frontend files.
-            Uncomment when wiki pages are restored.
-        <Route path="/wiki" element={<MG k="wiki" t="Wiki"><S><WikiHomePage /></S></MG>} />
-        <Route path="/wiki/search" element={<MG k="wiki" t="Wiki"><S><WikiSearchPage /></S></MG>} />
-        <Route path="/wiki/articles" element={<MG k="wiki" t="Wiki"><S><WikiAllArticlesPage /></S></MG>} />
-        <Route path="/wiki/whats-new" element={<MG k="wiki" t="Wiki"><S><WikiWhatsNewPage /></S></MG>} />
-        <Route path="/wiki/learning-paths" element={<MG k="wiki" t="Wiki"><S><WikiLearningPathsPage /></S></MG>} />
-        <Route path="/wiki/learning-paths/:pathId" element={<MG k="wiki" t="Wiki"><S><WikiLearningPathDetailPage /></S></MG>} />
-        <Route path="/wiki/subscriptions" element={<MG k="wiki" t="Wiki"><S><WikiSubscriptionsPage /></S></MG>} />
-        <Route path="/wiki/verification" element={<MG k="wiki" t="Wiki"><S><WikiVerificationPage /></S></MG>} />
-        <Route path="/wiki/analytics" element={<MG k="wiki" t="Wiki"><S><WikiAnalyticsPage /></S></MG>} />
-        <Route path="/wiki/templates" element={<MG k="wiki" t="Wiki"><S><WikiTemplatesPage /></S></MG>} />
-        <Route path="/wiki/domains" element={<Navigate to="/wiki" replace />} />
-        <Route path="/wiki/domains/:slug" element={<MG k="wiki" t="Wiki"><S><WikiCategoryPage /></S></MG>} />
-        <Route path="/wiki/category/:slug" element={<MG k="wiki" t="Wiki"><S><WikiCategoryPage /></S></MG>} />
-        <Route path="/wiki/:pageSlug" element={<MG k="wiki" t="Wiki"><S><WikiArticlePage /></S></MG>} />
-        */}
 
         <Route path="/mining" element={<S><MiningComingSoon /></S>} />
         <Route path="/product/room" element={<S><ProductRoomPage /></S>} />
