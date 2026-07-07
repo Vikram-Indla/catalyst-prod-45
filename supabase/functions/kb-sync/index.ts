@@ -510,6 +510,16 @@ Deno.serve(async (req) => {
           { status: 400, headers: { ...cors, "Content-Type": "application/json" } });
       }
 
+      // sync_single is a BRD-ingestion-queue action (see brd_processing_queue
+      // bookkeeping below) — `table` must not be caller-controlled to an
+      // arbitrary name, or any authenticated caller could read rows from any
+      // table into the embedding pipeline via kb_embeddings.
+      const SYNC_SINGLE_ALLOWED_TABLES = new Set(["brd_documents"]);
+      if (!SYNC_SINGLE_ALLOWED_TABLES.has(table)) {
+        return new Response(JSON.stringify({ error: `sync_single does not support table: ${table}` }),
+          { status: 400, headers: { ...cors, "Content-Type": "application/json" } });
+      }
+
       const fieldName = content_field || "raw_text";
       const srcType = source_type || "brd_document";
       let queueUpdated = false;

@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { requireAuth } from "../_shared/auth-guard.ts";
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SUPABASE_SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
@@ -14,6 +15,11 @@ serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
+
+  // ── Auth guard ── previously unauthenticated; with --no-verify-jwt this
+  // let anyone flip was_helpful on any log row by guessing/enumerating UUIDs.
+  const auth = await requireAuth(req);
+  if (auth.error) return auth.error;
 
   try {
     const { log_id, was_helpful } = await req.json();
