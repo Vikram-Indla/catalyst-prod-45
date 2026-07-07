@@ -536,7 +536,9 @@ function CatalystShellContent() {
   });
 
   // Check if on Folio route (renamed /wiki→/docex→/folio)
-  const isWikiRoute = location.pathname.startsWith("/folio") || location.pathname.startsWith("/docex");
+  // Document Intelligence (CAT-DOCINTEL-ARABIC-RAG-20260706-001) is a peer
+  // surface under Folio sidebar — mounted at top-level but scoped to WikiSidebar.
+  const isWikiRoute = location.pathname.startsWith("/folio") || location.pathname.startsWith("/docex") || location.pathname.startsWith("/doc-intelligence");
 
   // Check if on IncidentHub route
   const isIncidentHubRoute = location.pathname.startsWith("/incident-hub");
