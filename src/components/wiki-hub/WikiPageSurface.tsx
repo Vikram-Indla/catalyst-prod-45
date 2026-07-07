@@ -42,7 +42,7 @@ import { syncMentionLinks } from './editor/syncMentionLinks';
 import { BacklinksPanel } from './BacklinksPanel';
 import { DocexAttachments } from './DocexAttachments';
 import { PageTree } from './PageTree';
-import { DropdownMenu, Lozenge } from '@/components/ads';
+import { DropdownMenu, Lozenge, Popup } from '@/components/ads';
 import { Input } from '@/components/ui/input';
 import { exportPageHtml, exportPageMarkdown, printPage } from './editor/exportPage';
 import { uploadWikiFile } from './editor/wikiUpload';
@@ -1103,92 +1103,92 @@ export function WikiPageSurface({ workspace, page, treePages }: WikiPageSurfaceP
           }}
         >
           {page.icon ? (
-            <button
-              type="button"
-              aria-label="Change page icon"
-              onClick={() => {
-                setIconDraft(page.icon ?? '');
-                setIconPickerOpen((v) => !v);
-              }}
-              className="wiki-no-print wiki-icon-btn"
-              style={{
-                border: 'none',
-                background: page.cover_url ? 'var(--ds-surface)' : 'transparent',
-                borderRadius: 14,
-                padding: page.cover_url ? 6 : 0,
-                cursor: 'pointer',
-                fontSize: 28,
-                lineHeight: 1,
-                boxShadow: page.cover_url ? 'var(--ds-shadow-overlay)' : 'none',
-              }}
-            >
-              {page.icon}
-            </button>
-          ) : null}
-          {iconPickerOpen && (
-            <div
-              role="dialog"
-              aria-label="Page icon"
-              style={{
-                position: 'absolute',
-                top: '100%',
-                insetInlineStart: 0,
-                zIndex: 20,
-                marginTop: 6,
-                padding: 10,
-                borderRadius: 8,
-                border: '1px solid var(--ds-border)',
-                background: 'var(--ds-surface-raised)',
-                boxShadow: 'var(--ds-shadow-overlay)',
-                display: 'flex',
-                gap: 8,
-                alignItems: 'center',
-              }}
-            >
-              <Input
-                autoFocus
-                value={iconDraft}
-                onChange={(e) => setIconDraft(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') commitIcon(iconDraft.trim() || null);
-                  if (e.key === 'Escape') setIconPickerOpen(false);
-                }}
-                placeholder="Paste or type an emoji"
-                aria-label="Page icon emoji"
-                style={{ width: 190 }}
-              />
-              <button
-                type="button"
-                onClick={() => commitIcon(iconDraft.trim() || null)}
-                style={{
-                  border: '1px solid var(--ds-border)',
-                  borderRadius: 4,
-                  background: 'transparent',
-                  color: 'var(--ds-text)',
-                  font: 'var(--ds-font-body-small)',
-                  padding: '5px 10px',
-                  cursor: 'pointer',
-                }}
-              >
-                Set
-              </button>
-              {page.icon && (
+            // Grid-anchored popover (was position:absolute top-left, which
+            // detached from the trigger). Popup anchors to the icon button via
+            // Popper and supplies its own elevated surface.
+            <Popup
+              isOpen={iconPickerOpen}
+              onClose={() => setIconPickerOpen(false)}
+              placement="bottom-start"
+              trigger={(triggerProps) => (
                 <button
+                  ref={triggerProps.ref}
+                  aria-controls={triggerProps['aria-controls']}
+                  aria-expanded={triggerProps['aria-expanded']}
+                  aria-haspopup={triggerProps['aria-haspopup']}
                   type="button"
-                  onClick={() => commitIcon(null)}
+                  aria-label="Change page icon"
+                  onClick={() => {
+                    setIconDraft(page.icon ?? '');
+                    setIconPickerOpen((v) => !v);
+                  }}
+                  className="wiki-no-print wiki-icon-btn"
                   style={{
                     border: 'none',
-                    background: 'transparent',
-                    color: 'var(--ds-text-subtle)',
-                    font: 'var(--ds-font-body-small)',
+                    background: page.cover_url ? 'var(--ds-surface)' : 'transparent',
+                    borderRadius: 14,
+                    padding: page.cover_url ? 6 : 0,
                     cursor: 'pointer',
+                    fontSize: 28,
+                    lineHeight: 1,
+                    boxShadow: page.cover_url ? 'var(--ds-shadow-overlay)' : 'none',
                   }}
                 >
-                  Remove
+                  {page.icon}
                 </button>
               )}
-            </div>
-          )}
+              content={() => (
+                <div
+                  role="dialog"
+                  aria-label="Page icon"
+                  style={{ padding: 10, display: 'flex', gap: 8, alignItems: 'center' }}
+                >
+                  <Input
+                    autoFocus
+                    value={iconDraft}
+                    onChange={(e) => setIconDraft(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') commitIcon(iconDraft.trim() || null);
+                      if (e.key === 'Escape') setIconPickerOpen(false);
+                    }}
+                    placeholder="Paste or type an emoji"
+                    aria-label="Page icon emoji"
+                    style={{ width: 190 }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => commitIcon(iconDraft.trim() || null)}
+                    style={{
+                      border: '1px solid var(--ds-border)',
+                      borderRadius: 4,
+                      background: 'transparent',
+                      color: 'var(--ds-text)',
+                      font: 'var(--ds-font-body-small)',
+                      padding: '5px 10px',
+                      cursor: 'pointer',
+                    }}
+                  >
+                    Set
+                  </button>
+                  {page.icon && (
+                    <button
+                      type="button"
+                      onClick={() => commitIcon(null)}
+                      style={{
+                        border: 'none',
+                        background: 'transparent',
+                        color: 'var(--ds-text-subtle)',
+                        font: 'var(--ds-font-body-small)',
+                        cursor: 'pointer',
+                      }}
+                    >
+                      Remove
+                    </button>
+                  )}
+                </div>
+              )}
+            />
+          ) : null}
         </div>
 
         <input
