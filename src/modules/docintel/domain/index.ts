@@ -17,6 +17,7 @@ import type {
   DocintelCitation,
   DocintelDocument,
   DocintelDocumentLink,
+  DocintelDocumentVersion,
   DocintelLinkEntityType,
   DocintelLinkOrigin,
   DocintelResolvedLink,
@@ -629,7 +630,67 @@ export const docintelApi = {
       body: { projectId, files: staged },
     });
     if (error) throw new Error(error.message);
+    // Per-file union: created documents and/or {duplicate,existing} verdicts.
     return ((data as { documents?: DocintelIngestResult[] })?.documents ?? []);
+  },
+
+  /**
+   * Upload a NEW VERSION of an existing document: stage the file in storage,
+   * then invoke docintel-ingest with documentId (re-upload flow). The pipeline
+   * appends an ai_document_versions row (max+1) and re-runs extraction over
+   * the new bytes. Returns {duplicate, existing} when the bytes are identical
+   * to the document's current version (nothing changes then).
+   */
+  uploadNewVersion: async ({
+    projectId,
+    documentId,
+    file,
+  }: {
+    projectId: string;
+    documentId: string;
+    file: File;
+  }): Promise<DocintelIngestResult> => {
+    const storagePath = `${projectId}/${crypto.randomUUID()}/${file.name}`;
+    const { error: upErr } = await supabase.storage
+      .from(BUCKET)
+      .upload(storagePath, file, {
+        contentType: file.type || "application/octet-stream",
+        upsert: false,
+      });
+    if (upErr) throw new Error(`${file.name}: ${upErr.message}`);
+
+    const { data, error } = await supabase.functions.invoke("docintel-ingest", {
+      body: {
+        projectId,
+        documentId,
+        files: [{
+          storagePath,
+          fileName: file.name,
+          mimeType: file.type || "application/octet-stream",
+          fileSize: file.size,
+        }],
+      },
+    });
+    if (error) throw new Error(error.message);
+    const results =
+      (data as { documents?: DocintelIngestResult[] })?.documents ?? [];
+    if (results.length === 0) {
+      throw new Error("Ingest did not return a result");
+    }
+    return results[0];
+  },
+
+  /** Version history for a document (ai_document_versions), newest first. */
+  listDocumentVersions: async (
+    documentId: string,
+  ): Promise<DocintelDocumentVersion[]> => {
+    const { data, error } = await supabase
+      .from("ai_document_versions")
+      .select("*")
+      .eq("document_id", documentId)
+      .order("version_no", { ascending: false });
+    if (error) throw new Error(error.message);
+    return (data ?? []) as DocintelDocumentVersion[];
   },
 
   /**

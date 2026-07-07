@@ -24,8 +24,19 @@ import {
   SectionMessage,
   EmptyState,
   CatalystDrawer,
+  Modal,
+  ModalHeader,
+  ModalTitle,
+  ModalBody,
+  ModalFooter,
 } from "@/components/ads";
+import TextArea from "@atlaskit/textarea";
 import { useArtifact } from "../hooks/useDocintel";
+import {
+  useApproveArtifact,
+  useRejectArtifact,
+} from "../hooks/useArtifactGovernance";
+import { catalystToast } from "@/lib/catalystToast";
 import type { DocintelCitation } from "../types";
 import { groundingAppearance, pctLabel } from "./confidence";
 import { ARTIFACT_TYPE_LABELS, isArabicArtifact } from "./artifactTypes";
@@ -35,7 +46,7 @@ import { PromoteArtifactModal } from "./PromoteArtifactModal";
 const PROMOTABLE_TYPES = new Set(["epic", "story"]);
 
 const DASH = "—";
-const CITATION_RE = /\[E(\d+)\]/g;
+export const CITATION_RE = /\[E(\d+)\]/g;
 
 const ARABIC_FONT =
   '"Noto Naskh Arabic", "Geeza Pro", "Traditional Arabic", "Segoe UI", var(--ds-font-family-body), sans-serif';
@@ -75,7 +86,7 @@ function CitationChip({
  * chip. Returns an array of strings and chip elements. Non-marker text is left
  * as-is so react-markdown can render whole segments.
  */
-function renderWithCitations(
+export function renderWithCitations(
   text: string,
   citations: DocintelCitation[],
   onOpen: (c: DocintelCitation, n: number) => void,
@@ -130,6 +141,10 @@ export function ArtifactView({ artifactId }: ArtifactViewProps) {
   const queryClient = useQueryClient();
   const [active, setActive] = useState<{ citation: DocintelCitation; n: number } | null>(null);
   const [promoteOpen, setPromoteOpen] = useState(false);
+  const [rejectOpen, setRejectOpen] = useState(false);
+  const [rejectReason, setRejectReason] = useState("");
+  const approve = useApproveArtifact();
+  const reject = useRejectArtifact();
 
   const artifact = data?.artifact ?? null;
   const citations = useMemo(() => data?.citations ?? [], [data?.citations]);
@@ -161,8 +176,44 @@ export function ArtifactView({ artifactId }: ArtifactViewProps) {
   const typeLabel =
     ARTIFACT_TYPE_LABELS[artifact.artifact_type] ?? artifact.artifact_type;
 
+  const status = String(artifact.status);
   const isPromotable = PROMOTABLE_TYPES.has(String(artifact.artifact_type));
-  const isPromoted = String(artifact.status) === "promoted";
+  const isPromoted = status === "promoted";
+  const isRejected = status === "rejected";
+  /** Approval workflow (S8): only draft/verified can be approved or rejected. */
+  const isReviewable = status === "draft" || status === "verified";
+
+  const onApprove = () => {
+    approve.mutate(
+      { artifactId },
+      {
+        onSuccess: () => catalystToast.success("Artifact approved"),
+        onError: (e) =>
+          catalystToast.error(
+            "Approve failed",
+            e instanceof Error ? e.message : "Please try again.",
+          ),
+      },
+    );
+  };
+
+  const closeReject = () => {
+    setRejectOpen(false);
+    setRejectReason("");
+    reject.reset();
+  };
+
+  const onConfirmReject = () => {
+    reject.mutate(
+      { artifactId, reason: rejectReason },
+      {
+        onSuccess: () => {
+          closeReject();
+          catalystToast.success("Artifact rejected");
+        },
+      },
+    );
+  };
 
   return (
     <div style={{ paddingTop: 8 }}>
@@ -185,36 +236,61 @@ export function ArtifactView({ artifactId }: ArtifactViewProps) {
         </Lozenge>
         <Lozenge
           appearance={
-            artifact.status === "ready"
+            status === "ready" || status === "approved" || isPromoted
               ? "success"
-              : artifact.status === "failed"
+              : status === "failed" || isRejected
               ? "removed"
-              : artifact.status === "needs_review"
+              : status === "needs_review"
               ? "moved"
-              : isPromoted
-              ? "success"
               : "inprogress"
           }
         >
-          {String(artifact.status).replace(/_/g, " ")}
+          {status.replace(/_/g, " ")}
         </Lozenge>
 
-        {/* Promotion action — epic/story only. Promoted → status shown as a
-            success lozenge; otherwise a "Promote to work items" button. */}
-        {isPromotable && (
-          <span style={{ marginInlineStart: "auto", display: "inline-flex", alignItems: "center" }}>
-            {isPromoted ? (
+        {/* Actions: approve/reject while reviewable (draft/verified); promote
+            for epic/story (verified/approved/draft — not rejected). Promoted →
+            success lozenge. */}
+        <span
+          style={{
+            marginInlineStart: "auto",
+            display: "inline-flex",
+            alignItems: "center",
+            gap: 8,
+          }}
+        >
+          {isReviewable && (
+            <>
+              <Button
+                appearance="default"
+                onClick={onApprove}
+                isDisabled={approve.isPending || reject.isPending}
+              >
+                Approve
+              </Button>
+              <Button
+                appearance="danger"
+                onClick={() => setRejectOpen(true)}
+                isDisabled={approve.isPending || reject.isPending}
+              >
+                Reject
+              </Button>
+            </>
+          )}
+          {isPromotable &&
+            (isPromoted ? (
               <Lozenge appearance="success">Promoted</Lozenge>
             ) : (
-              <Button appearance="primary" onClick={() => setPromoteOpen(true)}>
-                Promote to work items
-              </Button>
-            )}
-          </span>
-        )}
+              !isRejected && (
+                <Button appearance="primary" onClick={() => setPromoteOpen(true)}>
+                  Promote to work items
+                </Button>
+              )
+            ))}
+        </span>
       </div>
 
-      {isPromotable && !isPromoted && (
+      {isPromotable && !isPromoted && !isRejected && (
         <PromoteArtifactModal
           artifact={artifact}
           projectId={artifact.project_id}
@@ -226,6 +302,57 @@ export function ArtifactView({ artifactId }: ArtifactViewProps) {
           }}
         />
       )}
+
+      {/* Rejection outcome — reason shown only when the reviewer entered one */}
+      {isRejected && (
+        <div style={{ marginBottom: 12 }}>
+          <SectionMessage appearance="warning" title="Rejected">
+            {artifact.rejection_reason?.trim() ||
+              "This artifact was rejected."}
+          </SectionMessage>
+        </div>
+      )}
+
+      {/* Reject-with-reason modal */}
+      <Modal isOpen={rejectOpen} onClose={closeReject} width="small">
+        <ModalHeader>
+          <ModalTitle>Reject artifact</ModalTitle>
+        </ModalHeader>
+        <ModalBody>
+          <p style={{ margin: "0 0 12px", color: "var(--ds-text-subtle)", fontSize: 13 }}>
+            Explain why this artifact is being rejected. The reason is stored
+            with the artifact and visible to the team.
+          </p>
+          <TextArea
+            value={rejectReason}
+            onChange={(e) => setRejectReason(e.currentTarget.value)}
+            placeholder="Reason for rejection"
+            minimumRows={3}
+            isDisabled={reject.isPending}
+          />
+          {reject.isError && (
+            <div style={{ marginTop: 12 }}>
+              <SectionMessage appearance="error" title="Reject failed">
+                {reject.error instanceof Error
+                  ? reject.error.message
+                  : "Please try again."}
+              </SectionMessage>
+            </div>
+          )}
+        </ModalBody>
+        <ModalFooter>
+          <Button appearance="subtle" onClick={closeReject} isDisabled={reject.isPending}>
+            Cancel
+          </Button>
+          <Button
+            appearance="danger"
+            onClick={onConfirmReject}
+            isDisabled={reject.isPending || !rejectReason.trim()}
+          >
+            Reject
+          </Button>
+        </ModalFooter>
+      </Modal>
 
       {/* Grounding summary line */}
       <p style={{ margin: "0 0 12px", color: "var(--ds-text-subtle)", fontSize: 13 }}>

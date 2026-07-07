@@ -69,6 +69,7 @@ const keys = {
   traceability: (documentId: string, projectId: string) =>
     ["docintel", "traceability", documentId, projectId] as const,
   links: (documentId: string) => ["docintel", "links", documentId] as const,
+  versions: (documentId: string) => ["docintel", "versions", documentId] as const,
 };
 
 /** All documents for a project. */
@@ -140,10 +141,14 @@ export function useDocintelUpload() {
       }),
     onSuccess: (results: DocintelIngestResult[], variables) => {
       qc.invalidateQueries({ queryKey: keys.list(variables.projectId) });
-      catalystToast.success(
-        "Upload started",
-        `${results.length} document${results.length === 1 ? "" : "s"} processing`,
-      );
+      // Duplicates create nothing — only count the documents actually processing.
+      const created = results.filter((r) => !r.duplicate).length;
+      if (created > 0) {
+        catalystToast.success(
+          "Upload started",
+          `${created} document${created === 1 ? "" : "s"} processing`,
+        );
+      }
     },
     onError: (err: unknown) => {
       catalystToast.error(
@@ -154,6 +159,66 @@ export function useDocintelUpload() {
   });
 
   return { ...mutation, progress, setProgress };
+}
+
+/** Version history for a document (workspace Versions dropdown), newest first. */
+export function useDocumentVersions(documentId: string | undefined) {
+  return useQuery({
+    queryKey: keys.versions(documentId ?? ""),
+    queryFn: () => docintelApi.listDocumentVersions(documentId!),
+    enabled: !!documentId,
+    staleTime: STALE,
+  });
+}
+
+/**
+ * Upload a new version of an existing document (re-upload flow). On success,
+ * invalidates the workspace caches (document/pages/evidence/formatted/
+ * traceability/versions) so every tab re-renders against the fresh
+ * extraction. Warns (no-op) when the bytes are identical to the current
+ * version; errors toast.
+ */
+export function useUploadNewVersion() {
+  const qc = useQueryClient();
+
+  return useMutation({
+    mutationFn: (input: {
+      projectId: string;
+      documentId: string;
+      slug: string;
+      file: File;
+    }) =>
+      docintelApi.uploadNewVersion({
+        projectId: input.projectId,
+        documentId: input.documentId,
+        file: input.file,
+      }),
+    onSuccess: (result: DocintelIngestResult, variables) => {
+      if (result.duplicate) {
+        catalystToast.warning(
+          "Identical file",
+          "This file matches the current version — nothing was changed",
+        );
+        return;
+      }
+      qc.invalidateQueries({ queryKey: keys.doc(variables.slug) });
+      qc.invalidateQueries({ queryKey: keys.pages(variables.documentId) });
+      qc.invalidateQueries({ queryKey: keys.evidence(variables.documentId) });
+      qc.invalidateQueries({ queryKey: keys.formatted(variables.documentId) });
+      qc.invalidateQueries({
+        queryKey: keys.traceability(variables.documentId, variables.projectId),
+      });
+      qc.invalidateQueries({ queryKey: keys.versions(variables.documentId) });
+      qc.invalidateQueries({ queryKey: keys.list(variables.projectId) });
+      catalystToast.success("New version uploaded", "Re-processing the document");
+    },
+    onError: (err: unknown) => {
+      catalystToast.error(
+        "Version upload failed",
+        err instanceof Error ? err.message : "Could not upload the new version",
+      );
+    },
+  });
 }
 
 /**

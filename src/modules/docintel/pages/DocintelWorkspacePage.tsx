@@ -3,18 +3,25 @@
  *
  * Resolves the document by slug, renders header (title + status pill) + breadcrumbs,
  * a placeholder tab bar (Evidence / Facts / Artifacts / Traceability) and the page
- * list with per-page status lozenges. Zero-assumption rendering throughout.
+ * list with per-page status lozenges. Header actions: Versions dropdown
+ * (ai_document_versions history) + "Upload new version" (re-ingest via
+ * docintel-ingest documentId flow). Zero-assumption rendering throughout.
  *
  * CAT-DOCINTEL-ARABIC-RAG-20260706-001
  */
+import { useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Tabs, { Tab, TabList, TabPanel } from "@atlaskit/tabs";
 import { PageHeader } from "@/components/ads/PageHeader";
 import { Breadcrumbs } from "@/components/ads/Breadcrumbs";
-import { Lozenge, Spinner, EmptyState } from "@/components/ads";
+import { Button, DropdownMenu, Lozenge, Spinner, EmptyState } from "@/components/ads";
 import type { LozengeAppearance } from "@/components/ads";
 import { docintelRoutes } from "@/lib/routes";
-import { useDocintelDocument } from "../hooks/useDocintel";
+import {
+  useDocintelDocument,
+  useDocumentVersions,
+  useUploadNewVersion,
+} from "../hooks/useDocintel";
 import { EvidenceViewer } from "../components/EvidenceViewer";
 import { TranslatedDocumentView } from "../components/TranslatedDocumentView";
 import { GenerationPanel } from "../components/GenerationPanel";
@@ -43,6 +50,9 @@ export default function DocintelWorkspacePage() {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
   const { document, isLoading, isError } = useDocintelDocument(slug);
+  const versionsQuery = useDocumentVersions(document?.id);
+  const uploadVersion = useUploadNewVersion();
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   if (isLoading) {
     return (
@@ -81,6 +91,51 @@ export default function DocintelWorkspacePage() {
               { key: "doc", text: document.title, isCurrent: true },
             ]}
           />
+        }
+        actions={
+          <span style={{ display: "flex", gap: 8, alignItems: "center" }}>
+            {(versionsQuery.data?.length ?? 0) > 0 ? (
+              <DropdownMenu
+                trigger={`Versions (${versionsQuery.data!.length})`}
+                placement="bottom-end"
+                aria-label="Version history"
+                groups={[{
+                  key: "versions",
+                  title: "Version history",
+                  items: versionsQuery.data!.map((v) => ({
+                    key: v.id,
+                    label: `v${v.version_no}`,
+                    description: new Date(v.created_at).toLocaleString(),
+                  })),
+                }]}
+              />
+            ) : null}
+            <Button
+              appearance="default"
+              isDisabled={uploadVersion.isPending}
+              onClick={() => fileInputRef.current?.click()}
+            >
+              {uploadVersion.isPending ? "Uploading…" : "Upload new version"}
+            </Button>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".pdf,.docx"
+              style={{ display: "none" }}
+              aria-hidden
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                e.target.value = "";
+                if (!file || !document || uploadVersion.isPending) return;
+                uploadVersion.mutate({
+                  projectId: document.project_id,
+                  documentId: document.id,
+                  slug: slug ?? document.slug ?? "",
+                  file,
+                });
+              }}
+            />
+          </span>
         }
       />
 

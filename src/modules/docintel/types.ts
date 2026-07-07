@@ -93,11 +93,36 @@ export interface DocintelUploadFile {
   title?: string;
 }
 
-/** docintel-ingest response row. */
-export interface DocintelIngestResult {
+/** docintel-ingest response row — a created (or re-ingested) document. */
+export interface DocintelIngestCreated {
   documentId: string;
   slug: string | null;
   pageCount: number | null;
+  duplicate?: undefined;
+}
+
+/**
+ * docintel-ingest response row — the file's byte hash matched an existing
+ * non-failed document in the project, so nothing was created.
+ */
+export interface DocintelIngestDuplicate {
+  duplicate: true;
+  fileName: string | null;
+  existing: { id: string; slug: string | null; title: string | null };
+}
+
+/** docintel-ingest response row (per-file union). */
+export type DocintelIngestResult = DocintelIngestCreated | DocintelIngestDuplicate;
+
+/** One row of ai_document_versions (immutable re-upload history). */
+export interface DocintelDocumentVersion {
+  id: string;
+  document_id: string;
+  version_no: number;
+  storage_path: string | null;
+  content_hash: string | null;
+  created_by: string | null;
+  created_at: string;
 }
 
 // ---------------------------------------------------------------------------
@@ -189,7 +214,16 @@ export type DocintelArtifactType =
   | "gap_analysis"
   | "open_questions";
 
+// DB truth (ai_generated_artifacts.status CHECK, 20260707030000 +
+// 20260707140000): draft | verified | approved | rejected | promoted.
+// The generating/ready/failed/needs_review members are legacy UI states kept
+// for older comparisons; the union stays open via `| string`.
 export type DocintelArtifactStatus =
+  | "draft"
+  | "verified"
+  | "approved"
+  | "rejected"
+  | "promoted"
   | "generating"
   | "ready"
   | "failed"
@@ -233,6 +267,12 @@ export interface DocintelArtifact {
    * promoted. Null until promotion. Set alongside status='promoted'.
    */
   promoted_work_item_id?: string | null;
+  /**
+   * Reviewer-entered reason captured when the artifact was rejected
+   * (status='rejected'; 20260707140000_docintel_governance.sql). Null/absent
+   * otherwise.
+   */
+  rejection_reason?: string | null;
   created_at: string;
 }
 

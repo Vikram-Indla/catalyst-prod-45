@@ -32,14 +32,14 @@ import type { DocintelAskCitation, DocintelAskResult } from "../types";
 import { groundingAppearance, pctLabel } from "./confidence";
 
 const DASH = "—";
-const CITATION_RE = /\[E(\d+)\]/g;
+export const CITATION_RE = /\[E(\d+)\]/g;
 const ARABIC_CHAR_RE = /[؀-ۿ]/g;
 
 const ARABIC_FONT =
   '"Noto Naskh Arabic", "Geeza Pro", "Traditional Arabic", "Segoe UI", var(--ds-font-family-body), sans-serif';
 
 /** Arabic-majority characters → treat the text as Arabic (RTL). */
-function isArabicText(s: string): boolean {
+export function isArabicText(s: string): boolean {
   const arabic = (s.match(ARABIC_CHAR_RE) ?? []).length;
   const latin = (s.match(/[A-Za-z]/g) ?? []).length;
   return arabic > 0 && arabic > latin;
@@ -80,7 +80,7 @@ function CitationChip({
  * Citations are marker-keyed (citation.marker === n) — an unresolvable marker
  * renders as a plain "E<n>" chip with no drawer.
  */
-function renderWithCitations(
+export function renderWithCitations(
   text: string,
   citations: DocintelAskCitation[],
   onOpen: (c: DocintelAskCitation) => void,

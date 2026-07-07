@@ -35,8 +35,11 @@ const DASH = "—";
 function statusAppearance(status: string): LozengeAppearance {
   switch (status) {
     case "ready":
+    case "approved":
+    case "promoted":
       return "success";
     case "failed":
+    case "rejected":
       return "removed";
     case "needs_review":
       return "moved";
