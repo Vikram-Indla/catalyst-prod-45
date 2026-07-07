@@ -263,21 +263,28 @@ export default function TestPlansPage() {
         <ModalDialog onClose={() => setRenaming(null)} width="small">
           <ModalHeader><ModalTitle>Rename test plan</ModalTitle></ModalHeader>
           <ModalBody>
-            <Textfield
-              autoFocus
-              value={renameValue}
-              onChange={e => setRenameValue((e.target as HTMLInputElement).value)}
-              onKeyDown={(e: React.KeyboardEvent) => {
-                if (e.key === 'Enter' && renameValue.trim()) renamePlan.mutate({ id: renaming.id, name: renameValue.trim() });
+            {/* Q5: same form-level submit as the create modal — no raw Enter handler. */}
+            <form
+              id="rename-plan-form"
+              onSubmit={(e) => {
+                e.preventDefault();
+                if (renameValue.trim() && !renamePlan.isPending) renamePlan.mutate({ id: renaming.id, name: renameValue.trim() });
               }}
-            />
+            >
+              <Textfield
+                autoFocus
+                value={renameValue}
+                onChange={e => setRenameValue((e.target as HTMLInputElement).value)}
+              />
+            </form>
           </ModalBody>
           <ModalFooter>
             <AkButton appearance="subtle" onClick={() => setRenaming(null)}>Cancel</AkButton>
             <AkButton
               appearance="primary"
+              type="submit"
+              form="rename-plan-form"
               isDisabled={!renameValue.trim() || renamePlan.isPending}
-              onClick={() => renamePlan.mutate({ id: renaming.id, name: renameValue.trim() })}
             >
               {renamePlan.isPending ? 'Saving…' : 'Save'}
             </AkButton>
@@ -311,18 +318,26 @@ export default function TestPlansPage() {
         <ModalDialog onClose={() => setCreateOpen(false)} width="small">
           <ModalHeader><ModalTitle>Create test plan</ModalTitle></ModalHeader>
           <ModalBody>
-            <Textfield
-              autoFocus
-              placeholder="Plan name"
-              value={newName}
-              onChange={e => setNewName((e.target as HTMLInputElement).value)}
-              onKeyDown={(e: React.KeyboardEvent) => { if (e.key === 'Enter' && newName.trim()) createPlan.mutate(newName.trim()); }}
-            />
+            {/* Q5: form-level submit — the old input onKeyDown Enter path could race
+                autoFocus and fire with an empty value (silent no-op). Native form
+                semantics only submit what the input actually holds. */}
+            <form
+              id="create-plan-form"
+              onSubmit={(e) => { e.preventDefault(); if (newName.trim() && !createPlan.isPending) createPlan.mutate(newName.trim()); }}
+            >
+              <Textfield
+                autoFocus
+                placeholder="Plan name"
+                value={newName}
+                onChange={e => setNewName((e.target as HTMLInputElement).value)}
+              />
+            </form>
           </ModalBody>
           <ModalFooter>
             <button onClick={() => setCreateOpen(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 'var(--ds-space-050) var(--ds-space-150)', fontWeight: 500, color: 'var(--ds-text-subtle)' }}>Cancel</button>
             <button
-              onClick={() => { if (newName.trim()) createPlan.mutate(newName.trim()); }}
+              type="submit"
+              form="create-plan-form"
               disabled={!newName.trim() || createPlan.isPending}
               style={{
                 padding: 'var(--ds-space-050) var(--ds-space-200)', borderRadius: 'var(--ds-border-radius)', border: 'none', fontWeight: 600,
