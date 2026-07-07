@@ -9,6 +9,8 @@
   "scripts": {
     "sync-deps": "node scripts/sync-deps.js",
     "dev": "node scripts/sync-deps.js && node --max-old-space-size=8192 node_modules/vite/bin/vite.js",
+    "dev:catalyst": "APP_PRODUCT=CATALYST npm run dev",
+    "dev:strata": "APP_PRODUCT=STRATA npm run dev",
     "verify:sw-chunks": "node scripts/verify-sw-chunks.js",
     "build": "node scripts/sync-deps.js && npm run verify:sw-chunks && NODE_OPTIONS=--max-old-space-size=8192 vite build",
     "build:dev": "node scripts/sync-deps.js && npm run verify:sw-chunks && NODE_OPTIONS=--max-old-space-size=8192 vite build --mode development",
@@ -42,7 +44,10 @@
     "db:local": "supabase start",
     "db:stop": "supabase stop",
     "db:reset": "supabase db reset",
-    "migrate:local": "supabase db push"
+    "migrate:local": "supabase db push",
+    "db:migrate:catalyst": "supabase db push --linked",
+    "db:migrate:strata": "supabase db push --linked --dir ./supabase/strata",
+    "check:product-env": "npx tsx scripts/check-product-environment.ts"
   },
   "dependencies": {
     "@atlaskit/adf-schema": "52.11.4",
