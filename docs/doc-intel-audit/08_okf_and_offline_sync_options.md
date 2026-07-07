@@ -1,58 +1,112 @@
-# 08 — OKF and Offline Knowledge Sync: Decision Options
+# 08 — OKF and the Knowledge Synchronization Engine: Corrected Terms
 
-> Written because an interactive clarifying question could not be delivered in this
-> session (non-interactive/webhook-driven — no live user to answer a blocking
-> prompt). This document replaces that question: pick an option (or tell me I've
-> misread the intent) and the next pass implements it directly.
+> **CORRECTION — 2026-07-07.** An earlier version of this file guessed at two undefined
+> terms and defaulted both to the smallest possible reading. Both defaults were wrong and
+> are retracted here. The corrected meanings below are authoritative. The full target
+> architecture that follows from them is in
+> [`09_knowledge_reservoir_target_architecture.md`](09_knowledge_reservoir_target_architecture.md).
+>
+> What changed:
+> - **OKF** = **Open Knowledge Format** — a generated, versioned, permission-aware,
+>   citation-backed *projection* of Catalyst objects. **Not** "Organizational Knowledge
+>   Framework," and **not** the existing `kb_sources` / `kb_access_matrix` access layer.
+>   Those tables may *support* access governance, but they are **not** OKF and OKF must not
+>   be reduced to them.
+> - **"Offline knowledge sync"** is retired as a framing. The real target is a
+>   **Knowledge Synchronization Engine** — background ingestion and compilation of Catalyst
+>   source data into OKF, with visible health, freshness, failures, stale items, and OKF
+>   coverage. It is **not** a browser offline cache and has nothing to do with `public/sw.js`.
 
-## OKF
+---
 
-"OKF" does not appear anywhere in this codebase (confirmed by repo-wide search)
-and is not a term this session can resolve from context. Three candidate readings,
-in order of how much new work each implies:
+## OKF — Open Knowledge Format (corrected)
 
-| Reading | What it would mean here | New work required |
-|---|---|---|
-| **A. Organizational Knowledge Framework** — the categorization/access layer around knowledge content | Already substantially exists: `kb_sources` (source registry, priority, scrape config), `kb_access_matrix` (role × module read/write flags), both now reachable again since `kb-sync`/`kb-train` were un-parked this session | Low — mostly exposing/using what's already there; maybe a small admin UI pass on `KBAdminSetup.tsx` to surface `kb_access_matrix` if it isn't already |
-| **B. Knowledge Graph** — entity/relationship graph over documents and work items | Confirmed **"Not found in repository"** by the original audit (`05_capability_matrix.md`) | High — genuinely new infrastructure: a graph store or a relational approximation (edge table + traversal queries), a UI, and a decision on what counts as a node/edge (documents? work items? both?) |
-| **C. Not a real term** | Drop it; nothing further needed | None |
+**OKF is a generated, versioned, permission-aware, citation-backed projection of Catalyst
+objects into a single open knowledge representation.** It is not a new source of truth and
+it is not an access-control table.
 
-**My default, if I don't hear back**: treat it as reading **A**, since it requires
-no new speculative infrastructure and the un-parking work already done this session
-moves it forward concretely. I will not build reading **B** (a knowledge graph)
-without explicit confirmation — that's too large and too speculative to start
-from an undefined acronym.
+- **Catalyst's Postgres/Supabase database remains the sole source of truth.** OKF never
+  replaces it. Every OKF node is derived *from* a Catalyst row (or a document/section/image
+  extracted from an uploaded artifact) and carries a citation back to that origin.
+- **Generated** — OKF is compiled by the Knowledge Synchronization Engine, not authored by
+  hand. When the underlying Catalyst object changes, its OKF projection is recompiled.
+- **Versioned** — each OKF node/edge is stamped with a content version and the source
+  version it was derived from, so staleness is detectable and history is queryable.
+- **Permission-aware** — an OKF projection carries the access constraints of its source, so
+  permission-scoped retrieval can filter OKF by the caller's roles/permissions without
+  re-deriving them from scratch.
+- **Citation-backed** — every OKF node points back to `{entity_type, entity_id, source
+  version, and — for documents — page/section/block anchors}`. This is the anti-hallucination
+  contract: nothing enters OKF (or any artifact generated from it) without a resolvable
+  source pointer.
 
-## Offline knowledge sync
+### What OKF must represent
 
-The existing service worker (`public/sw.js`) is not a neutral extension point —
-its header comment states a deliberate boundary: *"User data never hits the SW
-cache"* and lists *"no offline fallback HTML"* as an intentional non-goal, to
-avoid stale-content bugs and keep deploys instant. Any of the options below
-means **adding a second, separate caching mechanism alongside it** (not
-extending `sw.js` itself), because the existing one's whole design rests on
-never touching anything editable.
+OKF is **not** limited to uploaded documents. It must project the full Catalyst knowledge
+surface. The required node types are:
 
-| Option | Scope | New work | Risk |
-|---|---|---|---|
-| **A. Offline read cache for Folio** | Cache recently-viewed published pages (`content_text` + metadata) in IndexedDB; read-only, no offline edits | New: an IndexedDB layer, a cache-population hook on page view, an explicit invalidation policy (page edited/deleted while a stale copy sits in a user's cache) | Medium — the invalidation policy is the real design work; get it wrong and users read stale/deleted content while offline |
-| **B. Cross-device sync** | Keep in-progress edits synced across a user's devices/sessions even through brief disconnects (local-first, Notion-style) | Large: conflict resolution beyond the existing optimistic-concurrency check in `useUpdateWikiPage` (`WIKI_CONFLICT`), a local write-ahead queue, replay-on-reconnect logic | High — touches the actual editing path, not just reads; a bug here can lose or corrupt user edits |
-| **C. External system sync** | Periodic sync between Catalyst's KB and an external tool (Confluence, SharePoint, a file share) | Closer to `kb-sync`'s existing table-ingestion pattern than to "offline" in the browser sense — would likely be a new `kb-sync` action, not a frontend change at all | Medium — mostly a scoping question: which external system, which direction (import/export/both) |
-| **D. Drop for this pass** | Explicitly defer; keep this session's remaining effort on RAG/search/retrieval consolidation | None | None |
+| Group | OKF node types |
+|---|---|
+| **Document intelligence** | documents, document sections, images (image-derived text), tables |
+| **Delivery objects** | work items, business requests (BRs), epics, features, stories, releases, changes, tests, defects, incidents |
+| **Collaboration** | comments, approvals |
+| **Process / rules** | workflows, business rules |
+| **System surface** | APIs, database tables |
+| **Identity / access** | users, roles, permissions |
 
-**My default, if I don't hear back**: do **not** implement any of A/B/C
-speculatively. Offline sync is the one item in this goal where guessing wrong
-has a real, demonstrated cost (violating `sw.js`'s own documented safety
-invariant, or — worse for B — a data-loss bug in the editing path). I'll treat
-this as **D** (deferred) unless told otherwise, and the remaining consolidation
-work stays scoped to what the audit and this session's un-parking work already
-cover: RAG, keyword/hybrid search, and retrieval.
+Each node type is a first-class citizen of the projection. The point of OKF is that a single
+retrieval/graph layer can span "what does BRD-42 say" **and** "which release closed incident
+INC-9" **and** "who can approve this change" — because documents, delivery objects, process,
+and identity are all projected into one representation with consistent citations and
+permission scoping.
 
-## What happens next
+### Why the old default (`kb_sources` / `kb_access_matrix`) was wrong
 
-Absent a reply, subsequent passes in this session proceed on the defaults above
-(OKF → reading A, offline sync → deferred) and continue hardening/consolidating
-the RAG pipeline that's already been un-parked (kb-eval revival decision,
-ra-jira-proxy's plaintext-credential question, live-schema verification once
-Supabase access is available). Correcting either default at any point just
-redirects the next slice — nothing here is a one-way door.
+`kb_sources` is a crawl/source registry; `kb_access_matrix` is a role × module read/write
+flag table. Both are narrow support tables for the parked RAG pipeline. Neither *represents
+Catalyst objects as knowledge*, neither is versioned per node, neither carries per-node
+citations, and neither spans the node types above. Treating OKF as "the existing access
+layer" collapses a projection system into two config tables and loses the entire point.
+That reading is retracted.
+
+---
+
+## Knowledge Synchronization Engine (corrected — replaces "offline knowledge sync")
+
+The target is a **background compilation service**, in the spirit of how Google/Apple keep
+a device's view of a large backend continuously fresh — **not** a browser offline cache.
+
+- **What it does:** continuously (and on-change) ingest Catalyst source data → run it through
+  OCR/Vision/parse where needed → compile it into OKF nodes/edges → validate → keep the
+  projection fresh.
+- **What it exposes:** a **Knowledge Health** surface showing freshness (how current each
+  projection is vs its source), failures (what failed to compile and why), stale items (source
+  changed, OKF not yet recompiled), and **OKF coverage** (what fraction of each Catalyst
+  object type is projected).
+- **What it is NOT:** it is not `public/sw.js`, not IndexedDB read-caching of Folio pages,
+  not cross-device edit sync, and not an offline-first editing model. The earlier "offline
+  sync" options table (read cache / cross-device / external-system / defer) described a
+  different problem and is retracted. `sw.js`'s documented invariant ("user data never hits
+  the SW cache") is irrelevant to this engine and is not touched by it.
+
+The engine's design, the pieces that already exist to build it on, and the gaps are in
+[`09_knowledge_reservoir_target_architecture.md`](09_knowledge_reservoir_target_architecture.md)
+(§3 Knowledge Sync Engine, §4 Knowledge Health).
+
+---
+
+## Relationship to the RAG-consolidation work already done
+
+The un-parking / Folio-wiring work described in the deploy handover is **necessary and
+reused**, but it is a subset of this target, not the whole of it:
+
+- Un-parked `kb-ingest`/`kb-query`/`kb-sync` + pgvector + `kb_hybrid_search` = the **retrieval
+  substrate** the Knowledge Reservoir builds on (see 09 §1 Reuse).
+- The `20260707020000_docex_rag_wiring.sql` Folio→RAG wiring (`'docex'` source type +
+  `needs_reindex` dirty flag/trigger + `ingest_folio_batch`) is the **first working slice of
+  the Knowledge Sync Engine** — a change-driven recompile of one object type (published Folio
+  pages). The engine generalizes exactly this pattern to every object type OKF must represent.
+
+So: the current work advances the target. It is not the target. The corrected scope — OKF as
+a full projection + a real Knowledge Synchronization Engine + health + graph + agent — is
+laid out in 09.
