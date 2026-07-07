@@ -12,15 +12,13 @@ import fs from 'node:fs';
 
 // Live surfaces that MUST stay TipTap-free — these are imported by
 // the running app on real pages.
+// Note: the orphaned Knowledge Hub Confluence-clone (KnowledgeHubPage/
+// KnowledgeHubDocumentPage/KnowledgeHubSpacePage, src/components/knowledge-hub/editor/*,
+// CreateDocumentDialog.tsx, etc.) was deleted as dead code — it was never
+// mounted in any route. Removed from this list along with the files.
 const LIVE = [
   'src/components/workhub/create-story/CreateStoryModal.tsx',
   'src/components/business-requests/BusinessRequestDetailModal.tsx',
-  'src/components/knowledge-hub/editor/ConfluenceEditor.tsx',
-  'src/components/knowledge-hub/editor/index.ts',
-  'src/components/knowledge-hub/editor/EditorToolbar.tsx',
-  'src/components/knowledge-hub/editor/MacroExtensions.tsx',
-  'src/pages/KnowledgeHubDocumentPage.tsx',
-  'src/components/knowledge-hub/CreateDocumentDialog.tsx',
 ];
 
 // Orphaned / neutered surfaces — no live importers, but we still

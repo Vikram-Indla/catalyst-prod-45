@@ -217,16 +217,6 @@ export const tasksRoutes = {
 };
 
 // ---------------------------------------------------------------------------
-// Knowledge Hub
-// ---------------------------------------------------------------------------
-
-export const knowledgeHubRoutes = {
-  root: () => '/knowledge-hub',
-  space: (spaceSlug: string) => `/knowledge-hub/spaces/${spaceSlug}`,
-  document: (documentSlug: string) => `/knowledge-hub/documents/${documentSlug}`,
-};
-
-// ---------------------------------------------------------------------------
 // Folio — Catalyst Pages (CAT-DOCS-NOTION-20260704-001)
 // Workspaces per project/product/organization; pages addressed by slug.
 // Renamed from /wiki 2026-07-05 (Vikram): /wiki belongs to the restored
@@ -324,7 +314,6 @@ export const Routes = {
   team: teamRoutes,
   portfolio: portfolioRoutes,
   tasks: tasksRoutes,
-  knowledgeHub: knowledgeHubRoutes,
   folio: folioRoutes,
   /** @deprecated alias for folio */
   docex: docexRoutes,
