@@ -239,7 +239,10 @@ export function CatalystHeader() {
         flexShrink: 0,
         minWidth: 'max-content',
       }} data-theme-toggle-cluster>
-        {!isNarrow && <ReleaseTimerNavChip />}
+        {/* Narrow width sheds secondary chrome (ThemeToggle/SettingsMenu) but the
+            SLA timer stays visible as a compact dot — on-call/mobile users are
+            exactly who needs this and losing it entirely was a real gap. */}
+        <ReleaseTimerNavChip compact={isNarrow} />
         {!isNarrow && <ThemeToggle />}
         <NotificationsPanel />
         {!isNarrow && <SettingsMenu />}

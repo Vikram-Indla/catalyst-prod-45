@@ -65,28 +65,38 @@ function nextActionText(c: ChangeCtx, cards: ExecCard[]): string {
 }
 
 /** Self-ticking timer — owns its own 1s interval so parents never re-render on the tick. */
-function LiveCountdown({ change, variant }: { change: ChangeCtx; variant: 'full' | 'pill' }) {
+function LiveCountdown({ change, variant }: { change: ChangeCtx; variant: 'full' | 'pill' | 'dot' }) {
   const [now, setNow] = useState(() => Date.now());
   useEffect(() => {
     const id = window.setInterval(() => setNow(Date.now()), 1000);
     return () => window.clearInterval(id);
   }, []);
   const timer = computeTimer(change, now);
+  // role=status + aria-label keyed on the STATE word (eyebrow), not the ticking
+  // digits — announces "Live" / "window overrun" on real transitions without
+  // spamming assistive tech every second. The visible digits are aria-hidden;
+  // the label is the accessible equivalent (WCAG 4.1.3 status messages).
+  if (variant === 'dot') {
+    // Compact/narrow-viewport fallback — no room for digits, so the solid
+    // tone-colored dot IS the visible signal; full state+time lives in the
+    // parent button's aria-label/title.
+    return <span aria-hidden style={{ width: 10, height: 10, borderRadius: '50%', background: timer.tone, flexShrink: 0 }} />;
+  }
   if (variant === 'pill') {
     return (
-      <>
+      <span role="status" aria-live="polite" aria-label={`${change.chgNumber}: ${timer.eyebrow}`} style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
         {timer.pulse && <span aria-hidden style={{ width: 8, height: 8, borderRadius: '50%', background: timer.tone, flexShrink: 0 }} />}
-        <span style={{ fontFamily: T.mono, fontSize: 'var(--ds-font-size-300)', fontWeight: 700, color: timer.tone, fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap' }}>{timer.big}</span>
-      </>
+        <span aria-hidden style={{ fontFamily: T.mono, fontSize: 'var(--ds-font-size-300)', fontWeight: 700, color: timer.tone, fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap' }}>{timer.big}</span>
+      </span>
     );
   }
   return (
-    <>
-      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-050)', fontWeight: 600, color: T.subtle, whiteSpace: 'nowrap' }}>
-        {timer.pulse && <span aria-hidden style={{ width: 7, height: 7, borderRadius: '50%', background: timer.tone, display: 'inline-block' }} />}{timer.eyebrow}
+    <span role="status" aria-live="polite" aria-label={timer.eyebrow} style={{ display: 'inline-flex', flexDirection: 'column', alignItems: 'flex-end', gap: 4 }}>
+      <span aria-hidden style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-050)', fontWeight: 600, color: T.subtle, whiteSpace: 'nowrap' }}>
+        {timer.pulse && <span style={{ width: 7, height: 7, borderRadius: '50%', background: timer.tone, display: 'inline-block' }} />}{timer.eyebrow}
       </span>
-      <span style={{ fontFamily: T.mono, fontSize: 'var(--ds-font-size-500)', fontWeight: 600, color: timer.tone, fontVariantNumeric: 'tabular-nums', lineHeight: 1.1, whiteSpace: 'nowrap' }}>{timer.big}</span>
-    </>
+      <span aria-hidden style={{ fontFamily: T.mono, fontSize: 'var(--ds-font-size-500)', fontWeight: 600, color: timer.tone, fontVariantNumeric: 'tabular-nums', lineHeight: 1.1, whiteSpace: 'nowrap' }}>{timer.big}</span>
+    </span>
   );
 }
 
@@ -172,7 +182,7 @@ export function ReleaseChangeAnnouncementBanner({
  * For-You page during the hero window (where the full banner takes over, so we
  * avoid a duplicate timer). Click → change detail.
  */
-export function ReleaseTimerNavChip() {
+export function ReleaseTimerNavChip({ compact = false }: { compact?: boolean } = {}) {
   const navigate = useNavigate();
   const location = useLocation();
   const { data } = useMyExecutionWork();
@@ -181,10 +191,32 @@ export function ReleaseTimerNavChip() {
   if (!primary) return null;
   if (isForYouRoute(location.pathname) && inHeroWindow(primary, Date.now())) return null;
 
+  const open = () => navigate(`/release-hub/changes/${primary.slug ?? primary.id}`);
+  const label = `${primary.chgNumber} · ${primary.title}`;
+
+  // Narrow viewports (mobile/on-call): shed the text, keep a compact dot so the
+  // SLA signal is never fully invisible to the audience that most needs it.
+  if (compact) {
+    return (
+      <button
+        onClick={open}
+        aria-label={label}
+        title={label}
+        style={{
+          display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 32, height: 32, flexShrink: 0,
+          borderRadius: '50%', border: `1px solid ${T.magenta}`, cursor: 'pointer', padding: 0,
+          background: 'linear-gradient(135deg, var(--ds-surface-raised) 0%, var(--ds-background-information) 100%)',
+        }}
+      >
+        <LiveCountdown change={primary} variant="dot" />
+      </button>
+    );
+  }
+
   return (
     <button
-      onClick={() => navigate(`/release-hub/changes/${primary.slug ?? primary.id}`)}
-      title={`${primary.chgNumber} · ${primary.title}`}
+      onClick={open}
+      title={label}
       style={{
         display: 'inline-flex', alignItems: 'center', gap: 8, height: 32, padding: '0 12px', borderRadius: 999,
         border: `1px solid ${T.magenta}`, cursor: 'pointer', maxWidth: 260,
@@ -193,7 +225,7 @@ export function ReleaseTimerNavChip() {
       }}
     >
       <LiveCountdown change={primary} variant="pill" />
-      <span style={{ fontFamily: T.mono, fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: T.link, whiteSpace: 'nowrap' }}>{primary.chgNumber}</span>
+      <span aria-hidden style={{ fontFamily: T.mono, fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: T.link, whiteSpace: 'nowrap' }}>{primary.chgNumber}</span>
     </button>
   );
 }
