@@ -2,6 +2,8 @@
 ### Catalyst full-stack AI delivery operating model — skills audit + SDLC SOP
 **Date:** 2026-07-08 · **Auditor:** Fable 5 · **Evidence:** 3 parallel read-only audits of every SKILL.md across project (`.claude/skills/`, 27 dirs), user (`~/.claude/skills/`, 57 dirs), and plugin runtimes (`~/.claude/plugins/` + Cowork store). Facts cited from files; anything not read is marked **cannot confirm**.
 
+> **Next audit due: ~2026-10-08 (quarterly).** No durable scheduler exists for this (session-based cron expires in ≤7 days), so this line is the reminder — whoever opens this file past the due date should re-run the 3-agent audit from §A's evidence line and refresh this manual. Last full pass: 2026-07-08 (Weeks 1–3 of §L executed; Week 4 agent-persona prune executed same day, expanded from the original criteria — see git history on this file's directory).
+
 ---
 
 ## A. EXECUTIVE DIAGNOSIS
@@ -305,12 +307,15 @@ Standing authorization: direct push to origin/main allowed (memory `feedback_git
 - Decide `catalyst-agent` vs `start` (merge or keep SPEC split)
 - Rewrite `.claude/skills/README.md` + `AGENT_PIPELINE.md` to list the true canonical set; commit
 
-**Week 4 — governance:**
-- Read + classify the 4 un-inspected Cowork skills (market-intelligence, ui-ux-pro-max, ui-extraction, fable-prompt)
-- Prune off-domain agent personas from project `.claude/agents/` (keep bespoke 8 + engineering/testing/design subset); user copy is enough for the rest
-- Add this manual to the repo (`docs/ways-of-working/GOD_MODE_DELIVERY_MANUAL.md`) after Vikram review; link from CLAUDE.md supporting docs table
-- Add quarterly skills-audit reminder (`/schedule`)
-- Verify `delegate` hook scripts exist; wire or remove
+**Week 4 — governance (DONE 2026-07-08):**
+- ✅ Read + classified the 4 un-inspected Cowork skills: `market-intelligence` (clean, KEEP SPEC), `ui-extraction-react-replication` (clean, KEEP SPEC), `fable-prompt` (clean, KEEP — distinct from project `fable`), `ui-ux-pro-max` (QUARANTINED — its setup runs an unreviewed `git clone` + `npx uipro-cli@latest init`, and its 161 hex color palettes directly violate the ADS-token-only law; both Cowork copies patched with a quarantine notice, not deleted)
+- ✅ Pruned off-domain agent personas from project `.claude/agents/` (192→75 files). **Correction to the original criterion above:** "engineering/testing/design subset" was incomplete — it would have deleted `project-management-jira-workflow-steward`, `specialized-mcp-builder`, and `agents-orchestrator`, all cited as top-tier picks in this manual's own §D and in `.claude/skills/README.md`. Actual kept set: `engineering-*` (29) + `testing-*` (8) + `design-*` (8) + `project-management-*` (6) + `product-*` (5) + `specialized-*` (11) + `agents-orchestrator.md` + the 8 bespoke Catalyst-only agents (code-graph-agent, repo-context-agent, safety-change-control-agent, memory-guardrail-agent, ui-dom-probe-agent, token-efficiency-agent, implementation-planner-agent, tool-output-agent) = 75. Removed 117 off-domain personas (marketing/sales/paid-media/finance/legal/healthcare/academic/game-dev/~30 singleton specialists) — full 184-file backup remains at user-level `~/.claude/agents/` (confirmed identical before deletion).
+- ✅ Manual added to the repo, linked from CLAUDE.md supporting docs table
+- ⚠️ Quarterly skills-audit reminder: **no durable mechanism exists.** `CronCreate`/`/schedule` are session-scoped and auto-expire in ≤7 days — cannot carry a quarterly cadence across sessions. Substituted a durable in-file reminder instead (see the "Next audit due" callout at the top of this manual, refreshed by whoever runs the next audit).
+- ✅ Verified `delegate` hook scripts exist on disk (`.claude/hooks/delegation-guard.sh`, `.claude/hooks/record-session-model.sh`) — no fix needed.
+
+**Deliberately not done — needs your action, not mine:**
+- Cowork-store byte-identical/stale duplicate skills (`llm-council`, `story-writer`, `jira-compare`, `catalyst-feature`, plain `council`) live under `~/Library/Application Support/Claude/local-agent-mode-sessions/` — a different app's (Claude Desktop) managed plugin storage. The `cowork-plugin-management` skill (`cowork-plugin-customizer`, `create-cowork-plugin`) is for *authoring/customizing* Cowork plugins, not deduping installed ones — confirmed by inspecting both its skill names; it has no delete/dedupe capability. Raw `rm` there risks desyncing whatever manifest Claude Desktop keeps for that store. Resolve via that app's own plugin UI, or explicitly authorize raw deletion if you're confident no manifest tracks file counts.
 
 ---
 
