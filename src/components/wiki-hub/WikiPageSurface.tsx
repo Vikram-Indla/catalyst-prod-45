@@ -784,7 +784,7 @@ export function WikiPageSurface({ workspace, page, treePages }: WikiPageSurfaceP
           gap: 12,
         }}
       >
-        <div style={{ flex: 1, minWidth: 0 }}>
+        <div className="cat-breadcrumb-host" style={{ flex: 1, minWidth: 0, fontSize: 12, opacity: 0.8 }}>
           <Breadcrumbs
             items={crumbs}
             // Full ancestor path, never the collapsed "…" (Vikram 2026-07-06:
@@ -1112,7 +1112,7 @@ export function WikiPageSurface({ workspace, page, treePages }: WikiPageSurfaceP
                 borderRadius: 14,
                 padding: page.cover_url ? 6 : 0,
                 cursor: 'pointer',
-                fontSize: 64,
+                fontSize: 28,
                 lineHeight: 1,
                 boxShadow: page.cover_url ? 'var(--ds-shadow-overlay)' : 'none',
               }}
@@ -1203,10 +1203,8 @@ export function WikiPageSurface({ workspace, page, treePages }: WikiPageSurfaceP
             outline: 'none',
             background: 'transparent',
             color: 'var(--ds-text)',
-            /* ads-scanner:ignore-next-line — ADS heading token shorthand (font:), Notion-scale page title */
-            font: 'var(--ds-font-heading-xxlarge)',
-            fontWeight: 700,
-            letterSpacing: '-0.02em',
+            /* ads-scanner:ignore-next-line — ADS heading token shorthand (font:); Jira/Catalyst chrome scale, matches DocexDatabasePage (2026-07-07) */
+            font: 'var(--ds-font-heading-large)',
             padding: 0,
             margin: '2px 0 6px',
           }}
