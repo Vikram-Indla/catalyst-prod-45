@@ -44,7 +44,7 @@
  * Persistence of one page is factored into persistPage() so the main loop and
  * every retry path share it (and never double-insert). extraction_source is
  * 'native_pdf' for text-layer-derived blocks, 'llm_ocr' for image/scanned,
- * 'docx' for DOCX.
+ * 'docx' for DOCX, 'xlsx' for spreadsheets.
  *
  * On the last batch to finish, the single CAS winner advances the document
  * (extracting → chunking) and fans out docintel-embed. Any LLM failure marks
@@ -1403,11 +1403,8 @@ async function persistPage(
   // extraction_source + is_scanned are set by the ACTUAL path taken, not the
   // model's self-report: DOCX → docx; native text path → native_pdf (not
   // scanned); image path → llm_ocr (scanned, since it had no usable text layer).
-  // XLSX (deterministic SheetJS extraction) is stamped 'docx' — the closest
-  // office-native value the extraction_source CHECK constraint allows (adding
-  // an 'xlsx' value would need DDL, out of scope for this slice).
   const isScanned = !isDocx && mode === "image";
-  const blockSource = isDocx || isXlsx ? "docx" : mode === "text" ? "native_pdf" : "llm_ocr";
+  const blockSource = isXlsx ? "xlsx" : isDocx ? "docx" : mode === "text" ? "native_pdf" : "llm_ocr";
 
   // Page row: is_scanned + ocr_confidence + status.
   const minConf = pageMinConfidence(p);
@@ -1456,9 +1453,9 @@ async function persistPage(
     }
   }
 
-  // Tables → ai_document_tables + a matching 'table' block. XLSX table blocks
-  // are native cell extraction, not LLM reconstruction → stamped 'docx' too.
-  const tableBlockSource = isDocx || isXlsx ? "docx" : "llm_semantic";
+  // Tables → ai_document_tables + a matching 'table' block. XLSX/DOCX table
+  // blocks are native cell extraction, not LLM reconstruction.
+  const tableBlockSource = isXlsx ? "xlsx" : isDocx ? "docx" : "llm_semantic";
   for (const t of p.tables ?? []) {
     const { data: tableRow } = await admin
       .from("ai_document_tables")

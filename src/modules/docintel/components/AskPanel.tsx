@@ -62,7 +62,7 @@ function CitationChip({
         display: "inline-flex",
         alignItems: "center",
         verticalAlign: "baseline",
-        margin: "0 2px",
+        margin: "0 var(--ds-space-025)",
         padding: 0,
         border: "none",
         background: "transparent",
@@ -224,7 +224,7 @@ export function AskPanel({ projectId, documentId }: AskPanelProps) {
           />
         </div>
       ) : (
-        <div style={{ display: "flex", flexDirection: "column", gap: 16, marginTop: 20 }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: "var(--ds-space-200)", marginTop: "var(--ds-space-250)" }}>
           {history.map((entry) => {
             const answerArabic = isArabicText(entry.result.answer_md);
             const notFound = entry.result.evidence_count === 0;
@@ -296,7 +296,7 @@ export function AskPanel({ projectId, documentId }: AskPanelProps) {
                     alignItems: "center",
                     gap: 10,
                     flexWrap: "wrap",
-                    marginTop: 10,
+                    marginTop: "var(--ds-space-100)",
                   }}
                 >
                   <Lozenge appearance={groundingAppearance(entry.result.confidence)}>
@@ -345,7 +345,7 @@ export function AskPanel({ projectId, documentId }: AskPanelProps) {
                   dir="auto"
                   style={{
                     margin: 0,
-                    padding: "10px 14px",
+                    padding: "var(--ds-space-100) var(--ds-space-150)",
                     borderInlineStart: "3px solid var(--ds-border-focused)",
                     background: "var(--ds-surface-sunken)",
                     borderRadius: 6,
