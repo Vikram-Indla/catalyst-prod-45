@@ -232,6 +232,8 @@ const PlaceholderPage = lazy(() => import("../pages/jira-align/PlaceholderPage")
 // CAT-STRATA-20260705-001 (D-009/Q2): dormant StrategyRoom decommissioned;
 // the strategy surface is now STRATA at /strata.
 const StrataRoutesShell = lazy(() => import("../modules/strata/StrataRoutes"));
+// CAT-DOCINTEL-ARABIC-RAG-20260706-001: Arabic Document Intelligence hub.
+const DocintelRoutesShell = lazy(() => import("../modules/docintel/DocintelRoutes"));
 const CapacityPlannerPage = lazy(() => import("../pages/enterprise/CapacityPlannerPage"));
 const BudgetPlannerPage = lazy(() => import("../pages/enterprise/BudgetPlannerPage"));
 
@@ -633,6 +635,10 @@ export default function FullAppRoutes() {
             /strategyhub and /strategy-room redirects live in App.tsx OUTSIDE
             CatalystShell (Navigate inside FullAppRoutes is swallowed). */}
         <Route path="/strata/*" element={<MG k="strategyhub" t="STRATA"><S><StrataRoutesShell /></S></MG>} />
+
+        {/* ═══ Doc Intelligence (CAT-DOCINTEL-ARABIC-RAG-20260706-001) ═══ */}
+        {/* No feature-flag gate for now — simple authenticated. */}
+        <Route path="/doc-intelligence/*" element={<S><DocintelRoutesShell /></S>} />
 
         <Route path="/portfolio/:portfolioKey/*" element={<S><PortfolioRoutesShell /></S>} />
         <Route path="/program" element={<S><PlaceholderPage /></S>} />

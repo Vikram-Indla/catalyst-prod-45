@@ -6,8 +6,12 @@ import { enqueueWorkItemOperation } from '@/lib/jira-writeback';
 
 export interface CreateWorkItemInput {
   project_id: string;
-  type_id: string;
-  status_id: string;
+  // Nullable: some Catalyst instances/projects have no ph_work_types /
+  // ph_workflow_statuses rows and drive items by the string item_type alone
+  // (existing rows carry type_id/status_id = NULL). Keep these optional so
+  // callers can create items in those projects.
+  type_id?: string | null;
+  status_id?: string | null;
   title: string;
   item_type: string;
   description?: any;

@@ -287,6 +287,17 @@ export const strataRoutes = {
 };
 
 // ---------------------------------------------------------------------------
+// Doc Intelligence (CAT-DOCINTEL-ARABIC-RAG-20260706-001)
+// ---------------------------------------------------------------------------
+
+export const docintelRoutes = {
+  list: () => '/doc-intelligence',
+  upload: () => '/doc-intelligence/upload',
+  // slug is the frozen ai_documents.slug — no UUID in the URL
+  workspace: (slug: string) => `/doc-intelligence/${slug}`,
+};
+
+// ---------------------------------------------------------------------------
 // Admin
 // ---------------------------------------------------------------------------
 
@@ -322,4 +333,5 @@ export const Routes = {
   browse: browseRoutes,
   admin: adminRoutes,
   strata: strataRoutes,
+  docintel: docintelRoutes,
 } as const;
