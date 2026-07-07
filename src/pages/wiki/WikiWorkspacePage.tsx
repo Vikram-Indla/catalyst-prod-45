@@ -173,6 +173,7 @@ export default function WikiWorkspacePage() {
             alignItems: 'center',
             justifyContent: 'center',
             font: 'var(--ds-font-heading-large)',
+            color: 'var(--ds-text)',
             flexShrink: 0,
           }}
         >
@@ -204,7 +205,7 @@ export default function WikiWorkspacePage() {
           {heroTemplates.map((t) => (
             <button key={t.key} type="button" onClick={t.onClick} className="wiki-tpl">
               <span className="wiki-tpl__glyph" aria-hidden>
-                <span style={{ font: 'var(--ds-font-heading-medium)' }}>{t.icon}</span>
+                <span style={{ font: 'var(--ds-font-heading-medium)', color: 'var(--ds-text)' }}>{t.icon}</span>
               </span>
               {/* ads-scanner:ignore-next-line — ADS heading token shorthand (font:), not split fontSize/fontWeight */}
               <h3 style={{ font: 'var(--ds-font-heading-xsmall)', color: 'var(--ds-text)', margin: 0 }}>
@@ -236,7 +237,7 @@ export default function WikiWorkspacePage() {
               onClick={() => navigate(Routes.docex.database(workspace.slug, d.slug))}
             >
               <span className="wiki-tpl__glyph" aria-hidden>
-                <span style={{ font: 'var(--ds-font-heading-medium)' }}>{d.icon ?? '📊'}</span>
+                <span style={{ font: 'var(--ds-font-heading-medium)', color: 'var(--ds-text)' }}>{d.icon ?? '📊'}</span>
               </span>
               {/* ads-scanner:ignore-next-line — ADS heading token shorthand (font:), not split fontSize/fontWeight */}
               <h3 style={{ font: 'var(--ds-font-heading-xsmall)', color: 'var(--ds-text)', margin: 0 }}>
@@ -249,7 +250,7 @@ export default function WikiWorkspacePage() {
           ))}
           <button type="button" className="wiki-tpl" onClick={handleCreateDatabase}>
             <span className="wiki-tpl__glyph" aria-hidden>
-              <span style={{ font: 'var(--ds-font-heading-medium)' }}>➕</span>
+              <span style={{ font: 'var(--ds-font-heading-medium)', color: 'var(--ds-text)' }}>➕</span>
             </span>
             {/* ads-scanner:ignore-next-line — ADS heading token shorthand (font:), not split fontSize/fontWeight */}
             <h3 style={{ font: 'var(--ds-font-heading-xsmall)', color: 'var(--ds-text)', margin: 0 }}>
