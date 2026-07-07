@@ -62,6 +62,41 @@ track is **deprecated/parked**:
 - Consequently §1's "reuse the parked `kb_*` RAG stack" framing is **retracted** — reuse the
   live `ai_*`/docintel assets instead (see the corrected note atop §1).
 
+### §0.1 — Frontend + feature state (2026-07-07) — much of §2/§4/§7 is ALREADY BUILT
+
+Codebase discovery shows the docintel feature has a **live frontend**, not just a backend.
+Sections §2–§7 below were written as "what's missing" before this was probed and are
+**substantially overstated**. Reconciliation:
+
+| Target section | Live status | File evidence |
+|---|---|---|
+| §2 OKF (document slice) | **BUILT** — `ai_documents` + `ai_document_pages/blocks/tables/images` + `ai_extraction_issues` + `ai_requirement_facts` = a typed, versioned, cited projection of the document slice | `src/modules/docintel/domain/index.ts` (`docintelApi`) |
+| §4 Knowledge Health (per-document) | **BUILT** — `ProcessingStatusBoard`: 5-stage stepper, per-page status grid, `latency_ms` breakdown, realtime | `src/modules/docintel/components/ProcessingStatusBoard.tsx` |
+| §7 Artifact generation | **BUILT** — `GenerationPanel` → `docintel-generate`; `ai_generated_artifacts` (grounding_score, promote-to-work-item), `ai_artifact_citations`, `TraceabilityMatrix`, `FactsReviewPanel` | `src/modules/docintel/pages/*`, `components/*` |
+| Retrieval (permission-aware) | **BUILT** — `docintel_hybrid_search`, project-scoped, RLS | edge fns + §0 |
+| Routes / nav | **LIVE** — `/doc-intelligence/*` (list/upload/workspace) mounted; sidebar entry | `FullAppRoutes.tsx`, `routes.ts`, `WikiSidebar.tsx` |
+
+**What is GENUINELY still missing** (the real remaining backlog — everything else in §2–§9 is
+built or in-progress by the parallel build):
+
+1. **OKF beyond documents** — projection of non-document node types (work items, BRs, epics,
+   features, stories, releases, changes, tests, defects, incidents, comments, approvals,
+   workflows, business rules, APIs, db tables, users, roles, permissions). Today only the
+   document+requirement slice is projected. **This is the big open item.**
+2. **Project/org-level Knowledge Health rollup** — `ProcessingStatusBoard` is *per-document*.
+   No cross-document freshness/failure/stale/**coverage** dashboard exists yet (§4 rollup).
+3. **Knowledge Graph** (§5) — typed edges across node types + traversal. Not started.
+4. **Qwen provider abstraction** (§6) — pipeline still calls Gemini directly.
+5. **Sync Engine generalization** (§3) — change-driven recompile exists only for docintel
+   uploads; not generalized to other Catalyst objects.
+6. Feature-level TODOs owned by the parallel build: Word (.docx) input, streaming generation,
+   master orchestrator/intent-resolver confirmation.
+
+> **⚠️ Coordination:** `/doc-intelligence` is an **active parallel-session feature**
+> (`CAT-DOCEX-RAG-AGENTS-20260706-001`, objective phase, no Plan Lock yet, no session logs).
+> These docs are updated read-only. **Any code on `ai_*`/docintel must be coordinated with that
+> session** — do not fork the schema or edge functions from a second session.
+
 ## Target, in one line
 
 ```
@@ -269,12 +304,19 @@ no evidence of document/RAG grounding"** (`05`). Missing:
   (`SELECT true`, 0 rows), but the **live `ai_*` pipeline is already project-scoped with RLS**.
   So P0-4 is *solved on the substrate that matters* and only reappears if `kb_*` is chosen.
 
-**P1 — the core Reservoir spine:**
-- P1-1 OKF node/edge schema + versioning + citation anchors (§2).
-- P1-2 Generalized Knowledge Sync Engine: change-capture + job queue + worker (§3).
-- P1-3 Permission-aware hybrid retrieval (add role/permission filter to `kb_hybrid_search`) (§1,§2).
-- P1-4 Knowledge Health Dashboard (freshness/failures/stale/coverage) (§4).
-- P1-5 Master + specialist agents with retrieval grounding + streaming + citations (§7).
+**P1 — the core Reservoir spine (mostly BUILT per §0.1; ~~struck~~ = done on `ai_*`/docintel):**
+- P1-1 ~~OKF node/edge schema + versioning + citation anchors~~ **BUILT for the document slice**
+  (`ai_documents`/`ai_document_*`/`ai_requirement_facts`/`ai_artifact_citations`). Remaining =
+  edge/graph model + non-document node types (→ P2-1, P2-4).
+- P1-2 Generalized Knowledge Sync Engine (§3) — **partial**: change-driven recompile works for
+  docintel uploads; not generalized to other Catalyst objects. **Open.**
+- P1-3 ~~Permission-aware hybrid retrieval~~ **BUILT** — `docintel_hybrid_search`, project-scoped,
+  RLS.
+- P1-4 Knowledge Health — **per-document BUILT** (`ProcessingStatusBoard`). **Open: project/org
+  rollup** (cross-doc freshness/failures/stale/**coverage**).
+- P1-5 ~~Master + specialist agents, grounded + cited~~ **BUILT** (`GenerationPanel` →
+  `docintel-generate`, grounding_score + citations + promote). Remaining: streaming + master
+  intent-resolver confirmation (parallel build owns).
 
 **P2 — depth / differentiation (after spine works):**
 - P2-1 Knowledge Graph edges + permission-aware traversal + graph-fusion retrieval (§5).
