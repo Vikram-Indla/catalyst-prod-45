@@ -1,5 +1,6 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+import { requireAuth } from '../_shared/auth-guard.ts'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -15,6 +16,14 @@ function json(body: unknown, status = 200) {
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders })
+
+  // ── Auth guard ── previously unauthenticated. With this repo's
+  // --no-verify-jwt deploy flag that made it a fully public endpoint able to
+  // read live Jira API credentials, fetch arbitrary issues/attachments from
+  // the connected Jira instance, and write into brd_documents/Storage using
+  // the service-role key.
+  const auth = await requireAuth(req)
+  if (auth.error) return auth.error
 
   const supabase = createClient(
     Deno.env.get('SUPABASE_URL')!,

@@ -57,8 +57,17 @@ serve(async (req) => {
   }
 
   // ── Auth guard ──
-  const auth = await requireAuth(req);
-  if (auth.error) return auth.error;
+  // Accept either the cron secret (pg_cron → ingest_folio_batch, see
+  // 20260707020100_docex_rag_cron.sql) or a valid user JWT (admin tooling —
+  // KBAdminSetup.tsx and friends). No frontend surface calls this function
+  // directly today; the cron path is the only unattended caller.
+  const cronSecret = Deno.env.get("KB_REINDEX_CRON_SECRET");
+  const authHeader = req.headers.get("Authorization") ?? "";
+  const isCron = !!cronSecret && authHeader === `Bearer ${cronSecret}`;
+  if (!isCron) {
+    const auth = await requireAuth(req);
+    if (auth.error) return auth.error;
+  }
 
   try {
     const body = await req.json();
@@ -259,6 +268,98 @@ serve(async (req) => {
       );
     }
 
+    // ─── Action: ingest_folio_batch — (Re)embed published Folio/Docex pages ───
+    // Consumes the dirty flag set by kb_documents_flag_reindex_trigger
+    // (20260707020000_docex_rag_wiring.sql). Only published pages are
+    // eligible — this matches kb_documents' own SELECT RLS policy, so we
+    // never embed content a random querier couldn't already read via the app.
+    if (action === "ingest_folio_batch") {
+      const { data: pages, error: fetchErr } = await supabase
+        .from("kb_documents")
+        .select("id, space_id, title, doc_key, content_text, updated_at")
+        .eq("needs_reindex", true)
+        .not("published_at", "is", null)
+        .not("content_text", "is", null)
+        .order("updated_at", { ascending: true })
+        .limit(batchSize);
+
+      if (fetchErr) throw fetchErr;
+      if (!pages || pages.length === 0) {
+        return new Response(
+          JSON.stringify({ message: "No Folio pages need reindexing", ingested: 0, pages_processed: 0 }),
+          { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+
+      let ingested = 0;
+      const errors: string[] = [];
+      const processedPageIds: string[] = [];
+
+      for (const page of pages) {
+        const text = String(page.content_text || "").trim();
+        if (text.length < 20) {
+          // Nothing meaningful to embed (e.g. an empty page) — still clear
+          // the flag so it isn't retried forever.
+          processedPageIds.push(page.id);
+          continue;
+        }
+
+        try {
+          // Purge this page's previous chunks first — page content isn't
+          // append-only like training Q&A, so stale chunks from an earlier
+          // version must not linger alongside the new ones.
+          await supabase.from("kb_embeddings").delete().eq("source_url", `docex://document/${page.id}`);
+
+          const textChunks = chunkText(text);
+          const rows: any[] = [];
+          for (let ci = 0; ci < textChunks.length; ci++) {
+            rows.push({
+              content: textChunks[ci],
+              content_hash: await sha256(`${page.id}:${page.updated_at}:${ci}:${textChunks[ci]}`),
+              source_type: "docex",
+              source_url: `docex://document/${page.id}`,
+              metadata: { space_id: page.space_id, document_id: page.id, doc_key: page.doc_key, title: page.title },
+              chunk_index: ci,
+              language: "en",
+            });
+          }
+
+          const embeddings = await getEmbeddings(rows.map((r) => r.content));
+          rows.forEach((r, idx) => { r.embedding = embeddings[idx]; });
+
+          const { error: insertErr } = await supabase.from("kb_embeddings").insert(rows);
+          if (insertErr) {
+            errors.push(`${page.id}: ${insertErr.message}`);
+            continue; // leave needs_reindex=true so this page is retried
+          }
+
+          ingested += rows.length;
+          processedPageIds.push(page.id);
+        } catch (pageErr: any) {
+          errors.push(`${page.id}: ${pageErr.message}`);
+        }
+
+        if (pages.indexOf(page) < pages.length - 1) {
+          await new Promise((r) => setTimeout(r, 300));
+        }
+      }
+
+      if (processedPageIds.length > 0) {
+        await supabase.from("kb_documents").update({ needs_reindex: false }).in("id", processedPageIds);
+      }
+
+      return new Response(
+        JSON.stringify({
+          message: `Processed ${pages.length} Folio pages: embedded ${ingested} chunks across ${processedPageIds.length} pages`,
+          ingested,
+          pages_processed: processedPageIds.length,
+          pages_seen: pages.length,
+          errors: errors.length > 0 ? errors : undefined,
+        }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
     // ─── Action: purge — Clear all RAG chunks ───
     if (action === "purge") {
       const sourceType = body.source_type;
@@ -278,7 +379,7 @@ serve(async (req) => {
     }
 
     return new Response(
-      JSON.stringify({ error: "Invalid action. Use: status, ingest_training, ingest_text, purge" }),
+      JSON.stringify({ error: "Invalid action. Use: status, ingest_training, ingest_text, ingest_folio_batch, purge" }),
       { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   } catch (error: any) {

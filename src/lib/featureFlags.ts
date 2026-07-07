@@ -7,7 +7,6 @@
 
 export const ENABLE_AI = import.meta.env.VITE_ENABLE_AI !== 'false';
 export const ENABLE_HEAVY_EXPORTS = import.meta.env.VITE_ENABLE_HEAVY_EXPORTS !== 'false';
-export const ENABLE_KNOWLEDGE_HUB = import.meta.env.VITE_ENABLE_KNOWLEDGE_HUB !== 'false';
 
 /**
  * Master gate — defaults to TRUE.
