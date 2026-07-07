@@ -1,6 +1,6 @@
 # Agent Pipeline — companion to Catalyst skills
 
-**Status:** purely additive. Does not change any existing skill instruction. The 4 active skills (`preflight`, `design-intelligence`, `design-critique`, `jira-compare`) keep their phases, council membership, gates, and rules unchanged. This pipeline only specifies **which agent from `~/.claude/agents/` is invoked at which phase**, plus a uniform notification protocol.
+**Status:** purely additive. Does not change any existing skill instruction. The 4 rostered skills below (`preflight`, `design-intelligence`, `design-critique`, `jira-compare`) keep their phases, council membership, gates, and rules unchanged. This pipeline only specifies **which agent from `~/.claude/agents/` is invoked at which phase**, plus a uniform notification protocol. Scope note: this rosters only 4 of the ~27 skills in `.claude/skills/` — the rest run without a per-phase agent roster. Full skill taxonomy: [`docs/ways-of-working/GOD_MODE_DELIVERY_MANUAL.md`](../../docs/ways-of-working/GOD_MODE_DELIVERY_MANUAL.md) §C.
 
 **Why this exists.** 184 agents from `agency-agents/` are now installed in `~/.claude/agents/`. Without a pipeline they sit dormant. With this pipeline each skill phase gets a named specialist (read-only or implementer) so the work is partitioned cleanly and Vikram always knows who is doing what.
 

@@ -10,7 +10,7 @@ metadata:
   triggers: ["/catalyst-agent", "/agent", "activate agents", "run agents for", "smart-route this", "1000 IQ this"]
   banned_tools: ["testsprite_*", "preview_*"]
   design_system: "@atlaskit/* + var(--ds-*) tokens exclusively"
-  supabase_project: lmqwtldpfacrrlvdnmld
+  supabase_project: cyijbdeuehohvhnsywig
   dev_port: 8080
   wrapper_skills: [preflight, jira-compare, design-intelligence, design-critique]
 ---
@@ -228,7 +228,7 @@ HALT — CLAUDE.md ban hit
 10. **Port 8080 lock** (CLAUDE.md). Lane B probe MUST hit localhost:8080. Any 8081 → HALT.
 11. **No `preview_*` tools.** Still banned (global, cannot be overridden even by Directive 3).
 12. **Re-probe loop cap: 3.** Beyond that, escalate to user.
-13. **Supabase MCP for Lane C.** Read-only: `list_tables`, `execute_sql` (SELECT only), `list_extensions`, `list_migrations` on project `lmqwtldpfacrrlvdnmld`. Never write via MCP during probe phase.
+13. **Supabase MCP for Lane C.** Read-only: `list_tables`, `execute_sql` (SELECT only), `list_extensions`, `list_migrations` on project `cyijbdeuehohvhnsywig`. Never write via MCP during probe phase.
 14. **Jira REST API endpoints** (Lane A): Prefer proven endpoints from `wh-jira-bulk-sync`. Approved: `/rest/api/3/search/jql` (paginated), `/rest/api/3/issue/{key}/changelog` (transitions), `/rest/api/3/issue/{key}` (details).
 15. **gh CLI for git.** Push directly to `origin main` (Vikram authorized — see memory: feedback_git_push.md). Still use commit message format: `<type>(<scope>): <subject>` + `Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>` footer.
 16. **Gap report is a TABLE, not prose.** Step 5 output must use the `GAP_REPORT.md` table format. Bullet-list-only gap reports from this skill are rejected.

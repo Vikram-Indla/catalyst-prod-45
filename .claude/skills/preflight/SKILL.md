@@ -54,7 +54,7 @@ Your job is to classify, plan, and gate. Not to execute. Execution happens in su
 ⚠️ PORT LOCK ACTIVE: localhost:8080 is the only permitted Catalyst dev server.
 Any plan row referencing localhost:8081 or any other port → HALT.
 Claude preview tools (preview_start, preview_screenshot, preview_eval, etc.) → HALT.
-SQL execution: Supabase MCP read-only (list_tables, execute_sql SELECT) on project lmqwtldpfacrrlvdnmld.
+SQL execution: Supabase MCP read-only (list_tables, execute_sql SELECT) on project cyijbdeuehohvhnsywig.
 For schema DDL writes: migrations in supabase/migrations/ directory + apply_migration MCP.
 ```
 
@@ -211,7 +211,7 @@ Cost: ~30 seconds. Benefit: Often eliminates wasted probe cycles on wrong altern
 | A — Visual/structural + Jira REST API | `jira-compare` (Chrome MCP DOM probe) + Jira REST API via edge functions (`/rest/api/3/search/jql`, `/rest/api/3/issue/{key}`) | DOM probe JSON, computed-style diff, annotated screenshots, full issue details, changelog |
 | B — Schema/data + Rovo | Atlassian MCP (`getJiraIssueTypeMetaWithFields`, `searchJiraIssuesUsingJql`) + Rovo Search (requirement analysis, related issues, dependencies) | Fields JSON, workflow states, permission schemes, requirement clarity, scope boundaries |
 | C — Static analysis | `ads-validator` | ADS token violations with file/line refs |
-| D — Supabase schema introspection | Supabase MCP (project: `lmqwtldpfacrrlvdnmld`): `list_tables`, `execute_sql` (SELECT only), `list_extensions`, `list_migrations` | Table definitions, field types, constraints, RLS policies, migration history |
+| D — Supabase schema introspection | Supabase MCP (project: `cyijbdeuehohvhnsywig`): `list_tables`, `execute_sql` (SELECT only), `list_extensions`, `list_migrations` | Table definitions, field types, constraints, RLS policies, migration history |
 | E — Code archaeology results | `Explore` agent (grep for existing implementations) + proven Supabase/Jira patterns | File paths, prior patterns, proven endpoints, lessons from CLAUDE.md, working edge functions |
 
 ### Evidence envelope (passed to all Phase 2 advisors)
@@ -430,7 +430,7 @@ Include the full SQL in a code block directly below the row. Use `supabase migra
 
 For schema reads (probes/audits):
 ```
-| N | {description} | supabase-mcp | — | — | execute_sql(project_id="lmqwtldpfacrrlvdnmld", query="...") | Result confirms {expected outcome} |
+| N | {description} | supabase-mcp | — | — | execute_sql(project_id="cyijbdeuehohvhnsywig", query="...") | Result confirms {expected outcome} |
 ```
 
 ---

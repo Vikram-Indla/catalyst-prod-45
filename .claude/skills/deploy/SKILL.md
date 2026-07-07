@@ -74,7 +74,7 @@ When you run `/deploy`, the skill will:
  🔗 GITHUB
  ├─ PR #789 merged to main
  ├─ All CI checks green
- └─ Deployment: github.com/anthropics/catalyst-prod-45/commit/XXXXXXX
+ └─ Deployment: github.com/Vikram-Indla/catalyst-prod-45/commit/XXXXXXX
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
@@ -106,13 +106,13 @@ git -C . diff --name-only --diff-filter=U        # Show conflicted files
 **Phase 4: Cleanup**
 ```bash
 git -C . branch -d [merged-local-branches]       # Delete local branches
-gh api repos/anthropics/catalyst-prod-45/git/refs/heads/[branch] -X DELETE
+gh api repos/Vikram-Indla/catalyst-prod-45/git/refs/heads/[branch] -X DELETE
 ```
 
 **Phase 5: Validation**
 ```bash
-supabase status --project-ref lmqwtldpfacrrlvdnmld
-gh api repos/anthropics/catalyst-prod-45/actions/runs --created=">2026-05-18"
+supabase status --project-ref cyijbdeuehohvhnsywig
+gh api repos/Vikram-Indla/catalyst-prod-45/actions/runs --created=">2026-05-18"
 ```
 
 **Phase 6: Report**

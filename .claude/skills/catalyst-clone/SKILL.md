@@ -1,6 +1,6 @@
 ---
 name: catalyst-clone
-description: End-to-end clone protocol that replicates a complete surface — page, table, modal, or component — between two contexts. Handles BOTH directions — Catalyst↔Catalyst (e.g. project backlog → product backlog) AND Jira→Catalyst (external Jira link → internal Catalyst surface). Enforces probe-before-code via a 10-phase contract — scope contract, ability matrix, variation map (5 axes), canonical-component identity gate, field-binding contract, interaction probe plan, ADS pre-validation, L1-L10 + G1-G10 guardrails re-scan, surgical patch, live verification, lesson auto-log. Refuses to advance until each phase's evidence is in. Always appends a lesson entry to CLAUDE.md after every run (success or failure). Triggers on `/clone`, `/catalyst-clone`, "clone this", "replicate from jira", "make X like Y", "mirror the project table on product".
+description: End-to-end clone protocol that replicates a complete surface — page, table, modal, or component — between two contexts. Handles BOTH directions — Catalyst↔Catalyst (e.g. project backlog → product backlog) AND Jira→Catalyst (external Jira link → internal Catalyst surface). Enforces probe-before-code via a 10-phase contract — scope contract, ability matrix, variation map (5 axes), canonical-component identity gate, field-binding contract, interaction probe plan, ADS pre-validation, L1-L10 + G1-G10 guardrails re-scan, surgical patch, live verification, lesson auto-log. Refuses to advance until each phase's evidence is in. Logs every run to the feature folder; touches CLAUDE.md only when a run promotes a genuinely new guard. Triggers on `/clone`, `/catalyst-clone`, "clone this", "replicate from jira", "make X like Y", "mirror the project table on product".
 ---
 
 # Catalyst Clone
@@ -47,7 +47,7 @@ When the run completes:
 Abilities cloned: {N} / {N}
 Variations: {identical/vocab/schema/type-conditional/excluded breakdown}
 Gates: G1-G10 ✓ · L1-L10 ✓ · ADS ✓
-Lesson appended to CLAUDE.md.
+Run logged to feature folder. (CLAUDE.md touched only if a new guard was promoted.)
 Commit: {sha}
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
@@ -353,9 +353,11 @@ For each probe:
 
 ---
 
-## Phase 10 — Lesson Auto-Log (mandatory, every run)
+## Phase 10 — Lesson Log (mandatory, every run — CLAUDE.md only on a NEW guard)
 
-Append to **project CLAUDE.md** (this repo's root CLAUDE.md). Location: a new dated section under the existing lesson stream, or a dedicated `## YYYY-MM-DD — Catalyst Clone — {target}` heading.
+Write the run record to the active feature folder's `04_EXECUTION_LOG.md` (or `11_KARPATHY_LOOP_LOG.md`) every run — routine clone runs, including perfect clones, do not touch the operating contract.
+
+**Only append to project CLAUDE.md** when this run discovered a genuinely NEW failure mode worth promoting to a permanent guard (new L-number or G-number below). Routine "gates passed" logs stay in the feature folder — CLAUDE.md is the law, not a run log, and appending on every run silently bloats the contract every clone touches.
 
 **Template:**
 
@@ -380,9 +382,9 @@ Append to **project CLAUDE.md** (this repo's root CLAUDE.md). Location: a new da
 - {LN+1 — only if a NEW failure mode was discovered. Otherwise omit.}
 ```
 
-**Always written**, even on perfect clones — cite which gates passed so future runs can grep "G7 ✓ — root `<div>` confirmed on BrSidebarDetails" if they're ever debugging a regression.
+**Always written to the feature folder**, even on perfect clones — cite which gates passed so future runs can grep "G7 ✓ — root `<div>` confirmed on BrSidebarDetails" if they're ever debugging a regression.
 
-On failure or new discovered lesson:
+On failure or a genuinely new discovered lesson only:
 - Upgrade the entry to a permanent CLAUDE.md guard (add L11, L12, …)
 - Add a row to the Clone-Parity Gate (G11, G12, …) if it's a clone-specific failure mode
 - Update this skill (`SKILL.md`) with the new gate

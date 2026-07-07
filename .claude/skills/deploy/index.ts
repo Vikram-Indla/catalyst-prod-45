@@ -10,7 +10,7 @@ import { execSync } from 'child_process';
 import { writeFileSync, mkdirSync } from 'fs';
 import { join } from 'path';
 
-const PROJECT_ROOT = '/Users/vikramindla/Documents/GitHub/catalyst-prod-45';
+const PROJECT_ROOT = execSync('git rev-parse --show-toplevel', { encoding: 'utf-8' }).trim();
 const LOGS_DIR = join(PROJECT_ROOT, '.claude/deploy-logs');
 const TIMESTAMP = new Date().toISOString().replace(/[:.]/g, '-');
 const LOG_FILE = join(LOGS_DIR, `deploy-${TIMESTAMP}.log`);
@@ -294,14 +294,14 @@ class DeploymentWorkflow {
 
     try {
       const prJson = this.exec(
-        'gh api repos/anthropics/catalyst-prod-45/pulls --state=open --jq=".[0]" | jq -r \'."number"\'',
+        'gh api repos/Vikram-Indla/catalyst-prod-45/pulls --state=open --jq=".[0]" | jq -r \'."number"\'',
         true
       );
 
       if (prJson) {
         const prNumber = parseInt(prJson);
         const checks = this.exec(
-          `gh api repos/anthropics/catalyst-prod-45/commits/HEAD/check-runs --jq='.check_runs | map(.status) | @csv'`,
+          `gh api repos/Vikram-Indla/catalyst-prod-45/commits/HEAD/check-runs --jq='.check_runs | map(.status) | @csv'`,
           true
         );
 
@@ -311,7 +311,7 @@ class DeploymentWorkflow {
         let attempts = 0;
         while (attempts < 30) {
           const checkStatus = this.exec(
-            `gh api repos/anthropics/catalyst-prod-45/commits/HEAD/check-runs --jq='.check_runs | map(.conclusion) | if all(. == "success") then "success" elif any(. == "failure") then "failure" else "pending" end'`,
+            `gh api repos/Vikram-Indla/catalyst-prod-45/commits/HEAD/check-runs --jq='.check_runs | map(.conclusion) | if all(. == "success") then "success" elif any(. == "failure") then "failure" else "pending" end'`,
             true
           );
 
@@ -384,7 +384,7 @@ class DeploymentWorkflow {
           const branchName = branch.replace('origin/', '');
           try {
             this.exec(
-              `gh api -X DELETE repos/anthropics/catalyst-prod-45/git/refs/heads/${branchName}`,
+              `gh api -X DELETE repos/Vikram-Indla/catalyst-prod-45/git/refs/heads/${branchName}`,
               true
             );
             this.summary.branchesDeleted.remote.push(branchName);

@@ -184,6 +184,21 @@ Use Catalyst canonical components or ADS primitives (`@atlaskit/*`).
 
 ---
 
+## `show_widget` BANNED (except pixel-accurate Catalyst UI replicas)
+
+`show_widget` / `mcp__visualize__show_widget` is **BANNED** in every skill, agent, and session, with ONE exception: a before/after mockup of the actual Catalyst component layout, probed live from `localhost:8080` first — never a scorecard, dashboard, or chart standing in for prose.
+
+**Banned (no exceptions):**
+- Conversational scorecard widgets (heuristic scores, violation counts, metric dashboards)
+- Progress bars, radar charts, bar charts, or any analytics widget
+- Any widget that shows findings/scores/data *about* the UI rather than the Catalyst UI itself
+- Any widget generated without first probing the live page at `localhost:8080` via Chrome MCP
+- Any widget whose content is commentary or explanation rather than a replica
+
+**Findings, scores, violations, and RCA conclusions go in plain prose only — one line per finding — never in a widget.**
+
+---
+
 ## JIRATABLЕ / TABLE-LIST RULE
 
 Before building any table or list surface:

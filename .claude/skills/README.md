@@ -2,11 +2,13 @@
 
 A single reference for everything in `.claude/skills/` and `~/.claude/agents/`. Read this first if you've never touched the agent stack before.
 
+> **Canonical skill taxonomy lives in [`docs/ways-of-working/GOD_MODE_DELIVERY_MANUAL.md`](../../docs/ways-of-working/GOD_MODE_DELIVERY_MANUAL.md) §C.** This README covers only the 5-skill router core below (`catalyst-agent`, `preflight`, `jira-compare`, `design-intelligence`, `design-critique`) plus the 184-agent roster. The skills directory holds ~20 more (catalyst-feature, cre, deploy, fable, inspect, llm-council, advanced-council, mirror-component, regression, story-writer, systematic-debugging, obsidian, delegate, `/4`, `start`, etc.) — for routing across the FULL set, use the manual §C/§K, not this file. Updating this file when a new skill lands is optional; updating the manual is not.
+
 ---
 
 ## TL;DR (60 seconds)
 
-You have **5 skills** and **184 agent personas**.
+This file documents **5 router-core skills** out of ~27 total in `.claude/skills/` (full taxonomy: manual §C) and **184 agent personas**.
 
 - **Skills** are workflows. Each has a SKILL.md with a multi-phase pipeline, gates, and triggers. Think: "the recipe."
 - **Agents** are personas. Each has a single .md file with a role, voice, and process. Think: "the specialist who follows the recipe."
@@ -180,6 +182,8 @@ This is the contract. Every skill follows it so the chat stays scannable.
 ---
 
 ## File map — where everything lives
+
+> This map covers only the 5-skill router core. The full directory listing (~20 more skills) is not reproduced here — run `ls .claude/skills/` or see manual §C.
 
 ```
 .claude/skills/

@@ -10,7 +10,7 @@ metadata:
   triggers: ["/regression", "triage these defects", "defect log", "fix these bugs", "root cause these", "regression cycle", "work through this defect log"]
   banned_tools: ["testsprite_*", "preview_*"]
   design_system: "@atlaskit/* + var(--ds-*) tokens exclusively"
-  supabase_project: lmqwtldpfacrrlvdnmld
+  supabase_project: cyijbdeuehohvhnsywig
   dev_port: 8080
   companion_skills: [hermes-regression-sweep, jira-compare, design-critique, catalyst-agent]
 ---
