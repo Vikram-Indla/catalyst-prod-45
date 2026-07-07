@@ -154,7 +154,7 @@ export default function WikiWorkspacePage() {
         .wiki-tpl__glyph {
           width: 40px; height: 40px; border-radius: 10px;
           display: flex; align-items: center; justify-content: center;
-          background: var(--ds-background-neutral-bold);
+          border: 1.5px solid var(--ds-border-bold);
           margin-bottom: 12px;
         }
       `}</style>
@@ -167,7 +167,8 @@ export default function WikiWorkspacePage() {
             width: 56,
             height: 56,
             borderRadius: 14,
-            background: 'var(--ds-background-neutral-bold)',
+            border: '2px solid var(--ds-border-bold)',
+            background: 'transparent',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
