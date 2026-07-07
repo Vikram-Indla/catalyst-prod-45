@@ -263,6 +263,60 @@ export interface DocintelGenerateResult {
 }
 
 // ---------------------------------------------------------------------------
+// Knowledge integration: document ↔ work item / Folio links (S3)
+// ---------------------------------------------------------------------------
+
+/**
+ * Entity kinds a Doc Intel document can link to — mirrors the
+ * ai_document_links.entity_type CHECK constraint. 'document' = a Folio
+ * (kb_documents) page; the rest are Catalyst work-item families.
+ */
+export type DocintelLinkEntityType =
+  | "business_request"
+  | "epic"
+  | "feature"
+  | "story"
+  | "task"
+  | "defect"
+  | "incident"
+  | "test_case"
+  | "release"
+  | "change"
+  | "document";
+
+export type DocintelLinkOrigin = "manual" | "promotion" | "mention";
+
+/** One row of ai_document_links. */
+export interface DocintelDocumentLink {
+  id: string;
+  document_id: string;
+  entity_type: DocintelLinkEntityType | string;
+  entity_id: string;
+  link_origin: DocintelLinkOrigin | string;
+  created_by: string | null;
+  created_at: string;
+}
+
+/**
+ * A link joined with its resolved target — key/title looked up from the
+ * canonical table for the entity_type (ph_issues / ph_work_items /
+ * business_requests / tm_test_cases / rh_releases / rh_changes /
+ * kb_documents). All resolution fields are null when the target row is
+ * missing or unreadable — zero-assumption rendering falls back to the raw id.
+ */
+export interface DocintelResolvedLink extends DocintelDocumentLink {
+  /** Display key, e.g. BAU-5389, BR key, DOC-12, CHG number, case key. */
+  entity_key: string | null;
+  /** Display title/summary of the target entity. */
+  entity_title: string | null;
+  /** Work-item type string for JiraIssueTypeIcon (work items only). */
+  entity_icon_type: string | null;
+  /** Folio navigation slugs (entity_type='document' only). */
+  folio_space_slug: string | null;
+  folio_page_slug: string | null;
+}
+
+// ---------------------------------------------------------------------------
 // Ask: grounded Q&A over the corpus
 // ---------------------------------------------------------------------------
 

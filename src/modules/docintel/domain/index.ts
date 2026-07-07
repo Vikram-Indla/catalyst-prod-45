@@ -16,6 +16,10 @@ import type {
   DocintelBlock,
   DocintelCitation,
   DocintelDocument,
+  DocintelDocumentLink,
+  DocintelLinkEntityType,
+  DocintelLinkOrigin,
+  DocintelResolvedLink,
   DocintelElementKind,
   DocintelExtractFactsResult,
   DocintelExtractionIssue,
@@ -69,6 +73,222 @@ function normaliseKind(raw: string | null | undefined): {
 }
 
 const BUCKET = "docintel-documents";
+
+// ai_document_links postdates the generated Supabase types in this repo; the
+// link surfaces use the same untyped escape hatch as src/hooks/useWiki.ts.
+const db = supabase as unknown as { from: (table: string) => any };
+
+/** entity_type values resolved against ph_issues / ph_work_items. */
+const WORK_ITEM_ENTITY_TYPES: DocintelLinkEntityType[] = [
+  "epic",
+  "feature",
+  "story",
+  "task",
+  "defect",
+  "incident",
+];
+
+/**
+ * Resolve key/title for each link, per entity_type family, from the same
+ * canonical tables the existing pickers read (AddParentPicker/
+ * AttachWikiPageDialog → ph_issues + business_requests; PromoteArtifactModal
+ * → ph_work_items; TestHub → tm_test_cases; Release Ops → rh_releases /
+ * rh_changes; Folio → kb_documents). Lookups are best-effort — a failed or
+ * empty lookup leaves the link unresolved (null key/title) so the UI can fall
+ * back to the raw id. Zero-assumption: nothing is invented.
+ */
+async function resolveLinkTargets(
+  links: DocintelDocumentLink[],
+): Promise<DocintelResolvedLink[]> {
+  const idsByType = new Map<string, string[]>();
+  for (const l of links) {
+    const arr = idsByType.get(l.entity_type) ?? [];
+    arr.push(l.entity_id);
+    idsByType.set(l.entity_type, arr);
+  }
+
+  const resolved = new Map<
+    string,
+    Pick<
+      DocintelResolvedLink,
+      "entity_key" | "entity_title" | "entity_icon_type" | "folio_space_slug" | "folio_page_slug"
+    >
+  >();
+  const keyOf = (type: string, id: string) => `${type}:${id}`;
+
+  const workItemIds = WORK_ITEM_ENTITY_TYPES.flatMap(
+    (t) => idsByType.get(t) ?? [],
+  );
+
+  const tasks: Promise<void>[] = [];
+
+  // Work items: manual links point at ph_issues; promotion links point at
+  // ph_work_items. Query both, prefer the ph_issues hit.
+  if (workItemIds.length > 0) {
+    tasks.push(
+      (async () => {
+        try {
+          const [issues, workItems] = await Promise.all([
+            db
+              .from("ph_issues")
+              .select("id, issue_key, summary, issue_type")
+              .in("id", workItemIds),
+            db
+              .from("ph_work_items")
+              .select("id, item_key, title, item_type")
+              .in("id", workItemIds),
+          ]);
+          const byId = new Map<
+            string,
+            { key: string | null; title: string | null; icon: string | null }
+          >();
+          for (const r of (workItems.data ?? []) as Array<{
+            id: string;
+            item_key: string | null;
+            title: string | null;
+            item_type: string | null;
+          }>) {
+            byId.set(r.id, {
+              key: r.item_key ?? null,
+              title: r.title ?? null,
+              icon: r.item_type ?? null,
+            });
+          }
+          for (const r of (issues.data ?? []) as Array<{
+            id: string;
+            issue_key: string | null;
+            summary: string | null;
+            issue_type: string | null;
+          }>) {
+            byId.set(r.id, {
+              key: r.issue_key ?? null,
+              title: r.summary ?? null,
+              icon: r.issue_type ?? null,
+            });
+          }
+          for (const t of WORK_ITEM_ENTITY_TYPES) {
+            for (const id of idsByType.get(t) ?? []) {
+              const hit = byId.get(id);
+              if (!hit) continue;
+              resolved.set(keyOf(t, id), {
+                entity_key: hit.key,
+                entity_title: hit.title,
+                entity_icon_type: hit.icon,
+                folio_space_slug: null,
+                folio_page_slug: null,
+              });
+            }
+          }
+        } catch {
+          /* best-effort — unresolved links render their id */
+        }
+      })(),
+    );
+  }
+
+  const simpleLookup = (
+    entityType: string,
+    table: string,
+    columns: string,
+    map: (row: Record<string, unknown>) => {
+      key: string | null;
+      title: string | null;
+      icon: string | null;
+    },
+  ) => {
+    const ids = idsByType.get(entityType) ?? [];
+    if (ids.length === 0) return;
+    tasks.push(
+      (async () => {
+        try {
+          const { data } = await db.from(table).select(columns).in("id", ids);
+          for (const row of (data ?? []) as Array<Record<string, unknown>>) {
+            const m = map(row);
+            resolved.set(keyOf(entityType, String(row.id)), {
+              entity_key: m.key,
+              entity_title: m.title,
+              entity_icon_type: m.icon,
+              folio_space_slug: null,
+              folio_page_slug: null,
+            });
+          }
+        } catch {
+          /* best-effort */
+        }
+      })(),
+    );
+  };
+
+  simpleLookup(
+    "business_request",
+    "business_requests",
+    "id, request_key, title",
+    (r) => ({
+      key: (r.request_key as string | null) ?? null,
+      title: (r.title as string | null) ?? null,
+      icon: "Business Request",
+    }),
+  );
+  simpleLookup("test_case", "tm_test_cases", "id, case_key, title", (r) => ({
+    key: (r.case_key as string | null) ?? null,
+    title: (r.title as string | null) ?? null,
+    icon: "Test Case",
+  }));
+  simpleLookup("release", "rh_releases", "id, key, name, version", (r) => ({
+    key: (r.key as string | null) ?? (r.version as string | null) ?? null,
+    title: (r.name as string | null) ?? null,
+    icon: "Release",
+  }));
+  simpleLookup("change", "rh_changes", "id, chg_number, title", (r) => ({
+    key: (r.chg_number as string | null) ?? null,
+    title: (r.title as string | null) ?? null,
+    icon: "Change",
+  }));
+
+  // Folio documents — carry navigation slugs too.
+  const docIds = idsByType.get("document") ?? [];
+  if (docIds.length > 0) {
+    tasks.push(
+      (async () => {
+        try {
+          const { data } = await db
+            .from("kb_documents")
+            .select("id, doc_key, title, slug, space:kb_doc_spaces (slug)")
+            .in("id", docIds);
+          for (const row of (data ?? []) as Array<{
+            id: string;
+            doc_key: string | null;
+            title: string | null;
+            slug: string | null;
+            space: { slug: string } | null;
+          }>) {
+            resolved.set(keyOf("document", row.id), {
+              entity_key: row.doc_key ?? null,
+              entity_title: row.title ?? null,
+              entity_icon_type: null,
+              folio_space_slug: row.space?.slug ?? null,
+              folio_page_slug: row.slug ?? null,
+            });
+          }
+        } catch {
+          /* best-effort */
+        }
+      })(),
+    );
+  }
+
+  await Promise.all(tasks);
+
+  return links.map((l) => ({
+    ...l,
+    entity_key: null,
+    entity_title: null,
+    entity_icon_type: null,
+    folio_space_slug: null,
+    folio_page_slug: null,
+    ...(resolved.get(keyOf(l.entity_type, l.entity_id)) ?? {}),
+  }));
+}
 
 interface UploadAndIngestInput {
   projectId: string;
@@ -617,5 +837,53 @@ export const docintelApi = {
     return () => {
       supabase.removeChannel(channel);
     };
+  },
+
+  // ── Knowledge integration: document ↔ entity links (S3) ──────────────────
+
+  /** All links for a document, resolved to key/title, newest first. */
+  listDocumentLinks: async (
+    documentId: string,
+  ): Promise<DocintelResolvedLink[]> => {
+    const { data, error } = await db
+      .from("ai_document_links")
+      .select("*")
+      .eq("document_id", documentId)
+      .order("created_at", { ascending: false });
+    if (error) throw new Error(error.message);
+    return resolveLinkTargets((data ?? []) as DocintelDocumentLink[]);
+  },
+
+  /**
+   * Link a document to an entity. Upsert on the natural key so re-linking an
+   * already-linked entity is a no-op (mirrors useLinkPageToWorkItem).
+   */
+  linkDocument: async (
+    documentId: string,
+    entityType: DocintelLinkEntityType,
+    entityId: string,
+    origin: DocintelLinkOrigin = "manual",
+  ): Promise<void> => {
+    const { data: auth } = await supabase.auth.getUser();
+    const { error } = await db.from("ai_document_links").upsert(
+      {
+        document_id: documentId,
+        entity_type: entityType,
+        entity_id: entityId,
+        link_origin: origin,
+        created_by: auth?.user?.id ?? null,
+      },
+      { onConflict: "document_id,entity_type,entity_id", ignoreDuplicates: true },
+    );
+    if (error) throw new Error(error.message);
+  },
+
+  /** Remove one link by its row id. */
+  unlinkDocument: async (linkId: string): Promise<void> => {
+    const { error } = await db
+      .from("ai_document_links")
+      .delete()
+      .eq("id", linkId);
+    if (error) throw new Error(error.message);
   },
 };

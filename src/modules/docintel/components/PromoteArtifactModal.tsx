@@ -17,7 +17,7 @@
  * CAT-DOCINTEL-ARABIC-RAG-20260706-001
  */
 import { useMemo, useState, useCallback } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import ModalDialog, {
   ModalBody,
   ModalFooter,
@@ -88,6 +88,7 @@ export function PromoteArtifactModal({
   onClose,
   onPromoted,
 }: PromoteArtifactModalProps) {
+  const qc = useQueryClient();
   const items = useMemo(() => resolveItems(artifact), [artifact]);
 
   const { data: approved = [] } = useApprovedProfiles();
@@ -194,7 +195,12 @@ export function PromoteArtifactModal({
     const { data: userData } = await supabase.auth.getUser();
     const reporterId = userData?.user?.id ?? null;
 
-    const created: Array<{ id: string; item_key: string; title: string }> = [];
+    const created: Array<{
+      id: string;
+      item_key: string;
+      title: string;
+      kind: "epic" | "story";
+    }> = [];
     const failed: string[] = [];
     // Track the first epic created so same-batch stories can be parented to it.
     let epicParentId: string | null = null;
@@ -231,6 +237,7 @@ export function PromoteArtifactModal({
             id: result.id as string,
             item_key: (result.item_key as string) ?? "",
             title: (result.title as string) ?? item.title,
+            kind: item.kind,
           });
           if (item.kind === "epic" && !epicParentId) {
             epicParentId = result.id as string;
@@ -249,6 +256,20 @@ export function PromoteArtifactModal({
         await docintelApi.markArtifactPromoted(artifact.id, created[0].id);
       } catch {
         /* non-fatal — items already created */
+      }
+      // S3 Knowledge Integration: record document ↔ work item links so
+      // promotions appear in the workspace Links tab. Best-effort per link —
+      // items are already created; a failed link never fails the promotion.
+      const sourceDocumentIds = artifact.document_ids ?? [];
+      for (const documentId of sourceDocumentIds) {
+        for (const c of created) {
+          try {
+            await docintelApi.linkDocument(documentId, c.kind, c.id, "promotion");
+          } catch {
+            /* non-fatal */
+          }
+        }
+        qc.invalidateQueries({ queryKey: ["docintel", "links", documentId] });
       }
       const keys = created.map((c) => c.item_key).filter(Boolean).join(", ");
       if (failed.length > 0) {
@@ -280,6 +301,8 @@ export function PromoteArtifactModal({
     projectId,
     assignees,
     artifact.id,
+    artifact.document_ids,
+    qc,
     onPromoted,
     onClose,
   ]);

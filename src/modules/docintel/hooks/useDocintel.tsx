@@ -16,6 +16,8 @@ import type {
   DocintelExtractFactsResult,
   DocintelFactReviewStatus,
   DocintelIngestResult,
+  DocintelLinkEntityType,
+  DocintelLinkOrigin,
 } from "../types";
 
 const STALE = 30_000;
@@ -66,6 +68,7 @@ const keys = {
   facts: (documentId: string) => ["docintel", "facts", documentId] as const,
   traceability: (documentId: string, projectId: string) =>
     ["docintel", "traceability", documentId, projectId] as const,
+  links: (documentId: string) => ["docintel", "links", documentId] as const,
 };
 
 /** All documents for a project. */
@@ -378,6 +381,72 @@ export function useUpdateFactReview(documentId: string | undefined) {
     onError: (err: unknown) => {
       catalystToast.error(
         "Could not update review",
+        err instanceof Error ? err.message : "Please try again",
+      );
+    },
+  });
+}
+
+// ───────────────────────────────────────────────────────────────────────────
+// Knowledge integration: document ↔ entity links (S3)
+// ───────────────────────────────────────────────────────────────────────────
+
+/** Resolved links for a document (Links tab). */
+export function useDocumentLinks(documentId: string | undefined) {
+  return useQuery({
+    queryKey: keys.links(documentId ?? ""),
+    queryFn: () => docintelApi.listDocumentLinks(documentId!),
+    enabled: !!documentId,
+    staleTime: STALE,
+  });
+}
+
+/**
+ * Link a document to an entity. Invalidates the document's links on success.
+ * Toasts on error (success toast is the caller's call — the panel closes the
+ * picker and the new row appearing is feedback enough, mirroring siblings).
+ */
+export function useLinkDocument() {
+  const qc = useQueryClient();
+
+  return useMutation({
+    mutationFn: (input: {
+      documentId: string;
+      entityType: DocintelLinkEntityType;
+      entityId: string;
+      origin?: DocintelLinkOrigin;
+    }) =>
+      docintelApi.linkDocument(
+        input.documentId,
+        input.entityType,
+        input.entityId,
+        input.origin ?? "manual",
+      ),
+    onSuccess: (_d, variables) => {
+      qc.invalidateQueries({ queryKey: keys.links(variables.documentId) });
+    },
+    onError: (err: unknown) => {
+      catalystToast.error(
+        "Could not link",
+        err instanceof Error ? err.message : "Please try again",
+      );
+    },
+  });
+}
+
+/** Remove a link. Invalidates the document's links on success. */
+export function useUnlinkDocument() {
+  const qc = useQueryClient();
+
+  return useMutation({
+    mutationFn: (input: { linkId: string; documentId: string }) =>
+      docintelApi.unlinkDocument(input.linkId),
+    onSuccess: (_d, variables) => {
+      qc.invalidateQueries({ queryKey: keys.links(variables.documentId) });
+    },
+    onError: (err: unknown) => {
+      catalystToast.error(
+        "Could not remove the link",
         err instanceof Error ? err.message : "Please try again",
       );
     },
