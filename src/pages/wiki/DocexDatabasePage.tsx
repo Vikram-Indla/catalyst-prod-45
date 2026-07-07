@@ -1,10 +1,11 @@
 /**
  * DocexDatabasePage — /docex/:workspaceSlug/db/:dbSlug
  * (CAT-DOCEX-DB-COEDIT-20260705-001 D2). Full-page database surface.
+ * Uses canonical ProjectPageHeader (Folio module consistency, 2026-07-07).
  */
 import { Link, useParams } from 'react-router-dom';
-import { Breadcrumbs } from '@/components/ads';
 import { Skeleton } from '@/components/ui/skeleton';
+import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
 import { Routes } from '@/lib/routes';
 import { useWikiWorkspaceBySlug } from '@/hooks/useWiki';
 import { useDocexDatabaseBySlug } from '@/hooks/useDocexDatabase';
@@ -38,22 +39,24 @@ export default function DocexDatabasePage() {
   }
 
   return (
-    <div style={{ maxWidth: 1080, margin: '0 auto', padding: '20px 40px 96px' }}>
-      <Breadcrumbs
-        items={[
-          { key: 'folio', text: 'Folio', href: Routes.folio.root() },
-          { key: 'ws', text: workspace.name, href: Routes.docex.workspace(workspace.slug) },
-          { key: 'db', text: database.name },
+    <div>
+      <ProjectPageHeader
+        hubType="folio"
+        paddingX={40}
+        hideTitle
+        trail={[
+          { text: workspace.name, href: Routes.docex.workspace(workspace.slug) },
+          { text: database.name },
         ]}
-        LinkComponent={Link as never}
-        aria-label="Database location"
       />
-      {/* ads-scanner:ignore-next-line — ADS heading token shorthand (font:) */}
-      <h1 style={{ font: 'var(--ds-font-heading-large)', color: 'var(--ds-text)', margin: '12px 0 16px' }}>
-        {database.icon ? `${database.icon} ` : ''}
-        {database.name}
-      </h1>
-      <DatabaseSurface database={database} />
+      <div style={{ maxWidth: 1080, margin: '0 auto', padding: '20px 40px 96px' }}>
+        {/* ads-scanner:ignore-next-line — ADS heading token shorthand (font:) */}
+        <h1 style={{ font: 'var(--ds-font-heading-large)', color: 'var(--ds-text)', margin: '0 0 16px' }}>
+          {database.icon ? `${database.icon} ` : ''}
+          {database.name}
+        </h1>
+        <DatabaseSurface database={database} />
+      </div>
     </div>
   );
 }
