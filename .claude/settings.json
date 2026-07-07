@@ -6,6 +6,10 @@
           {
             "type": "command",
             "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/session-start.sh"
+          },
+          {
+            "type": "command",
+            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/record-session-model.sh"
           }
         ]
       }
@@ -35,6 +39,16 @@
             "type": "command",
             "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/supabase-linked-guard.sh",
             "statusMessage": "Checking supabase --linked target"
+          }
+        ]
+      },
+      {
+        "matcher": "Agent",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/delegation-guard.sh",
+            "statusMessage": "Checking model-delegation policy"
           }
         ]
       }
