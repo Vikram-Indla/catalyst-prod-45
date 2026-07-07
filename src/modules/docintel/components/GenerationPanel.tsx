@@ -22,7 +22,11 @@ import {
 import { useArtifacts, useGenerateArtifact } from "../hooks/useDocintel";
 import type { DocintelArtifact, DocintelArtifactType } from "../types";
 import { ArtifactView } from "./ArtifactView";
-import { ARTIFACT_TYPES, ARTIFACT_TYPE_LABELS } from "./artifactTypes";
+import {
+  ARTIFACT_TYPES,
+  ARTIFACT_TYPE_LABELS,
+  type DocintelGeneratedArtifactType,
+} from "./artifactTypes";
 import { groundingAppearance, pctLabel } from "./confidence";
 import type { LozengeAppearance } from "@/components/ads";
 
@@ -65,14 +69,16 @@ export interface GenerationPanelProps {
 export function GenerationPanel({ projectId, documentId }: GenerationPanelProps) {
   const { data: artifacts, isLoading, isError, error } = useArtifacts(projectId, documentId);
   const generate = useGenerateArtifact();
-  const [selectedType, setSelectedType] = useState<DocintelArtifactType>(
+  const [selectedType, setSelectedType] = useState<DocintelGeneratedArtifactType>(
     ARTIFACT_TYPES[0].value,
   );
   const [openArtifactId, setOpenArtifactId] = useState<string | null>(null);
 
   const onGenerate = () => {
     generate.mutate(
-      { projectId, documentIds: [documentId], artifactType: selectedType },
+      // The S4 grounded types are accepted by docintel-generate + the DB CHECK;
+      // DocintelArtifactType (types.ts) is the narrower pre-S4 union.
+      { projectId, documentIds: [documentId], artifactType: selectedType as DocintelArtifactType },
       {
         onSuccess: (res) => setOpenArtifactId(res.artifactId),
       },

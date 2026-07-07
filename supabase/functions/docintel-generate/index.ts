@@ -51,7 +51,12 @@ type ArtifactType =
   | "story"
   | "brd"
   | "gap_analysis"
-  | "open_questions";
+  | "open_questions"
+  | "business_process"
+  | "acceptance_criteria"
+  | "test_cases"
+  | "release_notes"
+  | "traceability";
 
 const ARTIFACT_TYPES: ArtifactType[] = [
   "summary_ar",
@@ -61,6 +66,11 @@ const ARTIFACT_TYPES: ArtifactType[] = [
   "brd",
   "gap_analysis",
   "open_questions",
+  "business_process",
+  "acceptance_criteria",
+  "test_cases",
+  "release_notes",
+  "traceability",
 ];
 
 // 'requirement_facts' is NOT a markdown artifact — it writes structured facts to
@@ -80,6 +90,16 @@ const RETRIEVAL_QUERY: Record<ArtifactType, string> = {
   summary_ar: "purpose overview key points",
   gap_analysis: "missing unclear undefined open question ambiguity",
   open_questions: "open question clarification unknown TBD",
+  business_process:
+    "process workflow steps actor role input output decision approval handoff sequence",
+  acceptance_criteria:
+    "acceptance criteria requirement condition given when then validation rule expected behaviour",
+  test_cases:
+    "test case scenario precondition steps expected result validation verification requirement",
+  release_notes:
+    "feature capability change improvement user benefit functionality delivered scope",
+  traceability:
+    "requirement source section page reference mapping coverage scope",
 };
 
 /** Default artifact title per type when the caller supplies none. */
@@ -91,6 +111,11 @@ const DEFAULT_TITLE: Record<ArtifactType, string> = {
   summary_ar: "ملخص المستند",
   gap_analysis: "Gap Analysis",
   open_questions: "Open Questions",
+  business_process: "Business Process",
+  acceptance_criteria: "Acceptance Criteria",
+  test_cases: "Test Cases",
+  release_notes: "Release Notes",
+  traceability: "Traceability Matrix",
 };
 
 /** Per-artifact structure instructions appended to the grounding system prompt. */
@@ -146,6 +171,44 @@ const STRUCTURE_INSTRUCTIONS: Record<ArtifactType, string> = {
     "Write a bulleted list of Open Questions raised by the document.",
     "Each question must be traceable to the evidence item that prompts it, cited inline (e.g. '[E2]').",
     "Only raise questions grounded in something actually present (or conspicuously absent) in the evidence.",
+  ].join("\n"),
+  business_process: [
+    "Write a Business Process description with these sections, using GitHub-flavoured Markdown headings:",
+    "'## Actors' — a bulleted list of the roles/systems involved; each bullet ends with its evidence marker(s).",
+    "'## Process Steps' — an ordered (numbered) list of the process steps in sequence; each step names who acts, what happens, and its inputs/outputs, cited to the evidence.",
+    "'## Decision Points' — a bulleted list of branch/approval points and their outcomes, each cited.",
+    "'## Inputs and Outputs' — a bulleted list of the overall process inputs and outputs, each cited.",
+    "Describe ONLY steps, actors, and decisions the evidence supports. For any section the evidence does not cover, write a single line 'Not found in source' under that heading.",
+  ].join("\n"),
+  acceptance_criteria: [
+    "Write Acceptance Criteria grouped by requirement.",
+    "For EACH requirement found in the evidence:",
+    "- A '### <requirement>' heading naming the requirement, cited to the evidence.",
+    "- A bulleted list of Given/When/Then criteria for that requirement; each criterion on its own line ending with its evidence marker(s).",
+    "Only write criteria the evidence supports. If a requirement has no verifiable criteria in the evidence, write 'Not found in source' under its heading. Do not invent requirements or criteria.",
+  ].join("\n"),
+  test_cases: [
+    "Write a Test Cases table in GitHub-flavoured Markdown with EXACTLY these columns:",
+    "| ID | Title | Preconditions | Steps | Expected Result | Source Requirement |",
+    "One row per test case. ID = TC-1, TC-2, … in order. Steps = a numbered sequence inside the cell separated by '<br>'.",
+    "The Source Requirement cell MUST carry the evidence marker(s) (e.g. '[E3]') that ground the case; every row must cite at least one evidence item.",
+    "Only derive test cases from requirements and behaviours present in the evidence. Where a precondition or expected result is not supported by the evidence, write 'Not found in source' in that cell.",
+  ].join("\n"),
+  release_notes: [
+    "Write user-facing Release Notes summarising the capabilities and changes described in the documents.",
+    "Start with a one-paragraph '## Overview', cited to the evidence.",
+    "Then a '## What's New' bulleted list — each bullet names one capability or change in plain user-facing language and ends with its evidence marker(s).",
+    "Then a '## Known Limitations' bulleted list for constraints/exclusions in the evidence (write 'Not found in source' if none).",
+    "Describe ONLY capabilities and changes the evidence supports. Do not invent features, dates, or version numbers not present in the evidence.",
+  ].join("\n"),
+  traceability: [
+    "Write a Traceability Matrix as a GitHub-flavoured Markdown table with EXACTLY these columns:",
+    "| Requirement | Evidence | Suggested Artifact |",
+    "One row per requirement found in the evidence.",
+    "Requirement = a one-line statement of the requirement, cited with its evidence marker(s).",
+    "Evidence = the supporting evidence marker(s) plus their page/section reference as given in the EVIDENCE (e.g. '[E4] page 12').",
+    "Suggested Artifact = the most fitting downstream artifact for that requirement: one of epic, story, test case, or BRD section.",
+    "Only include requirements the evidence supports; do not invent requirements or references. Where a mapping cannot be determined from the evidence, write 'Not found in source' in that cell.",
   ].join("\n"),
 };
 
