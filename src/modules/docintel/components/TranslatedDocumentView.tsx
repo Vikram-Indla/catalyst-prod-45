@@ -24,6 +24,10 @@ import {
   type ExportLanguage,
   type ExportMeta,
 } from "../lib/exportDocument";
+import {
+  logDocumentExport,
+  type DocintelExportFormat,
+} from "../domain/governance";
 import { catalystToast } from "@/lib/catalystToast";
 
 const ARABIC_FONT =
@@ -232,6 +236,7 @@ export function TranslatedDocumentView({ documentId }: TranslatedDocumentViewPro
   const { data, isLoading, isError, error } = useFormattedDocument(documentId);
   const [lang, setLang] = useState<LangMode>("en");
   const [isExporting, setIsExporting] = useState(false);
+  const [exportBlocked, setExportBlocked] = useState<string | null>(null);
   const captureRef = useRef<HTMLDivElement>(null);
 
   const elements = data?.elements ?? [];
@@ -246,11 +251,36 @@ export function TranslatedDocumentView({ documentId }: TranslatedDocumentViewPro
     [doc?.title, doc?.source_language, lang],
   );
 
-  const handleExportHtml = () => {
+  /**
+   * Audit gate (S8): docintel_log_export verifies project membership and
+   * appends an 'export' row to the ai_docintel_audit_events ledger. If it
+   * rejects (non-member / RPC error), the export MUST NOT run — surface a
+   * SectionMessage instead. Returns true when the export may proceed.
+   */
+  const auditExport = async (format: DocintelExportFormat): Promise<boolean> => {
     try {
+      await logDocumentExport(documentId, format);
+      setExportBlocked(null);
+      return true;
+    } catch (e) {
+      setExportBlocked(
+        e instanceof Error
+          ? e.message
+          : "Export could not be authorised. Please try again.",
+      );
+      return false;
+    }
+  };
+
+  const handleExportHtml = async () => {
+    setIsExporting(true);
+    try {
+      if (!(await auditExport("html"))) return;
       exportToHtml(elements, meta);
     } catch (e) {
       catalystToast.error("Export failed", e instanceof Error ? e.message : "Could not export HTML");
+    } finally {
+      setIsExporting(false);
     }
   };
 
@@ -258,6 +288,7 @@ export function TranslatedDocumentView({ documentId }: TranslatedDocumentViewPro
     if (!captureRef.current) return;
     setIsExporting(true);
     try {
+      if (!(await auditExport("pdf"))) return;
       await exportToPdf(captureRef.current, meta);
     } catch (e) {
       catalystToast.error("Export failed", e instanceof Error ? e.message : "Could not export PDF");
@@ -302,6 +333,15 @@ export function TranslatedDocumentView({ documentId }: TranslatedDocumentViewPro
 
   return (
     <div style={{ paddingTop: 16 }}>
+      {/* Export blocked by the audit gate (non-member / RPC rejection) */}
+      {exportBlocked && (
+        <div style={{ marginBottom: 16 }}>
+          <SectionMessage appearance="error" title="Export blocked">
+            {exportBlocked}
+          </SectionMessage>
+        </div>
+      )}
+
       {/* Toolbar: language segmented control + export menu */}
       <div
         style={{
@@ -376,7 +416,7 @@ export function TranslatedDocumentView({ documentId }: TranslatedDocumentViewPro
                 {
                   key: "html",
                   label: "Download HTML",
-                  onClick: handleExportHtml,
+                  onClick: () => void handleExportHtml(),
                 },
               ],
             },
