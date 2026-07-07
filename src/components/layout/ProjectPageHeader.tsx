@@ -210,7 +210,7 @@ export function ProjectPageHeader({
       {/* Breadcrumb inline — de-emphasised, left side */}
       <div
         className="cat-breadcrumb-host"
-        style={{ fontSize: 12, flexShrink: 0, opacity: 0.8 }}
+        style={{ fontSize: 'var(--ds-font-size-200)', flexShrink: 0, opacity: 0.8 }}
       >
         <Breadcrumbs items={breadcrumbItems.map(withEntityIcon)} LinkComponent={Link} />
       </div>
@@ -223,7 +223,7 @@ export function ProjectPageHeader({
             aria-hidden
             style={{
               color: "var(--ds-text-subtlest)",
-              fontSize: 14,
+              fontSize: 'var(--ds-font-size-400)',
               lineHeight: 1,
               flexShrink: 0,
               userSelect: "none",

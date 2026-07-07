@@ -52,7 +52,7 @@ function Metric({ label, value, fg, accent }: { label: string; value: string; fg
   return (
     <div style={{ background: T.sunken, borderRadius: 6, padding: '8px 12px', borderLeft: accent ? `3px solid ${accent}` : undefined }}>
       <div style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', color: T.subtle }}>{label}</div>
-      <div style={{ fontFamily: RH.fontDisplay, fontSize: value.length > 4 ? 16 : 22, fontWeight: 600, color: fg ?? T.text, lineHeight: '1.6' }}>{value}</div>
+      <div style={{ fontFamily: RH.fontDisplay, fontSize: value.length > 4 ? 'var(--ds-font-size-500)' : 'var(--ds-font-size-700)', fontWeight: 600, color: fg ?? T.text, lineHeight: '1.6' }}>{value}</div>
     </div>
   );
 }
