@@ -1,7 +1,6 @@
 # /catalyst-agent — Agent Index
 
-All 184 agents installed at `~/.claude/agents/` from
-[msitarzewski/agency-agents](https://github.com/msitarzewski/agency-agents),
+All 184 agents from [msitarzewski/agency-agents](https://github.com/msitarzewski/agency-agents),
 grouped by category with Catalyst relevance flags.
 
 - **🟢 high** — actively used by the ROUTER.md matrix
@@ -10,7 +9,14 @@ grouped by category with Catalyst relevance flags.
   but kept in library so the orchestrator can still reach them when explicitly
   requested via `--agents`.
 
-Total: 184 agents across 50 prefix categories.
+**2026-07-08 pruning note:** only the 🟢/🟡 subset (75 agents: engineering, testing,
+design, project-management, product, specialized, plus 8 bespoke Catalyst agents and
+`agents-orchestrator`) is installed at project-level `.claude/agents/` — see
+GOD_MODE_DELIVERY_MANUAL.md §L. The 🔴-low entries below (marketing, sales, game-dev,
+legal, healthcare, and singleton niche agents) are no longer in the project directory;
+they remain available at user-level `~/.claude/agents/` if reached via `--agents`.
+
+Total: 184 agents across 50 prefix categories (75 project-local + 109 user-level only as of 2026-07-08).
 
 ---
 
