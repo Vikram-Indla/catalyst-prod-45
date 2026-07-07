@@ -4,6 +4,24 @@
 > the forensic audit (`01`–`07`) and the `CAT-DOCEX-RAG-AGENTS-20260706-001` intent ledger.
 > **This is an architecture decision doc, not an implementation. No code is written here.**
 
+## §0 — Live verification (2026-07-07, staging `cyijbdeuehohvhnsywig` via MCP)
+
+The audit's two open evidence conflicts (`06`) and the deploy handover are now **settled
+against the live staging DB**. Both audit conflicts resolved; the handover's deploy picture is
+**stale**.
+
+| Question | Live answer |
+|---|---|
+| `kb_embeddings` RLS (`06` Conflict 1) | **Enabled, 3 policies** (insert/select/update). Audit Claim A correct. **SELECT qual = `true`** → any authed user reads all embeddings → **confirms P0-4 (no permission scoping)**. |
+| Dropped `kb_*` tables (`06` Conflict 2) | **Confirmed dropped**: `kb_audit_log`, `kb_document_jira_issues`, `kb_document_page_properties`, `kb_eval_set`, `kb_eval_results` all absent. Survivors: `kb_documents`, `kb_embeddings`, `kb_sources`, `kb_access_matrix`. |
+| kb-* un-parked functions on staging | **NOT deployed** (none present). The handover's CI deploy never landed them. |
+| Superseding work | Newer **`docintel-ingest` / `docintel-analyze` / `docintel-generate`** (+ `docex-import`, `folio-ai-search`) **are** live — deployed **directly via MCP, bypassing the broken CI**. So the dead `SUPABASE_ACCESS_TOKEN` secret is largely moot for functions. |
+| `docintel-*` backing schema | **Missing** — zero `docintel*`/`okf*` tables exist. Functions deployed without schema (breakage in the parallel build). |
+| Folio→RAG wiring migration `20260707020000` | **Applied this session** to staging (`docex` source_type + `needs_reindex` col/trigger/index). Ledger reconciled to file version `20260707020000`. |
+| Retrieval substrate | **`kb_embeddings` = 0 rows** — nothing ever ingested. `kb_documents` = 3 rows, **0 published** → nothing yet eligible for reindex. `ai_usage_log` exists. |
+
+**Net effect on P0 below:** P0-2 is now **closed** (conflicts resolved). P0-1 is **reframed** — functions deploy fine via MCP; the real gap is (a) **no ingestion runner** consuming `needs_reindex`, and (b) **`docintel-*` deployed without tables**. P0-4 (permission scoping) is **confirmed real** (`SELECT true`, empty store).
+
 ## Target, in one line
 
 ```
@@ -186,14 +204,21 @@ no evidence of document/RAG grounding"** (`05`). Missing:
 ## 8. P0 / P1 / P2 gap list
 
 **P0 — blocks everything; mostly verification + unblocking (do first, cheap):**
-- P0-1 Fix the broken deploy (`SUPABASE_ACCESS_TOKEN` dead) so un-parked functions + Folio
-  wiring actually reach staging (handover §2). Nothing below is real until this lands.
-- P0-2 Resolve the two live-schema evidence conflicts via `list_tables`/`get_advisors`
-  (`06`): does `kb_embeddings` have any RLS policy? which `kb_*` tables actually exist?
+- P0-1 ~~Fix the broken deploy (`SUPABASE_ACCESS_TOKEN` dead)~~ **REFRAMED (§0)** — functions
+  deploy fine via MCP; CI is bypassed, not blocking. Real P0 now: **(a) no ingestion runner**
+  consuming `kb_documents.needs_reindex` (the `docex` embedding pass has no worker on staging),
+  and **(b) `docintel-*` functions deployed without any backing tables** — reconcile which path
+  (kb-ingest vs docintel-*) owns ingestion before deploying either, to avoid colliding with the
+  parallel `CAT-DOCEX-RAG-AGENTS` build on the same staging DB.
+- P0-2 ~~Resolve the two live-schema evidence conflicts~~ **CLOSED (§0)** — `kb_embeddings` has
+  RLS + 3 policies; the five `kb_*` tables were confirmed dropped. No open conflict remains.
 - P0-3 Confirm the OKF projection schema decision: extend `kb_*` vs new `okf_*` family
-  (blast-radius check on `kb_*` consumers mandatory — intent ledger §3).
-- P0-4 Permission model for retrieval — retrieval today has **no** permission filter; a
-  permission-aware Reservoir cannot ship on `USING (true)` reads (`06` §5/§6).
+  (blast-radius check on `kb_*` consumers mandatory — intent ledger §3). *Note: no `okf*`/
+  `docintel*` tables exist on staging yet (§0), so this is greenfield, not a migration of
+  existing rows.*
+- P0-4 Permission model for retrieval — **confirmed real (§0)**: `kb_embeddings` SELECT qual is
+  literally `true`, and the store is empty (0 rows). A permission-aware Reservoir cannot ship on
+  `USING (true)` reads (`06` §5/§6).
 
 **P1 — the core Reservoir spine:**
 - P1-1 OKF node/edge schema + versioning + citation anchors (§2).
@@ -242,8 +267,10 @@ Each phase = one reviewable slice, ≤2h per CLAUDE.md, Plan Lock before code.
 
 Binary, evidence-backed (DOM/DB/API probes, not screenshots alone):
 
-1. **Deploy live** — un-parked functions + Folio-wiring migration confirmed on staging
-   (`list_edge_functions` shows recent deploy; migration row present). *(P0)*
+1. **Deploy live** — Folio-wiring migration confirmed on staging ✅ (applied 2026-07-07,
+   `docex` source_type + `needs_reindex` live, ledger `20260707020000`). **Remaining:** an
+   ingestion runner (kb-ingest `ingest_folio_batch` **or** the `docintel-*` path) is deployed
+   *and* backed by tables, and a published Folio page produces ≥1 `kb_embeddings` row. *(P0-1)*
 2. **OKF projects a document** — a Folio page edit produces a versioned OKF node with a
    resolvable citation back to `{kb_documents.id, version}`; recompiled on change. *(Phase 1)*
 3. **Sync freshness observable** — a source change flips the object to `stale`, then to `ready`
