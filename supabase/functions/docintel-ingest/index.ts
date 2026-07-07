@@ -14,7 +14,8 @@
  * documentId is given (re-upload flow) — append a new ai_document_versions row
  * (max+1), rewind the document, and drop the old derived rows (pages/blocks/
  * tables/images/chunks/embeddings; citations & artifacts are preserved) →
- * derive page_count (PDF via unpdf; DOCX = 1 logical page) → insert
+ * derive page_count (PDF via unpdf; XLSX = sheet count via SheetJS; PNG/JPEG =
+ * 1 scanned page; DOCX = 1 logical page) → insert
  * ai_document_pages (pending) → status → extracting, stamp ingest
  * latency → FAN OUT: invoke docintel-analyze once per BATCH (BATCH_SIZE pages)
  * in parallel via EdgeRuntime.waitUntil so the HTTP response returns immediately.
@@ -25,6 +26,7 @@
  * into ai_documents.latency_ms.
  */
 import { getDocumentProxy } from "https://esm.sh/unpdf@0.11.0";
+import * as XLSX from "https://esm.sh/xlsx@0.18.5";
 import {
   corsHeaders,
   getServiceClient,
@@ -43,6 +45,8 @@ interface IngestFile {
 }
 
 const PDF_MIME = "application/pdf";
+const XLSX_MIME = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+const IMAGE_MIMES = new Set(["image/png", "image/jpeg"]);
 // pages per docintel-analyze call. 8 pages/batch: docintel-analyze now takes a
 // SEGMENT-AND-TRANSLATE path — for native PDFs it pulls the Arabic text layer
 // with unpdf (no vision OCR), deterministically segments it (Arabic = source of
@@ -296,8 +300,16 @@ Deno.serve(async (req) => {
         if (file.mimeType === PDF_MIME) {
           const pdf = await getDocumentProxy(bytes);
           pageCount = pdf.numPages;
+        } else if (file.mimeType === XLSX_MIME) {
+          // XLSX: one logical page per sheet (SheetJS parses the workbook here
+          // only for the sheet count; cell extraction happens in analyze).
+          const wb = XLSX.read(bytes, { type: "array", bookSheets: true });
+          pageCount = wb.SheetNames.length > 0 ? wb.SheetNames.length : 1;
+        } else if (IMAGE_MIMES.has(file.mimeType)) {
+          // Standalone image: exactly one scanned page.
+          pageCount = 1;
         } else {
-          // DOCX (and any non-PDF): one logical page. page_count stays null.
+          // DOCX (and any other non-PDF): one logical page. page_count stays null.
           pageCount = null;
         }
       } catch (e) {

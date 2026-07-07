@@ -2,7 +2,7 @@
  * DocintelUploadPage — enterprise upload wizard.
  *
  * Steps (CatalystProgressTracker): Upload → Processing → Review.
- *  - Upload: react-dropzone (.pdf/.docx, 1–3 files, 50MB each), file cards,
+ *  - Upload: react-dropzone (.pdf/.docx/.xlsx/.png/.jpg, 1–3 files, 50MB each), file cards,
  *    per-file progress bars on submit.
  *  - Processing: LIVE per-page progress from Realtime (X of N extracted),
  *    per-file status lozenges, elapsed-seconds ticker (the ≤60s NFR D6 budget
@@ -39,6 +39,9 @@ const MAX_BYTES = 50 * 1024 * 1024;
 const ACCEPT = {
   "application/pdf": [".pdf"],
   "application/vnd.openxmlformats-officedocument.wordprocessingml.document": [".docx"],
+  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": [".xlsx"],
+  "image/png": [".png"],
+  "image/jpeg": [".jpg", ".jpeg"],
 };
 
 type WizardStep = "upload" | "processing" | "review";
@@ -250,7 +253,9 @@ export default function DocintelUploadPage() {
             <input {...getInputProps()} />
             <Upload size={24} />
             <p style={{ margin: "8px 0 0", color: "var(--ds-text)" }}>
-              {isDragActive ? "Drop files here" : "Drag PDF or Word files here, or click to browse"}
+              {isDragActive
+                ? "Drop files here"
+                : "Drag PDF, Word, Excel, or image files here, or click to browse"}
             </p>
             <p style={{ margin: "4px 0 0", fontSize: 13 }}>
               Up to {MAX_FILES} files, 50MB each

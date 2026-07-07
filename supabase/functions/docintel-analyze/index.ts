@@ -29,6 +29,10 @@
  * image call — kept correct, not clever.
  *
  * DOCX: mammoth extractRawText → same text prompt (whole doc = page 1).
+ * XLSX: deterministic SheetJS path (no LLM for cells) — one sheet = one page,
+ *   rows persisted verbatim as tables; only summary_en uses the LLM (capped).
+ * PNG/JPEG: one scanned page — the whole image as inlineData through the SAME
+ *   Gemini vision ANALYZE prompt/schema (is_scanned=true).
  *
  *   POST { documentId, pageFrom, pageTo }   (service-role bearer only)
  *   → 200 { ok: true, pagesDone, advanced }
@@ -60,10 +64,25 @@ import { runEmbedStage } from "../_shared/embed_stage.ts";
 import { PDFDocument } from "https://esm.sh/pdf-lib@1.17.1";
 import { extractText, getDocumentProxy } from "https://esm.sh/unpdf@0.11.0";
 import mammoth from "https://esm.sh/mammoth@1.6.0";
+import * as XLSX from "https://esm.sh/xlsx@0.18.5";
 import { type SupabaseClient } from "https://esm.sh/@supabase/supabase-js@2.39.0";
 
 const PDF_MIME = "application/pdf";
+const XLSX_MIME = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+const IMAGE_MIMES = new Set(["image/png", "image/jpeg"]);
 const LOW_CONFIDENCE = 0.6;
+
+// ── XLSX native path tuning ─────────────────────────────────────────────────
+// Cell extraction is deterministic (SheetJS — no LLM, confidence 1.0). The only
+// LLM work per sheet is a compact summary_en: at most this many sheets per
+// analyze invocation get an LLM summary (Arabic sheets → the existing
+// TRANSLATE+LABEL agent over the flattened sample; others → one generateText).
+// Sheets beyond the cap keep summary_en=null (zero-assumption, never invented).
+const XLSX_SUMMARY_MAX_SHEETS = 5;
+// Cap on the flattened header+rows sample sent to the summary/translate call.
+const XLSX_SUMMARY_INPUT_CHARS = 1_500;
+// Arabic-detection heuristic (same Unicode block used by ai-improve-story).
+const ARABIC_RE = /[؀-ۿ]/;
 
 // A PDF page counts as "native text" when its extracted text layer has at least
 // this many non-whitespace chars — below it we treat the page as scanned/sparse
@@ -378,6 +397,9 @@ Deno.serve(async (req) => {
     const isPdf = mimeType === PDF_MIME;
     const isDocx = !isPdf &&
       (mimeType.includes("word") || (storagePath?.toLowerCase().endsWith(".docx") ?? false));
+    const isXlsx = !isPdf && !isDocx &&
+      (mimeType === XLSX_MIME || (storagePath?.toLowerCase().endsWith(".xlsx") ?? false));
+    const isImage = IMAGE_MIMES.has(mimeType);
 
     // 2) Load the page rows for this range (need their ids to persist against).
     const { data: pageRows, error: pgErr } = await admin
@@ -423,21 +445,27 @@ Deno.serve(async (req) => {
     } else if (isPdf) {
       nativeText = await extractNativePageText(fileBytes);
     } else {
+      // XLSX takes its own deterministic SheetJS path; images take the OCR
+      // (inlineData) path. Neither uses a native text layer map.
       nativeText = new Map<number, string>();
     }
 
     // Analyze context shared by the image OCR calls + retries. buildUserParts()
     // routes by mode: 'text' sends the supplied native text (legacy single-page
     // native retry), 'image' slices a sub-PDF → inlineData.
-    const ctx: AnalyzeCtx = { admin, documentId, isPdf, isDocx, mimeType, fileBytes, nativeText };
+    const ctx: AnalyzeCtx = { admin, documentId, isPdf, isDocx, isXlsx, isImage, mimeType, fileBytes, nativeText };
 
     // Route each owned page: native (has usable text layer) vs sparse (needs
     // OCR). DOCX is handled entirely by the native segment-and-translate path
-    // below (page 1), so it never enters the sparse (image) loop.
-    const nativePages = isDocx
+    // below (page 1), so it never enters the sparse (image) loop. XLSX is
+    // handled entirely by the deterministic SheetJS path (6a-bis) — neither
+    // loop. A standalone image (PNG/JPEG) is one sparse page (whole-image OCR).
+    const nativePages = isXlsx ? [] : isDocx
       ? rangeNumbers.filter((n) => nativeText.has(n))
       : rangeNumbers.filter((n) => hasNativeText(nativeText, n));
-    const sparsePages = isDocx ? [] : rangeNumbers.filter((n) => !hasNativeText(nativeText, n));
+    const sparsePages = (isDocx || isXlsx)
+      ? []
+      : rangeNumbers.filter((n) => !hasNativeText(nativeText, n));
 
     const provider0 = { provider: "" as string, model: "" as string };
     const pages: AnalyzedPage[] = [];
@@ -463,6 +491,23 @@ Deno.serve(async (req) => {
       batchOutputTokens = nat.outputTokens;
       batchDurationMs += nat.durationMs;
       for (const p of nat.pages) pages.push(p);
+    }
+
+    // 6a-bis) XLSX NATIVE PATH — deterministic SheetJS cell extraction (no LLM
+    //     for cells, confidence 1.0). One AnalyzedPage per sheet: sheet-name
+    //     heading block + compact dimensions summary block + the rows persisted
+    //     verbatim as a structured table (header = first non-empty row).
+    //     summary_en is the only LLM work (≤ XLSX_SUMMARY_MAX_SHEETS sheets).
+    if (isXlsx && rangeNumbers.length > 0) {
+      const x = await analyzeXlsxPages(fileBytes, rangeNumbers);
+      if (x.provider) {
+        provider0.provider = x.provider;
+        provider0.model = x.model;
+      }
+      batchInputTokens = x.inputTokens;
+      batchOutputTokens = x.outputTokens;
+      batchDurationMs += x.durationMs;
+      for (const p of x.pages) pages.push(p);
     }
 
     // 6b) OCR PATH — one single-page IMAGE call per sparse page. These pages have
@@ -495,7 +540,7 @@ Deno.serve(async (req) => {
     // A page's mode is a fact of how it was routed (native text vs image OCR),
     // not the model's self-report — used to stamp extraction_source correctly.
     const modeFor = (n: number): AnalyzeMode =>
-      isDocx || hasNativeText(nativeText, n) ? "text" : "image";
+      isDocx || isXlsx || hasNativeText(nativeText, n) ? "text" : "image";
 
     // 7) Persist per returned page. Only persist pages we own (in this range).
     //    persistPage() owns ALL per-page DB work (page row + blocks + tables +
@@ -1021,6 +1066,187 @@ async function analyzeNativePages(
 }
 
 // ─────────────────────────────────────────────────────────────────────
+// XLSX NATIVE PATH — deterministic SheetJS cell extraction (no LLM for cells).
+// One sheet = one page. Persisted through the SAME persistPage/table shape as
+// the OCR path (ai_document_tables header_rows/rows + a back-linked table
+// block). Confidence 1.0 for native cell extraction.
+// ─────────────────────────────────────────────────────────────────────
+
+/** True when a string contains any Arabic-block character. */
+function containsArabic(s: string): boolean {
+  return ARABIC_RE.test(s);
+}
+
+/** Flatten sheet name + header + rows into a compact sample capped at `limit`. */
+function flattenSheetSample(
+  name: string,
+  headerRow: string[],
+  rows: string[][],
+  limit: number,
+): string {
+  const lines: string[] = [`Sheet "${name}"`];
+  if (headerRow.length > 0) lines.push(headerRow.join(" | "));
+  let length = lines.join("\n").length;
+  for (const r of rows) {
+    const line = r.join(" | ");
+    if (length + line.length + 1 > limit) break;
+    lines.push(line);
+    length += line.length + 1;
+  }
+  return lines.join("\n").slice(0, limit);
+}
+
+/**
+ * Analyze the given sheet numbers (1-based; sheet n = SheetNames[n-1]) of an
+ * XLSX workbook into AnalyzedPages, ready for the shared persist loop:
+ *   - heading block: the sheet name (text_ar when the name is Arabic).
+ *   - paragraph block: compact deterministic summary (sheet name + dimensions).
+ *   - ONE table: header_row = first non-empty row (heuristic), rows = the
+ *     remaining non-empty rows VERBATIM. Confidence 1.0 (native extraction).
+ * summary_en is the only LLM work, capped at XLSX_SUMMARY_MAX_SHEETS sheets per
+ * invocation: an Arabic-containing sheet reuses the existing TRANSLATE+LABEL
+ * agent over the flattened sample; otherwise one compact generateText call.
+ * Beyond the cap (or on LLM failure) summary_en stays null — never invented.
+ */
+async function analyzeXlsxPages(
+  fileBytes: Uint8Array,
+  sheetNumbers: number[],
+): Promise<{
+  pages: AnalyzedPage[];
+  provider: string;
+  model: string;
+  inputTokens: number | null;
+  outputTokens: number | null;
+  durationMs: number;
+}> {
+  const started = Date.now();
+  const wb = XLSX.read(fileBytes, { type: "array" });
+
+  let provider = "";
+  let model = "";
+  let inputTokens = 0;
+  let outputTokens = 0;
+  let llmSummaries = 0;
+
+  const pages: AnalyzedPage[] = [];
+  for (const n of sheetNumbers) {
+    const name = wb.SheetNames[n - 1];
+    if (name === undefined) continue; // outside the workbook — nothing to persist.
+    const ws = wb.Sheets[name];
+    // raw:false → formatted cell text (what the user sees); defval "" keeps the
+    // grid rectangular enough to index. Cells are persisted VERBATIM; .trim()
+    // is used only for emptiness checks.
+    const grid = (XLSX.utils.sheet_to_json(ws, {
+      header: 1,
+      raw: false,
+      defval: "",
+    }) as unknown[][]).map((r) =>
+      Array.isArray(r) ? r.map((c) => String(c ?? "")) : []
+    );
+    const rowHasContent = (r: string[]) => r.some((c) => c.trim() !== "");
+    // Header heuristic: the FIRST non-empty row is the header.
+    const firstIdx = grid.findIndex(rowHasContent);
+    const headerRow = firstIdx >= 0 ? grid[firstIdx] : [];
+    const dataRows = firstIdx >= 0 ? grid.slice(firstIdx + 1).filter(rowHasContent) : [];
+    // reduce, not Math.max(...spread) — a huge sheet must not blow the stack.
+    const colCount = dataRows.reduce((m, r) => Math.max(m, r.length), headerRow.length);
+    const sheetHasArabic = containsArabic(
+      [name, ...headerRow, ...dataRows.flat()].join(" "),
+    );
+
+    const blocks: AnalyzedBlock[] = [
+      {
+        kind: "heading",
+        order: 1,
+        text_ar: containsArabic(name) ? name : "",
+        text_en: containsArabic(name) ? "" : name,
+        confidence: 1,
+      },
+      {
+        kind: "paragraph",
+        order: 2,
+        text_ar: "",
+        text_en: `Sheet "${name}": ${dataRows.length} data row${
+          dataRows.length === 1 ? "" : "s"
+        } × ${colCount} column${colCount === 1 ? "" : "s"}.`,
+        confidence: 1,
+      },
+    ];
+
+    const tables: AnalyzedTable[] = [];
+    if (firstIdx >= 0) {
+      let summaryEn: string | null = null;
+      if (llmSummaries < XLSX_SUMMARY_MAX_SHEETS) {
+        llmSummaries++;
+        const sample = flattenSheetSample(name, headerRow, dataRows, XLSX_SUMMARY_INPUT_CHARS);
+        try {
+          if (sheetHasArabic) {
+            // Reuse the existing TRANSLATE+LABEL agent on the flattened sample.
+            const res = await translateSegments([{ page: n, index: 1, text_ar: sample }]);
+            if (!provider) {
+              provider = res.provider;
+              model = res.model;
+            }
+            inputTokens += res.inputTokens ?? 0;
+            outputTokens += res.outputTokens ?? 0;
+            summaryEn = itemsFromResult(res).get(segKey(n, 1))?.text_en || null;
+          } else {
+            const res = await generateText({
+              messages: [
+                {
+                  role: "system",
+                  parts: [{
+                    text: "You summarise spreadsheet tables. Reply with 1-2 plain " +
+                      "English sentences describing what the table contains. " +
+                      "No preamble, no markdown.",
+                  }],
+                },
+                { role: "user", parts: [{ text: sample }] },
+              ],
+              temperature: 0.2,
+              maxOutputTokens: 512,
+              timeoutMs: TRANSLATE_TIMEOUT_MS,
+            });
+            if (!provider) {
+              provider = res.provider;
+              model = res.model;
+            }
+            inputTokens += res.inputTokens ?? 0;
+            outputTokens += res.outputTokens ?? 0;
+            summaryEn = res.text?.trim() || null;
+          }
+        } catch (_e) {
+          summaryEn = null; // summary is optional — never fail the batch for it.
+        }
+      }
+      tables.push({
+        header_row: headerRow,
+        rows: dataRows,
+        summary_en: summaryEn ?? "",
+        confidence: 1,
+      });
+    }
+
+    pages.push({
+      page_number: n,
+      is_scanned: false,
+      detected_language: sheetHasArabic ? "ar" : "en",
+      blocks,
+      tables,
+    });
+  }
+
+  return {
+    pages,
+    provider,
+    model,
+    inputTokens: inputTokens || null,
+    outputTokens: outputTokens || null,
+    durationMs: Date.now() - started,
+  };
+}
+
+// ─────────────────────────────────────────────────────────────────────
 // Analyze payload + LLM helpers — shared by the IMAGE (OCR) calls and the
 // single-page truncation-retry so every path uses the SAME schema / limits.
 // The mode selects the prompt + payload: TEXT (native retry) vs IMAGE (OCR).
@@ -1030,6 +1256,8 @@ type AnalyzeCtx = {
   documentId: string;
   isPdf: boolean;
   isDocx: boolean;
+  isXlsx: boolean;
+  isImage: boolean;
   mimeType: string;
   fileBytes: Uint8Array;
   nativeText: Map<number, string>;
@@ -1066,6 +1294,22 @@ async function buildUserParts(
         "as page_number 1. Segment it into layout blocks and reconstruct any tables.\n\n" +
         "----- PAGE 1 TEXT -----\n" +
         (rawText ?? ""),
+    });
+    return userParts;
+  }
+
+  if (ctx.isImage) {
+    // Standalone image (PNG/JPEG) = one scanned page. The WHOLE image goes to
+    // the model as inlineData (no pdf-lib slicing) through the SAME ANALYZE
+    // prompt/schema the scanned-PDF OCR path uses.
+    userParts.push({
+      text:
+        "The following is a single scanned document image. Treat the ENTIRE " +
+        "image as page_number 1 with is_scanned=true. Extract every block, " +
+        "table, and figure you can read.",
+    });
+    userParts.push({
+      inlineData: { mimeType: ctx.mimeType, data: encodeBase64(ctx.fileBytes) },
     });
     return userParts;
   }
@@ -1155,12 +1399,15 @@ async function persistPage(
   model: string,
   mode: AnalyzeMode,
 ): Promise<void> {
-  const { admin, documentId, isDocx } = ctx;
+  const { admin, documentId, isDocx, isXlsx } = ctx;
   // extraction_source + is_scanned are set by the ACTUAL path taken, not the
   // model's self-report: DOCX → docx; native text path → native_pdf (not
   // scanned); image path → llm_ocr (scanned, since it had no usable text layer).
+  // XLSX (deterministic SheetJS extraction) is stamped 'docx' — the closest
+  // office-native value the extraction_source CHECK constraint allows (adding
+  // an 'xlsx' value would need DDL, out of scope for this slice).
   const isScanned = !isDocx && mode === "image";
-  const blockSource = isDocx ? "docx" : mode === "text" ? "native_pdf" : "llm_ocr";
+  const blockSource = isDocx || isXlsx ? "docx" : mode === "text" ? "native_pdf" : "llm_ocr";
 
   // Page row: is_scanned + ocr_confidence + status.
   const minConf = pageMinConfidence(p);
@@ -1209,7 +1456,9 @@ async function persistPage(
     }
   }
 
-  // Tables → ai_document_tables + a matching 'table' block.
+  // Tables → ai_document_tables + a matching 'table' block. XLSX table blocks
+  // are native cell extraction, not LLM reconstruction → stamped 'docx' too.
+  const tableBlockSource = isDocx || isXlsx ? "docx" : "llm_semantic";
   for (const t of p.tables ?? []) {
     const { data: tableRow } = await admin
       .from("ai_document_tables")
@@ -1233,7 +1482,7 @@ async function persistPage(
         kind: "table",
         lang: p.detected_language ?? null,
         confidence: conf(t.confidence),
-        extraction_source: isDocx ? "docx" : "llm_semantic",
+        extraction_source: tableBlockSource,
         provider,
         model,
         text_en: t.summary_en || t.caption_en || null,

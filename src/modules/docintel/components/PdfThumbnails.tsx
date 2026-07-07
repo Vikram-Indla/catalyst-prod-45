@@ -5,8 +5,12 @@
  * rest render on demand via a "Show all N pages" control (a 24-page document
  * must not block the wizard).
  *
- * Non-PDF files (e.g. DOCX) get a document-icon placeholder — pdfjs cannot
- * rasterise them, and guessing would be a lie (zero-assumption rendering).
+ * Image files (PNG/JPEG) get a real thumbnail via URL.createObjectURL — the
+ * browser renders them natively, no pdfjs involved.
+ *
+ * Other non-PDF files (e.g. DOCX, XLSX) get a document-icon placeholder —
+ * pdfjs cannot rasterise them, and guessing would be a lie (zero-assumption
+ * rendering).
  *
  * pdfjs-dist@4.8.69 + Vite worker setup:
  *   import * as pdfjsLib from "pdfjs-dist";
@@ -33,6 +37,14 @@ function isPdf(file: File): boolean {
   return (
     file.type === "application/pdf" ||
     file.name.toLowerCase().endsWith(".pdf")
+  );
+}
+
+function isImage(file: File): boolean {
+  return (
+    file.type === "image/png" ||
+    file.type === "image/jpeg" ||
+    /\.(png|jpe?g)$/.test(file.name.toLowerCase())
   );
 }
 
@@ -147,6 +159,19 @@ export function PdfThumbnails({ file, label }: PdfThumbnailsProps) {
   const [showAll, setShowAll] = useState(false);
 
   const pdfFile = isPdf(file);
+  const imageFile = !pdfFile && isImage(file);
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
+
+  // Image files: browser-native thumbnail via an object URL (revoked on cleanup).
+  useEffect(() => {
+    if (!imageFile) return;
+    const url = URL.createObjectURL(file);
+    setImageUrl(url);
+    return () => {
+      URL.revokeObjectURL(url);
+      setImageUrl(null);
+    };
+  }, [file, imageFile]);
 
   useEffect(() => {
     if (!pdfFile) return;
@@ -183,7 +208,32 @@ export function PdfThumbnails({ file, label }: PdfThumbnailsProps) {
     };
   }, [file, pdfFile]);
 
-  // Non-PDF (DOCX etc.) — no rasterisation, honest placeholder.
+  // Image (PNG/JPEG) — a real thumbnail, straight from the file bytes.
+  if (imageFile) {
+    return (
+      <div
+        aria-label={label ?? `Preview of ${file.name}`}
+        style={{ display: "flex", padding: "var(--ds-space-050) var(--ds-space-025) var(--ds-space-100)" }}
+      >
+        {imageUrl ? (
+          <img
+            src={imageUrl}
+            alt={label ?? `Preview of ${file.name}`}
+            style={{
+              maxWidth: 160,
+              maxHeight: 200,
+              display: "block",
+              border: "1px solid var(--ds-border)",
+              borderRadius: 4,
+              background: "var(--ds-surface-sunken)",
+            }}
+          />
+        ) : null}
+      </div>
+    );
+  }
+
+  // Other non-PDF (DOCX, XLSX etc.) — no rasterisation, honest placeholder.
   if (!pdfFile) {
     return (
       <div
@@ -202,7 +252,7 @@ export function PdfThumbnails({ file, label }: PdfThumbnailsProps) {
           <FileText size={24} />
         </span>
         <span style={{ fontSize: 13 }}>
-          Preview available for PDF files only
+          Preview available for PDF and image files only
         </span>
       </div>
     );
