@@ -92,6 +92,17 @@ export function renderWithCitations(
   onOpen: (c: DocintelCitation, n: number) => void,
   arabic: boolean,
 ): ReactNode[] {
+  // Paragraph-first: see AskPanel.renderWithCitations — inline chips must not
+  // fragment sentences into separate <p> blocks.
+  const paras = text.split(/\n{2,}/);
+  if (paras.length > 1) {
+    return paras.filter((p) => p.trim()).map((p, i) => (
+      <div key={`para-${i}`} style={{ marginBlockEnd: "var(--ds-space-100)" }}>
+        {renderWithCitations(p, citations, onOpen, arabic)}
+      </div>
+    ));
+  }
+
   const parts: ReactNode[] = [];
   let lastIndex = 0;
   let match: RegExpExecArray | null;
@@ -101,13 +112,17 @@ export function renderWithCitations(
   const pushMarkdown = (chunk: string) => {
     if (!chunk) return;
     parts.push(
-      <div
+      <span
         key={`md-${key++}`}
-        style={{ display: "contents" }}
         {...(arabic ? { dir: "rtl", lang: "ar" } : {})}
       >
-        <ReactMarkdown skipHtml>{chunk}</ReactMarkdown>
-      </div>,
+        <ReactMarkdown
+          skipHtml
+          components={{ p: ({ children }) => <span>{children}</span> }}
+        >
+          {chunk}
+        </ReactMarkdown>
+      </span>,
     );
   };
 

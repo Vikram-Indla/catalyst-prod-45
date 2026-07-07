@@ -86,6 +86,18 @@ export function renderWithCitations(
   onOpen: (c: DocintelAskCitation) => void,
   arabic: boolean,
 ): ReactNode[] {
+  // Paragraph-first: each blank-line-separated block renders as its own
+  // block element, and chips + text flow INLINE within it (a per-chunk
+  // <p> from ReactMarkdown used to orphan trailing punctuation).
+  const paras = text.split(/\n{2,}/);
+  if (paras.length > 1) {
+    return paras.filter((p) => p.trim()).map((p, i) => (
+      <div key={`para-${i}`} style={{ marginBlockEnd: "var(--ds-space-100)" }}>
+        {renderWithCitations(p, citations, onOpen, arabic)}
+      </div>
+    ));
+  }
+
   const byMarker = new Map<number, DocintelAskCitation>();
   for (const c of citations) byMarker.set(c.marker, c);
 
@@ -98,13 +110,17 @@ export function renderWithCitations(
   const pushMarkdown = (chunk: string) => {
     if (!chunk) return;
     parts.push(
-      <div
+      <span
         key={`md-${key++}`}
-        style={{ display: "contents" }}
         {...(arabic ? { dir: "rtl", lang: "ar" } : {})}
       >
-        <ReactMarkdown skipHtml>{chunk}</ReactMarkdown>
-      </div>,
+        <ReactMarkdown
+          skipHtml
+          components={{ p: ({ children }) => <span>{children}</span> }}
+        >
+          {chunk}
+        </ReactMarkdown>
+      </span>,
     );
   };
 
