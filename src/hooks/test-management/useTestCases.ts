@@ -967,6 +967,20 @@ export function useBulkCopyTestCases() {
             );
             if (copyStepsError) throw copyStepsError;
           }
+
+          // Copy requirement links — a copied case keeps covering the same work
+          // items (clone contract: steps + links + metadata travel together)
+          const { data: reqLinks, error: reqLinksError } = await supabase
+            .from('tm_requirement_links')
+            .select('requirement_type, requirement_id, external_key, external_url, external_title, link_type, coverage_status, notes, project_id')
+            .eq('test_case_id', caseId);
+          if (reqLinksError) throw reqLinksError;
+          if (reqLinks && reqLinks.length > 0) {
+            const { error: copyLinksError } = await supabase.from('tm_requirement_links').insert(
+              reqLinks.map(l => ({ ...l, test_case_id: cloned.id, created_by: user.id }))
+            );
+            if (copyLinksError) throw copyLinksError;
+          }
         }
       }
 

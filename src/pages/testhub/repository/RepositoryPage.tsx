@@ -21,6 +21,7 @@ import {
   useCreateTestCase,
   useBulkArchiveTestCases,
   useBulkCopyTestCases,
+  useMoveTestCase,
 } from '@/hooks/test-management/useTestCases';
 import { supabase } from '@/integrations/supabase/client';
 import { CatyIconCTA } from '@/components/ui/CatyIconCTA';
@@ -247,6 +248,49 @@ function CopyModal({ count, folders, onConfirm, onClose, saving }: {
           style={primaryBtnStyle(saving)}
         >
           {saving ? 'Copying…' : 'Copy'}
+        </button>
+      </ModalFooter>
+    </ModalDialog>
+  );
+}
+
+// ── Move cases modal ──────────────────────────────────────────────────────────
+// Journey gap: cases could only be COPIED across folders; useMoveTestCase existed
+// with zero consumers. Same folder-picker shape as CopyModal, no suffix option.
+
+function MoveModal({ count, folders, onConfirm, onClose, saving }: {
+  count: number;
+  folders: TMFolder[];
+  onConfirm: (targetFolderId: string | null) => void;
+  onClose: () => void;
+  saving: boolean;
+}) {
+  const [targetFolderId, setTargetFolderId] = useState('');
+  const flat = flattenFolders(folders);
+  const options = [{ value: '', label: 'Not assigned (no folder)' }, ...flat.map(f => ({ value: f.id, label: `${f.indent}${f.name}` }))];
+
+  return (
+    <ModalDialog onClose={onClose} width="small">
+      <ModalHeader>
+        <ModalTitle>Move {count} case{count > 1 ? 's' : ''}</ModalTitle>
+      </ModalHeader>
+      <ModalBody>
+        <label style={labelStyle}>Target folder</label>
+        <Select
+          options={options}
+          value={options.find(o => o.value === targetFolderId) ?? null}
+          onChange={opt => setTargetFolderId(opt?.value ?? '')}
+          isSearchable
+        />
+      </ModalBody>
+      <ModalFooter>
+        <button onClick={onClose} style={cancelBtnStyle}>Cancel</button>
+        <button
+          onClick={() => onConfirm(targetFolderId || null)}
+          disabled={saving}
+          style={primaryBtnStyle(saving)}
+        >
+          {saving ? 'Moving…' : 'Move'}
         </button>
       </ModalFooter>
     </ModalDialog>
@@ -748,6 +792,7 @@ export default function RepositoryPage() {
   const [folderModalParentId, setFolderModalParentId] = useState<string | null>(null);
   const [archiveModalOpen, setArchiveModalOpen] = useState(false);
   const [copyModalOpen, setCopyModalOpen] = useState(false);
+  const [moveModalOpen, setMoveModalOpen] = useState(false);
   // S5: link selected cases to a cycle or set from the repository.
   const [linkTarget, setLinkTarget] = useState<LinkTarget | null>(null);
   // P1-S4: row-level hard delete replaced with archive (VER-004) — a case
@@ -759,6 +804,7 @@ export default function RepositoryPage() {
   const { data: allFolders = [] } = useFolderTree(projectId);
   const archiveCases = useBulkArchiveTestCases();
   const copyCases = useBulkCopyTestCases();
+  const moveCases = useMoveTestCase();
   const createCase = useCreateTestCase({ silent: true });
   // S2: real project-hub traceability (ph_issues links + latest run) per case.
   const { data: coverageMap } = useCaseCoverage(projectId);
@@ -883,6 +929,17 @@ export default function RepositoryPage() {
     copyCases.mutate(
       { case_ids: Array.from(selectedIds), folder_id: targetFolderId, project_id: projectId },
       { onSuccess: () => { setCopyModalOpen(false); exitSelectMode(); } }
+    );
+  };
+
+  const handleMoveConfirm = (targetFolderId: string | null) => {
+    if (!projectId) return;
+    const folderName = targetFolderId
+      ? flattenFolders(allFolders).find(f => f.id === targetFolderId)?.name
+      : 'Not assigned';
+    moveCases.mutate(
+      { case_ids: Array.from(selectedIds), folder_id: targetFolderId, project_id: projectId, folder_name: folderName },
+      { onSuccess: () => { setMoveModalOpen(false); exitSelectMode(); } }
     );
   };
 
@@ -1147,6 +1204,7 @@ export default function RepositoryPage() {
               {/* "Add to set…" removed: sets are deprecated into plans (D-004) and no
                   surface reads tm_set_cases — writing there was a silent data black hole. */}
               <DropdownItem onClick={() => setCopyModalOpen(true)}>Copy cases</DropdownItem>
+              <DropdownItem onClick={() => setMoveModalOpen(true)}>Move to folder…</DropdownItem>
               <DropdownItem onClick={() => setArchiveModalOpen(true)}>Archive cases</DropdownItem>
             </DropdownItemGroup>
           </DropdownMenu>
@@ -1444,6 +1502,16 @@ export default function RepositoryPage() {
           onConfirm={handleCopyConfirm}
           onClose={() => setCopyModalOpen(false)}
           saving={copyCases.isPending}
+        />
+      )}
+
+      {moveModalOpen && (
+        <MoveModal
+          count={selectedIds.size}
+          folders={allFolders}
+          onConfirm={handleMoveConfirm}
+          onClose={() => setMoveModalOpen(false)}
+          saving={moveCases.isPending}
         />
       )}
 
