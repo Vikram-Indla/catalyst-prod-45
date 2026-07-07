@@ -562,10 +562,10 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
       }
       /* Row hover. Apr 28, 2026 (jira-compare cycle 4): tokenized — was
          hardcoded var(--ds-surface-sunken). --ds-background-neutral-subtle-hovered is the
-         exact Atlaskit hover bg (var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06)) in light theme). */
+         exact Atlaskit hover bg (var(--ds-background-neutral-subtle-hovered) in light theme). */
       /* Jira DOM probe 2026-05-16: row hover bg = rgba(9,30,66,0.06) ≈ var(--ds-background-neutral) */
       .jira-table-grid table tbody > tr:hover > td {
-        background-color: var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06));
+        background-color: var(--ds-background-neutral-subtle-hovered);
       }
       /* Whole-cell hover tint: opened editor only (no hover tint).
          Per status-pill unification 2026-06-29: hover bg removed at user
@@ -821,7 +821,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
            treatment was a Catalyst opinion. Matching Jira's actual list
            view here for parity. Apr 27 2026 jira-compare regression
            (D-005 + D-006): fontWeight 700 → 653, color var(--ds-text-subtle, var(--ds-icon)) → var(--ds-text-subtlest, var(--ds-text-subtlest)).
-           Jira spec (measured 2026-05-12): 12px/653/var(--ds-text-subtle, rgb(80,82,88)) — NOT 14px/400.
+           Jira spec (measured 2026-05-12): 12px/653/var(--ds-text-subtle) — NOT 14px/400.
            14px/400 is body text. Headers must be bold and smaller.
            May 12 2026 (design-intelligence RCA): line-height 18px → 16px
            to match Jira's vertical compaction. Tighter line-height = denser
@@ -831,7 +831,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
         font-size: 12px;
         font-weight: 653;
         line-height: 20px;
-        color: var(--ds-text-subtle, rgb(80, 82, 88));
+        color: var(--ds-text-subtle);
         text-transform: none;
         letter-spacing: normal;
         white-space: nowrap;
@@ -872,7 +872,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
       .jira-th-sort-arrow-active { width: 18px !important; opacity: 1 !important; }
       .jira-th-menu-trigger-active { width: 18px !important; opacity: 1 !important; }
       .jira-th-menu-trigger:hover {
-        background: var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06)) !important;
+        background: var(--ds-background-neutral-subtle-hovered) !important;
       }
       .jira-table-grid tbody td {
         padding: 0 12px;
@@ -1001,7 +1001,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
         background: var(--ds-surface-sunken);
       }
       .jira-table-grid thead th {
-        color: var(--ds-text-subtle, rgb(80, 82, 88)) !important;
+        color: var(--ds-text-subtle) !important;
       }
       /* Header z-index for non-sticky-left case — no left-pin, just
          keep header floating above body on vertical scroll. */
@@ -1080,7 +1080,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
       }
       /* Row hover tint matches Jira's list view. */
       .jira-table-grid table tbody > tr:hover > td {
-        background-color: var(--ds-background-neutral-subtle-hovered, rgba(9, 30, 66, 0.04)) !important;
+        background-color: var(--ds-background-neutral-subtle-hovered) !important;
       }
       /* Drag-handle grip — hidden at rest, visible on row hover */
       .jira-table-grid .jira-drag-handle { visibility: hidden; }
@@ -1428,7 +1428,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
                         cursor: 'pointer',
                       }}
                       onMouseEnter={(e) => {
-                        e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9, 30, 66, 0.06))';
+                        e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered)';
                       }}
                       onMouseLeave={(e) => {
                         e.currentTarget.style.background = 'transparent';
@@ -1666,7 +1666,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
                       cursor: 'pointer',
                     }}
                     onMouseEnter={(e) => {
-                      e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9, 30, 66, 0.06))';
+                      e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered)';
                     }}
                     onMouseLeave={(e) => {
                       e.currentTarget.style.background = 'transparent';
@@ -1881,7 +1881,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
                   background: 'var(--cp-bg-elevated, var(--ds-surface))',
                 } : {}),
                 ...(isDropTarget ? {
-                  background: 'var(--ds-background-selected, rgba(76, 154, 255, 0.15))',
+                  background: 'var(--ds-background-selected)',
                   boxShadow: 'inset 1px 0 0 0 var(--ds-border-selected), inset -1px 0 0 0 var(--ds-border-selected)',
                 } : {}),
               }}>
@@ -2115,7 +2115,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
                       right: meta?.id === '__actions' ? 0 : undefined,
                       zIndex: meta?.id === '__actions' ? 3 : undefined,
                       background: isDragOverThis
-                        ? 'var(--ds-background-selected, rgba(76, 154, 255, 0.15))'
+                        ? 'var(--ds-background-selected)'
                         : meta?.id === '__actions'
                           ? 'var(--cp-bg-elevated, var(--ds-surface))'
                           : undefined,
@@ -2272,7 +2272,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
                               padding: 0,
                               border: 'none',
                               borderRadius: 3,
-                              background: showChevron ? 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))' : 'transparent',
+                              background: showChevron ? 'var(--ds-background-neutral-subtle-hovered)' : 'transparent',
                               color: col.hasActiveFilter ? 'var(--ds-icon-brand)' : 'var(--ds-text-subtlest, var(--cp-text-secondary))',
                               cursor: 'pointer',
                               flexShrink: 0,
@@ -2498,7 +2498,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
                 borderBottomLeftRadius: 8,
                 borderBottomRightRadius: 8,
               } : {
-                boxShadow: 'inset 0 1px 0 0 var(--ds-border, rgba(11,18,14,0.14))',
+                boxShadow: 'inset 0 1px 0 0 var(--ds-border)',
               }),
             }}
           >
@@ -2645,7 +2645,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
             background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))',
             border: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))',
             borderRadius: 4,
-            boxShadow: '0 8px 16px var(--ds-shadow-raised, rgba(9,30,66,0.15))',
+            boxShadow: '0 8px 16px var(--ds-shadow-raised)',
             minWidth: 220,
             maxHeight: 360,
             overflowY: 'auto',
@@ -2675,7 +2675,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
             background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))',
             border: '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border)))',
             borderRadius: 4,
-            boxShadow: '0 1px 1px var(--ds-shadow-raised, rgba(9,30,66,0.25)), 0 8px 24px -4px var(--ds-shadow-raised, rgba(9,30,66,0.18))',
+            boxShadow: '0 1px 1px var(--ds-shadow-raised), 0 8px 24px -4px var(--ds-shadow-raised)',
             padding: 4,
             fontFamily: '"Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", sans-serif',
             color: 'var(--ds-text)',
@@ -3053,7 +3053,7 @@ function ColumnManagerTrigger<TRow>({
             background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))',
             border: '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border)))',
             borderRadius: 4,
-            boxShadow: '0 1px 1px var(--ds-shadow-raised, rgba(9,30,66,0.25)), 0 8px 24px -4px var(--ds-shadow-raised, rgba(9,30,66,0.18))',
+            boxShadow: '0 1px 1px var(--ds-shadow-raised), 0 8px 24px -4px var(--ds-shadow-raised)',
             padding: 8,
             maxHeight: 420,
             display: 'flex',

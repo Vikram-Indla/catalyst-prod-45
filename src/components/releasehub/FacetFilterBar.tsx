@@ -27,7 +27,7 @@ const T = {
   subtlest: 'var(--ds-text-subtlest)',
   link: 'var(--ds-link)',
   selectedBg: 'var(--ds-background-selected)',
-  hover: 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))',
+  hover: 'var(--ds-background-neutral-subtle-hovered)',
 };
 
 export interface FacetOption {
@@ -105,7 +105,7 @@ function FacetDropdown({ facet, selected, onChange }: {
             position: 'fixed', top: rect.bottom + 4, left: rect.left, zIndex: 9999,
             minWidth: Math.max(180, rect.width), maxHeight: 320, overflowY: 'auto',
             background: T.card, border: `1px solid ${T.border}`, borderRadius: 6,
-            boxShadow: 'var(--ds-shadow-overlay, 0 8px 28px rgba(9,30,66,0.25))', padding: '4px 0',
+            boxShadow: 'var(--ds-shadow-overlay)', padding: '4px 0',
           }}
         >
           {facet.options.length === 0 && (
