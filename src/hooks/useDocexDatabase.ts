@@ -13,6 +13,21 @@ const db = supabase as unknown as {
   from: (table: string) => any;
 };
 
+/**
+ * Supabase returns a PostgrestError — a PLAIN object ({ message, details,
+ * hint, code }), NOT an Error instance. `e instanceof Error` is therefore
+ * false for real DB failures, which silently discarded the cause and left
+ * users with a bare "Could not …" toast. Extract the message from either shape.
+ */
+function docexErrorMessage(e: unknown): string | undefined {
+  if (e instanceof Error) return e.message;
+  if (e && typeof e === 'object' && 'message' in e) {
+    const m = (e as { message?: unknown }).message;
+    if (typeof m === 'string' && m.length > 0) return m;
+  }
+  return undefined;
+}
+
 // ---------------------------------------------------------------------------
 // Types
 // ---------------------------------------------------------------------------
@@ -317,8 +332,14 @@ export function useCreateDocexRow() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (input: { databaseId: string; values?: Record<string, unknown>; position: number }) => {
-      const { data: auth } = await supabase.auth.getUser();
-      const uid = auth?.user?.id ?? null;
+      if (!input.databaseId) {
+        throw new Error('No database is loaded yet — reload the page and try again.');
+      }
+      const { data: sessionData } = await supabase.auth.getSession();
+      const uid = sessionData?.session?.user?.id ?? null;
+      if (!uid) {
+        throw new Error('Your session has expired — sign in again to add a row.');
+      }
       const { error } = await db.from('kb_database_rows').insert({
         database_id: input.databaseId,
         values: input.values ?? {},
@@ -331,7 +352,7 @@ export function useCreateDocexRow() {
     onSuccess: (_d, { databaseId }) =>
       qc.invalidateQueries({ queryKey: ['docex-db', 'rows', databaseId] }),
     onError: (e) =>
-      catalystToast.error('Could not add the row', e instanceof Error ? e.message : undefined),
+      catalystToast.error('Could not add the row', docexErrorMessage(e)),
   });
 }
 

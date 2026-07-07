@@ -732,8 +732,17 @@ export function DatabaseSurface({ database }: { database: DocexDatabase }) {
   );
 
   const addRow = (seed?: Record<string, unknown>) => {
+    // Guard: several call sites wire this straight to onClick={addRow}, so the
+    // first arg is a React SyntheticEvent (or DOM node), not row values. Letting
+    // that reach `values` made the insert payload a circular structure —
+    // JSON.stringify threw before the request, surfacing only as "Could not add
+    // the row". Accept a plain-object seed; otherwise start the row empty.
+    const seedValues =
+      seed && typeof seed === 'object' && Object.getPrototypeOf(seed) === Object.prototype
+        ? seed
+        : {};
     const maxPos = (rows ?? []).reduce((m, r) => Math.max(m, r.position), 0);
-    createRow.mutate({ databaseId: database.id, position: maxPos + 1, values: seed ?? {} });
+    createRow.mutate({ databaseId: database.id, position: maxPos + 1, values: seedValues });
   };
   const updateValue = (row: DocexRow, fieldId: string, value: unknown) =>
     updateValues.mutate({
