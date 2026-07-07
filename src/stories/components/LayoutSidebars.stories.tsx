@@ -15,7 +15,6 @@ import { ProjectHubSidebar } from '@/components/layout/ProjectHubSidebar';
 import { ReleaseHubSidebar } from '@/components/layout/ReleaseHubSidebar';
 import { SidebarBase } from '@/components/layout/SidebarBase';
 import { TaskHubSidebar } from '@/components/layout/TaskHubSidebar';
-import { TeamRoomSidebar } from '@/components/layout/TeamRoomSidebar';
 import { TestHubSidebar } from '@/components/layout/TestHubSidebar';
 import { WikiSidebar } from '@/components/layout/WikiSidebar';
 
@@ -78,11 +77,6 @@ export const IdeationSidebarDefault: StoryObj = {
 export const OperationsSidebarDefault: StoryObj = {
   name: 'OperationsSidebar / Default',
   render: () => <Wrap><OperationsSidebar expanded={false} onToggle={fn()} /></Wrap>,
-}
-
-export const TeamRoomSidebarDefault: StoryObj = {
-  name: 'TeamRoomSidebar / Default',
-  render: () => <Wrap><TeamRoomSidebar teamId="item-1" expanded={false} onToggle={fn()} selectedSprint="test-value" onSprintChange={fn()} /></Wrap>,
 }
 
 export const ProductRoomSidebarDefault: StoryObj = {

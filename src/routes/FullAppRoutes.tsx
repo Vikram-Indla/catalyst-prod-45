@@ -271,9 +271,7 @@ const PIObjectives = lazy(() => import("../pages/PIObjectives"));
 const WorkSpendGrid = lazy(() => import("../pages/WorkSpendGrid"));
 const RisksGridPage = lazy(() => import("../pages/risks/RisksGridPage"));
 const RiskRoamReportPage = lazy(() => import("../pages/risks/RiskRoamReportPage"));
-const TeamRoom = lazy(() => import("../pages/TeamRoom"));
 const SprintBoard = lazy(() => import("../pages/SprintBoard"));
-const Backlog = lazy(() => import("../pages/Backlog"));
 const Sprints = lazy(() => import("../pages/Sprints"));
 const Stories = lazy(() => import("../pages/Stories"));
 const Subtasks = lazy(() => import("../pages/Subtasks"));
@@ -932,9 +930,6 @@ export default function FullAppRoutes() {
           <Route path="settings" element={<S><InJiraSettingsPage /></S>} />
         </Route>
 
-        <Route path="/team-room" element={<S><TeamRoom /></S>} />
-        <Route path="/backlog" element={<S><Backlog /></S>} />
-        <Route path="/backlog-phase2" element={<Navigate to="/backlog" replace />} />
         <Route path="/sprints" element={<S><Sprints /></S>} />
         <Route path="/sprint-board" element={<S><SprintBoard /></S>} />
         <Route path="/stories" element={<S><Stories /></S>} />
