@@ -12,7 +12,7 @@ When the user types `/start [request]`, do not execute the work immediately.
 Only:
 1. Understand the intent.
 2. Classify the work type.
-3. Recommend the exact skills/agents/capabilities to use.
+3. Recommend the exact skills/agents/capabilities to use. Resolve skill choice from `docs/ways-of-working/GOD_MODE_DELIVERY_MANUAL.md` — §K command recipes first, §C canonical taxonomy for anything §K doesn't cover. Always recommend the plain (project-level) skill name; never a namespaced duplicate unless §C explicitly says so.
 4. Explain why each is needed.
 5. Explain what each will do after `proceed`.
 6. State what will not be used.

@@ -23,6 +23,8 @@ When instructions conflict, resolve in this order — highest first:
 
 ## OPERATING COMMANDS
 
+**Skill routing + phase gates:** follow [`GOD_MODE_DELIVERY_MANUAL.md`](docs/ways-of-working/GOD_MODE_DELIVERY_MANUAL.md) — §C canonical skill taxonomy (one skill per capability; plain/project name always wins over namespaced duplicates), §G 16-phase SDLC gates, §J merge-to-main checklist, §K command recipes.
+
 ### `activate feature <name>`
 
 Starts a new Catalyst feature or fix. Claude must:
@@ -509,6 +511,7 @@ navigate(Routes.projectHub.board(projectKey, board.slug));
 | Doc | Purpose |
 |---|---|
 | [`CATALYST_ONBOARDING.md`](docs/ways-of-working/CATALYST_ONBOARDING.md) | **Start here on a fresh clone** — one-time setup + how to run `activate feature` |
+| [`GOD_MODE_DELIVERY_MANUAL.md`](docs/ways-of-working/GOD_MODE_DELIVERY_MANUAL.md) | Skills-estate audit + delivery SOP — canonical skill taxonomy, 16-role team, council SOP, 16-phase gates, merge governance, command recipes |
 | [`CATALYST_OPERATING_SYSTEM.md`](docs/ways-of-working/CATALYST_OPERATING_SYSTEM.md) | Full operating system — TRIAD roles, delivery loop, drift control |
 | [`CATALYST_PARALLEL_AGENTS.md`](docs/ways-of-working/CATALYST_PARALLEL_AGENTS.md) | Agent definitions, inputs, outputs, failure criteria |
 | [`CATALYST_CANONICAL_COMPONENTS.md`](docs/ways-of-working/CATALYST_CANONICAL_COMPONENTS.md) | Canonical-first rules, JiraTable rule, proof of unsuitability |
