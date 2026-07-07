@@ -127,13 +127,16 @@ export default function NotificationPanel({
   const T = {
     panelBg: isDark ? "var(--ds-surface-sunken)" : "var(--ds-surface)",
     surfaceBg: isDark ? "var(--ds-surface-sunken)" : "var(--ds-surface)",
-    text1: isDark ? "var(--ds-background-neutral)" : "var(--ds-text)",
-    text2: isDark ? "var(--ds-text-subtlest)" : "var(--ds-text-subtle)",
-    text3: isDark ? "var(--ds-text-subtlest)" : "var(--ds-text-subtlest)",
-    border: isDark ? "var(--ds-background-neutral)" : "rgba(15,23,42,0.15)", // Direct values, not CSS vars
-    borderStrong: isDark ? "var(--ds-text-subtle)" : "rgba(15,23,42,0.20)",
-    hover: isDark ? "rgba(255,255,255,0.06)" : "rgba(15,23,42,0.04)", // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
-    press: isDark ? "rgba(255,255,255,0.10)" : "rgba(15,23,42,0.08)", // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
+    // ADS tokens are theme-aware (Atlaskit data-theme + Catalyst .dark) — no isDark
+    // branching needed. Prior code mapped text1/border to --ds-background-neutral,
+    // which resolves to a 7%-alpha fill and rendered the dark-mode title invisible.
+    text1: "var(--ds-text)",
+    text2: "var(--ds-text-subtle)",
+    text3: "var(--ds-text-subtlest)",
+    border: "var(--ds-border)",
+    borderStrong: "var(--ds-border-bold)",
+    hover: "var(--ds-background-neutral-subtle-hovered)",
+    press: "var(--ds-background-neutral-subtle-pressed)",
     shadow: isDark
       ? "0 8px 24px var(--ds-shadow-raised, rgba(0,0,0,0.4)), 0 0 1px var(--ds-shadow-raised, rgba(0,0,0,0.5))"
       : "0 8px 24px var(--ds-shadow-overlay, rgba(15,23,42,0.12)), 0 0 1px var(--ds-shadow-overlay, rgba(15,23,42,0.08))",
@@ -415,7 +418,7 @@ export default function NotificationPanel({
             <span
               style={{
                 fontFamily: "var(--cp-font-heading)",
-                fontSize: 'var(--ds-font-size-800)',
+                fontSize: 'var(--ds-font-size-500)',
                 fontWeight: 600,
                 color: T.text1,
                 margin: 0,
