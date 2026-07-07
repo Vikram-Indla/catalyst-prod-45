@@ -10,7 +10,7 @@ import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } fro
 import { Link, useNavigate } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import type { Block, BlockNoteEditor } from '@blocknote/core';
-import { Breadcrumbs, type BreadcrumbItem } from '@/components/ads';
+import { type BreadcrumbItem } from '@/components/ads';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ImageIcon, Star, StarOff, PanelRight } from '@/lib/atlaskit-icons';
 import { Routes } from '@/lib/routes';
@@ -31,6 +31,7 @@ import {
   type WikiWorkspace,
 } from '@/hooks/useWiki';
 import { ProjectIcon } from '@/components/shared/ProjectIcon';
+import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
 import { getProductAvatarUrl } from '@/components/icons';
 import { WikiEditorBoundary } from './editor/WikiEditorBoundary';
 import { DocexVersionHistory } from './DocexVersionHistory';
@@ -548,6 +549,14 @@ export function WikiPageSurface({ workspace, page, treePages }: WikiPageSurfaceP
     ];
   }, [treePages, page.parent_id, page.id, page.title, workspace]);
 
+  // Canonical Grid-E breadcrumb trail for ProjectPageHeader (hubType="folio"
+  // prepends the "Folio" root crumb). Reuses the ancestor chain above; the
+  // current page (isCurrent) drops its href so it renders as the bold crumb.
+  const folioTrail = useMemo(
+    () => crumbs.map((c) => ({ text: c.text, href: c.isCurrent ? undefined : c.href })),
+    [crumbs],
+  );
+
   const isLegacyAdf = page.content_format === 'adf';
 
   // ---- Exports (markdown / HTML free-core serializers; print for PDF) ----
@@ -784,15 +793,11 @@ export function WikiPageSurface({ workspace, page, treePages }: WikiPageSurfaceP
           gap: 12,
         }}
       >
-        <div className="cat-breadcrumb-host" style={{ flex: 1, minWidth: 0, fontSize: 12, opacity: 0.8 }}>
-          <Breadcrumbs
-            items={crumbs}
-            // Full ancestor path, never the collapsed "…" (Vikram 2026-07-06:
-            // "the breadcrumb sucks" — deep pages collapsed at the default 4).
-            maxItems={12}
-            LinkComponent={Link as never}
-            aria-label="Page location"
-          />
+        <div style={{ flex: 1, minWidth: 0 }}>
+          {/* Grid E5: ProjectPageHeader is the sole sanctioned breadcrumb
+              mechanism on hub routes. hubType="folio" prepends the "Folio"
+              root; hideTitle because the editable page title renders below. */}
+          <ProjectPageHeader hubType="folio" paddingX={0} hideTitle trail={folioTrail} />
         </div>
         <span
           role="status"
