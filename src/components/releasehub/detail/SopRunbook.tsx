@@ -43,7 +43,7 @@ function statusColor(status: string): { fg: string; bg: string } {
 }
 
 function Indicator({ label, tone }: { label: string; tone: string }) {
-  return <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-50)', fontWeight: 700, color: tone, border: `1px solid ${tone}`, borderRadius: 3, padding: '0 4px', textTransform: 'uppercase', letterSpacing: '.03em' }}>{label}</span>;
+  return <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', fontWeight: 700, color: tone, border: `1px solid ${tone}`, borderRadius: 3, padding: '0 4px', textTransform: 'uppercase', letterSpacing: '.03em' }}>{label}</span>;
 }
 
 // ── assignee picker (change participants + profiles) ──────────────────
@@ -228,7 +228,7 @@ function Detail({ label, value, mono }: { label: string; value: React.ReactNode;
 }
 
 function Stat({ label, value, tone }: { label: string; value: React.ReactNode; tone?: string }) {
-  return <div><div style={{ fontFamily: RH.fontDisplay, fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: tone ?? T.text }}>{value}</div><div style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-50)', color: T.subtlest, textTransform: 'uppercase', letterSpacing: '.03em' }}>{label}</div></div>;
+  return <div><div style={{ fontFamily: RH.fontDisplay, fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: tone ?? T.text }}>{value}</div><div style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', color: T.subtlest, textTransform: 'uppercase', letterSpacing: '.03em' }}>{label}</div></div>;
 }
 
 export interface StepIssueInfo { incidents: number; defects: number; crit: boolean }

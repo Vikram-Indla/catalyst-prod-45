@@ -87,8 +87,8 @@ function SlotChip({ slot, now }: { slot: Slot; now: number }) {
     <button onClick={() => navigate(`/release-hub/changes/${slot.slug ?? slot.changeId}`)}
       style={{ textAlign: 'left', width: '100%', background: tone.bg, border: `1px solid ${running ? 'var(--ds-border-focused)' : overdue ? 'var(--ds-border-danger)' : T.border}`, borderLeft: `4px solid ${tone.fg}`, borderRadius: 6, padding: 8, cursor: 'pointer', display: 'flex', flexDirection: 'column', gap: 4 }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-        <span style={{ fontFamily: T.mono, fontSize: 'var(--ds-font-size-50)', fontWeight: 600, color: T.link }}>{slot.chgNumber}</span>
-        <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-50)', color: T.subtle }}>#{slot.step.stepNo}</span>
+        <span style={{ fontFamily: T.mono, fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: T.link }}>{slot.chgNumber}</span>
+        <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', color: T.subtle }}>#{slot.step.stepNo}</span>
         {slot.isEmergency && <FlagLozenge label="Emergency" />}
         {slot.issues > 0 && <FlagLozenge label={`Issues ${slot.issues}`} />}
         {running && <span style={{ marginLeft: 'auto' }}><FlagLozenge label="Live" /></span>}
@@ -97,8 +97,8 @@ function SlotChip({ slot, now }: { slot: Slot; now: number }) {
       <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: T.text, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{slot.step.title}</span>
       <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
         <ChangeStatusLozenge status={slot.step.status} />
-        {slot.ownerName ? <CatalystAvatar name={slot.ownerName} size="xsmall" /> : <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-50)', color: T.subtle }}>Unassigned</span>}
-        <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-50)', color: T.subtle }}>{slot.targetEnv ?? ''}{slot.step.commitRequired ? ' · commit' : ''}{slot.step.evidenceRequired ? ' · ev' : ''}</span>
+        {slot.ownerName ? <CatalystAvatar name={slot.ownerName} size="xsmall" /> : <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', color: T.subtle }}>Unassigned</span>}
+        <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', color: T.subtle }}>{slot.targetEnv ?? ''}{slot.step.commitRequired ? ' · commit' : ''}{slot.step.evidenceRequired ? ' · ev' : ''}</span>
       </div>
     </button>
   );
@@ -178,7 +178,7 @@ export default function ExecutionCalendarPage() {
             <div key={dayKey(d)} style={{ minWidth: 0 }}>
               <div style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: isToday(d) ? T.link : T.subtle, padding: '4px 0', textAlign: 'center', borderBottom: `2px solid ${isToday(d) ? 'var(--ds-border-focused)' : T.border}` }}>{d.toLocaleDateString(undefined, { weekday: 'short', day: 'numeric' })}</div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 6, padding: '8px 0', minHeight: 80 }}>
-                {(byDay[dayKey(d)] ?? []).length === 0 ? <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-50)', color: T.subtlest, textAlign: 'center' }}>—</span> : (byDay[dayKey(d)] ?? []).map((s) => <SlotChip key={s.step.id} slot={s} now={now} />)}
+                {(byDay[dayKey(d)] ?? []).length === 0 ? <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', color: T.subtlest, textAlign: 'center' }}>—</span> : (byDay[dayKey(d)] ?? []).map((s) => <SlotChip key={s.step.id} slot={s} now={now} />)}
               </div>
             </div>
           ))}

@@ -176,19 +176,19 @@ export default function ReleaseCalendarPage() {
         {frozen && <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 2, background: T.freeze, opacity: 0.55 }} />}
         <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
           {isToday ? (
-            <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-50)', fontWeight: 600, color: 'var(--ds-text-inverse)', background: T.info, borderRadius: 999, padding: '0 8px' }}>Today</span>
+            <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-inverse)', background: T.info, borderRadius: 999, padding: '0 8px' }}>Today</span>
           ) : (
             <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: inMonth ? T.subtle : T.subtlest }}>{format(day, 'd')}</span>
           )}
         </div>
         {conflict && !compact && (
-          <div style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-50)', fontWeight: 600, color: 'var(--ds-text-danger)', marginTop: 4 }}>Freeze conflict</div>
+          <div style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-danger)', marginTop: 4 }}>Freeze conflict</div>
         )}
         {compact
           ? dayEvents.slice(0, 3).map((ev) => <span key={ev.id} title={ev.label} style={{ display: 'inline-block', width: 6, height: 6, borderRadius: '50%', background: RAIL[ev.lane], marginRight: 4, marginTop: 4 }} />)
           : dayEvents.slice(0, 4).map((ev) => <Chip key={`${ev.id}-${format(day, 'yyyyMMdd')}`} ev={ev} pred={predForRelease(ev)} onClick={() => onChipClick(ev)} />)}
         {!compact && dayEvents.length > 4 && (
-          <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-50)', color: T.subtlest, padding: '0 4px' }}>+{dayEvents.length - 4} more</span>
+          <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', color: T.subtlest, padding: '0 4px' }}>+{dayEvents.length - 4} more</span>
         )}
       </div>
     );

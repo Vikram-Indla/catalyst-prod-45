@@ -274,7 +274,7 @@ export default function CommandCenterPage() {
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                     <span style={{ fontFamily: T.mono, fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: T.link, flexShrink: 0 }}>{c.chg_number}</span>
-                    {risk && risk !== 'low' && <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-50)', fontWeight: 700, color: riskColor, letterSpacing: '0.05em' }}>{risk.toUpperCase()} RISK</span>}
+                    {risk && risk !== 'low' && <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', fontWeight: 700, color: riskColor, letterSpacing: '0.05em' }}>{risk.toUpperCase()} RISK</span>}
                   </div>
                   <p style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', color: T.text, margin: '4px 0 0', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{c.title ?? '—'}</p>
                   {windowStr && <p style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', color: T.subtlest, margin: '4px 0 0' }}>{windowStr}</p>}

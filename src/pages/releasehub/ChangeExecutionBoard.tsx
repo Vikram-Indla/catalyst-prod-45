@@ -64,7 +64,7 @@ function Card({ row }: { row: ChangeListRow }) {
       <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
         <span style={{ fontFamily: T.mono, fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: T.link }}>{row.chg_number}</span>
         {row.risk_level && <RiskLozenge risk={row.risk_level} />}
-        {row.target_env && <span style={{ marginLeft: 'auto', fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-50)', color: T.subtle }}>{row.target_env}</span>}
+        {row.target_env && <span style={{ marginLeft: 'auto', fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', color: T.subtle }}>{row.target_env}</span>}
       </div>
       <div style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: T.text, lineHeight: 1.3 }}>{row.title}</div>
       <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>

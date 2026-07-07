@@ -53,7 +53,7 @@ function Panel({ title, children, action }: { title: string; children: React.Rea
   );
 }
 function Field({ label, value, tone, mono }: { label: string; value: React.ReactNode; tone?: string; mono?: boolean }) {
-  return <div><div style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-50)', color: T.subtlest }}>{label}</div><div style={{ fontFamily: mono ? T.mono : RH.fontBody, fontSize: 'var(--ds-font-size-200)', color: tone ?? T.text }}>{value ?? '—'}</div></div>;
+  return <div><div style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', color: T.subtlest }}>{label}</div><div style={{ fontFamily: mono ? T.mono : RH.fontBody, fontSize: 'var(--ds-font-size-200)', color: tone ?? T.text }}>{value ?? '—'}</div></div>;
 }
 const grid = (cols: number): React.CSSProperties => ({ display: 'grid', gridTemplateColumns: `repeat(${cols}, minmax(0,1fr))`, gap: 12 });
 // Canonical person cell: face avatar + name (falls back to em-dash when unknown).
@@ -81,9 +81,9 @@ function StepReplay({ step, issues }: { step: SopStepFull; issues: ReplayIssue[]
         <span style={{ width: 6, height: 6, borderRadius: '50%', background: tone, flex: 'none' }} />
         <span style={{ fontFamily: T.mono, fontSize: 'var(--ds-font-size-100)', color: T.subtlest, minWidth: 18 }}>{step.stepNo}</span>
         <span style={{ flex: 1, minWidth: 0, fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-300)', color: T.text, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{step.title}{step.isRollback ? ' ↩' : ''}{step.ownerName ? ` · ${step.ownerName}` : ''}</span>
-        {stepIssues.length > 0 && <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-50)', fontWeight: 700, color: T.danger }}>{stepIssues.length} issue{stepIssues.length === 1 ? '' : 's'}</span>}
-        <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-50)', color: T.subtle }}>plan {plannedDur} · act {actualDur}{overran ? ' ⚠' : ''}</span>
-        <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-50)', fontWeight: 700, color: tone, minWidth: 60, textAlign: 'right' }}>{tc(step.status)}</span>
+        {stepIssues.length > 0 && <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', fontWeight: 700, color: T.danger }}>{stepIssues.length} issue{stepIssues.length === 1 ? '' : 's'}</span>}
+        <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', color: T.subtle }}>plan {plannedDur} · act {actualDur}{overran ? ' ⚠' : ''}</span>
+        <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', fontWeight: 700, color: tone, minWidth: 60, textAlign: 'right' }}>{tc(step.status)}</span>
       </div>
       {open && (
         <div style={{ padding: '4px 4px 12px 44px', ...grid(3) }}>
@@ -156,7 +156,7 @@ export default function ProductionEventReplayPage() {
       )}
 
       {/* executive summary */}
-      <Panel title="Executive summary" action={<span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-50)', color: T.subtlest }}>Deterministic — generated from event data (not AI)</span>}>
+      <Panel title="Executive summary" action={<span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', color: T.subtlest }}>Deterministic — generated from event data (not AI)</span>}>
         <p style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-400)', color: T.text, margin: 0, lineHeight: 1.5 }}>{r.summary}</p>
       </Panel>
 
@@ -172,7 +172,7 @@ export default function ProductionEventReplayPage() {
       </Panel>
 
       {/* scope snapshot */}
-      <Panel title="Scope snapshot" action={<span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-50)', color: r.scope.source === 'reconstructed' ? T.warning : T.subtlest }}>{r.scope.source === 'snapshot' ? 'From event snapshot' : r.scope.source === 'reconstructed' ? 'Reconstructed from current release links' : 'No scope data'}</span>}>
+      <Panel title="Scope snapshot" action={<span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', color: r.scope.source === 'reconstructed' ? T.warning : T.subtlest }}>{r.scope.source === 'snapshot' ? 'From event snapshot' : r.scope.source === 'reconstructed' ? 'Reconstructed from current release links' : 'No scope data'}</span>}>
         {r.scope.source === 'none' ? <SectionMessage appearance="warning" title="No scope snapshot"><span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)' }}>This event has no scope snapshot and no linked release to reconstruct from.</span></SectionMessage>
           : <div style={grid(3)}><Field label="Business requests" value={r.scope.brs} /><Field label="Sprints" value={r.scope.sprints} /><Field label="Work items" value={r.scope.workItems} /></div>}
       </Panel>
@@ -259,7 +259,7 @@ function Ledger({ rows, empty, gap, gapLabel }: { rows: Array<{ step: string; va
         <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '6px 0', borderTop: i ? `1px solid ${T.border}` : 'none' }}>
           <span style={{ flex: 1, minWidth: 0, fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', color: T.text, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{r.step}</span>
           {r.href ? <a href={r.href} target="_blank" rel="noreferrer" style={{ fontFamily: T.mono, fontSize: 'var(--ds-font-size-100)', color: T.link }}>{r.val} <ExternalLink size={10} style={{ color: T.link }} /></a> : <span style={{ fontFamily: T.mono, fontSize: 'var(--ds-font-size-100)', color: T.subtle, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 320 }}>{r.val}</span>}
-          {r.owner && <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-50)', color: T.subtlest }}>{r.owner}</span>}
+          {r.owner && <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', color: T.subtlest }}>{r.owner}</span>}
         </div>
       ))}
     </>
@@ -271,8 +271,8 @@ function GateRow({ g }: { g: ReplayGate }) {
     <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '6px 0', borderTop: `1px solid ${T.border}` }}>
       <span style={{ minWidth: 52 }}><Lozenge appearance="default">{g.scope}</Lozenge></span>
       <span style={{ flex: 1, minWidth: 0, display: 'inline-flex', alignItems: 'center', gap: 8, fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', color: T.text }}>{tc(g.role)}{g.approverName ? <Person name={g.approverName} /> : null}</span>
-      {g.comment && <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-50)', color: T.subtlest, maxWidth: 280, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{g.comment}</span>}
-      <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-50)', fontWeight: 700, color: tone, minWidth: 64, textAlign: 'right' }}>{g.overdue && g.status === 'pending' ? 'Overdue' : tc(g.status)}</span>
+      {g.comment && <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', color: T.subtlest, maxWidth: 280, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{g.comment}</span>}
+      <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', fontWeight: 700, color: tone, minWidth: 64, textAlign: 'right' }}>{g.overdue && g.status === 'pending' ? 'Overdue' : tc(g.status)}</span>
     </div>
   );
 }

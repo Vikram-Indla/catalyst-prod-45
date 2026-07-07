@@ -128,7 +128,7 @@ function LiveCountdown({ change, variant }: { change: ChangeCtx; variant: 'full'
   const bigSize = variant === 'card' ? 'var(--ds-font-size-300)' : 'var(--ds-font-size-400)';
   return (
     <span role="status" aria-live="polite" aria-label={timer.eyebrow} style={{ display: 'inline-flex', flexDirection: 'column', alignItems: 'flex-end', gap: 2 }}>
-      <span aria-hidden style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-050)', fontWeight: 500, color: timer.tone, whiteSpace: 'nowrap' }}>
+      <span aria-hidden style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: timer.tone, whiteSpace: 'nowrap' }}>
         {timer.pulse && <span style={{ width: 6, height: 6, borderRadius: '50%', background: timer.tone, display: 'inline-block' }} />}{timer.eyebrow}
       </span>
       <span aria-hidden style={{ fontFamily: RH.fontBody, fontSize: bigSize, fontWeight: 600, color: timer.tone, fontVariantNumeric: 'tabular-nums', lineHeight: 1.1, whiteSpace: 'nowrap' }}>{timer.big}</span>
@@ -166,7 +166,7 @@ const isForYouRoute = (path: string) => path === '/' || path === '/for-you' || p
 function GridField({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <span style={{ display: 'flex', flexDirection: 'column', gap: 2, minWidth: 0 }}>
-      <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-050)', color: T.subtlest, whiteSpace: 'nowrap' }}>{label}</span>
+      <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', color: T.subtlest, whiteSpace: 'nowrap' }}>{label}</span>
       <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: T.text, minWidth: 0 }}>{children}</span>
     </span>
   );

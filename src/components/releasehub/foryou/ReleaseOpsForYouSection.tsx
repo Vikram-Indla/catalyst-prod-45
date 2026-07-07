@@ -26,7 +26,7 @@ const fmt = (iso: string | null) => (iso ? new Date(iso).toLocaleString(undefine
 function durStr(ms: number) { const m = Math.max(0, Math.round(ms / 60000)); return m >= 60 ? `${Math.floor(m / 60)}h ${m % 60}m` : `${m}m`; }
 
 function Chip({ label, fg, bg }: { label: string; fg: string; bg: string }) {
-  return <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-50)', fontWeight: 700, color: fg, background: bg, padding: '1px 6px', borderRadius: 3, textTransform: 'uppercase', letterSpacing: '.03em', whiteSpace: 'nowrap' }}>{label}</span>;
+  return <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', fontWeight: 700, color: fg, background: bg, padding: '1px 6px', borderRadius: 3, textTransform: 'uppercase', letterSpacing: '.03em', whiteSpace: 'nowrap' }}>{label}</span>;
 }
 
 function changeMarkers(c: ChangeCtx): React.ReactNode {
