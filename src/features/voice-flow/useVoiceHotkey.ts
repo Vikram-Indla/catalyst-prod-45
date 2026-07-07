@@ -9,6 +9,8 @@ interface UseVoiceHotkeyOptions {
   onActivate: (field: ActiveField) => void;
   onCommit: () => void;
   onCancel: () => void;
+  /** Current dictation target — lets commit keys stay scoped to it. */
+  getActiveField?: () => ActiveField | null;
 }
 
 /**
@@ -22,20 +24,32 @@ interface UseVoiceHotkeyOptions {
  *   Space or Enter → onCommit()
  *   Escape        → onCancel()
  */
+/** Any element that receives typed text — broader than voice eligibility
+ *  (a data-voice-flow="off" field is still editable). */
+function isEditableElement(el: HTMLElement): boolean {
+  const tag = el.tagName.toLowerCase();
+  if (tag === 'input' || tag === 'textarea') return true;
+  const editable = el.getAttribute('contenteditable');
+  return el.isContentEditable || editable === 'true' || editable === 'plaintext-only';
+}
+
 export function useVoiceHotkey({
   enabled,
   isVoiceActive,
   onActivate,
   onCommit,
   onCancel,
+  getActiveField,
 }: UseVoiceHotkeyOptions): void {
   const lastSpaceTimeRef = useRef(0);
   const isActiveRef = useRef(isVoiceActive);
   const enabledRef  = useRef(enabled);
+  const getFieldRef = useRef(getActiveField);
 
   // Keep refs in sync without triggering effect re-registration
   isActiveRef.current = isVoiceActive;
   enabledRef.current  = enabled;
+  getFieldRef.current = getActiveField;
 
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
@@ -54,6 +68,21 @@ export function useVoiceHotkey({
       // ── While voice session is active ──────────────────────────────
       if (isActiveRef.current) {
         if (isSpace || isEnter) {
+          // Commit keys belong to the dictation target only. If focus has
+          // moved to a DIFFERENT editable element (incl. voice-opted-out
+          // fields), the user is typing there — release the keys
+          // (no preventDefault) and end the session.
+          const sessionField = getFieldRef.current?.() ?? null;
+          const focused = document.activeElement;
+          if (
+            sessionField &&
+            focused instanceof HTMLElement &&
+            focused !== sessionField.element &&
+            isEditableElement(focused)
+          ) {
+            onCancel();
+            return;
+          }
           e.preventDefault();
           e.stopPropagation();
           onCommit();

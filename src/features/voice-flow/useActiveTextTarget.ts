@@ -14,6 +14,10 @@ export function getActiveTextTarget(el: Element | null): ActiveField | null {
   if (!el || !(el instanceof HTMLElement)) return null;
   if (!el.isConnected) return null;
 
+  // Explicit opt-out: fields (or containers) marked data-voice-flow="off"
+  // own their key gestures — e.g. ask/search boxes where Enter submits.
+  if (el.closest('[data-voice-flow="off"]')) return null;
+
   const tag = el.tagName.toLowerCase();
 
   if (tag === 'input') {

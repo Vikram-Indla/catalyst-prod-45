@@ -659,6 +659,7 @@ export function VoiceFlowProvider({ children }: Props) {
     onActivate: handleActivate,
     onCommit: commit,
     onCancel: cancel,
+    getActiveField: () => fieldRef.current,
   });
 
   // ─── Audit helpers ────────────────────────────────────────────────────

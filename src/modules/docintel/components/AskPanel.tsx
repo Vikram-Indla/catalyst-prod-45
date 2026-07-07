@@ -191,7 +191,9 @@ export function AskPanel({ projectId, documentId }: AskPanelProps) {
     <div style={{ paddingTop: 16 }}>
       {/* Question input */}
       <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-        <div style={{ flex: 1 }} dir={questionArabic ? "rtl" : "auto"}>
+        {/* data-voice-flow="off": Enter submits here — the global dictation
+            hotkeys (double-space activate, Enter commit) must never bind. */}
+        <div style={{ flex: 1 }} dir={questionArabic ? "rtl" : "auto"} data-voice-flow="off">
           <Textfield
             value={question}
             placeholder="Ask a question about the source documents…"
