@@ -8,6 +8,7 @@ import { useMemo, useState } from 'react';
 import { JiraTable } from '@/components/shared/JiraTable';
 import type { Column } from '@/components/shared/JiraTable/types';
 import { DropdownMenu, Lozenge, Modal, ModalHeader, ModalTitle, ModalBody, ModalFooter } from '@/components/ads';
+import Tabs, { Tab, TabList } from '@atlaskit/tabs';
 import { Input } from '@/components/ui/input';
 import { Plus, ChevronLeft, ChevronRight, X, Settings } from '@/lib/atlaskit-icons';
 import { CalendarGrid } from '@/components/workhub/calendar/CalendarGrid';
@@ -760,36 +761,24 @@ export function DatabaseSurface({ database }: { database: DocexDatabase }) {
 
   return (
     <div>
-      {/* View tabs — Notion's database header */}
+      {/* View switcher — canonical @atlaskit/tabs (TabList only; the active
+          view's content renders below, driven by activeView). */}
       <div
-        role="tablist"
-        aria-label="Database views"
-        style={{ display: 'flex', alignItems: 'center', gap: 4, borderBottom: '1px solid var(--ds-border)', marginBottom: 12 }}
+        style={{ display: 'flex', alignItems: 'center', gap: 8, borderBottom: '1px solid var(--ds-border)', marginBottom: 12 }}
       >
-        {(views ?? []).map((v) => {
-          const active = v.id === activeView?.id;
-          return (
-            <button
-              key={v.id}
-              role="tab"
-              aria-selected={active}
-              type="button"
-              onClick={() => setActiveViewId(v.id)}
-              style={{
-                border: 'none',
-                background: 'transparent',
-                padding: '8px 12px',
-                font: 'var(--ds-font-body)',
-                fontWeight: active ? 600 : 400,
-                color: active ? 'var(--ds-text)' : 'var(--ds-text-subtle)',
-                borderBottom: active ? '2px solid var(--ds-border-focused)' : '2px solid transparent',
-                cursor: 'pointer',
-              }}
-            >
-              {v.name}
-            </button>
-          );
-        })}
+        {(views ?? []).length > 0 && (
+          <Tabs
+            id="folio-db-views"
+            selected={Math.max(0, (views ?? []).findIndex((v) => v.id === activeView?.id))}
+            onChange={(i) => setActiveViewId((views ?? [])[i]?.id ?? null)}
+          >
+            <TabList>
+              {(views ?? []).map((v) => (
+                <Tab key={v.id}>{v.name}</Tab>
+              ))}
+            </TabList>
+          </Tabs>
+        )}
         <DropdownMenu
           aria-label="Add a view"
           placement="bottom-start"
