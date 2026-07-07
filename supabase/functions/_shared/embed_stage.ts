@@ -49,11 +49,15 @@ export async function runEmbedStage(
 
   const { data: doc, error: docErr } = await admin
     .from("ai_documents")
-    .select("id, project_id, created_at")
+    .select("id, project_id, created_at, title")
     .eq("id", documentId)
     .maybeSingle();
   if (docErr || !doc) throw new Error(`document not found: ${docErr?.message ?? "missing"}`);
   const projectId = doc.project_id as string;
+  // Fallback section path for content preceding the first heading block (e.g.
+  // a title line the extractor labelled paragraph/other): those sections used
+  // to flush with section_path NULL. The document title is the honest anchor.
+  const docTitle = ((doc.title as string | null) ?? "").trim() || null;
 
   const { data: pageRows } = await admin
     .from("ai_document_pages")
@@ -101,14 +105,14 @@ export async function runEmbedStage(
       drafts.push({
         scope: "heading_section", lang: "ar", content: arContent,
         block_ids: [...sectionBlockIds], page_numbers: pagesArr,
-        section_path: sectionTitle, content_kind: "ar_text",
+        section_path: sectionTitle ?? docTitle, content_kind: "ar_text",
       });
     }
     if (enContent) {
       drafts.push({
         scope: "heading_section", lang: "en", content: enContent,
         block_ids: [...sectionBlockIds], page_numbers: pagesArr,
-        section_path: sectionTitle, content_kind: "en_text",
+        section_path: sectionTitle ?? docTitle, content_kind: "en_text",
       });
     }
     arParts = [];

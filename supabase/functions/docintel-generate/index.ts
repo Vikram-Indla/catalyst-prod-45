@@ -180,6 +180,7 @@ type HybridRow = {
   rrf_score: number | null;
   vector_sim: number | null;
   keyword_rank: number | null;
+  document_updated_at: string | null;
 };
 
 // ─────────────────────────────────────────────────────────────────────
@@ -296,6 +297,14 @@ function buildCitations(
   const byIndex = new Map<number, EvidenceItem>();
   for (const e of evidence) byIndex.set(e.index, e);
 
+  // RRF scores are tiny by construction (≈ weight/(rrf_k + rank), max ~0.016) —
+  // stored raw they made confidence read as ~0.01 on a 0..1 column while the
+  // artifact's grounding_score sat at 1.0. Store rank-relative confidence
+  // instead: rrf_score / max(rrf_score) over this retrieval, so the strongest
+  // retrieved evidence = 1.0 and the rest are proportional to how strongly
+  // retrieval ranked them (a retrieval-strength signal, not a probability).
+  const maxRrf = evidence.reduce((m, e) => Math.max(m, e.rrf_score ?? 0), 0);
+
   const rows: CitationRow[] = [];
   const seen = new Set<string>();
 
@@ -315,7 +324,9 @@ function buildCitations(
         page_number: e.page_number,
         block_id: e.block_id,
         quoted_text: e.content.length > QUOTE_CAP ? e.content.slice(0, QUOTE_CAP) : e.content,
-        confidence: e.rrf_score,
+        confidence: e.rrf_score != null && maxRrf > 0
+          ? Number((e.rrf_score / maxRrf).toFixed(4))
+          : null,
       });
     }
   }
@@ -831,6 +842,99 @@ async function handleRequirementFacts(
     inserted = toInsert.length;
   }
 
+  // 5b) Embed fact statements as scope='fact' chunks + content_kind
+  //     'requirement_fact' embeddings — docintel_match_facts retrieves through
+  //     these rows. Driven from DB state (facts lacking a fact chunk) rather
+  //     than from toInsert, so a run that persisted facts but failed before
+  //     embedding self-heals on the next extraction instead of being skipped
+  //     forever by the statement_en dedupe above.
+  const { data: allFacts, error: allFactsErr } = await admin
+    .from("ai_requirement_facts")
+    .select("document_id, statement_en, statement_ar, source_block_ids, source_page_numbers")
+    .in("document_id", documentIds);
+  if (allFactsErr) throw new Error(`facts re-read failed: ${allFactsErr.message}`);
+
+  const { data: factChunkRows, error: factChunkReadErr } = await admin
+    .from("ai_document_chunks")
+    .select("content")
+    .eq("scope", "fact")
+    .in("document_id", documentIds);
+  if (factChunkReadErr) throw new Error(`fact chunks lookup failed: ${factChunkReadErr.message}`);
+  const embeddedStatements = new Set<string>(
+    ((factChunkRows ?? []) as Array<{ content: string }>).map((r) => r.content),
+  );
+
+  type FactChunkDraft = {
+    document_id: string;
+    lang: "ar" | "en";
+    content: string;
+    block_ids: string[];
+    page_numbers: number[];
+  };
+  const factDrafts: FactChunkDraft[] = [];
+  for (
+    const f of (allFacts ?? []) as Array<{
+      document_id: string;
+      statement_en: string | null;
+      statement_ar: string | null;
+      source_block_ids: string[] | null;
+      source_page_numbers: number[] | null;
+    }>
+  ) {
+    const statements: Array<{ text: string; lang: "ar" | "en" }> = [];
+    const en = (f.statement_en ?? "").trim();
+    const ar = (f.statement_ar ?? "").trim();
+    if (en.length > 0) statements.push({ text: en, lang: "en" });
+    if (ar.length > 0) statements.push({ text: ar, lang: "ar" });
+    for (const s of statements) {
+      if (embeddedStatements.has(s.text)) continue;
+      embeddedStatements.add(s.text);
+      factDrafts.push({
+        document_id: f.document_id,
+        lang: s.lang,
+        content: s.text,
+        block_ids: f.source_block_ids ?? [],
+        page_numbers: f.source_page_numbers ?? [],
+      });
+    }
+  }
+
+  let factEmbeddings = 0;
+  if (factDrafts.length > 0) {
+    const factEmbed = await embed(factDrafts.map((d) => d.content));
+    if (factEmbed.embeddings.length !== factDrafts.length) {
+      throw new Error(`fact embedding count mismatch: ${factEmbed.embeddings.length} vs ${factDrafts.length}`);
+    }
+    const { data: insertedFactChunks, error: factChunkErr } = await admin
+      .from("ai_document_chunks")
+      .insert(factDrafts.map((d) => ({
+        document_id: d.document_id,
+        scope: "fact",
+        lang: d.lang,
+        content: d.content,
+        block_ids: d.block_ids,
+        page_numbers: d.page_numbers,
+        section_path: null,
+        char_count: d.content.length,
+      })))
+      .select("id");
+    if (factChunkErr || !insertedFactChunks) {
+      throw new Error(`fact chunk insert failed: ${factChunkErr?.message ?? "no rows"}`);
+    }
+    const { error: factEmbErr } = await admin.from("ai_document_embeddings").insert(
+      factDrafts.map((d, i) => ({
+        chunk_id: insertedFactChunks[i].id as string,
+        document_id: d.document_id,
+        project_id: projectId,
+        content_kind: "requirement_fact",
+        embedding: factEmbed.embeddings[i] as unknown as string,
+        embedding_model: factEmbed.model,
+      })),
+    );
+    if (factEmbErr) throw new Error(`fact embedding insert failed: ${factEmbErr.message}`);
+    factEmbeddings = factDrafts.length;
+  }
+
   // 6) byKind tally over inserted rows.
   const byKind: Record<string, number> = {};
   for (const row of toInsert) byKind[row.kind] = (byKind[row.kind] ?? 0) + 1;
@@ -864,6 +968,7 @@ async function handleRequirementFacts(
       evidence_count: evidence.length,
       factCount: inserted,
       skipped,
+      factEmbeddings,
     },
   });
 
