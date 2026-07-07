@@ -10,6 +10,7 @@ import { ErrorBoundary } from "@/components/ErrorBoundary";
 
 const DocumentsPage = lazy(() => import("./pages/DocintelDocumentsPage"));
 const UploadPage = lazy(() => import("./pages/DocintelUploadPage"));
+const HealthPage = lazy(() => import("./pages/DocintelHealthPage"));
 const WorkspacePage = lazy(() => import("./pages/DocintelWorkspacePage"));
 
 function DocintelNotFound() {
@@ -48,6 +49,8 @@ export function DocintelRoutes() {
     <Routes>
       <Route path="" element={<S><DocumentsPage /></S>} />
       <Route path="upload" element={<S><UploadPage /></S>} />
+      {/* health before :slug so /doc-intelligence/health isn't caught as a slug */}
+      <Route path="health" element={<S><HealthPage /></S>} />
       <Route path=":slug" element={<S><WorkspacePage /></S>} />
       <Route path="*" element={<S><DocintelNotFound /></S>} />
     </Routes>

@@ -155,19 +155,34 @@ export default function DocintelDocumentsPage() {
           />
         }
         actions={
-          <Button
-            appearance="primary"
-            onClick={() =>
-              navigate(
-                activeProject
-                  ? `${docintelRoutes.upload()}?project=${activeProject.key}`
-                  : docintelRoutes.upload(),
-              )
-            }
-            isDisabled={!activeProject}
-          >
-            Upload documents
-          </Button>
+          <div style={{ display: "flex", gap: 8 }}>
+            <Button
+              appearance="default"
+              onClick={() =>
+                navigate(
+                  activeProject
+                    ? `${docintelRoutes.health()}?project=${activeProject.key}`
+                    : docintelRoutes.health(),
+                )
+              }
+              isDisabled={!activeProject}
+            >
+              Knowledge Health
+            </Button>
+            <Button
+              appearance="primary"
+              onClick={() =>
+                navigate(
+                  activeProject
+                    ? `${docintelRoutes.upload()}?project=${activeProject.key}`
+                    : docintelRoutes.upload(),
+                )
+              }
+              isDisabled={!activeProject}
+            >
+              Upload documents
+            </Button>
+          </div>
         }
       />
 

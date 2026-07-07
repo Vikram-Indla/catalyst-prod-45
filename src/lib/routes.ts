@@ -293,6 +293,8 @@ export const strataRoutes = {
 export const docintelRoutes = {
   list: () => '/doc-intelligence',
   upload: () => '/doc-intelligence/upload',
+  // project-level Knowledge Health rollup (read-only)
+  health: () => '/doc-intelligence/health',
   // slug is the frozen ai_documents.slug — no UUID in the URL
   workspace: (slug: string) => `/doc-intelligence/${slug}`,
 };
