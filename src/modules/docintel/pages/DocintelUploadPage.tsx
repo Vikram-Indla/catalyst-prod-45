@@ -12,7 +12,7 @@
  * ADS tokens only. CAT-DOCINTEL-ARABIC-RAG-20260706-001
  */
 import { useCallback, useMemo, useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useDropzone } from "react-dropzone";
 import { PageHeader } from "@/components/ads/PageHeader";
 import { Breadcrumbs } from "@/components/ads/Breadcrumbs";
@@ -26,6 +26,7 @@ import {
   useDocintelUpload,
   useDocumentRealtime,
 } from "../hooks/useDocintel";
+import { useActiveDocintelProject } from "../hooks/useActiveDocintelProject";
 import { PdfThumbnails } from "../components/PdfThumbnails";
 import { ProcessingStatusBoard } from "../components/ProcessingStatusBoard";
 import type {
@@ -135,12 +136,10 @@ function ProcessingPanel({
 export default function DocintelUploadPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const [params] = useSearchParams();
 
   const projectsQuery = useDocintelProjects(user?.id);
   const projects = projectsQuery.data ?? [];
-  const activeKey = params.get("project") ?? projects[0]?.key;
-  const activeProject = projects.find((p) => p.key === activeKey) ?? projects[0] ?? null;
+  const { activeProject } = useActiveDocintelProject(projects);
 
   const [files, setFiles] = useState<File[]>([]);
   const [step, setStep] = useState<WizardStep>("upload");

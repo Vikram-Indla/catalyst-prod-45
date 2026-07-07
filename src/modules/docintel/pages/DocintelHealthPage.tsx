@@ -10,7 +10,7 @@
  * CAT-DOCINTEL-HEALTH-20260707-001
  */
 import { useMemo } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { formatDistanceToNow } from "date-fns";
 import { PageHeader } from "@/components/ads/PageHeader";
 import { Breadcrumbs } from "@/components/ads/Breadcrumbs";
@@ -28,6 +28,7 @@ import type { Column } from "@/components/shared/JiraTable/types";
 import { useAuth } from "@/hooks/useAuth";
 import { docintelRoutes } from "@/lib/routes";
 import { useDocintelProjects } from "../hooks/useDocintel";
+import { useActiveDocintelProject } from "../hooks/useActiveDocintelProject";
 import { useDocintelHealth } from "../hooks/useDocintelHealth";
 import type { DocintelDocument, DocintelStatus } from "../types";
 
@@ -140,14 +141,11 @@ function StatTile({
 export default function DocintelHealthPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const [params, setParams] = useSearchParams();
 
   const projectsQuery = useDocintelProjects(user?.id);
   const projects = projectsQuery.data ?? [];
 
-  const activeKey = params.get("project") ?? projects[0]?.key;
-  const activeProject =
-    projects.find((p) => p.key === activeKey) ?? projects[0] ?? null;
+  const { activeProject, setActiveProjectKey } = useActiveDocintelProject(projects);
 
   const healthQuery = useDocintelHealth(activeProject?.id);
   const health = healthQuery.data ?? null;
@@ -254,10 +252,7 @@ export default function DocintelHealthPage() {
             options={projectOptions}
             value={selectValue}
             onChange={(next) => {
-              if (next) {
-                params.set("project", String(next.value));
-                setParams(params, { replace: true });
-              }
+              if (next) setActiveProjectKey(String(next.value));
             }}
             aria-label="Project"
             isSearchable

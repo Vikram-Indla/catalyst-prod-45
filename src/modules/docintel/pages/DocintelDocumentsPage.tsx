@@ -8,7 +8,7 @@
  * CAT-DOCINTEL-ARABIC-RAG-20260706-001
  */
 import { useMemo, useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { formatDistanceToNow } from "date-fns";
 import { PageHeader } from "@/components/ads/PageHeader";
 import { Breadcrumbs } from "@/components/ads/Breadcrumbs";
@@ -26,6 +26,7 @@ import type { Column } from "@/components/shared/JiraTable/types";
 import { useAuth } from "@/hooks/useAuth";
 import { docintelRoutes } from "@/lib/routes";
 import { useDocintelDocuments, useDocintelProjects } from "../hooks/useDocintel";
+import { useActiveDocintelProject } from "../hooks/useActiveDocintelProject";
 import { AskPanel } from "../components/AskPanel";
 import type { DocintelDocument, DocintelStatus } from "../types";
 
@@ -67,16 +68,13 @@ function formatDuration(doc: DocintelDocument): string {
 export default function DocintelDocumentsPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const [params, setParams] = useSearchParams();
-
   const [askOpen, setAskOpen] = useState(false);
 
   const projectsQuery = useDocintelProjects(user?.id);
   const projects = projectsQuery.data ?? [];
 
-  // Resolve the active project: ?project=<key> or first available.
-  const activeKey = params.get("project") ?? projects[0]?.key;
-  const activeProject = projects.find((p) => p.key === activeKey) ?? projects[0] ?? null;
+  // Resolve the active project: ?project=<key> → remembered → first.
+  const { activeProject, setActiveProjectKey } = useActiveDocintelProject(projects);
 
   const documentsQuery = useDocintelDocuments(activeProject?.id);
   const documents = documentsQuery.data ?? [];
@@ -209,10 +207,7 @@ export default function DocintelDocumentsPage() {
             options={projectOptions}
             value={selectValue}
             onChange={(next) => {
-              if (next) {
-                params.set("project", String(next.value));
-                setParams(params, { replace: true });
-              }
+              if (next) setActiveProjectKey(String(next.value));
             }}
             aria-label="Project"
             isSearchable
