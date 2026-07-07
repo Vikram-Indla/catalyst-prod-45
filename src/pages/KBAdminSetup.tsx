@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
+import { fetchAccessMatrix } from "@/services/knowledgeBase";
 
 interface TrainStatus {
   total_questions: number;
@@ -9,12 +10,20 @@ interface TrainStatus {
   percentage: number;
 }
 
+interface AccessMatrixRow {
+  role_name: string;
+  module_name: string;
+  has_access: boolean;
+}
+
 export default function KBAdminSetup() {
   const [status, setStatus] = useState<TrainStatus | null>(null);
   const [loading, setLoading] = useState(false);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   const [elapsed, setElapsed] = useState(0);
   const [logs, setLogs] = useState<{ time: string; action: string; result: any }[]>([]);
+  const [accessMatrix, setAccessMatrix] = useState<AccessMatrixRow[] | null>(null);
+  const [accessMatrixError, setAccessMatrixError] = useState<string | null>(null);
 
   const fetchStatus = useCallback(async () => {
     setLoading(true);
@@ -32,6 +41,12 @@ export default function KBAdminSetup() {
   }, []);
 
   useEffect(() => { fetchStatus(); }, [fetchStatus]);
+
+  useEffect(() => {
+    fetchAccessMatrix()
+      .then((rows) => setAccessMatrix(rows as AccessMatrixRow[]))
+      .catch((e: any) => setAccessMatrixError(e.message));
+  }, []);
 
   // Elapsed time counter for long-running ops
   useEffect(() => {
@@ -133,6 +148,39 @@ export default function KBAdminSetup() {
           </div>
         </div>
       )}
+
+      {/* Access Matrix — role x module access flags (kb_access_matrix) */}
+      <div className="border rounded-lg p-4 space-y-2 bg-card">
+        <h2 className="text-sm font-semibold">Access Matrix</h2>
+        {accessMatrixError ? (
+          <p className="text-xs text-destructive">{accessMatrixError}</p>
+        ) : !accessMatrix ? (
+          <p className="text-xs text-muted-foreground">Loading…</p>
+        ) : accessMatrix.length === 0 ? (
+          <p className="text-xs text-muted-foreground">No access matrix rows configured.</p>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-xs">
+              <thead>
+                <tr className="border-b text-left text-muted-foreground">
+                  <th className="py-1 pr-4 font-medium">Role</th>
+                  <th className="py-1 pr-4 font-medium">Module</th>
+                  <th className="py-1 font-medium">Access</th>
+                </tr>
+              </thead>
+              <tbody>
+                {accessMatrix.map((row, i) => (
+                  <tr key={`${row.role_name}-${row.module_name}-${i}`} className="border-b last:border-0">
+                    <td className="py-1 pr-4">{row.role_name}</td>
+                    <td className="py-1 pr-4">{row.module_name}</td>
+                    <td className="py-1">{row.has_access ? "Granted" : "Denied"}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
 
       {/* Results Log */}
       <div className="border rounded-lg p-4 space-y-2 bg-card">
