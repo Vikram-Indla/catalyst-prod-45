@@ -170,10 +170,11 @@ function useTraceability(projectId: string | undefined) {
 // ─── Main ─────────────────────────────────────────────────────────────────────
 
 export default function TraceabilityPage() {
-  const { projectKey = 'BAU' } = useParams<{ projectKey: string }>();
+  // No literal fallback key: /testhub/traceability has no :projectKey param, and a
+  // hardcoded 'BAU' default silently matched a real (empty) project named BAU —
+  // rendering an eternally-empty matrix. Route param wins only when present.
+  const { projectKey } = useParams<{ projectKey?: string }>();
   const { projectId: defaultId, projects, isLoading: projLoading } = useTestHubProject();
-  // Resolve the route's project; fall back to the resolver default (real
-  // active Test Space) only when the route key matches nothing (legacy no-key URL).
   const projectId =
     (projectKey ? projects.find((p: any) => p.key === projectKey)?.id : undefined) ?? defaultId;
 
