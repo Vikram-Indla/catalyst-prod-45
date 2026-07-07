@@ -42,7 +42,7 @@ import { syncMentionLinks } from './editor/syncMentionLinks';
 import { BacklinksPanel } from './BacklinksPanel';
 import { DocexAttachments } from './DocexAttachments';
 import { PageTree } from './PageTree';
-import { DropdownMenu, Lozenge, Popup } from '@/components/ads';
+import { DropdownMenu, Lozenge } from '@/components/ads';
 import { Input } from '@/components/ui/input';
 import { exportPageHtml, exportPageMarkdown, printPage } from './editor/exportPage';
 import { uploadWikiFile } from './editor/wikiUpload';
@@ -1103,45 +1103,53 @@ export function WikiPageSurface({ workspace, page, treePages }: WikiPageSurfaceP
           }}
         >
           {page.icon ? (
-            // Grid-anchored popover (was position:absolute top-left, which
-            // detached from the trigger). Popup anchors to the icon button via
-            // Popper and supplies its own elevated surface.
-            <Popup
-              isOpen={iconPickerOpen}
-              onClose={() => setIconPickerOpen(false)}
-              placement="bottom-start"
-              trigger={(triggerProps) => (
-                <button
-                  ref={triggerProps.ref}
-                  aria-controls={triggerProps['aria-controls']}
-                  aria-expanded={triggerProps['aria-expanded']}
-                  aria-haspopup={triggerProps['aria-haspopup']}
-                  type="button"
-                  aria-label="Change page icon"
-                  onClick={() => {
-                    setIconDraft(page.icon ?? '');
-                    setIconPickerOpen((v) => !v);
-                  }}
-                  className="wiki-no-print wiki-icon-btn"
-                  style={{
-                    border: 'none',
-                    background: page.cover_url ? 'var(--ds-surface)' : 'transparent',
-                    borderRadius: 14,
-                    padding: page.cover_url ? 6 : 0,
-                    cursor: 'pointer',
-                    fontSize: 28,
-                    lineHeight: 1,
-                    boxShadow: page.cover_url ? 'var(--ds-shadow-overlay)' : 'none',
-                  }}
-                >
-                  {page.icon}
-                </button>
-              )}
-              content={() => (
+            // Self-contained relative wrapper so the picker anchors to the ICON
+            // (a full-width relative row anchored it to the row's left edge =
+            // viewport top-left). AkPopup would not anchor reliably inside this
+            // sticky/flex context, so a scoped absolute dialog is used here.
+            <span style={{ position: 'relative', display: 'inline-flex' }}>
+              <button
+                type="button"
+                aria-label="Change page icon"
+                aria-expanded={iconPickerOpen}
+                aria-haspopup="dialog"
+                onClick={() => {
+                  setIconDraft(page.icon ?? '');
+                  setIconPickerOpen((v) => !v);
+                }}
+                className="wiki-no-print wiki-icon-btn"
+                style={{
+                  border: 'none',
+                  background: page.cover_url ? 'var(--ds-surface)' : 'transparent',
+                  borderRadius: 14,
+                  padding: page.cover_url ? 6 : 0,
+                  cursor: 'pointer',
+                  fontSize: 28,
+                  lineHeight: 1,
+                  boxShadow: page.cover_url ? 'var(--ds-shadow-overlay)' : 'none',
+                }}
+              >
+                {page.icon}
+              </button>
+              {iconPickerOpen && (
                 <div
                   role="dialog"
                   aria-label="Page icon"
-                  style={{ padding: 10, display: 'flex', gap: 8, alignItems: 'center' }}
+                  style={{
+                    position: 'absolute',
+                    top: '100%',
+                    insetInlineStart: 0,
+                    marginTop: 'var(--ds-space-075)',
+                    zIndex: 30,
+                    padding: 'var(--ds-space-100)',
+                    borderRadius: 8,
+                    border: '1px solid var(--ds-border)',
+                    background: 'var(--ds-surface-raised)',
+                    boxShadow: 'var(--ds-shadow-overlay)',
+                    display: 'flex',
+                    gap: 'var(--ds-space-100)',
+                    alignItems: 'center',
+                  }}
                 >
                   <Input
                     autoFocus
@@ -1187,7 +1195,7 @@ export function WikiPageSurface({ workspace, page, treePages }: WikiPageSurfaceP
                   )}
                 </div>
               )}
-            />
+            </span>
           ) : null}
         </div>
 
