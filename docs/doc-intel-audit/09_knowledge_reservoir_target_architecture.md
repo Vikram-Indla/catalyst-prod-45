@@ -7,20 +7,46 @@
 ## §0 — Live verification (2026-07-07, staging `cyijbdeuehohvhnsywig` via MCP)
 
 The audit's two open evidence conflicts (`06`) and the deploy handover are now **settled
-against the live staging DB**. Both audit conflicts resolved; the handover's deploy picture is
-**stale**.
+against the live staging DB** — and, critically, **most of this doc's "target" already exists
+and runs** as a self-contained `ai_*` / `docintel_*` family (the `CAT-DOCEX-RAG-AGENTS`
+pipeline). The rest of this doc (§1–§10) was written before that pipeline was probed and
+**overstates what is missing** — read it through the lens of this section.
+
+### Finding A — the Knowledge Reservoir is largely BUILT (as `ai_*`/docintel, not `kb_*`)
+
+| Piece | Live status |
+|---|---|
+| Schema | 14 `ai_*` tables (`ai_documents`, `ai_document_versions/pages/jobs/blocks/chunks/images/tables/embeddings`, `ai_extraction_issues`, `ai_agent_runs`, `ai_generated_artifacts`, `ai_artifact_citations`, `ai_requirement_facts`) + 9 `docintel_*` RPCs + `docintel-documents` storage bucket — **all present** |
+| Functions | `docintel-ingest` / `docintel-analyze` / `docintel-generate` live (deployed via MCP, CI bypassed) |
+| Ingestion | `ai_documents` = 2 docs ingested (PDF page-count via unpdf, fan-out per 8-page batch) |
+| Embeddings | **`ai_document_embeddings` = 365 rows**, dim **1536**, `project_id`-scoped |
+| Retrieval | `docintel_hybrid_search` RPC live — scoped by project/doc/lang/content-kind/confidence (RRF vector+keyword) |
+| Agents + citations | `ai_generated_artifacts` = 2 (**brd, epic**); **`ai_artifact_citations` = 78 rows** → citation-backed generation is working; `ai_requirement_facts` for grounded facts |
+| Permissions | `requireMember` → `ph_project_members`, `docintel_is_project_member` RPC, **RLS on `ai_documents` and `ai_document_embeddings` (3 policies each)** → **permission-aware** |
+
+So: OKF-style projection of documents, permission-aware hybrid retrieval, and citation-backed
+artifact generation are **not "missing" — they are deployed and producing real data.** The
+`ai_*` schema is effectively an OKF for the document+requirement slice.
+
+### Finding B — audit conflicts closed; `kb_*` path is a separate, empty, older track
 
 | Question | Live answer |
 |---|---|
-| `kb_embeddings` RLS (`06` Conflict 1) | **Enabled, 3 policies** (insert/select/update). Audit Claim A correct. **SELECT qual = `true`** → any authed user reads all embeddings → **confirms P0-4 (no permission scoping)**. |
-| Dropped `kb_*` tables (`06` Conflict 2) | **Confirmed dropped**: `kb_audit_log`, `kb_document_jira_issues`, `kb_document_page_properties`, `kb_eval_set`, `kb_eval_results` all absent. Survivors: `kb_documents`, `kb_embeddings`, `kb_sources`, `kb_access_matrix`. |
-| kb-* un-parked functions on staging | **NOT deployed** (none present). The handover's CI deploy never landed them. |
-| Superseding work | Newer **`docintel-ingest` / `docintel-analyze` / `docintel-generate`** (+ `docex-import`, `folio-ai-search`) **are** live — deployed **directly via MCP, bypassing the broken CI**. So the dead `SUPABASE_ACCESS_TOKEN` secret is largely moot for functions. |
-| `docintel-*` backing schema | **Missing** — zero `docintel*`/`okf*` tables exist. Functions deployed without schema (breakage in the parallel build). |
-| Folio→RAG wiring migration `20260707020000` | **Applied this session** to staging (`docex` source_type + `needs_reindex` col/trigger/index). Ledger reconciled to file version `20260707020000`. |
-| Retrieval substrate | **`kb_embeddings` = 0 rows** — nothing ever ingested. `kb_documents` = 3 rows, **0 published** → nothing yet eligible for reindex. `ai_usage_log` exists. |
+| `kb_embeddings` RLS (`06` Conflict 1) | **Enabled, 3 policies**; but **SELECT qual = `true`** (unscoped). Audit Claim A correct. |
+| Dropped `kb_*` tables (`06` Conflict 2) | **Confirmed dropped**: `kb_audit_log`, `kb_document_jira_issues`, `kb_document_page_properties`, `kb_eval_set`, `kb_eval_results` absent. Survivors: `kb_documents`, `kb_embeddings`, `kb_sources`, `kb_access_matrix`. |
+| kb-* un-parked functions | **NOT deployed** — the handover's CI deploy never landed them; the docintel pipeline superseded them. |
+| `kb_embeddings` substrate | **0 rows** — nothing ever ingested here. The live vectors are in `ai_document_embeddings`, not `kb_embeddings`. |
+| Folio→RAG wiring `20260707020000` | **Applied this session** (`docex` source_type + `needs_reindex` col/trigger/index; ledger `20260707020000`). But it wires Folio → the **empty `kb_*`** path, which has **no runner** — a *different, older* track than the working docintel pipeline. |
 
-**Net effect on P0 below:** P0-2 is now **closed** (conflicts resolved). P0-1 is **reframed** — functions deploy fine via MCP; the real gap is (a) **no ingestion runner** consuming `needs_reindex`, and (b) **`docintel-*` deployed without tables**. P0-4 (permission scoping) is **confirmed real** (`SELECT true`, empty store).
+**⚠️ Re-fragmentation risk:** the `kb_*` Folio-wiring (incl. the migration applied this session)
+and the live `ai_*`/docintel pipeline are two parallel doc-intel stacks — exactly the
+"seven systems" split `01` warned about. **Decide one substrate before building further.** The
+evidence says `ai_*`/docintel is the live winner; the `kb_*` path may be redundant.
+
+**Net effect on §8 P0:** P0-2 **closed**. P0-1 **reframed** — functions deploy fine; the docintel
+pipeline is live with data, so the real P0 is a **substrate decision** (`ai_*` vs `kb_*`), not a
+deploy fix. P0-4 (no permission scoping) is **true only for the dead `kb_*` path** — the live
+`ai_*` pipeline is already project-scoped with RLS.
 
 ## Target, in one line
 
@@ -204,21 +230,21 @@ no evidence of document/RAG grounding"** (`05`). Missing:
 ## 8. P0 / P1 / P2 gap list
 
 **P0 — blocks everything; mostly verification + unblocking (do first, cheap):**
-- P0-1 ~~Fix the broken deploy (`SUPABASE_ACCESS_TOKEN` dead)~~ **REFRAMED (§0)** — functions
-  deploy fine via MCP; CI is bypassed, not blocking. Real P0 now: **(a) no ingestion runner**
-  consuming `kb_documents.needs_reindex` (the `docex` embedding pass has no worker on staging),
-  and **(b) `docintel-*` functions deployed without any backing tables** — reconcile which path
-  (kb-ingest vs docintel-*) owns ingestion before deploying either, to avoid colliding with the
-  parallel `CAT-DOCEX-RAG-AGENTS` build on the same staging DB.
+- P0-1 **SUBSTRATE DECISION (§0)** — the deploy is not the blocker; there are **two live doc-intel
+  stacks** and building further on both re-creates the "seven systems" split. Pick one:
+  the **working `ai_*`/docintel pipeline** (365 embeddings, 78 citations, permission-scoped) vs
+  the **empty `kb_*` path** (0 rows, no runner, extended by this session's `docex_rag_wiring`).
+  Evidence favors `ai_*`/docintel. Everything else P0 depends on this call.
 - P0-2 ~~Resolve the two live-schema evidence conflicts~~ **CLOSED (§0)** — `kb_embeddings` has
   RLS + 3 policies; the five `kb_*` tables were confirmed dropped. No open conflict remains.
-- P0-3 Confirm the OKF projection schema decision: extend `kb_*` vs new `okf_*` family
-  (blast-radius check on `kb_*` consumers mandatory — intent ledger §3). *Note: no `okf*`/
-  `docintel*` tables exist on staging yet (§0), so this is greenfield, not a migration of
-  existing rows.*
-- P0-4 Permission model for retrieval — **confirmed real (§0)**: `kb_embeddings` SELECT qual is
-  literally `true`, and the store is empty (0 rows). A permission-aware Reservoir cannot ship on
-  `USING (true)` reads (`06` §5/§6).
+- P0-3 Confirm the OKF projection schema decision. **Re-scoped (§0):** `ai_*`/docintel is
+  effectively an OKF for the document+requirement slice **and it already exists with data** — so
+  this is less "greenfield vs `kb_*`" and more "**extend `ai_*` to the remaining OKF node types**
+  (work items, releases, incidents, …) vs start a parallel family." Blast-radius check applies to
+  whichever is chosen.
+- P0-4 Permission model for retrieval — **split by path (§0)**: the dead `kb_*` path is unscoped
+  (`SELECT true`, 0 rows), but the **live `ai_*` pipeline is already project-scoped with RLS**.
+  So P0-4 is *solved on the substrate that matters* and only reappears if `kb_*` is chosen.
 
 **P1 — the core Reservoir spine:**
 - P1-1 OKF node/edge schema + versioning + citation anchors (§2).
@@ -267,10 +293,12 @@ Each phase = one reviewable slice, ≤2h per CLAUDE.md, Plan Lock before code.
 
 Binary, evidence-backed (DOM/DB/API probes, not screenshots alone):
 
-1. **Deploy live** — Folio-wiring migration confirmed on staging ✅ (applied 2026-07-07,
-   `docex` source_type + `needs_reindex` live, ledger `20260707020000`). **Remaining:** an
-   ingestion runner (kb-ingest `ingest_folio_batch` **or** the `docintel-*` path) is deployed
-   *and* backed by tables, and a published Folio page produces ≥1 `kb_embeddings` row. *(P0-1)*
+1. **Substrate chosen + live** — one doc-intel stack is designated canonical (§0). On the
+   evidence, the `ai_*`/docintel pipeline **already meets this**: ingested docs → 365
+   `ai_document_embeddings` (1536-dim, project-scoped) → `docintel_hybrid_search` → 2
+   citation-backed artifacts (78 `ai_artifact_citations`). Acceptance = a documented decision
+   that `ai_*`/docintel is canonical (or a justified case for `kb_*`), **not** a second deploy.
+   *(P0-1)*
 2. **OKF projects a document** — a Folio page edit produces a versioned OKF node with a
    resolvable citation back to `{kb_documents.id, version}`; recompiled on change. *(Phase 1)*
 3. **Sync freshness observable** — a source change flips the object to `stale`, then to `ready`
