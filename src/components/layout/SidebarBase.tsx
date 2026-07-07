@@ -48,7 +48,7 @@ const HUB_ITEMS = [
   { label: 'Test Hub',     href: '/testhub/dashboard',          Icon: CheckCircleIcon,     tone: 'var(--ds-icon-accent-green)' },
   { label: 'Incident Hub', href: '/incident-hub',               Icon: WarningIcon,         tone: 'var(--ds-icon-accent-red)' },
   { label: 'Tasks',     href: '/tasks/overview',          Icon: TaskIcon,            tone: 'var(--ds-icon-accent-yellow)' },
-  { label: 'Folio',        href: '/folio',                      Icon: BookIcon,            tone: 'var(--ds-icon-accent-lime)' },
+  { label: 'Folio',        href: '/folio',                      Icon: BookIcon,            tone: 'var(--ds-icon-accent-purple)' },
 ] as const;
 
 /**
