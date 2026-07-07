@@ -14,8 +14,9 @@ import Lozenge from '@atlaskit/lozenge';
 import Spinner from '@atlaskit/spinner';
 import ModalDialog, { ModalBody, ModalFooter, ModalHeader, ModalTitle } from '@atlaskit/modal-dialog';
 import Textfield from '@atlaskit/textfield';
+import DropdownMenu, { DropdownItem, DropdownItemGroup } from '@atlaskit/dropdown-menu';
 import { catalystToast } from '@/lib/catalystToast';
-import { Plus } from '@/lib/atlaskit-icons';
+import { Plus, MoreHorizontal } from '@/lib/atlaskit-icons';
 
 /**
  * S6 (CAT-TESTHUB-REPOSITORY-REDESIGN-20260705-001) — Test Plans surface.
@@ -36,6 +37,7 @@ interface TmTestPlan {
   passed_count: number | null;
   failed_count: number | null;
   blocked_count: number | null;
+  is_locked: boolean | null;
 }
 
 const PLAN_STATUS: Record<string, { appearance: 'default' | 'inprogress' | 'success' | 'removed'; label: string }> = {
@@ -67,7 +69,7 @@ export default function TestPlansPage() {
       if (!projectId) return [];
       const { data, error } = await supabase
         .from('tm_test_plans')
-        .select('id, plan_key, name, status, planned_start_date, planned_end_date, total_tests, passed_count, failed_count, blocked_count')
+        .select('id, plan_key, name, status, planned_start_date, planned_end_date, total_tests, passed_count, failed_count, blocked_count, is_locked')
         .eq('project_id', projectId)
         .order('created_at', { ascending: false });
       // E1 (CAT-TESTHUB-V2): a query failure must surface, not render fake-empty
@@ -87,6 +89,40 @@ export default function TestPlansPage() {
       qc.invalidateQueries({ queryKey: ['tm-test-plans', projectId] });
       setCreateOpen(false);
       setNewName('');
+    },
+    onError: (e: Error) => catalystToast.error(e.message),
+  });
+
+  // Plan CRUD completion: rename + delete were missing (list was create/read only).
+  const [renaming, setRenaming] = useState<TmTestPlan | null>(null);
+  const [renameValue, setRenameValue] = useState('');
+  const [deleting, setDeleting] = useState<TmTestPlan | null>(null);
+
+  const renamePlan = useMutation({
+    mutationFn: async ({ id, name }: { id: string; name: string }) => {
+      const { error } = await supabase.from('tm_test_plans').update({ name }).eq('id', id);
+      if (error) throw new Error(error.message);
+    },
+    onSuccess: () => {
+      catalystToast.success('Plan renamed');
+      qc.invalidateQueries({ queryKey: ['tm-test-plans', projectId] });
+      setRenaming(null);
+    },
+    onError: (e: Error) => catalystToast.error(e.message),
+  });
+
+  const deletePlan = useMutation({
+    mutationFn: async (id: string) => {
+      // Case refs first (no cascade guarantee), then the plan itself.
+      const { error: refsError } = await supabase.from('tm_test_plan_cases').delete().eq('test_plan_id', id);
+      if (refsError) throw new Error(refsError.message);
+      const { error } = await supabase.from('tm_test_plans').delete().eq('id', id);
+      if (error) throw new Error(error.message);
+    },
+    onSuccess: () => {
+      catalystToast.success('Plan deleted');
+      qc.invalidateQueries({ queryKey: ['tm-test-plans', projectId] });
+      setDeleting(null);
     },
     onError: (e: Error) => catalystToast.error(e.message),
   });
@@ -134,6 +170,35 @@ export default function TestPlansPage() {
       cell: ({ row }) => (
         <span style={{ fontSize: 'var(--ds-font-size-300)', lineHeight: 'var(--ds-line-height-body)', color: 'var(--ds-text-subtle)' }}>
           {fmtDate(row.planned_start_date)} → {fmtDate(row.planned_end_date)}
+        </span>
+      ),
+    },
+    {
+      id: 'actions', label: '', width: 5, alwaysVisible: true,
+      cell: ({ row }) => (
+        <span onClick={e => e.stopPropagation()}>
+          <DropdownMenu
+            trigger={({ triggerRef, isSelected: _isSelected, testId: _testId, ...props }) => (
+              <button
+                ref={triggerRef as React.Ref<HTMLButtonElement>}
+                {...props}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, display: 'flex', color: 'var(--ds-text-subtlest)' }}
+                title="Plan actions"
+              >
+                <MoreHorizontal size={14} />
+              </button>
+            )}
+            placement="bottom-end"
+          >
+            <DropdownItemGroup>
+              <DropdownItem isDisabled={!!row.is_locked} onClick={() => { setRenaming(row); setRenameValue(row.name); }}>
+                {row.is_locked ? 'Rename (locked)' : 'Rename'}
+              </DropdownItem>
+              <DropdownItem isDisabled={!!row.is_locked} onClick={() => setDeleting(row)}>
+                {row.is_locked ? 'Delete (locked)' : 'Delete'}
+              </DropdownItem>
+            </DropdownItemGroup>
+          </DropdownMenu>
         </span>
       ),
     },
@@ -193,6 +258,54 @@ export default function TestPlansPage() {
           )}
         </div>
       </div>
+
+      {renaming && (
+        <ModalDialog onClose={() => setRenaming(null)} width="small">
+          <ModalHeader><ModalTitle>Rename test plan</ModalTitle></ModalHeader>
+          <ModalBody>
+            <Textfield
+              autoFocus
+              value={renameValue}
+              onChange={e => setRenameValue((e.target as HTMLInputElement).value)}
+              onKeyDown={(e: React.KeyboardEvent) => {
+                if (e.key === 'Enter' && renameValue.trim()) renamePlan.mutate({ id: renaming.id, name: renameValue.trim() });
+              }}
+            />
+          </ModalBody>
+          <ModalFooter>
+            <AkButton appearance="subtle" onClick={() => setRenaming(null)}>Cancel</AkButton>
+            <AkButton
+              appearance="primary"
+              isDisabled={!renameValue.trim() || renamePlan.isPending}
+              onClick={() => renamePlan.mutate({ id: renaming.id, name: renameValue.trim() })}
+            >
+              {renamePlan.isPending ? 'Saving…' : 'Save'}
+            </AkButton>
+          </ModalFooter>
+        </ModalDialog>
+      )}
+
+      {deleting && (
+        <ModalDialog onClose={() => setDeleting(null)} width="small">
+          <ModalHeader><ModalTitle appearance="danger">Delete test plan?</ModalTitle></ModalHeader>
+          <ModalBody>
+            <p style={{ margin: 0, color: 'var(--ds-text)' }}>
+              <strong>{deleting.name}</strong> and its case references will be deleted.
+              Repository cases themselves are not affected. This cannot be undone.
+            </p>
+          </ModalBody>
+          <ModalFooter>
+            <AkButton appearance="subtle" onClick={() => setDeleting(null)}>Cancel</AkButton>
+            <AkButton
+              appearance="danger"
+              isDisabled={deletePlan.isPending}
+              onClick={() => deletePlan.mutate(deleting.id)}
+            >
+              {deletePlan.isPending ? 'Deleting…' : 'Delete plan'}
+            </AkButton>
+          </ModalFooter>
+        </ModalDialog>
+      )}
 
       {createOpen && (
         <ModalDialog onClose={() => setCreateOpen(false)} width="small">

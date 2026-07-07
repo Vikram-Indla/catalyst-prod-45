@@ -421,7 +421,7 @@ function FolderNode({
 
         <span onClick={e => e.stopPropagation()}>
           <DropdownMenu
-            trigger={({ triggerRef, ...props }) => (
+            trigger={({ triggerRef, isSelected: _isSelected, testId: _testId, ...props }) => (
               <button
                 ref={triggerRef as React.Ref<HTMLButtonElement>}
                 className="folder-menu-btn"
@@ -1144,7 +1144,8 @@ export default function RepositoryPage() {
           <DropdownMenu trigger="Bulk actions" placement="bottom-start">
             <DropdownItemGroup>
               <DropdownItem onClick={() => setLinkTarget('cycle')}>Add to cycle…</DropdownItem>
-              <DropdownItem onClick={() => setLinkTarget('set')}>Add to set…</DropdownItem>
+              {/* "Add to set…" removed: sets are deprecated into plans (D-004) and no
+                  surface reads tm_set_cases — writing there was a silent data black hole. */}
               <DropdownItem onClick={() => setCopyModalOpen(true)}>Copy cases</DropdownItem>
               <DropdownItem onClick={() => setArchiveModalOpen(true)}>Archive cases</DropdownItem>
             </DropdownItemGroup>

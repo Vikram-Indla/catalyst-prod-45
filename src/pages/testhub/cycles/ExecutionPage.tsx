@@ -7,8 +7,11 @@ import { useCycleScope } from '@/hooks/test-management/useTestCycles';
 import { useTestCase } from '@/hooks/test-management/useTestCases';
 import { useExecutionSteps } from '@/hooks/test-management/useTestSteps';
 import { useTestHubProject } from '@/hooks/test-management/useTestHubProject';
+import { useCreateDefect } from '@/hooks/test-management/useDefects';
 import { supabase } from '@/integrations/supabase/client';
-import { useQueryClient } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import Textfield from '@atlaskit/textfield';
+import Select from '@atlaskit/select';
 import Spinner from '@atlaskit/spinner';
 import SectionMessage from '@atlaskit/section-message';
 import Textarea from '@atlaskit/textarea';
@@ -431,6 +434,12 @@ function StepRunner({
   const [saving, setSaving] = useState(false);
   const [showSaveModal, setShowSaveModal] = useState(false);
   const [completedRunCount, setCompletedRunCount] = useState(0);
+  // Defect-from-failure at the point of execution: armed by a failed/blocked
+  // save, cleared on case switch. Carries the failed step-result for lineage.
+  const [defectRun, setDefectRun] = useState<{
+    runId: string; status: string; stepResultId: string | null; failedStepLabel: string | null;
+  } | null>(null);
+  const [logDefectOpen, setLogDefectOpen] = useState(false);
   const timer = useTimer();
   const isOnline = useOnlineStatus();
   const queryClient = useQueryClient();
@@ -444,6 +453,23 @@ function StepRunner({
   // Runner unmounts on scope switch (parent gates that click already) — clear
   // the flag so a stale "dirty" doesn't linger against the next case.
   useEffect(() => () => onDirtyChange(false), []);
+  // A defect prompt from one case must not survive into the next.
+  useEffect(() => { setDefectRun(null); setLogDefectOpen(false); }, [scope.id]);
+
+  // Defects belong to the cycle's project (not the viewer's hub scope).
+  const { data: cycleProjectId } = useQuery({
+    queryKey: ['cycle-project', cycleId],
+    enabled: !!cycleId,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('tm_test_cycles')
+        .select('project_id')
+        .eq('id', cycleId)
+        .single();
+      if (error) throw error;
+      return data.project_id as string;
+    },
+  });
 
   // Flush offline queue when coming back online
   useEffect(() => {
@@ -645,6 +671,7 @@ function StepRunner({
       if (runError) throw runError;
 
       // Insert step results
+      let failedStepResult: { id: string; step_number: number } | null = null;
       if (run && stepStates.length > 0) {
         const stepResults = stepStates.map((ss, i) => ({
           test_run_id: run.id,
@@ -654,8 +681,14 @@ function StepRunner({
           actual_result: ss.actualResult || null,
           executed_at: new Date().toISOString(),
         }));
-        const { error: stepErr } = await supabase.from('tm_step_results').insert(stepResults);
+        const { data: insertedResults, error: stepErr } = await supabase
+          .from('tm_step_results')
+          .insert(stepResults)
+          .select('id, step_number, status');
         if (stepErr) throw stepErr;
+        failedStepResult = (insertedResults ?? [])
+          .filter(r => r.status === 'failed' || r.status === 'blocked')
+          .sort((a, b) => a.step_number - b.step_number)[0] ?? null;
       }
 
       // Upload attachments
@@ -696,6 +729,14 @@ function StepRunner({
       setCompletedRunCount(nextRunNumber);
       catalystToast.success(`Run #${nextRunNumber} saved: ${runStatus}`);
       setForcePassReason('');
+      if (run && (dbStatus === 'failed' || dbStatus === 'blocked')) {
+        setDefectRun({
+          runId: run.id,
+          status: dbStatus,
+          stepResultId: failedStepResult?.id ?? null,
+          failedStepLabel: failedStepResult ? `step ${failedStepResult.step_number}` : null,
+        });
+      }
       timer.reset();
       onSaved();
     } catch (err: unknown) {
@@ -803,6 +844,33 @@ function StepRunner({
             setForcePassReason('');
             setForcePassOpen(false);
           }}
+        />
+      )}
+
+      {/* Defect-from-failure: a failed/blocked save arms this strip so the
+          tester can file a fully-linked defect without leaving the runner. */}
+      {defectRun && (
+        <div style={{ marginBottom: 16 }}>
+          <SectionMessage appearance="error" title={`Run ${defectRun.status} — log a defect?`}>
+            <p style={{ margin: '0 0 8px' }}>
+              The defect will be linked to this run{defectRun.failedStepLabel ? `, ${defectRun.failedStepLabel},` : ''} and the test case automatically.
+            </p>
+            <Button appearance="danger" onClick={() => setLogDefectOpen(true)}>Log defect</Button>
+            {' '}
+            <Button appearance="subtle" onClick={() => setDefectRun(null)}>Dismiss</Button>
+          </SectionMessage>
+        </div>
+      )}
+
+      {logDefectOpen && defectRun && cycleProjectId && (
+        <LogDefectFromRunModal
+          projectId={cycleProjectId}
+          cycleId={cycleId}
+          caseId={scope.case_id}
+          caseTitle={caseDetail.title}
+          run={defectRun}
+          onClose={() => setLogDefectOpen(false)}
+          onFiled={() => { setLogDefectOpen(false); setDefectRun(null); }}
         />
       )}
 
@@ -1218,6 +1286,102 @@ function ForcePassModal({
         <Button appearance="subtle" onClick={onCancel}>Cancel</Button>
         <Button appearance="warning" isDisabled={!reason.trim()} onClick={() => onConfirm(reason.trim())}>
           Arm force pass
+        </Button>
+      </ModalFooter>
+    </ModalDialog>
+  );
+}
+
+// ─── Defect-from-failure modal ──────────────────────────────────────────────
+// Canonical creation path (useCreateDefect): RPC-generated key, real project,
+// auto tm_defect_links to case + run (+ step result) with cycle-scope lineage.
+function LogDefectFromRunModal({
+  projectId,
+  cycleId,
+  caseId,
+  caseTitle,
+  run,
+  onClose,
+  onFiled,
+}: {
+  projectId: string;
+  cycleId: string;
+  caseId: string;
+  caseTitle: string;
+  run: { runId: string; status: string; stepResultId: string | null; failedStepLabel: string | null };
+  onClose: () => void;
+  onFiled: () => void;
+}) {
+  const [title, setTitle] = useState(
+    `${caseTitle} — ${run.status}${run.failedStepLabel ? ` at ${run.failedStepLabel}` : ''}`
+  );
+  const [severity, setSeverity] = useState<'critical' | 'major' | 'minor' | 'trivial'>('major');
+  const [description, setDescription] = useState('');
+  const createDefect = useCreateDefect();
+  const saving = createDefect.isPending;
+
+  const handleFile = async () => {
+    if (!title.trim()) return;
+    try {
+      const created = await createDefect.mutateAsync({
+        project_id: projectId,
+        title: title.trim(),
+        description: description.trim() || undefined,
+        severity,
+        source_test_run_id: run.runId,
+        source_test_case_id: caseId,
+        run_id: run.runId,
+        cycle_id: cycleId,
+        step_id: run.stepResultId ?? undefined,
+      } as any);
+      catalystToast.success(`Defect ${(created as any)?.defect_key ?? ''} filed and linked to this run`.trim());
+      onFiled();
+    } catch {
+      // useCreateDefect surfaces its own error toast
+    }
+  };
+
+  return (
+    <ModalDialog onClose={onClose} width="medium">
+      <ModalHeader>
+        <ModalTitle appearance="danger">Log defect from failed run</ModalTitle>
+      </ModalHeader>
+      <ModalBody>
+        <div style={{ marginBottom: 12 }}>
+          <label style={{ display: 'block', fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtle)', marginBottom: 4 }}>Title</label>
+          <Textfield
+            value={title}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setTitle(e.target.value)}
+            placeholder="Describe the defect…"
+          />
+        </div>
+        <div style={{ marginBottom: 12 }}>
+          <label style={{ display: 'block', fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtle)', marginBottom: 4 }}>Severity</label>
+          <Select
+            value={{ label: severity.charAt(0).toUpperCase() + severity.slice(1), value: severity }}
+            options={[
+              { label: 'Critical', value: 'critical' },
+              { label: 'Major', value: 'major' },
+              { label: 'Minor', value: 'minor' },
+              { label: 'Trivial', value: 'trivial' },
+            ]}
+            onChange={(opt) => opt && setSeverity(opt.value as typeof severity)}
+          />
+        </div>
+        <div>
+          <label style={{ display: 'block', fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtle)', marginBottom: 4 }}>Description (optional)</label>
+          <Textarea
+            value={description}
+            onChange={(e) => setDescription((e.target as HTMLTextAreaElement).value)}
+            placeholder="Steps observed, actual vs expected…"
+            minimumRows={3}
+          />
+        </div>
+      </ModalBody>
+      <ModalFooter>
+        <Button appearance="subtle" onClick={onClose}>Cancel</Button>
+        <Button appearance="danger" isDisabled={!title.trim() || saving} onClick={handleFile}>
+          {saving ? 'Filing…' : 'File defect'}
         </Button>
       </ModalFooter>
     </ModalDialog>

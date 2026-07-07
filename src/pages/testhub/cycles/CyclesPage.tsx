@@ -129,7 +129,7 @@ export default function CyclesPage() {
             {selectedIds.size} selected
           </span>
           <DropdownMenu
-            trigger={({ triggerRef, ...props }) => (
+            trigger={({ triggerRef, isSelected: _isSelected, testId: _testId, ...props }) => (
               <button
                 ref={triggerRef as React.Ref<HTMLButtonElement>}
                 {...props}
@@ -231,7 +231,7 @@ function CycleActions({ cycle }: { cycle: TMCycle }) {
   return (
     <div onClick={e => e.stopPropagation()}>
       <DropdownMenu
-        trigger={({ triggerRef, ...props }) => (
+        trigger={({ triggerRef, isSelected: _isSelected, testId: _testId, ...props }) => (
           <button
             ref={triggerRef as React.Ref<HTMLButtonElement>}
             {...props}

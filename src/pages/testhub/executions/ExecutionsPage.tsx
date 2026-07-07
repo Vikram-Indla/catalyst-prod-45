@@ -26,10 +26,14 @@ import { Select } from '@/components/ads';
 import {
   useTestExecutions,
   useCreateTestExecution,
+  useDeleteTestExecution,
   type TmTestExecution,
   type ExecutionScopeType,
 } from '@/hooks/test-management/useTestExecutions';
 import { useSprintsByProject } from '@/hooks/test-management/useSprintsByProject';
+import DropdownMenu, { DropdownItem, DropdownItemGroup } from '@atlaskit/dropdown-menu';
+import { MoreHorizontal } from '@/lib/atlaskit-icons';
+import { catalystToast } from '@/lib/catalystToast';
 
 const SCOPE_LABEL: Record<ExecutionScopeType, string> = {
   sprint: 'Sprint',
@@ -68,6 +72,8 @@ export default function ExecutionsPage() {
   const navigate = useNavigate();
   const { data: executions = [], isPending, isError, error, refetch } = useTestExecutions(projectId);
   const createExecution = useCreateTestExecution();
+  const deleteExecution = useDeleteTestExecution();
+  const [deleting, setDeleting] = useState<TmTestExecution | null>(null);
 
   const [createOpen, setCreateOpen] = useState(false);
   const [name, setName] = useState('');
@@ -104,6 +110,30 @@ export default function ExecutionsPage() {
       cell: ({ row }) => (
         <span style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtle)' }}>
           {new Date(row.created_at).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' })}
+        </span>
+      ),
+    },
+    {
+      id: 'actions', label: '', width: 5, alwaysVisible: true,
+      cell: ({ row }) => (
+        <span onClick={(e) => e.stopPropagation()}>
+          <DropdownMenu
+            trigger={({ triggerRef, isSelected: _isSelected, testId: _testId, ...props }) => (
+              <button
+                ref={triggerRef as React.Ref<HTMLButtonElement>}
+                {...props}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, display: 'flex', color: 'var(--ds-text-subtlest)' }}
+                title="Execution actions"
+              >
+                <MoreHorizontal size={14} />
+              </button>
+            )}
+            placement="bottom-end"
+          >
+            <DropdownItemGroup>
+              <DropdownItem onClick={() => setDeleting(row)}>Delete</DropdownItem>
+            </DropdownItemGroup>
+          </DropdownMenu>
         </span>
       ),
     },
@@ -180,6 +210,37 @@ export default function ExecutionsPage() {
           )}
         </div>
       </div>
+
+      {deleting && (
+        <ModalDialog onClose={() => setDeleting(null)} width="small">
+          <ModalHeader><ModalTitle appearance="danger">Delete execution?</ModalTitle></ModalHeader>
+          <ModalBody>
+            <p style={{ margin: 0, color: 'var(--ds-text)' }}>
+              <strong>{deleting.name}</strong> will be deleted. Executions that contain cycles
+              cannot be deleted — their cycles carry run evidence.
+            </p>
+          </ModalBody>
+          <ModalFooter>
+            <Button appearance="subtle" onClick={() => setDeleting(null)}>Cancel</Button>
+            <Button
+              appearance="danger"
+              isLoading={deleteExecution.isPending}
+              onClick={() => {
+                if (!projectId) return;
+                deleteExecution.mutate(
+                  { id: deleting.id, projectId },
+                  {
+                    onSuccess: () => { catalystToast.success('Execution deleted'); setDeleting(null); },
+                    onError: (e: Error) => catalystToast.error('Cannot delete execution', e.message),
+                  },
+                );
+              }}
+            >
+              Delete
+            </Button>
+          </ModalFooter>
+        </ModalDialog>
+      )}
 
       {createOpen && (
         <ModalDialog onClose={() => setCreateOpen(false)} width="medium">

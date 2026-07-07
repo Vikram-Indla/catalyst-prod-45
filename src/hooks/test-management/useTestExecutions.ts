@@ -100,6 +100,29 @@ export function useCreateTestExecution() {
   });
 }
 
+export function useDeleteTestExecution() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ id, projectId }: { id: string; projectId: string }): Promise<void> => {
+      // Guard: an execution that already contains cycles must not be deletable —
+      // cycles carry runs/results; deleting the container would orphan evidence.
+      const { count, error: countError } = await typedQuery('tm_test_cycles')
+        .select('id', { count: 'exact', head: true })
+        .eq('execution_id', id);
+      if (countError) throw countError;
+      if ((count ?? 0) > 0) {
+        throw new Error(`This execution has ${count} cycle${count === 1 ? '' : 's'}. Delete or move its cycles first.`);
+      }
+      const { error } = await typedQuery('tm_test_executions').delete().eq('id', id);
+      if (error) throw error;
+      void projectId;
+    },
+    onSuccess: (_d, vars) => {
+      queryClient.invalidateQueries({ queryKey: ['tm-executions', vars.projectId] });
+    },
+  });
+}
+
 export function useUpdateTestExecution() {
   const queryClient = useQueryClient();
   return useMutation({

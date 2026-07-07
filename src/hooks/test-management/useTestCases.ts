@@ -136,21 +136,22 @@ export function useTestCases(projectId: string | undefined, filters?: CaseFilter
       const lastExecutions: Record<string, { status: string; executed_at: string | null }> = {};
       
       if (caseIds.length > 0) {
+        // tm_cycle_scope is the live execution container (legacy test_cycle_executions is dead)
         const { data: execData, error: execError } = await supabase
-          .from('test_cycle_executions')
-          .select('case_id, status, executed_at')
-          .in('case_id', caseIds)
-          .order('executed_at', { ascending: false });
+          .from('tm_cycle_scope')
+          .select('test_case_id, current_status, updated_at')
+          .in('test_case_id', caseIds)
+          .order('updated_at', { ascending: false });
 
         if (execError) throw execError;
 
         // Get latest execution per case
         if (execData) {
           execData.forEach(exec => {
-            if (!lastExecutions[exec.case_id]) {
-              lastExecutions[exec.case_id] = {
-                status: exec.status || 'not_run',
-                executed_at: exec.executed_at,
+            if (!lastExecutions[exec.test_case_id]) {
+              lastExecutions[exec.test_case_id] = {
+                status: exec.current_status || 'not_run',
+                executed_at: exec.updated_at,
               };
             }
           });
@@ -219,18 +220,18 @@ export function useTestCase(caseId: string | undefined) {
 
       if (labelsError) throw labelsError;
 
-      // Fetch last execution status
+      // Fetch last execution status (tm_cycle_scope is the live execution container)
       const { data: executions, error: execError } = await supabase
-        .from('test_cycle_executions')
-        .select('status, executed_at')
-        .eq('case_id', caseId)
-        .order('executed_at', { ascending: false })
+        .from('tm_cycle_scope')
+        .select('current_status, updated_at')
+        .eq('test_case_id', caseId)
+        .order('updated_at', { ascending: false })
         .limit(1);
 
       if (execError) throw execError;
 
-      const lastExecution = executions && executions.length > 0 
-        ? { status: executions[0].status || 'not_run', executed_at: executions[0].executed_at }
+      const lastExecution = executions && executions.length > 0
+        ? { status: executions[0].current_status || 'not_run', executed_at: executions[0].updated_at }
         : null;
 
       const mappedSteps = (steps || []).map(s => ({
