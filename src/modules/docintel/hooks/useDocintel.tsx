@@ -289,6 +289,32 @@ export function useGenerateArtifact() {
 }
 
 // ───────────────────────────────────────────────────────────────────────────
+// Ask (grounded Q&A)
+// ───────────────────────────────────────────────────────────────────────────
+
+/**
+ * Ask a grounded question over the corpus (docintel-ask). Document-scoped when
+ * documentId is given, else project-wide. No cache invalidation — an answer is
+ * ephemeral, not a persisted artifact. Toasts on error only; the answer
+ * renders in the Ask panel.
+ */
+export function useAskDocintel() {
+  return useMutation({
+    mutationFn: (input: {
+      projectId: string;
+      documentId?: string;
+      question: string;
+    }) => docintelApi.askQuestion(input),
+    onError: (err: unknown) => {
+      catalystToast.error(
+        "Ask failed",
+        err instanceof Error ? err.message : "Could not answer the question",
+      );
+    },
+  });
+}
+
+// ───────────────────────────────────────────────────────────────────────────
 // Requirement facts + traceability
 // ───────────────────────────────────────────────────────────────────────────
 

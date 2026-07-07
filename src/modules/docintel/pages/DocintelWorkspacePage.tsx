@@ -20,6 +20,7 @@ import { TranslatedDocumentView } from "../components/TranslatedDocumentView";
 import { GenerationPanel } from "../components/GenerationPanel";
 import { FactsReviewPanel } from "../components/FactsReviewPanel";
 import { TraceabilityMatrix } from "../components/TraceabilityMatrix";
+import { AskPanel } from "../components/AskPanel";
 import type { DocintelStatus } from "../types";
 
 function docStatusAppearance(status: DocintelStatus): LozengeAppearance {
@@ -90,6 +91,7 @@ export default function DocintelWorkspacePage() {
             <Tab>Facts</Tab>
             <Tab>Artifacts</Tab>
             <Tab>Traceability</Tab>
+            <Tab>Ask</Tab>
           </TabList>
 
           <TabPanel>
@@ -117,6 +119,11 @@ export default function DocintelWorkspacePage() {
           <TabPanel>
             <div style={{ padding: "0 0 16px", width: "100%" }}>
               <TraceabilityMatrix projectId={document.project_id} documentId={document.id} />
+            </div>
+          </TabPanel>
+          <TabPanel>
+            <div style={{ padding: "0 0 16px", width: "100%" }}>
+              <AskPanel projectId={document.project_id} documentId={document.id} />
             </div>
           </TabPanel>
         </Tabs>

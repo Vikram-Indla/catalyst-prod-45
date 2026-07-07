@@ -7,18 +7,26 @@
  *
  * CAT-DOCINTEL-ARABIC-RAG-20260706-001
  */
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { formatDistanceToNow } from "date-fns";
 import { PageHeader } from "@/components/ads/PageHeader";
 import { Breadcrumbs } from "@/components/ads/Breadcrumbs";
-import { Button, Lozenge, Select, Spinner, EmptyState } from "@/components/ads";
+import {
+  Button,
+  Lozenge,
+  Select,
+  Spinner,
+  EmptyState,
+  CatalystDrawer,
+} from "@/components/ads";
 import type { LozengeAppearance } from "@/components/ads";
 import { JiraTable } from "@/components/shared/JiraTable";
 import type { Column } from "@/components/shared/JiraTable/types";
 import { useAuth } from "@/hooks/useAuth";
 import { docintelRoutes } from "@/lib/routes";
 import { useDocintelDocuments, useDocintelProjects } from "../hooks/useDocintel";
+import { AskPanel } from "../components/AskPanel";
 import type { DocintelDocument, DocintelStatus } from "../types";
 
 const DASH = "—";
@@ -60,6 +68,8 @@ export default function DocintelDocumentsPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [params, setParams] = useSearchParams();
+
+  const [askOpen, setAskOpen] = useState(false);
 
   const projectsQuery = useDocintelProjects(user?.id);
   const projects = projectsQuery.data ?? [];
@@ -158,6 +168,13 @@ export default function DocintelDocumentsPage() {
           <div style={{ display: "flex", gap: 8 }}>
             <Button
               appearance="default"
+              onClick={() => setAskOpen(true)}
+              isDisabled={!activeProject}
+            >
+              Ask
+            </Button>
+            <Button
+              appearance="default"
               onClick={() =>
                 navigate(
                   activeProject
@@ -238,6 +255,23 @@ export default function DocintelDocumentsPage() {
           ariaLabel="Documents"
         />
       )}
+
+      {/* Project-scoped grounded Q&A over every document in the project. */}
+      <CatalystDrawer
+        isOpen={askOpen}
+        onClose={() => setAskOpen(false)}
+        label="Ask the documents"
+        width="wide"
+      >
+        {activeProject && (
+          <div style={{ padding: 24 }}>
+            <span style={{ fontWeight: 600, fontSize: 16, color: "var(--ds-text)" }}>
+              Ask — {activeProject.name}
+            </span>
+            <AskPanel projectId={activeProject.id} />
+          </div>
+        )}
+      </CatalystDrawer>
     </div>
   );
 }

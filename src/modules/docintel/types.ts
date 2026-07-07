@@ -263,6 +263,39 @@ export interface DocintelGenerateResult {
 }
 
 // ---------------------------------------------------------------------------
+// Ask: grounded Q&A over the corpus
+// ---------------------------------------------------------------------------
+
+/** One citation backing an [E<n>] marker in an Ask answer (docintel-ask). */
+export interface DocintelAskCitation {
+  /** The [E<n>] evidence index this citation backs. */
+  marker: number;
+  document_id: string;
+  document_title: string | null;
+  page_number: number | null;
+  block_id: string | null;
+  quoted_text: string | null;
+  snippet: string | null;
+  /** ai_documents.updated_at of the cited document (source freshness). */
+  document_updated_at: string | null;
+}
+
+/** Freshness of the sources behind an Ask answer. */
+export interface DocintelAskFreshness {
+  latest_source_at: string | null;
+  oldest_source_at: string | null;
+}
+
+/** docintel-ask (non-streaming) response. */
+export interface DocintelAskResult {
+  answer_md: string;
+  citations: DocintelAskCitation[];
+  confidence: number | null;
+  evidence_count: number;
+  freshness: DocintelAskFreshness | null;
+}
+
+// ---------------------------------------------------------------------------
 // Requirement facts + traceability
 // ---------------------------------------------------------------------------
 

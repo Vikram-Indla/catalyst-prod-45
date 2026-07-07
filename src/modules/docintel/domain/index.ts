@@ -12,6 +12,7 @@ import type {
   DocintelArtifactCoverage,
   DocintelArtifactType,
   DocintelArtifactWithCitations,
+  DocintelAskResult,
   DocintelBlock,
   DocintelCitation,
   DocintelDocument,
@@ -338,6 +339,36 @@ export const docintelApi = {
       citationCount: res.citationCount ?? null,
       status: res.status ?? "ready",
       content_md: res.content_md ?? null,
+    };
+  },
+
+  /**
+   * Ask a grounded question over the corpus via the docintel-ask edge
+   * function. Non-streaming for v1 (stream:false) — resolves with the full
+   * answer, marker-keyed citations, deterministic confidence and source
+   * freshness. Scoped to one document when documentId is given, else
+   * project-wide.
+   */
+  askQuestion: async ({
+    projectId,
+    documentId,
+    question,
+  }: {
+    projectId: string;
+    documentId?: string;
+    question: string;
+  }): Promise<DocintelAskResult> => {
+    const { data, error } = await supabase.functions.invoke("docintel-ask", {
+      body: { projectId, documentId, question, stream: false },
+    });
+    if (error) throw new Error(error.message);
+    const res = data as Partial<DocintelAskResult> | null;
+    return {
+      answer_md: res?.answer_md ?? "",
+      citations: res?.citations ?? [],
+      confidence: typeof res?.confidence === "number" ? res.confidence : null,
+      evidence_count: res?.evidence_count ?? 0,
+      freshness: res?.freshness ?? null,
     };
   },
 
