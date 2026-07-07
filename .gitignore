@@ -91,3 +91,6 @@ package-lock.json
 
 *storybook.log
 .aider*
+
+# Playwright storageState (live session token — never commit)
+.auth/

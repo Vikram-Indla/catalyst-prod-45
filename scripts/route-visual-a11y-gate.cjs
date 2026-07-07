@@ -48,6 +48,10 @@ const BASE = arg('base', 'http://localhost:8080').replace(/\/$/, '');
 const ONLY = arg('only', 'both'); // both | contrast | a11y
 const THEMES = arg('themes', 'dark,light').split(',').map((s) => s.trim()).filter(Boolean);
 const STRICT = has('strict');
+// Playwright storageState JSON (cookies + localStorage) exported from a
+// logged-in session — required to reach the auth-gated app. Without it every
+// route renders the login page. Build one with: node scripts/export-auth-state.cjs
+const AUTH = arg('auth', null);
 
 function resolveRoutes() {
   const explicit = arg('routes', null);
@@ -127,11 +131,21 @@ async function main() {
   const report = { base: BASE, only: ONLY, themes: THEMES, generatedRoutes: routes.length, results: [] };
   let violationCount = 0;
 
+  if (AUTH && !fs.existsSync(AUTH)) {
+    console.error(`--auth: storageState file not found at ${AUTH}. Build one: node scripts/export-auth-state.cjs`);
+    process.exit(1);
+  }
+  if (!AUTH) {
+    console.warn('WARNING: no --auth storageState given — auth-gated routes will render the login page. Build one: node scripts/export-auth-state.cjs');
+  }
+
   const browser = await chromium.launch();
   try {
     for (const route of routes) {
       for (const theme of THEMES) {
-        const context = await browser.newContext({ viewport: { width: 1440, height: 900 } });
+        const ctxOpts = { viewport: { width: 1440, height: 900 } };
+        if (AUTH) ctxOpts.storageState = AUTH;
+        const context = await browser.newContext(ctxOpts);
         await context.addInitScript((t) => {
           try { localStorage.setItem('catalyst-theme', t); } catch {}
         }, theme);
