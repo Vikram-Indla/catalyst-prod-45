@@ -28,7 +28,11 @@ import {
 } from "../hooks/useDocintel";
 import { PdfThumbnails } from "../components/PdfThumbnails";
 import { ProcessingStatusBoard } from "../components/ProcessingStatusBoard";
-import type { DocintelIngestResult, DocintelStatus } from "../types";
+import type {
+  DocintelIngestCreated,
+  DocintelIngestResult,
+  DocintelStatus,
+} from "../types";
 
 const MAX_FILES = 3;
 const MAX_BYTES = 50 * 1024 * 1024;
@@ -64,7 +68,7 @@ function ProcessingPanel({
   onOpen,
   onRetry,
 }: {
-  result: DocintelIngestResult;
+  result: DocintelIngestCreated;
   file: File | undefined;
   startedAt: number;
   onOpen: (slug: string) => void;
@@ -350,16 +354,41 @@ export default function DocintelUploadPage() {
               ))}
             </div>
           ) : (
-            results.map((r, i) => (
-              <ProcessingPanel
-                key={r.documentId}
-                result={r}
-                file={files[i]}
-                startedAt={startedAt}
-                onOpen={(slug) => navigate(docintelRoutes.workspace(slug))}
-                onRetry={retry}
-              />
-            ))
+            results.map((r, i) =>
+              r.duplicate ? (
+                // Exact duplicate — nothing was created; link to the existing doc.
+                <div
+                  key={`dup-${r.existing.id}-${i}`}
+                  style={{ marginBottom: 12 }}
+                >
+                  <SectionMessage
+                    appearance="information"
+                    title="Duplicate document"
+                    actions={
+                      r.existing.slug
+                        ? [{
+                            key: "open",
+                            text: "Open existing document",
+                            onClick: () =>
+                              navigate(docintelRoutes.workspace(r.existing.slug!)),
+                          }]
+                        : undefined
+                    }
+                  >
+                    {`Identical document already exists: ${r.existing.title ?? "Untitled"}`}
+                  </SectionMessage>
+                </div>
+              ) : (
+                <ProcessingPanel
+                  key={r.documentId}
+                  result={r}
+                  file={files[i]}
+                  startedAt={startedAt}
+                  onOpen={(slug) => navigate(docintelRoutes.workspace(slug))}
+                  onRetry={retry}
+                />
+              )
+            )
           )}
         </>
       )}

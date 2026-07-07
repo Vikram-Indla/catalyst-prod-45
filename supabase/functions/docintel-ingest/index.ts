@@ -4,12 +4,18 @@
  * Contract (client uploads to the 'docintel-documents' bucket FIRST, then calls
  * this with the resulting storage paths):
  *
- *   POST { projectId, files: [{ storagePath, fileName, mimeType, fileSize, title? }] }
- *   → 200 { documents: [{ documentId, slug, pageCount }] }
+ *   POST { projectId, files: [{ storagePath, fileName, mimeType, fileSize, title? }], documentId? }
+ *   → 200 { documents: [{ documentId, slug, pageCount } | { duplicate, fileName, existing }] }
  *
- * Per file: verify caller membership → insert ai_documents (ingesting) + version
- * + ingest job → download → derive page_count (PDF via unpdf; DOCX = 1 logical
- * page) → insert ai_document_pages (pending) → status → extracting, stamp ingest
+ * Per file: verify caller membership → download → SHA-256 of the BYTES (true
+ * content hash) → duplicate check (same project, same hash, status != failed:
+ * report {duplicate, existing} and delete the redundant upload — no rows
+ * created) → insert ai_documents (ingesting) + version + ingest job, OR — when
+ * documentId is given (re-upload flow) — append a new ai_document_versions row
+ * (max+1), rewind the document, and drop the old derived rows (pages/blocks/
+ * tables/images/chunks/embeddings; citations & artifacts are preserved) →
+ * derive page_count (PDF via unpdf; DOCX = 1 logical page) → insert
+ * ai_document_pages (pending) → status → extracting, stamp ingest
  * latency → FAN OUT: invoke docintel-analyze once per BATCH (BATCH_SIZE pages)
  * in parallel via EdgeRuntime.waitUntil so the HTTP response returns immediately.
  * Batches run concurrently so wall-clock ≈ slowest batch regardless of page
@@ -50,15 +56,26 @@ const PDF_MIME = "application/pdf";
 // Scanned/sparse pages still fall back to the multimodal image path per page.
 const BATCH_SIZE = 8;
 
-/** Cheap v1 content hash: storagePath + fileSize + fileName. SHA-256 hex. */
-async function computeContentHash(f: IngestFile): Promise<string> {
-  const input = `${f.storagePath}|${f.fileSize}|${f.fileName}`;
-  const bytes = new TextEncoder().encode(input);
+/**
+ * True content hash (v2): SHA-256 hex of the actual file BYTES. Replaces the
+ * weak v1 path-based hash (`storagePath|fileSize|fileName`) — storagePath
+ * embeds a client-generated uuid, so identical files never collided under v1.
+ */
+async function computeContentHash(bytes: Uint8Array): Promise<string> {
   const digest = await crypto.subtle.digest("SHA-256", bytes);
   return [...new Uint8Array(digest)]
     .map((b) => b.toString(16).padStart(2, "0"))
     .join("");
 }
+
+/** Per-file ingest outcome: a created/re-ingested document, or a detected duplicate. */
+type IngestResult =
+  | { documentId: string; slug: string | null; pageCount: number | null }
+  | {
+    duplicate: true;
+    fileName: string;
+    existing: { id: string; slug: string | null; title: string | null };
+  };
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -68,11 +85,13 @@ Deno.serve(async (req) => {
   try {
     const admin = getServiceClient();
     const body = await req.json().catch(() => null) as
-      | { projectId?: string; files?: IngestFile[] }
+      | { projectId?: string; files?: IngestFile[]; documentId?: string }
       | null;
 
     const projectId = body?.projectId;
     const files = body?.files;
+    // Re-upload flow: when set, files[0] becomes a NEW VERSION of this document.
+    const targetDocumentId = body?.documentId;
     if (!projectId || !Array.isArray(files) || files.length === 0) {
       return json({ error: "projectId and non-empty files[] are required" }, 400);
     }
@@ -84,7 +103,7 @@ Deno.serve(async (req) => {
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 
-    const results: Array<{ documentId: string; slug: string | null; pageCount: number | null }> = [];
+    const results: IngestResult[] = [];
     const fanOut: Promise<unknown>[] = [];
 
     for (const file of files) {
@@ -97,42 +116,165 @@ Deno.serve(async (req) => {
         );
       }
 
-      const contentHash = await computeContentHash(file);
-      const sourceLanguage: string | null = null; // detected in a later stage
-
-      // Insert the document row (ingesting).
-      const { data: doc, error: insErr } = await admin
-        .from("ai_documents")
-        .insert({
-          project_id: projectId,
-          title: file.title ?? file.fileName,
-          original_file_name: file.fileName,
-          mime_type: file.mimeType,
-          storage_path: file.storagePath,
-          file_size: file.fileSize,
-          source_language: sourceLanguage,
-          status: "ingesting",
-          content_hash: contentHash,
-          created_by: userId,
-        })
-        .select("id, slug")
-        .single();
-
-      if (insErr || !doc) {
+      // Download FIRST — the bytes are the document's identity. True content
+      // hash + duplicate detection happen before any row is created. (The
+      // storage object was already uploaded by the client before this call.)
+      const { data: blob, error: dlErr } = await admin.storage
+        .from("docintel-documents")
+        .download(file.storagePath);
+      if (dlErr || !blob) {
         return json(
-          { error: `Failed to create document: ${insErr?.message ?? "unknown"}` },
+          { error: `Download failed for ${file.fileName}: ${dlErr?.message ?? "no file"}` },
           500,
         );
       }
-      const documentId = doc.id as string;
+      const bytes = new Uint8Array(await blob.arrayBuffer());
+      const contentHash = await computeContentHash(bytes);
+      const sourceLanguage: string | null = null; // detected in a later stage
 
-      // Version row (v1) + ingest job (running).
-      await admin.from("ai_document_versions").insert({
-        document_id: documentId,
-        version_no: 1,
-        storage_path: file.storagePath,
-        content_hash: contentHash,
-      });
+      let documentId: string;
+      let docSlug: string | null;
+
+      if (targetDocumentId) {
+        // ── Re-upload flow: NEW VERSION of an existing document ────────────
+        const { data: existingDoc, error: exErr } = await admin
+          .from("ai_documents")
+          .select("id, slug, title, content_hash, status")
+          .eq("id", targetDocumentId)
+          .eq("project_id", projectId)
+          .maybeSingle();
+        if (exErr || !existingDoc) {
+          return json({ error: "Target document not found in project" }, 404);
+        }
+
+        // Byte-identical to the current version → nothing to do.
+        if (existingDoc.content_hash === contentHash && existingDoc.status !== "failed") {
+          await admin.storage.from("docintel-documents").remove([file.storagePath]);
+          results.push({
+            duplicate: true,
+            fileName: file.fileName,
+            existing: {
+              id: existingDoc.id as string,
+              slug: (existingDoc.slug as string | null) ?? null,
+              title: (existingDoc.title as string | null) ?? null,
+            },
+          });
+          continue;
+        }
+
+        // Next version number (the current file is v1 even if its row is missing).
+        const { data: lastVer } = await admin
+          .from("ai_document_versions")
+          .select("version_no")
+          .eq("document_id", targetDocumentId)
+          .order("version_no", { ascending: false })
+          .limit(1)
+          .maybeSingle();
+        await admin.from("ai_document_versions").insert({
+          document_id: targetDocumentId,
+          version_no: ((lastVer?.version_no as number | undefined) ?? 1) + 1,
+          storage_path: file.storagePath,
+          content_hash: contentHash,
+        });
+
+        // Point the document at the new bytes and rewind it to re-extraction.
+        const { error: updErr } = await admin
+          .from("ai_documents")
+          .update({
+            title: file.title ?? file.fileName,
+            original_file_name: file.fileName,
+            mime_type: file.mimeType,
+            storage_path: file.storagePath,
+            file_size: file.fileSize,
+            page_count: null,
+            source_language: sourceLanguage,
+            status: "ingesting",
+            status_detail: "Re-ingesting new version",
+            content_hash: contentHash,
+            error_message: null,
+          })
+          .eq("id", targetDocumentId);
+        if (updErr) {
+          return json({ error: `Failed to update document: ${updErr.message}` }, 500);
+        }
+
+        // Fresh extraction: drop the derived rows of the old version.
+        // FK audit (20260707030000): ai_artifact_citations.block_id and
+        // ai_requirement_facts.source_block_ids carry NO FK constraints, so
+        // artifacts/citations/facts survive untouched and keep their
+        // historical block/page references. Cascades: pages → blocks/tables/
+        // images/extraction_issues (page_id), chunks → embeddings (chunk_id).
+        // tables/images/chunks are also deleted by document_id to catch rows
+        // whose nullable page_id never got set.
+        await admin.from("ai_document_pages").delete().eq("document_id", targetDocumentId);
+        await admin.from("ai_document_tables").delete().eq("document_id", targetDocumentId);
+        await admin.from("ai_document_images").delete().eq("document_id", targetDocumentId);
+        await admin.from("ai_document_chunks").delete().eq("document_id", targetDocumentId);
+
+        documentId = targetDocumentId;
+        docSlug = (existingDoc.slug as string | null) ?? null;
+      } else {
+        // ── New upload: project-wide duplicate detection on the byte hash ──
+        const { data: dup } = await admin
+          .from("ai_documents")
+          .select("id, slug, title")
+          .eq("project_id", projectId)
+          .eq("content_hash", contentHash)
+          .neq("status", "failed")
+          .limit(1)
+          .maybeSingle();
+        if (dup) {
+          // The just-uploaded object is redundant — remove it (best-effort).
+          await admin.storage.from("docintel-documents").remove([file.storagePath]);
+          results.push({
+            duplicate: true,
+            fileName: file.fileName,
+            existing: {
+              id: dup.id as string,
+              slug: (dup.slug as string | null) ?? null,
+              title: (dup.title as string | null) ?? null,
+            },
+          });
+          continue;
+        }
+
+        // Insert the document row (ingesting).
+        const { data: doc, error: insErr } = await admin
+          .from("ai_documents")
+          .insert({
+            project_id: projectId,
+            title: file.title ?? file.fileName,
+            original_file_name: file.fileName,
+            mime_type: file.mimeType,
+            storage_path: file.storagePath,
+            file_size: file.fileSize,
+            source_language: sourceLanguage,
+            status: "ingesting",
+            content_hash: contentHash,
+            created_by: userId,
+          })
+          .select("id, slug")
+          .single();
+
+        if (insErr || !doc) {
+          return json(
+            { error: `Failed to create document: ${insErr?.message ?? "unknown"}` },
+            500,
+          );
+        }
+        documentId = doc.id as string;
+        docSlug = (doc.slug as string | null) ?? null;
+
+        // Version row (v1).
+        await admin.from("ai_document_versions").insert({
+          document_id: documentId,
+          version_no: 1,
+          storage_path: file.storagePath,
+          content_hash: contentHash,
+        });
+      }
+
+      // Ingest job (running).
       const { data: job } = await admin
         .from("ai_document_jobs")
         .insert({
@@ -148,29 +290,11 @@ Deno.serve(async (req) => {
         .single();
       const ingestJobId = job?.id as string | undefined;
 
-      // Download the file (service client).
-      const { data: blob, error: dlErr } = await admin.storage
-        .from("docintel-documents")
-        .download(file.storagePath);
-      if (dlErr || !blob) {
-        await markDocumentFailed(admin, documentId, `Download failed: ${dlErr?.message ?? "no file"}`);
-        if (ingestJobId) {
-          await admin.from("ai_document_jobs").update({
-            status: "failed",
-            error_message: dlErr?.message ?? "download failed",
-            finished_at: new Date().toISOString(),
-          }).eq("id", ingestJobId);
-        }
-        results.push({ documentId, slug: doc.slug ?? null, pageCount: null });
-        continue;
-      }
-
-      // Derive page count.
+      // Derive page count (bytes already downloaded for the content hash).
       let pageCount: number | null = null;
       try {
         if (file.mimeType === PDF_MIME) {
-          const buf = new Uint8Array(await blob.arrayBuffer());
-          const pdf = await getDocumentProxy(buf);
+          const pdf = await getDocumentProxy(bytes);
           pageCount = pdf.numPages;
         } else {
           // DOCX (and any non-PDF): one logical page. page_count stays null.
@@ -189,7 +313,7 @@ Deno.serve(async (req) => {
             finished_at: new Date().toISOString(),
           }).eq("id", ingestJobId);
         }
-        results.push({ documentId, slug: doc.slug ?? null, pageCount: null });
+        results.push({ documentId, slug: docSlug, pageCount: null });
         continue;
       }
 
@@ -245,13 +369,21 @@ Deno.serve(async (req) => {
         );
       }
 
-      results.push({ documentId, slug: doc.slug ?? null, pageCount });
+      results.push({ documentId, slug: docSlug, pageCount });
     }
 
     // Non-blocking: let the fan-out settle in the background.
     // @ts-ignore EdgeRuntime is available in the Supabase Edge runtime.
     EdgeRuntime.waitUntil(Promise.allSettled(fanOut));
 
+    // Every file was an exact duplicate → nothing was created; surface the
+    // duplicate verdict at the top level too (single-file callers read it).
+    const dups = results.filter(
+      (r): r is Extract<IngestResult, { duplicate: true }> => "duplicate" in r,
+    );
+    if (dups.length > 0 && dups.length === results.length) {
+      return json({ duplicate: true, existing: dups[0].existing, documents: results });
+    }
     return json({ documents: results });
   } catch (err) {
     console.error("docintel-ingest error:", err);
