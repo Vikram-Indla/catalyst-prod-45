@@ -99,6 +99,7 @@ export function captureFieldState(element: HTMLElement): {
   savedStart: number;
   savedEnd: number;
   savedRange: Range | null;
+  savedValue: string | null;
 } {
   const tag = element.tagName.toLowerCase();
 
@@ -108,6 +109,7 @@ export function captureFieldState(element: HTMLElement): {
       savedStart: el.selectionStart ?? el.value.length,
       savedEnd:   el.selectionEnd   ?? el.value.length,
       savedRange: null,
+      savedValue: el.value,
     };
   }
 
@@ -119,10 +121,47 @@ export function captureFieldState(element: HTMLElement): {
         savedStart: -1,
         savedEnd:   -1,
         savedRange: sel.getRangeAt(0).cloneRange(),
+        savedValue: null,
       };
     } catch {
       /* fall through */
     }
   }
-  return { savedStart: -1, savedEnd: -1, savedRange: null };
+  return { savedStart: -1, savedEnd: -1, savedRange: null, savedValue: null };
+}
+
+/**
+ * Restore an input/textarea to its exact pre-activation state (value +
+ * selection). Called on cancel so an aborted dictation session leaves the
+ * field as it was — including the space removed by double-space activation.
+ *
+ * contenteditable is left alone: rewriting a rich editor's DOM from outside
+ * corrupts its internal state (ProseMirror/BlockNote), and a cancelled
+ * session never inserted into it anyway (inserts are status-guarded).
+ * Returns true when a restore was applied.
+ */
+export function restoreFieldSnapshot(field: ActiveField): boolean {
+  const { element, kind, savedValue, savedStart, savedEnd } = field;
+  if (kind !== 'input' && kind !== 'textarea') return false;
+  if (typeof savedValue !== 'string') return false;
+
+  const el = element as HTMLInputElement | HTMLTextAreaElement;
+  if (!el.isConnected || el.value === savedValue) return false;
+
+  const proto = el instanceof HTMLTextAreaElement
+    ? HTMLTextAreaElement.prototype
+    : HTMLInputElement.prototype;
+  const nativeSetter = Object.getOwnPropertyDescriptor(proto, 'value')?.set;
+  if (nativeSetter) nativeSetter.call(el, savedValue);
+  else el.value = savedValue;
+
+  try {
+    const pos = Math.min(Math.max(savedStart, 0), savedValue.length);
+    const end = Math.min(Math.max(savedEnd, pos), savedValue.length);
+    el.setSelectionRange(pos, end);
+  } catch { /* selection best-effort */ }
+
+  el.dispatchEvent(new Event('input',  { bubbles: true }));
+  el.dispatchEvent(new Event('change', { bubbles: true }));
+  return true;
 }

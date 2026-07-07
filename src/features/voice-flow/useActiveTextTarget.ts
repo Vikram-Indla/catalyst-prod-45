@@ -48,8 +48,8 @@ export function getActiveTextTarget(el: Element | null): ActiveField | null {
 }
 
 function buildField(el: HTMLElement, kind: ActiveFieldKind): ActiveField {
-  const { savedStart, savedEnd, savedRange } = captureFieldState(el);
-  return { element: el, kind, savedStart, savedEnd, savedRange };
+  const { savedStart, savedEnd, savedRange, savedValue } = captureFieldState(el);
+  return { element: el, kind, savedStart, savedEnd, savedRange, savedValue };
 }
 
 function isSensitive(el: HTMLElement): boolean {

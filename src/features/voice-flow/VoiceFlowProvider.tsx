@@ -4,7 +4,7 @@ import { useFeatureFlags } from '@/contexts/FeatureFlagContext';
 import { useAuth } from '@/hooks/useAuth';
 import { VOICE_FLOW_CONFIG, getPreferredLanguage, setPreferredLanguage } from './voiceFlow.config';
 import { AudioCaptureService } from './AudioCaptureService';
-import { insertTextIntoTarget } from './insertTextIntoTarget';
+import { insertTextIntoTarget, restoreFieldSnapshot } from './insertTextIntoTarget';
 import { cleanupTranscript } from './cleanupTranscript';
 import { RealtimeTranscriber, realtimeAvailable } from './RealtimeTranscriber';
 import { armCorrectionLearner, getActiveTerms } from './dictionary';
@@ -319,6 +319,15 @@ export function VoiceFlowProvider({ children }: Props) {
     durationMs: number,
     geminiStart: number,
   ) => {
+    // Session identity at entry: the cleanup/rewrite awaits below take up to
+    // ~1.5s, during which the user may press Escape. A cancelled (or
+    // superseded) session must never write into the field afterwards.
+    const sessId = sessionIdRef.current;
+    const sessionCancelled = () =>
+      statusRef.current === 'cancelled' ||
+      statusRef.current === 'idle' ||
+      sessionIdRef.current !== sessId;
+
     // Command mode: the transcript is an INSTRUCTION applied to the text
     // that was selected at activation. The rewrite replaces the selection
     // (insertTextIntoTarget writes over the saved range). ~1.5s is
@@ -341,6 +350,7 @@ export function VoiceFlowProvider({ children }: Props) {
           durationMs,
           geminiLatencyMs: Date.now() - geminiStart,
         };
+        if (sessionCancelled()) return;
         setResult(voiceResultCmd);
         if (VOICE_FLOW_CONFIG.autoCommit && fieldRef.current) {
           setStatusBoth('committing');
@@ -394,6 +404,9 @@ export function VoiceFlowProvider({ children }: Props) {
       setDetectedLanguage(detectedLang);
       setPreferredLanguage(detectedLang); // pin for next session
     }
+
+    // The cleanup pass above awaited — bail if the user cancelled meanwhile.
+    if (sessionCancelled()) return;
 
     setResult(voiceResult);
 
@@ -450,6 +463,14 @@ export function VoiceFlowProvider({ children }: Props) {
       captureRef.current.cancel();
     }
     setStatusBoth('cancelled');
+    // A cancelled session must leave the field exactly as it was before
+    // activation — this restores the space double-space activation removed
+    // (and any session insert that raced the cancel) for input/textarea.
+    if (fieldRef.current) {
+      try {
+        restoreFieldSnapshot(fieldRef.current);
+      } catch { /* best-effort */ }
+    }
     void updateSession('cancelled');
     scheduleReset(400);
   }, [reset, scheduleReset]);

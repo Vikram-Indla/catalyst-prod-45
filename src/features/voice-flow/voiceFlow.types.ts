@@ -21,6 +21,10 @@ export interface ActiveField {
   savedEnd: number;
   /** Cloned Range for contenteditable (may be stale — fall back to end). */
   savedRange: Range | null;
+  /** Full pre-activation value (input/textarea only; null for contenteditable).
+   *  Cancel restores it so an aborted session leaves the field untouched —
+   *  including the space that double-space activation removed. */
+  savedValue: string | null;
 }
 
 export interface VoiceResult {
