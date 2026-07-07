@@ -1,0 +1,3553 @@
+{
+  "generatedFrom": [
+    "src/App.tsx",
+    "src/routes/FullAppRoutes.tsx"
+  ],
+  "registryTitleKeys": 72,
+  "totalDeclarations": 444,
+  "uniqueResolvedPaths": 442,
+  "countsByType": {
+    "index": 4,
+    "wildcard": 22,
+    "absolute": 284,
+    "dynamic": 132
+  },
+  "routes": [
+    {
+      "path": " (index)",
+      "type": "index",
+      "dynamic": false,
+      "source": "src/App.tsx:281",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/*",
+      "type": "wildcard",
+      "dynamic": false,
+      "source": "src/App.tsx:307",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/admin",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:960",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/admin (index)",
+      "type": "index",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:961",
+      "nested": true,
+      "pageTitle": null
+    },
+    {
+      "path": "/admin/*",
+      "type": "wildcard",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:1032",
+      "nested": true,
+      "pageTitle": null
+    },
+    {
+      "path": "/admin/access",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:973",
+      "nested": true,
+      "pageTitle": null
+    },
+    {
+      "path": "/admin/ai-assistant",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:1028",
+      "nested": true,
+      "pageTitle": null
+    },
+    {
+      "path": "/admin/ai-governance/translations",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:1003",
+      "nested": true,
+      "pageTitle": null
+    },
+    {
+      "path": "/admin/avatars",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:1008",
+      "nested": true,
+      "pageTitle": null
+    },
+    {
+      "path": "/admin/business-owners",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:972",
+      "nested": true,
+      "pageTitle": null
+    },
+    {
+      "path": "/admin/capacity-departments",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:974",
+      "nested": true,
+      "pageTitle": null
+    },
+    {
+      "path": "/admin/components",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:970",
+      "nested": true,
+      "pageTitle": null
+    },
+    {
+      "path": "/admin/connections",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:985",
+      "nested": true,
+      "pageTitle": null
+    },
+    {
+      "path": "/admin/connections/jira",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:986",
+      "nested": true,
+      "pageTitle": null
+    },
+    {
+      "path": "/admin/connections/jira/hierarchy",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:988",
+      "nested": true,
+      "pageTitle": null
+    },
+    {
+      "path": "/admin/connections/notion",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:989",
+      "nested": true,
+      "pageTitle": null
+    },
+    {
+      "path": "/admin/connections/vercel",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:990",
+      "nested": true,
+      "pageTitle": null
+    },
+    {
+      "path": "/admin/departments",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:971",
+      "nested": true,
+      "pageTitle": null
+    },
+    {
+      "path": "/admin/feature-flags",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:966",
+      "nested": true,
+      "pageTitle": null
+    },
+    {
+      "path": "/admin/fields",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:1013",
+      "nested": true,
+      "pageTitle": null
+    },
+    {
+      "path": "/admin/fields/layout",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:1014",
+      "nested": true,
+      "pageTitle": null
+    },
+    {
+      "path": "/admin/governance",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:1004",
+      "nested": true,
+      "pageTitle": null
+    },
+    {
+      "path": "/admin/icons",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:1007",
+      "nested": true,
+      "pageTitle": null
+    },
+    {
+      "path": "/admin/jira-user-sync",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:998",
+      "nested": true,
+      "pageTitle": null
+    },
+    {
+      "path": "/admin/notification-triggers",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:969",
+      "nested": true,
+      "pageTitle": null
+    },
+    {
+      "path": "/admin/overview",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:963",
+      "nested": true,
+      "pageTitle": null
+    },
+    {
+      "path": "/admin/permissions",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:1027",
+      "nested": true,
+      "pageTitle": null
+    },
+    {
+      "path": "/admin/quarters",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:981",
+      "nested": true,
+      "pageTitle": null
+    },
+    {
+      "path": "/admin/release-ops",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:980",
+      "nested": true,
+      "pageTitle": null
+    },
+    {
+      "path": "/admin/resource-assignments",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:967",
+      "nested": true,
+      "pageTitle": null
+    },
+    {
+      "path": "/admin/resources",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:1010",
+      "nested": true,
+      "pageTitle": null
+    },
+    {
+      "path": "/admin/resources/:resourceId",
+      "type": "dynamic",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:1011",
+      "nested": true,
+      "pageTitle": null
+    },
+    {
+      "path": "/admin/roles",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:1026",
+      "nested": true,
+      "pageTitle": null
+    },
+    {
+      "path": "/admin/roles-permissions",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:965",
+      "nested": true,
+      "pageTitle": null
+    },
+    {
+      "path": "/admin/routing-taxonomy",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:1009",
+      "nested": true,
+      "pageTitle": null
+    },
+    {
+      "path": "/admin/settings/notifications",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:968",
+      "nested": true,
+      "pageTitle": null
+    },
+    {
+      "path": "/admin/storybook",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:1005",
+      "nested": true,
+      "pageTitle": null
+    },
+    {
+      "path": "/admin/test-ops",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:979",
+      "nested": true,
+      "pageTitle": null
+    },
+    {
+      "path": "/admin/test/case-statuses",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:1018",
+      "nested": true,
+      "pageTitle": null
+    },
+    {
+      "path": "/admin/test/case-types",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:1017",
+      "nested": true,
+      "pageTitle": null
+    },
+    {
+      "path": "/admin/test/case-workflow",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:1019",
+      "nested": true,
+      "pageTitle": null
+    },
+    {
+      "path": "/admin/test/permissions",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:1024",
+      "nested": true,
+      "pageTitle": null
+    },
+    {
+      "path": "/admin/test/priorities",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:1016",
+      "nested": true,
+      "pageTitle": null
+    },
+    {
+      "path": "/admin/user-access",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:964",
+      "nested": true,
+      "pageTitle": null
+    },
+    {
+      "path": "/admin/v2/*",
+      "type": "wildcard",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:1039",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/admin/workflows",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:975",
+      "nested": true,
+      "pageTitle": null
+    },
+    {
+      "path": "/admin/workflows/:versionId/edit",
+      "type": "dynamic",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:978",
+      "nested": true,
+      "pageTitle": null
+    },
+    {
+      "path": "/admin/workflows/classic",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:976",
+      "nested": true,
+      "pageTitle": null
+    },
+    {
+      "path": "/admin/workflows/hierarchy",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:987",
+      "nested": true,
+      "pageTitle": null
+    },
+    {
+      "path": "/admin/workflows/versions",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:977",
+      "nested": true,
+      "pageTitle": null
+    },
+    {
+      "path": "/admin/workhub",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:993",
+      "nested": true,
+      "pageTitle": null
+    },
+    {
+      "path": "/admin/workhub-connection",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:992",
+      "nested": true,
+      "pageTitle": null
+    },
+    {
+      "path": "/admin/workhub/*",
+      "type": "wildcard",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:1002",
+      "nested": true,
+      "pageTitle": null
+    },
+    {
+      "path": "/admin/workhub/activity-sync",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:1001",
+      "nested": true,
+      "pageTitle": null
+    },
+    {
+      "path": "/admin/workhub/hierarchy-mapping",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:995",
+      "nested": true,
+      "pageTitle": null
+    },
+    {
+      "path": "/admin/workhub/jira-connection",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:994",
+      "nested": true,
+      "pageTitle": null
+    },
+    {
+      "path": "/admin/workhub/jira-sync-control",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:1000",
+      "nested": true,
+      "pageTitle": null
+    },
+    {
+      "path": "/admin/workhub/sync-logs",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:999",
+      "nested": true,
+      "pageTitle": null
+    },
+    {
+      "path": "/admin/workhub/user-mapping",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:997",
+      "nested": true,
+      "pageTitle": null
+    },
+    {
+      "path": "/ads-validator",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:1036",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/audit-trail",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/App.tsx:296",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/auth",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/App.tsx:227",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/auth/slack/callback",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/App.tsx:228",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/backlog",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:936",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/backlog-phase2",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:937",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/backlog/epics",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:857",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/browse/:issueKey",
+      "type": "dynamic",
+      "dynamic": false,
+      "source": "src/App.tsx:300",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/browse/:key",
+      "type": "dynamic",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:483",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/capacity",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:888",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/catalyst/testpage",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/App.tsx:297",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/chat",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:472",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/cleanup",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/App.tsx:295",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/deactivated",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/App.tsx:232",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/dependencies",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:879",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/doc-intelligence/*",
+      "type": "wildcard",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:623",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/docex",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:845",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/docex/*",
+      "type": "wildcard",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:846",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/enterprise/*",
+      "type": "wildcard",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:637",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/epics",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:856",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/features",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:858",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/features/prioritization",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:859",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/folio",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:835",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/folio/_sandbox",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:839",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/folio/:workspaceSlug",
+      "type": "dynamic",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:841",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/folio/:workspaceSlug/:pageSlug",
+      "type": "dynamic",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:843",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/folio/:workspaceSlug/db/:dbSlug",
+      "type": "dynamic",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:842",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/folio/search",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:836",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/folio/sitemap",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:837",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/for-you",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/App.tsx:282",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/for-you/:tab",
+      "type": "dynamic",
+      "dynamic": false,
+      "source": "src/App.tsx:284",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/for-you/archives",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/App.tsx:283",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/home",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/App.tsx:285",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/ideation",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:586",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/ideation/analytics",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:591",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/ideation/backlog",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:587",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/ideation/board",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:588",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/ideation/intelligence",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:594",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/ideation/matrix",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:592",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/ideation/roadmap",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:589",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/ideation/themes",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:590",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/ideation/triage",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:593",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/incident-hub",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:733",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/incident-hub/all-incidents",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:734",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/incident-hub/analytics",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:764",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/incident-hub/backlog/:key",
+      "type": "dynamic",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:777",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/incident-hub/board",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:740",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/incident-hub/committee-queue",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:769",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/incident-hub/dashboard",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:761",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/incident-hub/dependencies",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:754",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/incident-hub/filters",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:746",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/incident-hub/filters/:filterId",
+      "type": "dynamic",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:748",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/incident-hub/filters/create",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:747",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/incident-hub/kanban",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:741",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/incident-hub/reports",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:768",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/incident-hub/timeline",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:753",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/incident-hub/view/:incidentKey",
+      "type": "dynamic",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:770",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/incident-hub/work",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:763",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/industry/*",
+      "type": "wildcard",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:610",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/initiatives",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:855",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/insights/dependency-risk",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:957",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/insights/portfolio",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:953",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/insights/predictability",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:956",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/insights/program",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:954",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/insights/team",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:955",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/invite/accept",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/App.tsx:230",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/issue/:issueKey",
+      "type": "dynamic",
+      "dynamic": false,
+      "source": "src/App.tsx:303",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/items/:type",
+      "type": "dynamic",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:1046",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/items/epics",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:860",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/items/epics/:epicId/planning",
+      "type": "dynamic",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:867",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/items/epics/:epicId/requirement-hierarchy",
+      "type": "dynamic",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:865",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/items/epics/:epicId/responsibility-matrix",
+      "type": "dynamic",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:866",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/items/epics/:epicId/status-report",
+      "type": "dynamic",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:863",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/items/epics/:epicId/trace",
+      "type": "dynamic",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:864",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/items/epics/canceled",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:862",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/items/epics/estimation",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:868",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/items/epics/recycle-bin",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:861",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/items/impediments",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:873",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/items/release-vehicles",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:874",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/items/success-criteria",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:875",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/items/tasks",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:872",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/kb-admin",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:470",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/kb-admin-setup",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:469",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/kb-data-audit",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:471",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/knowledge-hub",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:948",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/knowledge-hub/documents/:documentId",
+      "type": "dynamic",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:950",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/knowledge-hub/spaces/:spaceId",
+      "type": "dynamic",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:949",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/me",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:1053",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/mining",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:848",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/my-team",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:1054",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/my-team/:resourceId",
+      "type": "dynamic",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:1055",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/pi-objectives",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:887",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/pis",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:885",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/planhub*",
+      "type": "wildcard",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:829",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/planner",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:825",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/planner/*",
+      "type": "wildcard",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:826",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/portfolio-insights",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:882",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/portfolio-kanban",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:876",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/portfolio-roadmap",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:877",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/portfolio/:portfolioKey/*",
+      "type": "wildcard",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:625",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/product-hub",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/App.tsx:253",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/product-hub/:key/allwork",
+      "type": "dynamic",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:524",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/product-hub/:key/backlog",
+      "type": "dynamic",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:520",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/product-hub/:key/backlog/:issueKey",
+      "type": "dynamic",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:519",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/product-hub/:key/boards",
+      "type": "dynamic",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:521",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/product-hub/:key/boards/:boardSlug",
+      "type": "dynamic",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:522",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/product-hub/:key/cards",
+      "type": "dynamic",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:548",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/product-hub/:key/dashboard",
+      "type": "dynamic",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:532",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/product-hub/:key/dependencies",
+      "type": "dynamic",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:544",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/product-hub/:key/filters",
+      "type": "dynamic",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:550",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/product-hub/:key/filters/:filterId",
+      "type": "dynamic",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:557",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/product-hub/:key/filters/create",
+      "type": "dynamic",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:556",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/product-hub/:key/kanban",
+      "type": "dynamic",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:523",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/product-hub/:key/milestones",
+      "type": "dynamic",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:545",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/product-hub/:key/milestones/:milestoneId",
+      "type": "dynamic",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:546",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/product-hub/:key/releases",
+      "type": "dynamic",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:547",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/product-hub/:key/roadmap",
+      "type": "dynamic",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:537",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/product-hub/:key/roadmaps/:id",
+      "type": "dynamic",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:541",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/product-hub/:key/settings",
+      "type": "dynamic",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:549",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/product-hub/:key/standups",
+      "type": "dynamic",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:536",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/product-hub/:key/timeline",
+      "type": "dynamic",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:543",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/product-hub/:key/timeline/:issueKey",
+      "type": "dynamic",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:542",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/product-hub/backlog",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/App.tsx:261",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/product-hub/cards",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:567",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/product-hub/dashboard",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:509",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/product-hub/filters",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:561",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/product-hub/filters/create",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:562",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/product-hub/ideation",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:572",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/product-hub/kanban",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:507",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/product-hub/product-dashboard",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:510",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/product-hub/products",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:503",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/product-hub/reports",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:565",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/product-hub/req-assist",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:608",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/product-hub/req-assist/generate",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:609",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/product-hub/requests/:requestKey/move",
+      "type": "dynamic",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:1086",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/product-hub/requirement-assist",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:573",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/product-hub/requirement-assist/:id",
+      "type": "dynamic",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:576",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/product-hub/requirement-assist/categories",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:575",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/product-hub/requirement-assist/compose",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:574",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/product-hub/roadmap",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:566",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/product-hub/roadmaps",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:563",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/product-hub/roadmaps-v1",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:564",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/product-hub/table",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:506",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/product/:productId/room",
+      "type": "dynamic",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:850",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/product/capacity",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:851",
+      "nested": false,
+      "pageTitle": "Capacity"
+    },
+    {
+      "path": "/product/ideas/analytics",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:604",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/product/ideas/backlog",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:601",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/product/ideas/board",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:602",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/product/ideas/roadmap",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:599",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/product/ideas/roadmap-new",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:600",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/product/ideas/themes",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:603",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/product/req-assist",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:605",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/product/req-assist/generate",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:606",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/product/room",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:849",
+      "nested": false,
+      "pageTitle": "Product Room"
+    },
+    {
+      "path": "/producthub",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/App.tsx:240",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/producthub/*",
+      "type": "wildcard",
+      "dynamic": false,
+      "source": "src/App.tsx:241",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/profile",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:1042",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/profile/archives",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:1045",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/program",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:626",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/program-backlog",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:892",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/program-board",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:886",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/program-room",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:884",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/program/:programId/*",
+      "type": "wildcard",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:627",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/programs",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:628",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/programs/:programId/*",
+      "type": "wildcard",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:631",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/programs/program-board",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:629",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/programs/program-board/history",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:630",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/project-hub",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/App.tsx:266",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/project-hub/:key",
+      "type": "dynamic",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:1067",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/project-hub/:key/allwork",
+      "type": "dynamic",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:1102",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/project-hub/:key/allwork/:issueKey",
+      "type": "dynamic",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:1101",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/project-hub/:key/backlog",
+      "type": "dynamic",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:1072",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/project-hub/:key/backlog/:issueKey",
+      "type": "dynamic",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:1073",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/project-hub/:key/board",
+      "type": "dynamic",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:1088",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/project-hub/:key/boards",
+      "type": "dynamic",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:1089",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/project-hub/:key/boards/:boardSlug",
+      "type": "dynamic",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:1094",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/project-hub/:key/boards/:boardSlug/map-statuses",
+      "type": "dynamic",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:1090",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/project-hub/:key/boards/:boardSlug/settings",
+      "type": "dynamic",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:1091",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/project-hub/:key/boards/:boardSlug/settings/:section",
+      "type": "dynamic",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:1092",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/project-hub/:key/dashboard",
+      "type": "dynamic",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:1068",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/project-hub/:key/dashboards/:id",
+      "type": "dynamic",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:1099",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/project-hub/:key/dependencies",
+      "type": "dynamic",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:1111",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/project-hub/:key/epic-backlog",
+      "type": "dynamic",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:1079",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/project-hub/:key/feature-backlog",
+      "type": "dynamic",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:1080",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/project-hub/:key/filters",
+      "type": "dynamic",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:1103",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/project-hub/:key/filters/:filterId",
+      "type": "dynamic",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:1105",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/project-hub/:key/filters/create",
+      "type": "dynamic",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:1104",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/project-hub/:key/issue-selector",
+      "type": "dynamic",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:1087",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/project-hub/:key/issue/:issueKey",
+      "type": "dynamic",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:1083",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/project-hub/:key/issue/:issueKey/convert-to-subtask",
+      "type": "dynamic",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:1084",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/project-hub/:key/issue/:issueKey/move",
+      "type": "dynamic",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:1085",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/project-hub/:key/kanban",
+      "type": "dynamic",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:1096",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/project-hub/:key/list",
+      "type": "dynamic",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:1100",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/project-hub/:key/releases",
+      "type": "dynamic",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:1110",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/project-hub/:key/reports",
+      "type": "dynamic",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:1116",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/project-hub/:key/risk-scanner",
+      "type": "dynamic",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:1118",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/project-hub/:key/roadmaps",
+      "type": "dynamic",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:1097",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/project-hub/:key/roadmaps/:id",
+      "type": "dynamic",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:1098",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/project-hub/:key/settings",
+      "type": "dynamic",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:1071",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/project-hub/:key/sprint-predictor",
+      "type": "dynamic",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:1117",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/project-hub/:key/sprints",
+      "type": "dynamic",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:1113",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/project-hub/:key/sprints/:sprintSlug",
+      "type": "dynamic",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:1114",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/project-hub/:key/sprints/:sprintSlug/work",
+      "type": "dynamic",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:1115",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/project-hub/:key/standups",
+      "type": "dynamic",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:1070",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/project-hub/:key/story-backlog",
+      "type": "dynamic",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:1081",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/project-hub/:key/story/:itemId",
+      "type": "dynamic",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:1082",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/project-hub/:key/timeline",
+      "type": "dynamic",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:1109",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/project-hub/:key/timeline/:issueKey",
+      "type": "dynamic",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:1108",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/project-hub/filters",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:1106",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/project-hub/filters/create",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:1107",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/project-hub/INV/*",
+      "type": "wildcard",
+      "dynamic": false,
+      "source": "src/App.tsx:274",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/project-hub/MDT/*",
+      "type": "wildcard",
+      "dynamic": false,
+      "source": "src/App.tsx:275",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/project-hub/portfolio-health",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:1052",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/project-hub/projects",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:1049",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/project-hub/projects-legacy",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:1051",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/project-hub/resource-360/:resourceId",
+      "type": "dynamic",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:1064",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/project-hub/resource360",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:1062",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/project-hub/resource360/:id",
+      "type": "dynamic",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:1063",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/project-hub/resources",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:1056",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/project-hub/resources-v2",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:1058",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/project-hub/resources-v2/:resourceId",
+      "type": "dynamic",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:1059",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/project-hub/resources/:resourceId",
+      "type": "dynamic",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:1057",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/project/:projectId/work",
+      "type": "dynamic",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:921",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/project/:projectKey",
+      "type": "dynamic",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:923",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/project/:projectKey (index)",
+      "type": "index",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:924",
+      "nested": true,
+      "pageTitle": null
+    },
+    {
+      "path": "/project/:projectKey/all-work",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:927",
+      "nested": true,
+      "pageTitle": null
+    },
+    {
+      "path": "/project/:projectKey/boards/kanban",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:928",
+      "nested": true,
+      "pageTitle": null
+    },
+    {
+      "path": "/project/:projectKey/boards/scrum",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:929",
+      "nested": true,
+      "pageTitle": null
+    },
+    {
+      "path": "/project/:projectKey/list",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:926",
+      "nested": true,
+      "pageTitle": null
+    },
+    {
+      "path": "/project/:projectKey/release-management",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:931",
+      "nested": true,
+      "pageTitle": null
+    },
+    {
+      "path": "/project/:projectKey/releases",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:930",
+      "nested": true,
+      "pageTitle": null
+    },
+    {
+      "path": "/project/:projectKey/settings",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:932",
+      "nested": true,
+      "pageTitle": null
+    },
+    {
+      "path": "/project/:projectKey/summary",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:925",
+      "nested": true,
+      "pageTitle": null
+    },
+    {
+      "path": "/project/all-projects",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:1050",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/projecthub",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:899",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/projecthub/resource360",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:900",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/projecthub/resource360/:id",
+      "type": "dynamic",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:901",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/projects",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:894",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/projects/:projectId",
+      "type": "dynamic",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:908",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/projects/:projectId/backlog",
+      "type": "dynamic",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:917",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/projects/:projectId/board",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:909",
+      "nested": true,
+      "pageTitle": null
+    },
+    {
+      "path": "/projects/:projectId/boards",
+      "type": "dynamic",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:914",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/projects/:projectId/boards/:boardId",
+      "type": "dynamic",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:915",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/projects/:projectId/dependencies",
+      "type": "dynamic",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:919",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/projects/:projectId/feature-map",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:911",
+      "nested": true,
+      "pageTitle": null
+    },
+    {
+      "path": "/projects/:projectId/features",
+      "type": "dynamic",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:905",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/projects/:projectId/features/:featureId",
+      "type": "dynamic",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:906",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/projects/:projectId/reports",
+      "type": "dynamic",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:920",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/projects/:projectId/roadmap",
+      "type": "dynamic",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:918",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/projects/:projectId/timeline",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:910",
+      "nested": true,
+      "pageTitle": null
+    },
+    {
+      "path": "/projects/:projectId/work",
+      "type": "dynamic",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:916",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/projects/:projectKey",
+      "type": "dynamic",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:895",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/projects/:projectKey/settings",
+      "type": "dynamic",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:904",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/projects/:projectKey/summary",
+      "type": "dynamic",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:896",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/release-hub",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:780",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/release-hub/:releaseId",
+      "type": "dynamic",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:808",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/release-hub/calendar",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:792",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/release-hub/change-board",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:785",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/release-hub/changes",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:796",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/release-hub/changes/:changeId",
+      "type": "dynamic",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:797",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/release-hub/command-center",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:804",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/release-hub/compare",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:805",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/release-hub/execution",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:786",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/release-hub/filters",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:788",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/release-hub/filters/:filterId",
+      "type": "dynamic",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:790",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/release-hub/filters/create",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:789",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/release-hub/freeze-windows",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:800",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/release-hub/overview",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:781",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/release-hub/production-events",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:790",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/release-hub/production-events/:eventKey",
+      "type": "dynamic",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:791",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/release-hub/release-kanban",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:784",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/release-hub/releases",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:783",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/release-hub/releases-management",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:793",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/release-hub/releases-management/:releaseSlug",
+      "type": "dynamic",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:794",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/release-hub/releases-management/:releaseSlug/work",
+      "type": "dynamic",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:795",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/release-hub/settings",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:801",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/release-hub/sign-off-queue",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:799",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/release-hub/sop-templates",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:798",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/release-hub/triage",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:806",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/release-hub/work",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:787",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/release-train-calendar",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:891",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/releasehub",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:811",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/releasehub/all",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:819",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/releasehub/all-releases",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:813",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/releasehub/changes",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:816",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/releasehub/command-center",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:812",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/releasehub/compare",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:814",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/releasehub/dashboard",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:818",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/releasehub/production-events",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:817",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/releasehub/triage",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:815",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/releases/*",
+      "type": "wildcard",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:943",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/reports/dependencies/maps",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:880",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/req-assist/rag-audit",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:607",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/reset-password",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/App.tsx:229",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/resource-360/:resourceId",
+      "type": "dynamic",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:902",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/resource360/members/:memberId",
+      "type": "dynamic",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:1065",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/resources",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:1066",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/risk-roam-report",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:890",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/risks",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:889",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/roadmaps",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:878",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/s/:code",
+      "type": "dynamic",
+      "dynamic": false,
+      "source": "src/App.tsx:231",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/search",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:613",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/sprint-board",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:939",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/sprints",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:938",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/starred",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:612",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/stories",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:940",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/strata/*",
+      "type": "wildcard",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:619",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/strategy-room",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/App.tsx:245",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/strategyhub",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/App.tsx:243",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/strategyhub/*",
+      "type": "wildcard",
+      "dynamic": false,
+      "source": "src/App.tsx:244",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/taskhub",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:666",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/taskhub-kanban",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:673",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/taskhub/:view",
+      "type": "dynamic",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:672",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/taskhub/boards",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:667",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/taskhub/dashboard",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:669",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/taskhub/settings",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:671",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/taskhub/task-list",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:668",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/tasks",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:644",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/tasks/:view",
+      "type": "dynamic",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:659",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/tasks/filters",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:656",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/tasks/filters/:filterId",
+      "type": "dynamic",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:658",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/tasks/filters/create",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:657",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/tasks/my-tasks",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:661",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/tasks/priorities/*",
+      "type": "wildcard",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:822",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/tasks/view/:taskKey",
+      "type": "dynamic",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:652",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/tasks/workstreams",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:663",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/team-room",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:935",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/team/:teamSlug/*",
+      "type": "wildcard",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:635",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/teams",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:633",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/teams/:teamSlug/*",
+      "type": "wildcard",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:634",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/testhub",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:681",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/testhub/:projectKey/cycles/:cycleKey",
+      "type": "dynamic",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:689",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/testhub/:projectKey/cycles/:cycleKey/execute",
+      "type": "dynamic",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:690",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/testhub/:projectKey/cycles/:cycleKey/runs",
+      "type": "dynamic",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:691",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/testhub/board",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:684",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/testhub/cycles",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:688",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/testhub/cycles/:cycleKey",
+      "type": "dynamic",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:693",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/testhub/cycles/:cycleKey/execute",
+      "type": "dynamic",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:694",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/testhub/cycles/:cycleKey/runs",
+      "type": "dynamic",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:695",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/testhub/dashboard",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:682",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/testhub/defects",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:709",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/testhub/defects/:defectKey",
+      "type": "dynamic",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:710",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/testhub/dependencies",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:697",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/testhub/executions",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:705",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/testhub/executions/:executionKey",
+      "type": "dynamic",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:706",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/testhub/filters",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:725",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/testhub/filters/:filterId",
+      "type": "dynamic",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:727",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/testhub/filters/create",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:726",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/testhub/my-work",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:683",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/testhub/plans",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:701",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/testhub/plans/:planKey",
+      "type": "dynamic",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:703",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/testhub/reports",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:716",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/testhub/reports-lab",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:715",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/testhub/reports/:reportSlug",
+      "type": "dynamic",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:722",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/testhub/reports/defects-incidents",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:721",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/testhub/reports/project-status",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:717",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/testhub/reports/sprint-status",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:718",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/testhub/reports/team-status",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:720",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/testhub/reports/tester-status",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:719",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/testhub/repository",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:685",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/testhub/repository/case/:caseKey",
+      "type": "dynamic",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:687",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/testhub/sets",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:700",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/testhub/sets/:setKey",
+      "type": "dynamic",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:707",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/testhub/timeline",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:696",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/testhub/traceability",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:708",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/themes",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:853",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/themes/grid",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:854",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/unauthorized",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:945",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/value-stream",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:1041",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/work-hub-test",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:474",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/work-hub-test (index)",
+      "type": "index",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:475",
+      "nested": true,
+      "pageTitle": null
+    },
+    {
+      "path": "/work-hub-test/all-work",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:478",
+      "nested": true,
+      "pageTitle": null
+    },
+    {
+      "path": "/work-hub-test/list",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:477",
+      "nested": true,
+      "pageTitle": null
+    },
+    {
+      "path": "/work-hub-test/releases",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:479",
+      "nested": true,
+      "pageTitle": null
+    },
+    {
+      "path": "/work-hub-test/releases/:versionId",
+      "type": "dynamic",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:480",
+      "nested": true,
+      "pageTitle": null
+    },
+    {
+      "path": "/work-hub-test/summary",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:476",
+      "nested": true,
+      "pageTitle": null
+    },
+    {
+      "path": "/work-items/stories",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:941",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/work-items/subtasks",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:942",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/work-spend-grid",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:881",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/work-tree",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:639",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/workhub",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:898",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/workhub/all-work",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:897",
+      "nested": false,
+      "pageTitle": null
+    },
+    {
+      "path": "/workitems",
+      "type": "absolute",
+      "dynamic": false,
+      "source": "src/routes/FullAppRoutes.tsx:486",
+      "nested": false,
+      "pageTitle": null
+    }
+  ]
+}
