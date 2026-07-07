@@ -8,7 +8,7 @@
  */
 import { useEffect, useMemo, useRef, type ReactNode } from 'react';
 import { useLocation } from 'react-router-dom';
-import { Home, Building2, Search, CircleUser, Network } from '@/lib/atlaskit-icons';
+import { Home, Building2, Search, CircleUser, Network, FileSearch } from '@/lib/atlaskit-icons';
 import { SidebarBase, SidebarConfig } from './SidebarBase';
 import { WikiTreeNav } from '@/components/wiki-hub/WikiTreeNav';
 import { parseWikiPath } from '@/components/wiki-hub/wikiPath';
@@ -102,22 +102,31 @@ export function WikiSidebar({ expanded, onToggle, className }: WikiSidebarProps)
           ],
         },
         // Personal pages live here and can be moved into any project/product
-        // workspace via the page Actions menu (Vikram 2026-07-06).
-        ...(mySpace
-          ? [
-              {
-                title: 'My Space',
-                items: [
+        // workspace via the page Actions menu (Vikram 2026-07-06). Document
+        // Intelligence (Arabic OCR + translation + RAG) is surfaced here so it
+        // sits in My Space under Folio (Vikram 2026-07-07).
+        {
+          title: 'My Space',
+          items: [
+            ...(mySpace
+              ? [
                   {
                     id: mySpace.id,
                     title: mySpace.name,
                     path: Routes.wiki.workspace(mySpace.slug),
                     icon: CircleUser,
                   },
-                ],
-              },
-            ]
-          : []),
+                ]
+              : []),
+            {
+              id: 'doc-intelligence',
+              title: 'Document Intelligence',
+              path: Routes.docintel.list(),
+              icon: FileSearch,
+              exact: false,
+            },
+          ],
+        },
         ...(byType('project').length
           ? [{ title: 'Project workspaces', items: byType('project').map(item) }]
           : []),
