@@ -48,6 +48,20 @@ pipeline is live with data, so the real P0 is a **substrate decision** (`ai_*` v
 deploy fix. P0-4 (no permission scoping) is **true only for the dead `kb_*` path** — the live
 `ai_*` pipeline is already project-scoped with RLS.
 
+### ✅ DECISION (2026-07-07, Vikram): `ai_*`/docintel is the canonical substrate
+
+The Knowledge Reservoir is built on the **`ai_*` / `docintel_*` family**. The `kb_*` doc-intel
+track is **deprecated/parked**:
+- **Build on:** `ai_documents` + `ai_document_*` + `ai_document_embeddings` + `docintel_*` RPCs
+  + `docintel-ingest`/`-analyze`/`-generate`. Extend *this* family to the remaining OKF node
+  types (§2).
+- **Parked (do not build on):** the un-parked `kb-*` functions (never deployed) and the
+  `20260707020000_docex_rag_wiring.sql` Folio→`kb_*` wiring. The migration stays applied on
+  staging (additive, harmless) but is **inert** — no runner, empty store. Formally superseded;
+  no further Folio→`kb_embeddings` work.
+- Consequently §1's "reuse the parked `kb_*` RAG stack" framing is **retracted** — reuse the
+  live `ai_*`/docintel assets instead (see the corrected note atop §1).
+
 ## Target, in one line
 
 ```
@@ -70,8 +84,17 @@ Catalyst's Postgres/Supabase DB stays the **source of truth**. OKF is a *project
 
 ## 1. What existing Doc Intel / RAG assets should be reused
 
-The audit proves a **schema-complete, code-complete RAG stack already exists** — it was
-parked, not missing. Reuse it; do not greenfield.
+> **CORRECTED (§0 DECISION):** the canonical reuse target is the **live `ai_*`/docintel**
+> family — `ai_document_embeddings` (365 rows, 1536-dim, project-scoped, RLS),
+> `docintel_hybrid_search`, `docintel-ingest/-analyze/-generate`, `ai_generated_artifacts` +
+> `ai_artifact_citations`. The `kb_*` rows in the table below were written before that pipeline
+> was probed and are **superseded** — treat them as historical context (what the parked stack
+> offered), not as the substrate to build on. Where a row says `kb_*`, the live equivalent is
+> the `ai_*`/docintel one.
+
+The audit originally described a schema-complete, code-complete **`kb_*`** RAG stack that was
+parked. That stack is now **retired in favor of `ai_*`/docintel** (see §0). Table retained for
+provenance:
 
 | Asset | Location (per audit) | Role in the Reservoir |
 |---|---|---|

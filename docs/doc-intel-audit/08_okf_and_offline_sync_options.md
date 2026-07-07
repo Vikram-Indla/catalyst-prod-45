@@ -97,16 +97,19 @@ The engine's design, the pieces that already exist to build it on, and the gaps 
 
 ## Relationship to the RAG-consolidation work already done
 
-The un-parking / Folio-wiring work described in the deploy handover is **necessary and
-reused**, but it is a subset of this target, not the whole of it:
+> **SUPERSEDED — 2026-07-07.** Live probing (see 09 §0) shows the Knowledge Reservoir is
+> **already built and running** as the `ai_*` / `docintel_*` family (365 embeddings,
+> citation-backed artifacts, permission-scoped). **Decision: `ai_*`/docintel is the canonical
+> substrate.** The `kb_*` RAG-consolidation track below (un-parked functions + the
+> `docex_rag_wiring` Folio→`kb_*` migration) is **parked/deprecated** — kept for history, not
+> to build on. The two bullets below describe the *old* plan and no longer reflect the target.
 
-- Un-parked `kb-ingest`/`kb-query`/`kb-sync` + pgvector + `kb_hybrid_search` = the **retrieval
-  substrate** the Knowledge Reservoir builds on (see 09 §1 Reuse).
-- The `20260707020000_docex_rag_wiring.sql` Folio→RAG wiring (`'docex'` source type +
-  `needs_reindex` dirty flag/trigger + `ingest_folio_batch`) is the **first working slice of
-  the Knowledge Sync Engine** — a change-driven recompile of one object type (published Folio
-  pages). The engine generalizes exactly this pattern to every object type OKF must represent.
+- ~~Un-parked `kb-ingest`/`kb-query`/`kb-sync` + pgvector + `kb_hybrid_search` = the retrieval
+  substrate the Reservoir builds on.~~ → **Replaced** by `docintel_hybrid_search` over
+  `ai_document_embeddings`. The `kb_*` functions were never even deployed to staging.
+- ~~The `20260707020000_docex_rag_wiring.sql` Folio→RAG wiring is the first slice of the
+  Sync Engine.~~ → **Parked.** It was applied to staging (additive, harmless) but wires Folio
+  into the **empty `kb_*`** path that has no runner; the live sync path is `docintel-ingest`.
 
-So: the current work advances the target. It is not the target. The corrected scope — OKF as
-a full projection + a real Knowledge Synchronization Engine + health + graph + agent — is
-laid out in 09.
+Canonical substrate + full corrected scope (OKF projection, Sync Engine, health, graph, agent)
+are in 09.
