@@ -70,6 +70,15 @@ const formatGrounding = (v: number | null) =>
 const formatCount = (v: number | null) =>
   typeof v === "number" ? v.toLocaleString() : DASH;
 
+/** Pull a numeric count out of an ai_sync_runs.counts jsonb, or null. */
+function syncCount(
+  counts: Record<string, number> | null | undefined,
+  key: string,
+): number | null {
+  const v = counts?.[key];
+  return typeof v === "number" ? v : null;
+}
+
 /** One KPI tile — token-styled to match the docintel surface (ds-* + ads). */
 function StatTile({
   label,
@@ -375,6 +384,120 @@ export default function DocintelHealthPage() {
                 emphasis={health.openIssues > 0 ? "danger" : "default"}
               />
             </div>
+          </section>
+
+          {/* Knowledge debt: unverified knowledge waiting on a human (S6) */}
+          <section>
+            <Heading as="h3" size="small">
+              Knowledge debt
+            </Heading>
+            <div style={{ height: 12 }} />
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns:
+                  "repeat(auto-fill, minmax(180px, 1fr))",
+                gap: 12,
+              }}
+            >
+              <StatTile
+                label="Facts pending review"
+                value={formatCount(health.pendingFacts)}
+                hint="Requirement facts awaiting confirm/reject"
+                emphasis={health.pendingFacts > 0 ? "danger" : "default"}
+              />
+              <StatTile
+                label="Draft artifacts"
+                value={formatCount(health.draftArtifacts)}
+                hint="Generated but not yet verified"
+              />
+              <StatTile
+                label="Fact conflicts"
+                value={formatCount(health.factConflicts)}
+                hint="Cross-document contradictions (unresolved)"
+                emphasis={health.factConflicts > 0 ? "danger" : "default"}
+              />
+              <StatTile
+                label="Stale documents"
+                value={formatCount(health.staleDocs)}
+                hint="No update in over 30 days"
+              />
+            </div>
+          </section>
+
+          {/* Background sync: last docintel-sync run + queue depth (S6) */}
+          <section>
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <Heading as="h3" size="small">
+                Background sync
+              </Heading>
+              {health.lastSyncRun && (
+                <Lozenge
+                  appearance={
+                    health.lastSyncRun.status === "ok" ? "success" : "removed"
+                  }
+                >
+                  {health.lastSyncRun.status}
+                </Lozenge>
+              )}
+            </div>
+            <div style={{ height: 12 }} />
+            {!health.lastSyncRun ? (
+              <div
+                style={{
+                  padding: "16px 0",
+                  color: "var(--ds-text-subtle)",
+                  fontSize: 14,
+                }}
+              >
+                No sync run recorded yet.
+              </div>
+            ) : (
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns:
+                    "repeat(auto-fill, minmax(180px, 1fr))",
+                  gap: 12,
+                }}
+              >
+                <StatTile
+                  label="Last sync"
+                  value={
+                    health.lastSyncRun.started_at
+                      ? formatDistanceToNow(
+                          new Date(health.lastSyncRun.started_at),
+                          { addSuffix: true },
+                        )
+                      : DASH
+                  }
+                  hint={
+                    health.lastSyncRun.error_message ?? "Runs every 15 minutes"
+                  }
+                />
+                <StatTile
+                  label="Repaired / retried"
+                  value={`${formatCount(
+                    syncCount(health.lastSyncRun.counts, "stuck_repaired"),
+                  )} / ${formatCount(
+                    syncCount(health.lastSyncRun.counts, "retried"),
+                  )}`}
+                  hint="Stuck docs re-driven · failed docs retried"
+                />
+                <StatTile
+                  label="Conflicts found"
+                  value={formatCount(
+                    syncCount(health.lastSyncRun.counts, "conflicts_found"),
+                  )}
+                  hint="Flagged by the last sweep"
+                />
+                <StatTile
+                  label="Queue depth"
+                  value={formatCount(health.queuedJobs + health.runningJobs)}
+                  hint={`${health.queuedJobs} queued · ${health.runningJobs} running`}
+                />
+              </div>
+            )}
           </section>
 
           {/* Attention: failed + needs-review documents */}
