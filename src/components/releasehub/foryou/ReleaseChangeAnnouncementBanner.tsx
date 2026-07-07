@@ -119,8 +119,8 @@ function LiveCountdown({ change, variant }: { change: ChangeCtx; variant: 'full'
   if (variant === 'pill') {
     return (
       <span role="status" aria-live="polite" aria-label={`${change.chgNumber}: ${timer.eyebrow}`} style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
-        {timer.pulse && <span aria-hidden style={{ width: 8, height: 8, borderRadius: '50%', background: timer.tone, flexShrink: 0 }} />}
-        <span aria-hidden style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: timer.tone, fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap' }}>{timer.big}</span>
+        <span aria-hidden style={{ width: 8, height: 8, borderRadius: '50%', background: timer.tone, flexShrink: 0 }} />
+        <span aria-hidden style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text)', fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap' }}>{timer.big}</span>
       </span>
     );
   }
@@ -425,7 +425,7 @@ export function ReleaseTimerNavChip({ compact = false }: { compact?: boolean } =
         title={label}
         style={{
           display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 32, height: 32, flexShrink: 0,
-          borderRadius: '50%', border: `1px solid ${T.magenta}`, cursor: 'pointer', padding: 0, background: T.raised,
+          borderRadius: '50%', border: `1px solid ${T.border}`, cursor: 'pointer', padding: 0, background: T.raised,
         }}
       >
         <LiveCountdown change={primary} variant="dot" />
@@ -439,12 +439,11 @@ export function ReleaseTimerNavChip({ compact = false }: { compact?: boolean } =
       title={label}
       style={{
         display: 'inline-flex', alignItems: 'center', gap: 8, height: 32, padding: '0 12px', borderRadius: 999,
-        border: `1px solid ${T.magenta}`, cursor: 'pointer', maxWidth: 260, background: T.raised,
-        boxShadow: 'var(--ds-shadow-raised)',
+        border: `1px solid ${T.border}`, cursor: 'pointer', maxWidth: 260, background: T.raised,
       }}
     >
       <LiveCountdown change={primary} variant="pill" />
-      <span aria-hidden style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', fontWeight: 500, color: T.link, whiteSpace: 'nowrap' }}>{primary.chgNumber}</span>
+      <span aria-hidden style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: T.subtle, whiteSpace: 'nowrap' }}>{primary.chgNumber}</span>
     </button>
   );
 }
