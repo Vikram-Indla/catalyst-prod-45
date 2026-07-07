@@ -102,7 +102,7 @@ Example: "preflight:backlog-page:2026-05-11"
 echo "CARD_KEY={card_key}" > {project_root}/.catalyst-board-session
 ```
 
-`{project_root}` = `/Users/jahanarakhan/Documents/GitHub/catalyst-prod-45`
+`{project_root}` = repo root (output of `git rev-parse --show-toplevel`) — never hardcode a machine-specific path.
 
 #### 4c — Feature group (swimlane assignment)
 
@@ -464,10 +464,10 @@ Await explicit "yes" or "go" confirmation before proceeding to git commands.
 ### Auto-commit on confirmed "go"
 
 ```bash
-# Only after user confirms "yes"
-git -C /Users/jahanarakhan/Documents/GitHub/catalyst-prod-45 add [specific files only]
-git -C /Users/jahanarakhan/Documents/GitHub/catalyst-prod-45 diff --staged
-git -C /Users/jahanarakhan/Documents/GitHub/catalyst-prod-45 commit -m "$(cat <<'EOF'
+# Only after user confirms "yes" — run from repo root, never a hardcoded path
+git add [specific files only]
+git diff --staged
+git commit -m "$(cat <<'EOF'
 {type}({scope}): {description under 72 chars}
 
 Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>

@@ -41,8 +41,8 @@
 
 ## Integrations
 
-- **Uses /1 (design-critique)** for visual heuristic scoring (optional, on request)
-- **Uses /2 (systematic-debugging)** for root-cause analysis (optional, on request)
+- **Uses `design-critique`** for visual heuristic scoring (optional, on request)
+- **Uses `systematic-debugging`** for root-cause analysis (optional, on request)
 - **Chrome MCP** for live probe + screenshot
 - **Code execution** for optional fix application
 
