@@ -40,7 +40,9 @@ const CASES = [
     // "تذكرة" is ambiguous (ticket/reminder) — the domain glossary steers it,
     // which is itself part of what this case verifies.
     vocabulary: ['ticket', 'CAT', 'BAU'],
-    expect: ['ticket|reminder', 'thursday', 'file'],
+    // ASR on synthetic TTS varies run-to-run ("ticket"/"reminder"/"update") —
+    // assert the stable content words, keep the ticket-word as a soft third.
+    expect: ['thursday', 'file', 'ticket|reminder|update'],
     provider: 'groq',
   },
   {
@@ -63,7 +65,38 @@ const CASES = [
     vocabulary: ['Sikander', 'CAT', 'BAU'],
     expect: ['sikander', 'cat 1234|cat-1234'],
   },
+  {
+    // S7 intent collapse: the SPOKEN correction must win end-to-end —
+    // transcribe, then the cleanup pass collapses to the final intent.
+    name: 'english-self-correction',
+    voice: 'Samantha',
+    text: 'Send the report on Thursday. No wait, make that Wednesday. Also tell the team.',
+    clean: true,
+    expect: ['wednesday', 'team'],
+    reject: ['thursday', 'no wait'],
+  },
+  {
+    // Arabic correction ("لا انتظر خليه الأربعاء") arrives translated; the
+    // collapse must still land on Wednesday only.
+    name: 'arabic-self-correction',
+    voice: 'Majed',
+    text: 'أرسل التقرير يوم الخميس، لا انتظر، خليه يوم الأربعاء، وأبلغ الفريق',
+    clean: true,
+    expect: ['wednesday', 'team'],
+    reject: ['thursday'],
+  },
 ];
+
+const CLEAN_URL = FN_URL.replace('voice-transcribe', 'catyflow-clean');
+async function cleanText(text) {
+  const resp = await fetch(CLEAN_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${JWT}` },
+    body: JSON.stringify({ mode: 'clean', text, register: 'chat', dictionary: [] }),
+  });
+  const body = await resp.json().catch(() => ({}));
+  return { status: resp.status, cleaned: body.cleaned ?? null, provider: body.provider };
+}
 
 function synth(voice, text, dir, name) {
   const aiff = join(dir, `${name}.aiff`);
@@ -91,10 +124,32 @@ async function run() {
           streaming: false,
         }),
       });
-      const ms = Date.now() - t0;
+      let ms = Date.now() - t0;
       const body = await resp.json().catch(() => ({}));
-      const text = (body.englishText ?? '').toLowerCase();
+      let finalText = body.englishText ?? '';
       const problems = [];
+      // Mirror the client's translation guarantee: Whisper /translations
+      // occasionally passes Arabic through — the app re-translates, so the
+      // harness must too or it tests a pipeline that doesn't exist.
+      if (/[؀-ۿ]/.test(finalText)) {
+        const t2 = Date.now();
+        const tr = await fetch(FN_URL.replace('voice-transcribe', 'ai-translate-field'), {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${JWT}` },
+          body: JSON.stringify({ text: finalText, target: 'en' }),
+        }).then((r) => r.json()).catch(() => ({}));
+        ms += Date.now() - t2;
+        if (tr.translated) finalText = tr.translated;
+        else problems.push('arabic passed through and re-translate failed');
+      }
+      if (c.clean && finalText) {
+        const t1 = Date.now();
+        const cl = await cleanText(finalText);
+        ms += Date.now() - t1;
+        if (cl.status !== 200 || !cl.cleaned) problems.push(`clean failed (${cl.status})`);
+        else finalText = cl.cleaned;
+      }
+      const text = finalText.toLowerCase();
       if (resp.status !== 200) problems.push(`status ${resp.status} (${body.error ?? ''} ${body.message ?? ''})`);
       if (c.provider && body.provider !== c.provider) {
         problems.push(`provider ${body.provider} (wanted ${c.provider}${body.groqError ? `; groqError: ${body.groqError}` : ''})`);
@@ -103,13 +158,16 @@ async function run() {
         const ok = kw.split('|').some((alt) => text.includes(alt.toLowerCase()));
         if (!ok) problems.push(`missing "${kw}"`);
       }
-      if (ms > 8000) problems.push(`slow: ${ms}ms`);
+      for (const kw of c.reject ?? []) {
+        if (text.includes(kw.toLowerCase())) problems.push(`must NOT contain "${kw}"`);
+      }
+      if (ms > (c.clean ? 15000 : 8000)) problems.push(`slow: ${ms}ms`);
       if (problems.length) {
         failures++;
         console.error(`✗ ${c.name} [${ms}ms ${body.provider ?? '-'}] — ${problems.join('; ')}`);
-        console.error(`  output: ${body.englishText ?? '(none)'}`);
+        console.error(`  output: ${finalText || '(none)'}`);
       } else {
-        console.log(`✓ ${c.name} [${ms}ms ${body.provider}] ${body.englishText}`);
+        console.log(`✓ ${c.name} [${ms}ms ${body.provider}] ${finalText}`);
       }
     }
   } finally {

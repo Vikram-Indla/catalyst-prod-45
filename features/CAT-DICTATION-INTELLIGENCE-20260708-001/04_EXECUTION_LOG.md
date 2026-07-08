@@ -28,3 +28,12 @@
 ## Post-S6 regression: golden corpus ALL GREEN on v23 (groq, 0.5-2.2s).
 
 ## GOAL CLOSE-OUT (2026-07-08 /goal): ALL SLICES S1-S6 DELIVERED + research loop 2 complete (TOP-10 in 12_AGENT_OUTPUTS.md). Premium-route verdict: the 2026 field (Wispr/Aqua/Typeless) converged on screen-context+tone+intent-collapse+command-mode; NONE handles Arabic seriously, none is work-item-native — our lane ("Wispr Flow for Arabic enterprise") is empty and we now hold: bilingual pipeline (proven), structure inference, entity normalization, visible learning dictionary, measurable accuracy flywheel, speculative translation, and a CONFIRMED live-translate capability nobody ships. NEXT WAVE (approved backlog, ranked): #1 bilingual self-correction/intent collapse, #2 screen-entity context biasing (own-DOM advantage), #3 structured work-item modes (bug-report/standup scaffolds), #8 in-dictation agentic actions, #6 admin bilingual glossary, live-translate lane integration (outputTranscription consumer), Scribe v2/Munsit A/B judged by edit_ratio.
+
+## S7 — bilingual self-correction / intent collapse (2026-07-08) ✅
+- catyflow-clean v8: full INTENT COLLAPSE ruleset (last decision wins; superseded values never appear; "scratch that"/"خلاص لا" cancels the clause; restarts collapse; markers in EITHER language apply cross-language; markers removed; keep-if-in-doubt). Also fixed audit to ai_usage_log (was ai_governance_audit_log — 2026-07-04 sweep escapee).
+- Client shouldCleanup gate: more correction markers (EN+AR) + repeated-word restart detector.
+- **TRANSLATION GUARANTEE (real gap found by the harness)**: Whisper /translations occasionally passes Arabic through untranslated; batch results now get a defensive re-translate when Arabic reaches handleResult (context rides along). Harness mirrors it.
+- Golden suite +2 spoken-correction cases (EN + AR), chained through catyflow-clean. ALL GREEN:
+  EN: "Send the report on Thursday. No wait, make that Wednesday." → "Send the report on Wednesday. Also tell the team." (Thursday + marker gone)
+  AR: "أرسل التقرير يوم الخميس، لا انتظر، خليه يوم الأربعاء" → "Send the report on Wednesday… inform the team." (Thursday gone)
+- Known residual: the AR marker occasionally survives as literal "Don't wait" (translation renders it before cleanup sees it) — prompt iteration candidate, superseded-value contract holds regardless.

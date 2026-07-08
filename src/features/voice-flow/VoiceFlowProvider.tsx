@@ -504,6 +504,23 @@ export function VoiceFlowProvider({ children }: Props) {
       return;
     }
 
+    // Translation guarantee (S7 finding): Whisper /translations occasionally
+    // passes Arabic through untranslated — the English contract must hold on
+    // EVERY path, so any Arabic that reaches here gets one more translate.
+    if (containsArabicScript(englishText)) {
+      try {
+        const { data, error } = await supabase.functions.invoke('ai-translate-field', {
+          body: {
+            text: englishText,
+            target: 'en',
+            context: getConversationContext(fieldRef.current?.element ?? null) || undefined,
+          },
+        });
+        const translated = (data as { translated?: string } | null)?.translated?.trim();
+        if (!error && translated) englishText = translated;
+      } catch { /* keep the original rather than lose words */ }
+    }
+
     // Entity normalization (CAT-DICTATION-INTELLIGENCE-20260708-001 S1):
     // spoken ticket keys → canonical KEY-123, known project keys only.
     // Runs on every path (batch, shortcut-translate, command) — pure and

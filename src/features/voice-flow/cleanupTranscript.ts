@@ -27,10 +27,16 @@ function toastLaneFailureOnce() {
 /** Utterances shorter than this many words skip cleanup entirely. */
 const MIN_WORDS = 4;
 
-/** Disfluency markers (EN + AR) — if none appear and the text already ends
- *  with terminal punctuation, cleanup is unnecessary. */
+/** Disfluency + self-correction markers (EN + AR — Arabic corrections
+ *  usually arrive already translated, but raw-Arabic callers hit this fn
+ *  too). If none appear and the text already ends with terminal
+ *  punctuation, cleanup is unnecessary. */
 const FILLER_RE =
-  /\b(um+|uh+|erm+|hmm+|like|you know|i mean|actually|no wait|scratch that|make that)\b|يعني|ااه|امم/i;
+  /\b(um+|uh+|erm+|hmm+|like|you know|i mean|actually|no wait|wait no|scratch that|make (?:that|it)|forget (?:that|it)|correction|rather|sorry,|not that|instead)\b|يعني|ااه|امم|لا انتظر|اقصد|خلاص لا|بدل كذا/i;
+
+/** Immediate word/bigram repetition = a spoken restart ("we need we need
+ *  to ship") — cleanup-worthy even with no filler words. */
+const RESTART_RE = /\b(\S+(?:\s+\S+)?)\s+\1\b/i;
 
 export interface CleanupOutcome {
   cleaned: string;
@@ -41,6 +47,7 @@ export function shouldCleanup(raw: string): boolean {
   const words = raw.trim().split(/\s+/).filter(Boolean);
   if (words.length < MIN_WORDS) return false;
   if (FILLER_RE.test(raw)) return true;
+  if (RESTART_RE.test(raw)) return true;
   // No fillers: still clean long-form (punctuation/list formatting), skip short.
   return words.length >= 25 || !/[.!?؟։۔]\s*$/.test(raw.trim());
 }
