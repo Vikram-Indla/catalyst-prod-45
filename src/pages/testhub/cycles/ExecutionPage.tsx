@@ -112,6 +112,13 @@ async function flushOfflineQueue(qc: { invalidateQueries: (opts: { queryKey: str
   }
 }
 
+// useExecutionSteps synthesizes non-UUID ids ("pinned-<caseId>-v<n>-<i>") for
+// steps resolved from a version snapshot — tm_step_results.test_step_id is a
+// uuid FK, so those must be sent as null rather than the synthetic string.
+function dbStepId(stepId: string): string | null {
+  return stepId.startsWith('pinned-') ? null : stepId;
+}
+
 type StepStatus = 'NOT_RUN' | 'PASSED' | 'FAILED' | 'BLOCKED' | 'HOLD' | 'SKIPPED';
 
 interface StepState {
@@ -610,7 +617,7 @@ function StepRunner({
           notes: notes || null,
           durationSeconds: timer.elapsed,
           stepResults: stepStates.map((ss, i) => ({
-            test_step_id: ss.stepId,
+            test_step_id: dbStepId(ss.stepId),
             step_number: i + 1,
             status: ss.status.toLowerCase(),
             actual_result: ss.actualResult || null,
@@ -675,7 +682,7 @@ function StepRunner({
       if (run && stepStates.length > 0) {
         const stepResults = stepStates.map((ss, i) => ({
           test_run_id: run.id,
-          test_step_id: ss.stepId,
+          test_step_id: dbStepId(ss.stepId),
           step_number: i + 1,
           status: ss.status.toLowerCase(),
           actual_result: ss.actualResult || null,
