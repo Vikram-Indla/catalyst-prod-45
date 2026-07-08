@@ -113,6 +113,11 @@ export interface RichTextEditorProps {
    *  `editor.commands.setContent(...)`. */
   onEditorReady?: (editor: Editor | null) => void;
 
+  /** Hide the toolbar voice-to-text mic. Surfaces that mount their own
+   *  CatyFlow VoiceMicButton (chat composer) pass this so exactly one mic
+   *  is visible per composer (CAT-VOICE-UX-PREMIUM-20260708-001 S2a). */
+  hideMicButton?: boolean;
+
   /** Content rendered INSIDE the editor's scrollable body, directly
    *  after `<EditorContent>`. Used by Caty Improve to position the muted
    *  "before" snapshot inside the editor frame, so as the AI writes new
@@ -152,6 +157,7 @@ export function RichTextEditor({
   hideActionButtons = false,
   belowEditor,
   onEditorReady,
+  hideMicButton = false,
   bodyAfterEditor,
   issue,
 }: RichTextEditorProps) {
@@ -407,7 +413,7 @@ export function RichTextEditor({
             historyAvailable={false}
             onMicToggle={handleMicToggle}
             micActive={mic.isActive}
-            micSupported={mic.isSupported}
+            micSupported={!hideMicButton && mic.isSupported}
             voiceMode={voiceMode}
             onVoiceModeChange={setVoiceMode}
           />

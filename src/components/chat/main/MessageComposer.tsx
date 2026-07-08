@@ -6,9 +6,10 @@
  * saveLabel="Send" keeps the chat context; onCancel clears the editor.
  */
 import React, { useCallback, useRef, useState, forwardRef } from 'react';
+import type { Editor } from '@tiptap/react';
 import { IconButton } from '@atlaskit/button/new';
-import MicrophoneIcon from '@atlaskit/icon/core/microphone';
 import AttachmentIcon from '@atlaskit/icon/core/attachment';
+import { VoiceMicButton } from '@/features/voice-flow';
 import { RichTextEditor } from '@/components/catalyst-detail-views/shared/sections/Description/RichTextEditor';
 import { isAdfEmpty, adfToPlainText } from '@/components/shared/rich-text/atlaskit/adfHelpers';
 import { useDraft } from '@/hooks/chat/useDraft';
@@ -23,8 +24,6 @@ export interface MessageComposerProps {
     opts?: { adf?: unknown | null; scheduled_for?: string | null },
   ) => void | Promise<void>;
   onAskCaty?: () => void;
-  /** Called when user activates mic recording. */
-  onMic?: () => void;
   /** Called on every keystroke — use to broadcast typing indicators. */
   onTyping?: () => void;
   /** Last message id created by onSend (passed back so attachments can bind). */
@@ -40,7 +39,6 @@ export const MessageComposer = forwardRef<HTMLTextAreaElement, MessageComposerPr
       conversationId,
       disabled,
       onSend,
-      onMic,
       onTyping,
       lastSentMessageId,
       minHeight = 48,
@@ -54,6 +52,13 @@ export const MessageComposer = forwardRef<HTMLTextAreaElement, MessageComposerPr
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [uploading, setUploading] = useState(false);
     const [sendError, setSendError] = useState<string | null>(null);
+    // CatyFlow dictation target — the Tiptap contenteditable root
+    // (CAT-VOICE-UX-PREMIUM-20260708-001 S2a). Ref, not state: the mic
+    // button resolves it lazily at click time.
+    const editorElRef = useRef<HTMLElement | null>(null);
+    const handleEditorReady = useCallback((editor: Editor | null) => {
+      editorElRef.current = editor ? (editor.view.dom as HTMLElement) : null;
+    }, []);
 
     const placeholder = conversationTitle
       ? `Message ${conversationTitle}`
@@ -142,10 +147,12 @@ export const MessageComposer = forwardRef<HTMLTextAreaElement, MessageComposerPr
           initialAdf={null}
           onSave={handleSave}
           onChange={onTyping ? () => onTyping() : undefined}
+          onEditorReady={handleEditorReady}
           placeholder={placeholder}
           saveLabel="Send"
           isSaving={sending || uploading || disabled}
           minHeight={minHeight}
+          hideMicButton
         />
         <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
           <div aria-live="off" className="cc-composer__hint" style={{ flex: 1 }}>
@@ -164,14 +171,7 @@ export const MessageComposer = forwardRef<HTMLTextAreaElement, MessageComposerPr
               onClick={() => fileInputRef.current?.click()}
             />
           )}
-          {onMic && (
-            <IconButton
-              icon={MicrophoneIcon}
-              label="Voice message"
-              appearance="subtle"
-              onClick={onMic}
-            />
-          )}
+          <VoiceMicButton getTargetElement={() => editorElRef.current} />
         </div>
       </div>
     );

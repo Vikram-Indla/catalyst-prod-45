@@ -45,6 +45,16 @@ export interface VoiceFlowContextValue {
   result: VoiceResult | null;
   errorMessage: string | null;
   isActive: boolean;
+  /** False when the voice_dictation module flag / env gate is off. */
+  enabled: boolean;
+  /** The element the current session is dictating into (null when idle). */
+  activeElement: HTMLElement | null;
+  /** False on the native-SpeechRecognition lane (no pause API). */
+  canPause: boolean;
+  /** Start a session on a resolved field — same engine as the hotkeys. */
+  activate: (field: ActiveField) => void;
   commit: () => void;
   cancel: () => void;
+  pause: () => void;
+  resume: () => void;
 }

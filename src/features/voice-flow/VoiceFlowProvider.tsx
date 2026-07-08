@@ -10,7 +10,6 @@ import { RealtimeTranscriber, realtimeAvailable } from './RealtimeTranscriber';
 import { armCorrectionLearner, getActiveTerms } from './dictionary';
 import { useVoiceHotkey } from './useVoiceHotkey';
 import { VoiceFloatingCapsule } from './VoiceFloatingCapsule';
-import { DictationCTA } from './DictationCTA';
 import type { ActiveField, VoiceFlowContextValue, VoiceResult, VoiceStatus } from './voiceFlow.types';
 
 const VoiceFlowContext = createContext<VoiceFlowContextValue>({
@@ -18,8 +17,14 @@ const VoiceFlowContext = createContext<VoiceFlowContextValue>({
   result: null,
   errorMessage: null,
   isActive: false,
+  enabled: false,
+  activeElement: null,
+  canPause: false,
+  activate: () => {},
   commit: () => {},
   cancel: () => {},
+  pause: () => {},
+  resume: () => {},
 });
 
 export const useVoiceFlow = () => useContext(VoiceFlowContext);
@@ -737,16 +742,23 @@ export function VoiceFlowProvider({ children }: Props) {
     result,
     errorMessage,
     isActive: status !== 'idle',
+    enabled: featureEnabled,
+    activeElement: status !== 'idle' ? fieldRef.current?.element ?? null : null,
+    canPause,
+    activate: handleActivate,
     commit,
     cancel,
+    pause,
+    resume,
   };
 
   return (
     <VoiceFlowContext.Provider value={contextValue}>
       {children}
-      {featureEnabled && (
-        <DictationCTA sessionActive={status !== 'idle'} onActivate={handleActivate} />
-      )}
+      {/* The global hover DictationCTA is retired (CAT-VOICE-UX-PREMIUM-
+          20260708-001 S2b): visible mics are composer-anchored VoiceMicButtons
+          on key surfaces; hotkeys (double-space / ⌘⇧V) still work on every
+          eligible field. */}
       {featureEnabled && (
         <VoiceFloatingCapsule
           status={status}
