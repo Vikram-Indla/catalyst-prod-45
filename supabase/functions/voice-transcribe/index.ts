@@ -92,11 +92,12 @@ function parseGeminiText(raw: string): {
   return { englishText: text, confidence, detectedLanguage };
 }
 
-/** Primary: Groq whisper-large-v3 with task=translate → English. */
+/** Primary: Groq whisper-large-v3 via /translations → English. */
 async function transcribeWithGroq(
   audioBase64: string,
   mimeType: string,
   groqKey: string,
+  vocabulary: string[],
 ): Promise<{ englishText: string; confidence: "high" | "low"; detectedLanguage: string | undefined }> {
   const audioBytes = Uint8Array.from(atob(audioBase64), c => c.charCodeAt(0));
   // Groq rejects codec params (e.g. "audio/webm;codecs=opus") — strip to base type
@@ -106,6 +107,13 @@ async function transcribeWithGroq(
   form.append("model", "whisper-large-v3");
   form.append("response_format", "verbose_json");
   form.append("temperature", "0");
+  // Whisper prompt biasing (CAT-DICTATION-INTELLIGENCE-20260708-001 S1):
+  // workspace names + ticket keys steer spelling. Whisper only reads the
+  // last ~224 tokens of the prompt — cap hard so the terms all fit.
+  if (vocabulary.length) {
+    const prompt = `Glossary: ${vocabulary.slice(0, 60).join(", ")}`.slice(0, 800);
+    form.append("prompt", prompt);
+  }
 
   const resp = await fetchWithRetry(GROQ_STT_URL, {
     method: "POST",
@@ -223,6 +231,9 @@ serve(async (req) => {
     const sourceLanguages: string[]      = Array.isArray(body?.sourceLanguages)
       ? body.sourceLanguages : ["ar-SA", "ur-PK", "hi-IN"];
     const preferredLanguage: string | undefined = body?.preferredLanguage ?? undefined;
+    const vocabulary: string[] = Array.isArray(body?.vocabulary)
+      ? body.vocabulary.filter((t: unknown): t is string => typeof t === "string").slice(0, 60)
+      : [];
 
     if (!audioBase64 || audioBase64.length < 100)
       return json({ error: "empty_audio", message: "No audio data provided" }, 400);
@@ -243,7 +254,7 @@ serve(async (req) => {
 
     if (GROQ_API_KEY) {
       try {
-        ({ englishText, confidence, detectedLanguage } = await transcribeWithGroq(audioBase64, mimeType, GROQ_API_KEY));
+        ({ englishText, confidence, detectedLanguage } = await transcribeWithGroq(audioBase64, mimeType, GROQ_API_KEY, vocabulary));
       } catch (groqErr) {
         console.warn("voice-transcribe Groq failed, falling back to Gemini:", groqErr);
         groqError = groqErr instanceof Error ? groqErr.message : String(groqErr);

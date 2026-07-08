@@ -18,6 +18,26 @@ const CACHE_TTL_MS = 5 * 60_000;
 
 let cache: { userId: string; terms: string[]; at: number } | null = null;
 let workspaceCache: { terms: string[]; at: number } | null = null;
+let projectKeysCache: { keys: string[]; at: number } | null = null;
+
+/** Known project keys (CAT, BAU, …) — drives deterministic ticket-key
+ *  normalization (CAT-DICTATION-INTELLIGENCE-20260708-001 S1). */
+export async function getProjectKeys(): Promise<string[]> {
+  if (projectKeysCache && Date.now() - projectKeysCache.at < CACHE_TTL_MS) {
+    return projectKeysCache.keys;
+  }
+  let keys: string[] = [];
+  try {
+    const { data } = await db.from('projects').select('key').limit(200);
+    keys = ((data ?? []) as Array<{ key?: string | null }>)
+      .map((p) => p.key?.trim())
+      .filter((k): k is string => !!k);
+  } catch {
+    /* best-effort */
+  }
+  projectKeysCache = { keys, at: Date.now() };
+  return keys;
+}
 
 /** Workspace proper nouns the ASR keeps mishearing: teammate names and
  *  project keys/names (CAT-VOICE-UX-PREMIUM-20260708-001 S6b AD-7). These

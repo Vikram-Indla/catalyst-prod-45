@@ -6,12 +6,13 @@ import { VOICE_FLOW_CONFIG } from './voiceFlow.config';
 import { AudioCaptureService } from './AudioCaptureService';
 import { insertTextIntoTarget, restoreFieldSnapshot } from './insertTextIntoTarget';
 import { cleanupTranscript } from './cleanupTranscript';
+import { normalizeEntities } from './normalizeEntities';
 import { RealtimeTranscriber, realtimeAvailable } from './RealtimeTranscriber';
 import { LivePartialsController, type LiveLaneStatus, type LivePartial } from './livePartials';
 import { containsArabicScript } from '@/lib/i18n/detectScript';
 import { playListenPing, playStopPing } from './soundPing';
 import { useVoiceFlowSettings } from './useVoiceSettings';
-import { armCorrectionLearner, getActiveTerms } from './dictionary';
+import { armCorrectionLearner, getActiveTerms, getProjectKeys } from './dictionary';
 import { useVoiceHotkey } from './useVoiceHotkey';
 import { VoiceFloatingCapsule } from './VoiceFloatingCapsule';
 import { ComposerGhostText } from './ComposerGhostText';
@@ -261,6 +262,11 @@ export function VoiceFlowProvider({ children }: Props) {
       }
     } catch { /* fall back to anon key */ }
 
+    // Vocabulary → Whisper prompt biasing (S1): the batch lane finally gets
+    // the same workspace/personal terms the live lane already had — names
+    // and keys stop coming out phonetically mangled.
+    const vocabulary = await getActiveTerms().catch(() => [] as string[]);
+
     try {
       const resp = await fetch(VOICE_FN_URL, {
         method: 'POST',
@@ -275,6 +281,7 @@ export function VoiceFlowProvider({ children }: Props) {
           sessionId: sessionIdRef.current,
           sourceLanguages: VOICE_FLOW_CONFIG.sourceLanguages,
           cleanupEnabled: VOICE_FLOW_CONFIG.cleanupEnabled,
+          vocabulary,
           streaming: true,
         }),
       });
@@ -474,6 +481,15 @@ export function VoiceFlowProvider({ children }: Props) {
       }
       return;
     }
+
+    // Entity normalization (CAT-DICTATION-INTELLIGENCE-20260708-001 S1):
+    // spoken ticket keys → canonical KEY-123, known project keys only.
+    // Runs on every path (batch, shortcut-translate, command) — pure and
+    // instant, before the polish pass so cleanup sees canonical keys too.
+    try {
+      const keys = await getProjectKeys();
+      englishText = normalizeEntities(englishText, keys);
+    } catch { /* normalization is best-effort */ }
 
     // CatyFlow polish pass (CAT-VOICE-FLOW-20260704-001): register-aware
     // cleanup raced against a deadline — a late/failed cleanup silently
