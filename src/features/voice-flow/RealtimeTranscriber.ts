@@ -136,16 +136,11 @@ export class RealtimeTranscriber {
 
       ws.onopen = () => {
         if (this.closed) return;
-        // Setup (matches the token's locked constraints).
-        ws.send(
-          JSON.stringify({
-            setup: {
-              model: minted.model,
-              generationConfig: { responseModalities: ['TEXT'] },
-              inputAudioTranscription: {},
-            },
-          }),
-        );
+        // Constrained endpoint: the session config is LOCKED into the
+        // ephemeral token server-side; the first message must still be a
+        // setup, but an empty one — restating model/config here is rejected
+        // ("model not found for v1main", live-probed 2026-07-08).
+        ws.send(JSON.stringify({ setup: {} }));
       };
 
       ws.onmessage = async (ev) => {

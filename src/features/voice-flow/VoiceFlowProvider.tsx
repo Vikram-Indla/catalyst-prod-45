@@ -2,12 +2,13 @@ import React, { createContext, useCallback, useContext, useEffect, useRef, useSt
 import { supabase } from '@/integrations/supabase/client';
 import { useFeatureFlags } from '@/contexts/FeatureFlagContext';
 import { useAuth } from '@/hooks/useAuth';
-import { VOICE_FLOW_CONFIG, getPreferredLanguage, setPreferredLanguage } from './voiceFlow.config';
+import { VOICE_FLOW_CONFIG } from './voiceFlow.config';
 import { AudioCaptureService } from './AudioCaptureService';
 import { insertTextIntoTarget, restoreFieldSnapshot } from './insertTextIntoTarget';
 import { cleanupTranscript } from './cleanupTranscript';
 import { RealtimeTranscriber, realtimeAvailable } from './RealtimeTranscriber';
 import { LivePartialsController, type LiveLaneStatus, type LivePartial } from './livePartials';
+import { containsArabicScript } from '@/lib/i18n/detectScript';
 import { playListenPing, playStopPing } from './soundPing';
 import { useVoiceFlowSettings } from './useVoiceSettings';
 import { armCorrectionLearner, getActiveTerms } from './dictionary';
@@ -96,9 +97,6 @@ export function VoiceFlowProvider({ children }: Props) {
   const fieldRef          = useRef<ActiveField | null>(null);
   const sessionIdRef      = useRef<string | null>(null);
   const stopAndProcessRef = useRef<() => Promise<void>>(() => Promise.resolve());
-  // Native SpeechRecognition path (English only — skips edge function entirely)
-  const recognitionRef  = useRef<SpeechRecognition | null>(null);
-  const nativeModeRef   = useRef(false);
 
   const setStatusBoth = (s: VoiceStatus) => {
     statusRef.current = s;
@@ -110,13 +108,7 @@ export function VoiceFlowProvider({ children }: Props) {
     realtimeRef.current = null;
     commandRef.current = null;
     setCommandMode(false);
-    if (nativeModeRef.current) {
-      recognitionRef.current?.abort();
-      recognitionRef.current = null;
-      nativeModeRef.current = false;
-    } else {
-      captureRef.current.cancel();
-    }
+    captureRef.current.cancel();
     if (countdownRef.current) { clearInterval(countdownRef.current); countdownRef.current = null; }
     fieldRef.current     = null;
     sessionIdRef.current = null;
@@ -152,13 +144,8 @@ export function VoiceFlowProvider({ children }: Props) {
     }, delayMs);
   }, [reset]);
 
-  // ─── Stop recording → Gemini (streaming) → result ────────────────────
+  // ─── Stop recording → transcript/translation → result ────────────────
   const stopAndProcess = useCallback(async () => {
-    if (nativeModeRef.current) {
-      // Native path: stop() triggers onend → handleResult called there
-      recognitionRef.current?.stop();
-      return;
-    }
     if (
       !captureRef.current.isRecording &&
       !captureRef.current.isPaused &&
@@ -168,37 +155,60 @@ export function VoiceFlowProvider({ children }: Props) {
     setStatusBoth('processing');
     setAnalyserNode(null); // stop waveform; mic stops below
 
-    // ── CatyFlow realtime shortcut ─────────────────────────────────────
-    // If the live WebRTC lane produced a transcript, it IS the result —
-    // no batch round-trip. Small grace wait lets the final delta land.
+    // Grace wait lets the final live delta land before we read the lane.
     const rt = realtimeRef.current;
+    let rtTranscript = '';
+    const rtStart = Date.now();
     if (rt?.hasTranscript) {
-      const rtStart = Date.now();
       await new Promise((r) => setTimeout(r, 350));
-      const transcript = rt.transcript;
-      rt.dispose();
-      realtimeRef.current = null;
-      let durationRt = 0;
-      try {
-        ({ durationMs: durationRt } = await captureRef.current.stop());
-      } catch { /* recording stop failure is irrelevant on this lane */ }
-      if (transcript) {
-        setPartialText(null);
-        await handleResult(transcript, undefined, 'high', durationRt, rtStart);
-        return;
-      }
-    } else if (rt) {
+      rtTranscript = rt.transcript;
+    }
+    if (rt) {
       rt.dispose();
       realtimeRef.current = null;
     }
 
-    let blob: Blob;
-    let durationMs: number;
-
+    // Always collect the recording — it is the retry artifact AND the
+    // fallback when the live lane produced Arabic that fails to translate.
+    let blob: Blob | null = null;
+    let durationMs = 0;
     try {
       ({ blob, durationMs } = await captureRef.current.stop());
     } catch (e) {
       console.warn('[VoiceFlow] stop capture failed:', e);
+      blob = null;
+    }
+
+    // ── CatyFlow realtime shortcut — LANGUAGE-AWARE (Arabic demo fix,
+    // 2026-07-08). Gemini Live transcribes speech in its SPOKEN language:
+    // Arabic speech yields Arabic text. The old shortcut inserted that raw
+    // transcript as the final "English" result, silently skipping the
+    // translating batch lane — the exact "Arabic doesn't work" failure.
+    if (rtTranscript) {
+      setPartialText(null);
+      if (!containsArabicScript(rtTranscript)) {
+        // Latin transcript — already the deliverable. Fast path.
+        await handleResult(rtTranscript, undefined, 'high', durationMs, rtStart);
+        return;
+      }
+      // Arabic transcript → translate the TEXT (seconds) instead of
+      // re-uploading audio; on any failure fall through to the batch
+      // audio lane, which translates via Groq/Gemini.
+      try {
+        const { data, error } = await supabase.functions.invoke('ai-translate-field', {
+          body: { text: rtTranscript, target: 'en' },
+        });
+        const translated = (data as { translated?: string } | null)?.translated?.trim();
+        if (error || !translated) throw new Error(error?.message ?? 'translate_empty');
+        await handleResult(translated, 'ar-SA', 'high', durationMs, rtStart);
+        return;
+      } catch (e) {
+        console.warn('[VoiceFlow] live-transcript translate failed, using batch lane:', e);
+        /* fall through to batch below */
+      }
+    }
+
+    if (!blob) {
       setErrorMessage('Failed to capture audio');
       setStatusBoth('error');
       scheduleReset(3000);
@@ -251,8 +261,6 @@ export function VoiceFlowProvider({ children }: Props) {
       }
     } catch { /* fall back to anon key */ }
 
-    const preferredLanguage = getPreferredLanguage();
-
     try {
       const resp = await fetch(VOICE_FN_URL, {
         method: 'POST',
@@ -267,7 +275,6 @@ export function VoiceFlowProvider({ children }: Props) {
           sessionId: sessionIdRef.current,
           sourceLanguages: VOICE_FLOW_CONFIG.sourceLanguages,
           cleanupEnabled: VOICE_FLOW_CONFIG.cleanupEnabled,
-          preferredLanguage: preferredLanguage ?? undefined,
           streaming: true,
         }),
       });
@@ -497,8 +504,10 @@ export function VoiceFlowProvider({ children }: Props) {
     };
 
     if (detectedLang) {
+      // Display only — language history must NEVER change how the next
+      // session is recognized (the old 'en' pin sent Arabic speech through
+      // an en-US recognizer; Arabic demo fix 2026-07-08).
       setDetectedLanguage(detectedLang);
-      setPreferredLanguage(detectedLang); // pin for next session
     }
 
     // The cleanup pass above awaited — bail if the user cancelled meanwhile.
@@ -577,7 +586,7 @@ export function VoiceFlowProvider({ children }: Props) {
 
   // ─── Pause / Resume ───────────────────────────────────────────────────
   const pause = useCallback(() => {
-    if (statusRef.current !== 'listening' || nativeModeRef.current) return;
+    if (statusRef.current !== 'listening') return;
     captureRef.current.pause();
     realtimeRef.current?.setPaused(true);
     setStatusBoth('paused');
@@ -595,13 +604,7 @@ export function VoiceFlowProvider({ children }: Props) {
     if (statusRef.current === 'idle') return;
     realtimeRef.current?.dispose();
     realtimeRef.current = null;
-    if (nativeModeRef.current) {
-      recognitionRef.current?.abort();
-      recognitionRef.current = null;
-      nativeModeRef.current = false;
-    } else {
-      captureRef.current.cancel();
-    }
+    captureRef.current.cancel();
     setStatusBoth('cancelled');
     // A cancelled session must leave the field exactly as it was before
     // activation — this restores the space double-space activation removed
@@ -640,7 +643,6 @@ export function VoiceFlowProvider({ children }: Props) {
 
   // ─── Activation ──────────────────────────────────────────────────────
   const handleActivate = useCallback(async (field: ActiveField) => {
-    console.log('[VF] handleActivate status=', statusRef.current, 'prefLang=', getPreferredLanguage());
     if (statusRef.current !== 'idle') {
       // Allow re-activation from terminal non-active states (error, committing)
       if (statusRef.current === 'error' || statusRef.current === 'committing') reset();
@@ -673,94 +675,13 @@ export function VoiceFlowProvider({ children }: Props) {
     sessionIdRef.current = sessId;
     void logSessionStart(sessId, field.kind);
 
-    const prefLang = getPreferredLanguage();
-    const SR: (new () => SpeechRecognition) | undefined =
-      (window as unknown as { SpeechRecognition?: new () => SpeechRecognition }).SpeechRecognition ??
-      (window as unknown as { webkitSpeechRecognition?: new () => SpeechRecognition }).webkitSpeechRecognition;
-
-    if (prefLang === 'en' && SR) {
-      // ── Native English path: zero edge-function calls, zero latency ──
-      // Native SpeechRecognition has no pause API — hide the pause control.
-      nativeModeRef.current = true;
-      setCanPause(false);
-      const recognition = new SR();
-      recognition.lang = 'en-US';
-      recognition.continuous = false;
-      recognition.interimResults = true;
-      recognitionRef.current = recognition;
-
-      const sessionStart = Date.now();
-      let finalTranscript = '';
-
-      recognition.onstart = () => {
-        console.log('[VF] native SR onstart');
-        listenStartRef.current = Date.now();
-        setStatusBoth('listening');
-      };
-
-      recognition.onresult = (event) => {
-        let interim = '';
-        for (let i = event.resultIndex; i < event.results.length; i++) {
-          const t = event.results[i][0].transcript;
-          if (event.results[i].isFinal) finalTranscript += t;
-          else interim += t;
-        }
-        // Live caption accumulates finals + interim so the speaker sees the
-        // whole utterance build up, not just the trailing fragment.
-        if (statusRef.current === 'listening') {
-          const live = (finalTranscript + interim).trim();
-          if (live) {
-            markFirstPartial();
-            setPartialText(live);
-            setLivePartial(partialsRef.current.update(live));
-          }
-        }
-      };
-
-      recognition.onend = async () => {
-        nativeModeRef.current = false;
-        recognitionRef.current = null;
-        if (statusRef.current !== 'listening' && statusRef.current !== 'processing') return;
-        setStatusBoth('processing');
-        setPartialText(null);
-        const durationMs = Date.now() - sessionStart;
-        if (finalTranscript.trim()) {
-          await handleResult(finalTranscript.trim(), 'en', 'high', durationMs, sessionStart);
-        } else {
-          setErrorMessage('No speech detected');
-          setStatusBoth('error');
-          scheduleReset(3000);
-        }
-      };
-
-      recognition.onerror = (event) => {
-        nativeModeRef.current = false;
-        recognitionRef.current = null;
-        const err = (event as SpeechRecognitionErrorEvent).error;
-        console.error('[VF] native SR onerror=', err, 'status=', statusRef.current);
-        const msg = err === 'not-allowed'
-          ? 'Microphone access denied. Check browser permissions.'
-          : err === 'no-speech' ? 'No speech detected' : `Speech recognition error: ${err}`;
-        setErrorMessage(msg);
-        setStatusBoth('error');
-        scheduleReset(3000);
-      };
-
-      try {
-        console.log('[VF] calling recognition.start() nativeModeRef=', nativeModeRef.current);
-        recognition.start();
-      } catch {
-        nativeModeRef.current = false;
-        recognitionRef.current = null;
-        setErrorMessage('Speech recognition unavailable');
-        setStatusBoth('error');
-        scheduleReset(3000);
-      }
-      return;
-    }
-
-    // ── Groq / Gemini path (AR/UR/HI + first-ever session) ───────────
-    nativeModeRef.current = false;
+    // ONE language-agnostic engine for every session (Arabic demo fix,
+    // 2026-07-08): the old native-SpeechRecognition "English fast path"
+    // activated whenever a previous result detected 'en' — after which
+    // Arabic speech went through an en-US recognizer and came out as
+    // phonetic garbage. Deleted: recording + Gemini Live captions handle
+    // English and Arabic identically, so language history can never
+    // poison the next utterance.
     setCanPause(true);
     // Fresh instance every activation — guarantees clean stream/AudioContext state
     captureRef.current = new AudioCaptureService();

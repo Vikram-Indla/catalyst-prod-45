@@ -29,21 +29,11 @@ export const VOICE_FLOW_CONFIG = {
   confidenceReviewEnabled: true,
 } as const;
 
-// ─── Language preference (page-session scope only) ───────────────────────────
-// Intentionally NOT persisted to localStorage — persisting 'en' across page
-// loads causes Urdu/Arabic/Hindi speech to bypass Groq and land in native
-// SpeechRecognition, which produces phonetic Roman Urdu instead of translations.
-// Every page load starts with Groq; native path only activates mid-session
-// after Groq confirms the user is speaking English.
-let _sessionPreferredLang: string | null = null;
-
-export function setPreferredLanguage(lang: string): void {
-  _sessionPreferredLang = lang;
-}
-
-export function getPreferredLanguage(): string | null {
-  return _sessionPreferredLang;
-}
+// Language preference routing was REMOVED entirely (Arabic demo fix,
+// 2026-07-08): even session-scoped 'en' pinning sent the next Arabic
+// utterance through a native en-US recognizer. Every session now uses the
+// same language-agnostic engine; nothing about a previous utterance can
+// change how the next one is recognized.
 
 /** Fields that must never activate voice regardless of kind. */
 export const BLOCKED_INPUT_TYPES = new Set([

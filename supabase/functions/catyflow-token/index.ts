@@ -27,8 +27,12 @@ const corsHeaders = {
 
 const GEMINI_AUTH_TOKENS_URL =
   "https://generativelanguage.googleapis.com/v1alpha/auth_tokens";
+// Ephemeral tokens are ONLY honoured by the Constrained endpoint — the plain
+// BidiGenerateContent endpoint rejects them with 1008 "unregistered callers"
+// (live-probed 2026-07-08; this single wrong URL meant live captions never
+// worked). The token-locked bidiGenerateContentSetup is applied server-side.
 const LIVE_WS_URL =
-  "wss://generativelanguage.googleapis.com/ws/google.ai.generativelanguage.v1alpha.GenerativeService.BidiGenerateContent";
+  "wss://generativelanguage.googleapis.com/ws/google.ai.generativelanguage.v1alpha.GenerativeService.BidiGenerateContentConstrained";
 
 function json(body: unknown, status = 200): Response {
   return new Response(JSON.stringify(body), {
@@ -58,7 +62,11 @@ serve(async (req) => {
     const apiKey = Deno.env.get("GEMINI_API_KEY");
     if (!apiKey) return json({ error: "not_configured", message: "GEMINI_API_KEY missing" }, 503);
 
-    const model = "models/" + (Deno.env.get("CATYFLOW_LIVE_MODEL") ?? "gemini-2.0-flash-live-001");
+    // gemini-2.0-flash-live-001 was retired ("not found for API version
+    // v1main", live-probed 2026-07-08). ListModels for this key exposes
+    // bidiGenerateContent on gemini-2.5-flash-native-audio-latest — the
+    // stable alias — plus dated previews and gemini-3.1-flash-live-preview.
+    const model = "models/" + (Deno.env.get("CATYFLOW_LIVE_MODEL") ?? "gemini-2.5-flash-native-audio-latest");
 
     // Optional keyterm vocabulary → nudges recognition of names/jargon.
     let vocabulary: string[] = [];
@@ -114,10 +122,10 @@ serve(async (req) => {
     }
 
     const data = await resp.json();
-    const tokenName: string | undefined = data?.name; // e.g. "auth_tokens/AQ.xxx"
-    const ephemeral = tokenName?.startsWith("auth_tokens/")
-      ? tokenName.slice("auth_tokens/".length)
-      : tokenName;
+    // The Constrained endpoint requires the FULL resource name
+    // ("auth_tokens/AQ.xxx") in the access_token query param — the stripped
+    // form is rejected as malformed (live-probed 2026-07-08).
+    const ephemeral: string | undefined = data?.name;
     if (!ephemeral) return json({ error: "mint_failed" }, 502);
 
     return json({
