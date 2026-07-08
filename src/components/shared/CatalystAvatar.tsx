@@ -114,8 +114,12 @@ export default function CatalystAvatar({
     const px = SIZE_PX[size];
     const initials = getInitials(name);
     const bg = colorForName(name);
-    // Font scaling: ~0.42 of diameter → 6px / 10px / 14px / 17px / 40px / 54px
-    const fontSize = Math.max(9, Math.floor(px * 0.42));
+    // Font scaling: ~0.42 of diameter, floored at 11px — sub-11px text is a
+    // hard-fail (ruthless-audit HF1; flagged live on testhub/defects +
+    // incident board 24px avatar stacks). Initials in a 16px avatar clip
+    // slightly at 11px but remain legible; below 11px they are decoration
+    // pretending to be text.
+    const fontSize = Math.max(11, Math.floor(px * 0.42));
     return (
       <span
         role="img"
