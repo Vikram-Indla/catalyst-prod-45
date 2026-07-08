@@ -91,3 +91,4 @@ package-lock.json
 
 *storybook.log
 .aider*
+.ui-vitals-auth.json

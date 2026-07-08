@@ -47,7 +47,8 @@
     "migrate:local": "supabase db push",
     "db:migrate:catalyst": "supabase db push --linked",
     "db:migrate:strata": "supabase db push --linked --dir ./supabase/strata",
-    "check:product-env": "npx tsx scripts/check-product-environment.ts"
+    "check:product-env": "npx tsx scripts/check-product-environment.ts",
+    "ui:vitals": "node scripts/ui-vitals.mjs"
   },
   "dependencies": {
     "@atlaskit/adf-schema": "52.11.4",
