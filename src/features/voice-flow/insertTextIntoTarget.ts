@@ -13,8 +13,16 @@ export function insertTextIntoTarget(field: ActiveField, text: string): void {
   const { element, kind, savedStart, savedEnd, savedRange } = field;
 
   try {
-    if (kind === 'input' || kind === 'textarea') {
-      insertIntoInputLike(element as HTMLInputElement | HTMLTextAreaElement, text, savedStart, savedEnd);
+    if (kind === 'input') {
+      // Single-line fields can't hold structure — flatten (S2).
+      insertIntoInputLike(
+        element as HTMLInputElement,
+        text.replace(/\n+/g, ' ').replace(/ {2,}/g, ' '),
+        savedStart,
+        savedEnd,
+      );
+    } else if (kind === 'textarea') {
+      insertIntoInputLike(element as HTMLTextAreaElement, text, savedStart, savedEnd);
     } else {
       insertIntoContentEditable(element, text, savedRange);
     }
@@ -69,29 +77,57 @@ function insertIntoContentEditable(
     }
   }
 
+  // Structured text (S2): rich editors model paragraphs as nodes — a raw
+  // "\n" inside insertText is ignored or collapses in ProseMirror. Insert
+  // line-by-line with insertParagraph between lines so lists and paragraph
+  // breaks land as real structure (Tiptap's input rules even auto-listify
+  // "- " and "1. " prefixes typed this way).
+  if (text.includes('\n')) {
+    const lines = text.split('\n');
+    for (let i = 0; i < lines.length; i++) {
+      if (i > 0 && !document.execCommand('insertParagraph', false)) {
+        // Editor refused the break — flush the rest flat so every word
+        // still lands exactly once (structure is nice-to-have, words are not).
+        const rest = lines.slice(i).filter(Boolean).join(' ');
+        if (rest) document.execCommand('insertText', false, ' ' + rest);
+        return;
+      }
+      if (lines[i] && !document.execCommand('insertText', false, lines[i])) {
+        const rest = lines.slice(i).filter(Boolean).join(' ');
+        insertViaRangeFallback(el, i === 0 ? rest : ' ' + rest);
+        return;
+      }
+    }
+    return;
+  }
+
   // execCommand works with ProseMirror: PM listens to InputEvent / MutationObserver
   // Deprecated but universally supported and the only reliable cross-engine method.
   const ok = document.execCommand('insertText', false, text);
 
   if (!ok) {
-    // Fallback: Range API + InputEvent
-    const sel = window.getSelection();
-    if (!sel?.rangeCount) return;
-    const range = sel.getRangeAt(0);
-    range.deleteContents();
-    const node = document.createTextNode(text);
-    range.insertNode(node);
-    range.setStartAfter(node);
-    range.setEndAfter(node);
-    sel.removeAllRanges();
-    sel.addRange(range);
-    el.dispatchEvent(new InputEvent('input', {
-      bubbles: true,
-      cancelable: true,
-      data: text,
-      inputType: 'insertText',
-    }));
+    insertViaRangeFallback(el, text);
   }
+}
+
+/** Last-resort insertion: Range API + InputEvent. */
+function insertViaRangeFallback(el: HTMLElement, text: string): void {
+  const sel = window.getSelection();
+  if (!sel?.rangeCount) return;
+  const range = sel.getRangeAt(0);
+  range.deleteContents();
+  const node = document.createTextNode(text);
+  range.insertNode(node);
+  range.setStartAfter(node);
+  range.setEndAfter(node);
+  sel.removeAllRanges();
+  sel.addRange(range);
+  el.dispatchEvent(new InputEvent('input', {
+    bubbles: true,
+    cancelable: true,
+    data: text,
+    inputType: 'insertText',
+  }));
 }
 
 /** Capture current caret position from an already-focused element. */

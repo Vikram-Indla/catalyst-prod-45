@@ -7,6 +7,8 @@ import { AudioCaptureService } from './AudioCaptureService';
 import { insertTextIntoTarget, restoreFieldSnapshot } from './insertTextIntoTarget';
 import { cleanupTranscript } from './cleanupTranscript';
 import { normalizeEntities } from './normalizeEntities';
+import { structureText } from './structureText';
+import { getVoiceSnippets } from './voiceSnippets';
 import { RealtimeTranscriber, realtimeAvailable } from './RealtimeTranscriber';
 import { LivePartialsController, type LiveLaneStatus, type LivePartial } from './livePartials';
 import { containsArabicScript } from '@/lib/i18n/detectScript';
@@ -508,6 +510,18 @@ export function VoiceFlowProvider({ children }: Props) {
         }
       } catch { /* raw transcript stands */ }
     }
+
+    // Spoken structure (S2) + snippet expansion (S4): after polish so the
+    // command phrases survive cleanup intact; before insert so rich editors
+    // receive real paragraphs/lists.
+    try {
+      const snippets = await getVoiceSnippets().catch(() => []);
+      const structured = structureText(finalText, snippets);
+      if (structured !== finalText) {
+        rawText = rawText ?? englishText;
+        finalText = structured;
+      }
+    } catch { /* structure is best-effort */ }
 
     const voiceResult: VoiceResult = {
       englishText: finalText,

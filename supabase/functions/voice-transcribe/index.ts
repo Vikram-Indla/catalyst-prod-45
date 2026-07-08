@@ -130,10 +130,30 @@ async function transcribeWithGroq(
     text: string;
     language?: string;
     duration?: number;
-    segments?: Array<{ avg_logprob: number }>;
+    segments?: Array<{ text?: string; start?: number; end?: number; avg_logprob: number }>;
   };
 
-  const englishText = data.text?.trim() ?? "";
+  // Auto-paragraphing (CAT-DICTATION-INTELLIGENCE-20260708-001 S2): a
+  // thinking pause ≥1.5s between segments is a paragraph break — long
+  // dictations stop landing as a wall of text. Falls back to the flat text
+  // whenever segment timestamps are absent.
+  let englishText = data.text?.trim() ?? "";
+  const segs = data.segments ?? [];
+  if (segs.length > 1 && segs.every((s) => typeof s.text === "string")) {
+    const parts: string[] = [];
+    for (let i = 0; i < segs.length; i++) {
+      const t = (segs[i].text ?? "").trim();
+      if (!t) continue;
+      const prev = segs[i - 1];
+      const gap = prev && typeof segs[i].start === "number" && typeof prev.end === "number"
+        ? (segs[i].start as number) - (prev.end as number)
+        : 0;
+      if (parts.length && gap >= 1.5) parts.push("\n\n" + t);
+      else parts.push(parts.length ? " " + t : t);
+    }
+    const joined = parts.join("");
+    if (joined) englishText = joined;
+  }
   const rawLang = data.language?.toLowerCase() ?? "";
   const detectedLanguage = WHISPER_LANG_MAP[rawLang] ?? (rawLang || undefined);
 
