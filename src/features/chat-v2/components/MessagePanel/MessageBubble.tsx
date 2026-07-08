@@ -247,6 +247,7 @@ export function MessageBubble({
             // while English stays LTR — mixed-direction conversations render
             // each message in its own natural direction.
             dir="auto"
+            data-msg-body
             style={{
               fontFamily: 'var(--cv2-font)',
               fontSize: 'var(--cv2-fs-msg-body)',

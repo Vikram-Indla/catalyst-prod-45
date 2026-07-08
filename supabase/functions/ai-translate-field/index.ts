@@ -88,6 +88,11 @@ serve(async (req) => {
     const text: string = typeof body?.text === "string" ? body.text.trim() : "";
     const requestedTarget: string | undefined =
       typeof body?.target === "string" ? body.target.toLowerCase() : undefined;
+    // Conversation context (CAT-DICTATION-INTELLIGENCE-20260708-001 S6):
+    // recent thread messages so pronouns and tone resolve. Never translated,
+    // never echoed — reference only.
+    const context: string =
+      typeof body?.context === "string" ? body.context.slice(0, 800) : "";
 
     if (!text) {
       return new Response(
@@ -253,12 +258,15 @@ MANDATORY SELF-CHECK before returning your output:
 
 When in doubt about an Arabic token's identity, translate it. Never leave Arabic prose in the output.`;
 
+    const contextBlock = context
+      ? `Conversation context (reference only — resolves pronouns and tone; do NOT translate or include it in the output):\n${context}\n\n`
+      : "";
     const userPrompt = target === "ar"
-      ? `Translate the following work-item field content to Arabic. Follow all rules in the system prompt.
+      ? `${contextBlock}Translate the following work-item field content to Arabic. Follow all rules in the system prompt.
 
 Content:
 ${text}`
-      : `Translate the following work-item field content to English. Follow all rules in the system prompt.
+      : `${contextBlock}Translate the following work-item field content to English. Follow all rules in the system prompt.
 
 Content:
 ${text}`;

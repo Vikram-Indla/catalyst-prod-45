@@ -12,6 +12,7 @@ import { getVoiceSnippets } from './voiceSnippets';
 import { RealtimeTranscriber, realtimeAvailable } from './RealtimeTranscriber';
 import { LivePartialsController, type LiveLaneStatus, type LivePartial } from './livePartials';
 import { SpeculativeTranslator } from './speculativeTranslate';
+import { getConversationContext } from './conversationContext';
 import { containsArabicScript } from '@/lib/i18n/detectScript';
 import { playListenPing, playStopPing } from './soundPing';
 import { useVoiceFlowSettings } from './useVoiceSettings';
@@ -75,6 +76,7 @@ export function VoiceFlowProvider({ children }: Props) {
   const [analyserNode, setAnalyserNode]         = useState<AnalyserNode | null>(null);
   const [partialText, setPartialText]           = useState<string | null>(null);
   const [livePartial, setLivePartial]           = useState<LivePartial | null>(null);
+  const [lowSegments, setLowSegments]           = useState<string[]>([]);
   const [liveLaneStatus, setLiveLaneStatus]     = useState<LiveLaneStatus | null>(null);
   const partialsRef = useRef(new LivePartialsController());
   const speculativeRef = useRef<SpeculativeTranslator | null>(null);
@@ -128,6 +130,7 @@ export function VoiceFlowProvider({ children }: Props) {
     setPartialText(null);
     setLivePartial(null);
     setLiveLaneStatus(null);
+    setLowSegments([]);
     partialsRef.current.reset();
     speculativeRef.current?.dispose();
     speculativeRef.current = null;
@@ -210,7 +213,11 @@ export function VoiceFlowProvider({ children }: Props) {
           return;
         }
         const { data, error } = await supabase.functions.invoke('ai-translate-field', {
-          body: { text: rtTranscript, target: 'en' },
+          body: {
+            text: rtTranscript,
+            target: 'en',
+            context: getConversationContext(fieldRef.current?.element ?? null) || undefined,
+          },
         });
         const translated = (data as { translated?: string } | null)?.translated?.trim();
         if (error || !translated) throw new Error(error?.message ?? 'translate_empty');
@@ -367,6 +374,7 @@ export function VoiceFlowProvider({ children }: Props) {
           englishText  = finalData.englishText as string;
           detectedLang = finalData.detectedLanguage as string | undefined;
           confidence   = finalData.confidence as 'high' | 'low' | undefined;
+          if (Array.isArray(finalData.lowSegments)) setLowSegments(finalData.lowSegments as string[]);
         } else {
           // Parse accumulated streaming text for markers
           let text = accumulated;
@@ -392,6 +400,7 @@ export function VoiceFlowProvider({ children }: Props) {
         // ── Non-streaming JSON fallback ──────────────────────────────────
         const data = await resp.json() as Record<string, unknown>;
         if (!data?.englishText) throw new Error((data?.error as string) ?? 'Empty transcription');
+        if (Array.isArray(data.lowSegments)) setLowSegments(data.lowSegments as string[]);
 
         setPartialText(null);
         lastBlobRef.current = null;
@@ -776,8 +785,12 @@ export function VoiceFlowProvider({ children }: Props) {
                       setLivePartial(partialsRef.current.update(text));
                       // Speculative AR→EN (S5): start translating while the
                       // user is still speaking so stop feels instant.
+                      // Conversation context (S6) rides along so pronouns
+                      // and tone resolve against the visible thread.
                       if (containsArabicScript(text)) {
-                        (speculativeRef.current ??= new SpeculativeTranslator()).feed(text);
+                        (speculativeRef.current ??= new SpeculativeTranslator(
+                          getConversationContext(fieldRef.current?.element ?? null),
+                        )).feed(text);
                       }
                     }
                   },
@@ -898,6 +911,7 @@ export function VoiceFlowProvider({ children }: Props) {
           canPause={canPause}
           elapsedMs={elapsedMs}
           liveLaneStatus={liveLaneStatus}
+          lowSegments={lowSegments}
           detectedLanguage={detectedLanguage}
           analyserNode={analyserNode}
           partialText={partialText}

@@ -25,6 +25,9 @@ export class SpeculativeTranslator {
   private pending: { source: string; promise: Promise<string | null> } | null = null;
   private disposed = false;
 
+  /** Conversation context (S6) — captured once at session start. */
+  constructor(private readonly context: string = '') {}
+
   /** Feed the current full transcript; may fire a speculative translation. */
   feed(transcript: string): void {
     if (this.disposed) return;
@@ -38,7 +41,7 @@ export class SpeculativeTranslator {
     this.lastFiredAt = now;
     this.lastSource = source;
     const promise = supabase.functions
-      .invoke('ai-translate-field', { body: { text: source, target: 'en' } })
+      .invoke('ai-translate-field', { body: { text: source, target: 'en', context: this.context || undefined } })
       .then(({ data, error }) => {
         const translated = (data as { translated?: string } | null)?.translated?.trim();
         if (!error && translated && !this.disposed) {

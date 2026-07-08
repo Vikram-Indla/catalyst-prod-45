@@ -24,6 +24,9 @@ interface Props {
   /** Realtime caption lane health — 'unavailable' renders an honest notice
    *  instead of a silent caption-less "Listening…". */
   liveLaneStatus?: 'connecting' | 'live' | 'unavailable' | null;
+  /** Low-confidence transcript spans (S6) — marked so the eye lands on
+   *  exactly what needs checking. */
+  lowSegments?: string[];
   detectedLanguage?: string | null;
   /** Real-time mic analyser — drives bar heights from amplitude data */
   analyserNode?: AnalyserNode | null;
@@ -298,6 +301,41 @@ function formatMs(ms: number): string {
   return `${m}:${String(s).padStart(2, '0')}`;
 }
 
+/** Render result text with low-confidence spans visually marked (S6). */
+function renderMarked(text: string, lowSegments?: string[]): React.ReactNode {
+  if (!lowSegments?.length) return text;
+  let nodes: React.ReactNode[] = [text];
+  for (const seg of lowSegments) {
+    const trimmed = seg.trim();
+    if (!trimmed) continue;
+    nodes = nodes.flatMap((node) => {
+      if (typeof node !== 'string' || !node.includes(trimmed)) return [node];
+      const parts = node.split(trimmed);
+      const out: React.ReactNode[] = [];
+      parts.forEach((p, i) => {
+        if (p) out.push(p);
+        if (i < parts.length - 1) {
+          out.push(
+            <span
+              key={`low-${trimmed.slice(0, 12)}-${i}`}
+              style={{
+                color: 'var(--ds-text-warning)',
+                textDecorationLine: 'underline',
+                textDecorationStyle: 'dotted',
+              }}
+              title="Low confidence — double-check this part"
+            >
+              {trimmed}
+            </span>,
+          );
+        }
+      });
+      return out;
+    });
+  }
+  return nodes;
+}
+
 // ─── VoiceFloatingCapsule ─────────────────────────────────────────────────────
 
 export function VoiceFloatingCapsule({
@@ -314,6 +352,7 @@ export function VoiceFloatingCapsule({
   canPause,
   elapsedMs,
   liveLaneStatus,
+  lowSegments,
   detectedLanguage,
   analyserNode,
   partialText,
@@ -434,7 +473,7 @@ export function VoiceFloatingCapsule({
         return (
           <>
             <span className="vf-label vf-label--result" title={resultText ?? ''}>
-              {resultText ?? '…'}
+              {resultText ? renderMarked(resultText, lowSegments) : '…'}
             </span>
             <button className="vf-btn vf-btn--cancel" onClick={onCancel} aria-label="Discard">✕</button>
             <button className="vf-btn vf-btn--commit" onClick={onCommit} aria-label="Insert text">✓</button>
@@ -446,7 +485,7 @@ export function VoiceFloatingCapsule({
           <>
             <span className="vf-icon--warn" aria-hidden="true">⚠</span>
             <span className="vf-label vf-label--review" title={resultText ?? ''}>
-              {resultText ?? 'Low confidence — review before inserting'}
+              {resultText ? renderMarked(resultText, lowSegments) : 'Low confidence — review before inserting'}
             </span>
             <button className="vf-btn vf-btn--cancel" onClick={onCancel} aria-label="Discard">✕</button>
             <button className="vf-btn vf-btn--commit-review" onClick={onCommit} aria-label="Insert anyway">✓</button>

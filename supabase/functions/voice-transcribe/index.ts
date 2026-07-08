@@ -98,7 +98,7 @@ async function transcribeWithGroq(
   mimeType: string,
   groqKey: string,
   vocabulary: string[],
-): Promise<{ englishText: string; confidence: "high" | "low"; detectedLanguage: string | undefined }> {
+): Promise<{ englishText: string; confidence: "high" | "low"; detectedLanguage: string | undefined; lowSegments?: string[] }> {
   const audioBytes = Uint8Array.from(atob(audioBase64), c => c.charCodeAt(0));
   // Groq rejects codec params (e.g. "audio/webm;codecs=opus") — strip to base type
   const groqMimeType = mimeType.split(";")[0].trim();
@@ -163,7 +163,14 @@ async function transcribeWithGroq(
     : -0.3;
   const confidence: "high" | "low" = avgLogprob > -0.5 ? "high" : "low";
 
-  return { englishText, confidence, detectedLanguage };
+  // Per-segment confidence (S6): the shaky spans, so the client can mark
+  // exactly where to look instead of flagging the whole result.
+  const lowSegments = segments
+    .filter((s) => (s.avg_logprob ?? 0) < -0.5 && (s.text ?? "").trim())
+    .map((s) => (s.text ?? "").trim())
+    .slice(0, 10);
+
+  return { englishText, confidence, detectedLanguage, lowSegments };
 }
 
 /** Fallback: Gemini non-streaming (used only when Groq fails). */
@@ -173,7 +180,7 @@ async function transcribeWithGemini(
   geminiKey: string,
   sourceLanguages: string[],
   preferredLanguage: string | undefined,
-): Promise<{ englishText: string; confidence: "high" | "low"; detectedLanguage: string | undefined }> {
+): Promise<{ englishText: string; confidence: "high" | "low"; detectedLanguage: string | undefined; lowSegments?: string[] }> {
   const body = {
     contents: [{
       role: "user",
@@ -266,6 +273,7 @@ serve(async (req) => {
     let englishText: string;
     let confidence: "high" | "low";
     let detectedLanguage: string | undefined;
+    let lowSegments: string[] | undefined;
     let provider: "groq" | "gemini" = "groq";
     // Diagnostic only (CAT-VOICE Arabic hotfix 2026-07-08): surfaces the raw
     // Groq failure reason in the response so it's visible without dashboard
@@ -274,7 +282,7 @@ serve(async (req) => {
 
     if (GROQ_API_KEY) {
       try {
-        ({ englishText, confidence, detectedLanguage } = await transcribeWithGroq(audioBase64, mimeType, GROQ_API_KEY, vocabulary));
+        ({ englishText, confidence, detectedLanguage, lowSegments } = await transcribeWithGroq(audioBase64, mimeType, GROQ_API_KEY, vocabulary));
       } catch (groqErr) {
         console.warn("voice-transcribe Groq failed, falling back to Gemini:", groqErr);
         groqError = groqErr instanceof Error ? groqErr.message : String(groqErr);
@@ -309,13 +317,13 @@ serve(async (req) => {
     }).catch(() => {});
 
     if (streaming) {
-      const packet = `data: ${JSON.stringify({ englishText, confidence, detectedLanguage })}\ndata: [DONE]\n\n`;
+      const packet = `data: ${JSON.stringify({ englishText, confidence, detectedLanguage, lowSegments })}\ndata: [DONE]\n\n`;
       return new Response(packet, {
         headers: { ...corsHeaders, "Content-Type": "text/event-stream", "Cache-Control": "no-cache", "X-Accel-Buffering": "no" },
       });
     }
 
-    return json({ englishText, confidence, detectedLanguage, mimeType, provider, groqError });
+    return json({ englishText, confidence, detectedLanguage, lowSegments, mimeType, provider, groqError });
 
   } catch (e) {
     const message = e instanceof Error ? e.message : String(e);
