@@ -31,9 +31,9 @@ export default function BlockedTasksWidget({ collapsed, onToggleCollapse }: Widg
   const withReason = blocked.filter((t) => (t.blockedReason ?? '').trim().length > 0).length;
   const withoutReason = total - withReason;
 
-  const badge = (
-    <Lozenge appearance={total === 0 ? 'success' : 'removed'}>{total}</Lozenge>
-  );
+  // Zero counts render no badge (ruthless-audit E3) — a green "0" is
+  // semantic color used decoratively.
+  const badge = total > 0 ? <Lozenge appearance="removed">{total}</Lozenge> : null;
 
   return (
     <WidgetWrapper

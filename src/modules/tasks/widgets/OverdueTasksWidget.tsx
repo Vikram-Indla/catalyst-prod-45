@@ -55,9 +55,9 @@ export default function OverdueTasksWidget({ collapsed, onToggleCollapse }: Widg
     };
   }, [tasks]);
 
-  const badge = (
-    <Lozenge appearance={total === 0 ? 'success' : 'removed'}>{total}</Lozenge>
-  );
+  // Zero counts render no badge (ruthless-audit E3) — a green "0" is
+  // semantic color used decoratively.
+  const badge = total > 0 ? <Lozenge appearance="removed">{total}</Lozenge> : null;
 
   return (
     <WidgetWrapper
