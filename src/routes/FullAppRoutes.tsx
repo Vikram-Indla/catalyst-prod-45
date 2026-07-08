@@ -406,6 +406,14 @@ function IncidentBacklogKeyRedirect() {
   return <Navigate to={`/incident-hub/view/${incidentKey}`} replace />;
 }
 
+/* /project-hub/:key/work → /allwork. Dead alias caught by the 2026-07-08
+   whole-app audit — sidebar links to /allwork but /work in-shell 404'd. */
+function WorkAliasRedirect() {
+  const { key } = useParams<{ key: string }>();
+  if (!key) return <Navigate to="/all-projects" replace />;
+  return <Navigate to={`/project-hub/${key}/allwork`} replace />;
+}
+
 function Resource360Redirect() {
   const { id } = useParams();
   return <Navigate to={`/project-hub/resource-360/${id || '009'}`} replace />;
@@ -683,6 +691,8 @@ export default function FullAppRoutes() {
         <Route path="/testhub/my-work" element={<MG k="testhub" t="Test Hub"><S><TestHubMyWorkPage /></S></MG>} />
         <Route path="/testhub/board" element={<MG k="testhub" t="Test Hub"><S><TestHubBoardPage /></S></MG>} />
         <Route path="/testhub/repository" element={<MG k="testhub" t="Test Hub"><S><TestHubRepositoryPage /></S></MG>} />
+        {/* Legacy path from pre-unification TestHub — folded into Repository. */}
+        <Route path="/testhub/test-cases" element={<Navigate to="/testhub/repository" replace />} />
         {/* CAT-TESTHUB-V2 C1/D1: full-page test case authoring (key-based, no UUID) */}
         <Route path="/testhub/repository/case/:caseKey" element={<MG k="testhub" t="Test Hub"><S><TestHubTestCaseDetailPage /></S></MG>} />
         <Route path="/testhub/cycles" element={<MG k="testhub" t="Test Hub"><S><TestHubCyclesPage /></S></MG>} />
@@ -1100,6 +1110,8 @@ export default function FullAppRoutes() {
         <Route path="/project-hub/:key/list" element={<S><ProjectJiraLayoutLazy /></S>} />
         <Route path="/project-hub/:key/allwork/:issueKey" element={<S><AllWorkDetailPageLazy /></S>} />
         <Route path="/project-hub/:key/allwork" element={<S><ProjectJiraLayoutLazy /></S>} />
+        {/* Dead alias caught by 2026-07-08 whole-app audit — /work in-shell 404'd. */}
+        <Route path="/project-hub/:key/work" element={<WorkAliasRedirect />} />
         <Route path="/project-hub/:key/filters" element={<S><FiltersListPageLazy /></S>} />
         <Route path="/project-hub/:key/filters/create" element={<S><FilterPreviewPageLazy /></S>} />
         <Route path="/project-hub/:key/filters/:filterId" element={<S><FilterPreviewPageLazy /></S>} />

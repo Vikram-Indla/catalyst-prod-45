@@ -11,7 +11,10 @@
    8,596 usages across the codebase depend on these being defined here.
    ───────────────────────────────────────────────────────────────────────── */
 :root {
-  --ds-font-size-50:  10px;  /* micro — nav rail labels, kanban badges     */
+  --ds-font-size-50:  11px;  /* micro — nav rail labels, kanban badges.
+                                 2026-07-08 ruthless-audit HF1: visible 10px text
+                                 is a hard-fail; 11px is the absolute floor.
+                                 390 consumers lifted in one move.            */
   --ds-font-size-100: 11px;  /* caption — timestamps, metadata, fine print  */
   --ds-font-size-200: 12px;  /* small — secondary labels, table headers     */
   --ds-font-size-300: 13px;  /* compact body — dense lists, sidebar items   */
