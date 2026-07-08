@@ -37,3 +37,13 @@
   EN: "Send the report on Thursday. No wait, make that Wednesday." → "Send the report on Wednesday. Also tell the team." (Thursday + marker gone)
   AR: "أرسل التقرير يوم الخميس، لا انتظر، خليه يوم الأربعاء" → "Send the report on Wednesday… inform the team." (Thursday gone)
 - Known residual: the AR marker occasionally survives as literal "Don't wait" (translation renders it before cleanup sees it) — prompt iteration candidate, superseded-value contract holds regardless.
+
+## S8 — KSA regional-phrase allowlist (2026-07-08) ✅
+- **Trigger**: live demo screenshot — "Assalamu Alaikum" flagged low-confidence, required manual review (✕/✓ chip), for a phrase that's everyday vocabulary for a KSA/Gulf audience, not ASR noise.
+- Root cause: Whisper's avg_logprob uncertainty score is the wrong signal for common Islamic/Gulf greetings — it's genuinely unsure about words outside its training distribution, but "unsure" ≠ "wrong" for expected regional vocabulary.
+- voice-transcribe v25: `REGIONAL_PHRASES` canonical list (Assalamu Alaikum, Wa Alaikum Assalam, InshaAllah, MashaAllah, Alhamdulillah, SubhanAllah, JazakAllah Khair, Wallahi, Yalla, Habibi) does double duty:
+  1. Rides the Whisper prompt as a permanent baseline glossary (on top of per-user vocabulary) — steers consistent transliteration spelling for every KSA/Gulf user, no per-user setup needed.
+  2. Fuzzy allowlist (Levenshtein, length-gated) excludes matching segments from both the low-confidence score AND the avg_logprob average — a correctly-heard greeting never trips manual review, and doesn't drag down confidence for the rest of the utterance either.
+- **Live-probed gap that killed the first (exact-match) version**: Whisper's transliteration spelling drifts per utterance — "Assalamu Aalaikum" (extra vowel), "JazakAllah Kheran" (khairan→kheran). An exact variant list missed both. Fuzzy edit-distance match (threshold ~25% of variant length, length-gated to avoid false positives) catches the real spelling drift while still rejecting unrelated sentences and long sentences that merely mention a word like "yalla".
+- Golden suite +2 cases (`ksa-greeting-en-voice`, `ksa-greeting-ar-voice`), new `expectConfidence` assertion in the harness. **8/8 ALL GREEN.**
+- No client changes needed — VoiceFlowProvider/VoiceFloatingCapsule already trust `confidence`/`lowSegments` verbatim from the server.

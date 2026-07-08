@@ -85,6 +85,26 @@ const CASES = [
     expect: ['wednesday', 'team'],
     reject: ['thursday'],
   },
+  {
+    // S8 KSA regional-phrase allowlist: a common Gulf/Islamic greeting is
+    // expected vocabulary, not ASR noise — it must never come back
+    // low-confidence (2026-07-08 finding: it was, flagged for manual review).
+    name: 'ksa-greeting-en-voice',
+    voice: 'Samantha',
+    text: 'Assalamu Alaikum',
+    expect: ['assalamu'],
+    expectConfidence: 'high',
+  },
+  {
+    // Spoken in Arabic, transliterated back — same allowlist, same guarantee.
+    // Whisper's own transliteration spelling varies run to run ("Aalaikum"),
+    // hence the loose keyword — the fuzzy allowlist match is what's under test.
+    name: 'ksa-greeting-ar-voice',
+    voice: 'Majed',
+    text: 'السلام عليكم',
+    expect: ['assalamu'],
+    expectConfidence: 'high',
+  },
 ];
 
 const CLEAN_URL = FN_URL.replace('voice-transcribe', 'catyflow-clean');
@@ -153,6 +173,9 @@ async function run() {
       if (resp.status !== 200) problems.push(`status ${resp.status} (${body.error ?? ''} ${body.message ?? ''})`);
       if (c.provider && body.provider !== c.provider) {
         problems.push(`provider ${body.provider} (wanted ${c.provider}${body.groqError ? `; groqError: ${body.groqError}` : ''})`);
+      }
+      if (c.expectConfidence && body.confidence !== c.expectConfidence) {
+        problems.push(`confidence ${body.confidence} (wanted ${c.expectConfidence}) — lowSegments: ${JSON.stringify(body.lowSegments)}`);
       }
       for (const kw of c.expect) {
         const ok = kw.split('|').some((alt) => text.includes(alt.toLowerCase()));
