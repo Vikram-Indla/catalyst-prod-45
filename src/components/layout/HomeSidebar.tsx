@@ -474,21 +474,13 @@ export default function HomeSidebar({
 
   const config: SidebarConfig = useMemo(() => {
     if (!expanded) {
-      // Collapsed HOME route: render hub icons with outline styling
-      // Border color per hub — matches the colored square icons in the hub switcher (Variant A: stroke only).
-      const HUB_BORDER_COLORS: Record<string, string> = {
-        home:     '#4A7FE0', // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
-        strategy: 'var(--ds-background-discovery-bold)',
-        ideation: 'var(--ds-background-warning-bold)',
-        product:  '#38BDF8', // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
-        project:  'var(--ds-background-accent-teal-bolder)',
-        release:  'var(--ds-background-accent-magenta-bolder)',
-        test:     'var(--ds-background-success-bold)',
-        incident: 'var(--ds-background-danger-bold)',
-        task:     'var(--ds-background-warning-bold)',
-        wiki:     'var(--ds-text-subtle)',
-      };
-
+      // Collapsed HOME route: render hub icons with outline styling.
+      // CAT-HOME-NOISECUT-20260708-001: rail is monochrome — 9 competing
+      // per-hub ring colors (2 of them raw hex behind ads-scanner:ignore)
+      // read as noise, not navigation. Color now marks ACTIVE only, derived
+      // from the same signal SidebarBase already uses to tint the glyph
+      // itself (style.color flips to --ds-icon-brand on the active route,
+      // SidebarBase.tsx:786) — one active-state source of truth, not two.
       const hubItems: SidebarMenuItem[] = HUB_NAV_ITEMS.map((hub) => ({
         id: `hub-${hub.key}`,
         title: hub.label,
@@ -496,7 +488,8 @@ export default function HomeSidebar({
         path: hub.href,
         icon: ({ style }: { className?: string; style?: React.CSSProperties } = {}) => {
           const maskUrl = `url("${HUB_ICON_OUTLINE_REGISTRY[hub.key as keyof typeof HUB_ICON_OUTLINE_REGISTRY]}")`;
-          const borderColor = HUB_BORDER_COLORS[hub.key] ?? 'var(--ds-border)';
+          const isActiveHub = style?.color === 'var(--ds-icon-brand)';
+          const borderColor = isActiveHub ? 'var(--ds-border-selected)' : 'var(--ds-border)';
           return (
             <span
               aria-label={hub.label}

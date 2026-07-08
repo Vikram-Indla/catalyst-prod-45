@@ -45,14 +45,28 @@ const T = {
   magenta: 'var(--ds-border-accent-magenta)', raised: 'var(--ds-surface-raised)',
 };
 const HERO_LEAD_MS = 3600_000; // banner surfaces 1h before planned start
+const PILL_LEAD_MS = 48 * 3600_000; // queue pills earn a row within 48h of start
 const TERMINAL = ['implemented', 'closed', 'done', 'cancelled'];
-// "Dismissed" sends the on-page presence (pill or full card) up to the global
-// nav chip entirely — distinct from the time-driven pill/card size choice.
-const DISMISS_KEY = 'rb:dismissed';
+// "Dismissed" is PER CHANGE: it removes that change's row from the on-page
+// stack and hands its signal to the global nav chip. Dismissing the hero
+// promotes the next-ranked change — it never hides the whole stack.
+const DISMISS_PREFIX = 'rb:dismiss:';
 const DISMISS_EVENT = 'rb:dismissed-changed';
-const readDismissed = (): boolean => localStorage.getItem(DISMISS_KEY) === '1';
-const writeDismissed = (v: boolean) => {
-  localStorage.setItem(DISMISS_KEY, v ? '1' : '0');
+const readDismissedSet = (): Set<string> => {
+  const out = new Set<string>();
+  for (let i = 0; i < localStorage.length; i++) {
+    const k = localStorage.key(i);
+    if (k?.startsWith(DISMISS_PREFIX) && localStorage.getItem(k) === '1') out.add(k.slice(DISMISS_PREFIX.length));
+  }
+  return out;
+};
+const writeDismissed = (id: string, v: boolean) => {
+  if (v) localStorage.setItem(`${DISMISS_PREFIX}${id}`, '1');
+  else localStorage.removeItem(`${DISMISS_PREFIX}${id}`);
+  window.dispatchEvent(new Event(DISMISS_EVENT));
+};
+const clearAllDismissed = () => {
+  for (const id of readDismissedSet()) localStorage.removeItem(`${DISMISS_PREFIX}${id}`);
   window.dispatchEvent(new Event(DISMISS_EVENT));
 };
 const snoozeKey = (id: string) => `rb:snooze:${id}`;
@@ -99,27 +113,40 @@ function nextActionText(c: ChangeCtx, cards: ExecCard[]): string {
 /** Self-ticking timer — owns its own 1s interval so parents never re-render on the tick.
  *  One font family throughout (tabular numerals, no monospace) so the digits sit in the
  *  same type system as the rest of the card. */
-function LiveCountdown({ change, variant }: { change: ChangeCtx; variant: 'full' | 'card' | 'pill' | 'dot' }) {
+function LiveCountdown({ change, variant }: { change: ChangeCtx; variant: 'full' | 'card' | 'pill' | 'row' | 'dot' }) {
   const [now, setNow] = useState(() => Date.now());
   useEffect(() => {
     const id = window.setInterval(() => setNow(Date.now()), 1000);
     return () => window.clearInterval(id);
   }, []);
   const timer = computeTimer(change, now);
+  // 'row' = queue-pill digits: NO live region (one aria-live surface max per
+  // page — the hero owns it), eyebrow inline before the digits.
+  if (variant === 'row') {
+    return (
+      <span aria-hidden style={{ display: 'inline-flex', alignItems: 'center', gap: 8, whiteSpace: 'nowrap' }}>
+        <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', color: T.subtle }}>{timer.eyebrow}</span>
+        <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: timer.tone, fontVariantNumeric: 'tabular-nums' }}>{timer.big}</span>
+      </span>
+    );
+  }
   // role=status + aria-label keyed on the STATE word (eyebrow), not the ticking
   // digits — announces "Live" / "window overrun" on real transitions without
   // spamming assistive tech every second. The visible digits are aria-hidden;
   // the label is the accessible equivalent (WCAG 4.1.3 status messages).
   if (variant === 'dot') {
-    // Compact/narrow-viewport fallback — no room for digits, so the solid
-    // tone-colored dot IS the visible signal; full state+time lives in the
-    // parent button's aria-label/title.
-    return <span aria-hidden style={{ width: 10, height: 10, borderRadius: '50%', background: timer.tone, flexShrink: 0 }} />;
+    // Compact/narrow-viewport fallback — global nav chip only (CAT-HOME-
+    // NOISECUT-20260708-001): neutral presence dot, not tone-colored. Urgency
+    // lives on the page (variant='full'/'card'/'row'), not permanently in the
+    // global nav — a permanent red dot goes unnoticed within a day. Full
+    // state+time lives in the parent button's aria-label/title regardless.
+    return <span aria-hidden style={{ width: 10, height: 10, borderRadius: '50%', background: T.subtlest, flexShrink: 0 }} />;
   }
   if (variant === 'pill') {
+    // Global nav chip only — same neutral-at-rest rule as 'dot' above.
     return (
       <span role="status" aria-live="polite" aria-label={`${change.chgNumber}: ${timer.eyebrow}`} style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
-        <span aria-hidden style={{ width: 8, height: 8, borderRadius: '50%', background: timer.tone, flexShrink: 0 }} />
+        <span aria-hidden style={{ width: 8, height: 8, borderRadius: '50%', background: T.subtlest, flexShrink: 0 }} />
         <span aria-hidden style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text)', fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap' }}>{timer.big}</span>
       </span>
     );
@@ -147,17 +174,73 @@ function fmtWindow(startIso: string | null, endIso: string | null): string | nul
   return `${day} · ${hm(s)}${e && !Number.isNaN(e.getTime()) ? `–${hm(e)}` : ''}`;
 }
 
-/** Rank every change the user touches → the single most urgent (running first, else soonest start). */
-export function pickPrimaryChange(data: MyExecutionWork): { primary: ChangeCtx | null; moreCount: number } {
+/**
+ * Rank every change the user touches by MY NEXT ACTION, not raw change urgency:
+ * overrun → my step running → live → my step next → soonest start. Change
+ * severity is a tie-breaker via soonest-start, never the primary key. Also
+ * derives the per-change "why you" reason shown on queue pills.
+ */
+export function rankMyChanges(data: MyExecutionWork): { changes: ChangeCtx[]; reasonById: Map<string, string> } {
   const byId = new Map<string, ChangeCtx>();
   for (const c of [...data.dayOfChanges, ...data.assignedCards.map((k) => k.change), ...data.managedChanges]) {
     if (!byId.has(c.id)) byId.set(c.id, c);
   }
   const changes = Array.from(byId.values());
-  if (changes.length === 0) return { primary: null, moreCount: 0 };
+  const reasonById = new Map<string, string>();
+  if (changes.length === 0) return { changes, reasonById };
+
+  const myRunning = new Map<string, number>();
+  const myNext = new Map<string, number>();
+  for (const k of data.assignedCards) {
+    if (k.step.status === 'in_progress' && !myRunning.has(k.change.id)) myRunning.set(k.change.id, k.step.stepNo);
+    if ((k.step.status === 'pending' || k.step.status === 'ready') && !myNext.has(k.change.id)) myNext.set(k.change.id, k.step.stepNo);
+  }
+  const now = Date.now();
+  const endMs = (c: ChangeCtx) => (c.plannedEndAt ? new Date(c.plannedEndAt).getTime() : null);
   const startMs = (c: ChangeCtx) => (c.plannedStartAt ? new Date(c.plannedStartAt).getTime() : Number.MAX_SAFE_INTEGER);
-  changes.sort((a, b) => { const ar = a.running ? 0 : 1, br = b.running ? 0 : 1; return ar !== br ? ar - br : startMs(a) - startMs(b); });
-  return { primary: changes[0], moreCount: changes.length - 1 };
+  const score = (c: ChangeCtx): number => {
+    const e = endMs(c);
+    if (c.running && e != null && now > e) return 0; // overrun — never buried
+    if (myRunning.has(c.id)) return 1;
+    if (c.running) return 2;
+    if (myNext.has(c.id)) return 3;
+    return 4;
+  };
+  changes.sort((a, b) => { const sa = score(a), sb = score(b); return sa !== sb ? sa - sb : startMs(a) - startMs(b); });
+
+  for (const c of changes) {
+    if (myRunning.has(c.id)) reasonById.set(c.id, `your step #${myRunning.get(c.id)} is running`);
+    else if (myNext.has(c.id)) reasonById.set(c.id, `your step #${myNext.get(c.id)} is next`);
+    else if (c.managerRole) reasonById.set(c.id, 'you manage');
+    else if (c.running) reasonById.set(c.id, `#${c.running.stepNo} running`);
+  }
+  return { changes, reasonById };
+}
+
+/**
+ * The N≥2 signal that matters to ops: changes sharing a target environment with
+ * overlapping planned windows. Returns the largest colliding group (≥2) or null.
+ */
+export function findWindowCollision(changes: ChangeCtx[]): { env: string; members: ChangeCtx[]; start: string; end: string } | null {
+  const active = changes.filter((c) => !TERMINAL.includes(c.status) && c.targetEnv && c.plannedStartAt && c.plannedEndAt);
+  const byEnv = new Map<string, ChangeCtx[]>();
+  active.forEach((c) => { (byEnv.get(c.targetEnv!) ?? byEnv.set(c.targetEnv!, []).get(c.targetEnv!)!).push(c); });
+  let best: { env: string; members: ChangeCtx[]; start: string; end: string } | null = null;
+  for (const [env, list] of byEnv) {
+    for (const c of list) {
+      const cS = new Date(c.plannedStartAt!).getTime(), cE = new Date(c.plannedEndAt!).getTime();
+      const group = list.filter((o) => {
+        const oS = new Date(o.plannedStartAt!).getTime(), oE = new Date(o.plannedEndAt!).getTime();
+        return oS <= cE && oE >= cS;
+      });
+      if (group.length >= 2 && (!best || group.length > best.members.length)) {
+        const starts = group.map((g) => new Date(g.plannedStartAt!).getTime());
+        const ends = group.map((g) => new Date(g.plannedEndAt!).getTime());
+        best = { env, members: group, start: new Date(Math.min(...starts)).toISOString(), end: new Date(Math.max(...ends)).toISOString() };
+      }
+    }
+  }
+  return best;
 }
 
 const isForYouRoute = (path: string) => path === '/' || path === '/for-you' || path.startsWith('/for-you/');
@@ -186,7 +269,6 @@ export function ReleaseChangeAnnouncementBanner({
   change, assignedCards, moreCount,
 }: { change: ChangeCtx; assignedCards: ExecCard[]; moreCount: number }) {
   const navigate = useNavigate();
-  const [dismissed, setDismissedState] = useState<boolean>(() => readDismissed());
   const [snoozedUntil, setSnoozedUntil] = useState<number>(() => readSnooze(change.id));
   const [remindOpen, setRemindOpen] = useState(false);
   // Session-only manual size override — chevron toggles; time decides when null.
@@ -195,14 +277,6 @@ export function ReleaseChangeAnnouncementBanner({
   const remindRef = useRef<HTMLSpanElement>(null);
 
   useEffect(() => { setSnoozedUntil(readSnooze(change.id)); }, [change.id]);
-  // Nav chip and banner are separate mounts (header vs page) sharing only
-  // localStorage — sync via a same-tab custom event (storage events don't fire
-  // in the tab that wrote the value).
-  useEffect(() => {
-    const onDismissChange = () => setDismissedState(readDismissed());
-    window.addEventListener(DISMISS_EVENT, onDismissChange);
-    return () => window.removeEventListener(DISMISS_EVENT, onDismissChange);
-  }, []);
   // Close the reminders panel on outside click — but ignore clicks inside the
   // DateTimePicker's own portal (its calendar/time menus render to body).
   useEffect(() => {
@@ -217,14 +291,14 @@ export function ReleaseChangeAnnouncementBanner({
     return () => document.removeEventListener('mousedown', onDoc);
   }, [remindOpen]);
 
-  if (dismissed) return null;
   if (snoozedUntil && Date.now() < snoozedUntil) return null;
 
   const inWindow = inHeroWindow(change, Date.now());
   const tone = computeTimer(change, Date.now()).tone;
   const open = () => navigate(`/release-hub/changes/${change.slug ?? change.id}`);
   const openSop = () => navigate(`/release-hub/changes/${change.slug ?? change.id}?tab=sop`);
-  const dismiss = () => { writeDismissed(true); setDismissedState(true); };
+  // Per-change dismiss: removes THIS change's row; the stack promotes the next.
+  const dismiss = () => writeDismissed(change.id, true);
   const snoozeUntil = (until: number) => {
     if (!until || until <= Date.now()) return;
     localStorage.setItem(snoozeKey(change.id), String(until));
@@ -381,37 +455,143 @@ export function ReleaseChangeAnnouncementBanner({
   );
 }
 
+/** Queue pill — one compact row for a non-hero change: tone rail, key, title,
+ *  risk lozenge, the "why you" reason, quiet countdown, per-row dismiss. */
+function QueuePill({ change, reason }: { change: ChangeCtx; reason: string | null }) {
+  const navigate = useNavigate();
+  const tone = computeTimer(change, Date.now()).tone;
+  const open = () => navigate(`/release-hub/changes/${change.slug ?? change.id}`);
+  return (
+    <div
+      role="button" tabIndex={0} onClick={open} onKeyDown={(e) => { if (e.key === 'Enter') open(); }}
+      style={{
+        width: '100%', textAlign: 'left', cursor: 'pointer', display: 'flex', alignItems: 'stretch',
+        borderRadius: 8, border: `1px solid ${T.border}`, background: T.raised, overflow: 'hidden',
+      }}
+    >
+      <span style={{ width: 3, flexShrink: 0, background: tone }} aria-hidden />
+      <span style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px', minWidth: 0, flex: 1 }}>
+        <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', fontWeight: 500, color: T.link, flexShrink: 0 }}>{change.chgNumber}</span>
+        <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', color: T.text, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{change.title}</span>
+        <RiskLozenge risk={change.risk} />
+        {reason && <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', color: T.subtle, whiteSpace: 'nowrap', flexShrink: 0 }}>· {reason}</span>}
+        <span style={{ flex: 1 }} />
+        <LiveCountdown change={change} variant="row" />
+      </span>
+      <span onClick={(e) => e.stopPropagation()} style={{ display: 'flex', alignItems: 'center', paddingRight: 4 }}>
+        <IconButton label={`Dismiss ${change.chgNumber} to top bar`} appearance="subtle" spacing="compact" icon={(p) => <X {...p} size={14} />} onClick={() => writeDismissed(change.id, true)} />
+      </span>
+    </div>
+  );
+}
+
+/** One aggregated overlap warning — the collision itself is the alert, not N cards. */
+function CollisionRow({ collision }: { collision: NonNullable<ReturnType<typeof findWindowCollision>> }) {
+  const navigate = useNavigate();
+  return (
+    <div
+      role="button" tabIndex={0}
+      onClick={() => navigate('/release-hub/execution')}
+      onKeyDown={(e) => { if (e.key === 'Enter') navigate('/release-hub/execution'); }}
+      style={{
+        display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', padding: '8px 12px', borderRadius: 8,
+        border: '1px solid var(--ds-border-warning)', background: 'var(--ds-background-warning)',
+      }}
+    >
+      <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', fontWeight: 500, color: 'var(--ds-text-warning)' }}>
+        {collision.members.length} changes share the {collision.env} window{fmtWindow(collision.start, collision.end) ? ` (${fmtWindow(collision.start, collision.end)})` : ''}
+      </span>
+      <span style={{ flex: 1 }} />
+      <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-warning)', whiteSpace: 'nowrap' }}>Review overlap</span>
+    </div>
+  );
+}
+
+/**
+ * ReleaseChangeStack — the For-You announcement surface for N concurrent
+ * changes. Visible budget is constant regardless of N: one collision line
+ * (only when overlap exists) + one hero card + up to two queue pills + one
+ * overflow line. Everything else lives behind "View all in Execution".
+ * Dismiss is per change; dismissing the hero promotes the next-ranked one.
+ */
+const PILL_SLOTS = 2;
+export function ReleaseChangeStack({ data }: { data: MyExecutionWork }) {
+  const navigate = useNavigate();
+  const [dismissedIds, setDismissedIds] = useState<Set<string>>(() => readDismissedSet());
+  useEffect(() => {
+    const onDismissChange = () => setDismissedIds(readDismissedSet());
+    window.addEventListener(DISMISS_EVENT, onDismissChange);
+    return () => window.removeEventListener(DISMISS_EVENT, onDismissChange);
+  }, []);
+
+  const { changes, reasonById } = rankMyChanges(data);
+  if (changes.length === 0) return null;
+
+  const now = Date.now();
+  const visible = changes.filter((c) => !dismissedIds.has(c.id));
+  const hero = visible[0] ?? null;
+  // Pills must be earned: live/overdue, in hero window, or starting within 48h.
+  const pillEligible = (c: ChangeCtx) => {
+    if (inHeroWindow(c, now)) return true;
+    const start = c.plannedStartAt ? new Date(c.plannedStartAt).getTime() : null;
+    return start != null && start - now <= PILL_LEAD_MS;
+  };
+  const pills = visible.slice(1).filter(pillEligible).slice(0, PILL_SLOTS);
+  const shownCount = (hero ? 1 : 0) + pills.length;
+  const overflow = changes.length - shownCount;
+  const collision = findWindowCollision(changes);
+
+  if (!hero) return null; // everything dismissed — nav chip carries the signal
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+      {collision && <CollisionRow collision={collision} />}
+      <ReleaseChangeAnnouncementBanner change={hero} assignedCards={data.assignedCards} moreCount={0} />
+      {pills.map((c) => <QueuePill key={c.id} change={c} reason={reasonById.get(c.id) ?? null} />)}
+      {overflow > 0 && (
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '0 12px' }}>
+          <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', color: T.subtle }}>+{overflow} more {overflow === 1 ? 'change' : 'changes'}</span>
+          <Button appearance="subtle" spacing="compact" iconAfter={ArrowRightIcon} onClick={() => navigate('/release-hub/execution')}>View all in Execution</Button>
+        </div>
+      )}
+    </div>
+  );
+}
+
 /**
  * ReleaseTimerNavChip — the persistent global top-nav timer. Shows on every
  * page whenever the user has a relevant change, EXCEPT on the For-You page
- * while the on-page pill/full-card is showing there (avoids a duplicate
- * timer) — unless the user has explicitly dismissed the on-page element, in
- * which case the chip is the only remaining surface and must show there too.
- * Clicking it normally opens the change; on the For-You page while dismissed,
- * it instead un-dismisses back to the time-correct on-page size. On narrow
+ * while the on-page stack is showing (avoids a duplicate timer) — unless every
+ * change is dismissed, in which case the chip is the only remaining surface
+ * and must show there too. Clicking it normally opens the change; on the
+ * For-You page while everything is dismissed, it instead restores the stack.
+ * Carries a +N badge when more changes queue behind the primary. On narrow
  * viewports renders a compact dot-only variant instead of disappearing.
  */
 export function ReleaseTimerNavChip({ compact = false }: { compact?: boolean } = {}) {
   const navigate = useNavigate();
   const location = useLocation();
   const { data } = useMyExecutionWork();
-  const [dismissed, setDismissedState] = useState<boolean>(() => readDismissed());
+  const [dismissedIds, setDismissedIds] = useState<Set<string>>(() => readDismissedSet());
 
   useEffect(() => {
-    const onDismissChange = () => setDismissedState(readDismissed());
+    const onDismissChange = () => setDismissedIds(readDismissedSet());
     window.addEventListener(DISMISS_EVENT, onDismissChange);
     return () => window.removeEventListener(DISMISS_EVENT, onDismissChange);
   }, []);
 
   if (!data) return null;
-  const { primary } = pickPrimaryChange(data);
+  const { changes } = rankMyChanges(data);
+  const primary = changes[0] ?? null;
   if (!primary) return null;
+  const moreCount = changes.length - 1;
   const onForYou = isForYouRoute(location.pathname);
-  if (onForYou && !dismissed) return null;
+  const allDismissed = changes.every((c) => dismissedIds.has(c.id));
+  if (onForYou && !allDismissed) return null;
 
-  const label = `${primary.chgNumber} · ${primary.title}`;
+  const label = `${primary.chgNumber} · ${primary.title}${moreCount > 0 ? ` (+${moreCount} more)` : ''}`;
   const handleClick = () => {
-    if (onForYou && dismissed) { writeDismissed(false); setDismissedState(false); return; }
+    if (onForYou && allDismissed) { clearAllDismissed(); return; }
     navigate(`/release-hub/changes/${primary.slug ?? primary.id}`);
   };
 
@@ -444,6 +624,9 @@ export function ReleaseTimerNavChip({ compact = false }: { compact?: boolean } =
     >
       <LiveCountdown change={primary} variant="pill" />
       <span aria-hidden style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: T.subtle, whiteSpace: 'nowrap' }}>{primary.chgNumber}</span>
+      {moreCount > 0 && (
+        <span aria-hidden style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', fontWeight: 500, color: T.subtle, background: 'var(--ds-background-neutral)', borderRadius: 999, padding: '2px 8px', whiteSpace: 'nowrap' }}>+{moreCount}</span>
+      )}
     </button>
   );
 }

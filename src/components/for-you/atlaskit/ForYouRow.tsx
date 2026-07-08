@@ -91,13 +91,22 @@ interface ForYouRowProps {
    * default feed layout (avatar + star + relative time + inline lozenge).
    */
   variant?: 'default' | 'jira-assigned';
+  /**
+   * jira-assigned only (CAT-HOME-NOISECUT-20260708-001): the section's bucket
+   * label ("To do" / "In progress" / "Done"). When the item's literal status
+   * differs from this label, it renders as plain meta text instead of a
+   * trailing lozenge — the bucket header already states the category, so a
+   * per-row lozenge repeating it is dropped; the literal status is kept
+   * (never silently lost) whenever it says something the bucket doesn't.
+   */
+  bucketLabel?: string;
   /** Row-level action menu (hover-reveal ⋯ button). Same pattern as JiraTable makeRowActionsCell. */
   actions?: ForYouRowAction[];
 }
 
 // ─── Component ───────────────────────────────────────────────────────────────
 
-function ForYouRowImpl({ item, alwaysShowStar = false, onSelect, onToggleStar, hideProject = false, suggestion, variant = 'default', actions }: ForYouRowProps) {
+function ForYouRowImpl({ item, alwaysShowStar = false, onSelect, onToggleStar, hideProject = false, suggestion, variant = 'default', bucketLabel, actions }: ForYouRowProps) {
   const isJiraAssigned = variant === 'jira-assigned';
   const avatarUrl = resolveAvatarUrl(item.assignee.name) || undefined;
   const isStarred = !!item.starred;
@@ -279,11 +288,22 @@ function ForYouRowImpl({ item, alwaysShowStar = false, onSelect, onToggleStar, h
               </span>
             </Tooltip>
           )}
-          {/* Inline lozenge + updatedAt — DEFAULT VARIANT ONLY.
-              Jira-assigned variant moves the lozenge to the trailing slot
-              (right-edge, marginLeft:auto) per /jira/for-you DOM. */}
+          {/* Inline lozenge + updatedAt — DEFAULT VARIANT ONLY. */}
           {!isJiraAssigned && item.status && (
             <StatusLozenge status={item.status} statusCategory={item.statusCategory} />
+          )}
+          {/* jira-assigned: no lozenge (the section header already states the
+              bucket) — literal status shown as plain meta text only when it
+              says something the bucket label doesn't (CAT-HOME-NOISECUT). */}
+          {isJiraAssigned && item.status && bucketLabel && item.status.toLowerCase() !== bucketLabel.toLowerCase() && (
+            <span
+              style={{
+                font: `400 12px/16px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
+                color: 'var(--ds-text-subtlest)',
+              }}
+            >
+              · {item.status}
+            </span>
           )}
           {!isJiraAssigned && (
             <span
@@ -321,12 +341,11 @@ function ForYouRowImpl({ item, alwaysShowStar = false, onSelect, onToggleStar, h
 
       {/* Trailing slot
           ───────────────
-          jira-assigned variant: status Lozenge right-aligned, NO avatar, NO star
-          (matches /jira/for-you Assigned tab DOM 2026-05-17).
+          jira-assigned variant: empty — status already lives in the section
+          header + row meta text (CAT-HOME-NOISECUT-20260708-001 dropped the
+          per-row lozenge: same fact stated twice was pure noise).
           default variant: assignee Avatar + star (star omitted when no onToggleStar). */}
-      {isJiraAssigned ? (
-        item.status && <StatusLozenge status={item.status} statusCategory={item.statusCategory} />
-      ) : (
+      {isJiraAssigned ? null : (
         <div style={{ display: 'flex', alignItems: 'center', gap: token('space.100', '8px'), flexShrink: 0 }}>
           <Tooltip content={item.assignee.name}>
             <span>
