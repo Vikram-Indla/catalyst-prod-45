@@ -1,17 +1,18 @@
 /**
  * catyflow-clean — the Wispr-grade cleanup pass for CatyFlow dictation
- * (CAT-VOICE-FLOW-20260704-001).
+ * (CAT-VOICE-FLOW-20260704-001; intent collapse CAT-DICTATION-INTELLIGENCE-
+ * 20260708-001 S7).
  *
  * mode "clean":   raw ASR utterance → clean prose. Removes fillers,
- *                 resolves backtracks ("three… no wait five" → five),
- *                 punctuates, formats spoken lists, matches the target
- *                 field's register. Same-language output (Arabic stays
- *                 Arabic, English stays English).
+ *                 collapses self-corrections and restarts to the FINAL
+ *                 intent (bilingual: Arabic-corrects-English and vice
+ *                 versa), punctuates, formats spoken lists, matches the
+ *                 target field's register. Same-language output.
  * mode "command": selected text + spoken instruction → rewritten text.
  *
  * Provider: AI gateway (OpenAI-compatible chat completions) with
- * Gemini fallback via GEMINI_API_KEY. Client races a 700 ms deadline
- * for "clean" — late responses are discarded there, so this function
+ * Gemini fallback via GEMINI_API_KEY. Client races a deadline for
+ * "clean" — late responses are discarded there, so this function
  * favors small models and single-shot generation.
  */
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
@@ -44,7 +45,13 @@ function buildSystemPrompt(register: string, formality: string, dictionary: stri
     "You clean up dictated speech into written text. Output ONLY the cleaned text — no preamble, no quotes, no explanations.",
     "Rules:",
     "- Remove filler words (um, uh, like, you know, يعني, اه) and false starts.",
-    '- Resolve self-corrections: "retry three times… no wait, five times" becomes "retry five times". Keep only the corrected value.',
+    "- INTENT COLLAPSE — the speaker's LAST decision always wins:",
+    '  • Corrections replace what they correct: "retry three times… no wait, five times" → "retry five times". The superseded value NEVER appears.',
+    '  • "scratch that" / "forget that" / "خلاص لا" cancels the ENTIRE preceding clause — drop it and keep only what follows.',
+    '  • Restarts collapse: "we need we need to ship" → "we need to ship"; "tell him… tell him tomorrow" → "tell him tomorrow".',
+    '  • Correction markers in EITHER language apply ("no wait", "I mean", "actually", "make that", "rather", "لا انتظر", "اقصد", "بدل كذا") — a correction spoken in one language replaces content in the other just the same.',
+    '  • Remove the correction marker itself from the output ("no wait", "scratch that" etc. never appear).',
+    "  • When in doubt whether something is a correction or new content, keep it — never drop content that is not clearly superseded.",
     "- Add punctuation and capitalization. Honor spoken punctuation ('comma', 'new line', 'فاصلة').",
     "- When the speaker enumerates items, format them as a list (one item per line prefixed with '- ').",
     "- KEEP THE SPEAKER'S LANGUAGE: Arabic input stays Arabic, English stays English. Never translate.",
@@ -177,12 +184,14 @@ serve(async (req) => {
     const result = (await callGateway(system, user, maxTokens)) ?? (await callGemini(system, user, maxTokens));
     if (!result) return json({ error: "gateway_error", message: "No cleanup provider available" }, 502);
 
-    // Governance audit (best effort, service role)
+    // Governance audit (best effort, service role). ai_usage_log is the
+    // canonical AI audit table (2026-07-04 sweep) — this fn previously
+    // logged to ai_governance_audit_log by mistake.
     try {
       const svc = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
       if (svc) {
         const admin = createClient(supabaseUrl, svc, { auth: { persistSession: false } });
-        await admin.from("ai_governance_audit_log").insert({
+        await admin.from("ai_usage_log").insert({
           action: `catyflow_${mode}`,
           payload: {
             user_id: userData.user.id,
