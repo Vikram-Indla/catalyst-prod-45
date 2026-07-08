@@ -9,6 +9,7 @@ import AkEyeOpenStrikethroughIcon from '@atlaskit/icon/core/eye-open-strikethrou
 import AkExpandVerticalIcon from '@atlaskit/icon/core/expand-vertical';
 import AkCollapseVerticalIcon from '@atlaskit/icon/core/collapse-vertical';
 import { ToolbarMenuButton } from '@/components/shared/JiraTable';
+import { EmptyState } from '@/components/ads/EmptyState';
 import { useQuery } from '@tanstack/react-query';
 import { catalystFlag } from '@/lib/catalystFlag';
 import { supabase } from '@/integrations/supabase/client';
@@ -446,15 +447,15 @@ export function ReleasesPage() {
           density={density}
         />
       ) : (
-        <div
-          style={{
-            padding: '48px 24px',
-            textAlign: 'center',
-            color: 'var(--ds-text-subtlest)',
-          }}
-        >
-          No releases match this filter.
-        </div>
+        <EmptyState
+          header="No releases here yet"
+          description="Track what ships and when — plan scope, sign-offs, and readiness in one place."
+          primaryAction={
+            <Button appearance="primary" onClick={() => setIsCreateModalOpen(true)}>
+              Create release
+            </Button>
+          }
+        />
       )}
 
       <ReleaseCreateModal
