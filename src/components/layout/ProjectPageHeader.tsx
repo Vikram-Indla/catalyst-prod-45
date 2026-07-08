@@ -216,8 +216,12 @@ export function ProjectPageHeader({
       </div>
 
       {/* No dangling "/" when there is no title to follow it (Products/Projects
-          index pages derive an empty route word). */}
-      {!hideTitle && (title ?? routeWord) && (
+          index pages derive an empty route word). Global hubs additionally
+          suppress a derived title that merely repeats the root crumb —
+          otherwise /release-hub/releases-management reads "Releases / Releases"
+          (same for Incidents). An explicit `title` prop always renders. */}
+      {!hideTitle && (title ?? routeWord) &&
+        !(isGlobalHub && !title && routeWord.toLowerCase() === rootLabel.toLowerCase()) && (
         <>
           <span
             aria-hidden
