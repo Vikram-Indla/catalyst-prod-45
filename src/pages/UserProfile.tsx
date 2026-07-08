@@ -13,6 +13,7 @@ import { catalystToast } from '@/lib/catalystToast';
 import { Shield, History, Calendar } from '@/lib/atlaskit-icons';
 import { useUserRole } from '@/hooks/useUserRole';
 import { formatDistanceToNow } from 'date-fns';
+import { VoiceSettingsTab } from '@/features/voice-flow/VoiceSettingsTab';
 
 const ROLE_LABELS: Record<string, string> = {
   admin: 'Admin',
@@ -473,6 +474,7 @@ export default function UserProfile() {
           <Tab>Personal</Tab>
           <Tab>Security</Tab>
           <Tab>Leave</Tab>
+          <Tab>Voice</Tab>
         </TabList>
 
         {/* ── Personal tab ── */}
@@ -777,6 +779,14 @@ export default function UserProfile() {
                 </div>
               )}
             </div>
+          </div>
+        </TabPanel>
+
+        {/* ── Voice tab — dictation dictionary, snippets, sound
+            (CAT-DICTATION-INTELLIGENCE-20260708-001 S4) ── */}
+        <TabPanel>
+          <div style={{ width: '100%' }}>
+            <VoiceSettingsTab />
           </div>
         </TabPanel>
       </Tabs>

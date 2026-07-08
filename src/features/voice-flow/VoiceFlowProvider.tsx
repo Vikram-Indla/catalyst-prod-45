@@ -14,7 +14,7 @@ import { LivePartialsController, type LiveLaneStatus, type LivePartial } from '.
 import { containsArabicScript } from '@/lib/i18n/detectScript';
 import { playListenPing, playStopPing } from './soundPing';
 import { useVoiceFlowSettings } from './useVoiceSettings';
-import { armCorrectionLearner, getActiveTerms, getProjectKeys } from './dictionary';
+import { armCorrectionLearner, getActiveTerms, getProjectKeys, getMisheardMap, applyMisheardCorrections } from './dictionary';
 import { useVoiceHotkey } from './useVoiceHotkey';
 import { VoiceFloatingCapsule } from './VoiceFloatingCapsule';
 import { ComposerGhostText } from './ComposerGhostText';
@@ -492,6 +492,13 @@ export function VoiceFlowProvider({ children }: Props) {
       const keys = await getProjectKeys();
       englishText = normalizeEntities(englishText, keys);
     } catch { /* normalization is best-effort */ }
+
+    // Deterministic misheard correction (S4): mistakes this user has already
+    // corrected once never ship again.
+    try {
+      const misheard = await getMisheardMap();
+      if (misheard.length) englishText = applyMisheardCorrections(englishText, misheard);
+    } catch { /* best-effort */ }
 
     // CatyFlow polish pass (CAT-VOICE-FLOW-20260704-001): register-aware
     // cleanup raced against a deadline — a late/failed cleanup silently

@@ -102,6 +102,57 @@ export function invalidateTermCache(): void {
   cache = null;
 }
 
+// ─── Deterministic misheard correction (S4) ─────────────────────────────
+
+let misheardCache: { userId: string; map: Array<{ term: string; misheard: string[] }>; at: number } | null = null;
+
+/** Known mishearings learned from the user's own corrections. Unlike
+ *  vocabulary biasing (probabilistic), these are deterministic replacements:
+ *  the engine has ALREADY confused X for Y for this user — stop re-shipping
+ *  the mistake. */
+export async function getMisheardMap(): Promise<Array<{ term: string; misheard: string[] }>> {
+  const { data: auth } = await supabase.auth.getUser();
+  const userId = auth?.user?.id;
+  if (!userId) return [];
+  if (misheardCache && misheardCache.userId === userId && Date.now() - misheardCache.at < CACHE_TTL_MS) {
+    return misheardCache.map;
+  }
+  let map: Array<{ term: string; misheard: string[] }> = [];
+  try {
+    const { data } = await db
+      .from('dictation_dictionary')
+      .select('term, misheard_as')
+      .eq('user_id', userId)
+      .eq('active', true)
+      .limit(200);
+    map = ((data ?? []) as Array<{ term: string; misheard_as?: string[] | null }>)
+      .filter((r) => Array.isArray(r.misheard_as) && r.misheard_as.length > 0)
+      .map((r) => ({ term: r.term, misheard: r.misheard_as as string[] }));
+  } catch { /* best-effort */ }
+  misheardCache = { userId, map, at: Date.now() };
+  return map;
+}
+
+/** Apply known misheard→term corrections, whole-word, case-insensitive. */
+export function applyMisheardCorrections(
+  text: string,
+  map: Array<{ term: string; misheard: string[] }>,
+): string {
+  let out = text;
+  for (const { term, misheard } of map) {
+    for (const wrong of misheard) {
+      if (!wrong?.trim() || wrong.toLowerCase() === term.toLowerCase()) continue;
+      const re = new RegExp(`\\b${wrong.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'gi');
+      out = out.replace(re, term);
+    }
+  }
+  return out;
+}
+
+export function invalidateMisheardCache(): void {
+  misheardCache = null;
+}
+
 // ---------------------------------------------------------------------------
 // Learning
 // ---------------------------------------------------------------------------
