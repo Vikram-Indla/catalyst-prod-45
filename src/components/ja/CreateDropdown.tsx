@@ -90,6 +90,7 @@ export function CreateDropdown({ iconOnly = false }: CreateDropdownProps = {}) {
         onOpenBusinessRequest={() => { setStoryOpen(false); setBrOpen(true); }}
         projectKey={projectKeyFromUrl}
         creModule={creModule}
+        allowTestSet={isTestHub}
         defaultWorkType={
           pendingWorkType ??
           (isTasksModule ? 'Task' : 'Story')

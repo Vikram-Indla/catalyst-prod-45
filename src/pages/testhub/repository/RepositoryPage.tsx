@@ -1539,6 +1539,7 @@ export default function RepositoryPage() {
         onClose={() => setCreateOpen(false)}
         projectKey={project?.key ?? undefined}
         defaultWorkType="Test Case"
+        allowTestSet
         initialFolderId={activeFolderId}
         onSuccess={() => setCreateOpen(false)}
       />

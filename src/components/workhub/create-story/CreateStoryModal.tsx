@@ -182,6 +182,13 @@ export interface CreateStoryModalProps {
    * modal already scoped to the folder the user is viewing.
    */
   initialFolderId?: string | null;
+  /**
+   * 'Test Set' is TestHub-only (tm_test_sets has no surface outside it — a
+   * global leak let it show on any create surface). Callers on a genuine
+   * TestHub surface (repository "+ Create case", TestHub's own "+ Create")
+   * pass true; every other surface defaults to false.
+   */
+  allowTestSet?: boolean;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -212,9 +219,9 @@ const WORK_TYPES = [
   'Figma',
   'Integration',
   // TestHub-native types (project-scoped, write to tm_* tables — NOT ph_issues).
-  // 'Test Case' → tm_test_cases; 'Test Set' → tm_test_sets.
+  // 'Test Case' → tm_test_cases. 'Test Set' is intentionally NOT in this base
+  // list — it's TestHub-only, injected conditionally via `allowTestSet` below.
   'Test Case',
-  'Test Set',
 ] as const;
 
 const PRIORITIES = ['Highest', 'High', 'Medium', 'Low', 'Lowest'] as const;
@@ -528,6 +535,7 @@ export function CreateStoryModal({
   initialSummary,
   initialParentKey,
   initialFolderId,
+  allowTestSet = false,
 }: CreateStoryModalProps) {
   const { user } = useAuth();
   const { form, updateField, reset } = useCreateStoryForm(projectId);
@@ -862,9 +870,9 @@ export function CreateStoryModal({
   // CRE chokepoint (Grids A + D): with a module scope, both the default
   // catalogue and caller-restricted lists must pass filterCreatableTypes.
   const effectiveWorkTypes = useMemo(() => {
-    const base = workTypes ?? [...WORK_TYPES, ...customTypeNames];
+    const base = workTypes ?? [...WORK_TYPES, ...customTypeNames, ...(allowTestSet ? ['Test Set'] : [])];
     return creModule ? filterCreatableTypes(base, creModule) : [...base];
-  }, [workTypes, customTypeNames, creModule]);
+  }, [workTypes, customTypeNames, creModule, allowTestSet]);
   const workTypeOptions: IconOption[] = useMemo(
     () =>
       effectiveWorkTypes.map((t) => ({
