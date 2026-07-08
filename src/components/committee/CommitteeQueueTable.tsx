@@ -285,12 +285,21 @@ function LoadingSkeleton({ gridTemplate }: { gridTemplate: string }) {
 }
 
 function EmptyState({ onLoadDemoData, includeClosedDecisions }: { onLoadDemoData?: () => void; includeClosedDecisions?: boolean }) {
-  const message = includeClosedDecisions ? 'No committee items found.' : 'No open committee approvals.';
+  // Empty queue = a GOOD state for an approvals surface — celebrate it
+  // instead of the bare one-liner the whole-app audit flagged (D3 = 0).
+  const title = includeClosedDecisions ? 'No committee items found' : 'All clear';
+  const message = includeClosedDecisions
+    ? 'Nothing matches the current view — adjust filters or check back later.'
+    : 'No approvals waiting on the committee. New requests appear here the moment they need a decision.';
   return (
-    <div className="py-8 text-center border-t border-border">
-      <p className="text-sm text-muted-foreground">{message}</p>
+    <div style={{ padding: '48px 0', textAlign: 'center', borderTop: '1px solid var(--ds-border)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
+      <div style={{ width: 40, height: 40, borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--ds-background-success)' }}>
+        <Database style={{ width: 20, height: 20, color: 'var(--ds-icon-success)' }} />
+      </div>
+      <p style={{ margin: 0, fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: 'var(--ds-text)' }}>{title}</p>
+      <p style={{ margin: 0, fontSize: 'var(--ds-font-size-400)', maxWidth: 384, color: 'var(--ds-text-subtle)' }}>{message}</p>
       {onLoadDemoData && (
-        <Button variant="outline" size="sm" onClick={onLoadDemoData} className="gap-2 mt-3">
+        <Button variant="outline" size="sm" onClick={onLoadDemoData} className="gap-2 mt-2">
           <Database className="h-3.5 w-3.5" />
           Load Demo Data
         </Button>

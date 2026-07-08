@@ -709,9 +709,14 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
                 : 'No filters yet'}
             </span>
             {!search && !ownerFilter && !projectFilter && !groupFilter && (
-              <span style={{ fontSize: 'var(--ds-font-size-400)', color: token('color.text.subtlest') }}>
-                Save a JQL query as a filter to find and reuse it later.
-              </span>
+              <>
+                <span style={{ fontSize: 'var(--ds-font-size-400)', color: token('color.text.subtlest') }}>
+                  Save a JQL query as a filter to find and reuse it later.
+                </span>
+                <span style={{ marginTop: 4 }}>
+                  <Button appearance="primary" onClick={() => navigate(createHref)}>Create filter</Button>
+                </span>
+              </>
             )}
           </div>
         }
