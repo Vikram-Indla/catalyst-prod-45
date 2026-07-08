@@ -12,6 +12,9 @@ interface Props {
   onCancel: () => void;
   onPause?: () => void;
   onResume?: () => void;
+  /** Re-upload the retained audio after a failed transcription. */
+  onRetry?: () => void;
+  retryAvailable?: boolean;
   /** False on the native-SpeechRecognition lane (no pause API there). */
   canPause?: boolean;
   /** Un-paused elapsed session time — rendered as a count-up. */
@@ -319,6 +322,8 @@ export function VoiceFloatingCapsule({
   onCancel,
   onPause,
   onResume,
+  onRetry,
+  retryAvailable,
   canPause,
   elapsedMs,
   liveLaneStatus,
@@ -467,6 +472,9 @@ export function VoiceFloatingCapsule({
             <span className="vf-label vf-label--error" title={errorMessage ?? ''}>
               {errorMessage ?? 'Voice error'}
             </span>
+            {retryAvailable && onRetry && (
+              <button className="vf-btn vf-btn--commit" onClick={onRetry} aria-label="Retry transcription">↻</button>
+            )}
             <button className="vf-btn vf-btn--cancel" onClick={onCancel} aria-label="Dismiss">✕</button>
           </>
         );

@@ -73,6 +73,19 @@ export function VoiceFlowProvider({ children }: Props) {
 
   const countdownRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
+  // S6a reliability: retained audio for one-click retry + latency metric.
+  const lastBlobRef = useRef<{ blob: Blob; durationMs: number } | null>(null);
+  const processBlobRef = useRef<(blob: Blob, durationMs: number) => Promise<void>>(async () => {});
+  const listenStartRef = useRef<number | null>(null);
+  const firstPartialMsRef = useRef<number | null>(null);
+  const [retryAvailable, setRetryAvailable] = useState(false);
+
+  const markFirstPartial = () => {
+    if (firstPartialMsRef.current == null && listenStartRef.current != null) {
+      firstPartialMsRef.current = Date.now() - listenStartRef.current;
+    }
+  };
+
   const statusRef         = useRef<VoiceStatus>('idle');
   const captureRef        = useRef<AudioCaptureService>(new AudioCaptureService());
   const realtimeRef       = useRef<RealtimeTranscriber | null>(null);
@@ -117,15 +130,22 @@ export function VoiceFlowProvider({ children }: Props) {
     setLivePartial(null);
     setLiveLaneStatus(null);
     partialsRef.current.reset();
+    lastBlobRef.current = null;
+    listenStartRef.current = null;
+    firstPartialMsRef.current = null;
+    setRetryAvailable(false);
   }, []);
 
   /** Schedules reset() guarded by session ID — prevents stale error/cancel
    *  timeouts from killing a session that started after the error fired.
    *  Root cause of "second attempt fails": setTimeout(reset, N) was fire-and-forget;
    *  a new session would start but the old timer would call reset() mid-flight. */
+  const pendingResetRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const scheduleReset = useCallback((delayMs: number) => {
     const snapshotId = sessionIdRef.current;
-    setTimeout(() => {
+    if (pendingResetRef.current) clearTimeout(pendingResetRef.current);
+    pendingResetRef.current = setTimeout(() => {
+      pendingResetRef.current = null;
       if (sessionIdRef.current === snapshotId) reset();
     }, delayMs);
   }, [reset]);
@@ -190,12 +210,32 @@ export function VoiceFlowProvider({ children }: Props) {
       return;
     }
 
-    // Convert blob → base64
-    const arrayBuffer = await blob.arrayBuffer();
-    const uint8 = new Uint8Array(arrayBuffer);
-    let binaryStr = '';
-    for (let i = 0; i < uint8.length; i++) binaryStr += String.fromCharCode(uint8[i]);
-    const audioBase64 = btoa(binaryStr);
+    // Keep the audio for one-click retry — a failed upload must never cost
+    // the user their words (S6a never-lose-words).
+    lastBlobRef.current = { blob, durationMs };
+    await processBlobRef.current(blob, durationMs);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [reset, scheduleReset]);
+
+  // ─── Batch transcription of a captured blob (retry-safe) ─────────────
+  const processBlob = useCallback(async (blob: Blob, durationMs: number) => {
+    // Convert blob → base64 via FileReader — the old byte-by-byte string
+    // concat janked the main thread for seconds on multi-MB recordings.
+    const audioBase64 = await new Promise<string>((resolvePromise, rejectPromise) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const url = reader.result as string;
+        resolvePromise(url.slice(url.indexOf(',') + 1));
+      };
+      reader.onerror = () => rejectPromise(new Error('Failed to read audio'));
+      reader.readAsDataURL(blob);
+    }).catch((e) => {
+      setErrorMessage(e instanceof Error ? e.message : 'Failed to read audio');
+      setStatusBoth('error');
+      scheduleReset(3000);
+      return null;
+    });
+    if (audioBase64 === null) return;
     const mimeType = blob.type || 'audio/webm';
 
     const geminiStart = Date.now();
@@ -231,6 +271,17 @@ export function VoiceFlowProvider({ children }: Props) {
       });
 
       if (!resp.ok) {
+        // 422 no_speech is an OUTCOME, not an error (S6a): silence or a
+        // muted mic. Calm copy, no retry (re-uploading silence is useless).
+        if (resp.status === 422) {
+          lastBlobRef.current = null;
+          setPartialText(null);
+          setErrorMessage('Didn’t catch that — check your mic and try again');
+          setStatusBoth('error');
+          void updateSession('no_speech');
+          scheduleReset(2500);
+          return;
+        }
         const errBody = await resp.json().catch(() => ({})) as Record<string, unknown>;
         const friendlyMsg = resp.status === 429
           ? 'Busy — try again in a moment'
@@ -305,6 +356,7 @@ export function VoiceFlowProvider({ children }: Props) {
         if (!englishText) throw new Error('Empty transcription');
 
         setPartialText(null);
+        lastBlobRef.current = null;
         await handleResult(englishText, detectedLang, confidence, durationMs, geminiStart);
 
       } else {
@@ -313,6 +365,7 @@ export function VoiceFlowProvider({ children }: Props) {
         if (!data?.englishText) throw new Error((data?.error as string) ?? 'Empty transcription');
 
         setPartialText(null);
+        lastBlobRef.current = null;
         await handleResult(
           data.englishText as string,
           data.detectedLanguage as string | undefined,
@@ -326,13 +379,32 @@ export function VoiceFlowProvider({ children }: Props) {
       const msg = e instanceof Error ? e.message : 'Translation failed';
       console.error('[VoiceFlow] transcription error:', e);
       setPartialText(null);
+      // The blob is retained in lastBlobRef — the capsule offers Retry
+      // without re-recording (never-lose-words).
+      setRetryAvailable(lastBlobRef.current != null);
       setErrorMessage(msg);
       setStatusBoth('error');
       void updateSession('error', undefined, msg);
-      scheduleReset(4000);
+      scheduleReset(8000);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [reset, scheduleReset]);
+  processBlobRef.current = processBlob;
+
+  // Retry the last failed batch upload with the retained audio.
+  const retryTranscription = useCallback(() => {
+    const last = lastBlobRef.current;
+    if (!last || statusRef.current !== 'error') return;
+    // Cancel the error-state auto-reset so it can't fire mid-retry.
+    if (pendingResetRef.current) {
+      clearTimeout(pendingResetRef.current);
+      pendingResetRef.current = null;
+    }
+    setErrorMessage(null);
+    setRetryAvailable(false);
+    setStatusBoth('processing');
+    void processBlobRef.current(last.blob, last.durationMs);
+  }, []);
 
   const handleResult = useCallback(async (
     englishText: string,
@@ -590,7 +662,11 @@ export function VoiceFlowProvider({ children }: Props) {
       const sessionStart = Date.now();
       let finalTranscript = '';
 
-      recognition.onstart = () => { console.log('[VF] native SR onstart'); setStatusBoth('listening'); };
+      recognition.onstart = () => {
+        console.log('[VF] native SR onstart');
+        listenStartRef.current = Date.now();
+        setStatusBoth('listening');
+      };
 
       recognition.onresult = (event) => {
         let interim = '';
@@ -604,6 +680,7 @@ export function VoiceFlowProvider({ children }: Props) {
         if (statusRef.current === 'listening') {
           const live = (finalTranscript + interim).trim();
           if (live) {
+            markFirstPartial();
             setPartialText(live);
             setLivePartial(partialsRef.current.update(live));
           }
@@ -694,6 +771,7 @@ export function VoiceFlowProvider({ children }: Props) {
                 {
                   onLive: (text) => {
                     if ((statusRef.current === 'listening' || statusRef.current === 'paused') && text) {
+                      markFirstPartial();
                       setPartialText(text);
                       setLivePartial(partialsRef.current.update(text));
                     }
@@ -720,6 +798,7 @@ export function VoiceFlowProvider({ children }: Props) {
         setLiveLaneStatus('unavailable');
       }
 
+      listenStartRef.current = Date.now();
       setStatusBoth('listening');
     } catch (e) {
       const msg = e instanceof Error ? e.message : 'Microphone access denied';
@@ -762,6 +841,7 @@ export function VoiceFlowProvider({ children }: Props) {
         duration_ms:       vr?.durationMs,
         detected_language: vr?.detectedLanguage,
         gemini_latency_ms: vr?.geminiLatencyMs,
+        first_partial_ms:  firstPartialMsRef.current ?? undefined,
         error_code:        errorCode,
       } as never).eq('id' as never, sessionIdRef.current as never);
     } catch { /* non-blocking */ }
@@ -808,6 +888,8 @@ export function VoiceFlowProvider({ children }: Props) {
           onCancel={cancel}
           onPause={pause}
           onResume={resume}
+          onRetry={retryTranscription}
+          retryAvailable={retryAvailable}
           canPause={canPause}
           elapsedMs={elapsedMs}
           liveLaneStatus={liveLaneStatus}
