@@ -43,7 +43,11 @@ function categoryAppearance(c: string): ThemeAppearance {
     default: return 'default';
   }
 }
-function coverageHealth(pct: number): { label: string; appearance: ThemeAppearance } {
+function coverageHealth(pct: number, totalStories?: number): { label: string; appearance: ThemeAppearance } {
+  // No stories = nothing to cover yet. Screaming "At risk" in red over an
+  // absence of data is semantic color used decoratively (audit A5/E3) —
+  // risk requires something to be at risk.
+  if (!totalStories) return { label: 'No stories yet', appearance: 'default' };
   if (pct < 40) return { label: 'At risk', appearance: 'removed' };
   if (pct < 80) return { label: 'Partial', appearance: 'moved' };
   return { label: 'Healthy', appearance: 'success' };
@@ -52,7 +56,7 @@ function coverageHealth(pct: number): { label: string; appearance: ThemeAppearan
 export { metricLabel, cardStyle, metricValue, sectionH, subtle };
 
 export function ReportStatusView({ data, insight, onRowOpen, uncoveredEmpty }: ReportStatusViewProps) {
-  const health = coverageHealth(data.coveragePct);
+  const health = coverageHealth(data.coveragePct, data.totalStories);
 
   const mismatchColumns: Column<MismatchRow>[] = [
     { id: 'issue_key', label: 'Story', width: 14, sortable: true, cell: ({ row }) => <span style={{ fontWeight: 600, color: 'var(--ds-text)' }}>{row.issue_key}</span> },
@@ -80,9 +84,11 @@ export function ReportStatusView({ data, insight, onRowOpen, uncoveredEmpty }: R
           <div style={metricValue}>{data.exec.total}</div>
           <div style={metricLabel}>Executions</div>
           <div style={{ color: 'var(--ds-text-subtle)', marginTop: 8, display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-            <span style={{ color: 'var(--ds-text-success)' }}>{data.exec.passed} passed</span>
-            <span style={{ color: 'var(--ds-text-danger)' }}>{data.exec.failed} failed</span>
-            <span style={{ color: 'var(--ds-text-warning)' }}>{data.exec.blocked} blocked</span>
+            {/* Semantic color only when the count is non-zero — "0 failed" in
+                danger red screams about nothing (audit A5/E3). */}
+            <span style={{ color: data.exec.passed > 0 ? 'var(--ds-text-success)' : 'var(--ds-text-subtlest)' }}>{data.exec.passed} passed</span>
+            <span style={{ color: data.exec.failed > 0 ? 'var(--ds-text-danger)' : 'var(--ds-text-subtlest)' }}>{data.exec.failed} failed</span>
+            <span style={{ color: data.exec.blocked > 0 ? 'var(--ds-text-warning)' : 'var(--ds-text-subtlest)' }}>{data.exec.blocked} blocked</span>
             <span style={{ color: 'var(--ds-text-subtlest)' }}>{data.exec.not_run} pending</span>
           </div>
         </div>
