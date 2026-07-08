@@ -16,6 +16,9 @@ interface Props {
   canPause?: boolean;
   /** Un-paused elapsed session time — rendered as a count-up. */
   elapsedMs?: number;
+  /** Realtime caption lane health — 'unavailable' renders an honest notice
+   *  instead of a silent caption-less "Listening…". */
+  liveLaneStatus?: 'connecting' | 'live' | 'unavailable' | null;
   detectedLanguage?: string | null;
   /** Real-time mic analyser — drives bar heights from amplitude data */
   analyserNode?: AnalyserNode | null;
@@ -352,6 +355,7 @@ export function VoiceFloatingCapsule({
   onResume,
   canPause,
   elapsedMs,
+  liveLaneStatus,
   detectedLanguage,
   analyserNode,
   partialText,
@@ -417,7 +421,9 @@ export function VoiceFloatingCapsule({
                 ? 'Command — say the change to apply'
                 : nearCap
                   ? 'Listening — wraps up at 15:00'
-                  : 'Listening… (Enter to finish)'}
+                  : liveLaneStatus === 'unavailable'
+                    ? 'Listening — live captions unavailable, will transcribe on stop'
+                    : 'Listening… (Enter to finish)'}
             </span>
             {elapsedMs !== undefined && (
               <span className="vf-timer" aria-label={`${formatMs(elapsedMs)} elapsed`}>

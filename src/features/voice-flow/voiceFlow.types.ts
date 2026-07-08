@@ -40,7 +40,14 @@ export interface VoiceResult {
   cleanupProvider?: string;
 }
 
+import type { LivePartial, LiveLaneStatus } from './livePartials';
+
 export interface VoiceFlowContextValue {
+  /** Stable/provisional split of the live transcript (null when no live
+   *  words this session). Stable never rewrites. */
+  livePartial: LivePartial | null;
+  /** Health of the realtime caption lane; null on the native-EN lane. */
+  liveLaneStatus: LiveLaneStatus | null;
   status: VoiceStatus;
   result: VoiceResult | null;
   errorMessage: string | null;

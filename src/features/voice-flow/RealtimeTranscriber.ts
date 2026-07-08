@@ -16,10 +16,22 @@ import { supabase } from '@/integrations/supabase/client';
 
 const TARGET_RATE = 16000;
 const FRAME = 4096;
+/** Setup must complete this soon after the WS opens or the lane is dead. */
+const SETUP_TIMEOUT_MS = 3000;
+/** Speaking but no transcription delta for this long → degraded. */
+const DELTA_WATCHDOG_MS = 8000;
+const WATCHDOG_POLL_MS = 5000;
+/** PCM frame mean-amplitude above this counts as speech (int16 scale). */
+const SPEECH_AMPLITUDE = 500;
+
+export type RealtimeLaneState = 'connecting' | 'live' | 'degraded' | 'failed' | 'closed';
 
 export interface RealtimeCallbacks {
   onLive: (text: string) => void;
   onError?: (message: string) => void;
+  /** Health transitions — the UI must never be silently caption-less
+   *  (CAT-VOICE-UX-PREMIUM-20260708-001 S3a). */
+  onState?: (state: RealtimeLaneState) => void;
 }
 
 interface MintResult {
@@ -80,6 +92,18 @@ export class RealtimeTranscriber {
   private closed = false;
   private setupDone = false;
   private paused = false;
+  private state: RealtimeLaneState = 'connecting';
+  private onState: ((s: RealtimeLaneState) => void) | undefined;
+  private lastDeltaAt = 0;
+  private lastSpeechAt = 0;
+  private setupAt = 0;
+  private watchdogId: ReturnType<typeof setInterval> | null = null;
+
+  private setState(s: RealtimeLaneState): void {
+    if (this.state === s || this.state === 'closed') return;
+    this.state = s;
+    this.onState?.(s);
+  }
 
   /** Pause gate: while paused no PCM frames are sent upstream (the WS stays
    *  open; server VAD seals the in-flight segment via turnComplete). Never
@@ -97,8 +121,13 @@ export class RealtimeTranscriber {
   }
 
   async start(stream: MediaStream, callbacks: RealtimeCallbacks, vocabulary?: string[]): Promise<boolean> {
+    this.onState = callbacks.onState;
+    this.setState('connecting');
     const minted = await mint(vocabulary);
-    if (!minted) return false;
+    if (!minted) {
+      this.setState('failed');
+      return false;
+    }
 
     try {
       const ws = new WebSocket(`${minted.ws_url}?access_token=${encodeURIComponent(minted.access_token)}`);
@@ -133,7 +162,10 @@ export class RealtimeTranscriber {
         }
         if ('setupComplete' in msg) {
           this.setupDone = true;
+          this.setupAt = Date.now();
+          this.setState('live');
           this.startAudioPump(stream);
+          this.startWatchdog();
           return;
         }
         const server = msg.serverContent as
@@ -141,6 +173,8 @@ export class RealtimeTranscriber {
           | undefined;
         const delta = server?.inputTranscription?.text;
         if (delta) {
+          this.lastDeltaAt = Date.now();
+          if (this.state === 'degraded') this.setState('live');
           this.current += delta;
           callbacks.onLive(this.transcript);
         }
@@ -151,24 +185,63 @@ export class RealtimeTranscriber {
         }
       };
 
-      ws.onerror = () => callbacks.onError?.('Realtime transcription error');
+      ws.onerror = () => {
+        this.setState(this.setupDone ? 'degraded' : 'failed');
+        callbacks.onError?.('Realtime transcription error');
+      };
+      ws.onclose = () => {
+        // A close after setup is a dead lane mid-session (batch fallback
+        // still covers the result) — surface it, don't stay silently mute.
+        if (!this.closed) this.setState(this.setupDone ? 'degraded' : 'failed');
+      };
 
-      // Resolve once the socket is open; setup/audio proceed on their own.
+      // Resolve on setupComplete — a bare WS `open` is NOT a working lane
+      // (the old resolve-on-open is why dead lanes showed "Listening…" with
+      // no words). Setup must land within SETUP_TIMEOUT_MS of the open.
       return await new Promise<boolean>((resolve) => {
-        const t = setTimeout(() => resolve(this.ws?.readyState === WebSocket.OPEN), 4000);
+        const fail = () => {
+          if (this.setupDone) return;
+          this.setState('failed');
+          resolve(false);
+        };
+        const overall = setTimeout(fail, 4000 + SETUP_TIMEOUT_MS);
         ws.addEventListener('open', () => {
-          clearTimeout(t);
-          resolve(true);
+          setTimeout(fail, SETUP_TIMEOUT_MS);
         });
         ws.addEventListener('close', () => {
-          clearTimeout(t);
+          clearTimeout(overall);
           resolve(this.setupDone);
         });
+        const poll = setInterval(() => {
+          if (this.setupDone) {
+            clearInterval(poll);
+            clearTimeout(overall);
+            resolve(true);
+          } else if (this.closed || this.state === 'failed') {
+            clearInterval(poll);
+          }
+        }, 100);
       });
     } catch {
+      this.setState('failed');
       this.dispose();
       return false;
     }
+  }
+
+  /** Detect "connected but mute": user audibly speaking, lane live, yet no
+   *  transcription deltas — the exact silent-failure mode users hit. */
+  private startWatchdog(): void {
+    if (this.watchdogId) clearInterval(this.watchdogId);
+    this.watchdogId = setInterval(() => {
+      if (this.closed || this.paused || this.state !== 'live') return;
+      const now = Date.now();
+      const speakingRecently = now - this.lastSpeechAt < DELTA_WATCHDOG_MS;
+      const lastSignal = Math.max(this.lastDeltaAt, this.setupAt);
+      if (speakingRecently && now - lastSignal > DELTA_WATCHDOG_MS) {
+        this.setState('degraded');
+      }
+    }, WATCHDOG_POLL_MS);
   }
 
   private startAudioPump(stream: MediaStream): void {
@@ -183,7 +256,14 @@ export class RealtimeTranscriber {
       this.processor = processor;
       processor.onaudioprocess = (e) => {
         if (this.closed || this.paused || this.ws?.readyState !== WebSocket.OPEN) return;
-        const pcm = toPcm16(e.inputBuffer.getChannelData(0), ctx.sampleRate);
+        const channel = e.inputBuffer.getChannelData(0);
+        // Cheap speech detector for the delta watchdog (mean |amplitude|).
+        let sum = 0;
+        for (let i = 0; i < channel.length; i += 16) sum += Math.abs(channel[i]);
+        if ((sum / (channel.length / 16)) * 0x7fff > SPEECH_AMPLITUDE) {
+          this.lastSpeechAt = Date.now();
+        }
+        const pcm = toPcm16(channel, ctx.sampleRate);
         this.ws.send(
           JSON.stringify({
             realtimeInput: { audio: { mimeType: `audio/pcm;rate=${TARGET_RATE}`, data: base64(pcm) } },
@@ -203,6 +283,8 @@ export class RealtimeTranscriber {
 
   dispose(): void {
     this.closed = true;
+    this.setState('closed');
+    if (this.watchdogId) { clearInterval(this.watchdogId); this.watchdogId = null; }
     try {
       this.processor?.disconnect();
       this.source?.disconnect();

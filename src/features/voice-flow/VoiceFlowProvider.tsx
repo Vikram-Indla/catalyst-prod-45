@@ -7,6 +7,7 @@ import { AudioCaptureService } from './AudioCaptureService';
 import { insertTextIntoTarget, restoreFieldSnapshot } from './insertTextIntoTarget';
 import { cleanupTranscript } from './cleanupTranscript';
 import { RealtimeTranscriber, realtimeAvailable } from './RealtimeTranscriber';
+import { LivePartialsController, type LiveLaneStatus, type LivePartial } from './livePartials';
 import { armCorrectionLearner, getActiveTerms } from './dictionary';
 import { useVoiceHotkey } from './useVoiceHotkey';
 import { VoiceFloatingCapsule } from './VoiceFloatingCapsule';
@@ -20,6 +21,8 @@ const VoiceFlowContext = createContext<VoiceFlowContextValue>({
   enabled: false,
   activeElement: null,
   canPause: false,
+  livePartial: null,
+  liveLaneStatus: null,
   activate: () => {},
   commit: () => {},
   cancel: () => {},
@@ -63,6 +66,9 @@ export function VoiceFlowProvider({ children }: Props) {
   const [detectedLanguage, setDetectedLanguage] = useState<string | null>(null);
   const [analyserNode, setAnalyserNode]         = useState<AnalyserNode | null>(null);
   const [partialText, setPartialText]           = useState<string | null>(null);
+  const [livePartial, setLivePartial]           = useState<LivePartial | null>(null);
+  const [liveLaneStatus, setLiveLaneStatus]     = useState<LiveLaneStatus | null>(null);
+  const partialsRef = useRef(new LivePartialsController());
 
   const countdownRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
@@ -107,6 +113,9 @@ export function VoiceFlowProvider({ children }: Props) {
     setCanPause(false);
     setAnalyserNode(null);
     setPartialText(null);
+    setLivePartial(null);
+    setLiveLaneStatus(null);
+    partialsRef.current.reset();
   }, []);
 
   /** Schedules reset() guarded by session ID — prevents stale error/cancel
@@ -593,7 +602,10 @@ export function VoiceFlowProvider({ children }: Props) {
         // whole utterance build up, not just the trailing fragment.
         if (statusRef.current === 'listening') {
           const live = (finalTranscript + interim).trim();
-          if (live) setPartialText(live);
+          if (live) {
+            setPartialText(live);
+            setLivePartial(partialsRef.current.update(live));
+          }
         }
       };
 
@@ -665,8 +677,12 @@ export function VoiceFlowProvider({ children }: Props) {
       realtimeRef.current = null;
       const micStream = captureRef.current.getStream();
       if (micStream) {
+        setLiveLaneStatus('connecting');
         void realtimeAvailable().then((ok) => {
-          if (!ok || (statusRef.current !== 'listening' && statusRef.current !== 'arming')) return;
+          if (!ok || (statusRef.current !== 'listening' && statusRef.current !== 'arming')) {
+            if (!ok) setLiveLaneStatus('unavailable');
+            return;
+          }
           const rt = new RealtimeTranscriber();
           realtimeRef.current = rt;
           void getActiveTerms()
@@ -678,16 +694,29 @@ export function VoiceFlowProvider({ children }: Props) {
                   onLive: (text) => {
                     if ((statusRef.current === 'listening' || statusRef.current === 'paused') && text) {
                       setPartialText(text);
+                      setLivePartial(partialsRef.current.update(text));
                     }
+                  },
+                  onState: (s) => {
+                    if (realtimeRef.current !== rt) return;
+                    if (s === 'connecting') setLiveLaneStatus('connecting');
+                    else if (s === 'live') setLiveLaneStatus('live');
+                    else if (s === 'degraded' || s === 'failed') setLiveLaneStatus('unavailable');
+                    // 'closed' = normal teardown — leave the last UI state.
                   },
                 },
                 vocabulary,
               ),
             )
             .then((started) => {
-              if (!started && realtimeRef.current === rt) realtimeRef.current = null;
+              if (!started && realtimeRef.current === rt) {
+                realtimeRef.current = null;
+                setLiveLaneStatus('unavailable');
+              }
             });
         });
+      } else {
+        setLiveLaneStatus('unavailable');
       }
 
       setStatusBoth('listening');
@@ -745,6 +774,8 @@ export function VoiceFlowProvider({ children }: Props) {
     enabled: featureEnabled,
     activeElement: status !== 'idle' ? fieldRef.current?.element ?? null : null,
     canPause,
+    livePartial,
+    liveLaneStatus,
     activate: handleActivate,
     commit,
     cancel,
@@ -771,6 +802,7 @@ export function VoiceFlowProvider({ children }: Props) {
           onResume={resume}
           canPause={canPause}
           elapsedMs={elapsedMs}
+          liveLaneStatus={liveLaneStatus}
           detectedLanguage={detectedLanguage}
           analyserNode={analyserNode}
           partialText={partialText}
