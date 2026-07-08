@@ -13,7 +13,10 @@
 // (JWT gate, daily quota, cooldown, tm_ai_usage_log) mirrors the legacy fn.
 // ============================================================================
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.0";
+// Pinned 2.39.0 predates this project's ES256 (asymmetric) JWT signing keys —
+// its auth.getUser() rejects valid current tokens even though GoTrue itself
+// accepts them. Floating @2 matches the proven-working login-with-audit fn.
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
