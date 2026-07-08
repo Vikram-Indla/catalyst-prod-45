@@ -53,7 +53,7 @@ function StatusPill({ status }: { status: ReportStatus }) {
   return (
     <span
       style={{
-        fontSize: 'var(--ds-font-size-50)',
+        fontSize: 'var(--ds-font-size-200)',
         fontWeight: 700,
         letterSpacing: '0.03em',
         padding: '0px 6px',
@@ -61,8 +61,7 @@ function StatusPill({ status }: { status: ReportStatus }) {
         background: bg,
         color: text,
         flexShrink: 0,
-        textTransform: 'uppercase',
-      }}
+              }}
     >
       {STATUS_LABEL[status]}
     </span>
@@ -156,8 +155,7 @@ export default function ReportNavigator({ selected, onSelect, entries, categorie
           fontWeight: 700,
           color: 'var(--ds-text-subtlest)',
           letterSpacing: '0.06em',
-          textTransform: 'uppercase',
-          borderBottom: '1px solid var(--ds-border)',
+                    borderBottom: '1px solid var(--ds-border)',
         }}
       >
         Reports
@@ -169,7 +167,7 @@ export default function ReportNavigator({ selected, onSelect, entries, categorie
           <div
             style={{
               padding: 'var(--ds-space-100) var(--ds-space-150) var(--ds-space-050)',
-              fontSize: 'var(--ds-font-size-50)',
+              fontSize: 'var(--ds-font-size-200)',
               fontWeight: 700,
               color: 'var(--ds-text-subtlest)',
               letterSpacing: '0.08em',
@@ -220,12 +218,11 @@ export default function ReportNavigator({ selected, onSelect, entries, categorie
           <div
             style={{
               padding: '8px 14px 4px',
-              fontSize: 'var(--ds-font-size-50)',
+              fontSize: 'var(--ds-font-size-200)',
               fontWeight: 700,
               color: 'var(--ds-text-subtlest)',
               letterSpacing: '0.08em',
-              textTransform: 'uppercase',
-            }}
+                          }}
           >
             {group.category}
           </div>

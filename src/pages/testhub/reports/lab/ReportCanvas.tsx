@@ -735,7 +735,7 @@ function TraceabilitySummary({ data }: { data: ReportData }) {
       <Section>
         <div style={{ display: 'flex', gap: 16, alignItems: 'center', padding: '8px 0' }}>
           <div>
-            <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Overall Coverage</div>
+            <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest)', fontWeight: 600, letterSpacing: '0.05em' }}>Overall Coverage</div>
             <div style={{ fontSize: 'var(--ds-font-size-800)', fontWeight: 700, color: 'var(--ds-text)' }}>{coveragePercent(linkedCases, totalCases)}</div>
             <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle)' }}>{linkedCases} of {totalCases} cases linked to requirements</div>
           </div>

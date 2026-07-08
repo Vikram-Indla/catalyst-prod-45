@@ -39,8 +39,7 @@ export default function ReportFormulaDrawer({ reportSlug }: Props) {
               fontWeight: 700,
               color: 'var(--ds-text-subtlest)',
               letterSpacing: '0.05em',
-              textTransform: 'uppercase',
-              marginBottom: 8,
+                            marginBottom: 8,
             }}
           >
             How this is calculated

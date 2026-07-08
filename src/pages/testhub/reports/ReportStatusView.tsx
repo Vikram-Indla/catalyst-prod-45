@@ -23,7 +23,7 @@ const cardStyle: React.CSSProperties = {
   borderRadius: 'var(--ds-border-radius)', padding: 'var(--ds-space-200)', flex: '1 1 14rem',
 };
 const metricValue: React.CSSProperties = { fontSize: 'var(--ds-font-size-800)', fontWeight: 600, color: 'var(--ds-text)' };
-const metricLabel: React.CSSProperties = { fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle)', marginTop: 'var(--ds-space-050)', textTransform: 'uppercase' };
+const metricLabel: React.CSSProperties = { fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle)', marginTop: 'var(--ds-space-050)', };
 const sectionH: React.CSSProperties = { margin: 'var(--ds-space-100) 0' };
 const subtle: React.CSSProperties = { color: 'var(--ds-text-subtlest)', fontWeight: 400 };
 
