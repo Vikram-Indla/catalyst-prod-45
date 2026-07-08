@@ -284,12 +284,17 @@ export function MilestonesPage() {
           hideSprintsColumn
         />
       ) : (
+        /* count footer added below for both branches (audit D3: thin-data
+           views need an explicit count so the short list reads as complete) */
         <div style={{ padding: '48px 0', textAlign: 'center', color: 'var(--ds-text-subtlest)' }}>
           {milestones.length === 0
             ? 'No milestones yet. Create your first milestone to start tracking delivery targets.'
             : 'No milestones match this filter.'}
         </div>
       )}
+      <div style={{ padding: '8px 0', fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest)' }}>
+        This product has {milestones.length} milestone{milestones.length === 1 ? '' : 's'}
+      </div>
 
       <MilestoneCreateModal
         isOpen={isCreateModalOpen}
