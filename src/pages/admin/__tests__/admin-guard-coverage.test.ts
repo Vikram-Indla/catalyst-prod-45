@@ -27,7 +27,6 @@ const TARGET_FILES = [
   'FeatureFlagsPage.tsx',
   'NotificationTriggers.tsx',
   // Added 2026-06-09 (audit #60).
-  'AdminStorybookPage.tsx',
   'CatalystFeaturesBoard.tsx',
   'RoutingTaxonomyPage.tsx',
   'design-system/DesignSystemAdmin.tsx',
