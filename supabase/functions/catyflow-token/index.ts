@@ -66,7 +66,11 @@ serve(async (req) => {
     // v1main", live-probed 2026-07-08). ListModels for this key exposes
     // bidiGenerateContent on gemini-2.5-flash-native-audio-latest — the
     // stable alias — plus dated previews and gemini-3.1-flash-live-preview.
-    const model = "models/" + (Deno.env.get("CATYFLOW_LIVE_MODEL") ?? "gemini-2.5-flash-native-audio-latest");
+    let model = "models/" + (Deno.env.get("CATYFLOW_LIVE_MODEL") ?? "gemini-2.5-flash-native-audio-latest");
+
+    // Whitelisted experiments only (S5 spike): the live-translate preview
+    // transcribes Arabic speech directly INTO English captions.
+    const MODEL_OVERRIDES = new Set(["gemini-3.5-live-translate-preview"]);
 
     // Optional keyterm vocabulary → nudges recognition of names/jargon.
     let vocabulary: string[] = [];
@@ -74,6 +78,9 @@ serve(async (req) => {
       const body = await req.json();
       if (Array.isArray(body?.vocabulary)) {
         vocabulary = body.vocabulary.filter((t: unknown) => typeof t === "string").slice(0, 60);
+      }
+      if (typeof body?.model_override === "string" && MODEL_OVERRIDES.has(body.model_override)) {
+        model = "models/" + body.model_override;
       }
     } catch {
       // empty body is fine

@@ -11,6 +11,7 @@ import { structureText } from './structureText';
 import { getVoiceSnippets } from './voiceSnippets';
 import { RealtimeTranscriber, realtimeAvailable } from './RealtimeTranscriber';
 import { LivePartialsController, type LiveLaneStatus, type LivePartial } from './livePartials';
+import { SpeculativeTranslator } from './speculativeTranslate';
 import { containsArabicScript } from '@/lib/i18n/detectScript';
 import { playListenPing, playStopPing } from './soundPing';
 import { useVoiceFlowSettings } from './useVoiceSettings';
@@ -76,6 +77,7 @@ export function VoiceFlowProvider({ children }: Props) {
   const [livePartial, setLivePartial]           = useState<LivePartial | null>(null);
   const [liveLaneStatus, setLiveLaneStatus]     = useState<LiveLaneStatus | null>(null);
   const partialsRef = useRef(new LivePartialsController());
+  const speculativeRef = useRef<SpeculativeTranslator | null>(null);
 
   const countdownRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
@@ -127,6 +129,8 @@ export function VoiceFlowProvider({ children }: Props) {
     setLivePartial(null);
     setLiveLaneStatus(null);
     partialsRef.current.reset();
+    speculativeRef.current?.dispose();
+    speculativeRef.current = null;
     lastBlobRef.current = null;
     listenStartRef.current = null;
     firstPartialMsRef.current = null;
@@ -195,9 +199,16 @@ export function VoiceFlowProvider({ children }: Props) {
         return;
       }
       // Arabic transcript → translate the TEXT (seconds) instead of
-      // re-uploading audio; on any failure fall through to the batch
-      // audio lane, which translates via Groq/Gemini.
+      // re-uploading audio; the speculative translation fired during
+      // dictation usually already has the answer (S5) — exact-match claim
+      // first, fresh call only on miss. Any failure falls through to the
+      // batch audio lane, which translates via Groq/Gemini.
       try {
+        const speculative = await speculativeRef.current?.take(rtTranscript);
+        if (speculative) {
+          await handleResult(speculative, 'ar-SA', 'high', durationMs, rtStart);
+          return;
+        }
         const { data, error } = await supabase.functions.invoke('ai-translate-field', {
           body: { text: rtTranscript, target: 'en' },
         });
@@ -763,6 +774,11 @@ export function VoiceFlowProvider({ children }: Props) {
                       markFirstPartial();
                       setPartialText(text);
                       setLivePartial(partialsRef.current.update(text));
+                      // Speculative AR→EN (S5): start translating while the
+                      // user is still speaking so stop feels instant.
+                      if (containsArabicScript(text)) {
+                        (speculativeRef.current ??= new SpeculativeTranslator()).feed(text);
+                      }
                     }
                   },
                   onState: (s) => {
