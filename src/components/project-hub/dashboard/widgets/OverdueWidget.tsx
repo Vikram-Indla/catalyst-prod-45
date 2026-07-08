@@ -150,7 +150,10 @@ export default function OverdueWidget({ projectId, projectKey, collapsed, onTogg
 
   const badge = (
     <>
-      <Lozenge appearance={total === 0 ? 'success' : 'removed'}>{total}</Lozenge>
+      {/* Zero-value badges don't render — a green "0" is semantic color used
+          decoratively and a count badge with nothing to count is noise
+          (ruthless-audit E3, flagged on MWR/INV dashboards + tasks). */}
+      {total > 0 && <Lozenge appearance="removed">{total}</Lozenge>}
       <WidgetGearButton gadgetType="overdue" projectKey={projectKey} projectId={projectId} />
     </>
   );
