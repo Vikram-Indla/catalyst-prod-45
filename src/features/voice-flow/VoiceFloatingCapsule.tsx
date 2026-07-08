@@ -154,40 +154,6 @@ if (typeof document !== 'undefined' && !document.getElementById(CAPSULE_STYLE_ID
       font-style: italic;
     }
 
-    /* Live caption panel — CatyFlow "see what I'm saying" (CAT-VOICE-FLOW-
-       20260704-001). Multi-line, formal, per-line bidi so Arabic lays out
-       RTL and English LTR from the content itself. */
-    .vf-caption {
-      width: min(440px, calc(100vw - 48px));
-      max-height: 132px;
-      overflow-y: auto;
-      padding: 8px 12px;
-      margin-bottom: 8px;
-      border-radius: 10px;
-      background: rgba(16, 20, 36, 0.92); /* ads-scanner:ignore-line — always-dark Wispr overlay, matches capsule row */
-      border: 1px solid rgba(255, 255, 255, 0.12); /* ads-scanner:ignore-line — always-dark Wispr overlay */
-      box-shadow: 0 4px 24px var(--ds-shadow-raised, rgba(0, 0, 0, 0.28));
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      color: rgba(255,255,255,0.92); /* ads-scanner:ignore-line — always-dark Wispr overlay */
-      // ads-scanner:ignore-next-line — bespoke Wispr caption overlay, no ADS surface token
-      font-size: 14px;
-      line-height: 1.55;
-      white-space: pre-wrap;
-      word-break: break-word;
-      unicode-bidi: plaintext;
-      text-align: start;
-    }
-    .vf-caption__cursor {
-      display: inline-block;
-      width: 2px;
-      height: 1em;
-      vertical-align: -0.15em;
-      margin-inline-start: 4px;
-      background: #CD519D; // ads-scanner:ignore-line — CatyPulse signature magenta, canonical AI color
-      animation: vf-blink 1s steps(1) infinite;
-    }
-    @keyframes vf-blink { 50% { opacity: 0; } }
     .vf-label--error {
       color: #F87168; // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
     }
@@ -520,19 +486,8 @@ export function VoiceFloatingCapsule({
       className="vf-capsule vf-capsule--entering"
       style={{ top: pos.top, left: pos.left }}
     >
-      {(status === 'listening' || status === 'paused' || status === 'processing') && partialText ? (
-        <div
-          className="vf-caption"
-          dir="auto"
-          aria-label="Live transcript"
-          ref={(el) => {
-            if (el) el.scrollTop = el.scrollHeight;
-          }}
-        >
-          {partialText}
-          <span className="vf-caption__cursor" aria-hidden="true" />
-        </div>
-      ) : null}
+      {/* Live transcript renders inline in the composer via ComposerGhostText
+          (S3b) — the detached caption panel is gone. */}
       <div className={`vf-capsule__row${isReview ? ' vf-capsule__row--review' : ''}`}>
         {content}
       </div>

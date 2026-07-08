@@ -11,6 +11,7 @@ import { LivePartialsController, type LiveLaneStatus, type LivePartial } from '.
 import { armCorrectionLearner, getActiveTerms } from './dictionary';
 import { useVoiceHotkey } from './useVoiceHotkey';
 import { VoiceFloatingCapsule } from './VoiceFloatingCapsule';
+import { ComposerGhostText } from './ComposerGhostText';
 import type { ActiveField, VoiceFlowContextValue, VoiceResult, VoiceStatus } from './voiceFlow.types';
 
 const VoiceFlowContext = createContext<VoiceFlowContextValue>({
@@ -790,6 +791,13 @@ export function VoiceFlowProvider({ children }: Props) {
           20260708-001 S2b): visible mics are composer-anchored VoiceMicButtons
           on key surfaces; hotkeys (double-space / ⌘⇧V) still work on every
           eligible field. */}
+      {featureEnabled && (status === 'listening' || status === 'paused') && livePartial && (
+        <ComposerGhostText
+          targetEl={fieldRef.current?.element ?? null}
+          stable={livePartial.stable}
+          provisional={livePartial.provisional}
+        />
+      )}
       {featureEnabled && (
         <VoiceFloatingCapsule
           status={status}
