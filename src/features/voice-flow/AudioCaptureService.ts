@@ -1,28 +1,31 @@
 import { VOICE_FLOW_CONFIG } from './voiceFlow.config';
 
 export interface AudioCaptureCallbacks {
-  onSilenceTimeout?: () => void;
   onMaxDuration?: () => void;
 }
 
 /**
- * Wraps MediaRecorder for Phase 1 voice capture.
+ * Wraps MediaRecorder for voice capture.
  * Records as audio/webm (Gemini accepts this natively).
  * Also creates an AnalyserNode for real-time amplitude visualisation.
+ *
+ * There is intentionally NO silence auto-stop (CAT-VOICE-UX-PREMIUM-20260708-001
+ * S1): thinking pauses must never end a session. The only automatic stop is the
+ * 15-minute cap, and paused time does not burn that budget.
  */
 export class AudioCaptureService {
   private mediaRecorder: MediaRecorder | null = null;
   private stream: MediaStream | null = null;
   private chunks: Blob[] = [];
   private startTimeMs = 0;
-  private silenceTimer: ReturnType<typeof setTimeout> | null = null;
   private maxDurationTimer: ReturnType<typeof setTimeout> | null = null;
-  private amplitudePollId: number | null = null;
   private callbacks: AudioCaptureCallbacks = {};
 
-  // Amplitude below which audio is treated as silence (0–255 RMS scale).
-  // Tune upward in noisy environments; 15 comfortably rejects background hum.
-  private static readonly SILENCE_THRESHOLD = 15;
+  // Pause accounting: durationMs and the max-duration cap both count only
+  // un-paused time, so a long thinking pause never eats the 15-min budget.
+  private pausedAccumMs = 0;
+  private pauseStartedAt: number | null = null;
+  private capRemainingMs = 0;
 
   // Web Audio API for real-time waveform bars
   private audioCtx: AudioContext | null = null;
@@ -32,8 +35,15 @@ export class AudioCaptureService {
     return this.mediaRecorder?.state === 'recording';
   }
 
+  get isPaused(): boolean {
+    return this.mediaRecorder?.state === 'paused';
+  }
+
+  /** Un-paused elapsed time. */
   get durationMs(): number {
-    return this.startTimeMs ? Date.now() - this.startTimeMs : 0;
+    if (!this.startTimeMs) return 0;
+    const pausedLive = this.pauseStartedAt ? Date.now() - this.pauseStartedAt : 0;
+    return Date.now() - this.startTimeMs - this.pausedAccumMs - pausedLive;
   }
 
   /** Returns the AnalyserNode for real-time amplitude data, or null if not recording. */
@@ -58,6 +68,8 @@ export class AudioCaptureService {
 
     this.callbacks = callbacks;
     this.chunks = [];
+    this.pausedAccumMs = 0;
+    this.pauseStartedAt = null;
 
     this.stream = await navigator.mediaDevices.getUserMedia({
       audio: {
@@ -86,25 +98,45 @@ export class AudioCaptureService {
 
     this.mediaRecorder.ondataavailable = (e) => {
       if (e.data.size > 0) this.chunks.push(e.data);
-      // Silence timer is now driven by amplitude polling, not chunk size.
-      // WebM container always produces non-zero chunks even during silence,
-      // so chunk-based silence detection never fires — hence this is data-only.
     };
 
     this.mediaRecorder.start(250);
     this.startTimeMs = Date.now();
 
-    // Start silence timer and amplitude polling.
-    // Polling resets the timer whenever voice is detected; true silence lets it run.
-    this.resetSilenceTimer();
-    this.startAmplitudePoll();
-    this.maxDurationTimer = setTimeout(() => {
-      this.callbacks.onMaxDuration?.();
-    }, VOICE_FLOW_CONFIG.maxDurationMs);
+    this.capRemainingMs = VOICE_FLOW_CONFIG.maxDurationMs;
+    this.armMaxDurationTimer();
+  }
+
+  /** Pause capture: recorder pauses (stream stays live so the analyser and a
+   *  later resume keep working) and the cap timer freezes. */
+  pause(): void {
+    if (!this.mediaRecorder || this.mediaRecorder.state !== 'recording') return;
+    this.mediaRecorder.pause();
+    this.pauseStartedAt = Date.now();
+    if (this.maxDurationTimer) {
+      clearTimeout(this.maxDurationTimer);
+      this.maxDurationTimer = null;
+    }
+    this.capRemainingMs = Math.max(0, VOICE_FLOW_CONFIG.maxDurationMs - this.durationMs);
+  }
+
+  resume(): void {
+    if (!this.mediaRecorder || this.mediaRecorder.state !== 'paused') return;
+    if (this.pauseStartedAt) {
+      this.pausedAccumMs += Date.now() - this.pauseStartedAt;
+      this.pauseStartedAt = null;
+    }
+    this.mediaRecorder.resume();
+    this.armMaxDurationTimer();
   }
 
   async stop(): Promise<{ blob: Blob; durationMs: number }> {
     this.clearTimers();
+    // Close out a live pause so durationMs is final.
+    if (this.pauseStartedAt) {
+      this.pausedAccumMs += Date.now() - this.pauseStartedAt;
+      this.pauseStartedAt = null;
+    }
     const durationMs = this.durationMs;
 
     return new Promise((resolve, reject) => {
@@ -146,41 +178,25 @@ export class AudioCaptureService {
     this.cleanup();
   }
 
-  /** Polls the AnalyserNode for RMS amplitude. Resets the silence timer
-   *  when voice is detected; silence lets the timer run to onSilenceTimeout. */
-  private startAmplitudePoll(): void {
-    if (!this.analyserNode) return; // no analyser — silence detection disabled (graceful)
-    const data = new Uint8Array(this.analyserNode.frequencyBinCount);
-    const poll = () => {
-      if (!this.analyserNode || !this.mediaRecorder || this.mediaRecorder.state !== 'recording') return;
-      this.analyserNode.getByteFrequencyData(data);
-      const rms = Math.sqrt(data.reduce((s, v) => s + v * v, 0) / data.length);
-      if (rms > AudioCaptureService.SILENCE_THRESHOLD) this.resetSilenceTimer();
-      this.amplitudePollId = requestAnimationFrame(poll);
-    };
-    this.amplitudePollId = requestAnimationFrame(poll);
-  }
-
-  private resetSilenceTimer(): void {
-    if (this.silenceTimer) clearTimeout(this.silenceTimer);
-    this.silenceTimer = setTimeout(() => {
-      this.callbacks.onSilenceTimeout?.();
-    }, VOICE_FLOW_CONFIG.silenceAutoStopMs);
+  private armMaxDurationTimer(): void {
+    if (this.maxDurationTimer) clearTimeout(this.maxDurationTimer);
+    this.maxDurationTimer = setTimeout(() => {
+      this.callbacks.onMaxDuration?.();
+    }, this.capRemainingMs);
   }
 
   private clearTimers(): void {
-    if (this.silenceTimer) { clearTimeout(this.silenceTimer); this.silenceTimer = null; }
     if (this.maxDurationTimer) { clearTimeout(this.maxDurationTimer); this.maxDurationTimer = null; }
-    if (this.amplitudePollId !== null) { cancelAnimationFrame(this.amplitudePollId); this.amplitudePollId = null; }
   }
 
   private cleanup(): void {
-    if (this.amplitudePollId !== null) { cancelAnimationFrame(this.amplitudePollId); this.amplitudePollId = null; }
     this.stream?.getTracks().forEach(t => t.stop());
     this.stream = null;
     this.mediaRecorder = null;
     this.chunks = [];
     this.startTimeMs = 0;
+    this.pausedAccumMs = 0;
+    this.pauseStartedAt = null;
     // Release Web Audio resources
     this.analyserNode = null;
     this.audioCtx?.close().catch(() => {});

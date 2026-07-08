@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
+import { VOICE_FLOW_CONFIG } from './voiceFlow.config';
 import type { VoiceStatus } from './voiceFlow.types';
 
 interface Props {
@@ -9,7 +10,12 @@ interface Props {
   errorMessage: string | null;
   onCommit: () => void;
   onCancel: () => void;
-  remainingMs?: number;
+  onPause?: () => void;
+  onResume?: () => void;
+  /** False on the native-SpeechRecognition lane (no pause API there). */
+  canPause?: boolean;
+  /** Un-paused elapsed session time — rendered as a count-up. */
+  elapsedMs?: number;
   detectedLanguage?: string | null;
   /** Real-time mic analyser — drives bar heights from amplitude data */
   analyserNode?: AnalyserNode | null;
@@ -267,13 +273,15 @@ if (typeof document !== 'undefined' && !document.getElementById(CAPSULE_STYLE_ID
 
 interface WaveformBarsProps {
   analyserNode?: AnalyserNode | null;
+  /** Paused: bars render static (no analyser drive, no CSS bounce). */
+  frozen?: boolean;
 }
 
-function WaveformBars({ analyserNode }: WaveformBarsProps) {
+function WaveformBars({ analyserNode, frozen }: WaveformBarsProps) {
   const barRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   useEffect(() => {
-    if (!analyserNode) return;
+    if (!analyserNode || frozen) return;
 
     const data = new Uint8Array(analyserNode.frequencyBinCount); // 16 bins for fftSize=32
     const NUM_BARS = 5;
@@ -299,9 +307,9 @@ function WaveformBars({ analyserNode }: WaveformBarsProps) {
 
     rafId = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(rafId);
-  }, [analyserNode]);
+  }, [analyserNode, frozen]);
 
-  const hasCssAnim = !analyserNode;
+  const hasCssAnim = !analyserNode && !frozen;
 
   return (
     <div className={`vf-bars${hasCssAnim ? ' vf-bars--css-anim' : ''}`} aria-hidden="true">
@@ -325,7 +333,7 @@ function Spinner() {
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
 function formatMs(ms: number): string {
-  const totalSec = Math.ceil(ms / 1000);
+  const totalSec = Math.floor(ms / 1000);
   const m = Math.floor(totalSec / 60);
   const s = totalSec % 60;
   return `${m}:${String(s).padStart(2, '0')}`;
@@ -340,7 +348,10 @@ export function VoiceFloatingCapsule({
   errorMessage,
   onCommit,
   onCancel,
-  remainingMs,
+  onPause,
+  onResume,
+  canPause,
+  elapsedMs,
   detectedLanguage,
   analyserNode,
   partialText,
@@ -395,18 +406,47 @@ export function VoiceFloatingCapsule({
           </>
         );
 
-      case 'listening':
+      case 'listening': {
+        const nearCap =
+          elapsedMs !== undefined && elapsedMs >= VOICE_FLOW_CONFIG.capWarningMs;
         return (
           <>
             <WaveformBars analyserNode={analyserNode} />
             <span className="vf-label vf-label--muted">
-              {commandMode ? 'Command — say the change to apply' : 'Listening… (Space to finish)'}
+              {commandMode
+                ? 'Command — say the change to apply'
+                : nearCap
+                  ? 'Listening — wraps up at 15:00'
+                  : 'Listening… (Enter to finish)'}
             </span>
-            {remainingMs !== undefined && (
-              <span className="vf-timer" aria-label={`${formatMs(remainingMs)} remaining`}>
-                {formatMs(remainingMs)}
+            {elapsedMs !== undefined && (
+              <span className="vf-timer" aria-label={`${formatMs(elapsedMs)} elapsed`}>
+                {formatMs(elapsedMs)}
               </span>
             )}
+            {canPause && onPause && (
+              <button className="vf-btn vf-btn--cancel" onClick={onPause} aria-label="Pause dictation">⏸</button>
+            )}
+            <button className="vf-btn vf-btn--commit" onClick={onCommit} aria-label="Finish and insert">✓</button>
+            <button className="vf-btn vf-btn--cancel" onClick={onCancel} aria-label="Cancel voice">✕</button>
+          </>
+        );
+      }
+
+      case 'paused':
+        return (
+          <>
+            <WaveformBars frozen />
+            <span className="vf-label vf-label--muted">Paused — take your time</span>
+            {elapsedMs !== undefined && (
+              <span className="vf-timer" aria-label={`${formatMs(elapsedMs)} elapsed`}>
+                {formatMs(elapsedMs)}
+              </span>
+            )}
+            {onResume && (
+              <button className="vf-btn vf-btn--cancel" onClick={onResume} aria-label="Resume dictation">▶</button>
+            )}
+            <button className="vf-btn vf-btn--commit" onClick={onCommit} aria-label="Finish and insert">✓</button>
             <button className="vf-btn vf-btn--cancel" onClick={onCancel} aria-label="Cancel voice">✕</button>
           </>
         );
@@ -474,7 +514,7 @@ export function VoiceFloatingCapsule({
       className="vf-capsule vf-capsule--entering"
       style={{ top: pos.top, left: pos.left }}
     >
-      {(status === 'listening' || status === 'processing') && partialText ? (
+      {(status === 'listening' || status === 'paused' || status === 'processing') && partialText ? (
         <div
           className="vf-caption"
           dir="auto"

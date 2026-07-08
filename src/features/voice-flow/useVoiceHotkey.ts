@@ -21,8 +21,10 @@ interface UseVoiceHotkeyOptions {
  *   2. Cmd+Shift+V (Mac) / Ctrl+Shift+V (Windows/Linux) — works from any text field
  *
  * While voice active:
- *   Space or Enter → onCommit()
- *   Escape        → onCancel()
+ *   Enter  → onCommit()   (single Space is NEVER a control — Plan Lock
+ *            CAT-VOICE-UX-PREMIUM-20260708-001 D3: text may be streaming into
+ *            the focused composer, where Space is a legitimate character)
+ *   Escape → onCancel()
  */
 /** Any element that receives typed text — broader than voice eligibility
  *  (a data-voice-flow="off" field is still editable). */
@@ -67,7 +69,7 @@ export function useVoiceHotkey({
 
       // ── While voice session is active ──────────────────────────────
       if (isActiveRef.current) {
-        if (isSpace || isEnter) {
+        if (isEnter) {
           // Commit keys belong to the dictation target only. If focus has
           // moved to a DIFFERENT editable element (incl. voice-opted-out
           // fields), the user is typing there — release the keys

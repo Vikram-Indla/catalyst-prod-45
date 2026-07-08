@@ -79,6 +79,14 @@ export class RealtimeTranscriber {
   private current = '';
   private closed = false;
   private setupDone = false;
+  private paused = false;
+
+  /** Pause gate: while paused no PCM frames are sent upstream (the WS stays
+   *  open; server VAD seals the in-flight segment via turnComplete). Never
+   *  send audioStreamEnd here — that ends input for the whole session. */
+  setPaused(paused: boolean): void {
+    this.paused = paused;
+  }
 
   get hasTranscript(): boolean {
     return this.finals.length > 0 || this.current.trim().length > 0;
@@ -174,7 +182,7 @@ export class RealtimeTranscriber {
       const processor = ctx.createScriptProcessor(FRAME, 1, 1);
       this.processor = processor;
       processor.onaudioprocess = (e) => {
-        if (this.closed || this.ws?.readyState !== WebSocket.OPEN) return;
+        if (this.closed || this.paused || this.ws?.readyState !== WebSocket.OPEN) return;
         const pcm = toPcm16(e.inputBuffer.getChannelData(0), ctx.sampleRate);
         this.ws.send(
           JSON.stringify({

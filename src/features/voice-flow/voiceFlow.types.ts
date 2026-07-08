@@ -2,6 +2,7 @@ export type VoiceStatus =
   | 'idle'
   | 'arming'           // mic permission requested
   | 'listening'        // MediaRecorder active, user speaking
+  | 'paused'           // user paused — mic held open, no audio captured/streamed
   | 'processing'       // blob sent to Gemini, awaiting result
   | 'ready'            // result received, showing preview (auto_commit=false only)
   | 'review'           // low-confidence result — user must confirm before commit

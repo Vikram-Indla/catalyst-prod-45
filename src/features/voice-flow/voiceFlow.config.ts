@@ -4,11 +4,12 @@ export const VOICE_FLOW_CONFIG = {
   /** ms window for double-space detection. */
   doubleSpaceThresholdMs: 350,
   /** Max recording duration before auto-stop (15 minutes — CatyFlow spec,
-   *  CAT-VOICE-FLOW-20260704-001; silence auto-stop still ends an utterance
-   *  on a natural pause well before this ceiling). */
+   *  CAT-VOICE-FLOW-20260704-001). There is deliberately NO silence auto-stop:
+   *  thinking pauses of any length keep the session alive
+   *  (CAT-VOICE-UX-PREMIUM-20260708-001 S1; Wispr-parity). */
   maxDurationMs: 900_000,
-  /** Auto-stop after this much true silence (amplitude-based via AnalyserNode). */
-  silenceAutoStopMs: 1800,
+  /** Elapsed speaking time at which the capsule warns the cap is near. */
+  capWarningMs: 840_000,
   /** Run Gemini cleanup/polish pass on final result. */
   cleanupEnabled: true,
   /** Auto-commit result without user confirmation step. */

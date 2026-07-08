@@ -53,7 +53,8 @@ export function VoiceFlowProvider({ children }: Props) {
   const [status, setStatus]                     = useState<VoiceStatus>('idle');
   const [result, setResult]                     = useState<VoiceResult | null>(null);
   const [errorMessage, setErrorMessage]         = useState<string | null>(null);
-  const [remainingMs, setRemainingMs]           = useState<number>(VOICE_FLOW_CONFIG.maxDurationMs);
+  const [elapsedMs, setElapsedMs]               = useState<number>(0);
+  const [canPause, setCanPause]                 = useState<boolean>(false);
   const [detectedLanguage, setDetectedLanguage] = useState<string | null>(null);
   const [analyserNode, setAnalyserNode]         = useState<AnalyserNode | null>(null);
   const [partialText, setPartialText]           = useState<string | null>(null);
@@ -97,7 +98,8 @@ export function VoiceFlowProvider({ children }: Props) {
     setResult(null);
     setErrorMessage(null);
     setDetectedLanguage(null);
-    setRemainingMs(VOICE_FLOW_CONFIG.maxDurationMs);
+    setElapsedMs(0);
+    setCanPause(false);
     setAnalyserNode(null);
     setPartialText(null);
   }, []);
@@ -120,7 +122,12 @@ export function VoiceFlowProvider({ children }: Props) {
       recognitionRef.current?.stop();
       return;
     }
-    if (!captureRef.current.isRecording && statusRef.current !== 'listening') return;
+    if (
+      !captureRef.current.isRecording &&
+      !captureRef.current.isPaused &&
+      statusRef.current !== 'listening' &&
+      statusRef.current !== 'paused'
+    ) return;
     setStatusBoth('processing');
     setAnalyserNode(null); // stop waveform; mic stops below
 
@@ -437,18 +444,34 @@ export function VoiceFlowProvider({ children }: Props) {
 
   stopAndProcessRef.current = stopAndProcess;
 
-  // Countdown tick while listening
+  // Count-up tick while listening (CAT-VOICE-UX-PREMIUM-20260708-001 S1:
+  // count-up reassures, countdown reads as a deadline). Paused time does not
+  // tick — the interval only runs in 'listening'.
   useEffect(() => {
     if (status === 'listening') {
-      setRemainingMs(VOICE_FLOW_CONFIG.maxDurationMs);
       countdownRef.current = setInterval(() => {
-        setRemainingMs(prev => Math.max(0, prev - 1000));
+        setElapsedMs(prev => prev + 1000);
       }, 1000);
     } else {
       if (countdownRef.current) { clearInterval(countdownRef.current); countdownRef.current = null; }
     }
     return () => { if (countdownRef.current) { clearInterval(countdownRef.current); countdownRef.current = null; } };
   }, [status]);
+
+  // ─── Pause / Resume ───────────────────────────────────────────────────
+  const pause = useCallback(() => {
+    if (statusRef.current !== 'listening' || nativeModeRef.current) return;
+    captureRef.current.pause();
+    realtimeRef.current?.setPaused(true);
+    setStatusBoth('paused');
+  }, []);
+
+  const resume = useCallback(() => {
+    if (statusRef.current !== 'paused') return;
+    captureRef.current.resume();
+    realtimeRef.current?.setPaused(false);
+    setStatusBoth('listening');
+  }, []);
 
   // ─── Cancel ──────────────────────────────────────────────────────────
   const cancel = useCallback(() => {
@@ -478,7 +501,7 @@ export function VoiceFlowProvider({ children }: Props) {
   // ─── Commit ──────────────────────────────────────────────────────────
   const commit = useCallback(() => {
     const s = statusRef.current;
-    if (s === 'listening') {
+    if (s === 'listening' || s === 'paused') {
       void stopAndProcessRef.current();
       return;
     }
@@ -540,7 +563,9 @@ export function VoiceFlowProvider({ children }: Props) {
 
     if (prefLang === 'en' && SR) {
       // ── Native English path: zero edge-function calls, zero latency ──
+      // Native SpeechRecognition has no pause API — hide the pause control.
       nativeModeRef.current = true;
+      setCanPause(false);
       const recognition = new SR();
       recognition.lang = 'en-US';
       recognition.continuous = false;
@@ -611,14 +636,12 @@ export function VoiceFlowProvider({ children }: Props) {
 
     // ── Groq / Gemini path (AR/UR/HI + first-ever session) ───────────
     nativeModeRef.current = false;
+    setCanPause(true);
     // Fresh instance every activation — guarantees clean stream/AudioContext state
     captureRef.current = new AudioCaptureService();
 
     try {
       await captureRef.current.start({
-        onSilenceTimeout: () => {
-          if (statusRef.current === 'listening') void stopAndProcessRef.current();
-        },
         onMaxDuration: () => {
           void stopAndProcessRef.current();
         },
@@ -648,7 +671,9 @@ export function VoiceFlowProvider({ children }: Props) {
                 micStream,
                 {
                   onLive: (text) => {
-                    if (statusRef.current === 'listening' && text) setPartialText(text);
+                    if ((statusRef.current === 'listening' || statusRef.current === 'paused') && text) {
+                      setPartialText(text);
+                    }
                   },
                 },
                 vocabulary,
@@ -676,7 +701,7 @@ export function VoiceFlowProvider({ children }: Props) {
     enabled: featureEnabled,
     // Only block hotkeys while actively recording/processing/reviewing.
     // 'error' and 'committing' are terminal transitions — allow re-activation.
-    isVoiceActive: status === 'arming' || status === 'listening' || status === 'processing' || status === 'ready' || status === 'review',
+    isVoiceActive: status === 'arming' || status === 'listening' || status === 'paused' || status === 'processing' || status === 'ready' || status === 'review',
     onActivate: handleActivate,
     onCommit: commit,
     onCancel: cancel,
@@ -730,7 +755,10 @@ export function VoiceFlowProvider({ children }: Props) {
           errorMessage={errorMessage}
           onCommit={commit}
           onCancel={cancel}
-          remainingMs={remainingMs}
+          onPause={pause}
+          onResume={resume}
+          canPause={canPause}
+          elapsedMs={elapsedMs}
           detectedLanguage={detectedLanguage}
           analyserNode={analyserNode}
           partialText={partialText}
