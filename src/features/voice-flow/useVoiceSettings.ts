@@ -66,3 +66,56 @@ export function useTranslateSettings() {
 
   return { mode: data?.mode ?? DEFAULT_PREFS.mode, setMode };
 }
+
+// ─── voice_flow scope: sound preference ──────────────────────────────────
+
+interface VoiceFlowPrefs {
+  sound_enabled: boolean;
+}
+
+const VOICE_SCOPE = 'voice_flow';
+const DEFAULT_VOICE_PREFS: VoiceFlowPrefs = { sound_enabled: false };
+
+export function useVoiceFlowSettings() {
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
+  const queryKey = ['user-preferences', VOICE_SCOPE, user?.id];
+
+  const { data } = useQuery({
+    queryKey,
+    enabled: !!user?.id,
+    staleTime: 5 * 60 * 1000,
+    queryFn: async (): Promise<VoiceFlowPrefs> => {
+      const { data, error } = await supabase
+        .from('user_preferences' as never)
+        .select('value')
+        .eq('user_id' as never, user!.id as never)
+        .eq('scope' as never, VOICE_SCOPE as never)
+        .maybeSingle();
+      if (error) throw error;
+      const value = (data as { value?: Partial<VoiceFlowPrefs> } | null)?.value;
+      return { sound_enabled: value?.sound_enabled === true };
+    },
+  });
+
+  const setSoundEnabled = useCallback(
+    async (sound_enabled: boolean) => {
+      if (!user?.id) return;
+      queryClient.setQueryData(queryKey, { sound_enabled });
+      const { error } = await supabase
+        .from('user_preferences' as never)
+        .upsert(
+          { user_id: user.id, scope: VOICE_SCOPE, value: { sound_enabled } } as never,
+          { onConflict: 'user_id,scope' },
+        );
+      if (error) void queryClient.invalidateQueries({ queryKey });
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [user?.id, queryClient],
+  );
+
+  return {
+    soundEnabled: data?.sound_enabled ?? DEFAULT_VOICE_PREFS.sound_enabled,
+    setSoundEnabled,
+  };
+}

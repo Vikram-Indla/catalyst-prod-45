@@ -11,7 +11,7 @@ import Button, { IconButton } from '@atlaskit/button/new';
 import AttachmentIcon from '@atlaskit/icon/core/attachment';
 import ModalDialog, { ModalBody, ModalFooter, ModalHeader, ModalTitle, ModalTransition } from '@atlaskit/modal-dialog';
 import Spinner from '@atlaskit/spinner';
-import { VoiceMicButton } from '@/features/voice-flow';
+import { VoiceMicButton, useVoiceFlow } from '@/features/voice-flow';
 import { useTranslateSettings } from '@/features/voice-flow/useVoiceSettings';
 import { isTranslatableArabic } from '@/lib/i18n/detectScript';
 import { supabase } from '@/integrations/supabase/client';
@@ -69,6 +69,17 @@ export const MessageComposer = forwardRef<HTMLTextAreaElement, MessageComposerPr
       // as the user types — never hardcoded on a mixed AR/EN composer.
       el?.setAttribute('dir', 'auto');
     }, []);
+
+    // Listening border (S6b): quiet magenta ring while dictating into THIS
+    // composer. Token-only, static — no glow/animation (Critic ruling).
+    const { status: voiceStatus, activeElement: voiceElement } = useVoiceFlow();
+    const dictatingHere =
+      (voiceStatus === 'listening' || voiceStatus === 'paused') &&
+      !!voiceElement &&
+      !!editorElRef.current &&
+      (editorElRef.current === voiceElement ||
+        editorElRef.current.contains(voiceElement) ||
+        voiceElement.contains(editorElRef.current));
 
     // ── Write-side AR→EN translate mode (S4b) ──────────────────────────
     const { mode: translateMode, setMode: setTranslateMode } = useTranslateSettings();
@@ -202,7 +213,15 @@ export const MessageComposer = forwardRef<HTMLTextAreaElement, MessageComposerPr
     const sendHint = isMac ? '⌘↵ to send · ⇧↵ new line' : 'Ctrl+Enter to send · Shift+Enter new line';
 
     return (
-      <div className="cc-composer" data-cc-compact>
+      <div
+        className="cc-composer"
+        data-cc-compact
+        style={
+          dictatingHere
+            ? { boxShadow: 'inset 0 0 0 1px var(--ds-border-accent-magenta)', borderRadius: 6 }
+            : undefined
+        }
+      >
         <input
           ref={fileInputRef}
           type="file"

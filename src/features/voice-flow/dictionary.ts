@@ -17,6 +17,36 @@ const MAX_TERMS_FED = 80;
 const CACHE_TTL_MS = 5 * 60_000;
 
 let cache: { userId: string; terms: string[]; at: number } | null = null;
+let workspaceCache: { terms: string[]; at: number } | null = null;
+
+/** Workspace proper nouns the ASR keeps mishearing: teammate names and
+ *  project keys/names (CAT-VOICE-UX-PREMIUM-20260708-001 S6b AD-7). These
+ *  bias both the Gemini Live vocabulary and the cleanup prompt, same as
+ *  personal terms. Ranked AFTER personal terms so truncation drops the
+ *  generic tail first. */
+async function getWorkspaceTerms(): Promise<string[]> {
+  if (workspaceCache && Date.now() - workspaceCache.at < CACHE_TTL_MS) {
+    return workspaceCache.terms;
+  }
+  const terms: string[] = [];
+  try {
+    const [{ data: people }, { data: projects }] = await Promise.all([
+      db.from('resource_inventory').select('name').limit(100),
+      db.from('projects').select('key, name').limit(100),
+    ]);
+    for (const r of (people ?? []) as Array<{ name?: string | null }>) {
+      if (r.name?.trim()) terms.push(r.name.trim());
+    }
+    for (const p of (projects ?? []) as Array<{ key?: string | null; name?: string | null }>) {
+      if (p.key?.trim()) terms.push(p.key.trim());
+      if (p.name?.trim()) terms.push(p.name.trim());
+    }
+  } catch {
+    /* workspace vocabulary is best-effort — dictation never blocks on it */
+  }
+  workspaceCache = { terms, at: Date.now() };
+  return terms;
+}
 
 export async function getActiveTerms(): Promise<string[]> {
   const { data: auth } = await supabase.auth.getUser();
@@ -32,7 +62,18 @@ export async function getActiveTerms(): Promise<string[]> {
     .eq('active', true)
     .order('occurrences', { ascending: false })
     .limit(MAX_TERMS_FED);
-  const terms = ((data ?? []) as Array<{ term: string }>).map((r) => r.term);
+  const personal = ((data ?? []) as Array<{ term: string }>).map((r) => r.term);
+  const workspace = await getWorkspaceTerms();
+  // Personal first (learned corrections are highest-signal), de-duped, capped.
+  const seen = new Set<string>();
+  const terms: string[] = [];
+  for (const t of [...personal, ...workspace]) {
+    const key = t.toLowerCase();
+    if (seen.has(key)) continue;
+    seen.add(key);
+    terms.push(t);
+    if (terms.length >= MAX_TERMS_FED) break;
+  }
   cache = { userId, terms, at: Date.now() };
   return terms;
 }

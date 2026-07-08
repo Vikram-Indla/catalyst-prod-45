@@ -8,6 +8,8 @@ import { insertTextIntoTarget, restoreFieldSnapshot } from './insertTextIntoTarg
 import { cleanupTranscript } from './cleanupTranscript';
 import { RealtimeTranscriber, realtimeAvailable } from './RealtimeTranscriber';
 import { LivePartialsController, type LiveLaneStatus, type LivePartial } from './livePartials';
+import { playListenPing, playStopPing } from './soundPing';
+import { useVoiceFlowSettings } from './useVoiceSettings';
 import { armCorrectionLearner, getActiveTerms } from './dictionary';
 import { useVoiceHotkey } from './useVoiceHotkey';
 import { VoiceFloatingCapsule } from './VoiceFloatingCapsule';
@@ -522,6 +524,22 @@ export function VoiceFlowProvider({ children }: Props) {
       } catch (insertErr) {
         console.warn('[VoiceFlow] auto-commit insert failed:', insertErr);
       }
+      // Polish transparency (S6b): when the cleanup pass changed the raw
+      // transcript, say so and keep the raw one a click away. Non-blocking.
+      if (rawText) {
+        void import('@/lib/catalystToast').then(({ catalystToast }) => {
+          catalystToast.show({
+            type: 'info',
+            title: 'CatyFlow polished your dictation',
+            message: cleanupProvider ? `Cleaned via ${cleanupProvider}.` : undefined,
+            action: {
+              label: 'Copy raw transcript',
+              onClick: () => void navigator.clipboard.writeText(rawText),
+            },
+            duration: 6000,
+          });
+        });
+      }
       void updateSession('completed', voiceResult);
       scheduleReset(200);
     } else {
@@ -530,6 +548,18 @@ export function VoiceFlowProvider({ children }: Props) {
   }, [reset, scheduleReset]);
 
   stopAndProcessRef.current = stopAndProcess;
+
+  // Sound ping on mic open/close — off by default, user preference
+  // (S6b; never the only state signal).
+  const { soundEnabled } = useVoiceFlowSettings();
+  const prevStatusRef = useRef<VoiceStatus>('idle');
+  useEffect(() => {
+    const prev = prevStatusRef.current;
+    prevStatusRef.current = status;
+    if (!soundEnabled) return;
+    if (status === 'listening' && prev === 'arming') playListenPing();
+    if (status === 'processing' && (prev === 'listening' || prev === 'paused')) playStopPing();
+  }, [status, soundEnabled]);
 
   // Count-up tick while listening (CAT-VOICE-UX-PREMIUM-20260708-001 S1:
   // count-up reassures, countdown reads as a deadline). Paused time does not

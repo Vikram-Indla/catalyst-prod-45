@@ -1,5 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
+import Lozenge from '@atlaskit/lozenge';
+import { containsArabicScript } from '@/lib/i18n/detectScript';
 import { VOICE_FLOW_CONFIG } from './voiceFlow.config';
 import type { VoiceStatus } from './voiceFlow.types';
 
@@ -175,22 +177,7 @@ if (typeof document !== 'undefined' && !document.getElementById(CAPSULE_STYLE_ID
       flex-shrink: 0;
     }
 
-    /* Language detection badge */
-    .vf-lang-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      background: rgba(206, 147, 216, 0.12); // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
-      border: 1px solid rgba(206, 147, 216, 0.25); // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
-      border-radius: 999px;
-      padding: 0px 10px;
-      font-size: 11px;
-      font-weight: 500;
-      color: #CE93D8; // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
-      animation: vf-fade-in 250ms ease forwards;
-      align-self: flex-start;
-      margin-left: 12px;
-    }
+    /* Language chip is an @atlaskit/lozenge now (S6b) — no bespoke badge. */
     /* Hotkey hint badge (listening state, no lang yet) */
     .vf-hint-badge {
       display: inline-flex;
@@ -499,12 +486,24 @@ export function VoiceFloatingCapsule({
       <div className={`vf-capsule__row${isReview ? ' vf-capsule__row--review' : ''}`}>
         {content}
       </div>
-      {detectedLanguage && (
-        <div className="vf-lang-badge" aria-label={`Detected language: ${detectedLanguage}`}>
-          {detectedLanguage}
-        </div>
-      )}
-      {status === 'listening' && !detectedLanguage && (
+      {(() => {
+        // Live language chip (S6b): confirmed detection wins; before that, a
+        // live Arabic-script partial is enough to show the AR → EN promise.
+        // Zero-assumption: render nothing until either signal exists.
+        const liveArabic =
+          !detectedLanguage &&
+          (status === 'listening' || status === 'paused') &&
+          !!partialText &&
+          containsArabicScript(partialText);
+        const label = detectedLanguage ?? (liveArabic ? 'AR → EN' : null);
+        if (!label) return null;
+        return (
+          <span style={{ marginLeft: 12 }} aria-label={`Detected language: ${label}`}>
+            <Lozenge appearance="new">{label}</Lozenge>
+          </span>
+        );
+      })()}
+      {status === 'listening' && !detectedLanguage && !partialText && (
         <div className="vf-hint-badge" aria-hidden="true">
           ⌘⇧V or double-space
         </div>
