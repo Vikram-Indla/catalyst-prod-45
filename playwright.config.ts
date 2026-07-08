@@ -12,7 +12,7 @@ export default defineConfig({
     ['list'],
   ],
   use: {
-    baseURL: 'http://localhost:5173',
+    baseURL: 'http://localhost:8080',
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
   },
@@ -51,11 +51,24 @@ export default defineConfig({
       testMatch: '**/test-management/golden-path.spec.ts',
       use: { ...devices['Desktop Chrome'] },
     },
+    {
+      name: 'testhub-certification-setup',
+      testMatch: '**/testhub-certification/auth.setup.ts',
+      use: { ...devices['Desktop Chrome'] },
+      timeout: 30000,
+    },
+    {
+      name: 'testhub-certification',
+      testMatch: '**/testhub-certification/**/*.spec.ts',
+      use: { ...devices['Desktop Chrome'], storageState: 'test-results/testhub-certification/.auth/user.json' },
+      dependencies: ['testhub-certification-setup'],
+      timeout: 60000,
+    },
   ],
 
   webServer: {
     command: 'npm run dev',
-    url: 'http://localhost:5173',
+    url: 'http://localhost:8080',
     reuseExistingServer: !process.env.CI,
   },
 });

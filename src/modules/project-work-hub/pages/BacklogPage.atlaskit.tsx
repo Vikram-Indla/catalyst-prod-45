@@ -4630,8 +4630,14 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
                         if (dataSource) {
                           await dataSource.onCreate({ title: trimmed });
                           flag.success(`Created — ${trimmed}`);
-                          dataSource.invalidationKeys.forEach((k) =>
-                            queryClient.invalidateQueries({ queryKey: k as any }),
+                          // DEF-008: await the invalidation (was fire-and-forget)
+                          // so the "X of Y" count + new row are guaranteed to be
+                          // in the render before we close the create form —
+                          // matches the manual refresh button's awaited behavior.
+                          await Promise.all(
+                            dataSource.invalidationKeys.map((k) =>
+                              queryClient.invalidateQueries({ queryKey: k as any }),
+                            ),
                           );
                           setInsertAboveRowId(null);
                           setInlineCreateSubmitting(false);
@@ -4706,8 +4712,14 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
                       if (dataSource) {
                         await dataSource.onCreate({ title: trimmed });
                         flag.success(`Created — ${trimmed}`);
-                        dataSource.invalidationKeys.forEach((k) =>
-                          queryClient.invalidateQueries({ queryKey: k as any }),
+                        // DEF-008: await the invalidation (was fire-and-forget)
+                        // so the "X of Y" count + new row are guaranteed to be
+                        // in the render before we close the create form —
+                        // matches the manual refresh button's awaited behavior.
+                        await Promise.all(
+                          dataSource.invalidationKeys.map((k) =>
+                            queryClient.invalidateQueries({ queryKey: k as any }),
+                          ),
                         );
                         setInlineCreateGroup(null);
                         setInlineCreateSubmitting(false);
@@ -4801,8 +4813,14 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
                     if (dataSource) {
                       await dataSource.onCreate({ title: trimmed });
                       flag.success(`Created — ${trimmed}`);
-                      dataSource.invalidationKeys.forEach(k =>
-                        queryClient.invalidateQueries({ queryKey: k as any }),
+                      // DEF-008: await the invalidation (was fire-and-forget)
+                      // so the "X of Y" count + new row are guaranteed to be
+                      // in the render before we close the create form —
+                      // matches the manual refresh button's awaited behavior.
+                      await Promise.all(
+                        dataSource.invalidationKeys.map(k =>
+                          queryClient.invalidateQueries({ queryKey: k as any }),
+                        ),
                       );
                       setFooterCreateActive(false);
                       setInlineCreateSubmitting(false);
