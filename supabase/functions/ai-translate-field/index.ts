@@ -59,6 +59,31 @@ serve(async (req) => {
   }
 
   try {
+    // Auth gate (CAT-VOICE-UX-PREMIUM-20260708-001 S0): this function is
+    // deployed with verify_jwt=false, so without this check it is an open
+    // Gemini proxy. Same getUser pattern as catyflow-token.
+    const authHeader = req.headers.get("Authorization") ?? "";
+    const jwt = authHeader.startsWith("Bearer ") ? authHeader.slice(7) : "";
+    const supabaseUrl = Deno.env.get("SUPABASE_URL");
+    const anonKey = Deno.env.get("SUPABASE_ANON_KEY");
+    if (!jwt || !supabaseUrl || !anonKey) {
+      return new Response(
+        JSON.stringify({ error: "unauthorized", message: "Sign-in required." }),
+        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      );
+    }
+    const authClient = createClient(supabaseUrl, anonKey, {
+      auth: { persistSession: false },
+      global: { headers: { Authorization: `Bearer ${jwt}` } },
+    });
+    const { data: userData, error: userErr } = await authClient.auth.getUser(jwt);
+    if (userErr || !userData?.user) {
+      return new Response(
+        JSON.stringify({ error: "unauthorized", message: "Sign-in required." }),
+        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      );
+    }
+
     const body = await req.json();
     const text: string = typeof body?.text === "string" ? body.text.trim() : "";
     const requestedTarget: string | undefined =
