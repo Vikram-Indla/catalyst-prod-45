@@ -5,11 +5,17 @@
  *
  * saveLabel="Send" keeps the chat context; onCancel clears the editor.
  */
-import React, { useCallback, useRef, useState, forwardRef } from 'react';
+import React, { useCallback, useEffect, useRef, useState, forwardRef } from 'react';
 import type { Editor } from '@tiptap/react';
-import { IconButton } from '@atlaskit/button/new';
+import Button, { IconButton } from '@atlaskit/button/new';
 import AttachmentIcon from '@atlaskit/icon/core/attachment';
+import ModalDialog, { ModalBody, ModalFooter, ModalHeader, ModalTitle, ModalTransition } from '@atlaskit/modal-dialog';
+import Spinner from '@atlaskit/spinner';
 import { VoiceMicButton } from '@/features/voice-flow';
+import { useTranslateSettings } from '@/features/voice-flow/useVoiceSettings';
+import { isTranslatableArabic } from '@/lib/i18n/detectScript';
+import { supabase } from '@/integrations/supabase/client';
+import { ComposerTranslateBanner } from './ComposerTranslateBanner';
 import { RichTextEditor } from '@/components/catalyst-detail-views/shared/sections/Description/RichTextEditor';
 import { isAdfEmpty, adfToPlainText } from '@/components/shared/rich-text/atlaskit/adfHelpers';
 import { useDraft } from '@/hooks/chat/useDraft';
@@ -60,28 +66,60 @@ export const MessageComposer = forwardRef<HTMLTextAreaElement, MessageComposerPr
       editorElRef.current = editor ? (editor.view.dom as HTMLElement) : null;
     }, []);
 
+    // ── Write-side AR→EN translate mode (S4b) ──────────────────────────
+    const { mode: translateMode, setMode: setTranslateMode } = useTranslateSettings();
+    const [hasArabic, setHasArabic] = useState(false);
+    const [translateArmed, setTranslateArmed] = useState(false);
+    const [preview, setPreview] = useState<{ original: string; adf: unknown } | null>(null);
+    const [previewTranslated, setPreviewTranslated] = useState<string | null>(null);
+    const [previewError, setPreviewError] = useState<string | null>(null);
+
+    const refreshArabic = useCallback(() => {
+      const next = isTranslatableArabic(editorElRef.current?.textContent ?? '');
+      setHasArabic((prev) => (prev === next ? prev : next));
+    }, []);
+
+    // Auto-arm in Always mode the moment Arabic appears; disarm when it goes.
+    useEffect(() => {
+      if (!hasArabic) setTranslateArmed(false);
+      else if (translateMode === 'always') setTranslateArmed(true);
+    }, [hasArabic, translateMode]);
+
+    // Editor resets to empty after a send — clear the gate with it.
+    useEffect(() => {
+      setHasArabic(false);
+    }, [resetKey]);
+
+    // Translate for the preview when it opens. Failure never blocks the send
+    // path — "Send original" is always available.
+    useEffect(() => {
+      if (!preview) return;
+      let stale = false;
+      setPreviewTranslated(null);
+      setPreviewError(null);
+      void supabase.functions
+        .invoke('ai-translate-field', { body: { text: preview.original, target: 'en' } })
+        .then(({ data, error }) => {
+          if (stale) return;
+          const translated = (data as { translated?: string } | null)?.translated;
+          if (error || !translated) setPreviewError(error?.message ?? 'Translation failed');
+          else setPreviewTranslated(translated);
+        });
+      return () => {
+        stale = true;
+      };
+    }, [preview]);
+
     const placeholder = conversationTitle
       ? `Message ${conversationTitle}`
       : 'Type /ai to Ask Caty · @ to mention and notify someone';
 
-    const handleSave = useCallback(
-      async (adfJson: string) => {
-        if (disabled || sending) return;
-        let isEmpty = true;
-        let plainText = '';
-        try {
-          const parsed = JSON.parse(adfJson);
-          isEmpty = isAdfEmpty(parsed);
-          plainText = adfToPlainText(parsed).trim();
-        } catch {
-          isEmpty = !adfJson || adfJson.trim().length === 0;
-          plainText = adfJson.trim();
-        }
-        if (isEmpty || !plainText) return;
+    const doSend = useCallback(
+      async (text: string, adf: unknown | null) => {
         setSending(true);
         setSendError(null);
         try {
-          await onSend(plainText, { adf: JSON.parse(adfJson), scheduled_for: null });
+          await onSend(text, { adf, scheduled_for: null });
           draft.clear();
           // Increment key to reset editor to empty state
           setResetKey((k) => k + 1);
@@ -91,7 +129,34 @@ export const MessageComposer = forwardRef<HTMLTextAreaElement, MessageComposerPr
           setSending(false);
         }
       },
-      [disabled, sending, onSend, draft],
+      [onSend, draft],
+    );
+
+    const handleSave = useCallback(
+      async (adfJson: string) => {
+        if (disabled || sending) return;
+        let isEmpty = true;
+        let plainText = '';
+        let parsedAdf: unknown | null = null;
+        try {
+          const parsed = JSON.parse(adfJson);
+          parsedAdf = parsed;
+          isEmpty = isAdfEmpty(parsed);
+          plainText = adfToPlainText(parsed).trim();
+        } catch {
+          isEmpty = !adfJson || adfJson.trim().length === 0;
+          plainText = adfJson.trim();
+        }
+        if (isEmpty || !plainText) return;
+        // Armed AR→EN: preview before anything leaves the composer — the
+        // translation is applied only after explicit confirmation.
+        if (translateArmed && translateMode !== 'never' && isTranslatableArabic(plainText)) {
+          setPreview({ original: plainText, adf: parsedAdf });
+          return;
+        }
+        await doSend(plainText, parsedAdf);
+      },
+      [disabled, sending, doSend, translateArmed, translateMode],
     );
 
     const handleCancel = useCallback(() => {
@@ -142,11 +207,22 @@ export const MessageComposer = forwardRef<HTMLTextAreaElement, MessageComposerPr
           onChange={handleFileSelect}
           accept=".jpg,.jpeg,.png,.gif,.webp,.svg,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.csv,.mp4,.webm,.mov,.avi,.zip,.tar,.gz"
         />
+        {hasArabic && translateMode !== 'never' && (
+          <ComposerTranslateBanner
+            mode={translateMode}
+            onModeChange={setTranslateMode}
+            armed={translateArmed}
+            onArmedChange={setTranslateArmed}
+          />
+        )}
         <RichTextEditor
           key={resetKey}
           initialAdf={null}
           onSave={handleSave}
-          onChange={onTyping ? () => onTyping() : undefined}
+          onChange={() => {
+            onTyping?.();
+            refreshArabic();
+          }}
           onEditorReady={handleEditorReady}
           placeholder={placeholder}
           saveLabel="Send"
@@ -173,6 +249,91 @@ export const MessageComposer = forwardRef<HTMLTextAreaElement, MessageComposerPr
           )}
           <VoiceMicButton getTargetElement={() => editorElRef.current} />
         </div>
+
+        {/* AR→EN preview-before-send — the translation is never applied
+            blind; original always remains one click away. */}
+        <ModalTransition>
+          {preview && (
+            <ModalDialog onClose={() => setPreview(null)} width="medium">
+              <ModalHeader>
+                <ModalTitle>Send as English?</ModalTitle>
+              </ModalHeader>
+              <ModalBody>
+                <div style={{ display: 'grid', gap: 12 }}>
+                  <div>
+                    <div style={{ font: 'var(--ds-font-body-small)', color: 'var(--ds-text-subtlest)', marginBottom: 4 }}>
+                      Original
+                    </div>
+                    <div
+                      dir="auto"
+                      style={{
+                        font: 'var(--ds-font-body)',
+                        whiteSpace: 'pre-wrap',
+                        wordBreak: 'break-word',
+                        unicodeBidi: 'plaintext',
+                        borderInlineStart: '2px solid var(--ds-border)',
+                        paddingInlineStart: 8,
+                      }}
+                    >
+                      {preview.original}
+                    </div>
+                  </div>
+                  <div>
+                    <div style={{ font: 'var(--ds-font-body-small)', color: 'var(--ds-text-subtlest)', marginBottom: 4 }}>
+                      English
+                    </div>
+                    {previewError ? (
+                      <div style={{ font: 'var(--ds-font-body)', color: 'var(--ds-text-danger)' }}>
+                        {previewError} — you can still send the original.
+                      </div>
+                    ) : previewTranslated ? (
+                      <div
+                        dir="auto"
+                        style={{
+                          font: 'var(--ds-font-body)',
+                          whiteSpace: 'pre-wrap',
+                          wordBreak: 'break-word',
+                          borderInlineStart: '2px solid var(--ds-border-accent-magenta)',
+                          paddingInlineStart: 8,
+                        }}
+                      >
+                        {previewTranslated}
+                      </div>
+                    ) : (
+                      <Spinner size="small" />
+                    )}
+                  </div>
+                </div>
+              </ModalBody>
+              <ModalFooter>
+                <Button appearance="subtle" onClick={() => setPreview(null)}>
+                  Keep editing
+                </Button>
+                <Button
+                  appearance="subtle"
+                  onClick={() => {
+                    const p = preview;
+                    setPreview(null);
+                    void doSend(p.original, p.adf);
+                  }}
+                >
+                  Send original
+                </Button>
+                <Button
+                  appearance="primary"
+                  isDisabled={!previewTranslated}
+                  onClick={() => {
+                    const translated = previewTranslated;
+                    setPreview(null);
+                    if (translated) void doSend(translated, null);
+                  }}
+                >
+                  Send English
+                </Button>
+              </ModalFooter>
+            </ModalDialog>
+          )}
+        </ModalTransition>
       </div>
     );
   },
