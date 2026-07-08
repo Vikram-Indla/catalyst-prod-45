@@ -203,40 +203,40 @@ export function EmptyRowAdd({ rowTop, addLeft, onAdd }: { rowTop: number; addLef
 
 /* ─────────────────────────────── inline empty overlay ──────────────── */
 
+/* Quiet inline hint, NOT a modal. The previous fixed-center card with an
+   overlay shadow read as a blocking dialog floating over live rows — the
+   2026-07-08 whole-app audit flagged the contradiction. Rows stay the
+   subject; this is a caption. */
 export function InlineEmptyOverlay({ projectKey, onDismiss }: { projectKey: string; onDismiss: () => void }) {
   return (
     <div style={{
-      position: 'fixed', top: '48%', left: '48%', transform: 'translate(-50%, -50%)',
-      display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16, padding: 32,
-      background: 'var(--ds-surface-overlay)',
+      /* fixed = centered on the viewport, not the horizontally-scrollable
+         canvas (50% of scroll-width lands off-screen). */
+      position: 'fixed', top: 140, left: '50%', transform: 'translateX(-50%)',
+      display: 'flex', alignItems: 'center', gap: 12, padding: '8px 12px',
+      background: 'var(--ds-surface-raised)',
       border: '1px solid var(--ds-border)', borderRadius: 8,
-      boxShadow: 'var(--ds-shadow-overlay, 0 8px 16px rgba(9,30,66,0.15))',
-      zIndex: 20, minWidth: 280,
+      zIndex: 20, maxWidth: 520,
     }}>
+      <GanttChart style={{ width: 20, height: 20, color: 'var(--ds-text-subtlest)', flexShrink: 0 }} />
+      <span style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text-subtle)' }}>
+        <strong style={{ color: 'var(--ds-text)', fontWeight: 600 }}>No issues with dates.</strong>{' '}
+        Add start or due dates to issues in {projectKey} to plot them here.
+      </span>
       <button
         onClick={onDismiss}
         aria-label="Dismiss"
         style={{
-          position: 'absolute', top: 8, right: 8,
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          width: 24, height: 24, border: 'none', borderRadius: 3,
+          display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+          width: 24, height: 24, border: 'none', borderRadius: 4,
           background: 'transparent', cursor: 'pointer',
           color: 'var(--ds-text-subtlest)',
         }}
-        onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))'; }}
+        onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered)'; }}
         onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
       >
         <CrossIcon label="Dismiss" size="small" />
       </button>
-      <GanttChart style={{ width: 40, height: 40, color: 'var(--ds-text-subtlest)' }} />
-      <div style={{ textAlign: 'center' }}>
-        <p style={{ margin: 0, fontSize: 'var(--ds-font-size-500)', fontWeight: 600, color: 'var(--ds-text)' }}>
-          No issues with dates
-        </p>
-        <p style={{ margin: '8px 0 0', fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text-subtle)' }}>
-          Add start or due dates to issues in {projectKey} to see them on the timeline.
-        </p>
-      </div>
     </div>
   );
 }
