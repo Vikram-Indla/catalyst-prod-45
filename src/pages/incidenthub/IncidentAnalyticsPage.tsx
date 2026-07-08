@@ -64,7 +64,7 @@ export default function IncidentAnalyticsPage() {
             { label: 'MTTR', value: '\u2014', accent: 'var(--ds-text-success, var(--cp-success))' },
           ].map(s => (
             <div key={s.label} className="p-3" style={{ backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', border: isDark ? '1px solid var(--ds-text)' : '1px solid var(--ds-shadow-overlay, rgba(15,23,42,0.12))', borderRadius: 6 }}>
-              <div style={{ fontFamily: 'var(--cp-font-body)', fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))', marginBottom: 4 }}>{s.label}</div>
+              <div style={{ fontFamily: 'var(--cp-font-body)', fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))', marginBottom: 4 }}>{s.label}</div>
               <div style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 'var(--ds-font-size-700)', fontWeight: 700, color: s.accent }}>{s.value}</div>
             </div>
           ))}
@@ -78,11 +78,11 @@ export default function IncidentAnalyticsPage() {
             <div className="space-y-2">
               {analytics.bySeverity.map(([sev, count]) => (
                 <div key={sev} className="flex items-center gap-2">
-                  <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))', width: 40 }}>{sev}</span>
+                  <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))', width: 40 }}>{sev}</span>
                   <div className="flex-1" style={{ height: 16, backgroundColor: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))', borderRadius: 4, overflow: 'hidden' }}>
                     <div style={{ height: '100%', width: `${(count / maxCount(analytics.bySeverity)) * 100}%`, backgroundColor: SEV_BAR_COLORS[sev] || 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', borderRadius: 2 }} />
                   </div>
-                  <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1)))', width: 24, textAlign: 'right' }}>{count}</span>
+                  <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1)))', width: 24, textAlign: 'right' }}>{count}</span>
                 </div>
               ))}
             </div>
@@ -94,11 +94,11 @@ export default function IncidentAnalyticsPage() {
             <div className="space-y-2">
               {analytics.byStatus.map(([status, count]) => (
                 <div key={status} className="flex items-center gap-2">
-                  <span style={{ fontFamily: 'var(--cp-font-body)', fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))', width: 80, textTransform: 'capitalize' }}>{status.replace(/_/g, ' ')}</span>
+                  <span style={{ fontFamily: 'var(--cp-font-body)', fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))', width: 80, textTransform: 'capitalize' }}>{status.replace(/_/g, ' ')}</span>
                   <div className="flex-1" style={{ height: 16, backgroundColor: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))', borderRadius: 4, overflow: 'hidden' }}>
                     <div style={{ height: '100%', width: `${(count / maxCount(analytics.byStatus)) * 100}%`, backgroundColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', borderRadius: 2 }} />
                   </div>
-                  <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1)))', width: 24, textAlign: 'right' }}>{count}</span>
+                  <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1)))', width: 24, textAlign: 'right' }}>{count}</span>
                 </div>
               ))}
             </div>
@@ -110,11 +110,11 @@ export default function IncidentAnalyticsPage() {
             <div className="space-y-2">
               {analytics.byAssignee.slice(0, 8).map(([name, count]) => (
                 <div key={name} className="flex items-center gap-2">
-                  <span style={{ fontFamily: 'var(--cp-font-body)', fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))', width: 100, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{name}</span>
+                  <span style={{ fontFamily: 'var(--cp-font-body)', fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))', width: 100, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{name}</span>
                   <div className="flex-1" style={{ height: 16, backgroundColor: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))', borderRadius: 4, overflow: 'hidden' }}>
                     <div style={{ height: '100%', width: `${(count / maxCount(analytics.byAssignee)) * 100}%`, backgroundColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', borderRadius: 2 }} />
                   </div>
-                  <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1)))', width: 24, textAlign: 'right' }}>{count}</span>
+                  <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1)))', width: 24, textAlign: 'right' }}>{count}</span>
                 </div>
               ))}
             </div>
