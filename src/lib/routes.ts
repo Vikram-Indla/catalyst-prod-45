@@ -126,9 +126,6 @@ export const testHubRoutes = {
   executions: () => '/testhub/executions',
   // executionKey is tm_test_executions.execution_key (e.g. "EX-001")
   execution: (executionKey: string) => `/testhub/executions/${executionKey}`,
-  // runKey routes to the run player scoped by cycle (cycle_key + run number)
-  run: (cycleKey: string, runNumber: number | string) =>
-    `/testhub/cycles/${cycleKey}/runs/${runNumber}`,
   cycles: () => '/testhub/cycles',
   cycle: (cycleSlug: string) => `/testhub/cycles/${cycleSlug}`,
   cycleExecute: (cycleSlug: string) => `/testhub/cycles/${cycleSlug}/execute`,

@@ -19,7 +19,6 @@ export { useSprintsByProject } from './useSprintsByProject';
 export type { SprintOption } from './useSprintsByProject';
 export { useTeamMembers } from './useAdminConfig';
 export { useCreateFolder, useDeleteFolder } from './useFolders';
-export { useSaveTestData, hasTestDataToSave } from './useTestData';
 export { useDefects } from './useDefects';
 export {
   useTestExecutions,
@@ -32,13 +31,3 @@ export { useCycleVariance, usePullLatestIntoScope, useAcceptSnapshotVariance } f
 export type { ScopeVariance } from './useCaseVariance';
 export { useSprintTestHealth, useComputeSprintTestHealth } from './useSprintTestHealth';
 export type { SprintTestHealth, SprintGateState, SprintTestHealthTotals } from './useSprintTestHealth';
-
-// ── Real hooks from sibling files (with adapter wrappers for API compat) ──
-export { useTestPlan, useCreateTestPlan, useUpdateTestPlan, useDeleteTestPlan } from '../useTestPlansG26';
-
-// useTestPlans wrapper: consumers expect { plans: [] } shape and string projectId arg
-import { useTestPlans as _useTestPlans } from '../useTestPlansG26';
-export function useTestPlans(..._args: any[]) {
-  const result = _useTestPlans();
-  return { ...result, data: { plans: result.data ?? [] } as any };
-}
