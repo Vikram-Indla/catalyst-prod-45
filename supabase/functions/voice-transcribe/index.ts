@@ -26,7 +26,11 @@ const corsHeaders = {
   "Vary": "Origin",
 };
 
-const GROQ_STT_URL = "https://api.groq.com/openai/v1/audio/transcriptions";
+// /translations always outputs English and needs no task param — the
+// /transcriptions endpoint rejects task=translate ("unknown param `task`",
+// live-probed 2026-07-08; Groq has silently failed into the Gemini fallback
+// on every historical call for this reason).
+const GROQ_STT_URL = "https://api.groq.com/openai/v1/audio/translations";
 const GEMINI_GENERATE_URL =
   "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent";
 
@@ -101,7 +105,6 @@ async function transcribeWithGroq(
   form.append("file", new Blob([audioBytes], { type: groqMimeType }), "audio.webm");
   form.append("model", "whisper-large-v3");
   form.append("response_format", "verbose_json");
-  form.append("task", "translate");
   form.append("temperature", "0");
 
   const resp = await fetchWithRetry(GROQ_STT_URL, {
@@ -233,12 +236,17 @@ serve(async (req) => {
     let confidence: "high" | "low";
     let detectedLanguage: string | undefined;
     let provider: "groq" | "gemini" = "groq";
+    // Diagnostic only (CAT-VOICE Arabic hotfix 2026-07-08): surfaces the raw
+    // Groq failure reason in the response so it's visible without dashboard
+    // log access. Harmless to leave — absent on success, ignored by the client.
+    let groqError: string | undefined;
 
     if (GROQ_API_KEY) {
       try {
         ({ englishText, confidence, detectedLanguage } = await transcribeWithGroq(audioBase64, mimeType, GROQ_API_KEY));
       } catch (groqErr) {
         console.warn("voice-transcribe Groq failed, falling back to Gemini:", groqErr);
+        groqError = groqErr instanceof Error ? groqErr.message : String(groqErr);
         if (!GEMINI_API_KEY) {
           const msg = groqErr instanceof Error ? groqErr.message : "Groq transcription failed";
           const is429 = msg.includes("groq_429");
@@ -276,7 +284,7 @@ serve(async (req) => {
       });
     }
 
-    return json({ englishText, confidence, detectedLanguage, mimeType, provider });
+    return json({ englishText, confidence, detectedLanguage, mimeType, provider, groqError });
 
   } catch (e) {
     const message = e instanceof Error ? e.message : String(e);
