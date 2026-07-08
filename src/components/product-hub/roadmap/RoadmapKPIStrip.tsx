@@ -60,7 +60,9 @@ export function RoadmapKPIStrip({ stats }: RoadmapKPIStripProps) {
       <div style={cardStyle}>
         <div style={labelStyle}>By Status</div>
         <div className="flex items-baseline gap-2" style={{ marginTop: 4 }}>
-          <span style={{ fontFamily: FONT.heading, fontSize: 'var(--ds-font-size-800)', fontWeight: 700, color: 'var(--ds-text-success, var(--cp-success))', letterSpacing: '-0.03em' }}>{stats.activeCount}</span>
+          {/* success green only when there IS activity — a green "0" is semantic
+              color used decoratively (audit A5/E3) */}
+          <span style={{ fontFamily: FONT.heading, fontSize: 'var(--ds-font-size-800)', fontWeight: 700, color: stats.activeCount > 0 ? 'var(--ds-text-success)' : 'var(--ds-text)', letterSpacing: '-0.03em' }}>{stats.activeCount}</span>
           <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 500, color: ink[3] }}>Active</span>
           <span style={{ fontFamily: FONT.heading, fontSize: 'var(--ds-font-size-800)', fontWeight: 700, color: ink[4], marginLeft: 8, letterSpacing: '-0.03em' }}>{stats.validationCount}</span>
           <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 500, color: ink[3] }}>Validation</span>
