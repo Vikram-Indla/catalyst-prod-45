@@ -557,9 +557,10 @@ export function VoiceFlowProvider({ children }: Props) {
       setStatusBoth('committing');
       try {
         insertTextIntoTarget(fieldRef.current, finalText);
-        // Dictionary learning: if the user types over what we inserted,
-        // the correction becomes vocabulary (fires on blur / 45s).
-        armCorrectionLearner(fieldRef.current.element);
+        // Dictionary learning + edit-ratio telemetry: if the user types over
+        // what we inserted, the correction becomes vocabulary and the change
+        // magnitude lands on the session row (fires on blur / 45s).
+        armCorrectionLearner(fieldRef.current.element, sessionIdRef.current);
       } catch (insertErr) {
         console.warn('[VoiceFlow] auto-commit insert failed:', insertErr);
       }

@@ -203,12 +203,24 @@ export async function learnFromCorrection(committed: string, current: string): P
   return { learned };
 }
 
+/** Normalized edit distance (0 = identical, 1 = fully rewritten), capped
+ *  input length so pathological fields can't stall the UI thread. */
+function editRatio(a: string, b: string): number {
+  const x = a.slice(0, 2000);
+  const y = b.slice(0, 2000);
+  const max = Math.max(x.length, y.length);
+  if (max === 0) return 0;
+  return Math.min(1, editDistance(x, y) / max);
+}
+
 /**
  * Arm a one-shot learner on the field CatyFlow just committed into:
  * snapshots the field's value now, then on blur (or after 45s) diffs
- * against what the user left and learns respelled terms.
+ * against what the user left — learning respelled terms AND logging the
+ * edit ratio to the session row (S3 quality flywheel: accuracy becomes a
+ * measurable per-user, per-language trend instead of an anecdote).
  */
-export function armCorrectionLearner(target: Element): void {
+export function armCorrectionLearner(target: Element, sessionId?: string | null): void {
   const el = target as HTMLInputElement | HTMLTextAreaElement | HTMLElement;
   const readValue = () =>
     'value' in el && typeof el.value === 'string' ? el.value : (el.textContent ?? '');
@@ -221,7 +233,16 @@ export function armCorrectionLearner(target: Element): void {
     done = true;
     el.removeEventListener('blur', fire, true);
     const current = readValue();
-    if (current && current !== committedText) {
+    if (!current) return;
+    if (sessionId) {
+      const ratio = Math.round(editRatio(committedText, current) * 1000) / 1000;
+      void db
+        .from('voice_dictation_sessions')
+        .update({ edit_ratio: ratio })
+        .eq('id', sessionId)
+        .then(() => {}, () => {});
+    }
+    if (current !== committedText) {
       void learnFromCorrection(committedText, current).catch(() => {});
     }
   };
