@@ -20,7 +20,10 @@ export function ChangeStatusLozenge({ status }: { status: string | null }) {
   return <Lozenge appearance={CHANGE_STATUS[status.toLowerCase()] ?? 'default'}>{label(status)}</Lozenge>;
 }
 
-const RISK: Record<string, LozengeAppearance> = { critical: 'removed', high: 'removed', medium: 'moved', low: 'success' };
+// Escalation ladder — red is reserved for critical alone, yellow for high;
+// medium/low are informational, not alarms (green "success" on low risk read
+// as a good-state signal, which risk is not).
+const RISK: Record<string, LozengeAppearance> = { critical: 'removed', high: 'moved', medium: 'default', low: 'default' };
 export function RiskLozenge({ risk }: { risk: string | null }) {
   if (!risk) return <span style={{ color: 'var(--ds-text-subtlest)' }}>—</span>;
   return <Lozenge appearance={RISK[risk.toLowerCase()] ?? 'default'}>{label(risk)}</Lozenge>;
