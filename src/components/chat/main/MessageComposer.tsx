@@ -63,7 +63,11 @@ export const MessageComposer = forwardRef<HTMLTextAreaElement, MessageComposerPr
     // button resolves it lazily at click time.
     const editorElRef = useRef<HTMLElement | null>(null);
     const handleEditorReady = useCallback((editor: Editor | null) => {
-      editorElRef.current = editor ? (editor.view.dom as HTMLElement) : null;
+      const el = editor ? (editor.view.dom as HTMLElement) : null;
+      editorElRef.current = el;
+      // Bidi hygiene (S5): base direction follows the first strong character
+      // as the user types — never hardcoded on a mixed AR/EN composer.
+      el?.setAttribute('dir', 'auto');
     }, []);
 
     // ── Write-side AR→EN translate mode (S4b) ──────────────────────────

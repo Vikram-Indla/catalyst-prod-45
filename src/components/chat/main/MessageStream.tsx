@@ -119,19 +119,22 @@ function renderBody(
   broadcastParts.forEach((part, i) => {
     if (BROADCAST_RE.test(part)) {
       out.push(
-        <span
-          key={`b-${i}`}
-          className="cc-mention"
-          style={{
-            background: 'var(--ds-background-warning)',
-            color: 'var(--ds-text-warning-inverse)',
-            fontWeight: 600,
-            padding: '0 4px',
-            borderRadius: 3,
-          }}
-        >
-          {part}
-        </span>,
+        // <bdi>: broadcast tokens are Latin chips that must not scramble
+        // punctuation when embedded in RTL messages (S5 bidi hygiene).
+        <bdi key={`b-${i}`}>
+          <span
+            className="cc-mention"
+            style={{
+              background: 'var(--ds-background-warning)',
+              color: 'var(--ds-text-warning-inverse)',
+              fontWeight: 600,
+              padding: '0 4px',
+              borderRadius: 3,
+            }}
+          >
+            {part}
+          </span>
+        </bdi>,
       );
       return;
     }
@@ -140,12 +143,13 @@ function renderBody(
     mentionParts.forEach((m, j) => {
       if (m.type === 'mention') {
         out.push(
-          <MentionToken
-            key={`m-${i}-${j}`}
-            raw={m.raw}
-            userId={m.userId}
-            currentUserId={currentUserId}
-          />,
+          <bdi key={`m-${i}-${j}`}>
+            <MentionToken
+              raw={m.raw}
+              userId={m.userId}
+              currentUserId={currentUserId}
+            />
+          </bdi>,
         );
       } else {
         out.push(...renderPlain(m.value, `t-${i}-${j}`, issueRefs));
@@ -579,6 +583,7 @@ const MessageRow = React.forwardRef<HTMLDivElement, MessageRowProps>(({
           <div className="cc-msg__editor">
             <textarea
               autoFocus
+              dir="auto"
               className="cc-msg__editor-input"
               value={editValue}
               onChange={(e) => setEditValue(e.target.value)}
@@ -594,13 +599,13 @@ const MessageRow = React.forwardRef<HTMLDivElement, MessageRowProps>(({
             </div>
           </div>
         ) : isAdfPresent(msg.bodyAdf) ? (
-          <div className="cc-msg__text">
+          <div className="cc-msg__text" dir="auto">
             <Suspense fallback={<span>{renderBody(msg.bodyText, mentionRoster, currentUserId, issueRefs)}</span>}>
               <EpicDescriptionRenderer content={msg.bodyAdf as any} />
             </Suspense>
           </div>
         ) : (
-          <div className="cc-msg__text">{renderBody(msg.bodyText, mentionRoster, currentUserId, issueRefs)}</div>
+          <div className="cc-msg__text" dir="auto">{renderBody(msg.bodyText, mentionRoster, currentUserId, issueRefs)}</div>
         )}
 
         {attachments && attachments.length > 0 && (

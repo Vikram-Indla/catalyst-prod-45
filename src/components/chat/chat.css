@@ -64,7 +64,10 @@
   font-size: 14px;
   font-weight: 400;
   line-height: 20px;
-  font-family: var(--ds-font-family-body, 'Atlassian Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif);
+  /* Arabic-capable tail (S5 RTL hygiene): SF/Segoe cover Arabic on their
+     platforms; Geeza Pro + Noto Sans Arabic UI catch the rest so Arabic chat
+     never falls back to a serif tofu face. */
+  font-family: var(--ds-font-family-body, 'Atlassian Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif), 'Geeza Pro', 'Noto Sans Arabic UI', Tahoma, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -387,7 +390,16 @@
 .cc-msg__head { display: flex; align-items: baseline; gap: 8px; margin-bottom: var(--ds-space-025, 2px); }
 .cc-msg__name { font-size: 14px; font-weight: 700; color: var(--ds-text, #172B4D); }
 .cc-msg__time { font-size: 12px; font-weight: 400; color: var(--ds-text-subtlest, #626F86); }
-.cc-msg__text { font-size: 14px; font-weight: 400; line-height: 22px; color: var(--ds-text, #172B4D); white-space: pre-wrap; word-break: break-word; }
+.cc-msg__text {
+  font-size: 14px; font-weight: 400; color: var(--ds-text, #172B4D);
+  white-space: pre-wrap; word-break: break-word;
+  /* S5 RTL hygiene: per-paragraph bidi from content, start-aligned either
+     direction; the slightly looser line-height keeps Arabic diacritics
+     from clipping. */
+  unicode-bidi: plaintext;
+  text-align: start;
+  line-height: 1.6;
+}
 .cc-mention {
   background: var(--ds-background-selected, #E9F2FE);
   color: var(--ds-text-brand, #0C66E4);
