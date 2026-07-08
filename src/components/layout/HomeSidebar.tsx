@@ -134,36 +134,12 @@ function SkeletonRowTitle() {
 }
 
 /**
- * Format a timestamp (milliseconds since epoch) as relative time.
- * Examples: "2h ago", "30m ago", "Yesterday", "Oct 5"
- */
-function formatTimestamp(visitedAtMs: number): string {
-  const now = Date.now();
-  const diffMs = now - visitedAtMs;
-  const diffMins = Math.floor(diffMs / 60000);
-  const diffHours = Math.floor(diffMs / 3600000);
-  const diffDays = Math.floor(diffMs / 86400000);
-
-  if (diffMins < 1) return 'Just now';
-  if (diffMins < 60) return `${diffMins}m ago`;
-  if (diffHours < 24) return `${diffHours}h ago`;
-  if (diffDays === 1) return 'Yesterday';
-  if (diffDays < 7) return `${diffDays}d ago`;
-
-  // For older entries, show month/day
-  const date = new Date(visitedAtMs);
-  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-}
-
-
-/**
- * Row title — two-line stacked layout (Option C, 2026-06-21).
+ * Row title — single-line: [page icon]  Section name.
  *
- *   [page icon]  Section name
- *                timestamp
- *
- * Icon + label never fight for horizontal space. Timestamp sits below
- * the label at 11px/subtlest so it's readable but clearly secondary.
+ * CAT-HOME-NOISECUT-20260708-001 (2026-07-08): dropped the per-row relative
+ * timestamp ("24m ago") that used to sit below the label — it doubled every
+ * row's height for a fact nobody acted on. Was two-line stacked (Option C,
+ * 2026-06-21) before this.
  */
 function LocationRowTitle({ location }: { location: RecentLocation }) {
   const PageIcon = getSectionIcon(location.sectionLabel.toLowerCase());
@@ -186,30 +162,20 @@ function LocationRowTitle({ location }: { location: RecentLocation }) {
       >
         <PageIcon style={{ width: 20, height: 20 }} />
       </span>
-      <span style={{ display: 'flex', flexDirection: 'column', gap: '0px', minWidth: 0, flex: 1 }}>
-        <span
-          style={{
-            color: token('color.text', 'var(--ds-text)'),
-            fontWeight: 400,
-            fontSize: 'var(--ds-font-size-300)',
-            lineHeight: '18px',
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-            whiteSpace: 'nowrap',
-          }}
-        >
-          {location.sectionLabel}
-        </span>
-        <span
-          style={{
-            color: token('color.text.subtlest', 'var(--ds-icon-subtle)'),
-            fontWeight: 400,
-            fontSize: token('font.size.050', '11px'),
-            lineHeight: '14px',
-          }}
-        >
-          {formatTimestamp(location.visitedAt)}
-        </span>
+      <span
+        style={{
+          color: token('color.text', 'var(--ds-text)'),
+          fontWeight: 400,
+          fontSize: 'var(--ds-font-size-300)',
+          lineHeight: '18px',
+          minWidth: 0,
+          flex: 1,
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+          whiteSpace: 'nowrap',
+        }}
+      >
+        {location.sectionLabel}
       </span>
     </span>
   );

@@ -162,9 +162,11 @@ export function CatalystHeader() {
                 alt="Catalyst"
                 style={{ height: '24px', width: '24px', flexShrink: 0 }}
               />
+              {/* CAT-HOME-NOISECUT-20260708-001: 17px/500 outranked the page's
+                  own controls — Atlassian top-bar app-name spec is 14px/600. */}
               <span style={{
-                fontSize: 'var(--ds-font-size-500)',
-                fontWeight: 500,
+                fontSize: 'var(--ds-font-size-400)',
+                fontWeight: 600,
                 fontFamily: '"Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", "Segoe UI", Ubuntu, "Helvetica Neue", sans-serif',
                 color: 'var(--ds-text)',
                 letterSpacing: '-0.4px'

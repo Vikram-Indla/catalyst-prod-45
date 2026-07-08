@@ -318,7 +318,10 @@ export default function ForYouPageAtlaskit() {
     >
       <h1
         style={{
-          font: `653 24px/28px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
+          // CAT-HOME-NOISECUT-20260708-001: 653 is a browser-synthesized
+          // weight (not a real font instance) with no probe rationale behind
+          // it here — 600 is a real weight in the same visual range.
+          font: `600 24px/28px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
           color: token('color.text', 'var(--ds-text)'),
           margin: 0,
           marginBlockStart: 24,

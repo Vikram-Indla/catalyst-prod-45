@@ -276,8 +276,10 @@ function ForYouRowImpl({ item, alwaysShowStar = false, onSelect, onToggleStar, h
             <Tooltip content={item.projectName}>
               <span
                 style={{
+                  // CAT-HOME-NOISECUT-20260708-001: this text isn't a link —
+                  // no href, no onClick — so it doesn't get link color.
                   font: `500 12px/16px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
-                  color: token('color.link', 'var(--ds-link)'),
+                  color: 'var(--ds-text-subtlest)',
                   maxWidth: 180,
                   overflow: 'hidden',
                   textOverflow: 'ellipsis',
