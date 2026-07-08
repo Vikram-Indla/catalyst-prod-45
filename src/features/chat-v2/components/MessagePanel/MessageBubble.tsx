@@ -15,6 +15,7 @@ import { AttachmentList } from '../Attachments/AttachmentList';
 import { LinkPreviewList } from '../LinkPreviews/LinkPreviewList';
 import { formatMessageTime, formatMessageTimeShort } from '../../lib/formatTimestamp';
 import { renderMarkdownInline } from '../../lib/markdown';
+import { MessageTranslation } from '@/components/chat/main/MessageTranslation';
 import { useAuth } from '@/hooks/useAuth';
 import { extractUrls, useLinkPreviews } from '@/hooks/chat/useLinkPreview';
 import type { ChatMessage } from '@/types/chat';
@@ -263,6 +264,11 @@ export function MessageBubble({
           <span style={{ font: 'var(--ds-font-body-small)', color: 'var(--cv2-text-muted)', marginLeft: 4 }}>
             (edited)
           </span>
+        )}
+        {/* Read-side "See translation" under Arabic messages
+            (CAT-VOICE-UX-PREMIUM-20260708-001 S4a). */}
+        {!editing && message.bodyText && (
+          <MessageTranslation messageId={message.id} bodyText={message.bodyText} />
         )}
         {attachments && attachments.length > 0 && <AttachmentList attachments={attachments} />}
         {linkPreviews && linkPreviews.length > 0 && <LinkPreviewList previews={linkPreviews} />}

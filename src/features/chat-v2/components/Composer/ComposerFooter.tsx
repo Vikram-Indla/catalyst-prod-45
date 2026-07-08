@@ -18,6 +18,10 @@ interface ComposerFooterProps {
   onMicToggle?: () => void;
   voiceMode?: VoiceMode;
   onVoiceModeChange?: (mode: VoiceMode) => void;
+  /** Rendered in the mic position — hosts the CatyFlow VoiceMicButton
+   *  (CAT-VOICE-UX-PREMIUM-20260708-001 S2). When set, the legacy native-SR
+   *  mic block is not rendered (one mic per composer). */
+  voiceSlot?: React.ReactNode;
 }
 
 export function ComposerFooter({
@@ -34,6 +38,7 @@ export function ComposerFooter({
   onMicToggle,
   voiceMode = 'auto',
   onVoiceModeChange,
+  voiceSlot,
 }: ComposerFooterProps) {
   const [scheduleOpen, setScheduleOpen] = useState(false);
   const scheduleAnchorRef = useRef<HTMLButtonElement>(null);
@@ -63,16 +68,24 @@ export function ComposerFooter({
         <FooterBtn label="Emoji" onClick={onPickEmoji}>
           <SmileyIcon size={16} />
         </FooterBtn>
-        {micSupported && onMicToggle && (
+        {voiceSlot ? (
           <>
             <Divider />
-            <MicFooterBtn
-              active={micActive}
-              onToggle={onMicToggle}
-              voiceMode={voiceMode}
-              onVoiceModeChange={onVoiceModeChange}
-            />
+            {voiceSlot}
           </>
+        ) : (
+          micSupported &&
+          onMicToggle && (
+            <>
+              <Divider />
+              <MicFooterBtn
+                active={micActive}
+                onToggle={onMicToggle}
+                voiceMode={voiceMode}
+                onVoiceModeChange={onVoiceModeChange}
+              />
+            </>
+          )
         )}
         <FooterBtn label="Mention" onClick={onMention}>
           <AtIcon size={16} />

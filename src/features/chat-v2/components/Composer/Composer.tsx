@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { ComposerToolbar, type FormatAction } from './ComposerToolbar';
 import { ComposerEditor, type ComposerEditorHandle } from './ComposerEditor';
-import { ComposerFooter, type VoiceMode } from './ComposerFooter';
+import { ComposerFooter } from './ComposerFooter';
 import { NotificationBanner } from '../MessagePanel/NotificationBanner';
 import { EmojiPicker } from '../EmojiPicker/EmojiPicker';
 import { MentionPicker, type MentionEntry } from '../MentionPicker/MentionPicker';
@@ -10,7 +10,11 @@ import type { SlashCommand } from '../SlashCommandPicker/commands';
 import { ComposerAttachmentChip, type StagedAttachment } from '../Attachments/ComposerAttachmentChip';
 import { htmlToMarkdown } from '../../lib/markdown';
 import { replaceEmojiShortcodes } from '../../lib/emojiShortcodes';
-import { useMicVoiceRecorder } from '@/components/catalyst-detail-views/shared/sections/Description/hooks/useMicVoiceRecorder';
+import { VoiceMicButton, useVoiceFlow } from '@/features/voice-flow';
+import { useTranslateSettings } from '@/features/voice-flow/useVoiceSettings';
+import { isTranslatableArabic } from '@/lib/i18n/detectScript';
+import { ComposerTranslateBanner } from '@/components/chat/main/ComposerTranslateBanner';
+import { TranslatePreviewDialog } from '@/components/chat/main/TranslatePreviewDialog';
 
 interface ComposerProps {
   placeholder: string;
@@ -87,64 +91,48 @@ export function Composer({
   const hasDoneAttachment = attachments.some(a => a.status === 'done');
   const canSend = !isUploading && (value.trim().length > 0 || hasDoneAttachment);
 
-  // Voice-to-text — reuses the canonical mic recorder hook from the
-  // description toolbar. The hook expects a ProseMirror-style view; we
-  // expose a thin shim that routes inserts to the contenteditable handle.
-  const [voiceMode, setVoiceMode] = useState<VoiceMode>('auto');
-  const browserLang: 'en-US' | 'ar-SA' =
-    typeof navigator !== 'undefined' && navigator.language.toLowerCase().startsWith('ar')
-      ? 'ar-SA'
-      : 'en-US';
-  const effectiveLang: 'en-US' | 'ar-SA' =
-    voiceMode === 'en' ? 'en-US' : voiceMode === 'ar' ? 'ar-SA' : browserLang;
-  const getEditorView = useCallback(() => {
-    const handle = editorRef.current;
-    if (!handle) return null;
-    return {
-      state: {
-        doc: { content: { size: 1 } },
-        selection: { from: 1, to: 1 },
-        tr: {
-          insertText(text: string) {
-            return { __text: text };
-          },
-        },
-      },
-      dispatch(tr: unknown) {
-        const text = (tr as { __text?: unknown } | null)?.__text;
-        if (typeof text === 'string') handle.insertText(text);
-      },
-    };
-  }, []);
-  const mic = useMicVoiceRecorder({
-    editorRootRef,
-    getEditorView,
-    lang: effectiveLang,
-  });
-  const handleMicToggle = useCallback(() => {
-    if (mic.isActive) mic.stop();
-    else mic.start();
-  }, [mic]);
+  // Voice — CatyFlow (CAT-VOICE-UX-PREMIUM-20260708-001): the anchored mic
+  // replaces the legacy native-SR recorder here. Same engine as the hotkeys:
+  // AR/UR/HI speech lands as English with live inline captions.
+  const getVoiceTarget = useCallback(
+    () => editorRootRef.current?.querySelector<HTMLElement>('[contenteditable="true"]') ?? null,
+    [],
+  );
+  const { status: voiceStatus, activeElement: voiceElement } = useVoiceFlow();
+  const dictatingHere =
+    (voiceStatus === 'listening' || voiceStatus === 'paused') &&
+    !!voiceElement &&
+    !!editorRootRef.current &&
+    editorRootRef.current.contains(voiceElement);
+
+  // Write-side AR→EN mode (S4b) — value is the live markdown.
+  const { mode: translateMode, setMode: setTranslateMode } = useTranslateSettings();
+  const hasArabic = isTranslatableArabic(value);
+  const [translateArmed, setTranslateArmed] = useState(false);
+  const [preview, setPreview] = useState<string | null>(null);
   useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && mic.isActive) {
-        e.stopPropagation();
-        mic.cancel();
-      }
-    };
-    document.addEventListener('keydown', onKey, true);
-    return () => document.removeEventListener('keydown', onKey, true);
-  }, [mic]);
+    if (!hasArabic) setTranslateArmed(false);
+    else if (translateMode === 'always') setTranslateArmed(true);
+  }, [hasArabic, translateMode]);
+
+  const finishSend = (md: string) => {
+    onSend(md);
+    setValue('');
+    editorRef.current?.setMarkdown('');
+    requestAnimationFrame(() => editorRef.current?.focus());
+  };
 
   const submit = () => {
     if (!canSend) return;
     const html = editorRef.current?.getHtml() ?? '';
     const md = replaceEmojiShortcodes(htmlToMarkdown(html)).trim();
     if (!md && !hasDoneAttachment) return;
-    onSend(md);
-    setValue('');
-    editorRef.current?.setMarkdown('');
-    requestAnimationFrame(() => editorRef.current?.focus());
+    // Armed AR→EN: preview before anything leaves the composer.
+    if (md && translateArmed && translateMode !== 'never' && isTranslatableArabic(md)) {
+      setPreview(md);
+      return;
+    }
+    finishSend(md);
   };
 
   const schedule = (iso: string) => {
@@ -227,12 +215,24 @@ export function Composer({
           )}
         </div>
       )}
+      {hasArabic && translateMode !== 'never' && (
+        <div style={{ marginBottom: 4 }}>
+          <ComposerTranslateBanner
+            mode={translateMode}
+            onModeChange={setTranslateMode}
+            armed={translateArmed}
+            onArmedChange={setTranslateArmed}
+          />
+        </div>
+      )}
       <div
         ref={editorRootRef}
         onPaste={handlePaste}
         className="cv2-composer-shell"
         style={{
-          border: '1px solid var(--cv2-border-strong)',
+          border: dictatingHere
+            ? '1px solid var(--ds-border-accent-magenta)'
+            : '1px solid var(--cv2-border-strong)',
           borderRadius: bannerAttached
             ? `0 0 var(--cv2-radius-lg) var(--cv2-radius-lg)`
             : 'var(--cv2-radius-lg)',
@@ -310,11 +310,7 @@ export function Composer({
             onMention={() => editorRef.current?.insertText('@')}
             onSend={submit}
             onSchedule={schedule}
-            micSupported={mic.isSupported}
-            micActive={mic.isActive}
-            onMicToggle={handleMicToggle}
-            voiceMode={voiceMode}
-            onVoiceModeChange={setVoiceMode}
+            voiceSlot={<VoiceMicButton getTargetElement={getVoiceTarget} />}
           />
         </div>
         <input
@@ -356,6 +352,19 @@ export function Composer({
           onClose={() => setSlashState(null)}
         />
       )}
+      <TranslatePreviewDialog
+        original={preview}
+        onClose={() => setPreview(null)}
+        onSendOriginal={() => {
+          const md = preview;
+          setPreview(null);
+          if (md) finishSend(md);
+        }}
+        onSendTranslated={(translated) => {
+          setPreview(null);
+          finishSend(translated);
+        }}
+      />
     </div>
   );
 }
