@@ -35,7 +35,6 @@ import { DateTimePicker } from '@atlaskit/datetime-picker';
 import { ListChecks, Minimize2, X, Calendar, ChevronDown, ChevronUp } from '@/lib/atlaskit-icons';
 import { ChangeStatusLozenge, RiskLozenge } from '@/components/releasehub/shared/ReleaseOpsLozenges';
 import { CatalystOwnerAvatar } from '@/components/ui/catalyst';
-import { RH } from '@/constants/releasehub.design';
 import { useMyExecutionWork, type ChangeCtx, type ExecCard, type MyExecutionWork } from '@/hooks/useMyExecutionWork';
 
 const T = {
@@ -43,6 +42,16 @@ const T = {
   link: 'var(--ds-text-brand)', icon: 'var(--ds-icon-subtle)', danger: 'var(--ds-text-danger)',
   success: 'var(--ds-text-success)', info: 'var(--ds-text-information)', border: 'var(--ds-border)',
   magenta: 'var(--ds-border-accent-magenta)', raised: 'var(--ds-surface-raised)',
+};
+// Type ramp: ADS font SHORTHAND tokens only (--ds-font-body*, --ds-font-heading-*).
+// This repo's --ds-font-size-* ladder carries non-ADS values (ant-text root cause,
+// see design-critical charter) — never use it in this file. The shorthands carry
+// the real Jira scale: body-small 12/16, body 14/20, heading-small 16/20, heading-medium 20/24.
+const F = {
+  bodySmall: 'var(--ds-font-body-small)',
+  body: 'var(--ds-font-body)',
+  headingSmall: 'var(--ds-font-heading-small)',
+  headingMedium: 'var(--ds-font-heading-medium)',
 };
 const HERO_LEAD_MS = 3600_000; // banner surfaces 1h before planned start
 const PILL_LEAD_MS = 48 * 3600_000; // queue pills earn a row within 48h of start
@@ -125,8 +134,8 @@ function LiveCountdown({ change, variant }: { change: ChangeCtx; variant: 'full'
   if (variant === 'row') {
     return (
       <span aria-hidden style={{ display: 'inline-flex', alignItems: 'center', gap: 8, whiteSpace: 'nowrap' }}>
-        <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', color: T.subtle }}>{timer.eyebrow}</span>
-        <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: timer.tone, fontVariantNumeric: 'tabular-nums' }}>{timer.big}</span>
+        <span style={{ font: F.bodySmall, color: T.subtle }}>{timer.eyebrow}</span>
+        <span style={{ font: F.body, fontWeight: 600, color: timer.tone, fontVariantNumeric: 'tabular-nums' }}>{timer.big}</span>
       </span>
     );
   }
@@ -147,18 +156,18 @@ function LiveCountdown({ change, variant }: { change: ChangeCtx; variant: 'full'
     return (
       <span role="status" aria-live="polite" aria-label={`${change.chgNumber}: ${timer.eyebrow}`} style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
         <span aria-hidden style={{ width: 8, height: 8, borderRadius: '50%', background: T.subtlest, flexShrink: 0 }} />
-        <span aria-hidden style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text)', fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap' }}>{timer.big}</span>
+        <span aria-hidden style={{ font: F.body, fontWeight: 600, color: 'var(--ds-text)', fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap' }}>{timer.big}</span>
       </span>
     );
   }
-  // 'card' = compact on-page card (smaller digits); 'full' = expanded card.
-  const bigSize = variant === 'card' ? 'var(--ds-font-size-300)' : 'var(--ds-font-size-400)';
+  // 'card' = compact on-page card (16px digits); 'full' = expanded card (20px digits).
+  const bigFont = variant === 'card' ? F.headingSmall : F.headingMedium;
   return (
     <span role="status" aria-live="polite" aria-label={timer.eyebrow} style={{ display: 'inline-flex', flexDirection: 'column', alignItems: 'flex-end', gap: 2 }}>
-      <span aria-hidden style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: timer.tone, whiteSpace: 'nowrap' }}>
+      <span aria-hidden style={{ display: 'inline-flex', alignItems: 'center', gap: 6, font: F.bodySmall, fontWeight: 500, color: timer.tone, whiteSpace: 'nowrap' }}>
         {timer.pulse && <span style={{ width: 6, height: 6, borderRadius: '50%', background: timer.tone, display: 'inline-block' }} />}{timer.eyebrow}
       </span>
-      <span aria-hidden style={{ fontFamily: RH.fontBody, fontSize: bigSize, fontWeight: 600, color: timer.tone, fontVariantNumeric: 'tabular-nums', lineHeight: 1.1, whiteSpace: 'nowrap' }}>{timer.big}</span>
+      <span aria-hidden style={{ font: bigFont, color: timer.tone, fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap' }}>{timer.big}</span>
     </span>
   );
 }
@@ -247,10 +256,12 @@ const isForYouRoute = (path: string) => path === '/' || path === '/for-you' || p
 
 /** Field-grid cell: muted label over value — the memo layout of the expanded card. */
 function GridField({ label, children }: { label: string; children: React.ReactNode }) {
+  // Label UNDER value in size: 12px subtle label over a 14px medium value —
+  // the Jira field hierarchy. Inverting this is what makes cards read archaic.
   return (
-    <span style={{ display: 'flex', flexDirection: 'column', gap: 2, minWidth: 0 }}>
-      <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', color: T.subtlest, whiteSpace: 'nowrap' }}>{label}</span>
-      <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: T.text, minWidth: 0 }}>{children}</span>
+    <span style={{ display: 'flex', flexDirection: 'column', gap: 4, minWidth: 0 }}>
+      <span style={{ font: F.bodySmall, color: T.subtle, whiteSpace: 'nowrap' }}>{label}</span>
+      <span style={{ font: F.body, fontWeight: 500, color: T.text, minWidth: 0 }}>{children}</span>
     </span>
   );
 }
@@ -271,6 +282,7 @@ export function ReleaseChangeAnnouncementBanner({
   const navigate = useNavigate();
   const [snoozedUntil, setSnoozedUntil] = useState<number>(() => readSnooze(change.id));
   const [remindOpen, setRemindOpen] = useState(false);
+  const [hovered, setHovered] = useState(false);
   // Session-only manual size override — chevron toggles; time decides when null.
   const [sizeOverride, setSizeOverride] = useState<'expanded' | 'compact' | null>(null);
   const [pickIso, setPickIso] = useState<string>(() => new Date(Date.now() + 3600_000).toISOString());
@@ -325,14 +337,14 @@ export function ReleaseChangeAnnouncementBanner({
             border: `1px solid ${T.border}`, borderRadius: 12, boxShadow: 'var(--ds-shadow-overlay)',
           }}
         >
-          <div role="heading" aria-level={3} style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: T.text, padding: '0 4px' }}>Remind me</div>
+          <div role="heading" aria-level={3} style={{ font: F.headingSmall, color: T.text, padding: '0 4px' }}>Remind me</div>
           <div style={{ display: 'flex', gap: 8 }}>
             <span style={{ flex: 1 }}><Button shouldFitContainer appearance="default" onClick={() => snoozeUntil(Date.now() + HOUR)}>1 hour</Button></span>
             <span style={{ flex: 1 }}><Button shouldFitContainer appearance="default" onClick={() => snoozeUntil(Date.now() + 4 * HOUR)}>4 hours</Button></span>
             <span style={{ flex: 1 }}><Button shouldFitContainer appearance="default" onClick={() => snoozeUntil(tomorrow9())}>Tomorrow</Button></span>
           </div>
           <div style={{ height: 1, background: T.border, margin: '4px 0' }} />
-          <div style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', color: T.subtle, padding: '0 4px' }}>Or pick a date &amp; time</div>
+          <div style={{ font: F.bodySmall, color: T.subtle, padding: '0 4px' }}>Or pick a date &amp; time</div>
           <DateTimePicker defaultValue={pickIso} onChange={(v: string) => setPickIso(v)} />
           <Button shouldFitContainer appearance="primary" isDisabled={!pickIso} onClick={() => pickIso && snoozeUntil(new Date(pickIso).getTime())}>Set reminder</Button>
           <div style={{ height: 1, background: T.border, margin: '4px 0' }} />
@@ -353,31 +365,33 @@ export function ReleaseChangeAnnouncementBanner({
 
   const shell: React.CSSProperties = {
     width: '100%', textAlign: 'left', cursor: 'pointer', display: 'flex', alignItems: 'stretch',
-    borderRadius: 8, border: `1px solid ${T.border}`, background: T.raised, boxShadow: 'var(--ds-shadow-raised)', overflow: 'hidden',
+    borderRadius: 8, border: `1px solid ${T.border}`, boxShadow: 'var(--ds-shadow-raised)', overflow: 'hidden',
+    background: hovered ? 'var(--ds-surface-raised-hovered)' : T.raised, transition: 'background 120ms ease',
   };
+  const hoverProps = { onMouseEnter: () => setHovered(true), onMouseLeave: () => setHovered(false) };
   const rail = <span style={{ width: 3, flexShrink: 0, background: tone }} aria-hidden />;
-  const keyEl = <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', fontWeight: 500, color: T.link, flexShrink: 0 }}>{change.chgNumber}</span>;
+  const keyEl = <span style={{ font: F.body, fontWeight: 500, color: T.link, flexShrink: 0 }}>{change.chgNumber}</span>;
 
   // ── Compact (default): one row, everything present — date, release, env,
   // executor avatar, live countdown. Half the vertical cost of the full card. ──
   if (!showFull) {
     return (
-      <div role="button" tabIndex={0} onClick={open} onKeyDown={(e) => { if (e.key === 'Enter') open(); }} style={shell}>
+      <div role="button" tabIndex={0} onClick={open} onKeyDown={(e) => { if (e.key === 'Enter') open(); }} {...hoverProps} style={shell}>
         {rail}
-        <span style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '8px 16px', minWidth: 0, flex: 1 }}>
+        <span style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 16px', minWidth: 0, flex: 1 }}>
           <ExecutorAvatar name={change.running?.ownerName ?? null} avatarUrl={change.runningOwnerAvatarUrl} />
-          <span style={{ display: 'flex', flexDirection: 'column', gap: 3, minWidth: 0, flex: 1 }}>
+          <span style={{ display: 'flex', flexDirection: 'column', gap: 4, minWidth: 0, flex: 1 }}>
             <span style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
               {keyEl}
-              <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: T.text, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{change.title}</span>
+              <span style={{ font: F.body, fontWeight: 600, color: T.text, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{change.title}</span>
               <ChangeStatusLozenge status={change.status} />
               <RiskLozenge risk={change.risk} />
             </span>
-            <span style={{ display: 'flex', alignItems: 'center', gap: 6, fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', color: T.subtle, whiteSpace: 'nowrap', overflow: 'hidden', minWidth: 0 }}>
+            <span style={{ display: 'flex', alignItems: 'center', gap: 6, font: F.bodySmall, color: T.subtle, whiteSpace: 'nowrap', overflow: 'hidden', minWidth: 0 }}>
               {windowText && (
                 <>
                   <span style={{ display: 'inline-flex', color: T.icon, flexShrink: 0 }}><Calendar size={14} /></span>
-                  <span style={{ color: T.text, fontWeight: 600 }}>{windowText}</span>
+                  <span style={{ color: T.text, fontWeight: 500 }}>{windowText}</span>
                   <span>·</span>
                 </>
               )}
@@ -399,13 +413,13 @@ export function ReleaseChangeAnnouncementBanner({
   // ── Expanded (auto during the change window): header + labeled field grid +
   // SOP progress and actions. ──
   return (
-    <div role="button" tabIndex={0} onClick={open} onKeyDown={(e) => { if (e.key === 'Enter') open(); }} style={shell}>
+    <div role="button" tabIndex={0} onClick={open} onKeyDown={(e) => { if (e.key === 'Enter') open(); }} {...hoverProps} style={shell}>
       {rail}
-      <span style={{ display: 'flex', flexDirection: 'column', padding: '12px 16px', minWidth: 0, flex: 1 }}>
+      <span style={{ display: 'flex', flexDirection: 'column', padding: 16, minWidth: 0, flex: 1 }}>
         {/* header: key · title · lozenges ·· countdown */}
         <span style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
           {keyEl}
-          <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: T.text, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{change.title}</span>
+          <span style={{ font: F.headingSmall, color: T.text, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{change.title}</span>
           <ChangeStatusLozenge status={change.status} />
           <RiskLozenge risk={change.risk} />
           <span style={{ flex: 1 }} />
@@ -413,7 +427,7 @@ export function ReleaseChangeAnnouncementBanner({
         </span>
 
         {/* labeled field grid — the memo */}
-        <span style={{ display: 'grid', gridTemplateColumns: 'repeat(4, minmax(0, 1fr))', gap: 12, margin: '12px 0', padding: '12px 0', borderTop: `1px solid ${T.border}`, borderBottom: `1px solid ${T.border}` }}>
+        <span style={{ display: 'grid', gridTemplateColumns: 'repeat(4, minmax(0, 1fr))', gap: 16, margin: '12px 0', padding: '16px 0', borderTop: `1px solid ${T.border}`, borderBottom: `1px solid ${T.border}` }}>
           <GridField label="Window">{windowText ?? '—'}</GridField>
           <GridField label="Release">
             {releaseText}
@@ -435,9 +449,11 @@ export function ReleaseChangeAnnouncementBanner({
           </GridField>
         </span>
 
-        {/* footer: SOP progress + actions */}
-        <span onClick={(e) => e.stopPropagation()} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <span style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 8, fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', color: T.subtle, minWidth: 0 }}>
+        {/* footer: SOP progress + actions. One default button (View SOP), one
+            subtle (Open change), stopwatch popup (which owns collapse/dismiss
+            rows — no separate minimize icon, icon soup reads cheap), chevron. */}
+        <span onClick={(e) => e.stopPropagation()} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <span style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 8, font: F.bodySmall, color: T.subtle, minWidth: 0 }}>
             <span style={{ whiteSpace: 'nowrap' }}>SOP {change.sopDone} of {change.sopTotal}</span>
             <span aria-hidden style={{ flex: 1, maxWidth: 160, height: 4, background: 'var(--ds-background-neutral)', borderRadius: 2, overflow: 'hidden' }}>
               <span style={{ display: 'block', width: `${change.sopTotal > 0 ? Math.round((change.sopDone / change.sopTotal) * 100) : 0}%`, height: '100%', background: 'var(--ds-background-brand-bold)' }} />
@@ -447,7 +463,6 @@ export function ReleaseChangeAnnouncementBanner({
           <Button appearance="default" iconBefore={(p) => <ListChecks {...p} size={16} />} onClick={openSop}>View SOP</Button>
           <Button appearance="subtle" iconAfter={ArrowRightIcon} onClick={open}>Open change</Button>
           {remindPopup}
-          <IconButton label="Send to top bar" appearance="subtle" icon={(p) => <Minimize2 {...p} size={16} />} onClick={dismiss} />
           <IconButton label="Collapse change card" appearance="subtle" icon={(p) => <ChevronUp {...p} size={16} />} onClick={() => setSizeOverride('compact')} />
         </span>
       </span>
@@ -471,10 +486,10 @@ function QueuePill({ change, reason }: { change: ChangeCtx; reason: string | nul
     >
       <span style={{ width: 3, flexShrink: 0, background: tone }} aria-hidden />
       <span style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px', minWidth: 0, flex: 1 }}>
-        <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', fontWeight: 500, color: T.link, flexShrink: 0 }}>{change.chgNumber}</span>
-        <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', color: T.text, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{change.title}</span>
+        <span style={{ font: F.body, fontWeight: 500, color: T.link, flexShrink: 0 }}>{change.chgNumber}</span>
+        <span style={{ font: F.body, color: T.text, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{change.title}</span>
         <RiskLozenge risk={change.risk} />
-        {reason && <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', color: T.subtle, whiteSpace: 'nowrap', flexShrink: 0 }}>· {reason}</span>}
+        {reason && <span style={{ font: F.bodySmall, color: T.subtle, whiteSpace: 'nowrap', flexShrink: 0 }}>· {reason}</span>}
         <span style={{ flex: 1 }} />
         <LiveCountdown change={change} variant="row" />
       </span>
@@ -498,11 +513,11 @@ function CollisionRow({ collision }: { collision: NonNullable<ReturnType<typeof 
         border: '1px solid var(--ds-border-warning)', background: 'var(--ds-background-warning)',
       }}
     >
-      <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', fontWeight: 500, color: 'var(--ds-text-warning)' }}>
+      <span style={{ font: F.body, fontWeight: 500, color: 'var(--ds-text-warning)' }}>
         {collision.members.length} changes share the {collision.env} window{fmtWindow(collision.start, collision.end) ? ` (${fmtWindow(collision.start, collision.end)})` : ''}
       </span>
       <span style={{ flex: 1 }} />
-      <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-warning)', whiteSpace: 'nowrap' }}>Review overlap</span>
+      <span style={{ font: F.bodySmall, color: 'var(--ds-text-warning)', whiteSpace: 'nowrap' }}>Review overlap</span>
     </div>
   );
 }
@@ -550,7 +565,7 @@ export function ReleaseChangeStack({ data }: { data: MyExecutionWork }) {
       {pills.map((c) => <QueuePill key={c.id} change={c} reason={reasonById.get(c.id) ?? null} />)}
       {overflow > 0 && (
         <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '0 12px' }}>
-          <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', color: T.subtle }}>+{overflow} more {overflow === 1 ? 'change' : 'changes'}</span>
+          <span style={{ font: F.bodySmall, color: T.subtle }}>+{overflow} more {overflow === 1 ? 'change' : 'changes'}</span>
           <Button appearance="subtle" spacing="compact" iconAfter={ArrowRightIcon} onClick={() => navigate('/release-hub/execution')}>View all in Execution</Button>
         </div>
       )}
@@ -623,9 +638,9 @@ export function ReleaseTimerNavChip({ compact = false }: { compact?: boolean } =
       }}
     >
       <LiveCountdown change={primary} variant="pill" />
-      <span aria-hidden style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: T.subtle, whiteSpace: 'nowrap' }}>{primary.chgNumber}</span>
+      <span aria-hidden style={{ font: F.body, fontWeight: 500, color: T.subtle, whiteSpace: 'nowrap' }}>{primary.chgNumber}</span>
       {moreCount > 0 && (
-        <span aria-hidden style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', fontWeight: 500, color: T.subtle, background: 'var(--ds-background-neutral)', borderRadius: 999, padding: '2px 8px', whiteSpace: 'nowrap' }}>+{moreCount}</span>
+        <span aria-hidden style={{ font: F.bodySmall, fontWeight: 500, color: T.subtle, background: 'var(--ds-background-neutral)', borderRadius: 999, padding: '0 8px', whiteSpace: 'nowrap' }}>+{moreCount}</span>
       )}
     </button>
   );

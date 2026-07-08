@@ -13,7 +13,7 @@ import { useSopStepAction, type SopStepFull } from '@/hooks/useSopRunbook';
 import { SectionMessage } from '@/components/ads/SectionMessage';
 import { catalystToast } from '@/lib/catalystToast';
 import { RH } from '@/constants/releasehub.design';
-import { ReleaseChangeAnnouncementBanner } from '@/components/releasehub/foryou/ReleaseChangeAnnouncementBanner';
+import { ReleaseChangeStack } from '@/components/releasehub/foryou/ReleaseChangeAnnouncementBanner';
 
 const T = {
   card: 'var(--ds-surface-raised)', sunken: 'var(--ds-surface-sunken)', border: 'var(--ds-border)',
@@ -175,28 +175,14 @@ function promptAppearance(k: ExecPrompt['kind']): 'warning' | 'error' | 'informa
 export function ReleaseOpsForYouSection() {
   const { data, isLoading } = useMyExecutionWork();
   if (isLoading || !data) return null;
-  const { assignedCards, managedChanges, dayOfChanges } = data;
 
-  /* Collapse every change the user touches into ONE ranked list and surface the
-     single most urgent as a slim countdown banner (running first, then soonest
-     planned start). No card stack — the banner links into the hub for actions. */
-  const byId = new Map<string, ChangeCtx>();
-  for (const c of [...dayOfChanges, ...assignedCards.map((k) => k.change), ...managedChanges]) {
-    if (!byId.has(c.id)) byId.set(c.id, c);
-  }
-  const changes = Array.from(byId.values());
-  if (changes.length === 0) return null; // no execution involvement — keep For You uncluttered
-
-  const startMs = (c: ChangeCtx) => (c.plannedStartAt ? new Date(c.plannedStartAt).getTime() : Number.MAX_SAFE_INTEGER);
-  changes.sort((a, b) => {
-    const ar = a.running ? 0 : 1, br = b.running ? 0 : 1;
-    return ar !== br ? ar - br : startMs(a) - startMs(b);
-  });
-  const primary = changes[0];
-
+  /* Tiered stack with a constant visible budget no matter how many concurrent
+     changes exist: collision line (only on real overlap) + one hero card + up
+     to two queue pills + one overflow line into Execution. Ranking, per-change
+     dismiss, and overlap detection all live in ReleaseChangeStack. */
   return (
     <section style={{ marginBottom: 20 }}>
-      <ReleaseChangeAnnouncementBanner change={primary} assignedCards={assignedCards} moreCount={changes.length - 1} />
+      <ReleaseChangeStack data={data} />
     </section>
   );
 }
