@@ -15,9 +15,16 @@
                                  2026-07-08 ruthless-audit HF1: visible 10px text
                                  is a hard-fail; 11px is the absolute floor.
                                  390 consumers lifted in one move.            */
-  --ds-font-size-100: 11px;  /* caption — timestamps, metadata, fine print  */
+  --ds-font-size-100: 12px;  /* caption — timestamps, metadata, fine print.
+                                 2026-07-08 re-base step 1: 11→12px. The 12px
+                                 metadata floor (rubric B1) was the top point
+                                 loss on 6 routes; real ADS has no 11px body
+                                 token. -50 and -100 intentionally converge on
+                                 the B2 ramp (11px retires at full surgery). */
   --ds-font-size-200: 12px;  /* small — secondary labels, table headers     */
-  --ds-font-size-300: 13px;  /* compact body — dense lists, sidebar items   */
+  --ds-font-size-300: 14px;  /* compact body — re-based 13→14px (2026-07-08):
+                                 13px is off the ADS ramp; dense lists keep
+                                 density via line-height, not sub-body sizes. */
   --ds-font-size-400: 14px;  /* body — main table cells, standard UI text   */
   --ds-font-size-500: 17px;  /* medium heading — panel headers              */
   --ds-font-size-600: 18px;  /* section heading — section titles            */
