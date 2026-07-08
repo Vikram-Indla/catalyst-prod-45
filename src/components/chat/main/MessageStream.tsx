@@ -11,6 +11,7 @@ import { initialsOf } from './avatar';
 import { useConversationAttachments, type ChatAttachment } from '@/hooks/chat/useChatAttachments';
 import { AttachmentPreview } from './AttachmentPreview';
 import { LinkUnfurl } from './LinkUnfurl';
+import { MessageTranslation } from './MessageTranslation';
 import {
   useConversationPins,
   useTogglePin,
@@ -608,6 +609,12 @@ const MessageRow = React.forwardRef<HTMLDivElement, MessageRowProps>(({
 
         {/* Link unfurl cards — rendered for every URL detected in body_text. */}
         {!editing && msg.bodyText && <LinkUnfurl bodyText={msg.bodyText} />}
+
+        {/* Read-side translation — conditional "See translation" under
+            Arabic-script messages (CAT-VOICE-UX-PREMIUM-20260708-001 S4a). */}
+        {!editing && msg.bodyText && (
+          <MessageTranslation messageId={msg.id} bodyText={msg.bodyText} />
+        )}
 
         {/* Message actions toolbar — copy link, mark unread, remind, turn into issue */}
         {!editing && conversationId && (
