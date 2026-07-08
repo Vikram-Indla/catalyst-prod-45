@@ -4775,9 +4775,13 @@ input[type="range"]::-moz-range-thumb {
   ) !important;
 }
 
-.dark *:focus-visible,
-.dark *:focus-visible,
-[data-theme="dark"] *:focus-visible {
+/* CAT-HOME-NOISECUT slice 3: menu/popover CONTAINERS are excluded — Radix
+   focuses the container element on open, and this sweep was drawing a 2px
+   ring around entire dropdowns (hub switcher et al). Focus indication on a
+   menu belongs to the rows/fields inside it, never the container. */
+.dark *:not([data-radix-dropdown-menu-content]):not([data-radix-popover-content]):not([data-radix-select-content]):not([role="menu"]):focus-visible,
+[data-theme="dark"]
+  *:not([data-radix-dropdown-menu-content]):not([data-radix-popover-content]):not([data-radix-select-content]):not([role="menu"]):focus-visible {
   box-shadow: 0 0 0 2px
     var(--ds-background-information-bold, rgba(59, 130, 246, 0.7)) !important;
   outline: 1px solid var(--ds-border-focused) !important;

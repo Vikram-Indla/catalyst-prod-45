@@ -319,7 +319,13 @@ export function SidebarBase({
         className
       )}
         style={{
-          width: expanded ? '220px' : '56px',
+          // CAT-HOME-NOISECUT slice 3: 220 → 240. CatalystHeader's left-cluster
+          // math (228 = 240 - 12, chevron anchored on the sidebar edge) and
+          // CatalystShell's overlay parity comment both assume 240 — 220 was a
+          // later regression that also truncated two-word nav labels
+          // ("Sign-off queue" → "Sign-off qu..."). 240 restores the intended
+          // geometry and matches Jira's default rail width.
+          width: expanded ? '240px' : '56px',
           background: sidebarBg,
           borderRight: `1px solid ${sidebarBorder}`,
           boxShadow: 'none',

@@ -62,7 +62,7 @@ import {
 import { SidebarBase, type SidebarConfig, type SidebarMenuItem } from './SidebarBase';
 import SidebarClock from './SidebarClock';
 import { useRecentProjects, type RecentLocation } from '@/hooks/home/useRecentProjects';
-import { HUB_ICON_OUTLINE_REGISTRY, HUB_ICON_REGISTRY } from '@/components/icons';
+import { HUB_ICON_OUTLINE_REGISTRY } from '@/components/icons';
 import { sliceVisible } from '@/lib/home-recents';
 import { ProjectIcon } from '@/components/shared/ProjectIcon';
 import { ProductAvatar } from '@/components/icons/ProductAvatar';
@@ -204,9 +204,13 @@ function SpaceGroupHeader({
   // Global single hubs (task/incident/release/plan) have no key → type word only.
   const isSpaceScoped = head.hub === 'project' || head.hub === 'product';
   // Global hub icon (used only for non-space-scoped hubs: task/incident/release/plan).
+  // CAT-HOME-NOISECUT slice 3: monochrome OUTLINE glyph, not the colored tile —
+  // hubs are system categories, not identities. Color in this tree is reserved
+  // for project/product avatars (user identity data), same rule as the
+  // collapsed rail. Mask technique mirrors the rail (HomeSidebar collapsed config).
   const globalIconUrl =
     (head.hub !== 'project' && head.hub !== 'product')
-      ? (HUB_ICON_REGISTRY[head.hub as keyof typeof HUB_ICON_REGISTRY] ?? undefined)
+      ? (HUB_ICON_OUTLINE_REGISTRY[head.hub as keyof typeof HUB_ICON_OUTLINE_REGISTRY] ?? undefined)
       : undefined;
 
   // Whole header is the collapse affordance. The chevron sits left of the
@@ -252,11 +256,23 @@ function SpaceGroupHeader({
       ) : head.hub === 'product' ? (
         <ProductAvatar code={head.projectKey} size={20} />
       ) : globalIconUrl ? (
-        <img
-          src={globalIconUrl}
-          alt=""
+        <span
           aria-hidden="true"
-          style={{ width: 20, height: 20, flexShrink: 0, display: 'block', borderRadius: 4 }}
+          style={{
+            width: 20,
+            height: 20,
+            flexShrink: 0,
+            display: 'block',
+            backgroundColor: 'var(--ds-icon)',
+            WebkitMaskImage: `url("${globalIconUrl}")`,
+            maskImage: `url("${globalIconUrl}")`,
+            WebkitMaskRepeat: 'no-repeat',
+            maskRepeat: 'no-repeat',
+            WebkitMaskPosition: 'center',
+            maskPosition: 'center',
+            WebkitMaskSize: 'contain',
+            maskSize: 'contain',
+          }}
         />
       ) : null}
       <span

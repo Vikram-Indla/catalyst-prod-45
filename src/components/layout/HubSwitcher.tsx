@@ -44,7 +44,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { useCatalystContext } from '@/contexts/CatalystContext';
 import type { HubKey } from '@/components/icons';
-import { HUB_ICON_REGISTRY } from '@/components/icons';
+import { HUB_ICON_REGISTRY, HUB_ICON_OUTLINE_REGISTRY } from '@/components/icons';
 import type { HubTone } from '@/lib/hub-tone';
 
 type SectionKey = 'discover' | 'build_ship' | 'knowledge';
@@ -255,11 +255,21 @@ export function HubSwitcher() {
           padding: 0,
           maxHeight: 'none',
           overflow: 'visible',
+          // CAT-HOME-NOISECUT slice 3: Radix focuses this container on
+          // keyboard open, and index.css's universal *:focus-visible rule
+          // was ringing the entire popup. Menus don't ring their container —
+          // focus indication lives on the rows/search field inside.
+          outline: 'none',
         }}
       >
         <style>{`
           [data-hub-switcher-section] [class*="SectionTitle"] {
             color: var(--ds-text-subtle) !important;
+          }
+          /* Slice 3: hub tiles ship light-mode-strength chroma; on a dark
+             ground ADS mutes accents, so the raster tiles follow suit. */
+          .dark [data-hub-switcher-section] img[data-hub-tile] {
+            filter: saturate(0.7) brightness(0.92);
           }
         `}</style>
         <div
@@ -299,23 +309,37 @@ export function HubSwitcher() {
             return (
               <Section key={key} title={title}>
                 {rows.map((hub) => {
-                  // Deprecated hub: visually identical to active rows — dead CTA, ships within 1 week.
+                  // Deprecated hub: MUST look unavailable (slice 3) — it used
+                  // to render visually identical to live rows, a dead door.
                   if (hub.deprecated) {
                     return (
-                      <LinkItem
+                      <div
                         key={hub.key}
-                        href={hub.href}
-                        isDisabled
-                        iconBefore={
-                          <img
-                            src={HUB_ICON_REGISTRY[hub.key]}
-                            alt={hub.label}
-                            style={{ width: 24, height: 24, display: 'block' }}
-                          />
-                        }
+                        role="menuitem"
+                        aria-disabled="true"
+                        data-hub-deprecated={hub.key}
+                        title="Not available"
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 8,
+                          // matches Atlaskit LinkItem's 8/20 content inset
+                          padding: 'var(--ds-space-100) var(--ds-space-250)',
+                          cursor: 'not-allowed',
+                          userSelect: 'none',
+                        }}
                       >
-                        <HubRowLabel hub={hub} />
-                      </LinkItem>
+                        <img
+                          src={HUB_ICON_REGISTRY[hub.key]}
+                          alt=""
+                          aria-hidden="true"
+                          style={{ width: 24, height: 24, display: 'block', filter: 'grayscale(1)', opacity: 0.45 }}
+                        />
+                        <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, flex: 1 }}>
+                          <span data-hub-label={hub.key} style={{ color: 'var(--ds-text-disabled)' }}>{hub.label}</span>
+                          <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-disabled)' }}>Soon</span>
+                        </span>
+                      </div>
                     );
                   }
                   // Inaccessible hub: shown but grayed-out, non-navigable, locked.
@@ -363,15 +387,42 @@ export function HubSwitcher() {
                       href={hub.href}
                       isSelected={isActive(hub.href)}
                       iconBefore={
-                        <img
-                          src={HUB_ICON_REGISTRY[hub.key]}
-                          alt={hub.label}
-                          style={{
-                            width: 24,
-                            height: 24,
-                            display: 'block',
-                          }}
-                        />
+                        hub.key === 'docex' ? (
+                          // Slice 3: docex reuses the wiki glyph asset, which is
+                          // gray — the only colorless tile in the grid read as
+                          // disabled. Until a dedicated asset lands, mask the
+                          // outline glyph in the hub's registered purple tone.
+                          <span
+                            role="img"
+                            aria-label={hub.label}
+                            data-hub-tile={hub.key}
+                            style={{
+                              width: 24,
+                              height: 24,
+                              display: 'block',
+                              backgroundColor: 'var(--ds-background-discovery-bold)',
+                              WebkitMaskImage: `url("${HUB_ICON_OUTLINE_REGISTRY[hub.key]}")`,
+                              maskImage: `url("${HUB_ICON_OUTLINE_REGISTRY[hub.key]}")`,
+                              WebkitMaskRepeat: 'no-repeat',
+                              maskRepeat: 'no-repeat',
+                              WebkitMaskPosition: 'center',
+                              maskPosition: 'center',
+                              WebkitMaskSize: 'contain',
+                              maskSize: 'contain',
+                            }}
+                          />
+                        ) : (
+                          <img
+                            src={HUB_ICON_REGISTRY[hub.key]}
+                            alt={hub.label}
+                            data-hub-tile={hub.key}
+                            style={{
+                              width: 24,
+                              height: 24,
+                              display: 'block',
+                            }}
+                          />
+                        )
                       }
                       onClick={(e) => handleNavClick(e, hub)}
                     >
