@@ -2591,6 +2591,39 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
         );
       })()}
 
+      {/* Row-count footer — restores the standalone Jira-parity "{N} of {Total}
+          items" footer (added 2026-05-17, c9fb90199) for tables that don't opt
+          into the sticky create row. A "Sync repo with gitlab" merge
+          (887c7a64d) folded the row-count label into the sticky-create-footer
+          block above and dropped this fallback, so surfaces without
+          enableStickyCreateFooter silently lost the footer entirely — that
+          was a merge regression, not an intentional design change, so it's
+          restored here rather than weakening the test that caught it. */}
+      {!(enableStickyCreateFooter && stickyCreateFooter) && showRowCount && !groups && data && data.length > 0 && !onPageChange && (() => {
+        const visible = data.length;
+        const total = totalRowCount ?? visible;
+        const label = visible === total
+          ? `${visible} item${visible === 1 ? '' : 's'}`
+          : `${visible} of ${total} items`;
+        return (
+          <div
+            data-testid="jira-table-row-count"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: '8px 12px',
+              borderTop: '1px solid var(--ds-border)',
+              fontSize: 'var(--ds-font-size-200)',
+              color: 'var(--ds-text-subtle)',
+              background: 'var(--ds-surface)',
+            }}
+          >
+            {label}
+          </div>
+        );
+      })()}
+
       {/* Pagination footer — simple prev / next / page counter. Only shown
           when the caller provides onPageChange + rowsPerPage and data
           exceeds one page. Hidden entirely when grouping is active.

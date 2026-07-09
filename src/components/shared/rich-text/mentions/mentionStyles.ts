@@ -101,13 +101,20 @@ export function injectMentionStyles(): void {
       content: "@";
     }
 
-    /* ── OTHER-user — neutral grey pill with dark text. Only the
-       current-user mention gets the brand-blue fill; everyone else reads
-       as a quiet grey chip (image-83 parity, 2026-06-30). */
+    /* ── OTHER-user — Atlassian inline mention: link-blue text on a
+       faint neutral tint (NOT a solid grey pill). Matches @atlaskit/mention
+       read-mode rendering.
+       2026-06-30 (86fe3a91f, "design fixes v2") swapped this to a flat
+       neutral-grey pill citing an undocumented "image-83 parity" — no
+       probe evidence, not a Vikram-approved change, and it silently
+       reverted the ADS-link-colour contract this file (and its test,
+       mentionStyles.atlassian-inline.test.ts) were built around. Reverted
+       2026-07-09 back to the link-colour treatment; if grey-pill styling
+       is actually wanted, it needs its own probed decision + updated test. */
     span[data-mention-id]:not([data-mention-self="true"]),
     span.atlaskit-mention[data-id]:not([data-mention-self="true"]) {
-      background: var(--ds-background-neutral) !important;
-      color: var(--ds-text) !important;
+      background: var(--ds-background-neutral-subtle) !important;
+      color: var(--ds-link) !important;
     }
 
     /* ── CURRENT-user — bold brand blue + white text ───────────────── */

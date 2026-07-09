@@ -45,6 +45,7 @@ export const adminPockets: AdminNavPocket[] = [
     iconName: 'Palette',
     path: '/admin/design-system',
     children: [
+      { label: 'Components', path: '/admin/components' },
       // RESET ICONS — runtime asset override management. Admin-only.
       { label: 'Icons', path: '/admin/icons' },
       { label: 'Avatars', path: '/admin/avatars' },
@@ -116,6 +117,7 @@ export const REGISTERED_ADMIN_ROUTES = new Set([
   '/admin/access',
   '/admin/roles',
   '/admin/permissions',
+  '/admin/components',
   '/admin/icons',
   '/admin/avatars',
   '/admin/workflows',

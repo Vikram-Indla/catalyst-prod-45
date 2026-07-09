@@ -94,8 +94,14 @@ export function SlashCommandPalette({
     if (!el) return;
 
     const onSelChange = () => {
-      const caret = el.selectionStart ?? value.length;
-      const upto = value.slice(0, caret);
+      // Read the live DOM value rather than the `value` prop — on a
+      // controlled textarea, this listener (attached directly to the
+      // element) can run before React has flushed the prop update from
+      // fireEvent/typing, which would otherwise leave us evaluating a
+      // stale caret/text snapshot.
+      const liveValue = el.value;
+      const caret = el.selectionStart ?? liveValue.length;
+      const upto = liveValue.slice(0, caret);
       const lastSlash = upto.lastIndexOf('/');
 
       if (lastSlash < 0) {
@@ -116,12 +122,21 @@ export function SlashCommandPalette({
         return;
       }
 
-      setState(prev => ({
-        open: true,
-        query: sliceAfter,
-        triggerIndex: lastSlash,
-        selectedIndex: 0, // Reset selection when query changes
-      }));
+      setState(prev => {
+        // Nothing about the /-token actually changed (e.g. a keyup fired
+        // after an ArrowUp/ArrowDown palette-navigation keydown, which moves
+        // selectedIndex but never touches the caret or text) — keep the
+        // current selection instead of resetting it back to 0.
+        if (prev.open && prev.triggerIndex === lastSlash && prev.query === sliceAfter) {
+          return prev;
+        }
+        return {
+          open: true,
+          query: sliceAfter,
+          triggerIndex: lastSlash,
+          selectedIndex: 0, // Reset selection when query changes
+        };
+      });
     };
 
     el.addEventListener('input', onSelChange);

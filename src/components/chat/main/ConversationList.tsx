@@ -173,19 +173,19 @@ export function ConversationList({
   return (
     <>
       <div className="cc-convlist">
-        {/* Header — title + create icon */}
+        {/* Header — title only; create action lives in the full-width button below */}
         <div className="cc-cl-head">
           <div className="cc-cl-head__ttl">{title ?? (filter === 'dms' ? 'Direct messages' : 'Conversations')}</div>
-          <button
-            type="button"
-            className="cc-iconbtn"
-            onClick={handleCreateClick}
-            aria-label="Start a new conversation"
-          >
+        </div>
+
+        {/* New conversation — full-width primary button (2026-06-10 polish) */}
+        <div style={{ padding: '0 8px 8px' }}>
+          <button type="button" className="cc-new-conv-btn" onClick={handleCreateClick}>
             <svg viewBox="0 0 24 24" width={16} height={16} fill="none" stroke="currentColor" strokeWidth={2}>
               <line x1="12" y1="5" x2="12" y2="19" />
               <line x1="5" y1="12" x2="19" y2="12" />
             </svg>
+            New conversation
           </button>
         </div>
 
@@ -202,19 +202,19 @@ export function ConversationList({
           </div>
         )}
 
-        {/* Search — collapsed behind icon, shown only when searchQuery is non-empty or focused */}
-        {searchQuery ? (
-          <div className="cc-cl-search">
-            <input
-              ref={searchInputRef}
-              type="text"
-              className="cc-cl-search__inp-field"
-              placeholder={searchPlaceholder ?? (filter === 'dms' ? 'Find a DM' : 'Search conversations…')}
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              onKeyDown={handleSearchKeyDown}
-              aria-label="Search conversations by name or message"
-            />
+        {/* Search — always visible; filters channels/tickets/DMs by title, ticket key, or preview */}
+        <div className="cc-cl-search">
+          <input
+            ref={searchInputRef}
+            type="text"
+            className="cc-cl-search__inp-field"
+            placeholder={searchPlaceholder ?? (filter === 'dms' ? 'Find a DM' : 'Search conversations…')}
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            onKeyDown={handleSearchKeyDown}
+            aria-label="Search conversations by name or message"
+          />
+          {searchQuery ? (
             <button
               type="button"
               className="cc-cl-search__clear"
@@ -226,8 +226,8 @@ export function ConversationList({
             >
               ✕
             </button>
-          </div>
-        ) : null}
+          ) : null}
+        </div>
 
       <div className="cc-cl-scroll">
         {isLoading ? (

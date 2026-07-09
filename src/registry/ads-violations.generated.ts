@@ -4,8 +4,8 @@
  * Do NOT edit by hand. Run `npm run scan:ads-violations` to regenerate
  * after fixing or introducing a violation.
  *
- * Captured: 2026-05-17T15:07:50.203Z
- * Total: 6 (P0: 3, P1: 2, P2: 1)
+ * Captured: 2026-07-09T12:38:23.610Z
+ * Total: 13 (P0: 3, P1: 2, P2: 8)
  */
 
 export type AdsViolationCategory =
@@ -35,34 +35,34 @@ export interface AdsViolation {
 
 export const adsViolations: AdsViolation[] = [
   {
+    "id": "dropdown:src/components/catalyst-detail-views/shared/sections/Description/_components/CellChevronHandles/CellChevronHandles.tsx:61",
+    "category": "hand-rolled-dropdown",
+    "severity": "P0",
+    "file": "src/components/catalyst-detail-views/shared/sections/Description/_components/CellChevronHandles/CellChevronHandles.tsx",
+    "line": 61,
+    "excerpt": "const [menu, setMenu] = useState<OpenMenu | null>(null);",
+    "rule": "Hand-rolled menu/popover state combined with an outside-click listener (mousedown or capture-phase click).",
+    "suggestion": "Replace with @atlaskit/dropdown-menu (DropdownMenu + DropdownItem + DropdownItemGroup). See CLAUDE.md 2026-05-10.",
+    "claudeAnchor": "2026-05-10"
+  },
+  {
+    "id": "dropdown:src/components/catalyst-detail-views/shared/sections/Description/_components/TableInteractions/TableInteractions.tsx:87",
+    "category": "hand-rolled-dropdown",
+    "severity": "P0",
+    "file": "src/components/catalyst-detail-views/shared/sections/Description/_components/TableInteractions/TableInteractions.tsx",
+    "line": 87,
+    "excerpt": "const [activeMenu, setActiveMenu] = useState<ActiveMenu | null>(null);",
+    "rule": "Hand-rolled menu/popover state combined with an outside-click listener (mousedown or capture-phase click).",
+    "suggestion": "Replace with @atlaskit/dropdown-menu (DropdownMenu + DropdownItem + DropdownItemGroup). See CLAUDE.md 2026-05-10.",
+    "claudeAnchor": "2026-05-10"
+  },
+  {
     "id": "dropdown:src/components/hierarchy/HierarchyContextMenu.tsx:47",
     "category": "hand-rolled-dropdown",
     "severity": "P0",
     "file": "src/components/hierarchy/HierarchyContextMenu.tsx",
     "line": 47,
     "excerpt": "const [subMenu, setSubMenu] = useState<SubMenu>(null);",
-    "rule": "Hand-rolled menu/popover state combined with an outside-click listener (mousedown or capture-phase click).",
-    "suggestion": "Replace with @atlaskit/dropdown-menu (DropdownMenu + DropdownItem + DropdownItemGroup). See CLAUDE.md 2026-05-10.",
-    "claudeAnchor": "2026-05-10"
-  },
-  {
-    "id": "dropdown:src/components/testhub/FolderPanel.tsx:77",
-    "category": "hand-rolled-dropdown",
-    "severity": "P0",
-    "file": "src/components/testhub/FolderPanel.tsx",
-    "line": 77,
-    "excerpt": "const [folderContextMenu, setFolderContextMenu] = useState<FolderContextMenuState | null>(null);",
-    "rule": "Hand-rolled menu/popover state combined with an outside-click listener (mousedown or capture-phase click).",
-    "suggestion": "Replace with @atlaskit/dropdown-menu (DropdownMenu + DropdownItem + DropdownItemGroup). See CLAUDE.md 2026-05-10.",
-    "claudeAnchor": "2026-05-10"
-  },
-  {
-    "id": "dropdown:src/pages/testhub/TestRepositoryPage.tsx:129",
-    "category": "hand-rolled-dropdown",
-    "severity": "P0",
-    "file": "src/pages/testhub/TestRepositoryPage.tsx",
-    "line": 129,
-    "excerpt": "const [contextMenu, setContextMenu] = useState<ContextMenuState | null>(null);",
     "rule": "Hand-rolled menu/popover state combined with an outside-click listener (mousedown or capture-phase click).",
     "suggestion": "Replace with @atlaskit/dropdown-menu (DropdownMenu + DropdownItem + DropdownItemGroup). See CLAUDE.md 2026-05-10.",
     "claudeAnchor": "2026-05-10"
@@ -88,20 +88,90 @@ export const adsViolations: AdsViolation[] = [
     "suggestion": "Migrate to JiraTable (@/components/shared/JiraTable)."
   },
   {
-    "id": "lozenge:src/components/catalyst-ds/activity/ActivityItem.tsx:7",
+    "id": "lozenge:src/components/releasehub/shared/ReleaseOpsLozenges.tsx:8",
     "category": "lozenge-duplicate",
     "severity": "P2",
-    "file": "src/components/catalyst-ds/activity/ActivityItem.tsx",
-    "line": 7,
-    "excerpt": "import { Lozenge } from '../status/Lozenge';",
+    "file": "src/components/releasehub/shared/ReleaseOpsLozenges.tsx",
+    "line": 8,
+    "excerpt": "import { Lozenge, type LozengeAppearance } from '@/components/ads/Lozenge';",
+    "rule": "Importing a Lozenge from a non-canonical path.",
+    "suggestion": "Import from @atlaskit/lozenge (canonical primitive)."
+  },
+  {
+    "id": "lozenge:src/components/releasehub/signoff/SignoffDependencyGraph.tsx:14",
+    "category": "lozenge-duplicate",
+    "severity": "P2",
+    "file": "src/components/releasehub/signoff/SignoffDependencyGraph.tsx",
+    "line": 14,
+    "excerpt": "import { Lozenge, type LozengeAppearance } from '@/components/ads/Lozenge';",
+    "rule": "Importing a Lozenge from a non-canonical path.",
+    "suggestion": "Import from @atlaskit/lozenge (canonical primitive)."
+  },
+  {
+    "id": "lozenge:src/pages/releasehub/ChangeDetailPage.tsx:19",
+    "category": "lozenge-duplicate",
+    "severity": "P2",
+    "file": "src/pages/releasehub/ChangeDetailPage.tsx",
+    "line": 19,
+    "excerpt": "import { Lozenge } from '@/components/ads/Lozenge';",
+    "rule": "Importing a Lozenge from a non-canonical path.",
+    "suggestion": "Import from @atlaskit/lozenge (canonical primitive)."
+  },
+  {
+    "id": "lozenge:src/pages/releasehub/FreezeWindowsPage.tsx:19",
+    "category": "lozenge-duplicate",
+    "severity": "P2",
+    "file": "src/pages/releasehub/FreezeWindowsPage.tsx",
+    "line": 19,
+    "excerpt": "import { Lozenge } from '@/components/ads/Lozenge';",
+    "rule": "Importing a Lozenge from a non-canonical path.",
+    "suggestion": "Import from @atlaskit/lozenge (canonical primitive)."
+  },
+  {
+    "id": "lozenge:src/pages/releasehub/ProductionEventReplayPage.tsx:17",
+    "category": "lozenge-duplicate",
+    "severity": "P2",
+    "file": "src/pages/releasehub/ProductionEventReplayPage.tsx",
+    "line": 17,
+    "excerpt": "import { Lozenge } from '@/components/ads/Lozenge';",
+    "rule": "Importing a Lozenge from a non-canonical path.",
+    "suggestion": "Import from @atlaskit/lozenge (canonical primitive)."
+  },
+  {
+    "id": "lozenge:src/pages/releasehub/ReleaseDetailPage.tsx:24",
+    "category": "lozenge-duplicate",
+    "severity": "P2",
+    "file": "src/pages/releasehub/ReleaseDetailPage.tsx",
+    "line": 24,
+    "excerpt": "import { Lozenge } from '@/components/ads/Lozenge';",
+    "rule": "Importing a Lozenge from a non-canonical path.",
+    "suggestion": "Import from @atlaskit/lozenge (canonical primitive)."
+  },
+  {
+    "id": "lozenge:src/pages/releasehub/SignOffQueuePage.tsx:20",
+    "category": "lozenge-duplicate",
+    "severity": "P2",
+    "file": "src/pages/releasehub/SignOffQueuePage.tsx",
+    "line": 20,
+    "excerpt": "import { Lozenge } from '@/components/ads/Lozenge';",
+    "rule": "Importing a Lozenge from a non-canonical path.",
+    "suggestion": "Import from @atlaskit/lozenge (canonical primitive)."
+  },
+  {
+    "id": "lozenge:src/pages/releasehub/SopTemplatesPage.tsx:15",
+    "category": "lozenge-duplicate",
+    "severity": "P2",
+    "file": "src/pages/releasehub/SopTemplatesPage.tsx",
+    "line": 15,
+    "excerpt": "import { Lozenge } from '@/components/ads/Lozenge';",
     "rule": "Importing a Lozenge from a non-canonical path.",
     "suggestion": "Import from @atlaskit/lozenge (canonical primitive)."
   }
 ];
 
 export const adsViolationsStats = {
-  total: 6,
-  byCategory: {"hand-rolled-dropdown":3,"deprecated-shim":2,"lozenge-duplicate":1},
-  bySeverity: {"P0":3,"P1":2,"P2":1},
-  generatedAt: '2026-05-17T15:07:50.204Z',
+  total: 13,
+  byCategory: {"hand-rolled-dropdown":3,"deprecated-shim":2,"lozenge-duplicate":8},
+  bySeverity: {"P0":3,"P1":2,"P2":8},
+  generatedAt: '2026-07-09T12:38:23.611Z',
 };

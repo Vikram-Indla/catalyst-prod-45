@@ -23,6 +23,7 @@ import { RouteRoleGuard } from "../components/RouteRoleGuard";
 const GovernanceSettings = lazy(() => import("../pages/admin/GovernanceSettings"));
 const AdminIconsPage = lazy(() => import("../pages/admin/icons/AdminIconsPage"));
 const AdminAvatarsPage = lazy(() => import("../pages/admin/avatars/AdminAvatarsPage"));
+const ComponentsAdminPage = lazy(() => import("../pages/admin/components/ComponentsAdminPage"));
 const RoutingTaxonomyPageLazy = lazy(() => import("../pages/admin/RoutingTaxonomyPage"));
 const WorkListPageLazy = lazy(() => import("../modules/project-work-hub/pages/BacklogPage.atlaskit"));
 
@@ -995,6 +996,7 @@ export default function FullAppRoutes() {
           {/* RESET ICONS — runtime asset override management. Admin-only. */}
           <Route path="icons" element={<S><AdminIconsPage /></S>} />
           <Route path="avatars" element={<S><AdminAvatarsPage /></S>} />
+          <Route path="components" element={<S><ComponentsAdminPage /></S>} />
           <Route path="routing-taxonomy" element={<S><RoutingTaxonomyPageLazy /></S>} />
           <Route path="resources" element={<S><RouteRoleGuard><ResourceListingPageLazy /></RouteRoleGuard></S>} />
           <Route path="resources/:resourceId" element={<S><RouteRoleGuard><R360MemberDetailLazy /></RouteRoleGuard></S>} />

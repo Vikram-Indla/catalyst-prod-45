@@ -11,6 +11,18 @@
 export type SummaryType = 'progress' | 'blockers' | 'eta' | 'full';
 
 /**
+ * Optional explicit item-set narrowing, additive to the summaryType-derived
+ * scope. 'all' (or omitted) applies no additional narrowing.
+ */
+export type ItemScope = 'all' | 'in_progress' | 'blocked' | 'due_soon';
+
+/**
+ * Optional explicit recency/sprint narrowing. 'all_time' (or omitted)
+ * applies no additional narrowing.
+ */
+export type TimePeriod = 'last_7_days' | 'last_14_days' | 'last_30_days' | 'current_sprint' | 'all_time';
+
+/**
  * Recipient role — mirrors the app_role enum from the access management module.
  * Used by the edge function to tailor tone, detail level, and framing.
  */
@@ -36,6 +48,10 @@ export interface WhatsAppSummaryOptions {
   summaryType: SummaryType;
   recipientRole: RecipientRole;
   maxItems: number; // enforced by context builder (cap: 30)
+  /** Additive narrowing on top of the summaryType-derived scope. Defaults to 'all'. */
+  itemScope?: ItemScope;
+  /** Additive recency/sprint narrowing. Defaults to 'all_time'. */
+  timePeriod?: TimePeriod;
 }
 
 // ── Item shape sent to the AI ─────────────────────────────────────────────────
