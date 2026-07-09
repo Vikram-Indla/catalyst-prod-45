@@ -17,7 +17,11 @@
 - Apply path: **Supabase MCP connector** (token is staging-scoped; prod invisible). Repo checkout is NOT linked — keep it that way; do not `supabase link` the shared checkout.
 - pgvector 0.8.0 enabled. All probe rows cleaned up. Key sequence currently at IDEA-2 (gap-tolerant; probes consumed 1–2).
 
-## Next: S3 — Seeds (per 03_PLAN_LOCK_PHASE1.md)
+## Commits (this session)
+- **S3** `b8b865fea` — Scoring models, workflow, guards, notifications, admin roles
+- **S4** (staged, ready) — Feature flag + HubSwitcher update
+
+## Next: S5 — Shell + Routes
 1. Ideation workflow in `ph_wf_*` (states per discovery-03 §4: draft→submitted→screening→evaluation→decided(+approved/declined/parked/merged)→converted→delivered) — **discover ph_wf_* table shapes first** (src/lib/workflow/canonical/runtime.ts + ph_wf migrations).
 2. Register 3 guards in GUARD_EVIDENCE_REGISTRY (runtime.ts:19-47): `strategy_link_present`, `scores_complete`, `duplicate_review_complete` — registry is TS code, check whether guards also need DB rows.
 3. IdeationHub notification triggers (10 events, discovery-03 §8) — discover notification_trigger_config seed format (notificationTriggerService.ts + 20260704* migrations); quiet defaults: P3/P4 in-app only (04 §I.8).

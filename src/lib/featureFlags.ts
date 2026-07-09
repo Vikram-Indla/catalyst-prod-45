@@ -82,3 +82,11 @@ export const ENABLE_FILTER_WHATSAPP_AI_SUMMARY =
  * Set VITE_VOICE_DICTATION_ENABLED=true to enable locally.
  */
 export const ENABLE_VOICE_DICTATION = import.meta.env.VITE_VOICE_DICTATION_ENABLED === 'true';
+
+/**
+ * Ideation module — greenfield rebuild (CAT-IDEATION-REBUILD-20260709-001).
+ * Defaults to FALSE (Phase 1 dark launch: routes-only decommission, DB/component keep).
+ * Decoupled from ENABLE_AI — idea submission and triage work without AI.
+ * Set VITE_ENABLE_IDEATION=true to expose /ideation/* for flagged users.
+ */
+export const ENABLE_IDEATION = import.meta.env.VITE_ENABLE_IDEATION === 'true';

@@ -250,17 +250,24 @@ BEGIN
   ON CONFLICT DO NOTHING;
 END $$;
 
+-- ---------- Admin Nav Module (ideation) --------------------------------
+-- Register ideation as a navigable module in admin console (enables role-based access control).
+
+INSERT INTO public.admin_nav_modules (key, label, description, icon_name, is_active, requires_auth)
+VALUES ('ideation', 'Ideation', 'Idea intake and governance (CAT-IDEATION-REBUILD-20260709-001)', 'lightbulb', true, true)
+ON CONFLICT (key) DO NOTHING;
+
 -- ---------- Admin Role Module Permissions (ideation module defaults) ----
 -- Register roles in admin_role_module_permissions per D8 governance.
 -- Replicate the pattern from other modules (e.g., strata, product):
 -- SuperAdmin = all, Admin = config, Reviewer = triage/score, Submitter = read.
 
 INSERT INTO public.admin_role_module_permissions
-  (module_key, role_level, can_create, can_edit, can_delete, can_publish, can_manage_access, description)
+  (role_code, module_key, access_level)
 VALUES
-  ('ideation', 'superadmin', true, true, true, true, true, 'Full access: ideation admin control, config publish, access management'),
-  ('ideation', 'admin', true, true, false, false, false, 'Ideation Admin: config scoring models (draft), manage intake settings, AI toggles'),
-  ('ideation', 'reviewer', false, true, false, false, false, 'Reviewer: triage, assign ownership, score ideas, propose merges, decline/park'),
-  ('ideation', 'approver', false, true, false, true, false, 'Approver: approve ideas, convert to BR, reopen declined/parked'),
-  ('ideation', 'user', false, false, false, false, false, 'Submitter: create ideas, comment, vote, view non-private ideas')
-ON CONFLICT (module_key, role_level) DO NOTHING;
+  ('superadmin', 'ideation', 'full'),
+  ('admin', 'ideation', 'full'),
+  ('reviewer', 'ideation', 'full'),
+  ('approver', 'ideation', 'full'),
+  ('user', 'ideation', 'view')
+ON CONFLICT (role_code, module_key) DO NOTHING;
