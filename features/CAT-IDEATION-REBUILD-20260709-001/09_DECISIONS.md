@@ -14,6 +14,10 @@
 | D8 | 2026-07-09 | Scoring-model publish: Ideation Admin publishes, SuperAdmin approves (GovernedEnvelope) | Vikram | ✅ Decided |
 | D9 | 2026-07-09 | 5 non-canonical components approved: vote-with-importance control, AI suggestion card, portfolio field chart (recharts), guard checklist, phone card-list — Atlaskit primitives + ADS tokens only | Vikram | ✅ Decided |
 
+| D10 | 2026-07-09 | DRIFT-001 fix (a): notification_trigger_config seeds wrapped in conditional DO block — skip with NOTICE where table absent (staging); applies where it exists (prod). Staging exit-criterion "notification triggers present" waived, documented | Vikram | ✅ Decided |
+| D11 | 2026-07-09 | DRIFT-001 fix (b): admin_role_module_permissions for 'ideation' uses real product_roles codes — full: super_admin, product_owner, technical_po, pmo, delivery_manager, project_manager, business_analyst; view: all other roles (INSERT…SELECT from product_roles) | Vikram | ✅ Decided |
+| D12 | 2026-07-09 | DRIFT-001 fix (c): admin_nav_modules row = group 'core', nav_type 'main', sort_order 8 (mirrors workhub); ph_workflow_templates.work_item_type = 'Idea' | Vikram | ✅ Decided |
+
 Documented design departures (from Mobbin evidence, 05 K-delta): 2-pane Inbox (not Intercom 4-pane); suggestion-ledger-first Copilot (not chat-first); labeled quadrants (not free field); one-modal merge (not Salesforce 2-step); winner-takes merge V1 (per-field = P2).
 
 **Phase 0 status: ✅ EXITED 2026-07-09.** Next gate: Phase 1 Plan Lock approval (03_PLAN_LOCK_PHASE1.md).

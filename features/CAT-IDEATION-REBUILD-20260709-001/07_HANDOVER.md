@@ -21,20 +21,20 @@
 - **S3** `b8b865fea` — Scoring models, workflow, guards, notifications, admin roles (migration + guards registry)
 - **S4** `55725710f` — Feature flag (VITE_ENABLE_IDEATION), HubSwitcher update, admin nav/roles in S3 migration
 
-## Status
-- **S3–S4**: Code complete. Ready for staging migration apply + validation.
-- **S5**: Detailed plan created (`sessions/003_s5_shell_routes_plan.md`). Ready for implementation.
+## Status (updated session 004, 2026-07-09)
+- **S3**: ✅ APPLIED to staging + validated (12/12 probes, 06_VALIDATION_EVIDENCE.md) — after DRIFT-001 fix. The committed migration had 4 schema mismatches (wrong table `ph_wf_templates`, missing `notification_trigger_config`, wrong `admin_nav_modules` columns, non-existent role codes). Amended per D10–D12 (09_DECISIONS.md). **Amended migration file + feature docs not yet committed — commit approval pending.**
+- **S4**: Code complete (committed `55725710f`); DB side now live via S3.
+- **S5**: Not started. Plan at `sessions/003_s5_shell_routes_plan.md`.
 
 ## Handoff to Next Session
 
 **Immediate next steps**:
-1. Apply S3 migration to staging (cyijbdeuehohvhnsywig) via Supabase MCP
-2. Verify: scoring models, workflow, guards in DB (see validation script in S3 session log)
-3. Implement S5 per `sessions/003_s5_shell_routes_plan.md` (routes, scaffold, shell integration)
-4. Local smoke test (VITE_ENABLE_IDEATION=true) + flag-off validation
-5. Staging readiness review + Phase 2 Plan Lock planning
+1. Commit the S3 amendment (supabase/migrations/20260709160000_idn_seeds_phase1.sql + feature-folder docs) — needs Vikram file-list + message approval per COMMIT GATE
+2. Implement S5 per `sessions/003_s5_shell_routes_plan.md` (routes, scaffold, shell integration, legacy route-mount removal per D1)
+3. Local smoke test (VITE_ENABLE_IDEATION=true) + flag-off validation
+4. Staging readiness review + Phase 2 Plan Lock planning
 
-**Known blockers**: None. S3 migration is idempotent; S4 is fully compatible with existing nav architecture.
+**Known blockers**: None. D10 note: staging exit-criterion "notification triggers present" is waived (table absent on staging; conditional seed applies where it exists).
 
 ## Next: S5 — Shell + Routes
 1. Ideation workflow in `ph_wf_*` (states per discovery-03 §4: draft→submitted→screening→evaluation→decided(+approved/declined/parked/merged)→converted→delivered) — **discover ph_wf_* table shapes first** (src/lib/workflow/canonical/runtime.ts + ph_wf migrations).

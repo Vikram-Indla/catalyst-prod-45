@@ -99,11 +99,14 @@ DECLARE
   v_version  uuid;
   v_scheme   uuid;
 BEGIN
-  -- Use the existing template or create one (templates organize related workflows)
-  SELECT id INTO v_template FROM ph_wf_templates WHERE name='Ideation' LIMIT 1;
+  -- Use the existing template or create one (templates organize related workflows).
+  -- Real table is ph_workflow_templates (ph_wf_versions.template_id FK); work_item_type
+  -- is NOT NULL — 'Idea' per D12.
+  SELECT id INTO v_template FROM ph_workflow_templates
+   WHERE name='Ideation' AND work_item_type='Idea' LIMIT 1;
   IF v_template IS NULL THEN
-    INSERT INTO ph_wf_templates(name, description)
-    VALUES ('Ideation', 'Ideation module workflow templates')
+    INSERT INTO ph_workflow_templates(name, work_item_type, description)
+    VALUES ('Ideation', 'Idea', 'Ideation module workflow templates')
     RETURNING id INTO v_template;
   END IF;
 
@@ -172,23 +175,35 @@ END $$;
 
 -- ---------- Notification Trigger Config (IdeationHub event set per 03 §8) ----
 -- Quiet defaults: P3/P4 in-app only per 04 §I.8.
+-- D10 (DRIFT-001): notification_trigger_config exists on prod but not staging and no
+-- committed migration creates it. Seed conditionally — skip with NOTICE where absent.
+-- PL/pgSQL plans a statement only when first reached, so the early RETURN keeps the
+-- INSERT unresolved on environments without the table.
 
-INSERT INTO public.notification_trigger_config
-  (trigger_key, hub_source, category, priority, description, recipients_config, channels_config, default_enabled)
-VALUES
-  -- §8: 10 events
-  ('idea_submitted', 'IdeationHub', 'product_ideas', 'P2', 'An idea enters the Inbox queue', '["triage_queue_owners"]'::jsonb, '["in_app"]'::jsonb, true),
-  ('idea_triage_assigned', 'IdeationHub', 'product_ideas', 'P2', 'Idea ownership assigned during screening', '["assigned_triage_owner"]'::jsonb, '["in_app"]'::jsonb, true),
-  ('idea_status_changed', 'IdeationHub', 'product_ideas', 'P3', 'Idea status changes (→ Screening/Evaluation)', '["submitter", "watchers"]'::jsonb, '["in_app"]'::jsonb, true),
-  ('idea_comment_added', 'IdeationHub', 'product_ideas', 'P2', 'Comment posted on an idea', '["mentioned_users", "submitter", "watchers"]'::jsonb, '["in_app"]'::jsonb, true),
-  ('idea_mentioned', 'IdeationHub', 'product_ideas', 'P2', 'User @mentioned in idea comment', '["mentioned_users"]'::jsonb, '["in_app"]'::jsonb, true),
-  ('idea_vote_milestone', 'IdeationHub', 'product_ideas', 'P4', 'Idea reaches vote milestones (10/25/50)', '["submitter"]'::jsonb, '["in_app"]'::jsonb, true),
-  ('idea_decision', 'IdeationHub', 'product_ideas', 'P2', 'Idea decided (approved/declined/parked with reason)', '["submitter", "watchers"]'::jsonb, '["in_app"]'::jsonb, true),
-  ('idea_merged', 'IdeationHub', 'product_ideas', 'P2', 'Idea merged into another (both submitters notify)', '["submitter", "target_submitter"]'::jsonb, '["in_app"]'::jsonb, true),
-  ('idea_converted', 'IdeationHub', 'product_ideas', 'P2', 'Idea converted to Business Request', '["submitter", "voters", "watchers"]'::jsonb, '["in_app"]'::jsonb, true),
-  ('idea_delivered', 'IdeationHub', 'product_ideas', 'P2', 'Linked BR reaches terminal (loop-closer)', '["submitter", "voters"]'::jsonb, '["in_app"]'::jsonb, true),
-  ('idea_ai_suggestions_ready', 'IdeationHub', 'product_ideas', 'P4', 'AI suggestions ready for review', '["triage_owner"]'::jsonb, '["in_app"]'::jsonb, true)
-ON CONFLICT (trigger_key, hub_source) DO NOTHING;
+DO $$
+BEGIN
+  IF to_regclass('public.notification_trigger_config') IS NULL THEN
+    RAISE NOTICE 'notification_trigger_config absent — skipping IdeationHub trigger seeds (D10)';
+    RETURN;
+  END IF;
+
+  INSERT INTO public.notification_trigger_config
+    (trigger_key, hub_source, category, priority, description, recipients_config, channels_config, default_enabled)
+  VALUES
+    -- §8: 10 events (+ AI-ready)
+    ('idea_submitted', 'IdeationHub', 'product_ideas', 'P2', 'An idea enters the Inbox queue', '["triage_queue_owners"]'::jsonb, '["in_app"]'::jsonb, true),
+    ('idea_triage_assigned', 'IdeationHub', 'product_ideas', 'P2', 'Idea ownership assigned during screening', '["assigned_triage_owner"]'::jsonb, '["in_app"]'::jsonb, true),
+    ('idea_status_changed', 'IdeationHub', 'product_ideas', 'P3', 'Idea status changes (→ Screening/Evaluation)', '["submitter", "watchers"]'::jsonb, '["in_app"]'::jsonb, true),
+    ('idea_comment_added', 'IdeationHub', 'product_ideas', 'P2', 'Comment posted on an idea', '["mentioned_users", "submitter", "watchers"]'::jsonb, '["in_app"]'::jsonb, true),
+    ('idea_mentioned', 'IdeationHub', 'product_ideas', 'P2', 'User @mentioned in idea comment', '["mentioned_users"]'::jsonb, '["in_app"]'::jsonb, true),
+    ('idea_vote_milestone', 'IdeationHub', 'product_ideas', 'P4', 'Idea reaches vote milestones (10/25/50)', '["submitter"]'::jsonb, '["in_app"]'::jsonb, true),
+    ('idea_decision', 'IdeationHub', 'product_ideas', 'P2', 'Idea decided (approved/declined/parked with reason)', '["submitter", "watchers"]'::jsonb, '["in_app"]'::jsonb, true),
+    ('idea_merged', 'IdeationHub', 'product_ideas', 'P2', 'Idea merged into another (both submitters notify)', '["submitter", "target_submitter"]'::jsonb, '["in_app"]'::jsonb, true),
+    ('idea_converted', 'IdeationHub', 'product_ideas', 'P2', 'Idea converted to Business Request', '["submitter", "voters", "watchers"]'::jsonb, '["in_app"]'::jsonb, true),
+    ('idea_delivered', 'IdeationHub', 'product_ideas', 'P2', 'Linked BR reaches terminal (loop-closer)', '["submitter", "voters"]'::jsonb, '["in_app"]'::jsonb, true),
+    ('idea_ai_suggestions_ready', 'IdeationHub', 'product_ideas', 'P4', 'AI suggestions ready for review', '["triage_owner"]'::jsonb, '["in_app"]'::jsonb, true)
+  ON CONFLICT DO NOTHING;
+END $$;
 
 -- ---------- Ideation Workflow Transition Roles + Guards (S3) -----------
 -- Role assignments and guard prerequisites per transition.
@@ -251,23 +266,23 @@ BEGIN
 END $$;
 
 -- ---------- Admin Nav Module (ideation) --------------------------------
--- Register ideation as a navigable module in admin console (enables role-based access control).
+-- Register ideation as a navigable module (useModuleAccess/ModuleGuard read module_key).
+-- D12: top-level hub — mirrors workhub (group 'core', nav_type 'main', sort after workhub=7).
 
-INSERT INTO public.admin_nav_modules (key, label, description, icon_name, is_active, requires_auth)
-VALUES ('ideation', 'Ideation', 'Idea intake and governance (CAT-IDEATION-REBUILD-20260709-001)', 'lightbulb', true, true)
-ON CONFLICT (key) DO NOTHING;
+INSERT INTO public.admin_nav_modules (module_key, name, description, group_name, nav_type, sort_order, is_active)
+VALUES ('ideation', 'Ideation', 'Idea intake and governance (CAT-IDEATION-REBUILD-20260709-001)', 'core', 'main', 8, true)
+ON CONFLICT (module_key) DO NOTHING;
 
 -- ---------- Admin Role Module Permissions (ideation module defaults) ----
--- Register roles in admin_role_module_permissions per D8 governance.
--- Replicate the pattern from other modules (e.g., strata, product):
--- SuperAdmin = all, Admin = config, Reviewer = triage/score, Submitter = read.
+-- D11: role_code values come from product_roles.code (job-function vocabulary).
+-- full = product/portfolio administration family; view = everyone else (anyone can
+-- submit/vote per design). D8's submitter/reviewer/approver live in
+-- ph_wf_transition_roles above, not here.
 
-INSERT INTO public.admin_role_module_permissions
-  (role_code, module_key, access_level)
-VALUES
-  ('superadmin', 'ideation', 'full'),
-  ('admin', 'ideation', 'full'),
-  ('reviewer', 'ideation', 'full'),
-  ('approver', 'ideation', 'full'),
-  ('user', 'ideation', 'view')
+INSERT INTO public.admin_role_module_permissions (role_code, module_key, access_level)
+SELECT pr.code, 'ideation',
+  CASE WHEN pr.code IN ('super_admin','product_owner','technical_po','pmo','delivery_manager','project_manager','business_analyst')
+       THEN 'full' ELSE 'view' END
+FROM public.product_roles pr
+WHERE pr.code IS NOT NULL
 ON CONFLICT (role_code, module_key) DO NOTHING;
