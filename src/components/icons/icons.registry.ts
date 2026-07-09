@@ -368,12 +368,12 @@ export function pickStockAvatarForKey(projectKey: string): StockAvatarId {
 // ═══════════════════════════════════════════════════════════════════════
 
 export type HubKey =
-  | 'home' | 'strategy' | 'ideation' | 'product' | 'project'
+  | 'home' | 'strata' | 'ideation' | 'product' | 'project'
   | 'release' | 'test' | 'incident' | 'task' | 'wiki' | 'docex';
 
 export const HUB_ICON_REGISTRY: Record<HubKey, string> = {
   home:     hubHomeUrl,
-  strategy: hubStrategyUrl,
+  strata:   hubStrategyUrl,
   ideation: hubIdeationUrl,
   product:  hubProductUrl,
   project:  hubProjectUrl,
@@ -388,7 +388,7 @@ export const HUB_ICON_REGISTRY: Record<HubKey, string> = {
 
 export const HUB_ICON_OUTLINE_REGISTRY: Record<HubKey, string> = {
   home:     hubHomeOutlineUrl,
-  strategy: hubStrategyOutlineUrl,
+  strata:   hubStrategyOutlineUrl,
   ideation: hubIdeationOutlineUrl,
   product:  hubProductOutlineUrl,
   project:  hubProjectOutlineUrl,
