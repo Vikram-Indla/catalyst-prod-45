@@ -757,7 +757,7 @@ export default defineConfig(({ mode, command }) => {
     reportCompressedSize: false,
     rollupOptions: {
       maxParallelFileOps: 3,
-      external: ['@atlaskit/media-core'],
+      external: ['@atlaskit/media-core', '@atlassian/assets-workspace-host', '@atlassian/conversation-assistant-external-context'],
       output: {
         manualChunks(id) {
           // Stable vendor chunks for better long-term caching
