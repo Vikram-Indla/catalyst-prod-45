@@ -23,7 +23,7 @@ interface EnterpriseSidebarProps {
   className?: string;
 }
 
-const strataSidebarConfig: SidebarConfig = {
+export const strataSidebarConfig: SidebarConfig = {
   badge: 'ST',
   label: 'STRATA',
   // Four canonical areas under the Strategy Cycle (locked STRATA hierarchy,
