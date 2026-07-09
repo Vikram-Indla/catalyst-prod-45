@@ -104,6 +104,7 @@ import { useRecordProjectVisit } from "@/hooks/home/useRecentProjects";
 import { useCatalystTitle } from "@/hooks/useCatalystTitle";
 import { derivePageFromPath } from "@/lib/tabIdentity";
 import { usePresenceHeartbeat } from "@/hooks/usePresenceHeartbeat";
+import { ENABLE_IDEATION } from "@/lib/featureFlags";
 
 // ─── Lazy-loaded sidebars (only the active one loads into memory) ────
 const UnifiedSidebar = lazyWithRetry(
@@ -239,7 +240,7 @@ const JIRA_CANVAS_BG =
 const HUB_ROUTES: Record<string, string> = {
   home: '/for-you',
   strategy: '/strata',
-  ideation: '/ideation/backlog',
+  ideation: '/ideation',
   product: '/product-hub',
   project: '/project-hub',
   release: '/release-hub/overview',
@@ -417,7 +418,9 @@ function CatalystShellContent() {
   // because the latter previously caught /product/ideas/* — those URLs now
   // redirect to /ideation/*, but the redirect is a transient state and we
   // want IdeationSidebar to render the moment the new URL lands.
-  const isIdeationRoute = location.pathname.startsWith("/ideation");
+  // Gated on ENABLE_IDEATION: flag off ⇒ /ideation 404s with no ideation
+  // sidebar leak (CAT-IDEATION-REBUILD-20260709-001 "no nav trace").
+  const isIdeationRoute = ENABLE_IDEATION && location.pathname.startsWith("/ideation");
   const isProductRoute =
     !isIdeationRoute &&
     (location.pathname.startsWith("/producthub") ||

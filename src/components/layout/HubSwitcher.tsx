@@ -36,6 +36,7 @@ import SearchIcon from '@atlaskit/icon/glyph/search';
 import { MenuGroup, LinkItem, Section } from '@atlaskit/menu';
 import { useHubShortcuts } from '@/hooks/useHubShortcuts';
 import { useModuleAccess } from '@/hooks/useModuleAccess';
+import { ENABLE_IDEATION } from '@/lib/featureFlags';
 
 import {
   DropdownMenu,
@@ -78,6 +79,10 @@ const HUBS: DeprecatedHubEntry[] = [
   { key: 'task',     label: 'Tasks',    href: '/tasks/overview',             section: 'build_ship', tone: 'yellow',  shortcut: '9', moduleKey: 'planner' },
   { key: 'docex',    label: 'Folio',    href: '/folio',                      section: 'knowledge',  tone: 'purple',  shortcut: '-', moduleKey: 'docex' },
 ];
+
+// Ideation ships behind VITE_ENABLE_IDEATION (CAT-IDEATION-REBUILD-20260709-001).
+// Flag off ⇒ no tile, no ⌘3 target — DB module access alone must not surface it.
+const VISIBLE_HUBS = HUBS.filter((h) => h.key !== 'ideation' || ENABLE_IDEATION);
 
 const SECTIONS: { key: SectionKey; title: string }[] = [
   { key: 'discover',   title: 'Discover' },
@@ -161,7 +166,7 @@ export function HubSwitcher() {
   const isAccessible = (hub: HubEntry) => accessLoading || canViewInNav(hub.moduleKey);
 
   const shortcutTargets = useMemo(
-    () => HUBS.filter((h) => accessLoading || canViewInNav(h.moduleKey)).map((h) => ({ key: h.shortcut, hubKey: h.key, href: h.href })),
+    () => VISIBLE_HUBS.filter((h) => accessLoading || canViewInNav(h.moduleKey)).map((h) => ({ key: h.shortcut, hubKey: h.key, href: h.href })),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [accessLoading, canViewInNav],
   );
@@ -191,7 +196,7 @@ export function HubSwitcher() {
   // Show ALL hubs (subject only to the search filter) — the full module
   // catalogue is always visible; inaccessible hubs render grayed-out below.
   const hubsBySection = (key: SectionKey) =>
-    HUBS.filter((h) => h.section === key && matches(h));
+    VISIBLE_HUBS.filter((h) => h.section === key && matches(h));
 
   return (
     <DropdownMenu open={open} onOpenChange={setOpen}>

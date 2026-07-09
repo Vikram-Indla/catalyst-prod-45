@@ -297,6 +297,29 @@ export const docintelRoutes = {
 };
 
 // ---------------------------------------------------------------------------
+// Ideation (CAT-IDEATION-REBUILD-20260709-001) — greenfield module behind
+// VITE_ENABLE_IDEATION. Inbox-first landing (design 04 §C.1).
+// ---------------------------------------------------------------------------
+
+export const ideationRoutes = {
+  root: () => '/ideation',
+  inbox: () => '/ideation',
+  explore: () => '/ideation/explore',
+  portfolio: () => '/ideation/portfolio',
+  // slug is the frozen idn_ideas.slug — no UUID in the URL
+  idea: (slug: string) => `/ideation/ideas/${slug}`,
+  submit: () => '/ideation/submit',
+  admin: {
+    root: () => '/admin/ideation',
+    scoring: () => '/admin/ideation/scoring',
+    workflow: () => '/admin/ideation/workflow',
+    intake: () => '/admin/ideation/intake',
+    ai: () => '/admin/ideation/ai',
+    roles: () => '/admin/ideation/roles',
+  },
+};
+
+// ---------------------------------------------------------------------------
 // Admin
 // ---------------------------------------------------------------------------
 
@@ -333,4 +356,5 @@ export const Routes = {
   admin: adminRoutes,
   strata: strataRoutes,
   docintel: docintelRoutes,
+  ideation: ideationRoutes,
 } as const;

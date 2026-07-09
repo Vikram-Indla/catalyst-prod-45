@@ -62,3 +62,28 @@ Notes: G1 first attempt failed on `created_by NOT NULL` (definer context has nul
 | admin_nav_modules | PASS: ideation → core/main, sort 8 (D12) |
 | admin_role_module_permissions | PASS: 26 rows — full=7, view=19 (D11 exactly) |
 | notification_trigger_config | SKIPPED with NOTICE (table absent on staging — D10 waiver; seeds will apply where table exists) |
+
+## S5 — shell + routes (no migration) · localhost:8080 · 2026-07-09 · session 005
+
+**Gates**: `lint:colors:gate` ✅ 0/0 · `audit:ads:gate` ✅ (ratcheted down: tokens 22469→22293, typography 1427→1405) · `npm run build` ✅ exit 0 (twice: post-scaffold, post-nav-gate-fix) · legacy-route grep clean (comments only).
+
+**Flag-ON probes (VITE_ENABLE_IDEATION=true, signed in)**:
+| Route/surface | Outcome |
+|---|---|
+| /ideation (Inbox) | PASS — sidebar + HubPageHeader + ADS EmptyState, CTAs navigate (dark ss_0183geriy, light ss_61807z6zc) |
+| /ideation/explore | PASS (ss_2697265jw) |
+| /ideation/portfolio | PASS (ss_3218o92kk) |
+| /ideation/ideas/:slug | PASS — slug echoed, title derives "Test Slug Probe" (ss_0377wxywc) |
+| /ideation/submit | PASS (text probe; first attempt 404'd only because the checkout had been switched to strata-standalone mid-probe — see session 005 incident note) |
+| /admin/ideation | PASS — renders inside AdminLayout (ss_1523546qe) |
+| HubSwitcher | PASS — Ideation tile + ⌘3 under Discover; tile click navigates to /ideation (ss_5260uaq0q) |
+| Console | Clean — no errors post-restore |
+
+**Flag-OFF probes (server without the env var)**:
+| Surface | Outcome |
+|---|---|
+| /ideation | PASS — 404, NO ideation sidebar (leak fixed this session; ss_3601wtyyi) |
+| HubSwitcher | PASS — no tile, ⌘ chips skip 3 (ss_4454qq2qc) |
+| Home surfaces | PASS — no trace (ss_1770ulmrs) |
+
+**Known env limitation**: vitest cannot start locally (rolldown `styleText` array arg vs Node 20.12) — pre-existing, affects all suites; HubSwitcher suite (updated hrefs + pinned flag mock) runs in CI.
