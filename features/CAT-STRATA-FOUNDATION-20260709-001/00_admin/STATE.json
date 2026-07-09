@@ -4,7 +4,7 @@
   "feature_work_id": "CAT-STRATA-FOUNDATION-20260709-001",
   "mode": "deep-discovery",
   "stage": 6,
-  "step": "BUILD in progress on strata-standalone worktree: W1(3fd850c) W2(ed69742) W3-labels(a28bb0f) W4a-Astryx(a465022) delivered+pushed; migrations authored NOT applied",
+  "step": "BUILD: W1+W2+W3-labels+W4a/b/c delivered & pushed (10 commits on strata-standalone). Tests 10/10, tsc clean, gates at baseline. Migrations authored NOT applied.",
   "gates": {
     "R1": "approved 2026-07-09 by user 'approved' reply \u2014 workspace = features/CAT-STRATA-FOUNDATION-20260709-001/, deep-discovery, repo-evidence-first, 0 web budget, no code changes",
     "R2": "approved 2026-07-09 (resume session, structured question): CON-001 full rename incl. DB; CON-002 decommission+migrate (amendment A1); CON-003 strata-standalone branch + /strata IA; CON-006 delete Astryx + update CLAUDE.md",
@@ -23,6 +23,6 @@
     "mode_cap_websearches": 0,
     "used_websearches": 0
   },
-  "next_action": "Continue W4 in strata-foundation-wt: REQ-020 seed slice, REQ-021 nav smoke test, REQ-006 landing headers, Command Room depth (KPI bands/value bar/board pack), then REQ-016/022/023 decommission slice (see 08_DRIFT_LOG D-BUILD-001 \u2014 stack is LIVE here); staging apply of 20260709170000/171000 after project-ref check; screenshot acceptance for W1-W3 UI",
+  "next_action": "Next slices (need live app/DB or fresh 2h slice): staging apply of 3 migrations after project-ref check; screenshot/micro-interaction acceptance on running app (Plan Lock AC list); REQ-013 drilldown verify; REQ-006 remaining landings; Command Room visual depth (KPI bands on landings, segmented value bar, board-pack editorial); REQ-016/018/019/022/023 decommission slice (see D-BUILD-001: extract WorkTree pills first)",
   "blocked_on": null
 }
