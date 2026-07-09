@@ -372,6 +372,8 @@ export interface StrataProjectCard {
   source_key: string | null;
   /** The single Strategic Theme this card belongs to by default. Must reference a strata_strategy_elements row with element_type='theme'. */
   theme_id: string | null;
+  /** Linked Strategic Objective (locked rule 5). Theme-context objective; when theme_id is set it must belong to that Theme (DB-validated, REQ-007). */
+  objective_element_id: string | null;
   card_type: string;
   pm_id: string | null;
   business_owner_id: string | null;
