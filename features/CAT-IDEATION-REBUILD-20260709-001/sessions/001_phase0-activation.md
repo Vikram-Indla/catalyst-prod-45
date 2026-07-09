@@ -23,3 +23,6 @@
 
 ## S1 closed — 2026-07-09
 - Committed 0bf86b336 (16 files). Staging apply via Supabase MCP (token staging-scoped; ref screenshot-verified). Ledger aligned 20260709130000. P0 + 8 behavioral RLS probes ALL PASS → 06_VALIDATION_EVIDENCE.md. S1 EXIT COMPLETE. Next: S2 governance schema.
+
+## S2 closed — 2026-07-09
+- Authored + applied 20260709150000_idn_governance_schema.sql (7 enums, scoring models/drivers/scores w/ GovernedEnvelope + single-active index + recompute trigger, AI suggestion ledger w/ decision-attribution CHECK, pgvector embeddings (HNSW, service-role only), idn_conversions (immutable), business_requests.source_idea_id). Ledger aligned. 7/7 probes PASS incl. recompute math = 3.60 exact. Next: S3 seeds (workflow, scoring model v1, notification triggers, role defaults).

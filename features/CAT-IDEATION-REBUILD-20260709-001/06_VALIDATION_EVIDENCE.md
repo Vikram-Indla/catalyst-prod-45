@@ -22,3 +22,22 @@
 | cleanup | done (probe rows removed) |
 
 Notes: key sequence shows IDEA-2 because a first probe transaction rolled back on a temp-table grant (sequences don't roll back — expected, gap-tolerant by design). P2 (parallel-session key race) not executable over a single MCP connection; covered structurally by sequence-based generation + UNIQUE constraint; flagged for the Phase 2 integration test suite.
+
+## S2 — governance schema (20260709150000_idn_governance_schema.sql) · staging · 2026-07-09
+
+**Precondition**: pgvector 0.8.0 already enabled (verified) — HNSW index used.
+**Apply**: `apply_migration` success; ledger aligned to `20260709150000` (1:1).
+
+**Probes** (raw output):
+| Probe | Outcome |
+|---|---|
+| G1 single-active-model unique index (2nd approved model) | PASS: blocked (23505) |
+| G2 score recompute trigger — value 4×0.6 + effort 2 (lower_better → norm 3)×0.4 | PASS: 3.60 |
+| G3 score insert by user without idn role | PASS: blocked (42501) |
+| G4 AI suggestion insert by client (service-role-only ledger) | PASS: blocked (42501) |
+| G5 embeddings invisible to authenticated clients (RLS, no policies) | PASS: 0 rows |
+| G6 conversion insert by non-approver | PASS: blocked (42501) |
+| G7 business_requests.source_idea_id column present | PASS |
+| cleanup | done |
+
+Notes: G1 first attempt failed on `created_by NOT NULL` (definer context has null auth.uid()) before reaching the unique index — re-run with explicit created_by exercised the intended path. Suggestion-decide policy (status transition + decided_by attribution CHECK) exercised structurally via constraint `idn_suggestion_decision_attributed`; behavioral decide-flow probe lands with the Phase 4 copilot tests.
