@@ -163,7 +163,15 @@ describe('adfToTiptap — marks', () => {
       }],
     };
     const text = adfToTiptap(adf).content?.[0].content?.[0];
-    expect(text?.marks).toEqual([{ type: 'textStyle', attrs: { color: 'var(--ds-text-danger, var(--ds-text-danger))' } }]);
+    // 2026-07-09: convertMark's textColor branch is a pure passthrough of
+    // `attrs.color` (see adfToTiptap.ts:84-86) — it does not wrap the value
+    // in its own var() fallback. The old expectation here
+    // (`var(--ds-text-danger, var(--ds-text-danger))`) baked in a
+    // self-referencing-fallback bug pattern that CLAUDE.md's color-token
+    // rules reject elsewhere in this codebase (see the same anti-pattern
+    // documented in assignee-dark-mode.test.tsx); it was never something
+    // this adapter actually produced.
+    expect(text?.marks).toEqual([{ type: 'textStyle', attrs: { color: 'var(--ds-text-danger)' } }]);
   });
 });
 
@@ -267,9 +275,20 @@ describe('adfToTiptap — mediaSingle → image', () => {
         }],
       }],
     };
+    // 2026-07-XX (5b30b664c, image toolbar + display feature): mediaSingle
+    // conversion gained alignment/borderColor/borderSize attrs (defaulted
+    // from the mediaSingle node's layout/border attrs) to support the new
+    // image toolbar. This is an intentional attrs-contract expansion, not a
+    // regression — updated to match.
     expect(adfToTiptap(adf).content?.[0]).toEqual({
       type: 'image',
-      attrs: { src: 'https://x.com/i.png', alt: 'pic' },
+      attrs: {
+        src: 'https://x.com/i.png',
+        alt: 'pic',
+        alignment: 'center',
+        borderColor: null,
+        borderSize: 'medium',
+      },
     });
   });
 });
@@ -483,7 +502,10 @@ describe('tiptapToAdf — marks reverse', () => {
         }],
       }],
     });
-    expect(result.content?.[0].content?.[0].marks).toEqual([{ type: 'textColor', attrs: { color: 'var(--ds-text-danger, var(--ds-text-danger))' } }]);
+    // See forward-direction comment above — tiptapToAdf's textStyle branch
+    // is also a pure passthrough (tiptapToAdf.ts:49-51), so the ADF output
+    // color equals the input, not a self-referencing var() fallback.
+    expect(result.content?.[0].content?.[0].marks).toEqual([{ type: 'textColor', attrs: { color: 'var(--ds-text-danger)' } }]);
   });
 
   it('drops unsupported marks (e.g. smallText) but keeps the text', () => {

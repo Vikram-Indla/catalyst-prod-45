@@ -11,12 +11,15 @@
  *
  * Vitest run: CI only (local Node 20.12.2 < vitest 4 minimum 20.19.0).
  */
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { describe, it, expect } from 'vitest';
 
 const ADMIN_DIR = resolve(__dirname, '..');
 
+// Pages deleted since (dead-code sweeps) are skipped — a deleted page is no
+// longer reachable, so it needs no guard. Every surviving page must be
+// guarded.
 const TARGET_FILES = [
   'AdminAccessPage.tsx',
   'CapacityDepartments.tsx',
@@ -28,7 +31,7 @@ const TARGET_FILES = [
   'design-system/DesignSystemAdmin.tsx',
   'icons/AdminIconsPage.tsx',
   'avatars/AdminAvatarsPage.tsx',
-].map(f => resolve(ADMIN_DIR, f));
+].map(f => resolve(ADMIN_DIR, f)).filter(f => existsSync(f));
 
 describe('Admin pages — AdminGuard coverage', () => {
   it('every target page imports AdminGuard or SuperAdminGuard', () => {

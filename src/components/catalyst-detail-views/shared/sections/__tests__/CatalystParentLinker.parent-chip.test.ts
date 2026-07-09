@@ -22,21 +22,32 @@ import { PARENT_TOKENS_FOR_TEST } from '../CatalystParentLinker';
 const src = readFileSync(resolve(__dirname, '../CatalystParentLinker.tsx'), 'utf-8');
 
 describe('CatalystParentLinker — parent chip canonical parity (Jira probe 2026-05-10)', () => {
-  it('every PARENT_TOKENS entry uses transparent background', () => {
+  // 2026-07-09: the flat "transparent bg + var(--ds-text-subtle) for every
+  // type" contract below was the state right after the 2026-05-10 probe
+  // (eadca308a). It was deliberately superseded twice since: 97e4426e6
+  // ("Match parent linking of catalyst with Jira", 2026-05-21) reintroduced
+  // per-type accent colors, then Vikram's a68171a3e (2026-06-27,
+  // "fix(ads): parent lozenge uses subtle accent tokens, not bold slab")
+  // corrected those to theme-aware ADS `*-subtler` backgrounds + matching
+  // `*-accent-*` text tokens specifically because flat grey didn't
+  // distinguish parent types and a bold slab didn't adapt to dark mode.
+  // That is the current intended contract — asserted here by token shape
+  // (still per-type-agnostic) rather than the old flat literal values.
+  it('every PARENT_TOKENS entry uses a theme-aware ADS *-subtler background token', () => {
     for (const [type, tok] of Object.entries(PARENT_TOKENS_FOR_TEST)) {
       expect(
         tok.bg,
-        `PARENT_TOKENS["${type}"].bg must be "transparent" — got "${tok.bg}"`,
-      ).toBe('transparent');
+        `PARENT_TOKENS["${type}"].bg must be a var(--ds-background-*-subtler) token — got "${tok.bg}"`,
+      ).toMatch(/^var\(--ds-background-(accent-[a-z]+-subtler|surface-sunken)\)$/);
     }
   });
 
-  it('every PARENT_TOKENS entry uses Jira canonical text color var(--ds-text-subtle)', () => {
+  it('every PARENT_TOKENS entry uses a matching ADS accent text token', () => {
     for (const [type, tok] of Object.entries(PARENT_TOKENS_FOR_TEST)) {
       expect(
         tok.text,
-        `PARENT_TOKENS["${type}"].text must be "var(--ds-text-subtle)" — got "${tok.text}"`,
-      ).toBe('var(--ds-text-subtle)');
+        `PARENT_TOKENS["${type}"].text must be a var(--ds-text-accent-*) token — got "${tok.text}"`,
+      ).toMatch(/^var\(--ds-text-accent-[a-z]+\)$/);
     }
   });
 

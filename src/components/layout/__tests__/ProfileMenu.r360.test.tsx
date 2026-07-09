@@ -1,10 +1,18 @@
 /**
  * ProfileMenu — R360 persona-conditional menu item.
  *
- * Contract (this test is the spec — implementation follows):
+ * Original contract (this test was the spec — implementation followed):
  *   - canAccessEnterprise=true           → "Resource 360™"   → /admin/resources
  *   - canAccessEnterprise=false, lead    → "My Team"          → /my-team
  *   - canAccessEnterprise=false, IC      → "My Resource 360°" → /me
+ *
+ * Updated 2026-07-09: ProfileMenu.tsx now documents that the entire Resource
+ * 360 entry was REMOVED 2026-05-31 — "accessible via the For You
+ * 'Resource 360°' tab and via per-row contextual actions" instead. The
+ * three-way persona branch (canAccessEnterprise / useMyLeadProjects /
+ * r360Item) was deleted from the component. This test now pins the current,
+ * post-removal contract: none of the three R360 menu items render from
+ * ProfileMenu, for any persona.
  */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
@@ -46,27 +54,24 @@ const openMenu = async () => {
   await userEvent.click(trigger);
 };
 
-describe('ProfileMenu — R360 persona item', () => {
+describe('ProfileMenu — R360 persona item (removed 2026-05-31)', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  it('shows "Resource 360™" linking to /admin/resources for Manager+', async () => {
+  it('never shows "Resource 360™" for Manager+ — moved to the For You tab', async () => {
     (useUserRole as any).mockReturnValue({ canAccessEnterprise: true, isLoading: false });
     (useMyLeadProjects as any).mockReturnValue({ projects: [], isLoading: false });
 
     renderMenu();
     await openMenu();
 
-    const item = screen.getByRole('menuitem', { name: /resource 360™/i });
-    expect(item).toBeInTheDocument();
+    expect(screen.queryByRole('menuitem', { name: /resource 360™/i })).not.toBeInTheDocument();
     expect(screen.queryByRole('menuitem', { name: /my team/i })).not.toBeInTheDocument();
     expect(screen.queryByRole('menuitem', { name: /my resource 360°/i })).not.toBeInTheDocument();
-
-    await userEvent.click(item);
   });
 
-  it('shows "My Team" linking to /my-team for a Lead with no enterprise access', async () => {
+  it('never shows "My Team" for a Lead with no enterprise access', async () => {
     (useUserRole as any).mockReturnValue({ canAccessEnterprise: false, isLoading: false });
     (useMyLeadProjects as any).mockReturnValue({
       projects: [{ id: 'proj-aaa', key: 'BAU' }],
@@ -76,19 +81,19 @@ describe('ProfileMenu — R360 persona item', () => {
     renderMenu();
     await openMenu();
 
-    expect(screen.getByRole('menuitem', { name: /my team/i })).toBeInTheDocument();
+    expect(screen.queryByRole('menuitem', { name: /my team/i })).not.toBeInTheDocument();
     expect(screen.queryByRole('menuitem', { name: /resource 360™/i })).not.toBeInTheDocument();
     expect(screen.queryByRole('menuitem', { name: /my resource 360°/i })).not.toBeInTheDocument();
   });
 
-  it('shows "My Resource 360°" linking to /me for an IC', async () => {
+  it('never shows "My Resource 360°" for an IC', async () => {
     (useUserRole as any).mockReturnValue({ canAccessEnterprise: false, isLoading: false });
     (useMyLeadProjects as any).mockReturnValue({ projects: [], isLoading: false });
 
     renderMenu();
     await openMenu();
 
-    expect(screen.getByRole('menuitem', { name: /my resource 360°/i })).toBeInTheDocument();
+    expect(screen.queryByRole('menuitem', { name: /my resource 360°/i })).not.toBeInTheDocument();
     expect(screen.queryByRole('menuitem', { name: /my team/i })).not.toBeInTheDocument();
     expect(screen.queryByRole('menuitem', { name: /resource 360™/i })).not.toBeInTheDocument();
   });

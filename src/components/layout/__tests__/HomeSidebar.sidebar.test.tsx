@@ -96,9 +96,16 @@ describe('HomeSidebar — space-grouped Recents', () => {
   });
 
   it('renders the project name in the space group header', () => {
+    // 2026-06-19 "KEY · Type" de-noise decision (HomeSidebar.tsx SpaceGroupHeader):
+    // space-scoped headers show the short projectKey ("BAU") + "· Project" inline,
+    // with the full project name ("Senaei BAU") carried as the `title` tooltip
+    // rather than as visible text. Assertion updated from the pre-decision
+    // "Senaei BAU" visible-text expectation to match current behavior.
     render(<HomeSidebar />, { wrapper });
     const header = screen.getByTestId('section-header');
-    expect(within(header).getByText('Senaei BAU')).toBeTruthy();
+    expect(within(header).getByTitle('Senaei BAU')).toBeTruthy();
+    expect(within(header).getByText('BAU')).toBeTruthy();
+    expect(within(header).getByText('Project', { exact: false })).toBeTruthy();
   });
 
   it('passes projectKey to the canonical ProjectIcon (no letter tile)', () => {

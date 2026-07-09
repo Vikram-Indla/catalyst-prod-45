@@ -15,9 +15,20 @@ const SRC = readFileSync(resolve(__dirname, '../HomeSidebar.tsx'), 'utf8');
 
 describe('expanded Home sidebar — functional icons are neutral', () => {
   it('SectionIconWrapper defaults to the neutral subtle ink, never a brand/blue accent', () => {
-    expect(SRC).toMatch(/primaryColor=\{color \?\? 'var\(--ds-text-subtle, var(--ds-icon, var(--ds-icon))\)'\}/);
-    // no brand/blue literal feeding the functional glyph default
-    expect(SRC).not.toMatch(/icon-brand|var(--ds-link)|var(--ds-link, var(--ds-link))/i);
+    // Updated 2026-07-09: fallback chain was simplified from a nested
+    // token cascade to a single neutral token — assertion updated to match
+    // the current string while still pinning the neutral-only contract.
+    expect(SRC).toMatch(/primaryColor=\{color \?\? 'var\(--ds-text-subtle\)'\}/);
+
+    // Scope the "no brand/blue accent" check to the SectionIconWrapper
+    // function body only. The file elsewhere legitimately uses
+    // `--ds-icon-brand` to detect the ACTIVE collapsed-rail hub (the test's
+    // own docblock carves that out: "color is reserved for ... the active
+    // row") — a file-wide ban on the token was stale against that.
+    const fnStart = SRC.indexOf('function SectionIconWrapper');
+    expect(fnStart).toBeGreaterThan(-1);
+    const fnBody = SRC.slice(fnStart, SRC.indexOf('\n}', fnStart) + 2);
+    expect(fnBody).not.toMatch(/icon-brand|var(--ds-link)|var(--ds-link, var(--ds-link))/i);
   });
 
   it('recent-location functional icons do NOT inherit loc.color (would re-blue them)', () => {

@@ -7,8 +7,11 @@ const listSrc = readFileSync(resolve(repoRoot, 'src/pages/project-hub/filters/Fi
 const detailSrc = readFileSync(resolve(repoRoot, 'src/pages/project-hub/filters/FilterDetailPage.tsx'), 'utf8');
 
 describe('Filters directory row-click → detail (Phase D / G1)', () => {
-  it('detailHref points at the read-only detail route (/filters/:id), not the builder', () => {
-    expect(listSrc).toMatch(/\/project-hub\/\$\{projectKey\}\/filters\/\$\{f\.id\}/);
+  it('detailHref points at the read-only detail route (/filters/:slug), not the builder', () => {
+    // Slug contract (CAT-SLUGS-UNIVERSAL-20260701-001): detailHref now resolves
+    // via f.slug || f.id, not a bare :id segment.
+    expect(listSrc).toMatch(/\/project-hub\/\$\{projectKey\}\/filters\/\$\{seg\}/);
+    expect(listSrc).toMatch(/const seg = f\.slug \|\| f\.id/);
   });
 
   it('FiltersListPage no longer routes any row entry point to the builder (create?filterId)', () => {

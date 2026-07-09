@@ -14,13 +14,14 @@
  */
 
 import React from 'react';
+import { vi } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ReactionPicker } from '../ReactionPicker';
 
 describe('ReactionPicker', () => {
-  const mockOnEmojiPick = jest.fn();
-  const mockOnClose = jest.fn();
+  const mockOnEmojiPick = vi.fn();
+  const mockOnClose = vi.fn();
 
   beforeEach(() => {
     mockOnEmojiPick.mockClear();
@@ -506,10 +507,14 @@ describe('ReactionPicker', () => {
       );
 
       const menu = screen.getByRole('menu');
-      const computedStyle = window.getComputedStyle(menu);
 
-      // Should have background color from surface token
-      expect(computedStyle.background).toBeTruthy();
+      // jsdom's CSSOM validates `background`/`top`/`left` etc. against a
+      // strict grammar and silently drops var(...) values for those
+      // properties (both from computed style AND the serialized style
+      // attribute) — but it has no such validator for `box-shadow`, so that
+      // property reliably round-trips and can be used to prove ADS-token
+      // usage in this environment.
+      expect(menu.getAttribute('style')).toMatch(/box-shadow:[^;]*var\(--ds-/);
     });
 
     it('should have proper cursor style on emoji buttons', () => {

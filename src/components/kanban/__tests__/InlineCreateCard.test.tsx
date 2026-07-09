@@ -1,58 +1,71 @@
 /**
  * InlineCreateCard — Unit tests for inline issue creation component.
- * TDD first: tests written before implementation verification.
+ *
+ * NOTE (stale-contract rewrite): this suite was originally written TDD-first
+ * against an early draft of the component (Jira createmeta REST fetch via
+ * useCreatemeta, a debounced useSearchAssignees hook, Atlaskit
+ * Button/DropdownMenu/TextField primitives). The component was rewritten
+ * several times since (see git log: "canonical ProfilePicker", "SmartPopover
+ * portal", CRE chokepoint wiring) into its current form: a plain
+ * textarea + native buttons + a custom portal-based SmartPopover, sourcing
+ * assignees from `assigneeOptions` prop ∪ a live `profiles` Supabase query
+ * (no debounce — filtering is synchronous local state), and issue types from
+ * `filterCreatableTypes` (Catalyst Rules Engine), not a Jira createmeta call.
+ * There is also no toast on submission failure — errors render inline. The
+ * assertions below are rewritten to match this current, real contract.
  *
  * Scope:
  * - Form state management (summary, issue type, date, assignee)
- * - Createmeta fetch on mount
- * - Debounced assignee search (300ms)
- * - Form validation and submission
- * - Error handling and retry
+ * - Assignee search/filter and selection
+ * - Form validation (submit disabled until summary present)
+ * - Error handling (inline error message)
  * - Escape/click-outside handlers
  * - Portal rendering for dropdowns
  */
 
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen, fireEvent, waitFor, within } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { Toaster } from 'sonner';
 import InlineCreateCard from '../InlineCreateCard';
-import { useCreatemeta } from '@/hooks/useCreatemeta';
-import { useSearchAssignees } from '@/hooks/useSearchAssignees';
+import type { AssigneeOption } from '../AssigneePickerPopover';
 
-// Global fetch mock
-global.fetch = vi.fn() as any;
-
-// Mock dependencies
-vi.mock('@/hooks/useCreatemeta');
-vi.mock('@/hooks/useSearchAssignees');
-vi.mock('@atlaskit/button', () => ({
-  default: ({ children, onClick, disabled, ...props }: any) => (
-    <button onClick={onClick} disabled={disabled} data-testid="atlaskit-button" {...props}>{children}</button>
-  ),
-}));
-vi.mock('@atlaskit/dropdown-menu', () => ({
-  DropdownMenu: ({ children }: any) => <div data-testid="dropdown-menu">{children}</div>,
-  DropdownMenuTrigger: ({ children, asChild }: any) => asChild ? children : <div data-testid="dropdown-trigger">{children}</div>,
-  DropdownMenuContent: ({ children }: any) => <div data-testid="dropdown-content" role="menu">{children}</div>,
-  DropdownMenuItem: ({ children, onClick }: any) => <button data-testid="dropdown-item" onClick={onClick} role="menuitem">{children}</button>,
-}));
-vi.mock('@atlaskit/textfield', () => ({
-  default: ({ value, onChange, placeholder, disabled, ...props }: any) => (
-    <input value={value} onChange={(e) => onChange?.({ currentTarget: e.currentTarget })} placeholder={placeholder} disabled={disabled} data-testid="atlaskit-textfield" {...props} />
-  ),
-}));
+// The component renders type icons via JiraIssueTypeIcon — stub to a simple
+// span so assertions don't depend on the icon glyph set.
 vi.mock('@/lib/jira-issue-type-icons', () => ({
-  JiraIssueTypeIcon: ({ type, size }: any) => <span data-testid="jira-issue-type-icon" data-type={type}>{type}</span>,
+  JiraIssueTypeIcon: ({ type }: any) => <span data-testid="jira-issue-type-icon" data-type={type}>{type}</span>,
 }));
-vi.mock('sonner', async () => {
-  const actual = await vi.importActual('sonner');
+
+// Shared mutable state the mocked Supabase client reads from — lets
+// individual tests configure insert success/failure without re-mocking.
+const supaState = vi.hoisted(() => ({
+  insertError: null as Error | null,
+  insertData: { id: 'issue-1', issue_key: 'BAU-1' } as Record<string, any>,
+}));
+
+vi.mock('@/integrations/supabase/client', () => {
+  function makeChain() {
+    let isInsert = false;
+    const chain: any = {};
+    ['select', 'not', 'order', 'like', 'limit', 'eq'].forEach((m) => {
+      chain[m] = () => chain;
+    });
+    chain.insert = () => {
+      isInsert = true;
+      return chain;
+    };
+    const resolve = () =>
+      isInsert
+        ? Promise.resolve({ data: supaState.insertError ? null : supaState.insertData, error: supaState.insertError })
+        : Promise.resolve({ data: [], error: null });
+    chain.single = () => resolve();
+    chain.maybeSingle = () => resolve();
+    chain.then = (onFulfilled: any, onRejected: any) => resolve().then(onFulfilled, onRejected);
+    return chain;
+  }
   return {
-    ...actual,
-    toast: {
-      error: vi.fn(),
-      success: vi.fn(),
+    supabase: {
+      from: () => makeChain(),
     },
   };
 });
@@ -63,39 +76,17 @@ describe('InlineCreateCard', () => {
   const mockOnCancel = vi.fn();
   const mockProjectKey = 'BAU';
 
-  const mockCreatemetaResponse = {
-    projects: [
-      {
-        key: mockProjectKey,
-        issuetypes: [
-          { id: '10001', name: 'Story' },
-          { id: '10002', name: 'Task' },
-          { id: '10003', name: 'Bug' },
-        ],
-      },
-    ],
-  };
-
-  const mockAssigneeSearchResponse = [
-    { accountId: 'user-1', displayName: 'Alice', avatarUrls: { '24x24': 'http://...' } },
-    { accountId: 'user-2', displayName: 'Bob', avatarUrls: { '24x24': 'http://...' } },
+  const mockAssigneeOptions: AssigneeOption[] = [
+    { name: 'Alice', email: 'alice@example.com', avatarUrl: null },
+    { name: 'Bob', email: 'bob@example.com', avatarUrl: null },
   ];
 
   beforeEach(() => {
-    queryClient = new QueryClient({
-      defaultOptions: { queries: { retry: false } },
-    });
-    vi.clearAllMocks();
-
-    // Mock global fetch for createmeta API
-    (global.fetch as any).mockResolvedValue({
-      ok: true,
-      json: async () => mockCreatemetaResponse,
-    });
-  });
-
-  afterEach(() => {
-    queryClient.clear();
+    queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    mockOnCreateCard.mockReset();
+    mockOnCancel.mockReset();
+    supaState.insertError = null;
+    supaState.insertData = { id: 'issue-1', issue_key: 'BAU-1' };
   });
 
   const renderComponent = (props = {}) => {
@@ -110,8 +101,7 @@ describe('InlineCreateCard', () => {
     return render(
       <QueryClientProvider client={queryClient}>
         <InlineCreateCard {...defaultProps} />
-        <Toaster />
-      </QueryClientProvider>
+      </QueryClientProvider>,
     );
   };
 
@@ -119,29 +109,13 @@ describe('InlineCreateCard', () => {
   // Mount and initialization
   // ═════════════════════════════════════════════════════════════════════════
 
-  it('should fetch createmeta on mount', async () => {
-    const mockFetch = vi.fn().mockResolvedValue(mockCreatemetaResponse);
-    vi.mocked(useCreatemeta).mockReturnValue({ fetch: mockFetch } as any);
-    vi.mocked(useSearchAssignees).mockReturnValue({ search: vi.fn() } as any);
-
+  it('renders form fields: summary, type, due date, assignee', () => {
     renderComponent();
 
-    await waitFor(() => {
-      expect(mockFetch).toHaveBeenCalledWith(mockProjectKey);
-    });
-  });
-
-  it('should render form fields: summary, type, date, assignee', async () => {
-    vi.mocked(useCreatemeta).mockReturnValue({ fetch: vi.fn().mockResolvedValue(mockCreatemetaResponse) } as any);
-    vi.mocked(useSearchAssignees).mockReturnValue({ search: vi.fn() } as any);
-
-    renderComponent();
-
-    await waitFor(() => {
-      expect(screen.getByPlaceholderText(/What needs to be done/i)).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: /Story/i })).toBeInTheDocument(); // Default type
-      expect(screen.getByRole('button', { name: /Select assignee/i })).toBeInTheDocument();
-    });
+    expect(screen.getByPlaceholderText(/What needs to be done/i)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Type: Story/i })).toBeInTheDocument(); // Default type
+    expect(screen.getByRole('button', { name: /Due date/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Unassigned/i })).toBeInTheDocument();
   });
 
   // ═════════════════════════════════════════════════════════════════════════
@@ -150,9 +124,6 @@ describe('InlineCreateCard', () => {
 
   it('should update summary on input change', async () => {
     const user = userEvent.setup();
-    vi.mocked(useCreatemeta).mockReturnValue({ fetch: vi.fn().mockResolvedValue(mockCreatemetaResponse) } as any);
-    vi.mocked(useSearchAssignees).mockReturnValue({ search: vi.fn() } as any);
-
     renderComponent();
 
     const summaryInput = screen.getByPlaceholderText(/What needs to be done/i);
@@ -161,109 +132,69 @@ describe('InlineCreateCard', () => {
     expect(summaryInput).toHaveValue('Fix login page');
   });
 
-  it('should cycle issue type on button click', async () => {
+  it('opens the type dropdown and selects a type on click', async () => {
     const user = userEvent.setup();
-    vi.mocked(useCreatemeta).mockReturnValue({ fetch: vi.fn().mockResolvedValue(mockCreatemetaResponse) } as any);
-    vi.mocked(useSearchAssignees).mockReturnValue({ search: vi.fn() } as any);
-
     renderComponent();
 
-    const typeButton = await screen.findByRole('button', { name: /Story/i });
+    const typeButton = screen.getByRole('button', { name: /Type: Story/i });
     await user.click(typeButton);
 
-    expect(screen.getByRole('button', { name: /Task/i })).toBeInTheDocument();
+    const taskOption = screen.getByRole('button', { name: /\btask\b/i });
+    await user.click(taskOption);
+
+    expect(screen.getByRole('button', { name: /Type: Task/i })).toBeInTheDocument();
   });
 
   // ═════════════════════════════════════════════════════════════════════════
-  // Assignee search (debounced 300ms)
+  // Assignee search (local, synchronous filter over assigneeOptions)
   // ═════════════════════════════════════════════════════════════════════════
 
-  it('should debounce assignee search with 300ms delay', async () => {
-    const user = userEvent.setup({ delay: null }); // Disable default 5ms delay
-    const mockSearch = vi.fn().mockResolvedValue(mockAssigneeSearchResponse);
-    vi.mocked(useCreatemeta).mockReturnValue({ fetch: vi.fn().mockResolvedValue(mockCreatemetaResponse) } as any);
-    vi.mocked(useSearchAssignees).mockReturnValue({ search: mockSearch } as any);
+  it('filters assignee options as the user types', async () => {
+    const user = userEvent.setup();
+    renderComponent({ assigneeOptions: mockAssigneeOptions });
 
-    renderComponent();
+    const assigneeTrigger = screen.getByRole('button', { name: /Unassigned/i });
+    await user.click(assigneeTrigger);
 
-    const assigneeInput = await screen.findByRole('textbox', { name: /search assignee/i });
-    await user.type(assigneeInput, 'ali');
+    const searchInput = await screen.findByPlaceholderText(/Search a user/i);
+    await user.type(searchInput, 'ali');
 
-    // Search should NOT be called immediately
-    expect(mockSearch).not.toHaveBeenCalled();
-
-    // After 300ms, search should be called once (debounced)
-    await waitFor(() => {
-      expect(mockSearch).toHaveBeenCalledTimes(1);
-      expect(mockSearch).toHaveBeenCalledWith('ali');
-    }, { timeout: 350 });
+    expect(screen.getByRole('button', { name: /\balice\b/i })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /\bbob\b/i })).not.toBeInTheDocument();
   });
 
-  it('should cancel previous search on rapid input changes', async () => {
-    const user = userEvent.setup({ delay: null });
-    const mockSearch = vi.fn().mockResolvedValue(mockAssigneeSearchResponse);
-    vi.mocked(useCreatemeta).mockReturnValue({ fetch: vi.fn().mockResolvedValue(mockCreatemetaResponse) } as any);
-    vi.mocked(useSearchAssignees).mockReturnValue({ search: mockSearch } as any);
+  it('renders assignee options in a dropdown', async () => {
+    const user = userEvent.setup();
+    renderComponent({ assigneeOptions: mockAssigneeOptions });
 
-    renderComponent();
+    const assigneeTrigger = screen.getByRole('button', { name: /Unassigned/i });
+    await user.click(assigneeTrigger);
 
-    const assigneeInput = await screen.findByRole('textbox', { name: /search assignee/i });
-    await user.type(assigneeInput, 'a');
-    await user.type(assigneeInput, 'l');
-    await user.type(assigneeInput, 'i');
-
-    // Only the final debounced search should execute
-    await waitFor(() => {
-      expect(mockSearch).toHaveBeenCalledWith('ali');
-    }, { timeout: 350 });
-
-    expect(mockSearch).toHaveBeenCalledTimes(1);
+    expect(await screen.findByRole('button', { name: /\balice\b/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /\bbob\b/i })).toBeInTheDocument();
   });
 
-  it('should render assignee search results in dropdown', async () => {
-    const user = userEvent.setup({ delay: null });
-    const mockSearch = vi.fn().mockResolvedValue(mockAssigneeSearchResponse);
-    vi.mocked(useCreatemeta).mockReturnValue({ fetch: vi.fn().mockResolvedValue(mockCreatemetaResponse) } as any);
-    vi.mocked(useSearchAssignees).mockReturnValue({ search: mockSearch } as any);
+  it('selects an assignee on dropdown click', async () => {
+    const user = userEvent.setup();
+    renderComponent({ assigneeOptions: mockAssigneeOptions });
 
-    renderComponent();
+    const assigneeTrigger = screen.getByRole('button', { name: /Unassigned/i });
+    await user.click(assigneeTrigger);
 
-    const assigneeInput = await screen.findByRole('textbox', { name: /search assignee/i });
-    await user.type(assigneeInput, 'ali');
-
-    await waitFor(() => {
-      expect(screen.getByText('Alice')).toBeInTheDocument();
-      expect(screen.getByText('Bob')).toBeInTheDocument();
-    }, { timeout: 350 });
-  });
-
-  it('should select assignee on dropdown click', async () => {
-    const user = userEvent.setup({ delay: null });
-    const mockSearch = vi.fn().mockResolvedValue(mockAssigneeSearchResponse);
-    vi.mocked(useCreatemeta).mockReturnValue({ fetch: vi.fn().mockResolvedValue(mockCreatemetaResponse) } as any);
-    vi.mocked(useSearchAssignees).mockReturnValue({ search: mockSearch } as any);
-
-    renderComponent();
-
-    const assigneeInput = await screen.findByRole('textbox', { name: /search assignee/i });
-    await user.type(assigneeInput, 'ali');
-
-    const aliceOption = await screen.findByText('Alice');
+    const aliceOption = await screen.findByRole('button', { name: /\balice\b/i });
     await user.click(aliceOption);
 
-    expect(screen.getByText('Alice')).toBeInTheDocument();
-    expect(screen.queryByText('Bob')).not.toBeInTheDocument();
+    // Dropdown closes and the trigger now reflects the selection.
+    expect(screen.getByRole('button', { name: /Assigned to Alice/i })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /\bbob\b/i })).not.toBeInTheDocument();
   });
 
   // ═════════════════════════════════════════════════════════════════════════
   // Form submission and callbacks
   // ═════════════════════════════════════════════════════════════════════════
 
-  it('should call onCreateCard with form data on submit', async () => {
+  it('calls onCreateCard with form data on submit', async () => {
     const user = userEvent.setup();
-    vi.mocked(useCreatemeta).mockReturnValue({ fetch: vi.fn().mockResolvedValue(mockCreatemetaResponse) } as any);
-    vi.mocked(useSearchAssignees).mockReturnValue({ search: vi.fn() } as any);
-
     renderComponent();
 
     const summaryInput = screen.getByPlaceholderText(/What needs to be done/i);
@@ -273,39 +204,35 @@ describe('InlineCreateCard', () => {
     await user.click(submitButton);
 
     await waitFor(() => {
-      expect(mockOnCreateCard).toHaveBeenCalledWith({
-        summary: 'Fix login page',
-        issueType: 'Story', // Default
-        assigneeId: null,
-        dueDate: null,
-      });
+      expect(mockOnCreateCard).toHaveBeenCalledWith(
+        expect.objectContaining({
+          summary: 'Fix login page',
+          issueType: 'Story', // Default
+        }),
+      );
     });
   });
 
-  it('should validate that summary is required', async () => {
+  it('disables submit until a summary is entered', async () => {
     const user = userEvent.setup();
-    vi.mocked(useCreatemeta).mockReturnValue({ fetch: vi.fn().mockResolvedValue(mockCreatemetaResponse) } as any);
-    vi.mocked(useSearchAssignees).mockReturnValue({ search: vi.fn() } as any);
-
     renderComponent();
 
     const submitButton = screen.getByRole('button', { name: /Create/i });
-    await user.click(submitButton);
+    expect(submitButton).toBeDisabled();
 
-    // Should not call callback, should show error
+    const summaryInput = screen.getByPlaceholderText(/What needs to be done/i);
+    await user.type(summaryInput, 'Fix login page');
+
+    expect(submitButton).toBeEnabled();
     expect(mockOnCreateCard).not.toHaveBeenCalled();
-    expect(screen.getByText(/summary is required/i)).toBeInTheDocument();
   });
 
-  it('should clear form on successful submission', async () => {
+  it('clears the form on successful submission', async () => {
     const user = userEvent.setup();
-    vi.mocked(useCreatemeta).mockReturnValue({ fetch: vi.fn().mockResolvedValue(mockCreatemetaResponse) } as any);
-    vi.mocked(useSearchAssignees).mockReturnValue({ search: vi.fn() } as any);
-    mockOnCreateCard.mockResolvedValueOnce({ issueKey: 'BAU-1234', issueId: 'id-123' });
-
+    mockOnCreateCard.mockResolvedValueOnce(undefined);
     renderComponent();
 
-    const summaryInput = screen.getByPlaceholderText(/What needs to be done/i) as HTMLInputElement;
+    const summaryInput = screen.getByPlaceholderText(/What needs to be done/i) as HTMLTextAreaElement;
     await user.type(summaryInput, 'Fix login page');
 
     const submitButton = screen.getByRole('button', { name: /Create/i });
@@ -320,13 +247,9 @@ describe('InlineCreateCard', () => {
   // Error handling
   // ═════════════════════════════════════════════════════════════════════════
 
-  it('should display error toast on submission failure', async () => {
+  it('shows an inline error message when the insert fails', async () => {
     const user = userEvent.setup();
-    const { toast } = await import('sonner');
-    vi.mocked(useCreatemeta).mockReturnValue({ fetch: vi.fn().mockResolvedValue(mockCreatemetaResponse) } as any);
-    vi.mocked(useSearchAssignees).mockReturnValue({ search: vi.fn() } as any);
-    mockOnCreateCard.mockRejectedValueOnce(new Error('API error'));
-
+    supaState.insertError = new Error('API error');
     renderComponent();
 
     const summaryInput = screen.getByPlaceholderText(/What needs to be done/i);
@@ -336,19 +259,17 @@ describe('InlineCreateCard', () => {
     await user.click(submitButton);
 
     await waitFor(() => {
-      expect(toast.error).toHaveBeenCalledWith(expect.stringContaining('API error'));
+      expect(screen.getByText(/API error/i)).toBeInTheDocument();
     });
+    expect(mockOnCreateCard).not.toHaveBeenCalled();
   });
 
   // ═════════════════════════════════════════════════════════════════════════
   // Keyboard/escape handling
   // ═════════════════════════════════════════════════════════════════════════
 
-  it('should cancel form on Escape key', async () => {
+  it('cancels the form on Escape key', async () => {
     const user = userEvent.setup();
-    vi.mocked(useCreatemeta).mockReturnValue({ fetch: vi.fn().mockResolvedValue(mockCreatemetaResponse) } as any);
-    vi.mocked(useSearchAssignees).mockReturnValue({ search: vi.fn() } as any);
-
     renderComponent();
 
     const summaryInput = screen.getByPlaceholderText(/What needs to be done/i);
@@ -360,20 +281,14 @@ describe('InlineCreateCard', () => {
     });
   });
 
-  it('should cancel form on outside click', async () => {
-    const user = userEvent.setup();
-    vi.mocked(useCreatemeta).mockReturnValue({ fetch: vi.fn().mockResolvedValue(mockCreatemetaResponse) } as any);
-    vi.mocked(useSearchAssignees).mockReturnValue({ search: vi.fn() } as any);
-
+  it('cancels the form on outside click', async () => {
     renderComponent();
 
-    const summaryInput = screen.getByPlaceholderText(/What needs to be done/i);
-    await user.type(summaryInput, 'Fix login page');
-
-    const outsideElement = document.body;
-    fireEvent.click(outsideElement);
-
+    // The outside-click handler is attached one macrotask after mount
+    // (deferred so the click that opened the form doesn't immediately
+    // close it) and listens for `mousedown`, not `click`.
     await waitFor(() => {
+      fireEvent.mouseDown(document.body);
       expect(mockOnCancel).toHaveBeenCalled();
     });
   });
@@ -382,31 +297,24 @@ describe('InlineCreateCard', () => {
   // Portal rendering (dropdowns escape overflow:hidden)
   // ═════════════════════════════════════════════════════════════════════════
 
-  it('should render assignee dropdown in portal (data-inline-create-portal)', async () => {
-    const user = userEvent.setup({ delay: null });
-    const mockSearch = vi.fn().mockResolvedValue(mockAssigneeSearchResponse);
-    vi.mocked(useCreatemeta).mockReturnValue({ fetch: vi.fn().mockResolvedValue(mockCreatemetaResponse) } as any);
-    vi.mocked(useSearchAssignees).mockReturnValue({ search: mockSearch } as any);
+  it('renders the assignee dropdown in a portal (data-inline-create-portal)', async () => {
+    const user = userEvent.setup();
+    renderComponent({ assigneeOptions: mockAssigneeOptions });
 
-    renderComponent();
-
-    const assigneeInput = await screen.findByRole('textbox', { name: /search assignee/i });
-    await user.type(assigneeInput, 'ali');
+    const assigneeTrigger = screen.getByRole('button', { name: /Unassigned/i });
+    await user.click(assigneeTrigger);
 
     await waitFor(() => {
       const portal = document.querySelector('[data-inline-create-portal="true"]');
       expect(portal).toBeInTheDocument();
-    }, { timeout: 350 });
+    });
   });
 
-  it('should render date picker in portal', async () => {
+  it('renders the due-date picker in a portal', async () => {
     const user = userEvent.setup();
-    vi.mocked(useCreatemeta).mockReturnValue({ fetch: vi.fn().mockResolvedValue(mockCreatemetaResponse) } as any);
-    vi.mocked(useSearchAssignees).mockReturnValue({ search: vi.fn() } as any);
-
     renderComponent();
 
-    const dateButton = await screen.findByRole('button', { name: /Select due date/i });
+    const dateButton = screen.getByRole('button', { name: /Due date/i });
     await user.click(dateButton);
 
     await waitFor(() => {
@@ -419,34 +327,24 @@ describe('InlineCreateCard', () => {
   // Integration: full flow
   // ═════════════════════════════════════════════════════════════════════════
 
-  it('should complete full create flow: summary → type → assignee → submit', async () => {
-    const user = userEvent.setup({ delay: null });
-    const mockSearch = vi.fn().mockResolvedValue(mockAssigneeSearchResponse);
-    vi.mocked(useCreatemeta).mockReturnValue({ fetch: vi.fn().mockResolvedValue(mockCreatemetaResponse) } as any);
-    vi.mocked(useSearchAssignees).mockReturnValue({ search: mockSearch } as any);
-    mockOnCreateCard.mockResolvedValueOnce({ issueKey: 'BAU-1234', issueId: 'id-123' });
-
-    renderComponent();
+  it('completes a full create flow: summary → type → assignee → submit', async () => {
+    const user = userEvent.setup();
+    renderComponent({ assigneeOptions: mockAssigneeOptions });
 
     // Step 1: Enter summary
     const summaryInput = screen.getByPlaceholderText(/What needs to be done/i);
     await user.type(summaryInput, 'Fix login page');
 
     // Step 2: Change issue type
-    const typeButton = await screen.findByRole('button', { name: /Story/i });
+    const typeButton = screen.getByRole('button', { name: /Type: Story/i });
     await user.click(typeButton);
-    const taskOption = screen.getByRole('button', { name: /Task/i });
+    const taskOption = screen.getByRole('button', { name: /\btask\b/i });
     await user.click(taskOption);
 
     // Step 3: Select assignee
-    const assigneeInput = await screen.findByRole('textbox', { name: /search assignee/i });
-    await user.type(assigneeInput, 'ali');
-
-    await waitFor(() => {
-      expect(screen.getByText('Alice')).toBeInTheDocument();
-    }, { timeout: 350 });
-
-    const aliceOption = screen.getByText('Alice');
+    const assigneeTrigger = screen.getByRole('button', { name: /Unassigned/i });
+    await user.click(assigneeTrigger);
+    const aliceOption = await screen.findByRole('button', { name: /\balice\b/i });
     await user.click(aliceOption);
 
     // Step 4: Submit
@@ -454,12 +352,13 @@ describe('InlineCreateCard', () => {
     await user.click(submitButton);
 
     await waitFor(() => {
-      expect(mockOnCreateCard).toHaveBeenCalledWith({
-        summary: 'Fix login page',
-        issueType: 'Task',
-        assigneeId: 'user-1',
-        dueDate: null,
-      });
+      expect(mockOnCreateCard).toHaveBeenCalledWith(
+        expect.objectContaining({
+          summary: 'Fix login page',
+          issueType: 'Task',
+          assigneeId: 'Alice',
+        }),
+      );
     });
   });
 });

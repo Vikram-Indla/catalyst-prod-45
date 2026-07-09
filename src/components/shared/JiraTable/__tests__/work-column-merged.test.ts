@@ -30,7 +30,11 @@ describe('BacklogPage — Key + Summary merged into "Work" column (2026-05-17)',
     // Both factories must be invoked inside the Work column's cell
     // definition (within ~3000 chars of the id: 'key' line — the composed
     // IIFE is verbose because it inlines the type-icon resolver).
-    const pattern = /id:\s*['"]key['"][\s\S]{0,3000}makeKeyCell[\s\S]{0,2000}makeSummaryInlineEditCell/;
+    // 2026-07-09: makeKeyCell → makeSummaryInlineEditCell grew to ~2500 chars
+    // after the 'initiative' branch (hex-colored badge icon resolution) was
+    // added to the type-icon resolver inline in this cell — widened from
+    // 2000 to 3000 to match; the composition contract itself is unchanged.
+    const pattern = /id:\s*['"]key['"][\s\S]{0,3000}makeKeyCell[\s\S]{0,3000}makeSummaryInlineEditCell/;
     expect(src).toMatch(pattern);
   });
 

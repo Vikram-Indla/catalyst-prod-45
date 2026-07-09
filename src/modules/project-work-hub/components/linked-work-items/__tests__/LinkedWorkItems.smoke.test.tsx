@@ -237,21 +237,32 @@ describe('LinkedWorkItems (BAU-4771 pilot)', () => {
     expect(await screen.findByText('Linked work items')).toBeInTheDocument();
   });
 
+  // NOTE (stale-contract update): the section used to auto-expand once its
+  // links query resolved with 1+ rows. That auto-expand was removed ("per UX
+  // request to match the Subtasks panel default" — see LinkedWorkItems.tsx)
+  // so the section now ALWAYS starts collapsed; the user must click the
+  // chevron toggle (aria-label "Expand"/"Collapse", not "Linked work items"
+  // — the heading is a separate <h2>) to reveal the grouped body and the
+  // header's "+" add-link trigger (which itself only renders once expanded
+  // AND at least one link exists).
+
   it('renders the disclosure toggle with correct aria semantics', async () => {
     renderPilot();
-    // Wait for data to finish loading before testing collapse — without this
-    // the auto-expand useEffect (links.length 0→1) fires AFTER the click and
-    // re-opens the section, making the aria-expanded assertion flaky.
-    await screen.findByText('clones');
-    const toggle = screen.getByRole('button', { name: /Linked work items/i });
-    expect(toggle).toHaveAttribute('aria-expanded', 'true');
-    expect(toggle).toHaveAttribute('aria-controls', 'lwi-body-BAU-4771');
-    fireEvent.click(toggle);
+    await screen.findByText('Linked work items');
+    const toggle = screen.getByRole('button', { name: 'Expand' });
     expect(toggle).toHaveAttribute('aria-expanded', 'false');
+    expect(toggle).toHaveAttribute('aria-controls', 'lwi-body-BAU-4771');
+
+    fireEvent.click(toggle);
+    expect(toggle).toHaveAttribute('aria-expanded', 'true');
+    expect(screen.getByRole('button', { name: 'Collapse' })).toBe(toggle);
   });
 
   it('renders a link row grouped by link_type with key + summary', async () => {
     renderPilot();
+    await screen.findByText('Linked work items');
+    fireEvent.click(screen.getByRole('button', { name: 'Expand' }));
+
     expect(await screen.findByText('clones')).toBeInTheDocument();
     expect(await screen.findByText('BAU-4511')).toBeInTheDocument();
     expect(await screen.findByText('Business Process – NDS')).toBeInTheDocument();
@@ -260,6 +271,11 @@ describe('LinkedWorkItems (BAU-4771 pilot)', () => {
   it('renders the add-link trigger when expanded', async () => {
     renderPilot();
     await screen.findByText('Linked work items');
+    fireEvent.click(screen.getByRole('button', { name: 'Expand' }));
+
+    // The header's "+" add-link trigger only renders once links have
+    // loaded (count > 0) — wait for the group label before asserting.
+    await screen.findByText('clones');
     expect(
       screen.getByRole('button', { name: /Add linked work item/i }),
     ).toBeInTheDocument();

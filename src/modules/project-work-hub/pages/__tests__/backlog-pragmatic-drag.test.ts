@@ -93,7 +93,17 @@ describe('BacklogPage — Pragmatic DnD migration (BAU-backlog-drag-01)', () => 
     });
 
     it('drag handle still renders the 6-dot grip SVG', () => {
-      expect(src).toMatch(/jira-drag-handle/);
+      // NOTE (stale-contract update, 2026-07-01): BacklogPage's DragHandleCell
+      // was rewritten to portal the grip to <body> (it must render like the
+      // "+" button, outside the <tr>'s clipped overflow) so it no longer
+      // relies on the shared `.jira-drag-handle` CSS class (that class only
+      // drives the tr:hover visibility pattern used by JiraTable/BacklogTable's
+      // own row-level drag handles). Assert the actual current markup instead:
+      // an inline 6-dot grip SVG (viewBox "0 0 10 16", six <circle> dots).
+      expect(src).toMatch(/6-dot grip/);
+      expect(src).toMatch(/viewBox="0 0 10 16"/);
+      const circleCount = (src.match(/<circle\b/g) ?? []).length;
+      expect(circleCount).toBeGreaterThanOrEqual(6);
     });
   });
 

@@ -72,8 +72,15 @@ describe('CatalystViewBase — responsive + sticky (DC4 2026-05-11)', () => {
        and forbid sensible follow-up tweaks. Lower bound stays at 220 to
        preserve the original "guard against crowding the left content"
        intent — anything narrower starts to clip the Improve button. */
-    const match = baseSrc.match(/panelMode \? (\d+)/);
-    expect(match, 'CatalystViewBase.tsx: could not find panelMode ? <N> literal').not.toBeNull();
+    // 2026-XX (f447e4ffe, "allocate 0 to sidebar when hideSidebar"): the
+    // literal is no longer `panelMode ? <N>` directly — a nested ternary
+    // was added so hideSidebar starts the sidebar at 0 width instead of the
+    // full panel-mode default (0 width lays out correctly since the sidebar
+    // is display:none anyway). The panel-mode default width itself (the
+    // value this test cares about) is still a plain literal, just one level
+    // deeper: `panelMode ? (hideSidebar ? 0 : <N>)`.
+    const match = baseSrc.match(/panelMode \? \(hideSidebar \? 0 : (\d+)\)/);
+    expect(match, 'CatalystViewBase.tsx: could not find panelMode ? (hideSidebar ? 0 : <N>) literal').not.toBeNull();
     const value = match ? parseInt(match[1], 10) : NaN;
     expect(value, 'CatalystViewBase.tsx: panel-mode rightPanelWidth must be 220–440')
       .toBeGreaterThanOrEqual(220);

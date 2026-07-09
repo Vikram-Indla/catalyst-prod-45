@@ -16,11 +16,13 @@ import React from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 import { StageOverviewWidget } from './StageOverviewWidget';
-import { useActiveDemandProcessSteps } from '@/hooks/useDemandProcessSteps';
+// The widget migrated from useActiveDemandProcessSteps to the kanban
+// module's useProcessSteps — mock the hook it actually calls.
+import { useProcessSteps } from '@/modules/kanban/hooks/useProcessSteps';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 
-vi.mock('@/hooks/useDemandProcessSteps');
+vi.mock('@/modules/kanban/hooks/useProcessSteps');
 vi.mock('@/hooks/useAuth');
 vi.mock('@/integrations/supabase/client', () => ({
   supabase: { from: vi.fn() },
@@ -44,9 +46,13 @@ const STEPS = [
 
 /** Mock a single grouped-count query that returns counts per stage. */
 const mockCountsQuery = (rows: Array<{ process_step: string; count: number }>) => {
-  // Chain: .from('business_requests').select('process_step, count:id.count()').is('deleted_at', null)
-  const isNull = vi.fn().mockResolvedValue({ data: rows, error: null });
-  const select = vi.fn().mockReturnValue({ is: isNull });
+  // Counts chain: .select(...).is('deleted_at', null)          → awaited directly
+  // Stalled chain: .select(...).is('deleted_at', null).lt(...)  → awaited after .lt
+  const isResult = {
+    then: (resolve: (v: any) => void) => resolve({ data: rows, error: null }),
+    lt: vi.fn().mockResolvedValue({ data: [], error: null }),
+  };
+  const select = vi.fn().mockReturnValue({ is: vi.fn().mockReturnValue(isResult) });
   (supabase.from as any).mockReturnValue({ select });
 };
 
@@ -54,7 +60,7 @@ describe('StageOverviewWidget', () => {
   beforeEach(() => {
     vi.resetAllMocks();
     (useAuth as any).mockReturnValue({ user: { id: 'u1' }, loading: false, isAuthenticated: true });
-    (useActiveDemandProcessSteps as any).mockReturnValue({ data: STEPS, isLoading: false });
+    (useProcessSteps as any).mockReturnValue({ data: STEPS, isLoading: false });
     mockCountsQuery([
       { process_step: 'funnel',    count: 12 },
       { process_step: 'discovery', count: 5  },
@@ -108,7 +114,7 @@ describe('StageOverviewWidget', () => {
   });
 
   it('shows skeleton while stages are loading', () => {
-    (useActiveDemandProcessSteps as any).mockReturnValue({ data: undefined, isLoading: true });
+    (useProcessSteps as any).mockReturnValue({ data: undefined, isLoading: true });
 
     render(<StageOverviewWidget onStageClick={vi.fn()} />, { wrapper });
 
@@ -116,7 +122,7 @@ describe('StageOverviewWidget', () => {
   });
 
   it('renders nothing when no stages are configured', async () => {
-    (useActiveDemandProcessSteps as any).mockReturnValue({ data: [], isLoading: false });
+    (useProcessSteps as any).mockReturnValue({ data: [], isLoading: false });
 
     const { container } = render(<StageOverviewWidget onStageClick={vi.fn()} />, { wrapper });
 

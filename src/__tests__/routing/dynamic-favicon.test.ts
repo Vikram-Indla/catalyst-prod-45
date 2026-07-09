@@ -1,8 +1,10 @@
 /**
  * Dynamic favicon — swaps favicon to issue-type icon on issue detail routes.
  *
- * The useDynamicFavicon hook must exist and use the existing
- * jira-issue-type-icons primitive to render type-specific favicons.
+ * The useDynamicFavicon hook must exist and use the canonical work-type
+ * icon registry to render type-specific favicons. (The standalone
+ * jira-issue-type-icons primitive this hook originally used was
+ * consolidated into components/icons/icons.registry.ts.)
  */
 import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
@@ -17,10 +19,10 @@ describe('Dynamic favicon hook', () => {
     expect(src).toMatch(/export\s+function\s+useDynamicFavicon/);
   });
 
-  it('imports from jira-issue-type-icons', () => {
+  it('imports from the canonical icons registry', () => {
     const hookPath = join(ROOT, 'hooks/useDynamicFavicon.ts');
     const src = readFileSync(hookPath, 'utf8');
-    expect(src).toMatch(/jira-issue-type-icons/);
+    expect(src).toMatch(/icons\.registry/);
   });
 
   it('is mounted in CatalystShell or IssueFullPage', () => {

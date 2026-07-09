@@ -19,6 +19,18 @@
  * Static-source test — asserts both:
  *   (a) profiles SELECT includes `email`
  *   (b) the assignment uses email as the second fallback before "Unknown"
+ *
+ * NOTE (stale-contract update, 2026-07-09): the 2026-06-21 rescope of both
+ * pickers to project_members (+ a `useAllProfiles` all-approved-profiles
+ * mode) renamed the react-query keys — 'projectMembers-edit-local' /
+ * 'projectMembers-reporter' no longer exist; the assignee picker now keys
+ * on 'assignee-project-members' / 'assignee-all-profiles' and the reporter
+ * picker on 'reporter-project-members' / 'reporter-all-profiles'. The
+ * profiles SELECT also grew a third column (`jira_account_id`, for
+ * jira-parity avatar/identity resolution) alongside `full_name, email`.
+ * The fallback fix itself (`full_name ?? email ?? "Unknown"`) is untouched
+ * and still present at every call site — only the locator regexes below
+ * are updated to match the current source.
  */
 import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'fs';
@@ -33,12 +45,12 @@ describe('EditableAssignee / EditableReporter — display fallback', () => {
   it('EditableAssignee profiles SELECT requests email + falls back to email before Unknown', () => {
     // Locate the assignee profiles query
     const block = src.match(
-      /queryKey: \['projectMembers-edit-local'[\s\S]{0,1200}/,
+      /queryKey: useAllProfiles\s*\?\s*\["assignee-all-profiles"\][\s\S]{0,1500}/,
     );
     expect(block, 'Could not locate EditableAssignee profiles block').not.toBeNull();
     const text = block![0];
     expect(
-      /select\(['"]id, full_name, email['"]\)/.test(text),
+      /select\(['"]id, full_name, email, jira_account_id['"]\)/.test(text),
       'EditableAssignee: profiles SELECT must include `email` so users without a ' +
       'full_name fall back to their email rather than the literal string "Unknown".',
     ).toBe(true);
@@ -50,12 +62,12 @@ describe('EditableAssignee / EditableReporter — display fallback', () => {
 
   it('EditableReporter profiles SELECT requests email + falls back to email before Unknown', () => {
     const block = src.match(
-      /queryKey: \['projectMembers-reporter'[\s\S]{0,1200}/,
+      /queryKey: useAllProfiles\s*\?\s*\["reporter-all-profiles"\][\s\S]{0,1500}/,
     );
     expect(block, 'Could not locate EditableReporter profiles block').not.toBeNull();
     const text = block![0];
     expect(
-      /select\(['"]id, full_name, email['"]\)/.test(text),
+      /select\(['"]id, full_name, email, jira_account_id['"]\)/.test(text),
       'EditableReporter: profiles SELECT must include `email` so users without a ' +
       'full_name fall back to their email rather than the literal string "Unknown".',
     ).toBe(true);
