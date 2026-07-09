@@ -180,7 +180,7 @@ export interface StrataMapEdge {
   confidence: number | null;
 }
 
-export interface StrataPlayCharter {
+export interface StrataThemeCharter {
   id: string;
   element_id: string;
   hypothesis: string | null;

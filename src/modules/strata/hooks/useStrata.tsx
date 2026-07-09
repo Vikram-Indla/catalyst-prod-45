@@ -211,7 +211,7 @@ export const useStrategyElementBySlug = (slug?: string) =>
   });
 export const useMapEdges = (cycleId?: string) =>
   useQuery({ queryKey: ['strata', 'edges', cycleId], queryFn: () => strategyApi.edges(cycleId!), enabled: !!cycleId, staleTime: STALE });
-export const usePlayCharters = () =>
+export const useThemeCharters = () =>
   useQuery({ queryKey: ['strata', 'charters'], queryFn: strategyApi.charters, staleTime: STALE });
 export const useElementKpis = () =>
   useQuery({ queryKey: ['strata', 'element-kpis'], queryFn: strategyApi.elementKpis, staleTime: STALE });

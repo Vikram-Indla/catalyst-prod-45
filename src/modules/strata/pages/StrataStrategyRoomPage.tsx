@@ -20,7 +20,7 @@ import {
 } from '@/lib/atlaskit-icons';
 import {
   useElementKpis, useGateModels, useInvalidateStrata, useKpis, useMapEdges, usePerspectives,
-  usePlayCharters, useProfileNames, useStrataContext, useStrataRoles, useStrategyElements,
+  useThemeCharters, useProfileNames, useStrataContext, useStrataRoles, useStrategyElements,
 } from '@/modules/strata/hooks/useStrata';
 import { strategyApi, valueApi } from '@/modules/strata/domain';
 import { StrataChipMenu, StrataPageShell, StrataPanel, T } from '@/modules/strata/components/shared';
@@ -42,8 +42,8 @@ const STATUS_APPEARANCE: Record<StrataStrategyElement['status'], LozengeAppearan
 
 /**
  * Per-type visual identity — element types are SYSTEM values (DB CHECK).
- * 'play' was consolidated into 'theme' (CAT-STRATA-HIERARCHY-20260706-001):
- * Theme and Play are the same business concept, so legacy Play rows were
+ * the legacy tier-2 term was consolidated into 'theme' (CAT-STRATA-HIERARCHY-20260706-001):
+ * both tiers were the same business concept, so legacy rows were
  * relabeled to 'theme' and no longer need a distinct entry here.
  */
 const TYPE_META: Record<string, { icon: React.ComponentType<{ size?: number }>; bg: string; fg: string }> = {
@@ -82,7 +82,7 @@ const TREE_CSS = `
 const AUTHOR_ROLES = ['strategy_office', 'strata_admin'] as const;
 /**
  * SYSTEM element types (DB CHECK on strata_strategy_elements.element_type).
- * Active hierarchy is Theme -> Objective (2-tier). 'play' is not a creatable
+ * Active hierarchy is Theme -> Objective (2-tier). the legacy tier-2 type is not a creatable
  * type — legacy rows were relabeled to 'theme' (CAT-STRATA-HIERARCHY-20260706-001).
  */
 const ELEMENT_TYPES = ['theme', 'objective'] as const;
@@ -255,7 +255,7 @@ function KpiLinksModal({
 }
 
 /**
- * Governance gate scheduling for a play — the stage select depends on the
+ * Governance gate scheduling for a theme — the stage select depends on the
  * chosen model's stages, so it composes ads primitives directly.
  */
 function GateScheduleModal({
@@ -483,7 +483,7 @@ export default function StrataStrategyRoomPage() {
   const { activeCycle, isLoading: contextLoading } = useStrataContext();
   const elementsQ = useStrategyElements(activeCycle?.id);
   const edgesQ = useMapEdges(activeCycle?.id);
-  const chartersQ = usePlayCharters();
+  const chartersQ = useThemeCharters();
   const elementKpisQ = useElementKpis();
   const kpisQ = useKpis();
   const perspectivesQ = usePerspectives();
@@ -823,7 +823,7 @@ export default function StrataStrategyRoomPage() {
       ) : !activeCycle || elements.length === 0 ? (
         <EmptyState
           header="No strategy elements yet"
-          description="This cycle has no themes, plays or objectives. Draft the strategy structure in STRATA Configuration, then elements appear here."
+          description="This cycle has no themes or objectives. Draft the strategy structure in STRATA Configuration, then elements appear here."
           primaryAction={
             <Button onClick={() => navigate(Routes.strata.admin())}>Open Configuration</Button>
           }
@@ -957,7 +957,7 @@ export default function StrataStrategyRoomPage() {
             width="small"
           >
             <ModalHeader>
-              <ModalTitle>Promote play</ModalTitle>
+              <ModalTitle>Promote element</ModalTitle>
             </ModalHeader>
             <ModalBody>
               <p style={{ margin: 0, fontSize: 'var(--ds-font-size-200)', color: T.text }}>
@@ -1089,7 +1089,7 @@ export default function StrataStrategyRoomPage() {
           <StrataFormModal
             open
             onClose={closeAuthoring}
-            title="Play charter"
+            title="Theme charter"
             description={<>Charter for <strong>{el.name}</strong> — completeness is derived server-side.</>}
             fields={[
               { key: 'hypothesis', label: 'Hypothesis', kind: 'textarea' },
