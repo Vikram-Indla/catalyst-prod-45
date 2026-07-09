@@ -274,6 +274,7 @@
     "@atlaskit/editor-plugins": "13.0.120",
     "@atlaskit/editor-plugin-paste": "9.1.18",
     "@atlaskit/editor-plugin-table": "19.0.0",
-    "@atlassian/assets-workspace-host": "npm:@atlaskit/visually-hidden@3.0.5"
+    "@atlassian/assets-workspace-host": "npm:@atlaskit/visually-hidden@3.0.5",
+    "@atlassian/conversation-assistant-external-context": "npm:@atlaskit/visually-hidden@3.0.5"
   }
 }
