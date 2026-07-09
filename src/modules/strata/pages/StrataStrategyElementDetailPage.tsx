@@ -50,7 +50,7 @@ export default function StrataStrategyElementDetailPage() {
 
   const elements = elementsQ.data ?? [];
   const elementById = new Map(elements.map((e) => [e.id, e]));
-  const ownerName = (id: string | null) => (id ? profiles.data?.get(id) ?? '—' : '—');
+  const ownerName = (id: string | null) => (id ? profiles.data?.get(id)?.name ?? '—' : '—');
   const perspectiveName = (id: string | null) => {
     if (!id) return '—';
     return perspectivesQ.data?.find((p) => p.id === id)?.name ?? '—';

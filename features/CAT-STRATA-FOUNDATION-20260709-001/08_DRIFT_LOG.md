@@ -14,3 +14,12 @@ Engine, Network Excellence). Rule-6 trigger (objective must belong to the card's
 the seed a silent no-op. Repaired by 20260709180000 (cards → objective-bearing sub-themes, chain
 re-closed): 4/4 linked, proj-objective + rollup edges created. Detected only by post-apply SQL
 verification — screenshots would not have caught it.
+
+## D-BUILD-003 (2026-07-09, session 016) — theme detail crash after charter-owner backfill
+`/strata/strategy/elements/<theme-slug>` hit the error boundary ("Objects are not valid as a
+React child {name, avatarUrl}"). Cause: StrataStrategyElementDetailPage.ownerName returned the
+whole StrataProfileRef object instead of `.name` — latent since the page was written, but only
+triggered once session 006 backfilled charter owner_ids (session 005's 10/10 route sweep ran
+BEFORE the backfill, and objectives with NULL owners rendered '—'). One-line fix applied
+(`?.name`), verified live: theme detail renders Summary/Charter/KPI links/Map edges/Audit,
+charter owner shows as text. tsc clean, 67/67 green, gates at baseline after fix.

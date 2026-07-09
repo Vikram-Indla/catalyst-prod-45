@@ -43,3 +43,36 @@ Scorecards landing, CEO Scorecard detail, KPI detail, Execution by-theme, Care A
 - **Transition-duration audit (Strategy Map page, live DOM)**: 70 transitioned elements; every STRATA-authored transition ≤200ms. The 10 elements over 200ms are ALL Atlaskit component-owned 300ms opacity fades (Breadcrumbs hover, dropdown trigger, app chrome) — canonical component-owned styles, out of AC5 scope by the ADS component-owned-color/style rule. PASS.
 - **Map engine**: the Strategy Map canvas is react-flow (d3-zoom, hardware-transform pan/zoom) — canonical library, not hand-rolled. Seed renders 11 nodes (the 100-node jank bound cannot be exercised on current seed data).
 - **Frame-time jank sampling: BLOCKED by environment, not by code** — document.visibilityState=hidden (Chrome window minimized), rAF fully suspended, timers throttled to ≥1s (this also explains two earlier sampler timeouts, which were misread as renderer freezes; single-event dispatch costs 0.2–2.9ms). The ready-to-run rAF sampler is in sessions/015 — fold into Vikram signoff pass with the window foregrounded.
+
+## Session 016 — final acceptance closure (2026-07-09)
+
+### REQ-022 — production legacy OKR row counts: CLOSED (no-op)
+Read-only counts on PROD (lmqwtldpfacrrlvdnmld), via disposable scratch-dir link (project-ref asserted per call by hook; unlinked+removed after):
+| Table | Prod rows | Tenant rows | Referenced by active entities | Migration required | Release impact |
+|---|---|---|---|---|---|
+| objectives | 0 | no (empty) | no (empty) | no | none |
+| key_results | 0 | no | no | no | none |
+| key_result_checkins | 0 | no | no | no | none |
+| kr_work_contributions | 0 | no | no | no | none |
+| objective_feature_links | 0 | no | no | no | none |
+| objective_work_item_alignments | 0 | no | no | no | none |
+| strategic_themes | 0 | no | no | no | none |
+`public.scorecards` does NOT exist on prod (nor staging) — REQ-018 moot on both environments.
+Verdict: legacy OKR decommission is production-safe from a data-retention perspective, subject to normal backup/release controls. No data migration needed. Staging was already 0-rows (session 008). NOTHING was written to prod — SELECT-only.
+
+### AC5 — interactive frame sampler, window foregrounded: PASS (with 11-node limitation)
+- Environment fixed: Chrome window foregrounded via AppleScript; `visibilityState: visible`, `hasFocus: true` confirmed before sampling.
+- rAF sampler (sessions/015 script) ran across real trusted input: wheel zoom in/out at map center (viewport scale 0.72→1.81), click-drag pan (translate changed), node click → inspector panel open (Improve Customer Retention: Linked KPIs, incoming/outgoing links), Escape close.
+- **Result: 6,791 frames · p50 16.7ms · p95 17.6ms · p99 17.7ms · max 66.6ms · 1 frame >50ms (and >33ms) in the entire run.** Locked 60fps; the single 66.6ms frame coincided with the lazy panel mount. No visible jank.
+- Duration audit (session 015) stands: all STRATA-authored transitions ≤200ms; only Atlaskit component-owned 300ms fades exceed, out of scope.
+- **Limitation**: seed renders 11 nodes; react-flow (d3-zoom, hardware transforms) is the canonical engine, but the AC's 100-node jank bound has no dataset to exercise it. No 100-node proof is claimed. PO options: accept with limitation, or request a temporary local-only 100-node dataset test.
+
+### Route defect found + fixed during sweep (D-BUILD-003)
+Theme detail route crashed (owner object rendered as React child) — one-line fix in StrataStrategyElementDetailPage.tsx (`profiles.data?.get(id)?.name`), verified live post-fix. This was the only route defect in the 13-surface sweep; all other routes render with live staging data.
+
+### Validation at session-016 state
+tsc rc=0 · scoped suite (strata guards + registry + sidebar) **67/67 green** · color gate 0=0 · ads-audit-gate all categories at baseline (tokens 22463, typography 1409, spacing 0, fontImports 0).
+Full-repo vitest has pre-existing failures in legacy non-STRATA tests (e.g. huddleStore) — out of scope, unchanged by this feature; recorded for honesty since STATE previously said "FULL suite" (it meant the registry+strata scope, session 014).
+
+### Screenshot signoff
+Package prepared: 60_delivery/SCREENSHOT_SIGNOFF.md — 13 surfaces, all PENDING product-owner review.

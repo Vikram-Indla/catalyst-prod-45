@@ -23,6 +23,6 @@
     "mode_cap_websearches": 0,
     "used_websearches": 0
   },
-  "next_action": "ALL autonomous work COMPLETE. Register REQ-001..021+023 DONE; Command Room depth DONE+verified; all 8 micro-interaction ACs dispositioned (AC5 session 015: duration audit PASS, react-flow canon; interactive frame test needs foregrounded window). FULL suite 67/67 green. WAITING ON VIKRAM: (1) screenshot signoff sessions 005-015, (2) prod row counts for REQ-022 (query sessions/008), (3) AC5 frame sampler with window foregrounded (sessions/015). Then staging bake -> main-merge planning per GOD_MODE §J.",
-  "blocked_on": null
+  "next_action": "SESSION 016: final acceptance closure DONE. REQ-022 CLOSED no-op (all 7 legacy OKR tables 0 rows on PROD, read-only verified). AC5 CLOSED with limitation (foregrounded sampler: 6791 frames, p50 16.7ms/p95 17.6ms, 1 frame >50ms; 100-node bound untested on 11-node seed). Theme-detail crash found+fixed (D-BUILD-003, 1 line). 67/67 scoped suite green, tsc rc=0, gates at baseline. DECISION: Ready for Product Owner Review (60_delivery/RELEASE_READINESS.md). WAITING ON VIKRAM/JK: (1) SCREENSHOT_SIGNOFF.md 13 surfaces + 17-item checklist, (2) AC5 100-node limitation accept-or-test. Then staging bake -> main-merge planning per GOD_MODE §J.",
+  "blocked_on": "product-owner screenshot signoff + AC5 limitation decision"
 }
