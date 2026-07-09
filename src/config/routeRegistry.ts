@@ -41,7 +41,6 @@ export const ROUTE_REGISTRY: Record<string, RouteConfig> = {
   '/enterprise/stories': { section: '', pageTitle: 'Stories' },
   '/enterprise/defects': { section: '', pageTitle: 'Defects' },
   '/enterprise/tasks': { section: '', pageTitle: 'Tasks' },
-  '/enterprise/objectives': { section: '', pageTitle: 'Objectives' },
   '/enterprise/dependencies': { section: '', pageTitle: 'Dependencies' },
   '/enterprise/sprints': { section: '', pageTitle: 'Sprints' },
   '/enterprise/program-increments': { section: '', pageTitle: 'Program Increments' },

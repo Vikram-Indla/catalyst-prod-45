@@ -23,6 +23,6 @@
     "mode_cap_websearches": 0,
     "used_websearches": 0
   },
-  "next_action": "Next slices: DELETION slice (unblocked by 008): delete modules/objectives + okr-v2 + components/okr + EnterpriseObjectives, retire /enterprise/objectives with redirect to /strata/strategy, regen usage-map (REQ-016/023; staging tables all 0 rows, scorecards absent — REQ-018 moot on staging); Command Room visual depth; REQ-019 seams; AC5 transitions. BLOCKED: REQ-022 prod data migration — prod row counts unknown (MCP token lacks prod permission; query in sessions/008). Vikram: screenshot signoff 005-008 + prod counts.",
+  "next_action": "REQ-016+REQ-023 DONE (session 009: 89 files deleted, redirect live, baselines ratcheted down tokens -1107). Next slices: Command Room visual depth (50_design/DESIGN-DIRECTION.md); REQ-019 initiative->project-card seams in Execution UI; AC5 transitions; tiny fix: pre-existing banned-orphans failure (CatalystViewBase.stories.tsx:42, predates feature). BLOCKED: REQ-022 prod data migration — prod row counts unknown (query in sessions/008). Vikram: screenshot signoff 005-009 + prod counts.",
   "blocked_on": null
 }
