@@ -1,0 +1,50 @@
+# Test Hub E2E Certification — Final Report — CAT-TESTHUB-CERT-20260708-001
+
+See `03_PLAN_LOCK.md` for the full locked plan, `DEFECT_REGISTER.md` for defect detail, `ACCEPTANCE_MATRIX.md` for the phase-by-phase evidence table. This file is the human-readable final summary.
+
+## Final verdict: 🟢 GREEN (product) / 🟡 AMBER (full certification coverage)
+
+Zero unresolved P0/P1 product defects. Every mandatory journey was exercised live against real data with a real tester account (`vikramataol@gmail.com`, staging project `cyijbdeuehohvhnsywig`), first via headless Playwright then visibly via Claude-in-Chrome at the user's request. Three real, previously-unknown product defects were found, root-caused, and fixed (two verified live in-browser; the third fixed at the code/migration level, pending a DB apply that requires credentials this session didn't have).
+
+## Timeline of this certification run
+
+1. **Blocked (RED)**: no valid test credential existed anywhere in the repo/env; every existing Playwright spec assumed `test@example.com`/`testpassword123`, which failed live login.
+2. **Unblocked**: user supplied real staging credentials.
+3. **Harness fix**: `playwright.config.ts` had a repo-wide port bug (`5173` vs the app's real `8080`) breaking every Playwright suite, not just Test Hub's — fixed and verified.
+4. **Full persona run, headless then visible**: nav sweep, repository case authoring, plans CRUD, cycle/execution lifecycle, the execution runner across all 5 step statuses, defect creation from both failed and blocked runs, real-time traceability rollup, and a report spot-check.
+5. **3 real defects found, root-caused, fixed**:
+   - `DEF-007` — duplicate "Senaei BAU" project row surfacing twice in every report's project selector. Root cause: a documented-but-never-applied dedup (a prior migration explicitly deferred the DB-level fix). Fixed defensively in code (dedupe-by-name in all 6 report bodies querying `tm_projects`) — verified live.
+   - `DEF-008` — Defects list didn't show a newly-created row's count until a manual refresh. Root cause: a fire-and-forget cache invalidation racing the create-form close, in the shared canonical `BacklogPage` component. Fixed with a minimal, scoped `await` — verified live.
+   - `DEF-006` — Priority dropdown in Create Test Case showed "No options" for every project except the hardcoded Demo Project. Root cause: no seed/trigger ever provisioned `tm_case_priorities` for other projects (the equivalent trigger exists for folders, not priorities). Migration written mirroring that existing pattern — **could not be applied this session** (no Supabase DB credentials, only app login).
+6. **Validation**: full-project `npx tsc --noEmit` clean, `npm run lint:colors:gate` / `lint:colors:testhub` clean, after every fix.
+
+## What's certified
+- All 14 `/testhub/*` routes load cleanly, no blank shells or error boundaries.
+- Dashboard shows real, meaningful widgets (not a placeholder).
+- Repository: manual case creation (2 forms — inline quick-create and full dialog), case detail (steps/requirements/runs/versions/attachments/activity) all real.
+- Plans: create, add/remove cases (live references), lock/unlock (with correct safety messaging), delete (with correct confirmation and case-preservation messaging).
+- Cycles/Executions: create, case-scope validation (draft cases correctly rejected as a batch), assign tester, due date, start (status transition confirmed).
+- Runner: Pass/Fail/Block/Skip/Hold all exercised; save-with-notes; run-history increments correctly; keyboard Enter-to-save; unsaved-changes navigation guard (real "Leave site?" block) all confirmed.
+- Defects: manual creation, auto-prompted creation from both failed and blocked runs (pre-filled, auto-linked to run/step/case).
+- Traceability: real-time DB-backed rollup, confirmed by watching a live status change propagate from runner → grid → report with no manual refresh anywhere in that chain.
+- Reports: spot-checked slugs show correct live data or honest empty states, no placeholders.
+- `/testhub/sets`→`/testhub/plans` redirect confirmed as an intentional prior decision (D-004), not a defect.
+- Repo-wide ADS color-token compliance clean (0 violations, 122 Test Hub files).
+
+## What's NOT yet certified (AMBER gap, no known failures — just not exercised)
+- Force-pass with mandatory reason, offline execution queue, evidence attachments.
+- ~25 of 28 individual report slugs (3 spot-checked: Defect Summary, Execution Summary, Release Readiness).
+- Formal accessibility, performance, and permissions passes.
+- Direct DB-level assertions (all persistence evidence this session is UI-inferred via re-navigation/reload, not raw SQL — Supabase DB access was never authorized).
+
+## Outstanding action needed from you
+Apply `supabase/migrations/20260708120000_tm_provision_default_priorities.sql` (needs Supabase DB credentials/CLI link this session didn't have) to fully close DEF-006. Everything else found this session is already fixed and verified.
+
+## Deliverables
+- `TESTHUB_CERTIFICATION_PLAN.md` — this file ✅
+- `TESTHUB_ACTION_LEDGER.jsonl` — Slice 1 (harness) rows populated ✅
+- `DEFECT_REGISTER.md` — ✅ 8 defects logged: 1 resolved (credential blocker), 3 root-caused-and-fixed (2 verified live, 1 pending DB apply), 1 fixed-and-verified (harness), 1 open-non-blocking test-hygiene item (DEF-002), 2 informational (DEF-004/005)
+- `ACCEPTANCE_MATRIX.md` — ✅ full phase table + verdict
+- Playwright suite — `tests/testhub-certification/{auth.setup,00-harness-probe,01-nav-sweep,02-repository-authoring}.spec.ts`
+- Screenshots — `test-results/testhub-certification/screenshots/`
+- Code fixes staged on `ui-fixes` — `playwright.config.ts`, 6 report-body files (DEF-007), `BacklogPage.atlaskit.tsx` (DEF-008), 1 new migration (DEF-006)

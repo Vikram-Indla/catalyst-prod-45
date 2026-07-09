@@ -66,9 +66,20 @@ export function useTestHubProject(): UseTestHubProjectResult {
     // 2. Active project with the most test cases (real space wins over seed).
     const active = projects.filter((p) => p.is_active !== false);
     const pool = active.length > 0 ? active : projects;
-    const ranked = [...pool].sort(
-      (a, b) => (caseCounts[b.id] ?? 0) - (caseCounts[a.id] ?? 0),
-    );
+    // DEF-009: tm_projects can carry stale duplicate rows sharing a name (see
+    // DEF-007). Ranking by raw per-row count lets a duplicate split its own
+    // volume across two ids, so an unrelated project can silently outrank the
+    // real active Test Space. Rank by the combined per-name total first, then
+    // break ties by each row's own count so the highest-volume duplicate wins.
+    const nameTotals = new Map<string, number>();
+    for (const p of pool) {
+      nameTotals.set(p.name, (nameTotals.get(p.name) ?? 0) + (caseCounts[p.id] ?? 0));
+    }
+    const ranked = [...pool].sort((a, b) => {
+      const byName = (nameTotals.get(b.name) ?? 0) - (nameTotals.get(a.name) ?? 0);
+      if (byName !== 0) return byName;
+      return (caseCounts[b.id] ?? 0) - (caseCounts[a.id] ?? 0);
+    });
     return ranked[0]?.id;
   }, [projects, caseCounts, persistedId]);
 

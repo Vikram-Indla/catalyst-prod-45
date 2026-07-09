@@ -963,7 +963,7 @@
    Redefines --rai-* tokens for ADS neutral dark dark mode
    ═══════════════════════════════════════════════════════════ */
 .dark [data-module="ai-intelligence"] , [data-theme="dark"] [data-module="ai-intelligence"] {
-  --rai-ink: var(--fg-1, var(--cp-bg-neutral, var(--ds-background-neutral)));
+  --rai-ink: var(--fg-1, var(--cp-bg-neutral, var(--ds-text)));
   --rai-ink-secondary: var(--ds-text, var(--cp-bg-neutral));
   --rai-ink-tertiary: var(--fg-3, var(--cp-text-secondary, var(--ds-text-subtlest)));
   --rai-ink-muted: var(--fg-4, rgba(237,237,237,0.30));

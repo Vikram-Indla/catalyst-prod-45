@@ -29,7 +29,11 @@ function useTmProjects() {
     queryKey: ['tm-projects-list'],
     queryFn: async (): Promise<ProjectOption[]> => {
       const { data } = await supabase.from('tm_projects').select('id, name').order('name', { ascending: true });
-      return (data ?? []).map((p: { id: string; name: string }) => ({ label: p.name, value: p.id }));
+      // DEF-007: dedupe stale duplicate project rows sharing a name.
+      const seenNames = new Set<string>();
+      return (data ?? [])
+        .filter((p: { id: string; name: string }) => !seenNames.has(p.name) && seenNames.add(p.name))
+        .map((p: { id: string; name: string }) => ({ label: p.name, value: p.id }));
     },
     staleTime: 5 * 60 * 1000,
   });

@@ -896,7 +896,7 @@
   --rh-bg-page: var(--bg-0, var(--cp-bg-page, var(--ds-surface)));
   --rh-bg-card: var(--bg-2, var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface))));
   --rh-bg-muted: var(--ds-surface-overlay);
-  --rh-text-primary: var(--fg-1, var(--cp-bg-neutral, var(--ds-background-neutral)));
+  --rh-text-primary: var(--fg-1, var(--cp-bg-neutral, var(--ds-text)));
   --rh-text-secondary: var(--fg-2, var(--ds-text-subtlest));
   --rh-text-tertiary: var(--fg-3, var(--cp-text-secondary, var(--ds-text-subtlest)));
   --rh-text-muted: var(--fg-4, rgba(237,237,237,0.30));

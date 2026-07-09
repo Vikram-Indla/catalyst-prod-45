@@ -115,7 +115,7 @@
 .dark .budget-module,
 .dark .budget-module , [data-theme="dark"] .budget-module {
   /* Neutrals — hex only (no HSL) */
-  --slate-900: var(--fg-1, var(--cp-bg-neutral, var(--ds-background-neutral)));
+  --slate-900: var(--fg-1, var(--cp-bg-neutral, var(--ds-text)));
   --slate-800: var(--ds-text, var(--cp-bg-neutral));
   --slate-700: var(--fg-2, var(--ds-text-subtlest));
   --slate-600: var(--fg-3, var(--cp-text-secondary, var(--ds-text-subtlest)));
@@ -130,7 +130,7 @@
   /* Surfaces + text */
   --budget-bg-page: var(--cp-bg-page, var(--ds-surface));
   --budget-bg-surface: var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface)));
-  --budget-text-primary: var(--fg-1, var(--cp-bg-neutral, var(--ds-background-neutral)));
+  --budget-text-primary: var(--fg-1, var(--cp-bg-neutral, var(--ds-text)));
   --budget-text-secondary: var(--fg-2, var(--ds-text-subtlest));
   --budget-text-muted: var(--fg-3, var(--cp-text-secondary, var(--ds-text-subtlest)));
   --budget-border: var(--ds-border, var(--cp-ink-1));
@@ -139,7 +139,7 @@
   /* Legacy aliases */
   --budget-bg: var(--cp-bg-page, var(--ds-surface));
   --budget-surface: var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface)));
-  --budget-text: var(--fg-1, var(--cp-bg-neutral, var(--ds-background-neutral)));
+  --budget-text: var(--fg-1, var(--cp-bg-neutral, var(--ds-text)));
   --budget-border-light: var(--ds-border, var(--cp-ink-1));
 
   /* Primary surfaces used in info/expanded rows */

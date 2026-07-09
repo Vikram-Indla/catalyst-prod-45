@@ -907,7 +907,7 @@ function CatalystShellContent() {
             // the same 240px that SidebarBase expects when expanded=true.
             // Without this, the overlay wrapper had no explicit width and
             // was collapsing to intrinsic child width, which drifted under
-            // certain routes (e.g. TeamRoomSidebar uses 220px, not 240).
+            // certain routes whose sidebar had a narrower intrinsic width.
             // When NOT visually open we let the child (zero-width placeholder or
             // zero-width placeholder) size itself — forcing a width here
             // would collapse the edge-reveal handle.

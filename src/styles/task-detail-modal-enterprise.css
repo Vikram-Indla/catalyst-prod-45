@@ -63,7 +63,7 @@
   --tm-border-default: var(--ds-border, var(--cp-ink-1));
   --tm-border-subtle: var(--ds-border, var(--cp-ink-1));
   --tm-border-strong: var(--ds-border-bold);
-  --tm-text-primary: var(--fg-1, var(--cp-bg-neutral, var(--ds-background-neutral)));
+  --tm-text-primary: var(--fg-1, var(--cp-bg-neutral, var(--ds-text)));
   --tm-text-secondary: var(--fg-2, var(--ds-text-subtlest));
   --tm-text-muted: var(--fg-3, var(--cp-text-secondary, var(--ds-text-subtlest)));
   --tm-text-light: var(--fg-4, rgba(237,237,237,0.30));
@@ -1152,7 +1152,7 @@
 }
 
 /* ── DARK MODE — V3 hardcoded overrides ── */
-.dark .task-modal-v3 , [data-theme="dark"] .task-modal-v3 { background: var(--bg-2, var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface)))); color: var(--fg-1, var(--cp-bg-neutral, var(--ds-background-neutral))); }
+.dark .task-modal-v3 , [data-theme="dark"] .task-modal-v3 { background: var(--bg-2, var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface)))); color: var(--fg-1, var(--cp-bg-neutral, var(--ds-text))); }
 .dark .task-modal-v3__main , [data-theme="dark"] .task-modal-v3__main { border-right-color: var(--ds-border, var(--cp-ink-1)); }
 .dark .task-modal-v3__header , [data-theme="dark"] .task-modal-v3__header { border-bottom-color: var(--ds-border, var(--cp-ink-1)); }
 .dark .task-modal-v3__breadcrumb , [data-theme="dark"] .task-modal-v3__breadcrumb { color: var(--fg-3, var(--cp-text-secondary, var(--ds-text-subtlest))); }
@@ -1161,9 +1161,9 @@
 .dark .task-modal-v3__breadcrumb-sep , [data-theme="dark"] .task-modal-v3__breadcrumb-sep { color: var(--ds-border-bold); }
 .dark .task-modal-v3__breadcrumb-key , [data-theme="dark"] .task-modal-v3__breadcrumb-key { background: var(--ds-border, var(--cp-ink-1)); color: var(--fg-2); }
 .dark .task-modal-v3__icon-btn , [data-theme="dark"] .task-modal-v3__icon-btn { border-color: var(--ds-border, var(--cp-ink-1)); color: var(--fg-3, var(--cp-text-secondary, var(--ds-text-subtlest))); }
-.dark .task-modal-v3__icon-btn:hover , [data-theme="dark"] .task-modal-v3__icon-btn:hover { background: var(--ds-border, var(--cp-ink-1)); color: var(--fg-1, var(--cp-bg-neutral, var(--ds-background-neutral))); }
+.dark .task-modal-v3__icon-btn:hover , [data-theme="dark"] .task-modal-v3__icon-btn:hover { background: var(--ds-border, var(--cp-ink-1)); color: var(--fg-1, var(--cp-bg-neutral, var(--ds-text))); }
 .dark .task-modal-v3__icon-btn--close:hover , [data-theme="dark"] .task-modal-v3__icon-btn--close:hover { background: var(--ds-background-danger, rgba(239,68,68,0.12)); color: var(--ds-border-danger); border-color: var(--ds-background-danger, rgba(239,68,68,0.3)); }
-.dark .task-modal-v3__title , [data-theme="dark"] .task-modal-v3__title { color: var(--fg-1, var(--cp-bg-neutral, var(--ds-background-neutral))); }
+.dark .task-modal-v3__title , [data-theme="dark"] .task-modal-v3__title { color: var(--fg-1, var(--cp-bg-neutral, var(--ds-text))); }
 .dark .task-modal-v3__title:hover , [data-theme="dark"] .task-modal-v3__title:hover { background: var(--ds-surface-overlay); border-color: var(--ds-border, var(--cp-ink-1)); }
 .dark .task-modal-v3__title:focus , [data-theme="dark"] .task-modal-v3__title:focus { background: var(--bg-2, var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface)))); border-color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary)); box-shadow: 0 0 0 3px var(--ds-background-information-bold, rgba(59,130,246,0.15)); }
 .dark .task-modal-v3__tabs , [data-theme="dark"] .task-modal-v3__tabs { border-bottom-color: var(--ds-border, var(--cp-ink-1)); }
@@ -1174,13 +1174,13 @@
 .dark .task-modal-v3__sidebar , [data-theme="dark"] .task-modal-v3__sidebar { background: var(--bg-0, var(--cp-bg-page, var(--ds-surface))); }
 .dark .task-modal-v3__field-label , [data-theme="dark"] .task-modal-v3__field-label { color: var(--fg-3, var(--cp-text-secondary, var(--ds-text-subtlest))); }
 .dark .task-modal-v3__field-shortcut , [data-theme="dark"] .task-modal-v3__field-shortcut { background: var(--ds-border, var(--cp-ink-1)); color: var(--fg-3, var(--cp-text-secondary, var(--ds-text-subtlest))); }
-.dark .task-modal-v3__field-value , [data-theme="dark"] .task-modal-v3__field-value { background: var(--bg-2, var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface)))); border-color: var(--ds-border, var(--cp-ink-1)); color: var(--fg-1, var(--cp-bg-neutral, var(--ds-background-neutral))); }
+.dark .task-modal-v3__field-value , [data-theme="dark"] .task-modal-v3__field-value { background: var(--bg-2, var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface)))); border-color: var(--ds-border, var(--cp-ink-1)); color: var(--fg-1, var(--cp-bg-neutral, var(--ds-text))); }
 .dark .task-modal-v3__field-value:hover , [data-theme="dark"] .task-modal-v3__field-value:hover { border-color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary)); background: var(--ds-background-information-bold, rgba(59,130,246,0.08)); }
 .dark .task-modal-v3__sidebar-footer , [data-theme="dark"] .task-modal-v3__sidebar-footer { border-top-color: var(--ds-border, var(--cp-ink-1)); }
 .dark .task-modal-v3__timestamp-label , [data-theme="dark"] .task-modal-v3__timestamp-label { color: var(--fg-3, var(--cp-text-secondary, var(--ds-text-subtlest))); }
-.dark .task-modal-v3__timestamp-value , [data-theme="dark"] .task-modal-v3__timestamp-value { color: var(--fg-1, var(--cp-bg-neutral, var(--ds-background-neutral))); }
+.dark .task-modal-v3__timestamp-value , [data-theme="dark"] .task-modal-v3__timestamp-value { color: var(--fg-1, var(--cp-bg-neutral, var(--ds-text))); }
 .dark .task-modal-v3__footer-btn , [data-theme="dark"] .task-modal-v3__footer-btn { background: var(--bg-2, var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface)))); border-color: var(--ds-border, var(--cp-ink-1)); color: var(--fg-3, var(--cp-text-secondary, var(--ds-text-subtlest))); }
-.dark .task-modal-v3__footer-btn:hover , [data-theme="dark"] .task-modal-v3__footer-btn:hover { background: var(--ds-border, var(--cp-ink-1)); color: var(--fg-1, var(--cp-bg-neutral, var(--ds-background-neutral))); }
+.dark .task-modal-v3__footer-btn:hover , [data-theme="dark"] .task-modal-v3__footer-btn:hover { background: var(--ds-border, var(--cp-ink-1)); color: var(--fg-1, var(--cp-bg-neutral, var(--ds-text))); }
 .dark .task-modal-v3__footer-btn--danger:hover , [data-theme="dark"] .task-modal-v3__footer-btn--danger:hover { background: var(--ds-background-danger, rgba(239,68,68,0.12)); color: var(--ds-border-danger); border-color: var(--ds-background-danger, rgba(239,68,68,0.2)); }
 
 /* Responsive */

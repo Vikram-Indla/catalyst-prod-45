@@ -1662,7 +1662,7 @@ function PeopleTab() {
                         overrideStoragePath={avatarOverrides[u.id]?.storage_path}
                         onChanged={handleAvatarChanged}
                       />
-                      <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{u.full_name || '—'}</span>
+                      <span style={{ color: 'var(--ds-text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{u.full_name || '—'}</span>
                     </div>
                   </td>
                   <td style={{ padding: '8px 16px', color: 'var(--ds-text-subtle)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{u.email || '—'}</td>

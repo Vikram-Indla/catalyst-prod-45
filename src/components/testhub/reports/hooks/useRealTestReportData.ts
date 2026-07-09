@@ -40,7 +40,12 @@ export function useTmProjectOptions() {
         .select('id, name')
         .order('name', { ascending: true });
       if (error) throw error;
-      return (data ?? []).map((p: { id: string; name: string }) => ({ label: p.name, value: p.id }));
+      // DEF-007: tm_projects can carry stale duplicate rows sharing a name
+      // (e.g. an unmerged "Senaei BAU" pair) — dedupe by name so pickers show one entry.
+      const seenNames = new Set<string>();
+      return (data ?? [])
+        .filter((p: { id: string; name: string }) => !seenNames.has(p.name) && seenNames.add(p.name))
+        .map((p: { id: string; name: string }) => ({ label: p.name, value: p.id }));
     },
     staleTime: 5 * 60 * 1000,
   });

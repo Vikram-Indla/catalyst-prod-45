@@ -464,12 +464,12 @@
   --ra-bar-track-bg: var(--ds-border, var(--cp-ink-1));
 
   /* TEXT */
-  --ra-text-percent: var(--fg-1, var(--cp-bg-neutral, var(--ds-background-neutral)));
+  --ra-text-percent: var(--fg-1, var(--cp-bg-neutral, var(--ds-text)));
   --ra-text-project: var(--ds-text-subtlest);
 
   /* AVATAR */
   --ra-avatar-bg: var(--ds-border-bold);
-  --ra-avatar-text: var(--fg-1, var(--cp-bg-neutral, var(--ds-background-neutral)));
+  --ra-avatar-text: var(--fg-1, var(--cp-bg-neutral, var(--ds-text)));
 
   /* END/EMPTY CELL */
   --ra-end-bg: repeating-linear-gradient(

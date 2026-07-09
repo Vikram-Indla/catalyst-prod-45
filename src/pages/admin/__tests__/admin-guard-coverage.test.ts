@@ -19,15 +19,10 @@ const ADMIN_DIR = resolve(__dirname, '..');
 
 const TARGET_FILES = [
   'AdminAccessPage.tsx',
-  'UserAccessPage.tsx',
   'CapacityDepartments.tsx',
   'ResourceAssignments.tsx',
-  'JiraUserSync.tsx',
   'workflows/WorkflowAdminPage.tsx',
-  'FeatureFlagsPage.tsx',
-  'NotificationTriggers.tsx',
   // Added 2026-06-09 (audit #60).
-  'AdminStorybookPage.tsx',
   'CatalystFeaturesBoard.tsx',
   'RoutingTaxonomyPage.tsx',
   'design-system/DesignSystemAdmin.tsx',

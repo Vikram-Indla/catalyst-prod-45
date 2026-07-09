@@ -163,7 +163,6 @@ const IncidentHubDetailPage = lazy(() => import("../pages/incidenthub/IncidentDe
 const TestAdminPrioritiesPage   = lazy(() => import("../pages/admin/test/TestPrioritiesPage"));
 const TestAdminCaseTypesPage    = lazy(() => import("../pages/admin/test/TestCaseTypesPage"));
 const TestAdminCaseStatusesPage = lazy(() => import("../pages/admin/test/TestCaseStatusesPage"));
-const TestAdminCaseWorkflowPage = lazy(() => import("../pages/admin/test/TestCaseWorkflowPage"));
 const TestAdminPermissionsPage  = lazy(() => import("../pages/admin/test/TestPermissionsPage"));
 
 // RBAC Admin — mock-safe mode (schema not yet deployed)
@@ -271,9 +270,7 @@ const PIObjectives = lazy(() => import("../pages/PIObjectives"));
 const WorkSpendGrid = lazy(() => import("../pages/WorkSpendGrid"));
 const RisksGridPage = lazy(() => import("../pages/risks/RisksGridPage"));
 const RiskRoamReportPage = lazy(() => import("../pages/risks/RiskRoamReportPage"));
-const TeamRoom = lazy(() => import("../pages/TeamRoom"));
 const SprintBoard = lazy(() => import("../pages/SprintBoard"));
-const Backlog = lazy(() => import("../pages/Backlog"));
 const Sprints = lazy(() => import("../pages/Sprints"));
 const Stories = lazy(() => import("../pages/Stories"));
 const Subtasks = lazy(() => import("../pages/Subtasks"));
@@ -290,7 +287,6 @@ const AdminLayout = lazy(() => import('../pages/admin/AdminLayout').then(m => ({
 const CapacityDepartmentsPage = lazy(() => import("../pages/admin/CapacityDepartments"));
 const AdminAccessPage = lazy(() => import("../pages/admin/AdminAccessPage"));
 const ReleaseOpsAdminPage = lazy(() => import("../pages/admin/ReleaseOpsAdminPage"));
-const QuartersAdminPage = lazy(() => import("../pages/admin/QuartersAdminPage"));
 const JiraSyncPage = lazy(() => import("../pages/admin/connections/JiraSyncPage").then(m => ({ default: m.JiraSyncPage })));
 const WorkHubHierarchyPage = lazy(() => import("../modules/workhub/admin/pages/WorkHubHierarchyPage"));
 // Connections hub — each integration gets a page under /admin/connections/*
@@ -303,7 +299,6 @@ const WorkflowStudioPage = lazy(() => import("../pages/admin/workflows/studio/Wo
 const WorkflowEditorPage = lazy(() => import("../pages/admin/workflows/studio/WorkflowEditorPage"));
 const TestOpsPage = lazy(() => import("../pages/admin/test-ops/TestOpsPage"));
 const AiTranslationsAuditPage = lazy(() => import("../pages/admin/AiTranslationsAuditPage"));
-const AdminStorybookPage = lazy(() => import("../pages/admin/AdminStorybookPage").then(m => ({ default: m.AdminStorybookPage })));
 const FieldRegistryPage = lazy(() => import("../pages/admin/FieldRegistryPage"));
 const FieldLayoutPage = lazy(() => import("../pages/admin/FieldLayoutPage"));
 // Incident admin routes deleted 2026-05-09 (Vikram decision: delete all 7)
@@ -942,9 +937,6 @@ export default function FullAppRoutes() {
           <Route path="settings" element={<S><InJiraSettingsPage /></S>} />
         </Route>
 
-        <Route path="/team-room" element={<S><TeamRoom /></S>} />
-        <Route path="/backlog" element={<S><Backlog /></S>} />
-        <Route path="/backlog-phase2" element={<Navigate to="/backlog" replace />} />
         <Route path="/sprints" element={<S><Sprints /></S>} />
         <Route path="/sprint-board" element={<S><SprintBoard /></S>} />
         <Route path="/stories" element={<S><Stories /></S>} />
@@ -971,15 +963,11 @@ export default function FullAppRoutes() {
           <Route index element={<Navigate to="/admin/access" replace />} />
           {/* DEPRECATED 2026-06-20 — removed pages redirect to /admin/access */}
           <Route path="overview" element={<Navigate to="/admin/access" replace />} />
-          <Route path="user-access" element={<Navigate to="/admin/access" replace />} />
           <Route path="roles-permissions" element={<Navigate to="/admin/access" replace />} />
           <Route path="feature-flags" element={<Navigate to="/admin/access" replace />} />
           <Route path="resource-assignments" element={<Navigate to="/admin/access" replace />} />
-          <Route path="settings/notifications" element={<Navigate to="/admin/access" replace />} />
-          <Route path="notification-triggers" element={<Navigate to="/admin/access" replace />} />
           <Route path="components" element={<Navigate to="/admin/access" replace />} />
           <Route path="departments" element={<Navigate to="/admin/access" replace />} />
-          <Route path="business-owners" element={<Navigate to="/admin/access" replace />} />
           <Route path="access" element={<S><AdminAccessPage /></S>} />
           <Route path="capacity-departments" element={<S><CapacityDepartmentsPage /></S>} />
           <Route path="workflows" element={<S><WorkflowStudioPage /></S>} />
@@ -988,31 +976,22 @@ export default function FullAppRoutes() {
           <Route path="workflows/:versionId/edit" element={<S><WorkflowEditorPage /></S>} />
           <Route path="test-ops" element={<S><TestOpsPage /></S>} />
           <Route path="release-ops" element={<S><ReleaseOpsAdminPage /></S>} />
-          <Route path="quarters" element={<S><QuartersAdminPage /></S>} />
           {/* ── Connections hub (/admin/connections/*) — 2026-06-21 ─────────────
               Replaces the old /admin/workhub/* section. Each integration owns
               a page; old workhub paths redirect for backward compatibility.    */}
           <Route path="connections" element={<Navigate to="/admin/connections/jira" replace />} />
           <Route path="connections/jira" element={<S><JiraSyncPage /></S>} />
           <Route path="workflows/hierarchy" element={<S><WorkHubHierarchyPage /></S>} />
-          <Route path="connections/jira/hierarchy" element={<Navigate to="/admin/workflows/hierarchy" replace />} />
           <Route path="connections/notion" element={<S><NotionConnectionPage /></S>} />
           <Route path="connections/vercel" element={<S><VercelConnectionPage /></S>} />
           {/* Backward-compat redirects — old workhub/* paths */}
-          <Route path="workhub-connection" element={<Navigate to="/admin/connections/jira" replace />} />
           <Route path="workhub" element={<Navigate to="/admin/connections/jira" replace />} />
           <Route path="workhub/jira-connection" element={<Navigate to="/admin/connections/jira" replace />} />
-          <Route path="workhub/hierarchy-mapping" element={<Navigate to="/admin/workflows/hierarchy" replace />} />
           {/* DEPRECATED — user-mapping, sync-logs, jira-user-sync */}
-          <Route path="workhub/user-mapping" element={<Navigate to="/admin/connections/jira" replace />} />
-          <Route path="jira-user-sync" element={<Navigate to="/admin/connections/jira" replace />} />
           <Route path="workhub/sync-logs" element={<Navigate to="/admin/connections/jira" replace />} />
-          <Route path="workhub/jira-sync-control" element={<Navigate to="/admin/connections/jira" replace />} />
-          <Route path="workhub/activity-sync" element={<Navigate to="/admin/connections/jira" replace />} />
           <Route path="workhub/*" element={<Navigate to="/admin/connections/jira" replace />} />
           <Route path="ai-governance/translations" element={<S><AiTranslationsAuditPage /></S>} />
           <Route path="governance" element={<S><GovernanceSettings /></S>} />
-          <Route path="storybook" element={<S><AdminStorybookPage /></S>} />
           {/* RESET ICONS — runtime asset override management. Admin-only. */}
           <Route path="icons" element={<S><AdminIconsPage /></S>} />
           <Route path="avatars" element={<S><AdminAvatarsPage /></S>} />
@@ -1026,7 +1005,6 @@ export default function FullAppRoutes() {
           <Route path="test/priorities"    element={<S><TestAdminPrioritiesPage /></S>} />
           <Route path="test/case-types"    element={<S><TestAdminCaseTypesPage /></S>} />
           <Route path="test/case-statuses" element={<S><TestAdminCaseStatusesPage /></S>} />
-          <Route path="test/case-workflow" element={<S><TestAdminCaseWorkflowPage /></S>} />
           {/* P1-S16: "Run statuses" removed -- managed a disconnected legacy
               test_run_statuses table (0 rows, 0 readers anywhere else) with
               zero bearing on the real tm_execution_status enum that drives
