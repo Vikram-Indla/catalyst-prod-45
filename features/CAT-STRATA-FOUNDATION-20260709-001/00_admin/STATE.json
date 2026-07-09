@@ -23,6 +23,6 @@
     "mode_cap_websearches": 0,
     "used_websearches": 0
   },
-  "next_action": "Register: REQ-001..021+023 DONE; REQ-022 BLOCKED on prod row counts (query in sessions/008). Command Room depth COMPLETE in code: SRC-M3 bands (012), SRC-M5 value bar (011), SRC-M7 board-pack editorial (013 — DOM screenshot PENDING, Chrome MCP disconnected; verify /strata/reviews/<key> on :8081 first thing next session). Remaining: AC5 transitions; banned-orphans stories one-liner (pre-existing). Vikram: screenshot signoff sessions 005-013 + prod counts.",
+  "next_action": "Register: REQ-001..021+023 DONE; REQ-022 BLOCKED on prod row counts (query in sessions/008). Command Room depth COMPLETE + DOM-VERIFIED (SRC-M3/M5/M7). Banned-stories debt cleared (session 014); FULL suite 67/67 green. Remaining: AC5 transitions instrumentation (last item); Vikram screenshot signoff sessions 005-014 + prod counts; then staging bake -> main-merge planning per GOD_MODE §J.",
   "blocked_on": null
 }

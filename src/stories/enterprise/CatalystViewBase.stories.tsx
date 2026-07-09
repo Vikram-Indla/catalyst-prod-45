@@ -9,8 +9,6 @@ import { fn } from 'storybook/test';
 import CatalystDetailRouter from '@/components/catalyst-detail-views/CatalystDetailRouter';
 import CatalystViewBusinessRequestV3 from '@/components/catalyst-detail-views/business-request/CatalystViewBusinessRequest.v3';
 import { BrSidebarAdapter } from '@/components/catalyst-detail-views/business-request/sections/BrSidebarAdapter';
-import { CatalystAssessmentFeatureField } from '@/components/catalyst-detail-views/shared/sections/CatalystAssessmentFeatureField';
-import { CatalystMdtRefField } from '@/components/catalyst-detail-views/shared/sections/CatalystMdtRefField';
 import { CatalystViewBase } from '@/components/catalyst-detail-views/shared/CatalystViewBase';
 import { KeyboardShortcuts } from '@/components/business-requests/create-form/KeyboardShortcuts';
 import { RichTextEditor } from '@/components/business-requests/RichTextEditor';
@@ -37,15 +35,10 @@ export const CatalystDetailRouterDefault: StoryObj = {
   render: () => <Wrap><CatalystDetailRouter  /></Wrap>,
 }
 
-export const CatalystAssessmentFeatureFieldDefault: StoryObj = {
-  name: 'CatalystAssessmentFeatureField / Default',
-  render: () => <Wrap><CatalystAssessmentFeatureField issue={null} /></Wrap>,
-}
-
-export const CatalystMdtRefFieldDefault: StoryObj = {
-  name: 'CatalystMdtRefField / Default',
-  render: () => <Wrap><CatalystMdtRefField issue={null} /></Wrap>,
-}
+// CatalystAssessmentFeatureField story removed — CLAUDE.md 2026-05-07:
+// Assessment Feature permanently banned from ALL Catalyst views.
+// CatalystMdtRefField story removed — CLAUDE.md 2026-05-05: MDT Ref field
+// permanently banned (both enforced by the banned-orphans / ads-violations gates).
 
 export const BrSidebarAdapterDefault: StoryObj = {
   name: 'BrSidebarAdapter / Default',

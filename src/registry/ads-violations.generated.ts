@@ -4,8 +4,8 @@
  * Do NOT edit by hand. Run `npm run scan:ads-violations` to regenerate
  * after fixing or introducing a violation.
  *
- * Captured: 2026-07-09T11:58:07.752Z
- * Total: 15 (P0: 5, P1: 2, P2: 8)
+ * Captured: 2026-07-09T12:41:38.745Z
+ * Total: 13 (P0: 3, P1: 2, P2: 8)
  */
 
 export type AdsViolationCategory =
@@ -34,28 +34,6 @@ export interface AdsViolation {
 }
 
 export const adsViolations: AdsViolation[] = [
-  {
-    "id": "banned:src/stories/enterprise/CatalystViewBase.stories.tsx:12",
-    "category": "banned-import",
-    "severity": "P0",
-    "file": "src/stories/enterprise/CatalystViewBase.stories.tsx",
-    "line": 12,
-    "excerpt": "import { CatalystAssessmentFeatureField } from '@/components/catalyst-detail-views/shared/sections/CatalystAssessmentFeatureField';",
-    "rule": "Assessment Feature field is permanently banned.",
-    "suggestion": "REMOVE this import. See CLAUDE.md 2026-05-07.",
-    "claudeAnchor": "2026-05-07"
-  },
-  {
-    "id": "banned:src/stories/enterprise/CatalystViewBase.stories.tsx:13",
-    "category": "banned-import",
-    "severity": "P0",
-    "file": "src/stories/enterprise/CatalystViewBase.stories.tsx",
-    "line": 13,
-    "excerpt": "import { CatalystMdtRefField } from '@/components/catalyst-detail-views/shared/sections/CatalystMdtRefField';",
-    "rule": "MDT Ref field is permanently banned.",
-    "suggestion": "REMOVE this import. See CLAUDE.md 2026-05-05.",
-    "claudeAnchor": "2026-05-05"
-  },
   {
     "id": "dropdown:src/components/catalyst-detail-views/shared/sections/Description/_components/CellChevronHandles/CellChevronHandles.tsx:61",
     "category": "hand-rolled-dropdown",
@@ -192,8 +170,8 @@ export const adsViolations: AdsViolation[] = [
 ];
 
 export const adsViolationsStats = {
-  total: 15,
-  byCategory: {"banned-import":2,"hand-rolled-dropdown":3,"deprecated-shim":2,"lozenge-duplicate":8},
-  bySeverity: {"P0":5,"P1":2,"P2":8},
-  generatedAt: '2026-07-09T11:58:07.752Z',
+  total: 13,
+  byCategory: {"hand-rolled-dropdown":3,"deprecated-shim":2,"lozenge-duplicate":8},
+  bySeverity: {"P0":3,"P1":2,"P2":8},
+  generatedAt: '2026-07-09T12:41:38.746Z',
 };

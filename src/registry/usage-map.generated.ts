@@ -4,8 +4,8 @@
  * Do NOT edit by hand. Run `npx tsx scripts/scan-components.ts` to regenerate
  * after changing any import in src/.
  *
- * Captured: 2026-07-09T11:58:05.432Z
- * Stats: 4040 components observed (670 atlaskit, 3370 internal).
+ * Captured: 2026-07-09T12:41:36.446Z
+ * Stats: 4039 components observed (670 atlaskit, 3369 internal).
  */
 
 export interface UsageMapEntry {
@@ -9242,14 +9242,6 @@ export const usageMap: UsageMap = {
       "src/stories/enterprise/DetailViewTypes.stories.tsx"
     ]
   },
-  "CatalystAssessmentFeatureField::@/components/catalyst-detail-views/shared/sections/CatalystAssessmentFeatureField": {
-    "name": "CatalystAssessmentFeatureField",
-    "source": "@/components/catalyst-detail-views/shared/sections/CatalystAssessmentFeatureField",
-    "origin": "internal",
-    "consumers": [
-      "src/stories/enterprise/CatalystViewBase.stories.tsx"
-    ]
-  },
   "CatalystAttachmentsPanel::../shared/sections": {
     "name": "CatalystAttachmentsPanel",
     "source": "../shared/sections",
@@ -9721,14 +9713,6 @@ export const usageMap: UsageMap = {
     "origin": "internal",
     "consumers": [
       "src/components/shared/CatalystListPage/CatalystListPageLayout.tsx"
-    ]
-  },
-  "CatalystMdtRefField::@/components/catalyst-detail-views/shared/sections/CatalystMdtRefField": {
-    "name": "CatalystMdtRefField",
-    "source": "@/components/catalyst-detail-views/shared/sections/CatalystMdtRefField",
-    "origin": "internal",
-    "consumers": [
-      "src/stories/enterprise/CatalystViewBase.stories.tsx"
     ]
   },
   "CatalystMention::@/components/shared/rich-text/mentions/CatalystMention": {
@@ -41141,7 +41125,17 @@ export const usageMap: UsageMap = {
       "src/modules/strata/pages/StrataExecutionPage.tsx",
       "src/modules/strata/pages/StrataKpiDetailPage.tsx",
       "src/modules/strata/pages/StrataPortfolioVmoPage.tsx",
-      "src/modules/strata/pages/StrataScorecardsPage.tsx"
+      "src/modules/strata/pages/StrataReviewsPage.tsx",
+      "src/modules/strata/pages/StrataScorecardsPage.tsx",
+      "src/modules/strata/pages/StrataStrategyRoomPage.tsx"
+    ]
+  },
+  "StrataValueBar::@/modules/strata/components/shared": {
+    "name": "StrataValueBar",
+    "source": "@/modules/strata/components/shared",
+    "origin": "internal",
+    "consumers": [
+      "src/modules/strata/pages/StrataPortfolioVmoPage.tsx"
     ]
   },
   "Strikethrough::@/lib/atlaskit-icons": {
@@ -48552,10 +48546,10 @@ export const usageMap: UsageMap = {
 };
 
 export const usageMapStats = {
-  total: 4040,
+  total: 4039,
   atlaskit: 670,
-  internal: 3370,
-  generatedAt: '2026-07-09T11:58:05.436Z',
+  internal: 3369,
+  generatedAt: '2026-07-09T12:41:36.450Z',
 };
 
 /**
