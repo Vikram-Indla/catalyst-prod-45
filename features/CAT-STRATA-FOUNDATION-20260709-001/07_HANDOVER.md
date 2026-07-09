@@ -25,8 +25,8 @@ Tests (16 green as of session 004): terminology.guard (2) + linkage.guard (5) + 
 - **REQ-020**: seed slice for full canonical chain (follow `20260705100600` conventions, idempotent).
 - **REQ-021**: remaining smoke tests (nav 4-areas render test; hierarchy trigger; ban negative test needs staging DB).
 - **REQ-022/023 (BIGGEST, own slice)**: decommission+migrate `/enterprise/objectives` stacks per CON-002 — inventory legacy tables + live row counts FIRST (never probed), reversible migration, redirects. NOTE: these legacy stacks live on `main`, not `strata-standalone` — check whether they even exist on this branch before scoping (likely absent → REQ-022/023 may be main-branch work or moot here; log to 08_DRIFT_LOG).
-- **Migration apply**: 20260709170000 + 20260709171000 are committed files, NOT applied. Apply to staging only after `cat supabase/.temp/project-ref` = `cyijbdeuehohvhnsywig` and ledger check.
-- **Screenshot/DOM acceptance** for W1–W3 UI (micro-interaction AC checklist per Plan Lock) — requires the app running on 8080 from THIS worktree.
+- ~~Migration apply~~ **DONE session 005**: all 4 strata migrations (incl. new 20260709180000 chain repair, D-BUILD-002) applied to STAGING via Supabase MCP with exact-version ledger rows. NOT applied to prod. Rules 5–15 SQL-verified incl. negative tests.
+- ~~DOM acceptance~~ **DONE session 005** on :8081 (worktree app + staging): see 06_VALIDATION_EVIDENCE.md. Open acceptance items: Vikram screenshot signoff; Sector/CXO seed gap (REQ-013 leg + REQ-012 group visual); AC8 RAG-lozenge tooltips; AC5 transitions + AC6 mutation feedback not instrumented. Beware `catalyst-rq-cache`: clear it after DB changes or the UI shows stale pre-migration data with zero refetches.
 - W3 Command Room depth (KPI band flavor on remaining landings, segmented value bar, board-pack editorial layout) per 50_design/DESIGN-DIRECTION.md.
 
 ## Resume command

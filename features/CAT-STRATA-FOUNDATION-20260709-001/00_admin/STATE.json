@@ -4,7 +4,7 @@
   "feature_work_id": "CAT-STRATA-FOUNDATION-20260709-001",
   "mode": "deep-discovery",
   "stage": 6,
-  "step": "BUILD: W1+W2+W3-labels+W4a/b/c+REQ-006 delivered & pushed on strata-standalone. Tests 16/16, tsc clean, gates at baseline. Migrations authored NOT applied.",
+  "step": "BUILD: W1-W4c+REQ-006 pushed; session 005 APPLIED all 4 migrations to staging (incl. 20260709180000 chain repair, D-BUILD-002), ledger 1:1, rules 5-15 verified by SQL incl. negative tests; DOM acceptance on :8081 done (REQ-004/005/006/001/003/013-CEO-leg). Open: Sector/CXO seed gap, AC8 tooltips, AC5/6 instrumentation, screenshot signoff.",
   "gates": {
     "R1": "approved 2026-07-09 by user 'approved' reply \u2014 workspace = features/CAT-STRATA-FOUNDATION-20260709-001/, deep-discovery, repo-evidence-first, 0 web budget, no code changes",
     "R2": "approved 2026-07-09 (resume session, structured question): CON-001 full rename incl. DB; CON-002 decommission+migrate (amendment A1); CON-003 strata-standalone branch + /strata IA; CON-006 delete Astryx + update CLAUDE.md",
@@ -23,6 +23,6 @@
     "mode_cap_websearches": 0,
     "used_websearches": 0
   },
-  "next_action": "Next slices (need live app/DB or fresh 2h slice): worktree dev server on 8081 + screenshot/micro-interaction acceptance (Plan Lock AC list) + REQ-013 drilldown verify (8080 belongs to ideation session on main — probed session 004); staging apply of 3 migrations after supabase link + project-ref check (worktree unlinked); Command Room visual depth (KPI bands on landings, segmented value bar, board-pack editorial); REQ-016/018/019/022/023 decommission slice (see D-BUILD-001: extract WorkTree pills first)",
+  "next_action": "Next slices: Sector/CXO scorecard seed (closes REQ-013 leg + REQ-012 visual); AC8 RAG-lozenge tooltips + AC5/AC6 instrumentation; charter data repair (owner_id) or lozenge->charter.status; Command Room visual depth; REQ-016/018/019/022/023 decommission slice (DB row counts now reachable via Supabase MCP; extract WorkTree pills first per D-BUILD-001). Screenshot signoff from Vikram pending on session-005 evidence.",
   "blocked_on": null
 }
