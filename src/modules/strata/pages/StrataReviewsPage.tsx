@@ -129,6 +129,22 @@ function FactChip({ icon, value, label }: { icon: React.ReactNode; value: React.
   );
 }
 
+/** Editorial numbered section header (Command Room SRC-M7) — the board pack
+ *  reads like a document: "01 — Key metrics", "02 — Frozen evidence", … */
+function PackSection({ n, title }: { n: string; title: string }) {
+  return (
+    <div style={{ display: 'flex', alignItems: 'baseline', gap: 12, marginTop: 4 }}>
+      <span aria-hidden style={{
+        fontFamily: T.fontDisplay, fontSize: 26, fontWeight: 700, color: T.subtlest,
+        lineHeight: 1, fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.02em',
+      }}>
+        {n}
+      </span>
+      <Heading as="h3" size="small">{title}</Heading>
+    </div>
+  );
+}
+
 function SnapshotRailItem({ snapshot, isSelected, periodLabel, onSelect }: {
   snapshot: StrataSnapshot;
   isSelected: boolean;
@@ -375,6 +391,30 @@ export default function StrataReviewsPage() {
       },
     ];
   }, [decisionsQ.data, actionsQ.data, snapshots, activePeriod]);
+
+  // Board-pack "01 — Key metrics" (SRC-M7): oversized stat cards from the
+  // snapshot's own frozen payloads — value + governed band exactly as frozen,
+  // never recomputed. Zero-assumption: section renders only when values exist.
+  const keyMetrics = useMemo((): StrataStat[] => {
+    return items
+      .filter((i) => typeof i.payload?.value === 'number' || typeof i.payload?.value === 'string')
+      .slice(0, 4)
+      .map((i) => ({
+        key: i.id,
+        label: typeof i.payload?.entity_name === 'string' ? i.payload.entity_name : labelize(i.entity_type),
+        value: fmtUnit(
+          i.payload!.value as number | string,
+          typeof i.payload?.unit === 'string' ? i.payload.unit : null,
+        ),
+        caption: typeof i.payload?.name === 'string'
+          ? i.payload.name
+          : typeof i.payload?.metric_key === 'string' ? labelize(i.payload.metric_key) : undefined,
+        bandKey: typeof i.payload?.status_key === 'string' ? i.payload.status_key : null,
+      }));
+  }, [items]);
+  /** Editorial section number — shifts by one when "01 — Key metrics" renders. */
+  const packNo = (position: number): string =>
+    String(position + (keyMetrics.length > 0 ? 1 : 0)).padStart(2, '0');
 
   const [expandedDecisionId, setExpandedDecisionId] = useState<string | null>(null);
   const [lockOpen, setLockOpen] = useState(false);
@@ -821,6 +861,14 @@ export default function StrataReviewsPage() {
                     </SectionMessage>
                   ) : null}
 
+                  {keyMetrics.length > 0 ? (
+                    <div style={{ display: 'grid', gap: 8 }} data-testid="strata-pack-key-metrics">
+                      <PackSection n="01" title="Key metrics" />
+                      <StrataStatStrip items={keyMetrics} />
+                    </div>
+                  ) : null}
+
+                  <PackSection n={packNo(1)} title="Frozen evidence" />
                   <StrataPanel title="Frozen evidence" icon={<Database size={16} />} count={items.length} noPadding testId="strata-reviews-evidence">
                     {items.length === 0 ? (
                       <div style={{ padding: 16 }}>
@@ -855,6 +903,7 @@ export default function StrataReviewsPage() {
                     </SectionMessage>
                   ) : null}
 
+                  <PackSection n={packNo(2)} title="Decisions & actions" />
                   <StrataPanel
                     title="Decisions"
                     icon={<FileBarChart size={16} />}
@@ -888,6 +937,7 @@ export default function StrataReviewsPage() {
                     </StrataPanel>
                   ) : null}
 
+                  <PackSection n={packNo(3)} title="Distribution & audit" />
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 16 }}>
                     <StrataPanel
                       title="Board packs"
