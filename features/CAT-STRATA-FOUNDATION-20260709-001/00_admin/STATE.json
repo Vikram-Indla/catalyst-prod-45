@@ -3,16 +3,26 @@
   "slug": "strata-foundation",
   "feature_work_id": "CAT-STRATA-FOUNDATION-20260709-001",
   "mode": "deep-discovery",
-  "stage": 5,
-  "step": "research phase COMPLETE + design-discovery lane added (amendment A2): Mobbin sweep done, 50_design/DESIGN-DIRECTION.md (Command Room) awaiting Vikram direction approval",
+  "stage": 6,
+  "step": "BUILD in progress on strata-standalone worktree: W1(3fd850c) W2(ed69742) W3-labels(a28bb0f) W4a-Astryx(a465022) delivered+pushed; migrations authored NOT applied",
   "gates": {
-    "R1": "approved 2026-07-09 by user 'approved' reply — workspace = features/CAT-STRATA-FOUNDATION-20260709-001/, deep-discovery, repo-evidence-first, 0 web budget, no code changes",
+    "R1": "approved 2026-07-09 by user 'approved' reply \u2014 workspace = features/CAT-STRATA-FOUNDATION-20260709-001/, deep-discovery, repo-evidence-first, 0 web budget, no code changes",
     "R2": "approved 2026-07-09 (resume session, structured question): CON-001 full rename incl. DB; CON-002 decommission+migrate (amendment A1); CON-003 strata-standalone branch + /strata IA; CON-006 delete Astryx + update CLAUDE.md",
-    "R3": "FROZEN 2026-07-09 — REQ-001..023, all mechanical checks pass (READINESS.md v1.1)",
+    "R3": "FROZEN 2026-07-09 \u2014 REQ-001..023, all mechanical checks pass (READINESS.md v1.1)",
     "R4": "n/a this phase (research-only contract; build handoff scored after Plan Lock + waves)"
   },
-  "counters": { "SRC": 4, "REQ": 23, "RES": 0, "CON": 6, "ASM": 8, "CAP": 7 },
-  "budget": { "mode_cap_websearches": 0, "used_websearches": 0 },
-  "next_action": "BUILD SESSION (new session): `continue feature CAT-STRATA-FOUNDATION-20260709-001` → follow 90_handoff/IMPLEMENTATION-PROMPT.md → worktree from strata-standalone → W0 probes (project-ref, live drift ASM-001, legacy enterprise-objectives table inventory for REQ-022) → write 03_PLAN_LOCK.md for W1 → STOP for Vikram approval before any code",
+  "counters": {
+    "SRC": 4,
+    "REQ": 23,
+    "RES": 0,
+    "CON": 6,
+    "ASM": 8,
+    "CAP": 7
+  },
+  "budget": {
+    "mode_cap_websearches": 0,
+    "used_websearches": 0
+  },
+  "next_action": "Continue W4 in strata-foundation-wt: REQ-020 seed slice, REQ-021 nav smoke test, REQ-006 landing headers, Command Room depth (KPI bands/value bar/board pack), then REQ-016/022/023 decommission slice (see 08_DRIFT_LOG D-BUILD-001 \u2014 stack is LIVE here); staging apply of 20260709170000/171000 after project-ref check; screenshot acceptance for W1-W3 UI",
   "blocked_on": null
 }
