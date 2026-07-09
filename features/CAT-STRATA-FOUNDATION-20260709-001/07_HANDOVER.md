@@ -15,10 +15,10 @@
 | 69c40b2 | — | ADS audit baseline ratchet down (tokens 23574→23571) |
 | a28bb0f | W3 | CEO / Sector-CXO scorecard grouping (REQ-012), VMO value-kind + Project Card labels (REQ-014), Review Cadence on Reviews (REQ-015). |
 
-Tests: `src/modules/strata/__tests__/` terminology.guard (2) + linkage.guard (5) — all green. tsc rc=0. Color gate 0=0. ads-audit-gate at (ratcheted) baseline.
+Tests (16 green as of session 004): terminology.guard (2) + linkage.guard (5) + cyclecontext.guard (6) + EnterpriseSidebar.areas (3). tsc rc=0. Color gate 0=0. ads-audit-gate at (ratcheted) baseline. NOTE: local Node 20.12 needs the styleText shim to OVERRIDE unconditionally (util.styleText exists but rejects array formats).
 
 ## Remaining (frozen register, TRACE.csv)
-- **REQ-006**: visible cycle name+period on all 4 area landings (Command Center + Scorecards already show it; verify Strategy Room / Portfolio / Reviews headers).
+- ~~REQ-006~~ **DONE session 004**: all 4 landings + Command Center render StrataPageShell → cycle+period toolbar; pinned by `cyclecontext.guard.test.ts` (DOM confirmation folded into the acceptance slice).
 - **REQ-013**: drilldown clickthrough verification on seed data (CEO → Sector/CXO → measure → cards) — needs running app.
 - **REQ-016/017/018**: delete dead `StrategyCockpit` (zero importers), delete `src/modules/strategy/astryx/` + correct CLAUDE.md Astryx section, drop dead `public.scorecards` (migration).
 - **REQ-019**: initiative→project-card seams out of Execution UI.
