@@ -310,7 +310,7 @@ function BenefitDetailSection({ benefit, isFirst, canAuthor, canAuthorValues }: 
           </div>
         ) : values.length === 0 ? (
           <div style={{ padding: 16 }}>
-            <EmptyState size="compact" header="No values recorded" description="Baseline, planned, forecast and realized values appear here per period." />
+            <EmptyState size="compact" header="No values recorded" description="Baseline, planned, forecast, realized and validated values appear here per period." />
           </div>
         ) : (
           <>
@@ -414,7 +414,7 @@ function BenefitDetailSection({ benefit, isFirst, canAuthor, canAuthorValues }: 
             <p>{(attributionQ.error as Error | null)?.message ?? 'Unknown error'}</p>
           </SectionMessage>
         ) : attributionRules.length === 0 ? (
-          <EmptyState size="compact" header="No attribution rules" description="Rules that attribute realized value to initiatives appear here." />
+          <EmptyState size="compact" header="No attribution rules" description="Rules that attribute realized value to Project Cards appear here." />
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
             {attributionRules.map((rule) => {
@@ -675,7 +675,7 @@ function BenefitDetailSection({ benefit, isFirst, canAuthor, canAuthorValues }: 
         open={author?.kind === 'add-rule'}
         onClose={() => setAuthor(null)}
         title="Add attribution rule"
-        description="Rules attribute realized value to initiatives (shared benefit, counterfactual, double counting)."
+        description="Rules attribute realized value to Project Cards (shared benefit, counterfactual, double counting)."
         fields={[
           { key: 'ruleType', label: 'Rule type', kind: 'select', required: true, options: RULE_TYPE_OPTIONS },
           {

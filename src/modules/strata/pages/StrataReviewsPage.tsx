@@ -675,6 +675,14 @@ export default function StrataReviewsPage() {
       state={selected?.status ?? null}
       testId="strata-reviews-shell"
     >
+      {/* Review Cadence (locked Governance area, REQ-015) — derived from the
+          active Strategy Cycle's period granularity; nothing fabricated. */}
+      {!isDetail && activeCycle ? (
+        <p style={{ margin: '0 0 12px', fontSize: 'var(--ds-font-size-100)', color: T.subtlest }} data-testid="strata-review-cadence">
+          Review cadence: <strong style={{ color: T.subtle }}>{labelize(activeCycle.period_granularity)}</strong>
+          {' '}· from Strategy Cycle <strong style={{ color: T.subtle }}>{activeCycle.name}</strong>
+        </p>
+      ) : null}
       {railError ? (
         <SectionMessage appearance="error" title="Could not load review data">
           <p>{railError.message}</p>
