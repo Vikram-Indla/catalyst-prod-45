@@ -185,9 +185,11 @@ interface PortfolioMemberRow {
   priority: number | null;
 }
 
+// Project Card first and default (REQ-019: memberships favor project_card
+// paths; Initiative remains selectable only for legacy rows).
 const MEMBER_TYPE_OPTIONS: SelectOption<'initiative' | 'project_card'>[] = [
-  { value: 'initiative', label: 'Initiative' },
   { value: 'project_card', label: 'Project card' },
+  { value: 'initiative', label: 'Initiative (legacy)' },
 ];
 
 function AddMemberModal({
@@ -200,7 +202,7 @@ function AddMemberModal({
 }) {
   const initiativesQ = useInitiatives();
   const projectCardsQ = useProjectCards();
-  const [memberType, setMemberType] = useState<'initiative' | 'project_card'>('initiative');
+  const [memberType, setMemberType] = useState<'initiative' | 'project_card'>('project_card');
   const [memberId, setMemberId] = useState<string | null>(null);
   const [allocation, setAllocation] = useState<number | null>(null);
   const [priority, setPriority] = useState<number | null>(null);
@@ -209,7 +211,7 @@ function AddMemberModal({
 
   useEffect(() => {
     if (open) {
-      setMemberType('initiative'); setMemberId(null); setAllocation(null); setPriority(null);
+      setMemberType('project_card'); setMemberId(null); setAllocation(null); setPriority(null);
       setError(null); setBusy(false);
     }
   }, [open]);

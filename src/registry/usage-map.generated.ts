@@ -4,7 +4,7 @@
  * Do NOT edit by hand. Run `npx tsx scripts/scan-components.ts` to regenerate
  * after changing any import in src/.
  *
- * Captured: 2026-07-09T11:17:57.479Z
+ * Captured: 2026-07-09T11:58:05.432Z
  * Stats: 4040 components observed (670 atlaskit, 3370 internal).
  */
 
@@ -7316,7 +7316,6 @@ export const usageMap: UsageMap = {
       "src/modules/docintel/pages/DocintelHealthPage.tsx",
       "src/modules/docintel/pages/DocintelUploadPage.tsx",
       "src/modules/docintel/pages/DocintelWorkspacePage.tsx",
-      "src/modules/strata/components/InitiativeDetailModal.tsx",
       "src/modules/strata/components/ProjectCardDetailView.tsx",
       "src/modules/strata/components/authoring.tsx",
       "src/modules/strata/components/shared.tsx",
@@ -10002,7 +10001,6 @@ export const usageMap: UsageMap = {
     "source": "@/components/ads",
     "origin": "internal",
     "consumers": [
-      "src/modules/strata/components/InitiativeDetailModal.tsx",
       "src/modules/strata/components/ProjectCardDetailView.tsx",
       "src/modules/strata/components/vmoAuthoring.tsx",
       "src/modules/strata/pages/StrataAdminConfigPage.tsx",
@@ -19131,7 +19129,6 @@ export const usageMap: UsageMap = {
       "src/modules/docintel/pages/DocintelHealthPage.tsx",
       "src/modules/docintel/pages/DocintelWorkspacePage.tsx",
       "src/modules/product-roadmap/components/ProductRoadmap.tsx",
-      "src/modules/strata/components/InitiativeDetailModal.tsx",
       "src/modules/strata/components/ProjectCardDetailView.tsx",
       "src/modules/strata/components/vmoAuthoring.tsx",
       "src/modules/strata/pages/StrataAdminConfigPage.tsx",
@@ -27077,7 +27074,6 @@ export const usageMap: UsageMap = {
       "src/modules/product-roadmap/components/RoadmapToolbar.tsx",
       "src/modules/program-epics/components/CreateEpicDialog.tsx",
       "src/modules/project-work-hub/components/tabs/ArchivedTab.tsx",
-      "src/modules/strata/components/InitiativeDetailModal.tsx",
       "src/modules/strata/components/ProjectCardDetailView.tsx",
       "src/modules/strata/components/shared.tsx",
       "src/modules/strata/pages/StrataCommandCenterPage.tsx",
@@ -28246,7 +28242,6 @@ export const usageMap: UsageMap = {
       "src/components/wiki-hub/database/DatabaseSurface.tsx",
       "src/modules/docintel/components/ArtifactView.tsx",
       "src/modules/docintel/components/DocumentLinksPanel.tsx",
-      "src/modules/strata/components/InitiativeDetailModal.tsx",
       "src/modules/strata/components/authoring.tsx",
       "src/modules/strata/components/shared.tsx",
       "src/modules/strata/components/vmoAuthoring.tsx",
@@ -28358,7 +28353,6 @@ export const usageMap: UsageMap = {
       "src/components/wiki-hub/database/DatabaseSurface.tsx",
       "src/modules/docintel/components/ArtifactView.tsx",
       "src/modules/docintel/components/DocumentLinksPanel.tsx",
-      "src/modules/strata/components/InitiativeDetailModal.tsx",
       "src/modules/strata/components/authoring.tsx",
       "src/modules/strata/components/shared.tsx",
       "src/modules/strata/components/vmoAuthoring.tsx",
@@ -28627,7 +28621,6 @@ export const usageMap: UsageMap = {
       "src/components/wiki-hub/database/DatabaseSurface.tsx",
       "src/modules/docintel/components/ArtifactView.tsx",
       "src/modules/docintel/components/DocumentLinksPanel.tsx",
-      "src/modules/strata/components/InitiativeDetailModal.tsx",
       "src/modules/strata/components/authoring.tsx",
       "src/modules/strata/components/shared.tsx",
       "src/modules/strata/components/vmoAuthoring.tsx",
@@ -28796,7 +28789,6 @@ export const usageMap: UsageMap = {
       "src/components/wiki-hub/database/DatabaseSurface.tsx",
       "src/modules/docintel/components/ArtifactView.tsx",
       "src/modules/docintel/components/DocumentLinksPanel.tsx",
-      "src/modules/strata/components/InitiativeDetailModal.tsx",
       "src/modules/strata/components/authoring.tsx",
       "src/modules/strata/components/shared.tsx",
       "src/modules/strata/components/vmoAuthoring.tsx",
@@ -28960,7 +28952,6 @@ export const usageMap: UsageMap = {
       "src/components/wiki-hub/database/DatabaseSurface.tsx",
       "src/modules/docintel/components/ArtifactView.tsx",
       "src/modules/docintel/components/DocumentLinksPanel.tsx",
-      "src/modules/strata/components/InitiativeDetailModal.tsx",
       "src/modules/strata/components/authoring.tsx",
       "src/modules/strata/components/shared.tsx",
       "src/modules/strata/components/vmoAuthoring.tsx",
@@ -37018,7 +37009,6 @@ export const usageMap: UsageMap = {
       "src/modules/docintel/components/TranslatedDocumentView.tsx",
       "src/modules/docintel/pages/DocintelUploadPage.tsx",
       "src/modules/project-work-hub/pages/BacklogPage.atlaskit.tsx",
-      "src/modules/strata/components/InitiativeDetailModal.tsx",
       "src/modules/strata/components/ProjectCardDetailView.tsx",
       "src/modules/strata/components/authoring.tsx",
       "src/modules/strata/components/shared.tsx",
@@ -41014,7 +41004,6 @@ export const usageMap: UsageMap = {
     "source": "./authoring",
     "origin": "internal",
     "consumers": [
-      "src/modules/strata/components/InitiativeDetailModal.tsx",
       "src/modules/strata/components/ProjectCardDetailView.tsx"
     ]
   },
@@ -41601,7 +41590,6 @@ export const usageMap: UsageMap = {
     "source": "./shared",
     "origin": "internal",
     "consumers": [
-      "src/modules/strata/components/InitiativeDetailModal.tsx",
       "src/modules/strata/components/ProjectCardDetailView.tsx",
       "src/modules/strata/components/authoring.tsx",
       "src/modules/strata/components/evidence.tsx",
@@ -42027,7 +42015,6 @@ export const usageMap: UsageMap = {
       "src/features/kanban-board/components/SelectCoverPanel.tsx",
       "src/modules/docintel/pages/DocintelWorkspacePage.tsx",
       "src/modules/project-work-hub/components/WorkItemDetailsDrawer.tsx",
-      "src/modules/strata/components/InitiativeDetailModal.tsx",
       "src/modules/strata/components/ProjectCardDetailView.tsx",
       "src/modules/strata/pages/StrataAdminConfigPage.tsx",
       "src/pages/UserProfile.tsx",
@@ -42487,7 +42474,6 @@ export const usageMap: UsageMap = {
       "src/features/kanban-board/components/SelectCoverPanel.tsx",
       "src/modules/docintel/pages/DocintelWorkspacePage.tsx",
       "src/modules/project-work-hub/components/WorkItemDetailsDrawer.tsx",
-      "src/modules/strata/components/InitiativeDetailModal.tsx",
       "src/modules/strata/components/ProjectCardDetailView.tsx",
       "src/modules/strata/pages/StrataAdminConfigPage.tsx",
       "src/pages/UserProfile.tsx",
@@ -42524,7 +42510,6 @@ export const usageMap: UsageMap = {
       "src/features/kanban-board/components/SelectCoverPanel.tsx",
       "src/modules/docintel/pages/DocintelWorkspacePage.tsx",
       "src/modules/project-work-hub/components/WorkItemDetailsDrawer.tsx",
-      "src/modules/strata/components/InitiativeDetailModal.tsx",
       "src/modules/strata/components/ProjectCardDetailView.tsx",
       "src/modules/strata/pages/StrataAdminConfigPage.tsx",
       "src/pages/UserProfile.tsx",
@@ -42607,7 +42592,6 @@ export const usageMap: UsageMap = {
       "src/features/kanban-board/components/SelectCoverPanel.tsx",
       "src/modules/docintel/pages/DocintelWorkspacePage.tsx",
       "src/modules/project-work-hub/components/WorkItemDetailsDrawer.tsx",
-      "src/modules/strata/components/InitiativeDetailModal.tsx",
       "src/modules/strata/components/ProjectCardDetailView.tsx",
       "src/modules/strata/pages/StrataAdminConfigPage.tsx",
       "src/pages/UserProfile.tsx",
@@ -48571,7 +48555,7 @@ export const usageMapStats = {
   total: 4040,
   atlaskit: 670,
   internal: 3370,
-  generatedAt: '2026-07-09T11:17:57.483Z',
+  generatedAt: '2026-07-09T11:58:05.436Z',
 };
 
 /**

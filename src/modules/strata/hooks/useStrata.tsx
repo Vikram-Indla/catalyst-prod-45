@@ -289,12 +289,9 @@ export const useInitiatives = () =>
   useQuery({ queryKey: ['strata', 'initiatives'], queryFn: executionApi.initiatives, staleTime: STALE });
 export const useProjectCards = () =>
   useQuery({ queryKey: ['strata', 'project-cards'], queryFn: executionApi.projectCards, staleTime: STALE });
-export const useInitiativeProjects = () =>
-  useQuery({ queryKey: ['strata', 'initiative-projects'], queryFn: executionApi.initiativeProjects, staleTime: STALE });
-export const useInitiativeElements = () =>
-  useQuery({ queryKey: ['strata', 'initiative-elements'], queryFn: executionApi.initiativeElements, staleTime: STALE });
-export const useInitiativeKpis = () =>
-  useQuery({ queryKey: ['strata', 'initiative-kpis'], queryFn: executionApi.initiativeKpis, staleTime: STALE });
+// Initiative drill-down hooks removed with InitiativeDetailModal (REQ-019 —
+// Initiative is a legacy read-only concept; useInitiatives stays for member
+// name resolution in the VMO until legacy memberships retire).
 export const useMilestones = (projectCardId?: string) =>
   useQuery({
     queryKey: ['strata', 'milestones', projectCardId ?? 'all'],

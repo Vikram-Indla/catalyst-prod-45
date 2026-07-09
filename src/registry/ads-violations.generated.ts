@@ -4,7 +4,7 @@
  * Do NOT edit by hand. Run `npm run scan:ads-violations` to regenerate
  * after fixing or introducing a violation.
  *
- * Captured: 2026-07-09T11:19:43.142Z
+ * Captured: 2026-07-09T11:58:07.752Z
  * Total: 15 (P0: 5, P1: 2, P2: 8)
  */
 
@@ -195,5 +195,5 @@ export const adsViolationsStats = {
   total: 15,
   byCategory: {"banned-import":2,"hand-rolled-dropdown":3,"deprecated-shim":2,"lozenge-duplicate":8},
   bySeverity: {"P0":5,"P1":2,"P2":8},
-  generatedAt: '2026-07-09T11:19:43.143Z',
+  generatedAt: '2026-07-09T11:58:07.752Z',
 };
