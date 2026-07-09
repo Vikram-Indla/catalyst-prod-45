@@ -41,8 +41,19 @@ describe('buildCatySuggestions', () => {
     expect(buildCatySuggestions([item({ jira_updated_at: daysAgo(1) })], NOW, new Set())).toHaveLength(0);
   });
 
-  it('excludes dismissed items', () => {
-    expect(buildCatySuggestions([item({ issue_key: 'BAU-2' })], NOW, new Set(['stale:BAU-2']))).toHaveLength(0);
+  it('excludes dismissed items (and includes the same item when not dismissed)', () => {
+    // Give the item a real scoring signal (Overdue) so it clears the
+    // minimum-signal threshold — otherwise a zero-signal item is excluded
+    // regardless of the dismissed set and the test proves nothing.
+    // Dismissal keys use the scorer's real `trending:<key>` format
+    // (the old `stale:` prefix belonged to the superseded stale detector).
+    const overdue = item({ issue_key: 'BAU-2', status: 'In Progress', effective_due_date: daysAgo(2) });
+
+    const included = buildCatySuggestions([overdue], NOW, new Set());
+    expect(included.map((s) => s.issueKey)).toEqual(['BAU-2']);
+
+    const dismissed = buildCatySuggestions([overdue], NOW, new Set(['trending:BAU-2']));
+    expect(dismissed).toHaveLength(0);
   });
 
   it('tolerates inconsistent category casing/spacing', () => {
