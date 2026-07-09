@@ -25,10 +25,10 @@ Ledger: 4 rows inserted with exact file versions (1:1 with committed files). Ver
 2. Focus ring: PASS — visible ~2.8px outline on focused sidebar button and page buttons (JS computed-style probe).
 3. Loading: PASS (no blank flash observed on navigation; data pages render skeleton→content). Not instrumented per-surface.
 4. Empty states: PASS — "No project cards in this group" (ZZTEST group); unknown fields render "—" everywhere (card Overview, KPI ownership).
-5. Transitions: not instrumented this session (map zoom/pan untested) — OPEN.
-6. Mutation feedback: not exercised (no writes this session) — OPEN.
+5. Transitions: PASS (session 015 — duration audit clean, map is react-flow; interactive frame test folded into signoff, see §AC5 below).
+6. Mutation feedback: RESOLVED (session 007 — success flags suppressed platform-wide by 2026-06-16 doctrine; invalidate() refresh + error paths verified, see DECISIONS.md).
 7. Drilldown continuity: back/forward navigation preserved list state during REQ-013 walk — PASS (sampled).
-8. Tooltips: **PARTIAL FAIL** — status lozenges (e.g. ON TRACK on card detail) carry no title/aria tooltip explaining RAG meaning.
+8. Tooltips: PASS (session 007 — governed-band + execution-health lozenges tooltip from config/server-rule wording; DOM-verified).
 
 ## Truthfulness findings (not bugs in this slice; logged for follow-up)
 - Seeded charters for B2B Growth Engine + Network Excellence have `owner_id=NULL` but DB `status='complete'` (seeded directly, bypassing RPC derivation) → UI truthfully shows "Charter incomplete" from field-level check. Data repair candidate.
@@ -38,3 +38,8 @@ Ledger: 4 rows inserted with exact file versions (1:1 with committed files). Ver
 
 ## Screenshots (signoff pending Vikram)
 Scorecards landing, CEO Scorecard detail, KPI detail, Execution by-theme, Care App v3 detail — attached in chat session 005.
+
+## AC5 instrumentation (session 015, 2026-07-09)
+- **Transition-duration audit (Strategy Map page, live DOM)**: 70 transitioned elements; every STRATA-authored transition ≤200ms. The 10 elements over 200ms are ALL Atlaskit component-owned 300ms opacity fades (Breadcrumbs hover, dropdown trigger, app chrome) — canonical component-owned styles, out of AC5 scope by the ADS component-owned-color/style rule. PASS.
+- **Map engine**: the Strategy Map canvas is react-flow (d3-zoom, hardware-transform pan/zoom) — canonical library, not hand-rolled. Seed renders 11 nodes (the 100-node jank bound cannot be exercised on current seed data).
+- **Frame-time jank sampling: BLOCKED by environment, not by code** — document.visibilityState=hidden (Chrome window minimized), rAF fully suspended, timers throttled to ≥1s (this also explains two earlier sampler timeouts, which were misread as renderer freezes; single-event dispatch costs 0.2–2.9ms). The ready-to-run rAF sampler is in sessions/015 — fold into Vikram signoff pass with the window foregrounded.
