@@ -23,3 +23,12 @@ triggered once session 006 backfilled charter owner_ids (session 005's 10/10 rou
 BEFORE the backfill, and objectives with NULL owners rendered '—'). One-line fix applied
 (`?.name`), verified live: theme detail renders Summary/Charter/KPI links/Map edges/Audit,
 charter owner shows as text. tsc clean, 67/67 green, gates at baseline after fix.
+
+## D-BUILD-004 (2026-07-09, session 018) — cross-theme guard hole on project-objective upward link
+Create/edit verification (60_delivery/CREATE_EDIT_VERIFICATION.md) exercised every authoring
+flow live. One rule-6-adjacent gap found: `strata_create_project_objective` accepts a
+`p_parent_theme_objective` from ANY theme (validates theme-context only, not theme match) and
+the card modal's "Link to Theme Objective" select is unfiltered. The sibling guard on
+`strata_project_cards.objective_element_id` (trigger strata_validate_card_objective) verified
+working both ways (cross-theme rejected, same-theme accepted). NOT fixed — needs a UI filter +
+one RPC clause (migration); flagged for PO decision. All ZZTEST test data deleted (0 rows).
