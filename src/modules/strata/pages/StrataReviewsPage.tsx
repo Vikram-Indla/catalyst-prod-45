@@ -50,6 +50,8 @@ import {
   StrataPanel,
   StrataDataStateLozenge,
   StrataBandLozenge,
+  StrataStatStrip,
+  type StrataStat,
   T,
 } from '@/modules/strata/components/shared';
 import { StrataFormModal } from '@/modules/strata/components/authoring';
@@ -341,6 +343,38 @@ export default function StrataReviewsPage() {
   const boardPacksQ = useBoardPacks(selected?.id);
   const auditQ = useStrataAudit('strata_snapshots');
   const profilesQ = useProfileNames();
+
+  // Executive KPI band (Command Room SRC-M3) — derived from loaded governance
+  // data only; overdue = open/in-progress actions past their due date.
+  const governanceBand = useMemo((): StrataStat[] => {
+    const decisions = (decisionsQ.data ?? []) as StrataDecision[];
+    const actions = (actionsQ.data ?? []) as StrataAction[];
+    const openDecisions = decisions.filter((d) => d.status === 'open').length;
+    const today = new Date().toISOString().slice(0, 10);
+    const openActions = actions.filter((a) => a.status === 'open' || a.status === 'in_progress');
+    const overdue = openActions.filter((a) => a.due_date != null && a.due_date < today).length;
+    return [
+      {
+        key: 'snapshots', label: 'Snapshots', value: snapshots.length,
+        caption: snapshots[0] ? `latest ${snapshots[0].snapshot_key}` : 'none yet',
+      },
+      {
+        key: 'decisions', label: 'Open decisions', value: openDecisions,
+        caption: openDecisions > 0 ? 'awaiting a decision forum' : 'none open',
+        captionTone: openDecisions > 0 ? 'warning' : 'success',
+      },
+      {
+        key: 'actions', label: 'Overdue actions', value: overdue,
+        caption: overdue > 0 ? `of ${openActions.length} open actions` : `${openActions.length} open, none overdue`,
+        captionTone: overdue > 0 ? 'danger' : 'success',
+      },
+      {
+        key: 'period', label: 'Period close', value: activePeriod ? labelize(activePeriod.close_status) : '—',
+        caption: activePeriod ? activePeriod.name : 'no active period',
+        captionTone: activePeriod?.close_status === 'closed' ? 'success' : 'neutral',
+      },
+    ];
+  }, [decisionsQ.data, actionsQ.data, snapshots, activePeriod]);
 
   const [expandedDecisionId, setExpandedDecisionId] = useState<string | null>(null);
   const [lockOpen, setLockOpen] = useState(false);
@@ -698,6 +732,7 @@ export default function StrataReviewsPage() {
         </div>
       ) : (
         <div style={{ display: 'grid', gap: 16 }}>
+          {!isDetail ? <StrataStatStrip items={governanceBand} testId="strata-reviews-band" /> : null}
           {/* ── Period governance (index only): close ritual lives with reviews ── */}
           {!isDetail && activePeriod ? (
             <StrataPanel

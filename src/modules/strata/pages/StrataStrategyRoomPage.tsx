@@ -23,8 +23,8 @@ import {
   useThemeCharters, useProfileNames, useStrataContext, useStrataRoles, useStrategyElements,
 } from '@/modules/strata/hooks/useStrata';
 import { strategyApi, valueApi } from '@/modules/strata/domain';
-import { StrataChipMenu, StrataPageShell, StrataPanel, T } from '@/modules/strata/components/shared';
-import type { StrataMenuOption } from '@/modules/strata/components/shared';
+import { StrataChipMenu, StrataPageShell, StrataPanel, StrataStatStrip, T } from '@/modules/strata/components/shared';
+import type { StrataMenuOption, StrataStat } from '@/modules/strata/components/shared';
 import { StrataFormModal } from '@/modules/strata/components/authoring';
 import { fmtRatioPct, labelize } from '@/modules/strata/components/format';
 import type { StrataGateModel, StrataKpi, StrataStrategyElement } from '@/modules/strata/types';
@@ -520,6 +520,35 @@ export default function StrataStrategyRoomPage() {
   const ownerName = (ownerId: string | null): string =>
     (ownerId ? profiles?.get(ownerId)?.name : null) ?? '—';
 
+  // Executive KPI band (Command Room SRC-M3) — derived from already-loaded
+  // data, zero fabrication; charter completeness matches the row lozenge rule.
+  const bandStats = useMemo((): StrataStat[] => {
+    const themes = elements.filter((e) => e.element_type === 'theme');
+    const activeThemes = themes.filter((e) => e.status === 'active');
+    const themeObjectives = elements.filter((e) => e.element_type === 'objective' && e.context === 'theme');
+    const activeObjectives = themeObjectives.filter((e) => e.status === 'active');
+    const chartersComplete = activeThemes.filter((t) => {
+      const c = charterByElement.get(t.id);
+      return !!(c && c.hypothesis && c.value_thesis && c.owner_id);
+    }).length;
+    const kpiLinked = new Set(elementKpis.map((l) => l.element_id));
+    const objectivesMeasured = activeObjectives.filter((o) => kpiLinked.has(o.id)).length;
+    return [
+      { key: 'themes', label: 'Active themes', value: activeThemes.length, caption: `of ${themes.length} in cycle` },
+      { key: 'objectives', label: 'Active objectives', value: activeObjectives.length, caption: 'strategic objectives' },
+      {
+        key: 'charters', label: 'Charters complete', value: `${chartersComplete}/${activeThemes.length}`,
+        caption: chartersComplete < activeThemes.length ? 'governance drift' : 'all active themes chartered',
+        captionTone: chartersComplete < activeThemes.length ? 'warning' : 'success',
+      },
+      {
+        key: 'coverage', label: 'Objectives measured', value: `${objectivesMeasured}/${activeObjectives.length}`,
+        caption: objectivesMeasured < activeObjectives.length ? 'missing KPI links' : 'full KPI coverage',
+        captionTone: objectivesMeasured < activeObjectives.length ? 'warning' : 'success',
+      },
+    ];
+  }, [elements, charterByElement, elementKpis]);
+
   const distinctTypes = useMemo(
     () => Array.from(new Set(elements.map((e) => e.element_type))),
     [elements],
@@ -837,6 +866,8 @@ export default function StrataStrategyRoomPage() {
               </SectionMessage>
             </div>
           ) : null}
+
+          <StrataStatStrip items={bandStats} testId="strata-strategy-band" />
 
           {/* Hierarchy */}
           <div style={{ marginBottom: 16 }}>
