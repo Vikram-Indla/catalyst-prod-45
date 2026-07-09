@@ -14,7 +14,7 @@
 import React, { useState } from 'react';
 import {
   Button, DropdownMenu, Heading, Lozenge,
-  Modal, ModalBody, ModalFooter, ModalHeader, ModalTitle, SectionMessage, Textfield,
+  Modal, ModalBody, ModalFooter, ModalHeader, ModalTitle, SectionMessage, Textfield, Tooltip,
 } from '@/components/ads';
 import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
 import { ChevronDown } from '@/lib/atlaskit-icons';
@@ -64,10 +64,23 @@ const EXECUTION_HEALTH_APPEARANCE: Record<ExecutionHealthKey, React.ComponentPro
   on_track: 'success', minor_delay: 'moved', major_delay: 'removed',
   not_started: 'default', not_available: 'default', on_hold: 'default',
 };
+// Meanings mirror the server rules in strata_calc_execution_progress
+// (20260706231000) verbatim — if the RPC thresholds change, change these too.
+const EXECUTION_HEALTH_MEANING: Record<ExecutionHealthKey, string> = {
+  on_track: 'Schedule variance is under 10% and forecast is within 30 days of baseline end.',
+  minor_delay: 'Schedule variance is in the 10–20% minor-delay band.',
+  major_delay: 'Schedule variance is at or above 20%, or forecast end is more than 30 days beyond baseline end.',
+  not_started: 'Baseline window has not started and no progress recorded yet.',
+  not_available: 'Insufficient milestone baseline or progress data to calculate health.',
+  on_hold: 'Project is on hold — excluded from execution rollups.',
+};
 export function StrataExecutionHealthLozenge({ health }: { health: ExecutionHealthKey | string | null | undefined }) {
   const key = (health ?? 'not_available') as ExecutionHealthKey;
   const label = EXECUTION_HEALTH_LABEL[key] ?? String(health);
-  return <Lozenge appearance={EXECUTION_HEALTH_APPEARANCE[key] ?? 'default'}>{label}</Lozenge>;
+  const lozenge = <Lozenge appearance={EXECUTION_HEALTH_APPEARANCE[key] ?? 'default'}>{label}</Lozenge>;
+  const meaning = EXECUTION_HEALTH_MEANING[key];
+  if (!meaning) return lozenge;
+  return <Tooltip content={`${label} — ${meaning}`}><span style={{ display: 'inline-flex' }}>{lozenge}</span></Tooltip>;
 }
 
 // ── Band lozenge + band tone (governed config; zero-assumption when unknown) ─
@@ -76,9 +89,13 @@ export function StrataBandLozenge({ bandKey, band }: { bandKey?: string | null; 
   const resolved = band ?? resolve(bandKey ?? null);
   if (!resolved) return bandKey ? <Lozenge appearance="default">{bandKey}</Lozenge> : null;
   return (
-    <Lozenge appearance={(resolved.appearance as React.ComponentProps<typeof Lozenge>['appearance']) ?? 'default'}>
-      {resolved.label}
-    </Lozenge>
+    <Tooltip content={`${resolved.label} — governed threshold band, score ≥ ${resolved.min_score}.`}>
+      <span style={{ display: 'inline-flex' }}>
+        <Lozenge appearance={(resolved.appearance as React.ComponentProps<typeof Lozenge>['appearance']) ?? 'default'}>
+          {resolved.label}
+        </Lozenge>
+      </span>
+    </Tooltip>
   );
 }
 

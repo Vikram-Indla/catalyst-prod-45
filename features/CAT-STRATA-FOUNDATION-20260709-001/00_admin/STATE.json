@@ -23,6 +23,6 @@
     "mode_cap_websearches": 0,
     "used_websearches": 0
   },
-  "next_action": "Next slices: AC8 RAG-lozenge tooltips + AC6 mutation feedback (Recalculate shows no flag; stale total until reload) + AC5 transitions; Command Room visual depth (KPI bands on landings, segmented value bar, board-pack editorial); REQ-016/018/019/022/023 decommission slice (DB row counts reachable via Supabase MCP; extract WorkTree pills first per D-BUILD-001). Screenshot signoff from Vikram pending on session-005/006 evidence. Sector/CXO seed + charter repair DONE (20260709190000).",
+  "next_action": "Next slices: Command Room visual depth (KPI bands on landings, segmented value bar, board-pack editorial per 50_design/DESIGN-DIRECTION.md); REQ-016/018/019/022/023 decommission slice (DB row counts reachable via Supabase MCP; extract WorkTree pills first per D-BUILD-001); AC5 transitions instrumentation (only open micro-interaction item). Screenshot signoff from Vikram pending on sessions 005-007 evidence. DONE: sector seed+charter repair (006), AC8 tooltips + AC6 doctrine resolution (007).",
   "blocked_on": null
 }
