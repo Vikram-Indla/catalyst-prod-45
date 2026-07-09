@@ -76,3 +76,22 @@ Full-repo vitest has pre-existing failures in legacy non-STRATA tests (e.g. hudd
 
 ### Screenshot signoff
 Package prepared: 60_delivery/SCREENSHOT_SIGNOFF.md — 13 surfaces, all PENDING product-owner review.
+
+## Session 017 — AC5 100-node jank proof (2026-07-09)
+
+### Method (temporary, local-only — zero DB writes)
+89 synthetic nodes + 88 edges injected purely client-side into the live Strategy Map's react-flow state (React `onNodesChange`/`onEdgesChange` add-changes via fiber traversal; node visuals cloned from real seed nodes incl. JSX NodeCard labels, ~18% of edges animated to mirror the seed's strong-link animation). DOM verified 100 nodes / 95 edges mounted. No Supabase call is made by this path; node-drag and handle-connect (the two write paths on this page) were never triggered — all drags started on empty canvas (pane pan).
+
+### Results (window foregrounded, visibilityState=visible verified before/after each run)
+Real trusted input: wheel zoom in/out cycles (multiple positions), click-drag pans, at 100 nodes/95 edges:
+| Run | Samples | p50 | p95 | p99 | max | >50ms | >33.4ms |
+|---|---|---|---|---|---|---|---|
+| A (5 interactions) | 195 | 16.7ms | 17.6ms | 33.8ms | 34.3ms | 0 | 2 |
+| B (8 interactions) | 422 | 16.7ms | 17.6ms | 17.7ms | 34.2ms | 0 | 1 |
+Combined: 617 frames, **zero frames over 50ms**, 3 isolated single-frame drops to ~34ms (one dropped frame each during zoom re-render), otherwise locked 60fps. Node count re-verified = 100 at end of each run (no silent reset by refetch).
+(A third, earlier run of 970 samples showed identical interaction-frame stats but contained one 34s rAF suspension while the window lost visibility between tool calls — environment artifact, matching the session-015 finding; excluded.)
+
+### Cleanup verified
+Page reload discarded the injected state (DOM back to 11 nodes, 0 jank ids). Staging read-only check: strata_strategy_elements=14, strata_map_edges=7, 0 jank rows — identical to pre-test. Prod untouched.
+
+### AC5 disposition: **CLOSED — PASS at 100 nodes. The "with limitation" caveat is retired.**

@@ -23,6 +23,6 @@
     "mode_cap_websearches": 0,
     "used_websearches": 0
   },
-  "next_action": "SESSION 016: final acceptance closure DONE. REQ-022 CLOSED no-op (all 7 legacy OKR tables 0 rows on PROD, read-only verified). AC5 CLOSED with limitation (foregrounded sampler: 6791 frames, p50 16.7ms/p95 17.6ms, 1 frame >50ms; 100-node bound untested on 11-node seed). Theme-detail crash found+fixed (D-BUILD-003, 1 line). 67/67 scoped suite green, tsc rc=0, gates at baseline. DECISION: Ready for Product Owner Review (60_delivery/RELEASE_READINESS.md). WAITING ON VIKRAM/JK: (1) SCREENSHOT_SIGNOFF.md 13 surfaces + 17-item checklist, (2) AC5 100-node limitation accept-or-test. Then staging bake -> main-merge planning per GOD_MODE §J.",
-  "blocked_on": "product-owner screenshot signoff + AC5 limitation decision"
+  "next_action": "SESSION 017: AC5 FULLY CLOSED — 100-node local-only dataset (client-side injection, zero DB writes, cleanup verified): p50 16.7ms/p95 17.6ms, 0 frames >50ms over 617 frames at 100 nodes/95 edges. Limitation retired. Session 016 recap: REQ-022 CLOSED no-op (prod 0 rows, read-only), theme-detail crash fixed (D-BUILD-003), 67/67 green, gates at baseline. DECISION: Ready for Product Owner Review (60_delivery/RELEASE_READINESS.md). WAITING ON VIKRAM/JK: SCREENSHOT_SIGNOFF.md (13 surfaces + checklist) — the ONLY remaining gate. Then staging bake -> main-merge planning per GOD_MODE §J.",
+  "blocked_on": "product-owner screenshot signoff"
 }

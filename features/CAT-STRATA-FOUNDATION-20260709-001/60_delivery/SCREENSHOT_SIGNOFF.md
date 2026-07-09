@@ -41,4 +41,4 @@ Historical session evidence (in each session's chat): 005 = migration-day DOM ac
 - [ ] No active Play terminology visible (pinned by terminology.guard tests; visual confirm rows 2, 5)
 - [ ] Portfolio independence from Theme reviewed (row 11 — portfolio members by allocation, not theme)
 - [ ] Project Card as execution object reviewed (rows 9–10)
-- [ ] AC5 100-node limitation accepted OR 100-node dataset test requested (see RELEASE_READINESS.md)
+- [x] ~~AC5 100-node limitation~~ — resolved session 017: 100-node local-only dataset tested, PASS (0 frames >50ms; see 06_VALIDATION_EVIDENCE.md §017)
