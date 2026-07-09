@@ -725,11 +725,23 @@ function StepRunner({
       }
 
       // Update scope status
-      const { error: scopeUpdateErr } = await supabase
+      // DEF-010: .update() without .select() returns { error: null, data: null }
+      // when RLS's USING clause (or a stale scope.id) silently filters the row
+      // out — no exception, no error toast, but current_status never moves off
+      // 'not_run'. That is exactly the zero-step force-pass symptom: a run row
+      // gets inserted (correct status), but the scope's current_status — which
+      // both the cycle Scope table and the case's Runs tab actually read —
+      // stays 'not_run'. Selecting the updated row back turns that silent
+      // no-op into a real, surfaced error.
+      const { data: scopeUpdateRows, error: scopeUpdateErr } = await supabase
         .from('tm_cycle_scope')
         .update({ current_status: dbStatus })
-        .eq('id', scope.id);
+        .eq('id', scope.id)
+        .select('id');
       if (scopeUpdateErr) throw scopeUpdateErr;
+      if (!scopeUpdateRows || scopeUpdateRows.length === 0) {
+        throw new Error('Run saved, but the cycle scope status update was blocked (no row updated) — refresh and retry.');
+      }
 
       setShowSaveModal(false);
       setPendingFiles([]);
