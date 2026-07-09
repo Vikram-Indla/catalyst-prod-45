@@ -92,7 +92,11 @@ jobs:
       - name: Build
         run: npx vite build
         env:
-          NODE_OPTIONS: '--max-old-space-size=6144'
+          # Measured peak RSS for a full production build is ~7.4 GB
+          # (macOS /usr/bin/time -l, 2026-07-09); 6144 MB old-space OOMs
+          # in the rollup render phase. ubuntu-latest standard runners
+          # have 16 GB RAM, so 8192 MB fits with headroom.
+          NODE_OPTIONS: '--max-old-space-size=8192'
 
       - name: Run tests
         run: npx vitest run --passWithNoTests
