@@ -44,6 +44,9 @@ export const GUARD_EVIDENCE_REGISTRY: Record<string, { evidence: 'real' | 'missi
   figma_attached:              { evidence: 'real',    blockingSafe: true,  note: 'ph_issue_attachments (issue_key-scoped) filename/content_url match on figma (gateTransition)' },
   required_field:              { evidence: 'missing', blockingSafe: false, note: 'field requirements table not yet evaluated in gate — advisory' },
   comment_required:            { evidence: 'real',    blockingSafe: true,  note: 'real count from ph_comments (FK to ph_issues.id, gateTransition)' },
+  strategy_link_present:       { evidence: 'real',    blockingSafe: true,  note: 'idn_ideas.strategy_element_id IS NOT NULL — gate prevents Approve without strategy link (D7)' },
+  scores_complete:             { evidence: 'real',    blockingSafe: true,  note: 'all active scoring model drivers have at least one score for the idea — checked against idn_idea_scores' },
+  duplicate_review_complete:   { evidence: 'real',    blockingSafe: true,  note: 'duplicate suggestion (if present) has been reviewed — idn_ai_suggestions status <> proposed for duplicates' },
 };
 
 export interface ResolvedVersion {
