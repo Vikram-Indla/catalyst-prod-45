@@ -20,3 +20,6 @@
 - Verified all FK targets + helper fns exist in migrations (products, business_requests, strata_strategy_elements, ai_documents, is_admin, current_user_is_approved, catalyst_slugify). Timestamp unique.
 - Authored validation/s1_rls_probes.sql (P0-P9) for staging run.
 - NEXT (blocked on commit gate + staging apply): link staging (ref-check), db push, run probes → 06_VALIDATION_EVIDENCE.md, then commit S1.
+
+## S1 closed — 2026-07-09
+- Committed 0bf86b336 (16 files). Staging apply via Supabase MCP (token staging-scoped; ref screenshot-verified). Ledger aligned 20260709130000. P0 + 8 behavioral RLS probes ALL PASS → 06_VALIDATION_EVIDENCE.md. S1 EXIT COMPLETE. Next: S2 governance schema.
