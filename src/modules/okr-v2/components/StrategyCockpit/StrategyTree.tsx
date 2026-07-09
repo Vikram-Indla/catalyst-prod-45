@@ -19,11 +19,11 @@ import {
 } from '../../lib/okrMetrics';
 
 // Shared presentational components
-import { OkrStatusPill } from '../shared/OkrStatusPill';
-import { OkrProgressCell } from '../shared/OkrProgressCell';
+import { OkrStatusPill } from '@/components/shared/okr-pills/OkrStatusPill';
+import { OkrProgressCell } from '@/components/shared/okr-pills/OkrProgressCell';
 import { OkrRisksCell } from '../shared/OkrRisksCell';
 import { OkrLinkedCell } from '../shared/OkrLinkedCell';
-import { OkrThemeDot } from '../shared/OkrThemeDot';
+import { OkrThemeDot } from '@/components/shared/okr-pills/OkrThemeDot';
 import { OkrWorkItemBadge } from '../shared/OkrWorkItemBadge';
 
 interface StrategyTreeProps {

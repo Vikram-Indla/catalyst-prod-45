@@ -5,8 +5,17 @@
 
 import { cn } from '@/lib/utils';
 import { TrendingUp, TrendingDown } from '@/lib/atlaskit-icons';
-import type { ProgressBaseline, TrendCode } from '../../lib/okrTypes';
 import { useTheme } from '@/hooks/useTheme';
+
+// Inlined from the retired okr-v2 stack's okrTypes (CON-002 decommission) —
+// these two shapes are the pills' only type dependency.
+export type TrendCode = 'ahead' | 'on-track' | 'at-risk' | 'off-track' | 'none';
+export interface ProgressBaseline {
+  actual: number;           // 0–100
+  expected: number | null;  // 0–100, null if dates missing
+  variance: number | null;  // actual - expected
+  trend: TrendCode;
+}
 
 interface OkrProgressCellProps {
   baseline: ProgressBaseline;
