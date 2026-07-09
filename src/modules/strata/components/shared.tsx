@@ -19,7 +19,7 @@ import {
 import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
 import { ChevronDown } from '@/lib/atlaskit-icons';
 import { useBandResolver, useStrataContext } from '../hooks/useStrata';
-import { fmtScore } from './format';
+import { fmtSarCompact, fmtScore } from './format';
 import type { DataState, ThresholdBand } from '../types';
 
 export const T = {
@@ -144,6 +144,73 @@ export function StrataScoreRing({
         {fmtScore(score)}
       </span>
     </div>
+  );
+}
+
+// ── Segmented value bar (Command Room SRC-M5) ────────────────────────────────
+// Planned→Forecast→Realized→Validated as ONE visual; leakage = the visible gap.
+// No canonical magnitude-overlay bar exists: WorkItemsProgressBar's contract is
+// count buckets partitioning a total, while value kinds are NESTED magnitudes
+// (validated ⊆ realized; forecast vs planned reference) — proof in sessions/011.
+// Token-pure like StrataScoreRing; zero-assumption (renders nothing w/o scale).
+export function StrataValueBar({
+  planned, forecast, realized, validated, periodName, testId,
+}: {
+  planned: number | null; forecast: number | null; realized: number | null; validated: number | null;
+  periodName?: string | null; testId?: string;
+}) {
+  const scale = Math.max(planned ?? 0, forecast ?? 0, realized ?? 0);
+  if (!(scale > 0)) return null;
+  const pct = (v: number | null) => (v == null ? null : Math.max(0, Math.min(100, (v / scale) * 100)));
+  const p = pct(planned); const f = pct(forecast); const r = pct(realized); const va = pct(validated);
+  const leakage = planned != null && forecast != null && forecast < planned ? planned - forecast : null;
+  const summary = [
+    planned != null ? `Planned ${fmtSarCompact(planned)}` : null,
+    forecast != null ? `Forecast ${fmtSarCompact(forecast)}` : null,
+    realized != null ? `Realized ${fmtSarCompact(realized)}` : null,
+    validated != null ? `Validated ${fmtSarCompact(validated)}` : null,
+    leakage != null ? `Leakage ${fmtSarCompact(leakage)}` : null,
+  ].filter(Boolean).join(' · ');
+  return (
+    <div data-testid={testId} style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+      <Tooltip content={`${periodName ? `${periodName} — ` : ''}${summary}`}>
+        <div role="img" aria-label={summary} style={{
+          position: 'relative', height: 10, borderRadius: 5, overflow: 'hidden',
+          background: 'var(--ds-background-neutral)',
+        }}>
+          {leakage != null && f != null && p != null ? (
+            <div style={{ position: 'absolute', left: `${f}%`, width: `${p - f}%`, top: 0, bottom: 0, background: 'var(--ds-background-danger)' }} />
+          ) : null}
+          {r != null ? (
+            <div style={{ position: 'absolute', left: 0, width: `${r}%`, top: 0, bottom: 0, background: 'var(--ds-background-success)' }} />
+          ) : null}
+          {va != null ? (
+            <div style={{ position: 'absolute', left: 0, width: `${va}%`, top: 0, bottom: 0, background: 'var(--ds-background-success-bold)' }} />
+          ) : null}
+          {f != null ? (
+            <div style={{ position: 'absolute', left: `calc(${f}% - 1px)`, width: 2, top: 0, bottom: 0, background: 'var(--ds-border-bold)' }} />
+          ) : null}
+        </div>
+      </Tooltip>
+      <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap', fontSize: 'var(--ds-font-size-100)', color: T.subtle }}>
+        <ValueBarKey swatch="var(--ds-background-neutral)" label="Planned" text={planned != null ? fmtSarCompact(planned) : '—'} />
+        <ValueBarKey swatch="var(--ds-border-bold)" label="Forecast" text={forecast != null ? fmtSarCompact(forecast) : '—'} />
+        <ValueBarKey swatch="var(--ds-background-success)" label="Realized" text={realized != null ? fmtSarCompact(realized) : '—'} />
+        <ValueBarKey swatch="var(--ds-background-success-bold)" label="Validated" text={validated != null ? fmtSarCompact(validated) : '—'} />
+        {leakage != null ? (
+          <ValueBarKey swatch="var(--ds-background-danger)" label="Leakage" text={fmtSarCompact(leakage)} />
+        ) : null}
+      </div>
+    </div>
+  );
+}
+
+function ValueBarKey({ swatch, label, text }: { swatch: string; label: string; text: string }) {
+  return (
+    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, whiteSpace: 'nowrap' }}>
+      <span aria-hidden style={{ width: 10, height: 10, borderRadius: 2, background: swatch, flexShrink: 0, border: `1px solid ${T.border}` }} />
+      {label} <strong style={{ color: T.text, fontWeight: 600, fontVariantNumeric: 'tabular-nums' }}>{text}</strong>
+    </span>
   );
 }
 

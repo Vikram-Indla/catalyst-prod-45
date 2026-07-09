@@ -23,6 +23,6 @@
     "mode_cap_websearches": 0,
     "used_websearches": 0
   },
-  "next_action": "REQ-019 DONE (session 010: dead InitiativeDetailModal deleted, member authoring favors project_card, 4-test seam guard). Register status: REQ-001..021+023 all DONE (REQ-018 moot on staging); REQ-022 BLOCKED on prod row counts (query in sessions/008). Remaining non-register work: Command Room visual depth (50_design/DESIGN-DIRECTION.md); AC5 transitions; tiny fix: pre-existing banned-orphans failure (CatalystViewBase.stories.tsx:42). Vikram: screenshot signoff 005-010 + prod counts.",
+  "next_action": "Register: REQ-001..021+023 DONE; REQ-022 BLOCKED on prod row counts (query in sessions/008). Command Room depth: segmented value bar DONE (session 011, SRC-M5, StrataValueBar on VMO). Remaining: executive KPI band flavor on Strategy Room/Portfolio/Reviews landings (SRC-M3); board-pack editorial layout on Governance (SRC-M7); AC5 transitions; tiny fix: pre-existing banned-orphans stories failure. Vikram: screenshot signoff sessions 005-011 + prod counts.",
   "blocked_on": null
 }
