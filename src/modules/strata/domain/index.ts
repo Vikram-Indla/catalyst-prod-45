@@ -928,6 +928,48 @@ export const governanceApi = {
         .select('*')
         .single(),
     ),
+  // ── Board-pack persistence (CAT-STRATA-CLOSEOUT-20260710-001 W1) ──────────
+  /**
+   * Persist a generated pack binary to the private strata-board-packs bucket.
+   * Storage RLS (20260710130000) permits writes only for strategy_office
+   * (strata_is_admin bypass included) — callers surface failures verbatim.
+   * Upsert: regenerating a snapshot's pack overwrites the same object path.
+   */
+  uploadBoardPackBinary: async (path: string, blob: Blob, contentType: string): Promise<string> => {
+    const { error } = await supabase.storage
+      .from('strata-board-packs')
+      .upload(path, blob, { contentType, upsert: true });
+    if (error) throw new Error(`Pack storage upload failed: ${error.message}`);
+    return path;
+  },
+  /** Point an existing (pending) pack row at its stored binary and mark it ready. */
+  markBoardPackStored: (packId: string, storagePath: string): Promise<StrataBoardPack> =>
+    run(
+      typedQuery('strata_board_packs')
+        .update({ storage_path: storagePath, status: 'ready', generated_at: new Date().toISOString() })
+        .eq('id', packId)
+        .select('*')
+        .single(),
+    ),
+  /** Create a ready pack row for a freshly stored binary (no pending row existed). */
+  createBoardPackRecord: (snapshotId: string, format: 'pdf' | 'pptx', storagePath: string): Promise<StrataBoardPack> =>
+    run(
+      typedQuery('strata_board_packs')
+        .insert({ snapshot_id: snapshotId, format, storage_path: storagePath, status: 'ready', generated_at: new Date().toISOString() })
+        .select('*')
+        .single(),
+    ),
+  /**
+   * Short-lived signed URL for a stored pack (bucket is private — packs are
+   * governance artifacts and must never be publicly addressable).
+   */
+  boardPackSignedUrl: async (storagePath: string): Promise<string> => {
+    const { data, error } = await supabase.storage
+      .from('strata-board-packs')
+      .createSignedUrl(storagePath, 3600);
+    if (error || !data?.signedUrl) throw new Error(`Could not sign pack download: ${error?.message ?? 'no URL returned'}`);
+    return data.signedUrl;
+  },
   aiOutputs: (): Promise<StrataAiOutput[]> =>
     run(typedQuery('strata_ai_outputs').select('*').order('generated_at', { ascending: false })),
   // ── Authoring write paths (Recovery: Lane G) ──────────────────────────────

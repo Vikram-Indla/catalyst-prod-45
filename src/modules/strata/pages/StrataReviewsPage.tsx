@@ -103,6 +103,8 @@ const CLOSE_STATUS_LOZENGE: Record<StrataPeriod['close_status'], { label: string
 
 /** Roles allowed to author decisions/actions — UI affordance only; RPCs enforce for real. */
 const DECISION_AUTHOR_ROLES: readonly string[] = ['strategy_office', 'executive_viewer', 'vmo_validator', 'strata_admin'];
+/** Mirrors storage RLS on strata-board-packs (20260710130000): strategy_office, with strata_is_admin bypass. */
+const PACK_PERSIST_ROLES: readonly string[] = ['strategy_office', 'strata_admin'];
 
 const DECISION_TYPE_OPTIONS: Array<{ value: StrataDecision['decision_type']; label: string }> = [
   { value: 'governance', label: 'Governance' },
@@ -497,6 +499,17 @@ export default function StrataReviewsPage() {
    * (the only role RLS lets UPDATE strata_board_packs), reconcile it to 'ready';
    * otherwise leave the row untouched and say so — never fake server generation.
    */
+  /** Fetch a short-lived signed URL for a stored pack and open it (bucket is private). */
+  const downloadStoredPack = async (_packId: string, storagePath: string) => {
+    setPackError(null);
+    try {
+      const url = await governanceApi.boardPackSignedUrl(storagePath);
+      window.open(url, '_blank', 'noopener');
+    } catch (e) {
+      setPackError(e instanceof Error ? e.message : String(e));
+    }
+  };
+
   const generatePack = async (format: 'pdf' | 'pptx') => {
     if (!selected) return;
     setPackBusy(format); setPackError(null); setPackNote(null);
@@ -529,20 +542,31 @@ export default function StrataReviewsPage() {
           .filter((a) => a.status === 'open' || a.status === 'in_progress')
           .map((a) => ({ action: a, ownerName: profileName(a.owner_id) })),
       };
-      const filename = format === 'pdf' ? await generateBoardPackPdf(data) : await generateBoardPackPptx(data);
+      const artifact = format === 'pdf' ? await generateBoardPackPdf(data) : await generateBoardPackPptx(data);
 
-      const pending = (boardPacksQ.data ?? []).find((bp) => bp.format === format && bp.status === 'pending');
-      const canReconcile = (rolesQ.data ?? []).includes('strategy_office');
-      if (pending && canReconcile) {
-        try {
-          await governanceApi.markBoardPackReady(pending.id);
-          invalidate();
-          setPackNote(`${filename} downloaded — generated locally in your browser from the frozen snapshot; the pending pack record was marked ready.`);
-        } catch {
-          setPackNote(`${filename} downloaded — generated locally in your browser from the frozen snapshot. The pack record could not be updated and was left untouched.`);
-        }
-      } else {
-        setPackNote(`${filename} downloaded — generated locally in your browser from the frozen snapshot data.`);
+      // Persist to the shared pack library (private strata-board-packs bucket).
+      // DB rule: strata_has_role(['strategy_office']) = strategy_office OR strata_is_admin —
+      // the client gate mirrors it exactly; on failure we say so, never fake success.
+      const canPersist = (rolesQ.data ?? []).some((r) => PACK_PERSIST_ROLES.includes(r));
+      if (!canPersist) {
+        setPackNote(`${artifact.filename} downloaded — generated locally from the frozen snapshot. Storing to the shared pack library requires the Strategy Office role.`);
+        return;
+      }
+      const storagePath = `${selected.snapshot_key}/${artifact.filename}`;
+      try {
+        await governanceApi.uploadBoardPackBinary(storagePath, artifact.blob, artifact.contentType);
+        const rows = boardPacksQ.data ?? [];
+        const reusable =
+          rows.find((bp) => bp.format === format && bp.status === 'pending') ??
+          rows.find((bp) => bp.format === format && bp.storage_path === storagePath);
+        if (reusable) await governanceApi.markBoardPackStored(reusable.id, storagePath);
+        else await governanceApi.createBoardPackRecord(selected.id, format, storagePath);
+        invalidate();
+        setPackNote(`${artifact.filename} downloaded and stored to the pack library — anyone with STRATA access can retrieve it from this list.`);
+      } catch (persistErr) {
+        setPackNote(
+          `${artifact.filename} downloaded locally, but storing to the pack library failed: ${persistErr instanceof Error ? persistErr.message : String(persistErr)}`,
+        );
       }
     } catch (e) {
       setPackError(e instanceof Error ? e.message : String(e));
@@ -946,7 +970,7 @@ export default function StrataReviewsPage() {
                       testId="strata-reviews-board-packs"
                       actions={
                         <div style={{ display: 'flex', gap: 8 }}>
-                          <Tooltip content="Builds the executive PDF in your browser from this snapshot's frozen data">
+                          <Tooltip content="Builds the executive PDF from this snapshot's frozen data, downloads it, and stores it to the shared pack library">
                             <Button
                               appearance="primary"
                               spacing="compact"
@@ -957,7 +981,7 @@ export default function StrataReviewsPage() {
                               {packBusy === 'pdf' ? 'Generating…' : 'Generate board pack (PDF)'}
                             </Button>
                           </Tooltip>
-                          <Tooltip content="Builds the executive PPTX in your browser from this snapshot's frozen data">
+                          <Tooltip content="Builds the executive PPTX from this snapshot's frozen data, downloads it, and stores it to the shared pack library">
                             <Button
                               appearance="default"
                               spacing="compact"
@@ -980,7 +1004,7 @@ export default function StrataReviewsPage() {
                       ) : null}
                       {packNote ? (
                         <div style={{ marginBottom: 8 }}>
-                          <SectionMessage appearance="success" title="Board pack generated locally">
+                          <SectionMessage appearance="success" title="Board pack generated">
                             <p>{packNote}</p>
                           </SectionMessage>
                         </div>
@@ -991,6 +1015,7 @@ export default function StrataReviewsPage() {
                         (boardPacksQ.data ?? []).map((bp) => {
                           const isReady = bp.status === 'ready';
                           const isUrl = typeof bp.storage_path === 'string' && /^https?:\/\//.test(bp.storage_path);
+                          const hasStoredBinary = typeof bp.storage_path === 'string' && bp.storage_path.length > 0 && !isUrl;
                           return (
                             <div key={bp.id} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 4px', borderBottom: `1px solid ${T.border}` }} data-testid={`strata-reviews-pack-${bp.id}`}>
                               <CatalystTag text={bp.format.toUpperCase()} />
@@ -1000,8 +1025,14 @@ export default function StrataReviewsPage() {
                                 <Button appearance="default" spacing="compact" onClick={() => window.open(bp.storage_path as string, '_blank', 'noopener')}>
                                   Download
                                 </Button>
+                              ) : isReady && hasStoredBinary ? (
+                                <Tooltip content="Downloads via a 1-hour signed link — the pack bucket is private">
+                                  <Button appearance="default" spacing="compact" onClick={() => downloadStoredPack(bp.id, bp.storage_path as string)}>
+                                    Download
+                                  </Button>
+                                </Tooltip>
                               ) : isReady ? (
-                                <Tooltip content="Download ships with board-pack generation">
+                                <Tooltip content="Generated before pack storage existed — regenerate to store a retrievable copy">
                                   <CatalystTag text="Ready" color="green" />
                                 </Tooltip>
                               ) : null}
