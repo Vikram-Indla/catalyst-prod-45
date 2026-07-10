@@ -4,7 +4,7 @@
  * Contract:
  *   - Renders 3 tabs: People, Invitations, Email Log
  *   - People tab is selected by default
- *   - People tab panel contains an "Invite User" button
+ *   - People tab panel contains a "Create access" button (formerly "Invite User")
  *   - Wrapped in AdminGuard
  */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
@@ -78,11 +78,11 @@ describe('AdminAccessPage', () => {
     expect(screen.getByRole('tab', { name: /people/i })).toHaveAttribute('aria-selected', 'true');
   });
 
-  it('People tab contains the Invite User button', async () => {
+  it('People tab contains the Create access button', async () => {
     renderPage();
-    // Invite User is in PeopleTab (the default tab), not the Invitations tab
+    // "Create access" (formerly "Invite User") is in PeopleTab (the default tab), not the Invitations tab
     await waitFor(() => {
-      expect(screen.getByRole('button', { name: /invite user/i })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /create access/i })).toBeInTheDocument();
     });
   });
 });

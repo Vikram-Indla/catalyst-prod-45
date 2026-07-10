@@ -9,12 +9,14 @@
  *
  * Vitest run: CI only (local Node 20.12.2 < vitest 4 minimum 20.19.0).
  */
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { describe, it, expect } from 'vitest';
 
 const ADMIN_DIR = resolve(__dirname, '..');
 
+// Pages deleted since (dead-code sweeps) are skipped — the guard covers
+// whatever Reference Data pages still exist.
 const TARGET_FILES = [
   'CapacityDepartments.tsx',
   'Departments.tsx',
@@ -26,7 +28,7 @@ const TARGET_FILES = [
   'ResourceAssignments.tsx',
   'ThemeGroups.tsx',
   'ThemeStatuses.tsx',
-].map(f => resolve(ADMIN_DIR, f));
+].map(f => resolve(ADMIN_DIR, f)).filter(f => existsSync(f));
 
 describe('Reference Data admin pages — ADS icon compliance', () => {
   it('imports no icons from lucide-react', () => {

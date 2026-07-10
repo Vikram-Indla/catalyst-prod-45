@@ -118,8 +118,10 @@ describe('HubSwitcher v2 — sectioned popover with bespoke tiles', () => {
   it('renders each row with a colored tile carrying data-hub-tile=<key>', () => {
     const { container } = renderAt('/for-you');
     fireEvent.click(screen.getByRole('button', { name: /switch hub/i }));
+    // 'strategy' was renamed to 'strata' (label "STRATA", route /strata) —
+    // key list updated to match the current HUBS entry in HubSwitcher.tsx.
     const expected = [
-      'home', 'strategy', 'ideation', 'product', 'project',
+      'home', 'strata', 'ideation', 'product', 'project',
       'release', 'test', 'incident', 'task', 'docex',
     ];
     for (const key of expected) {
@@ -144,7 +146,8 @@ describe('HubSwitcher v2 — sectioned popover with bespoke tiles', () => {
     expect(hrefByLabel.Release).toBe('/release-hub/overview');
     expect(hrefByLabel.Test).toBe('/testhub/dashboard');
     expect(hrefByLabel.Incident).toBe('/incident-hub');
-    expect(hrefByLabel.Task).toBe('/tasks/overview');
+    // HUBS entry label is plural "Tasks" (see HubSwitcher.tsx), not "Task".
+    expect(hrefByLabel.Tasks).toBe('/tasks/overview');
     expect(hrefByLabel.Folio).toBe('/folio');
   });
 
@@ -194,10 +197,14 @@ describe('HubSwitcher v2 — search-to-filter', () => {
   });
 
   it('hides empty sections when the filter excludes all their hubs', () => {
+    // The 'docex' module was renamed to the user-facing label "Folio" (see
+    // "feat(folio): rename module Docex → Folio"); filtering matches on
+    // hub.label, not the internal moduleKey, so the query must use the
+    // current label.
     renderAt('/for-you');
     fireEvent.click(screen.getByRole('button', { name: /switch hub/i }));
     fireEvent.change(screen.getByPlaceholderText(/search hubs/i), {
-      target: { value: 'docex' },
+      target: { value: 'folio' },
     });
     expect(screen.queryByText(/^discover$/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/^build & ship$/i)).not.toBeInTheDocument();

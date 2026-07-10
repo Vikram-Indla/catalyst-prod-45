@@ -11,13 +11,14 @@
  */
 
 import React from 'react';
+import { vi } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MessageReactions } from '../MessageReactions';
 import type { ChatReaction } from '@/types/chat';
 
 describe('MessageReactions', () => {
-  const mockOnToggle = jest.fn();
+  const mockOnToggle = vi.fn();
 
   const mockReactions: ChatReaction[] = [
     { emoji: '👍', count: 5, reactedByMe: false },

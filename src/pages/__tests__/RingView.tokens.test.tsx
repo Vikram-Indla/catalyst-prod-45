@@ -7,6 +7,18 @@
  *   3. SVG spokes use ADS border token (not --ds-text-disabled)
  *   4. Orbital card Row 1 no longer outputs uppercase item_type text label
  *
+ * Updated 2026-07-09:
+ *   - The centre avatar was later unified onto the canonical PresenceRing
+ *     component ("feat(r360): add PresenceRing to all avatar surfaces"),
+ *     which renders it at PresenceRing/CatalystAvatar's "xlarge" size (96px),
+ *     not the original hand-rolled 72px div — a deliberate reuse-over-
+ *     hand-rolled-UI decision (CLAUDE.md canonical-component rule). Assertion
+ *     updated from 72px to 96px to match.
+ *   - The SVG spoke fallback chain (`T.borderBold`) had a real bug: it fell
+ *     back through `--ds-text-disabled` (a text token) before reaching
+ *     `--ds-border-bold`. Fixed in RingView.tsx to fall back straight to
+ *     `--ds-border-bold`.
+ *
  * Note: vitest may fail at startup on Node 20.12.2 (rolldown styleText compat bug
  * — pre-existing environment issue). Tests are written for when Node is upgraded.
  */
@@ -69,13 +81,15 @@ describe('RingView — V13 ADS token compliance', () => {
     expect(container.innerHTML).not.toContain('--cp-');
   });
 
-  it('renders centre avatar at 72px in normal ring view', () => {
+  it('renders centre avatar at 96px (PresenceRing "xlarge") in normal ring view', () => {
     const { container } = render(
       <RingView {...BASE_PROPS} items={makeItems(4)} />,
     );
-    // The 72px diameter avatar div should be in the DOM
-    const hits = Array.from(container.querySelectorAll('div')).filter(
-      el => el.style.width === '72px' || el.style.height === '72px',
+    // The centre avatar now renders via the canonical PresenceRing/
+    // CatalystAvatar component — a <span role="img"> at "xlarge" (96px),
+    // not a hand-rolled 72px <div>. Query both element types.
+    const hits = Array.from(container.querySelectorAll('div, span')).filter(
+      el => (el as HTMLElement).style.width === '96px' || (el as HTMLElement).style.height === '96px',
     );
     expect(hits.length).toBeGreaterThan(0);
   });

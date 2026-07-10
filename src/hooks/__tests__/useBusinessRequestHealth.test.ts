@@ -45,9 +45,16 @@ function makeWrapper() {
 }
 
 function mockSupabaseChain(data: unknown, error: unknown = null) {
+  // Shared chain object reused for every `.from()` call the hook makes:
+  // - business_requests: select().eq().single()
+  // - business_request_links (via fetchLinkedWorkForBRs): select().in().eq().limit()
+  // `.in()` must be chainable (mockReturnThis) so the linked-work fetch
+  // resolves to an empty link set instead of throwing on `undefined.eq()`.
   const chain = {
     select: vi.fn().mockReturnThis(),
     eq: vi.fn().mockReturnThis(),
+    in: vi.fn().mockReturnThis(),
+    is: vi.fn().mockReturnThis(),
     single: vi.fn().mockResolvedValue({ data, error }),
     limit: vi.fn().mockResolvedValue({ data: [], error: null }),
   };
@@ -88,7 +95,11 @@ describe('useBusinessRequestHealth', () => {
 
   it('uses id lookup when brId is a UUID', async () => {
     const chain = mockSupabaseChain(MOCK_BR);
-    const uuid = 'br-uuid-1-xxxx-0000-0000-000000000000';
+    // Must match the hook's strict UUID regex (8-4-4-4-12 hex) to exercise
+    // the `.eq('id', ...)` branch — the original fixture ('br-uuid-1-xxxx-...')
+    // was not a well-formed UUID and never matched, making this a stale
+    // contract that always fell through to the request_key lookup.
+    const uuid = 'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee';
     const { result } = renderHook(() => useBusinessRequestHealth(uuid), {
       wrapper: makeWrapper(),
     });

@@ -22,6 +22,8 @@ import type {
   SanitizedItem,
   BusinessStatus,
   EtaSource,
+  ItemScope,
+  TimePeriod,
 } from './types';
 
 // ── Constants ─────────────────────────────────────────────────────────────────
@@ -147,6 +149,51 @@ function derivedScopeFilter(summaryType: string) {
   };
 }
 
+// ── Explicit itemScope / timePeriod — additive narrowing on top of the
+// summaryType-derived scope above. Both default to a no-op ('all' /
+// 'all_time') so existing callers that never set them are unaffected. ─────
+
+function itemScopeFilter(itemScope: ItemScope | undefined) {
+  return (row: JqlResultRow): boolean => {
+    switch (itemScope) {
+      case 'blocked':
+        return classifyBusinessStatus(row) === 'blocked';
+      case 'in_progress': {
+        const status = classifyBusinessStatus(row);
+        return status === 'in_progress' || status === 'in_review';
+      }
+      case 'due_soon': {
+        if (!row.dueDate) return false;
+        const today = todayMidnight();
+        const days = daysBetween(today, parseLocalDate(row.dueDate));
+        return days >= 0 && days <= 7;
+      }
+      case 'all':
+      default:
+        return true;
+    }
+  };
+}
+
+function timePeriodFilter(timePeriod: TimePeriod | undefined) {
+  return (row: JqlResultRow): boolean => {
+    switch (timePeriod) {
+      case 'last_7_days':
+      case 'last_14_days':
+      case 'last_30_days': {
+        if (!row.updated) return false;
+        const limit = timePeriod === 'last_7_days' ? 7 : timePeriod === 'last_14_days' ? 14 : 30;
+        return daysBetween(new Date(row.updated), todayMidnight()) <= limit;
+      }
+      case 'current_sprint':
+        return !!row.sprintName;
+      case 'all_time':
+      default:
+        return true;
+    }
+  };
+}
+
 // ── Sanitize a single row into a SanitizedItem ───────────────────────────────
 
 function sanitizeRow(row: JqlResultRow, today: Date): SanitizedItem {
@@ -191,12 +238,15 @@ export function getFilterSummaryContext(
   const today = todayMidnight();
   const maxItems = Math.min(options.maxItems, MAX_ITEMS_HARD_CEILING);
   const scopeFilter = derivedScopeFilter(options.summaryType);
+  const scopeFilter2 = itemScopeFilter(options.itemScope);
+  const periodFilter = timePeriodFilter(options.timePeriod);
 
   // Step 1: Permission gate — exclude rows missing key or summary.
   const permittedRows = allRows.filter(r => r.key && r.summary);
 
-  // Step 2: Scope filter (auto-derived from summaryType — no time-period filter).
-  const filtered = permittedRows.filter(scopeFilter);
+  // Step 2: Scope filter — auto-derived from summaryType, plus any explicit
+  // itemScope/timePeriod narrowing the caller opted into.
+  const filtered = permittedRows.filter(r => scopeFilter(r) && scopeFilter2(r) && periodFilter(r));
 
   // Step 3: Classify and sanitize ALL filtered rows (needed for accurate counts).
   const allSanitized: SanitizedItem[] = filtered.map(r => sanitizeRow(r, today));

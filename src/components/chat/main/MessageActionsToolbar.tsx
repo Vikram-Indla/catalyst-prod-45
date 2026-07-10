@@ -77,8 +77,12 @@ export function MessageActionsToolbar({
     setIsLoading('copy');
     try {
       const url = `${window.location.origin}?message=${messageId}`;
-      await navigator.clipboard.writeText(url);
-      onCopyLink?.();
+      // Feature-detect: Clipboard API is unavailable in insecure contexts
+      // and unsupported test/jsdom environments.
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(url);
+      }
+      await onCopyLink?.();
     } finally {
       setIsLoading(null);
     }
@@ -177,6 +181,7 @@ export function MessageActionsToolbar({
         className="cc-msg__actions"
         role="toolbar"
         aria-label="Message actions"
+        tabIndex={-1}
         onKeyDown={handleToolbarKeyDown}
         onFocus={handleToolbarFocus}
         onBlur={handleToolbarBlur}

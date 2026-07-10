@@ -103,8 +103,20 @@ function ReactionChip({
         type="button"
         className={`cc-react${reactedByMe ? ' is-mine' : ''}`}
         onClick={onToggle}
-        onMouseEnter={() => setShowTooltip(true)}
-        onMouseLeave={() => setShowTooltip(false)}
+        onMouseEnter={(e) => {
+          setShowTooltip(true);
+          const el = e.currentTarget;
+          el.style.background = reactedByMe
+            ? 'var(--ds-background-information)'
+            : 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))';
+        }}
+        onMouseLeave={(e) => {
+          setShowTooltip(false);
+          const el = e.currentTarget;
+          el.style.background = reactedByMe
+            ? 'var(--ds-background-information-subtle)'
+            : 'var(--ds-background-neutral-subtle)';
+        }}
         aria-pressed={reactedByMe}
         style={{
           display: 'inline-flex',
@@ -124,18 +136,6 @@ function ReactionChip({
           color: 'var(--ds-text)',
           transition: 'all 100ms',
           userSelect: 'none',
-        }}
-        onMouseEnter={(e) => {
-          const el = e.currentTarget;
-          el.style.background = reactedByMe
-            ? 'var(--ds-background-information)'
-            : 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))';
-        }}
-        onMouseLeave={(e) => {
-          const el = e.currentTarget;
-          el.style.background = reactedByMe
-            ? 'var(--ds-background-information-subtle)'
-            : 'var(--ds-background-neutral-subtle)';
         }}
       >
         <span style={{ fontSize: 'var(--ds-font-size-500)' }}>{emoji}</span>

@@ -4,31 +4,48 @@
  * 2026-06-18 — Vikram flagged the collapsed left rail as a rainbow (10 hub
  * accent colors at once) — consumer, not enterprise. Decision: the persistent
  * rail is monochrome; color is reserved for the ACTIVE hub (brand-blue pill +
- * left bar). The hub outline SVGs feed the rail via <img>, so the accent color
- * is baked into the asset — neutralising the rail means the outline glyphs must
- * carry only the neutral ink (var(--ds-text-subtle)), never a per-hub accent.
+ * left bar).
  *
- * This test pins that: every hub *-outline.svg may contain only the neutral
- * ink + white/none. Any per-hub accent reappearing = rail rainbow regression.
+ * Updated 2026-07-09: the original version of this test read raw hex values
+ * out of the hub `*-outline.svg` asset files and required them to contain
+ * only the neutral ink literal. That assumed the SVGs were rendered directly
+ * (e.g. via <img src>), so their baked-in fill color would show on screen.
+ * The actual rendering technique (HomeSidebar.tsx collapsed hub icon,
+ * `maskUrl` / `WebkitMaskImage` / `maskImage`) uses the SVGs purely as CSS
+ * masks — only the shape/alpha channel is used, and the visible color comes
+ * from `backgroundColor`, which defaults to the neutral token
+ * `var(--ds-icon)` and only switches to the brand token for the active hub.
+ * The SVG files' own fill hex is therefore inert for rendering purposes and
+ * is no longer a valid signal for the "rail rainbow" regression this test
+ * guards against — it is now asserted against the actual mask + token logic.
  */
 import { describe, it, expect } from 'vitest';
-import { readFileSync, existsSync } from 'fs';
+import { readFileSync } from 'fs';
 import { resolve } from 'path';
 
-const HUBS_DIR = resolve(__dirname, '../../../assets/icons/hubs');
-const NEUTRAL = 'var(--ds-icon)';
-const HUBS = ['home', 'strategy', 'ideation', 'product', 'project', 'release', 'test', 'incident', 'tasks', 'plan', 'wiki'];
+const SRC = readFileSync(resolve(__dirname, '../HomeSidebar.tsx'), 'utf8');
 
-// Allowed: the neutral ink + white + shorthand white. Everything else is an accent.
-const ALLOWED = new Set([NEUTRAL.toLowerCase(), 'var(--ds-surface)', 'var(--ds-surface)']);
+// Isolate the collapsed hub-icon renderer block so assertions stay scoped
+// to the rail, not to unrelated parts of the file.
+const iconFnStart = SRC.indexOf('icon: ({ style }');
+const railBlock = SRC.slice(iconFnStart, SRC.indexOf('}));', iconFnStart));
 
 describe('collapsed Home rail is monochrome (neutral ink only)', () => {
-  it.each(HUBS)('%s-outline.svg uses only the neutral ink, no accent', (hub) => {
-    const p = resolve(HUBS_DIR, `${hub}-outline.svg`);
-    if (!existsSync(p)) return; // tolerate icon-set changes
-    const src = readFileSync(p, 'utf8');
-    const hexes = (src.match(/#[0-9A-Fa-f]{3,6}\b/g) ?? []).map((h) => h.toLowerCase());
-    const offenders = [...new Set(hexes)].filter((h) => !ALLOWED.has(h));
-    expect(offenders, `${hub}-outline.svg has non-neutral color(s): ${offenders.join(', ')}`).toEqual([]);
+  it('uses a CSS mask (not a raw <img>) so the outline SVG only contributes shape, never its own color', () => {
+    expect(iconFnStart).toBeGreaterThan(-1);
+    expect(railBlock).toMatch(/(WebkitMaskImage|maskImage):\s*maskUrl/);
+    expect(railBlock).not.toMatch(/<img\b/);
+  });
+
+  it('defaults the visible hub-icon color to the neutral ink token, not a per-hub accent', () => {
+    expect(railBlock).toMatch(/backgroundColor:\s*style\?\.color\s*\?\?\s*'var\(--ds-icon\)'/);
+  });
+
+  it('only ever switches away from neutral via the shared active-route color signal, never a hardcoded accent', () => {
+    // The only non-neutral color driving this block is `style?.color`, which
+    // SidebarBase sets to var(--ds-icon-brand) exclusively on the active
+    // route (see HomeSidebar.iconNeutral.test.ts docblock). No hex or
+    // per-hub literal should feed this block directly.
+    expect(railBlock).not.toMatch(/#[0-9A-Fa-f]{3,6}\b/);
   });
 });

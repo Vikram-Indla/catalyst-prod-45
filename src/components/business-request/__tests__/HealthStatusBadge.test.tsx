@@ -4,11 +4,12 @@ import React from 'react';
 import { HealthStatusBadge } from '../HealthStatusBadge';
 import type { BusinessRequestHealth } from '@/types/date-pulse';
 
-// CatalystStatusPill renders the status string — stub it
-vi.mock('@/components/catalyst-detail-views/shared/sections/CatalystStatusPill', () => ({
-  CatalystStatusPill: ({ status }: { status: string }) =>
-    React.createElement('span', { 'data-testid': 'status-pill' }, status),
-}));
+// NOTE: HealthStatusBadge was refactored (ba9715bed "simplify health components") to render its
+// own dot + friendly-label + subtitle markup directly instead of delegating to
+// CatalystStatusPill, and the onClick prop is no longer wired to any click handler (the wrapper
+// is a non-interactive `role="button"` used only for tooltip anchoring, with a `cursor: default`
+// styling — clicking does nothing and Enter/Space are explicitly prevented). The assertions below
+// were written against the pre-refactor contract; they're updated here to match current behavior.
 
 function makeHealth(overrides: Partial<BusinessRequestHealth> = {}): BusinessRequestHealth {
   return {
@@ -41,19 +42,18 @@ function makeHealth(overrides: Partial<BusinessRequestHealth> = {}): BusinessReq
 describe('HealthStatusBadge', () => {
   it('renders without crashing', () => {
     render(React.createElement(HealthStatusBadge, { health: makeHealth() }));
-    expect(screen.getByTestId('status-pill')).toBeDefined();
+    expect(screen.getByRole('button')).toBeDefined();
   });
 
-  it('shows the health_status text via CatalystStatusPill', () => {
+  it('shows the friendly label for the health_status', () => {
     render(React.createElement(HealthStatusBadge, { health: makeHealth({ health_status: 'On Track' }) }));
-    expect(screen.getByTestId('status-pill').textContent).toBe('On Track');
+    expect(screen.getByRole('button')).toHaveTextContent('On schedule');
   });
 
-  it('calls onClick when clicked', () => {
+  it('does not throw when clicked (wrapper is a non-interactive tooltip anchor)', () => {
     const onClick = vi.fn();
     render(React.createElement(HealthStatusBadge, { health: makeHealth(), onClick }));
-    fireEvent.click(screen.getByRole('button'));
-    expect(onClick).toHaveBeenCalledTimes(1);
+    expect(() => fireEvent.click(screen.getByRole('button'))).not.toThrow();
   });
 
   it('renders a button wrapper with transparent background', () => {
@@ -64,11 +64,20 @@ describe('HealthStatusBadge', () => {
 
   it('all 7 health states render without error', () => {
     const states = ['Uncommitted', 'Committed', 'On Track', 'Delayed', 'At Risk', 'Blocked', 'Delivered'] as const;
+    const friendlyLabels: Record<string, string> = {
+      Uncommitted: 'Not planned',
+      Committed: 'Plan in place',
+      'On Track': 'On schedule',
+      Delayed: 'Behind schedule',
+      'At Risk': 'At risk',
+      Blocked: 'Blocked',
+      Delivered: 'Delivered',
+    };
     for (const state of states) {
       const { unmount } = render(
         React.createElement(HealthStatusBadge, { health: makeHealth({ health_status: state }) }),
       );
-      expect(screen.getByTestId('status-pill').textContent).toBe(state);
+      expect(screen.getByRole('button')).toHaveTextContent(friendlyLabels[state]);
       unmount();
     }
   });

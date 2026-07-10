@@ -160,7 +160,7 @@ describe('EditableAssignee', () => {
 
     fireEvent.click(button);
     await waitFor(() => {
-      expect(screen.getByText('Bob Jones')).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /bob jones/i })).toBeInTheDocument();
     });
 
     const bobOption = screen.getByRole('button', { name: /bob jones/i });

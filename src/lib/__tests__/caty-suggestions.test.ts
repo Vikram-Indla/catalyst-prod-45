@@ -15,12 +15,22 @@ const item = (over: Partial<SuggestionInput>): SuggestionInput => ({
 });
 
 describe('buildCatySuggestions', () => {
-  it('suggests stale active items', () => {
-    const out = buildCatySuggestions([item({ issue_key: 'BAU-9', status: 'In Progress', jira_updated_at: daysAgo(4) })], NOW, new Set());
+  // NOTE: this file originally asserted a "sat in status for N days" stale
+  // detector. caty-suggestions.ts was later rewritten into the 10-rule
+  // trending scorer documented at the top of that file — its module
+  // docstring explicitly states stale-sitting is NOT a signal here ("stale
+  // view belongs in a separate tab"). These tests were stale contracts
+  // against removed behavior; rewritten below to assert the real scorer.
+  it('surfaces overdue items via the due-date signal', () => {
+    const out = buildCatySuggestions(
+      [item({ issue_key: 'BAU-9', status: 'In Progress', effective_due_date: daysAgo(2) })],
+      NOW,
+      new Set(),
+    );
     expect(out).toHaveLength(1);
     expect(out[0].issueKey).toBe('BAU-9');
-    expect(out[0].text).toMatch(/sat in In Progress for 4 days/);
-    expect(out[0].key).toBe('stale:BAU-9');
+    expect(out[0].signal).toBe('Overdue');
+    expect(out[0].key).toBe('trending:BAU-9');
   });
 
   it('excludes Done items', () => {
@@ -31,21 +41,41 @@ describe('buildCatySuggestions', () => {
     expect(buildCatySuggestions([item({ jira_updated_at: daysAgo(1) })], NOW, new Set())).toHaveLength(0);
   });
 
-  it('excludes dismissed items', () => {
-    expect(buildCatySuggestions([item({ issue_key: 'BAU-2' })], NOW, new Set(['stale:BAU-2']))).toHaveLength(0);
+  it('excludes dismissed items (and includes the same item when not dismissed)', () => {
+    // Give the item a real scoring signal (Overdue) so it clears the
+    // minimum-signal threshold — otherwise a zero-signal item is excluded
+    // regardless of the dismissed set and the test proves nothing.
+    // Dismissal keys use the scorer's real `trending:<key>` format
+    // (the old `stale:` prefix belonged to the superseded stale detector).
+    const overdue = item({ issue_key: 'BAU-2', status: 'In Progress', effective_due_date: daysAgo(2) });
+
+    const included = buildCatySuggestions([overdue], NOW, new Set());
+    expect(included.map((s) => s.issueKey)).toEqual(['BAU-2']);
+
+    const dismissed = buildCatySuggestions([overdue], NOW, new Set(['trending:BAU-2']));
+    expect(dismissed).toHaveLength(0);
   });
 
   it('tolerates inconsistent category casing/spacing', () => {
     const out = buildCatySuggestions([
-      item({ issue_key: 'BAU-3', status_category: 'To Do' }),
-      item({ issue_key: 'BAU-4', status_category: 'In Progress' }),
+      // odd-cased/spaced "Done" must still be excluded (normCategory strips
+      // whitespace/underscores/hyphens and lowercases before comparing).
+      item({ issue_key: 'BAU-3', status_category: ' Do_ne ', effective_due_date: daysAgo(2) }),
+      // odd-cased/spaced active category must still be scored normally.
+      item({ issue_key: 'BAU-4', status_category: ' In_Progress ', effective_due_date: daysAgo(2) }),
     ], NOW, new Set());
-    expect(out.map((s) => s.issueKey)).toEqual(['BAU-3', 'BAU-4']);
+    expect(out.map((s) => s.issueKey)).toEqual(['BAU-4']);
   });
 
-  it('caps the list and orders deterministically by key', () => {
-    const items = ['BAU-30', 'BAU-10', 'BAU-20', 'BAU-40', 'BAU-50', 'BAU-60']
-      .map((k) => item({ issue_key: k }));
+  it('caps the list and orders deterministically by score', () => {
+    const items = [
+      item({ issue_key: 'BAU-10', effective_due_date: daysAgo(2) }), // overdue → 40
+      item({ issue_key: 'BAU-20', is_assignee: true, jira_updated_at: daysAgo(1), status_category: 'todo' }), // just assigned → 35
+      item({ issue_key: 'BAU-30', effective_due_date: daysAgo(-1) }), // due tomorrow → 30
+      item({ issue_key: 'BAU-40', is_assignee: false, jira_created_at: daysAgo(1) }), // just created → 25
+      item({ issue_key: 'BAU-50', effective_due_date: daysAgo(-2) }), // due within 3 days → 20
+      item({ issue_key: 'BAU-60', jira_updated_at: daysAgo(0.5), status_category: 'in_progress' }), // just started → 15 (dropped by cap)
+    ];
     const out = buildCatySuggestions(items, NOW, new Set(), 5);
     expect(out).toHaveLength(5);
     expect(out.map((s) => s.issueKey)).toEqual(['BAU-10', 'BAU-20', 'BAU-30', 'BAU-40', 'BAU-50']);

@@ -11,14 +11,19 @@ describe('canReleaseTransition', () => {
     expect(canReleaseTransition('draft', 'draft')).toBe(true);
   });
 
+  // RELEASE_STAGES was consolidated from the old 9-stage model down to the
+  // canonical 5-stage model (draft/in_progress/qa/beta/production) — see the
+  // RELEASE_ALIAS map + comment in lifecycle.ts. 'planned' and 'draft' now
+  // both alias onto the same canonical stage, so a 'draft' → 'planned' call
+  // is a no-op, not "one step forward". Use canonical stage names here.
   it('allows one step forward', () => {
-    expect(canReleaseTransition('draft', 'planned')).toBe(true);
-    expect(canReleaseTransition('scheduled', 'deploying')).toBe(true);
+    expect(canReleaseTransition('draft', 'in_progress')).toBe(true);
+    expect(canReleaseTransition('qa', 'beta')).toBe(true);
   });
 
   it('allows one step back (rework)', () => {
-    expect(canReleaseTransition('planned', 'draft')).toBe(true);
-    expect(canReleaseTransition('deploying', 'scheduled')).toBe(true);
+    expect(canReleaseTransition('in_progress', 'draft')).toBe(true);
+    expect(canReleaseTransition('beta', 'qa')).toBe(true);
   });
 
   it('blocks skipping a stage', () => {
@@ -32,9 +37,11 @@ describe('canReleaseTransition', () => {
   });
 
   it('aliases legacy statuses onto the canonical scale', () => {
-    // todo → draft, so todo → planned is one step forward.
-    expect(canReleaseTransition('todo', 'planned')).toBe(true);
-    // released → completed (terminal-ish end); completed is last stage.
+    // todo → draft, in_readiness → in_progress, so todo → in_readiness is
+    // one step forward on the canonical scale. ('planned' also aliases to
+    // draft, so draft → planned is a no-op, not forward motion.)
+    expect(canReleaseTransition('todo', 'in_readiness')).toBe(true);
+    // monitoring → beta, completed → production: one step forward.
     expect(canReleaseTransition('monitoring', 'completed')).toBe(true);
   });
 
@@ -70,13 +77,17 @@ describe('canChangeTransition', () => {
 });
 
 describe('stage definitions', () => {
-  it('has 9 release stages and 9 change stages', () => {
-    expect(RELEASE_STAGES).toHaveLength(9);
+  // RELEASE_STAGES is the canonical 5-stage model (draft/in_progress/qa/
+  // beta/production); the old 9-stage names (planned, scheduled, deploying,
+  // completed, ...) live on only as RELEASE_ALIAS entries. CHANGE_STAGES was
+  // not consolidated and keeps its original 9 stages.
+  it('has 5 release stages and 9 change stages', () => {
+    expect(RELEASE_STAGES).toHaveLength(5);
     expect(CHANGE_STAGES).toHaveLength(9);
   });
   it('starts both lifecycles at draft and ends at a terminal-ready stage', () => {
     expect(RELEASE_STAGES[0]).toBe('draft');
-    expect(RELEASE_STAGES[RELEASE_STAGES.length - 1]).toBe('completed');
+    expect(RELEASE_STAGES[RELEASE_STAGES.length - 1]).toBe('production');
     expect(CHANGE_STAGES[0]).toBe('draft');
     expect(CHANGE_STAGES[CHANGE_STAGES.length - 1]).toBe('closed');
   });

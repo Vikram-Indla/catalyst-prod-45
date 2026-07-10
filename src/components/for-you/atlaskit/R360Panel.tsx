@@ -382,13 +382,9 @@ export default function R360Panel() {
     [teamResources, myResourceId],
   );
 
+  // Default view is always the current user's own resource — selectedId stays
+  // null until the lead explicitly picks a teammate from the roster/pills.
   const [selectedId, setSelectedId] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (filteredTeam.length > 0 && selectedId === null) {
-      setSelectedId(filteredTeam[0].id);
-    }
-  }, [filteredTeam, selectedId]);
 
   const [isWide, setIsWide] = useState(() =>
     typeof window !== 'undefined' ? window.innerWidth >= WIDE_THRESHOLD : false,
@@ -470,6 +466,23 @@ export default function R360Panel() {
 
       {/* Center: R360 Board + Detail */}
       <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 12 }}>
+        {selectedId !== null && (
+          <button
+            type="button"
+            onClick={() => setSelectedId(null)}
+            style={{
+              alignSelf: 'flex-start',
+              background: 'none',
+              border: 'none',
+              padding: 0,
+              cursor: 'pointer',
+              font: 'var(--ds-font-body)',
+              color: token('color.text.subtle', 'var(--ds-link)'),
+            }}
+          >
+            ← My view
+          </button>
+        )}
         <R360MemberDetail
           resourceId={activeResourceId}
           embedded

@@ -16,7 +16,7 @@ const mockMember = {
 describe('CatyWorkloadRisk', () => {
   it('renders rainbow CTA with correct label', () => {
     render(<CatyWorkloadRisk teamMembers={[mockMember]} />);
-    expect(screen.getByText('Ask Caty - Workload risk')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Ask Caty — Workload risk' })).toBeInTheDocument();
   });
 
   it('renders nothing when no team members', () => {

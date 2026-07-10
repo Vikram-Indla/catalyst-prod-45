@@ -182,6 +182,20 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey, onCr
     setTimeout(() => titleRef.current?.focus(), 100);
   }, [open, initialTitle, initialParentId]);
 
+  // Escape closes the modal, matching standard dialog a11y behavior.
+  useEffect(() => {
+    if (!open) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        e.stopPropagation();
+        handleClose();
+      }
+    };
+    document.addEventListener('keydown', onKeyDown);
+    return () => document.removeEventListener('keydown', onKeyDown);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open]);
+
   // ─── Filtered lists ─────────────────────────────────────
   const filteredProfiles = useMemo(() => {
     if (!assigneeSearch.trim()) return profiles;
@@ -283,12 +297,15 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey, onCr
       <div
         className="relative rounded-lg shadow-2xl flex flex-col bg-[var(--cp-float)]"
         style={{ width: 480, maxHeight: '85vh', border: '1px solid var(--divider)', borderRadius: 8 }}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="create-work-item-modal-title"
         onClick={e => { e.stopPropagation(); closeDropdowns(); }}
       >
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-3.5" style={{ borderBottom: '1px solid var(--cp-bd-zone)' }}>
           <div className="flex items-center gap-2">
-            <span className="text-[14px] font-semibold" style={{ color: 'var(--fg-1)', fontFamily: 'var(--cp-font-heading)' }}>
+            <span id="create-work-item-modal-title" className="text-[14px] font-semibold" style={{ color: 'var(--fg-1)', fontFamily: 'var(--cp-font-heading)' }}>
               Create Work Item
             </span>
             <span className="text-[10px] font-medium px-1.5 py-0.5 rounded bg-[var(--cp-bd-zone)]" style={{ color: 'var(--fg-3)' }}>
@@ -345,6 +362,8 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey, onCr
               value={title}
               onChange={e => setTitle(e.target.value)}
               placeholder="What needs to be done?"
+              required
+              aria-required="true"
               className="w-full rounded-md border px-3 text-[14px] font-medium focus:outline-none focus:ring-2 focus:ring-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))] transition-shadow"
               style={{ height: 40, borderColor: 'var(--divider)', color: 'var(--fg-1)', fontFamily: 'var(--cp-font-body)' }}
               onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) handleSubmit(); }}

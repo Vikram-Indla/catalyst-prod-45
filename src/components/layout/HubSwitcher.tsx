@@ -70,7 +70,7 @@ interface DeprecatedHubEntry extends HubEntry {
 const HUBS: DeprecatedHubEntry[] = [
   { key: 'home',     label: 'Home',     href: '/for-you',                    section: 'discover',   tone: 'blue',    shortcut: '1', moduleKey: 'home' },
   { key: 'strata',   label: 'STRATA',   href: '/strata',                     section: 'discover',   tone: 'purple',  shortcut: '2', moduleKey: 'strategyhub' },
-  { key: 'ideation', label: 'Ideation', href: '/ideation',                   section: 'discover',   tone: 'gray',    shortcut: '3', moduleKey: 'ideation' },
+  { key: 'ideation', label: 'Ideation', href: '/ideation/backlog',           section: 'discover',   tone: 'gray',    shortcut: '3', moduleKey: 'ideation' },
   { key: 'product',  label: 'Product',  href: '/product-hub',                section: 'build_ship', tone: 'teal',    shortcut: '4', moduleKey: 'product' },
   { key: 'project',  label: 'Project',  href: '/project-hub',                section: 'build_ship', tone: 'green',   shortcut: '5', moduleKey: 'workhub' },
   { key: 'release',  label: 'Release',  href: '/release-hub/overview', section: 'build_ship', tone: 'magenta', shortcut: '6', moduleKey: 'releases' },

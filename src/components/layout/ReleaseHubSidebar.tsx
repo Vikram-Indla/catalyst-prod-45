@@ -21,7 +21,7 @@ import {
   Settings,
 } from '@/lib/atlaskit-icons';
 import { HUB_ICON_REGISTRY } from '@/components/icons';
-import { NavKanbanIcon, NavDashboardIcon, NavWorkIcon } from '@/lib/nav-icons';
+import { NavKanbanIcon, NavDashboardIcon, NavWorkIcon, NavFiltersIcon } from '@/lib/nav-icons';
 import { SidebarBase, SidebarConfig, SidebarSection } from './SidebarBase';
 
 interface ReleaseHubSidebarProps {
@@ -36,6 +36,8 @@ export const buildReleaseHubSections = (pendingSignoffs: number): SidebarSection
     title: '',
     items: [
       { id: 'overview', title: 'Dashboard', path: '/release-hub/overview', icon: NavDashboardIcon, exact: true },
+      // Phase G8 — canonical FiltersListPage hubType='release'.
+      { id: 'filters', title: 'Filters', path: '/release-hub/filters', icon: NavFiltersIcon, exact: false },
     ],
   },
   {

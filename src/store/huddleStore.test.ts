@@ -1,17 +1,23 @@
 // src/store/huddleStore.test.ts
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 
+// huddleStore drives the mesh (N-way) implementation, not the legacy 1:1
+// HuddleConnection — mock the module it actually imports.
 const startMock = vi.fn(async () => {});
 const closeMock = vi.fn();
 const setMuteMock = vi.fn();
-vi.mock('@/lib/chat/huddle/HuddleConnection', () => ({
-  HuddleConnection: vi.fn().mockImplementation(function () {
+vi.mock('@/lib/chat/huddle/HuddleMesh', () => ({
+  HuddleMesh: vi.fn().mockImplementation(function () {
     return { start: startMock, close: closeMock, setMicMuted: setMuteMock };
   }),
 }));
 
 // Chainable supabase db mock — compatible with existing tests (they don't call db)
-// and observable by the new leave-persistence test via dbCalls.
+// and observable by the new leave-persistence test via dbCalls. Also provides a
+// minimal realtime `channel()` stub — HuddleMesh itself is mocked above so
+// nothing here actually negotiates WebRTC, but ChatRealtimeManager (a
+// singleton constructed at import time) still calls supabase.channel(...)
+// from other code paths exercised indirectly via huddleStore.
 const dbCalls: any[] = [];
 vi.mock('@/integrations/supabase/client', () => {
   const chain = () => {
@@ -23,7 +29,21 @@ vi.mock('@/integrations/supabase/client', () => {
     c.maybeSingle = async () => ({ data: null });
     return c;
   };
-  return { supabase: { from: () => chain() } };
+  const fakeChannel = () => {
+    const ch: any = {};
+    ch.on = () => ch;
+    ch.subscribe = () => ch;
+    ch.send = () => ch;
+    return ch;
+  };
+  return {
+    supabase: {
+      from: () => chain(),
+      channel: () => fakeChannel(),
+      removeChannel: () => {},
+      functions: { invoke: async () => ({ data: null, error: new Error('not mocked') }) },
+    },
+  };
 });
 
 import { useHuddleStore } from './huddleStore';
@@ -91,7 +111,11 @@ describe('huddleStore', () => {
     });
     dbCalls.length = 0;
     useHuddleStore.getState().leave();
-    await Promise.resolve(); // let the async update flush
+    // finalizeHuddleSummary is fire-and-forget from leave() and awaits a
+    // Promise.all of two lookups before building the update() call — one
+    // microtask tick isn't enough to flush that chain, so wait for the
+    // macrotask queue to drain instead of guessing a tick count.
+    await new Promise((resolve) => setTimeout(resolve, 0));
     const summary = dbCalls.find(
       (c) => c.op === 'update' && c.vals?.event_type === 'huddle_summary',
     );

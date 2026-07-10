@@ -1,9 +1,14 @@
 /**
  * ForYouRow — row height contract.
  *
- * Jira For You row spec (April 2026): 56px tall.
- * Previous impl was 48px; over-corrected to 62px in a fix pass.
- * The spec is authoritative: height must be exactly 56.
+ * Jira For You row spec (April 2026): 56px tall for non-Jira-assigned rows.
+ * A later live Jira DOM probe (2026-05-17, see comment above the height line
+ * in ForYouRow.tsx) found Jira-assigned rows render at 62px tall — the
+ * component now branches height on `isJiraAssigned` (62 : 56) rather than
+ * using a single fixed value.
+ * Updated 2026-07-09: this test previously enforced the single-value 56px
+ * spec, which is stale against the later live-probe-backed branch. Assertion
+ * updated to match current, evidence-backed behavior.
  *
  * Root-cause ref: preflight 2026-05-10 D2-HIGH
  */
@@ -17,19 +22,17 @@ const src = readFileSync(
 );
 
 describe('ForYouRow — row height', () => {
-  it('row container height must be 56 (Jira spec), not 48 or 62', () => {
-    // The spec comment at the top of the file says "56px tall".
+  it('row container height branches 62 (Jira-assigned) / 56 (default) per live Jira probe, never 48', () => {
     // The container style block is the one with `data-testid="for-you-row"` above it.
-    // Check the style block contains height: 56 and not height: 48 or height: 62.
     expect(
-      src.includes('height: 56,'),
-      'ForYouRow container must have height: 56 — Jira For You row spec is 56px. ' +
-      'Current value appears to differ. Fix the height in the style object of the ' +
-      'role="button" div with data-testid="for-you-row".',
+      src.includes('height: isJiraAssigned ? 62 : 56,'),
+      'ForYouRow container must branch height on isJiraAssigned (62 : 56), per the ' +
+      '2026-05-17 live Jira DOM probe recorded above the style block. Fix the height ' +
+      'in the style object of the role="button" div with data-testid="for-you-row".',
     ).toBe(true);
     expect(
-      src.includes('height: 62,') || src.includes('height: 48,'),
-      'ForYouRow must not use height: 62 or height: 48 — spec is 56px.',
+      src.includes('height: 48,'),
+      'ForYouRow must not use height: 48 — that was the pre-spec value.',
     ).toBe(false);
   });
 });

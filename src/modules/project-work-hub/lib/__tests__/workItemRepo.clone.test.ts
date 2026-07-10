@@ -5,8 +5,19 @@
  * Covers:
  *   - cloneIssue is exported from workItemRepo
  *   - cloned row: summary prefixed "Copy of", status="To Do",
- *     source="catalyst", is_archived=false, parent_key preserved
+ *     source="catalyst", archived_at=null, parent_key preserved
  *   - returns the new issue_key string
+ *
+ * NOTE (stale-contract update): `is_archived` is not a ph_issues column —
+ * archiving is tracked via a nullable `archived_at` timestamp (see the
+ * archiveIssue rewrite), so the insert payload sets `archived_at: null`
+ * instead of `is_archived: false`. Also, cloneIssue generates the new key
+ * itself up front (via generateIssueKey) and returns THAT value — it does
+ * not trust/re-read the insert response's `issue_key` (the insert's
+ * `.select('id, issue_key').single()` is only consulted for the new row's
+ * `id`, used to deep-copy child sections). The mocked insert response below
+ * intentionally returns a different key (`BAU-9999`) to prove the return
+ * value comes from the generated key, not the insert response.
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
@@ -95,8 +106,10 @@ describe('cloneIssue — unit', () => {
     const { cloneIssue } = await import('../workItemRepo');
     const result = await (cloneIssue as any)('BAU-5751');
 
-    // Returned key should be the new key (from insert response)
-    expect(result).toBe('BAU-9999');
+    // Returned key is the key cloneIssue generated up front (next after
+    // BAU-5998), NOT the insert response's issue_key (BAU-9999) — proves
+    // the return value doesn't round-trip through the insert result.
+    expect(result).toBe('BAU-5999');
 
     // Insert must have been called exactly once
     expect(insertSpy).toHaveBeenCalledOnce();
@@ -105,7 +118,7 @@ describe('cloneIssue — unit', () => {
     expect(insertPayload.summary).toBe('Copy of My Story');
     expect(insertPayload.status).toBe('To Do');
     expect(insertPayload.status_category).toBe('todo');
-    expect(insertPayload.is_archived).toBe(false);
+    expect(insertPayload.archived_at).toBeNull();
     expect(insertPayload.parent_key).toBe('BAU-100');
     expect(insertPayload.source).toBe('catalyst');
     // New key must be next after BAU-5998

@@ -60,8 +60,17 @@ describe('Improve* dialogs — inline panel (no createPortal stacking)', () => {
       const file = viewFile(name);
       // 2026-05-10: ImproveIssueDropdown belongs in the right-rail improveDropdown slot
       // (Vikram directive "follow jira" — replaces old "must be in leftContent" rule)
+      //
+      // 2026-06-21 (986b9f5b9): CatalystViewBusinessRequest.v3.tsx started gating the
+      // dropdown behind `isClosed ? undefined : (<>...<ImproveIssueDropdown .../></>)`
+      // so the element is no longer immediately after `improveDropdown={`. The slot
+      // contract itself didn't change — ImproveIssueDropdown must still live inside the
+      // improveDropdown prop's value, not loose in leftContent — so this looks within a
+      // bounded window after the prop key instead of requiring an exact literal match.
+      const propIdx = file.indexOf('improveDropdown={');
+      const propWindow = propIdx >= 0 ? file.slice(propIdx, propIdx + 800) : '';
       expect(
-        file.includes('improveDropdown={<ImproveIssueDropdown'),
+        propIdx >= 0 && propWindow.includes('<ImproveIssueDropdown'),
         `${name}: ImproveIssueDropdown must be in sidebar improveDropdown slot, not loose in leftContent`,
       ).toBe(true);
     });

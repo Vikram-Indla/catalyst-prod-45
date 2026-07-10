@@ -11,17 +11,18 @@
  */
 
 import React from 'react';
+import { vi } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MessageActionsToolbar } from '../MessageActionsToolbar';
 
 describe('MessageActionsToolbar - Keyboard Navigation', () => {
   const mockHandlers = {
-    onCopyLink: jest.fn().mockResolvedValue(undefined),
-    onMarkUnread: jest.fn().mockResolvedValue(undefined),
-    onRemind: jest.fn().mockResolvedValue(undefined),
-    onTurnIntoIssue: jest.fn().mockResolvedValue(undefined),
-    onReturnFocus: jest.fn(),
+    onCopyLink: vi.fn().mockResolvedValue(undefined),
+    onMarkUnread: vi.fn().mockResolvedValue(undefined),
+    onRemind: vi.fn().mockResolvedValue(undefined),
+    onTurnIntoIssue: vi.fn().mockResolvedValue(undefined),
+    onReturnFocus: vi.fn(),
   };
 
   const defaultProps = {
@@ -32,7 +33,7 @@ describe('MessageActionsToolbar - Keyboard Navigation', () => {
   };
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe('ARIA Structure', () => {
@@ -68,9 +69,9 @@ describe('MessageActionsToolbar - Keyboard Navigation', () => {
       fireEvent.click(issueBtn);
 
       await waitFor(() => {
-        const modal = screen.getByRole('dialog', { name: /create issue/i });
+        const modal = screen.getByRole('dialog', { name: /create work item/i });
         expect(modal).toHaveAttribute('aria-modal', 'true');
-        expect(modal).toHaveAttribute('aria-labelledby', 'issue-modal-title');
+        expect(modal).toHaveAttribute('aria-labelledby', 'create-work-item-modal-title');
       });
     });
 
@@ -80,7 +81,7 @@ describe('MessageActionsToolbar - Keyboard Navigation', () => {
       fireEvent.click(issueBtn);
 
       await waitFor(() => {
-        const titleInput = screen.getByPlaceholderText('Issue title');
+        const titleInput = screen.getByPlaceholderText('What needs to be done?');
         expect(titleInput).toHaveAttribute('aria-required', 'true');
       });
     });
@@ -160,10 +161,11 @@ describe('MessageActionsToolbar - Keyboard Navigation', () => {
   describe('Keyboard Navigation - Enter', () => {
     it('should activate copy button with Enter', async () => {
       const user = userEvent.setup();
-      Object.assign(navigator, {
-        clipboard: {
-          writeText: jest.fn().mockResolvedValue(undefined),
-        },
+      // navigator.clipboard is a getter-only accessor in this jsdom version —
+      // Object.assign(navigator, {...}) throws. Redefine the property instead.
+      Object.defineProperty(navigator, 'clipboard', {
+        value: { writeText: vi.fn().mockResolvedValue(undefined) },
+        configurable: true,
       });
 
       render(<MessageActionsToolbar {...defaultProps} />);
@@ -215,7 +217,7 @@ describe('MessageActionsToolbar - Keyboard Navigation', () => {
       // Press Enter to open issue modal
       await user.keyboard('{Enter}');
       await waitFor(() => {
-        expect(screen.getByRole('dialog', { name: /create issue/i })).toBeInTheDocument();
+        expect(screen.getByRole('dialog', { name: /create work item/i })).toBeInTheDocument();
       });
     });
   });
@@ -226,8 +228,12 @@ describe('MessageActionsToolbar - Keyboard Navigation', () => {
       render(<MessageActionsToolbar {...defaultProps} />);
       const remindBtn = screen.getByRole('button', { name: /set reminder/i });
 
-      // Open reminder modal
-      fireEvent.click(remindBtn);
+      // Open reminder modal. The reminder modal's own Escape handling
+      // relies on the key event reaching the toolbar's onKeyDown (via
+      // bubbling), so the button must actually be focused first — use
+      // userEvent.click (which focuses, like a real click) rather than
+      // fireEvent.click (which does not).
+      await user.click(remindBtn);
       await waitFor(() => {
         expect(screen.getByRole('dialog', { name: /set reminder/i })).toBeInTheDocument();
       });
@@ -247,13 +253,13 @@ describe('MessageActionsToolbar - Keyboard Navigation', () => {
       // Open issue modal
       fireEvent.click(issueBtn);
       await waitFor(() => {
-        expect(screen.getByRole('dialog', { name: /create issue/i })).toBeInTheDocument();
+        expect(screen.getByRole('dialog', { name: /create work item/i })).toBeInTheDocument();
       });
 
       // Press Escape to close
       await user.keyboard('{Escape}');
       await waitFor(() => {
-        expect(screen.queryByRole('dialog', { name: /create issue/i })).not.toBeInTheDocument();
+        expect(screen.queryByRole('dialog', { name: /create work item/i })).not.toBeInTheDocument();
       });
     });
 
@@ -271,13 +277,18 @@ describe('MessageActionsToolbar - Keyboard Navigation', () => {
   });
 
   describe('Focus Management', () => {
-    it('should set first button to tabIndex=0 when toolbar has focus', () => {
+    it('should set first button to tabIndex=0 when toolbar has focus', async () => {
       render(<MessageActionsToolbar {...defaultProps} />);
       const toolbar = screen.getByRole('toolbar');
       const copyBtn = screen.getByRole('button', { name: /copy message link/i });
 
+      // Native .focus() dispatches outside React's act() batching, so the
+      // resulting setState (handleToolbarFocus) may not have flushed yet —
+      // wait for the re-render instead of asserting synchronously.
       toolbar.focus();
-      expect(copyBtn).toHaveAttribute('tabIndex', '0');
+      await waitFor(() => {
+        expect(copyBtn).toHaveAttribute('tabIndex', '0');
+      });
     });
 
     it('should set other buttons to tabIndex=-1 when not focused', () => {
@@ -335,11 +346,11 @@ describe('MessageActionsToolbar - Keyboard Navigation', () => {
       // Open issue modal
       fireEvent.click(issueBtn);
       await waitFor(() => {
-        expect(screen.getByRole('dialog', { name: /create issue/i })).toBeInTheDocument();
+        expect(screen.getByRole('dialog', { name: /create work item/i })).toBeInTheDocument();
       });
 
       // Fill in title
-      const titleInput = screen.getByPlaceholderText('Issue title');
+      const titleInput = screen.getByPlaceholderText('What needs to be done?');
       await user.type(titleInput, 'Test issue');
 
       // Submit with Ctrl+Enter (if implemented)
@@ -374,7 +385,7 @@ describe('MessageActionsToolbar - Keyboard Navigation', () => {
 
     it('should disable buttons while loading', async () => {
       const user = userEvent.setup();
-      const slowHandler = jest.fn(() => new Promise(resolve => setTimeout(resolve, 100)));
+      const slowHandler = vi.fn(() => new Promise(resolve => setTimeout(resolve, 100)));
 
       render(
         <MessageActionsToolbar

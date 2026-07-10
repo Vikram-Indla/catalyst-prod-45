@@ -5,7 +5,10 @@
  * V13 changes (2026-05-11 — preflight Row 4+5):
  * - All --cp-* CSS vars → token() from @atlaskit/tokens (CLAUDE.md 2026-05-11 ban)
  * - All raw hex / --ds-text-* misuse → proper ADS semantic tokens
- * - Centre avatar 56px → 72px (ring-view visual redesign)
+ * - Centre avatar 56px → 72px (ring-view visual redesign), later unified to
+ *   96px ("xlarge") when the hand-rolled div was replaced by the canonical
+ *   PresenceRing component (feat(r360): add PresenceRing to all avatar
+ *   surfaces) so the ring view carries a live availability indicator.
  * - Ring canvas height viewport-proportional: clamp(480px, W×0.62, 700px)
  * - SVG spokes: token(color.border) dashed 1.5px (subtle, not text-disabled)
  * - Orbital card layout: 3 rows (icon+key+age size="sm" · title · status)
@@ -57,7 +60,10 @@ const T = {
   iconInverse:       () => token('color.icon.inverse', 'var(--ds-surface)'),
   iconDisabled:      () => token('color.icon.disabled', 'var(--ds-text-disabled, var(--ds-border-bold))'),
   border:            () => token('color.border', '#091E4224'),
-  borderBold:        () => token('color.border.bold', 'var(--ds-text-disabled, var(--ds-border-bold))'),
+  // Border token — was falling back through --ds-text-disabled (a text token,
+  // wrong semantic for a border) before reaching --ds-border-bold. Fixed to
+  // fall back to the border token directly.
+  borderBold:        () => token('color.border.bold', 'var(--ds-border-bold)'),
   borderSuccess:     () => token('color.border.success', 'var(--ds-background-success-bold, var(--ds-background-success-bold))'),
 } as const;
 

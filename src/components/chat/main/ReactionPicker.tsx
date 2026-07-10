@@ -18,6 +18,75 @@ const EMOJI_CATEGORIES = {
   nature: ['⭐', '✨', '⚡', '🔥', '💧', '🌟', '💫', '✴️', '⚪', '⚫', '🟡', '🟢', '🔵', '🟣', '🟤', '🟥'],
 };
 
+// Searchable keywords per emoji — search matches by name, not by the raw
+// (un-matchable) glyph. Covers every emoji in EMOJI_CATEGORIES.
+const EMOJI_NAMES: Record<string, string> = {
+  '😀': 'grinning face happy',
+  '😃': 'grinning face big eyes happy smile',
+  '😄': 'grinning face smiling eyes happy smile',
+  '😁': 'beaming face grin happy smile',
+  '😆': 'laughing squinting happy smile',
+  '😅': 'grinning sweat relief',
+  '🤣': 'rolling on the floor laughing rofl lol',
+  '😂': 'face with tears of joy lol laughing',
+  '🙂': 'slightly smiling face smile',
+  '🙃': 'upside down face silly',
+  '😉': 'winking face wink',
+  '😊': 'smiling face with smiling eyes blush happy',
+  '😇': 'smiling face with halo angel innocent',
+  '🥰': 'smiling face with hearts love adore',
+  '😍': 'heart eyes love smitten',
+  '🤩': 'star struck starstruck excited',
+  '👋': 'waving hand wave hello bye',
+  '🤚': 'raised back of hand',
+  '🖐️': 'hand with fingers splayed stop',
+  '✋': 'raised hand stop high five',
+  '🖖': 'vulcan salute spock',
+  '👌': 'ok hand okay',
+  '🤌': 'pinched fingers italian',
+  '🤏': 'pinching hand small tiny',
+  '✌️': 'victory hand peace',
+  '🤞': 'crossed fingers hope luck',
+  '🫰': 'hand with index finger and thumb crossed money',
+  '🤟': 'love you gesture',
+  '🤘': 'sign of the horns rock metal',
+  '🤙': 'call me hand shaka',
+  '👍': 'thumbs up like approve yes',
+  '👎': 'thumbs down dislike no',
+  '❤️': 'red heart love',
+  '🧡': 'orange heart love',
+  '💛': 'yellow heart love',
+  '💚': 'green heart love',
+  '💙': 'blue heart love',
+  '💜': 'purple heart love',
+  '🖤': 'black heart love',
+  '🤍': 'white heart love',
+  '🤎': 'brown heart love',
+  '💔': 'broken heart heartbreak sad',
+  '💕': 'two hearts love',
+  '💞': 'revolving hearts love',
+  '💓': 'beating heart heartbeat love',
+  '💗': 'growing heart love',
+  '💖': 'sparkling heart love',
+  '💝': 'heart with ribbon gift love',
+  '⭐': 'star',
+  '✨': 'sparkles shiny magic',
+  '⚡': 'high voltage lightning bolt zap',
+  '🔥': 'fire flame hot lit',
+  '💧': 'droplet water sweat',
+  '🌟': 'glowing star sparkle',
+  '💫': 'dizzy shooting star',
+  '✴️': 'eight pointed star',
+  '⚪': 'white circle',
+  '⚫': 'black circle',
+  '🟡': 'yellow circle',
+  '🟢': 'green circle',
+  '🔵': 'blue circle',
+  '🟣': 'purple circle',
+  '🟤': 'brown circle',
+  '🟥': 'red square',
+};
+
 export interface ReactionPickerProps {
   onEmojiPick: (emoji: string) => void;
   isOpen?: boolean;
@@ -36,16 +105,15 @@ export function ReactionPicker({
   const pickerRef = useRef<HTMLDivElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
-  // Close on click-outside
+  // Close on click-outside. A missing triggerRef means there is no trigger
+  // element to exempt — any click outside the picker itself should close it.
   useEffect(() => {
     if (!isOpen) return;
     const handleClickOutside = (e: MouseEvent) => {
-      if (
-        pickerRef.current &&
-        !pickerRef.current.contains(e.target as Node) &&
-        triggerRef?.current &&
-        !triggerRef.current.contains(e.target as Node)
-      ) {
+      const target = e.target as Node;
+      const isOutsidePicker = !pickerRef.current || !pickerRef.current.contains(target);
+      const isOutsideTrigger = !triggerRef?.current || !triggerRef.current.contains(target);
+      if (isOutsidePicker && isOutsideTrigger) {
         onClose?.();
       }
     };
@@ -74,13 +142,16 @@ export function ReactionPicker({
   const left = wouldOverflow ? 'auto' : (triggerRect ? triggerRect.left : 'auto');
   const right = wouldOverflow ? (viewW - triggerRight) : 'auto';
 
-  // Filter emojis by search term
+  // Filter emojis by search term — matches by name/keyword (not the raw
+  // glyph, which never contains latin substrings). Outside of search, the
+  // active category grid excludes anything already shown in the quick
+  // reactions row above it, to avoid duplicate "React with X" buttons.
   const filteredEmojis = searchTerm.trim()
     ? Object.values(EMOJI_CATEGORIES).flat().filter((e) => {
-      // Simple substring match on emoji visual representation
-      return e.toLowerCase().includes(searchTerm.toLowerCase());
+      const name = EMOJI_NAMES[e] ?? '';
+      return name.toLowerCase().includes(searchTerm.trim().toLowerCase());
     })
-    : EMOJI_CATEGORIES[activeCategory];
+    : EMOJI_CATEGORIES[activeCategory].filter((e) => !QUICK_REACTIONS.includes(e));
 
   return (
     <div
