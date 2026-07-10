@@ -102,7 +102,8 @@ const CLOSE_STATUS_LOZENGE: Record<StrataPeriod['close_status'], { label: string
 };
 
 /** Roles allowed to author decisions/actions — UI affordance only; RPCs enforce for real. */
-const DECISION_AUTHOR_ROLES: readonly string[] = ['strategy_office', 'executive_viewer', 'vmo_validator', 'strata_admin'];
+/** executive_viewer is read-only by definition ("CEO/CXO consumption; no data edits") — W2 20260710140000. */
+const DECISION_AUTHOR_ROLES: readonly string[] = ['strategy_office', 'vmo_validator', 'strata_admin'];
 /** Mirrors storage RLS on strata-board-packs (20260710130000): strategy_office, with strata_is_admin bypass. */
 const PACK_PERSIST_ROLES: readonly string[] = ['strategy_office', 'strata_admin'];
 

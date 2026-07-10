@@ -214,8 +214,9 @@ const ATTENTION_TYPE_LABEL: Record<string, string> = {
 };
 
 // ── AI advisory (F-GOV-009: draft → human review; reviewer ≠ author is DB-enforced) ─
-/** UI affordance gating only — the edge function / DB enforce the real rules. */
-const ADVISORY_ROLES: readonly string[] = ['strategy_office', 'executive_viewer', 'vmo_validator', 'strata_admin'];
+/** UI affordance gating only — the edge function / DB enforce the real rules.
+ *  executive_viewer is read-only ("no data edits") — advisory generate/review are writes; W2 20260710140000. */
+const ADVISORY_ROLES: readonly string[] = ['strategy_office', 'vmo_validator', 'strata_admin'];
 
 const ADVISORY_REVIEW_LOZENGE: Record<StrataAiOutput['human_review_status'], React.ComponentProps<typeof Lozenge>['appearance']> = {
   pending: 'moved',
