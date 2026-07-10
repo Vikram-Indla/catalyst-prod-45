@@ -13,7 +13,6 @@ import {
   Lozenge, Modal, ModalBody, ModalFooter, ModalHeader, ModalTitle, SectionMessage, Select, Spinner, Textfield,
 } from '@/components/ads';
 import type { SelectOption } from '@/components/ads';
-import { DatePicker } from '@atlaskit/datetime-picker';
 import { Routes } from '@/lib/routes';
 import {
   ChevronDown, ChevronRight, Gem, GitBranch, MoveRight, Network, Target, X,
@@ -22,12 +21,12 @@ import {
   useElementKpis, useGateModels, useInvalidateStrata, useKpis, useMapEdges, usePerspectives,
   useThemeCharters, useProfileNames, useStrataContext, useStrataRoles, useStrategyElements,
 } from '@/modules/strata/hooks/useStrata';
-import { strategyApi, valueApi } from '@/modules/strata/domain';
+import { strategyApi } from '@/modules/strata/domain';
 import { StrataChipMenu, StrataPageShell, StrataPanel, StrataStatStrip, T } from '@/modules/strata/components/shared';
 import type { StrataMenuOption, StrataStat } from '@/modules/strata/components/shared';
 import { StrataFormModal } from '@/modules/strata/components/authoring';
 import { fmtRatioPct, labelize } from '@/modules/strata/components/format';
-import type { StrataGateModel, StrataKpi, StrataStrategyElement } from '@/modules/strata/types';
+import type { StrataKpi, StrataStrategyElement } from '@/modules/strata/types';
 
 type LozengeAppearance = React.ComponentProps<typeof Lozenge>['appearance'];
 
@@ -103,8 +102,7 @@ type AuthoringState =
   | { kind: 'edit-element'; element: StrataStrategyElement }
   | { kind: 'retire-element'; element: StrataStrategyElement }
   | { kind: 'charter'; element: StrataStrategyElement }
-  | { kind: 'kpi-links'; element: StrataStrategyElement }
-  | { kind: 'schedule-gate'; element: StrataStrategyElement };
+  | { kind: 'kpi-links'; element: StrataStrategyElement };
 
 function AuthoringFieldLabel({ children }: { children: React.ReactNode }) {
   return (
@@ -255,112 +253,10 @@ function KpiLinksModal({
 }
 
 /**
- * Governance gate scheduling for a theme — the stage select depends on the
- * chosen model's stages, so it composes ads primitives directly.
- */
-function GateScheduleModal({
-  element, gateModels, onClose, onScheduled,
-}: {
-  element: StrataStrategyElement;
-  gateModels: StrataGateModel[];
-  onClose: () => void;
-  onScheduled: () => void;
-}) {
-  const [modelId, setModelId] = useState<string | null>(null);
-  const [stageId, setStageId] = useState<string | null>(null);
-  const [scheduledFor, setScheduledFor] = useState<string | null>(null);
-  const [busy, setBusy] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const modelOptions: SelectOption<string>[] = gateModels
-    .filter((m) => m.status === 'approved')
-    .map((m) => ({ value: m.id, label: m.name }));
-  const stages = gateModels.find((m) => m.id === modelId)?.stages ?? [];
-  const stageOptions: SelectOption<string>[] = stages.map((s) => ({ value: s.id, label: s.name }));
-
-  const submit = async () => {
-    if (!modelId || !stageId) { setError('Required: Gate model, Stage'); return; }
-    setBusy(true);
-    setError(null);
-    try {
-      await valueApi.scheduleGate({
-        gateModelId: modelId, stageId,
-        subjectType: 'element', subjectId: element.id,
-        scheduledFor: scheduledFor ?? undefined,
-      });
-      onScheduled();
-      onClose();
-    } catch (e) {
-      setError(e instanceof Error ? e.message : String(e));
-    } finally {
-      setBusy(false);
-    }
-  };
-
-  return (
-    <Modal isOpen onClose={busy ? () => {} : onClose} width="medium" testId="strata-schedule-gate-modal">
-      <ModalHeader><ModalTitle>Schedule gate — {element.name}</ModalTitle></ModalHeader>
-      <ModalBody>
-        <div style={{ display: 'grid', gap: 12 }}>
-          <div>
-            <AuthoringFieldLabel>Gate model (approved)</AuthoringFieldLabel>
-            <Select
-              options={modelOptions}
-              value={modelOptions.find((o) => o.value === modelId) ?? null}
-              onChange={(next) => { setModelId(next?.value ?? null); setStageId(null); }}
-              placeholder="Select gate model…"
-              isSearchable
-              usePortal
-              aria-label="Gate model"
-            />
-          </div>
-          <div>
-            <AuthoringFieldLabel>Stage</AuthoringFieldLabel>
-            <Select
-              options={stageOptions}
-              value={stageOptions.find((o) => o.value === stageId) ?? null}
-              onChange={(next) => setStageId(next?.value ?? null)}
-              placeholder={modelId ? 'Select stage…' : 'Select a gate model first'}
-              isDisabled={!modelId}
-              usePortal
-              aria-label="Stage"
-            />
-          </div>
-          <div>
-            <AuthoringFieldLabel>Scheduled for</AuthoringFieldLabel>
-            <DatePicker
-              value={scheduledFor ?? ''}
-              onChange={(iso) => setScheduledFor(iso || null)}
-              shouldShowCalendarButton
-              clearControlLabel="Clear scheduled date"
-              label="Scheduled for"
-            />
-          </div>
-        </div>
-        {error ? (
-          <div style={{ marginTop: 12 }}>
-            <SectionMessage appearance="error" title="Action rejected">
-              <p style={{ whiteSpace: 'pre-wrap' }}>{error}</p>
-            </SectionMessage>
-          </div>
-        ) : null}
-      </ModalBody>
-      <ModalFooter>
-        <Button appearance="subtle" onClick={onClose} isDisabled={busy}>Cancel</Button>
-        <Button appearance="primary" onClick={submit} isDisabled={busy}>
-          {busy ? 'Working…' : 'Schedule gate'}
-        </Button>
-      </ModalFooter>
-    </Modal>
-  );
-}
-
-
-/**
  * New element — Type-reactive (Theme has no parent field at all; Objective's
  * parent is required and restricted to Themes). StrataFormModal's field spec
  * is static per render and can't react to a value chosen inside the same
- * modal session, so this mirrors GateScheduleModal's local-state pattern
+ * modal session, so this composes ads primitives directly with local state
  * instead (CAT-STRATA-HIERARCHY-20260706-001, approved 2-tier hierarchy).
  */
 function NewElementModal({
@@ -621,9 +517,6 @@ export default function StrataStrategyRoomPage() {
       ? [{ key: 'charter', label: 'Charter', onClick: () => setAuthoring({ kind: 'charter', element: el }) }]
       : []),
     { key: 'kpis', label: 'KPI links', onClick: () => setAuthoring({ kind: 'kpi-links', element: el }) },
-    ...(el.element_type === 'theme'
-      ? [{ key: 'gate', label: 'Schedule gate', onClick: () => setAuthoring({ kind: 'schedule-gate', element: el }) }]
-      : []),
     ...(el.status !== 'retired'
       ? [{ key: 'retire', label: 'Retire…', onClick: () => setAuthoring({ kind: 'retire-element', element: el }) }]
       : []),
@@ -1154,15 +1047,6 @@ export default function StrataStrategyRoomPage() {
           kpis={kpis}
           onClose={closeAuthoring}
           onChanged={invalidate}
-        />
-      ) : null}
-
-      {authoring?.kind === 'schedule-gate' ? (
-        <GateScheduleModal
-          element={authoring.element}
-          gateModels={gateModelsQ.data ?? []}
-          onClose={closeAuthoring}
-          onScheduled={invalidate}
         />
       ) : null}
     </StrataPageShell>
