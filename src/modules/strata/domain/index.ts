@@ -1051,6 +1051,8 @@ export const governanceApi = {
   needsAttention: (periodId?: string): Promise<Array<{
     item_type: string; severity: string; entity_type: string; entity_id: string;
     entity_name: string | null; detail: string; due_date: string | null;
+    // CLOSEOUT W4: owner of the item (null where no single personal owner) — drives the "Mine" filter.
+    owner_id: string | null;
   }>> =>
     run(typedRpc('strata_needs_attention', { p_period: periodId ?? null })),
 };

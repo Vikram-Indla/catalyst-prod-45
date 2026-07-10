@@ -40,6 +40,7 @@ import {
   useDependencies,
   useKpis,
   useNeedsAttention,
+  useStrataUserId,
   useEnterpriseScoreTrend,
   useAiOutputs,
   useStrataRoles,
@@ -187,6 +188,8 @@ interface AttentionRow {
   detail: string;
   /** Due date ISO — rendered danger when overdue. */
   due: string | null;
+  /** Owner of the item (null where no single personal owner) — drives the "Mine" filter. */
+  ownerId: string | null;
   nav?: () => void;
 }
 
@@ -372,9 +375,22 @@ export default function StrataCommandCenterPage() {
       entityName: r.entity_name,
       detail: r.detail,
       due: r.due_date,
+      ownerId: r.owner_id,
       nav: navFor(r.entity_type, r.entity_id),
     }));
   }, [needsAttentionQ.data, kpiById, benefitById, navigate]);
+
+  // ── "Mine" filter (CLOSEOUT W4): narrow the org-wide feed to items I must act on ──
+  const myUserId = useStrataUserId().data ?? null;
+  const [attentionScope, setAttentionScope] = useState<'all' | 'mine'>('all');
+  const mineCount = useMemo(
+    () => (myUserId ? attentionRows.filter((r) => r.ownerId === myUserId).length : 0),
+    [attentionRows, myUserId],
+  );
+  const visibleAttentionRows = useMemo(
+    () => (attentionScope === 'mine' && myUserId ? attentionRows.filter((r) => r.ownerId === myUserId) : attentionRows),
+    [attentionRows, attentionScope, myUserId],
+  );
 
   // No silent failures: surface the failing inbox source.
   const attentionError = needsAttentionQ.error;
@@ -632,29 +648,51 @@ export default function StrataCommandCenterPage() {
             <StrataPanel
               title="Needs attention"
               icon={<AlertTriangle size={16} />}
-              count={needsAttentionQ.isLoading ? null : attentionRows.length}
-              noPadding={attentionRows.length > 0}
+              count={needsAttentionQ.isLoading ? null : visibleAttentionRows.length}
+              noPadding={visibleAttentionRows.length > 0}
               testId="strata-cc-needs-attention"
+              actions={
+                <div style={{ display: 'inline-flex', gap: 4 }} role="group" aria-label="Filter items needing attention">
+                  <Button
+                    appearance={attentionScope === 'all' ? 'primary' : 'subtle'}
+                    spacing="compact"
+                    onClick={() => setAttentionScope('all')}
+                    testId="strata-cc-attention-all"
+                  >
+                    All
+                  </Button>
+                  <Button
+                    appearance={attentionScope === 'mine' ? 'primary' : 'subtle'}
+                    spacing="compact"
+                    onClick={() => setAttentionScope('mine')}
+                    testId="strata-cc-attention-mine"
+                  >
+                    {`Mine${mineCount ? ` (${mineCount})` : ''}`}
+                  </Button>
+                </div>
+              }
             >
               {attentionError ? (
-                <div style={{ padding: attentionRows.length > 0 ? 16 : 0 }}>
+                <div style={{ padding: visibleAttentionRows.length > 0 ? 16 : 0 }}>
                   <PanelError error={attentionError} />
                 </div>
               ) : null}
               {needsAttentionQ.isLoading ? (
                 <div aria-hidden style={{ height: 96, borderRadius: 8, background: T.neutral, margin: 16 }} />
-              ) : attentionRows.length === 0 ? (
+              ) : visibleAttentionRows.length === 0 ? (
                 !attentionError ? (
                   <EmptyState
                     size="compact"
-                    header="Nothing needs attention — all queues clear."
-                    description="Pending attestations and validations, blocked dependencies, overdue actions and gates, broken assumptions, missing actuals and upload rejections land here."
+                    header={attentionScope === 'mine' ? 'Nothing is waiting on you.' : 'Nothing needs attention — all queues clear.'}
+                    description={attentionScope === 'mine'
+                      ? 'Items assigned to you — validations, blockers, overdue actions and delayed projects you own — appear here. Switch to All to see every open queue.'
+                      : 'Pending attestations and validations, blocked dependencies, overdue actions and gates, broken assumptions, missing actuals and upload rejections land here.'}
                   />
                 ) : null
               ) : (
                 <JiraTable<AttentionRow>
                   columns={attentionColumns}
-                  data={attentionRows}
+                  data={visibleAttentionRows}
                   getRowId={(r) => r.id}
                   onRowClick={(r) => r.nav?.()}
                   showRowCount={false}

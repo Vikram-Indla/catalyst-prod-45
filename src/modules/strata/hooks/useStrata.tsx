@@ -143,6 +143,18 @@ export function useStrataRoles() {
   });
 }
 
+// ── Identity: the current auth user id (CLOSEOUT W4 — drives the "Mine" filter). ─
+export function useStrataUserId() {
+  return useQuery({
+    queryKey: ['strata', 'my-user-id'],
+    queryFn: async (): Promise<string | null> => {
+      const { data } = await supabase.auth.getUser();
+      return data.user?.id ?? null;
+    },
+    staleTime: 5 * 60_000,
+  });
+}
+
 // ── Identity: owner/actor UUID → display name (zero-assumption: unknown → null) ─
 export interface StrataProfileRef { name: string | null; avatarUrl: string | null }
 export function useProfileNames() {
