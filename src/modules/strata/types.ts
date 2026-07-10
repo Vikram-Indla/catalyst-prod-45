@@ -171,6 +171,18 @@ export interface StrataStrategyElement {
   map_position: { x: number; y: number } | null;
 }
 
+/**
+ * Legacy 'play' rows were consolidated into 'theme' (CAT-STRATA-HIERARCHY-20260706-001)
+ * and the DB CHECK constraint (strata_strategy_elements_type_check) blocks new 'play'
+ * rows, but pre-migration data or other environments may still hold them. Treat both as
+ * Theme-equivalent everywhere Theme-only UI is gated — never gate on a bare
+ * `element_type === 'theme'` check.
+ */
+export const THEME_EQUIVALENT_TYPES = ['theme', 'play'] as const;
+export function isThemeElement(elementType: string): boolean {
+  return (THEME_EQUIVALENT_TYPES as readonly string[]).includes(elementType);
+}
+
 export interface StrataMapEdge {
   id: string;
   cycle_id: string;
@@ -683,6 +695,8 @@ export interface StrataDecision {
   decision_key: string;
   forum: string | null;
   snapshot_id: string | null;
+  /** Theme-scoped governance (CAT-STRATA-THEME-DETAIL-20260710-001 Slice 4) — nullable, independent of snapshot_id. */
+  element_id: string | null;
   decision_type: 'governance' | 'gate' | 'escalation' | 'action_only';
   title: string;
   description: string | null;

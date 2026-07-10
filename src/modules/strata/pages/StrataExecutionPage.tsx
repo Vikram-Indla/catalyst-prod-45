@@ -25,8 +25,10 @@ import { JiraTable } from '@/components/shared/JiraTable';
 import type { Column } from '@/components/shared/JiraTable';
 import { Routes } from '@/lib/routes';
 import {
-  EXECUTION_HEALTH_LABEL, StrataChipMenu, StrataExecutionHealthLozenge, StrataPageShell, StrataPanel, StrataStatStrip, T,
+  computeCardRollup, EXECUTION_HEALTH_LABEL, StrataChipMenu, StrataExecutionHealthLozenge, StrataPageShell,
+  StrataPanel, StrataStatStrip, T,
 } from '@/modules/strata/components/shared';
+import type { CardRollup } from '@/modules/strata/components/shared';
 import { StrataFormModal } from '@/modules/strata/components/authoring';
 import type { StrataFormValues } from '@/modules/strata/components/authoring';
 import { ProjectCardDetailView } from '@/modules/strata/components/ProjectCardDetailView';
@@ -131,45 +133,11 @@ function healthBucketOf(card: StrataProjectCard): HealthBucket {
 const isOpenBlocker = (d: StrataDependency): boolean =>
   d.is_blocker && d.status !== 'resolved' && d.status !== 'cancelled';
 
-interface CardRollup {
-  total: number;
-  onHold: number;
-  onTrack: number;
-  minorDelay: number;
-  majorDelay: number;
-  notStarted: number;
-  notAvailable: number;
-  avgProgress: number | null;
-  blockedDependencies: number;
-}
-
-/** Rule 2/14: On Hold projects are counted separately and excluded from
- * overall progress rollups and the on-track/minor/major/not-started/
- * not-available counts. */
-function computeCardRollup(cards: StrataProjectCard[], dependencies: StrataDependency[]): CardRollup {
-  const ids = new Set(cards.map((c) => c.id));
-  let onHold = 0; let onTrack = 0; let minorDelay = 0; let majorDelay = 0; let notStarted = 0; let notAvailable = 0;
-  let progressSum = 0; let progressCount = 0;
-  cards.forEach((c) => {
-    const bucket = healthBucketOf(c);
-    if (bucket === 'on_hold') { onHold += 1; return; }
-    if (bucket === 'on_track') onTrack += 1;
-    else if (bucket === 'minor_delay') minorDelay += 1;
-    else if (bucket === 'major_delay') majorDelay += 1;
-    else if (bucket === 'not_started') notStarted += 1;
-    else notAvailable += 1;
-    const frac = asFraction(c.actual_progress);
-    if (frac != null) { progressSum += frac; progressCount += 1; }
-  });
-  const blockedDependencies = dependencies.filter((d) => isOpenBlocker(d) && (
-    (d.requesting_type === 'project_card' && ids.has(d.requesting_id))
-    || (d.serving_type === 'project_card' && !!d.serving_id && ids.has(d.serving_id))
-  )).length;
-  return {
-    total: cards.length, onHold, onTrack, minorDelay, majorDelay, notStarted, notAvailable,
-    avgProgress: progressCount > 0 ? progressSum / progressCount : null, blockedDependencies,
-  };
-}
+// CardRollup / computeCardRollup now live in components/shared.tsx (canonical,
+// shared with Theme detail's Execution Summary panel — CAT-STRATA-THEME-
+// DETAIL-20260710-001 Slice 3). Self-contained there (own health-bucket/
+// blocker logic) — healthBucketOf/isOpenBlocker below remain page-local,
+// used elsewhere on this page for filters (line ~481, ~494, ~752-754).
 
 interface CardGroup { key: string; label: string; cards: StrataProjectCard[] }
 

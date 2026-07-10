@@ -6,13 +6,12 @@
  */
 import React, { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
 import {
   Avatar, Button, CatalystTag,
-  EmptyState, Lozenge, ProgressBar, SectionMessage, Spinner, Textfield, Tooltip,
+  EmptyState, Lozenge, SectionMessage, Spinner, Textfield, Tooltip,
 } from '@/components/ads';
 import {
-  Activity, ArrowDown, ArrowUp, CheckCircle2, ChevronDown, ChevronRight, Plus, Scale, Target,
+  Activity, ArrowDown, ArrowUp, CheckCircle2, Plus, Scale, Target,
 } from '@/lib/atlaskit-icons';
 import { JiraTable } from '@/components/shared/JiraTable';
 import type { Column, SortOrder } from '@/components/shared/JiraTable';
@@ -21,13 +20,11 @@ import { kpiApi } from '@/modules/strata/domain';
 import {
   useDataSources, useInvalidateStrata, useKpiAchievement, useKpis, useOkrs, useProfileNames, useStrataContext, useStrataRoles, useStrategyElements,
 } from '@/modules/strata/hooks/useStrata';
-import { StrataBandBar, StrataBandLozenge, StrataChipMenu, StrataPageShell, StrataPanel, T } from '@/modules/strata/components/shared';
+import { OkrRow, StrataBandBar, StrataBandLozenge, StrataChipMenu, StrataPageShell, StrataPanel, T } from '@/modules/strata/components/shared';
 import { StrataFormModal } from '@/modules/strata/components/authoring';
-import { fmtPct, fmtRatioPct, fmtUnit, labelize } from '@/modules/strata/components/format';
-import type { GovernedStatus, StrataKeyResult, StrataKpi, StrataOkr } from '@/modules/strata/types';
+import { fmtPct, labelize } from '@/modules/strata/components/format';
+import type { GovernedStatus, StrataKpi, StrataOkr } from '@/modules/strata/types';
 import type { StrataProfileRef } from '@/modules/strata/hooks/useStrata';
-
-const STALE = 30_000;
 
 /** UI affordance gating only — server RPCs enforce the real role rules (SoD etc.). */
 const CREATE_ROLES = ['strategy_office', 'kpi_owner', 'strata_admin'] as const;
@@ -177,165 +174,10 @@ function ValidatorCell({ validatorId, profiles }: { validatorId: string | null; 
   );
 }
 
-// ── OKR panel ────────────────────────────────────────────────────────────────
-const OKR_STATUS_LOZENGE: Record<StrataOkr['status'], { label: string; appearance: React.ComponentProps<typeof Lozenge>['appearance'] }> = {
-  draft: { label: 'Draft', appearance: 'default' },
-  active: { label: 'Active', appearance: 'inprogress' },
-  closed: { label: 'Closed', appearance: 'default' },
-};
-
-/** Display-only progress of current within baseline→target (mandated by S-116). */
-const krProgressFraction = (kr: StrataKeyResult): number | null => {
-  if (kr.target == null || kr.current_value == null) return null;
-  const base = kr.baseline ?? 0;
-  const span = kr.target - base;
-  if (span === 0) return null;
-  return Math.max(0, Math.min(1, (kr.current_value - base) / span));
-};
-
-/** Lazy key-result fetch — mounts only when the OKR row is expanded (S-115/S-116). */
-function KeyResultsList({ okrId }: { okrId: string }) {
-  const q = useQuery({
-    queryKey: ['strata', 'key-results', okrId],
-    queryFn: () => kpiApi.keyResults(okrId),
-    staleTime: STALE,
-  });
-
-  const columns = useMemo<Column<StrataKeyResult>[]>(() => [
-    {
-      id: 'name',
-      label: 'Key result',
-      flex: true,
-      cell: ({ row }) => (
-        <span style={{ fontWeight: 600, color: T.text, fontSize: 'var(--ds-font-size-400)', lineHeight: 'var(--ds-line-height-body)' }}>
-          {row.name}
-        </span>
-      ),
-    },
-    {
-      id: 'range',
-      label: 'Baseline → target',
-      width: 18,
-      cell: ({ row }) => (
-        <span style={{ color: T.subtle, fontVariantNumeric: 'tabular-nums' }}>
-          {fmtUnit(row.baseline, row.unit)} → {fmtUnit(row.target, row.unit)}
-        </span>
-      ),
-    },
-    {
-      id: 'current_value',
-      label: 'Current',
-      width: 12,
-      cell: ({ row }) => (
-        <span style={{ fontWeight: 600, color: T.text, fontVariantNumeric: 'tabular-nums' }}>
-          {fmtUnit(row.current_value, row.unit)}
-        </span>
-      ),
-    },
-    {
-      id: 'progress',
-      label: 'Progress',
-      width: 16,
-      cell: ({ row }) => {
-        const frac = krProgressFraction(row);
-        return frac == null
-          ? <Dash />
-          : <ProgressBar value={frac} aria-label={`Progress ${Math.round(frac * 100)}%`} />;
-      },
-    },
-  ], []);
-
-  if (q.isLoading) return <div style={{ padding: '8px 0' }}><Spinner size="small" aria-label="Loading key results" /></div>;
-  if (q.isError) {
-    return <p style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-danger)', margin: '8px 0' }}>Failed to load key results.</p>;
-  }
-  const krs = (q.data ?? []) as StrataKeyResult[];
-  if (krs.length === 0) {
-    return <p style={{ fontSize: 'var(--ds-font-size-100)', color: T.subtle, margin: '8px 0' }}>No key results recorded.</p>;
-  }
-  return (
-    <div style={{ marginTop: 8 }}>
-      <JiraTable<StrataKeyResult>
-        columns={columns}
-        data={krs}
-        getRowId={(row) => row.id}
-        density="compact"
-        showRowCount={false}
-        rowsPerPage={100}
-        ariaLabel="Key results"
-      />
-    </div>
-  );
-}
-
-/** Accordion row — canonical chrome: chevron icon, hover bg, structured header (S-117). */
-function OkrRow({ okr, objectiveName, isOpen, onToggle, onAddKeyResult }: {
-  okr: StrataOkr;
-  objectiveName: string | null;
-  isOpen: boolean;
-  onToggle: () => void;
-  onAddKeyResult?: () => void;
-}) {
-  const [hover, setHover] = useState(false);
-  const status = OKR_STATUS_LOZENGE[okr.status];
-  const confidenceText = okr.confidence != null
-    ? `Confidence ${okr.confidence <= 1 ? fmtRatioPct(okr.confidence) : fmtPct(okr.confidence)}`
-    : null;
-  return (
-    <div style={{ borderBottom: `1px solid ${T.border}` }}>
-      <button
-        type="button"
-        onClick={onToggle}
-        aria-expanded={isOpen}
-        onMouseEnter={() => setHover(true)}
-        onMouseLeave={() => setHover(false)}
-        style={{
-          display: 'flex', alignItems: 'center', gap: 8, width: '100%',
-          background: hover ? T.sunken : 'none', border: 'none', padding: '12px 8px', cursor: 'pointer',
-          font: 'inherit', textAlign: 'left', color: T.text, borderRadius: 4,
-        }}
-      >
-        <span aria-hidden style={{ display: 'inline-flex', color: 'var(--ds-icon-subtle)', flexShrink: 0 }}>
-          {isOpen ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
-        </span>
-        <span style={{ fontWeight: 600, fontSize: 'var(--ds-font-size-400)', lineHeight: 'var(--ds-line-height-body)', flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-          {okr.name}
-        </span>
-        {objectiveName ? (
-          <span style={{ fontSize: 'var(--ds-font-size-100)', color: T.subtle, whiteSpace: 'nowrap' }}>
-            Objective · {objectiveName}
-          </span>
-        ) : null}
-        {confidenceText ? (
-          <span style={{ fontSize: 'var(--ds-font-size-100)', color: T.subtle, minWidth: 110, textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>
-            {confidenceText}
-          </span>
-        ) : null}
-        {status
-          ? <Lozenge appearance={status.appearance}>{status.label}</Lozenge>
-          : <Lozenge appearance="default">{labelize(okr.status)}</Lozenge>}
-      </button>
-      {isOpen ? (
-        <div style={{ padding: '0 8px 12px 32px' }}>
-          <KeyResultsList okrId={okr.id} />
-          {onAddKeyResult ? (
-            <div style={{ marginTop: 8 }}>
-              <Button
-                appearance="default"
-                spacing="compact"
-                iconBefore={<Plus size={14} />}
-                onClick={onAddKeyResult}
-                testId={`strata-add-kr-${okr.id}`}
-              >
-                Add key result
-              </Button>
-            </div>
-          ) : null}
-        </div>
-      ) : null}
-    </div>
-  );
-}
+// ── OKR panel — OkrRow/KeyResultsList/krProgressFraction/OKR_STATUS_LOZENGE ──
+//    now live in components/shared.tsx (canonical, shared with Theme/Objective
+//    detail's OKR Performance panel — CAT-STRATA-THEME-DETAIL-20260710-001
+//    Slice 2). ──
 
 function OkrPanel() {
   const { activeCycle } = useStrataContext();

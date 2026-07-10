@@ -11,17 +11,23 @@
  * Data-state labels (live/draft/pending/locked) are SYSTEM states (DB CHECKs);
  * band labels/appearances come from governed threshold-scheme config at runtime.
  */
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import {
-  Button, DropdownMenu, Heading, Lozenge,
-  Modal, ModalBody, ModalFooter, ModalHeader, ModalTitle, SectionMessage, Textfield, Tooltip,
+  Button, DropdownMenu, Heading, Lozenge, ProgressBar,
+  Modal, ModalBody, ModalFooter, ModalHeader, ModalTitle, SectionMessage, Spinner, Textfield, Tooltip,
 } from '@/components/ads';
 import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
-import { ChevronDown } from '@/lib/atlaskit-icons';
+import { ChevronDown, ChevronRight, Plus } from '@/lib/atlaskit-icons';
+import { JiraTable } from '@/components/shared/JiraTable';
+import type { Column } from '@/components/shared/JiraTable';
+import { kpiApi } from '../domain';
 import { useBandResolver, useStrataContext } from '../hooks/useStrata';
 import { StrataNotificationBell } from './StrataNotificationBell';
-import { fmtSarCompact, fmtScore } from './format';
-import type { DataState, ThresholdBand } from '../types';
+import { fmtPct, fmtRatioPct, fmtSarCompact, fmtScore, fmtUnit, labelize } from './format';
+import type { DataState, StrataDependency, StrataKeyResult, StrataOkr, StrataProjectCard, ThresholdBand } from '../types';
+
+const STALE = 30_000;
 
 export const T = {
   text: 'var(--ds-text)',
@@ -748,3 +754,225 @@ export function StrataPanel({
 // The evidence drawer became a full page: pages/StrataEvidencePage.tsx
 // (routes kpis/:slug/evidence · scorecards/:slug/evidence · portfolio/:slug/evidence).
 // Its rendering primitives live in components/evidence.tsx.
+
+// ── OKR / key-result accordion (canonical — shared by KPI Library's OKR panel ──
+//    and Theme/Objective detail's OKR Performance panel, CAT-STRATA-THEME-DETAIL
+//    -20260710-001 Slice 2. One definition, two call sites.) ──
+const OkrDash = () => <span style={{ color: T.subtlest }}>—</span>;
+
+export const OKR_STATUS_LOZENGE: Record<StrataOkr['status'], { label: string; appearance: React.ComponentProps<typeof Lozenge>['appearance'] }> = {
+  draft: { label: 'Draft', appearance: 'default' },
+  active: { label: 'Active', appearance: 'inprogress' },
+  closed: { label: 'Closed', appearance: 'default' },
+};
+
+/** Display-only progress of current within baseline→target (mandated by S-116). */
+export const krProgressFraction = (kr: StrataKeyResult): number | null => {
+  if (kr.target == null || kr.current_value == null) return null;
+  const base = kr.baseline ?? 0;
+  const span = kr.target - base;
+  if (span === 0) return null;
+  return Math.max(0, Math.min(1, (kr.current_value - base) / span));
+};
+
+/** Lazy key-result fetch — mounts only when the OKR row is expanded (S-115/S-116). */
+export function KeyResultsList({ okrId }: { okrId: string }) {
+  const q = useQuery({
+    queryKey: ['strata', 'key-results', okrId],
+    queryFn: () => kpiApi.keyResults(okrId),
+    staleTime: STALE,
+  });
+
+  const columns = useMemo<Column<StrataKeyResult>[]>(() => [
+    {
+      id: 'name',
+      label: 'Key result',
+      flex: true,
+      cell: ({ row }) => (
+        <span style={{ fontWeight: 600, color: T.text, fontSize: 'var(--ds-font-size-400)', lineHeight: 'var(--ds-line-height-body)' }}>
+          {row.name}
+        </span>
+      ),
+    },
+    {
+      id: 'range',
+      label: 'Baseline → target',
+      width: 18,
+      cell: ({ row }) => (
+        <span style={{ color: T.subtle, fontVariantNumeric: 'tabular-nums' }}>
+          {fmtUnit(row.baseline, row.unit)} → {fmtUnit(row.target, row.unit)}
+        </span>
+      ),
+    },
+    {
+      id: 'current_value',
+      label: 'Current',
+      width: 12,
+      cell: ({ row }) => (
+        <span style={{ fontWeight: 600, color: T.text, fontVariantNumeric: 'tabular-nums' }}>
+          {fmtUnit(row.current_value, row.unit)}
+        </span>
+      ),
+    },
+    {
+      id: 'progress',
+      label: 'Progress',
+      width: 16,
+      cell: ({ row }) => {
+        const frac = krProgressFraction(row);
+        return frac == null
+          ? <OkrDash />
+          : <ProgressBar value={frac} aria-label={`Progress ${Math.round(frac * 100)}%`} />;
+      },
+    },
+  ], []);
+
+  if (q.isLoading) return <div style={{ padding: '8px 0' }}><Spinner size="small" aria-label="Loading key results" /></div>;
+  if (q.isError) {
+    return <p style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-danger)', margin: '8px 0' }}>Failed to load key results.</p>;
+  }
+  const krs = (q.data ?? []) as StrataKeyResult[];
+  if (krs.length === 0) {
+    return <p style={{ fontSize: 'var(--ds-font-size-100)', color: T.subtle, margin: '8px 0' }}>No key results recorded.</p>;
+  }
+  return (
+    <div style={{ marginTop: 8 }}>
+      <JiraTable<StrataKeyResult>
+        columns={columns}
+        data={krs}
+        getRowId={(row) => row.id}
+        density="compact"
+        showRowCount={false}
+        rowsPerPage={100}
+        ariaLabel="Key results"
+      />
+    </div>
+  );
+}
+
+/** Accordion row — canonical chrome: chevron icon, hover bg, structured header (S-117). */
+export function OkrRow({ okr, objectiveName, isOpen, onToggle, onAddKeyResult }: {
+  okr: StrataOkr;
+  objectiveName: string | null;
+  isOpen: boolean;
+  onToggle: () => void;
+  onAddKeyResult?: () => void;
+}) {
+  const [hover, setHover] = useState(false);
+  const status = OKR_STATUS_LOZENGE[okr.status];
+  const confidenceText = okr.confidence != null
+    ? `Confidence ${okr.confidence <= 1 ? fmtRatioPct(okr.confidence) : fmtPct(okr.confidence)}`
+    : null;
+  return (
+    <div style={{ borderBottom: `1px solid ${T.border}` }}>
+      <button
+        type="button"
+        onClick={onToggle}
+        aria-expanded={isOpen}
+        onMouseEnter={() => setHover(true)}
+        onMouseLeave={() => setHover(false)}
+        style={{
+          display: 'flex', alignItems: 'center', gap: 8, width: '100%',
+          background: hover ? T.sunken : 'none', border: 'none', padding: '12px 8px', cursor: 'pointer',
+          font: 'inherit', textAlign: 'left', color: T.text, borderRadius: 4,
+        }}
+      >
+        <span aria-hidden style={{ display: 'inline-flex', color: 'var(--ds-icon-subtle)', flexShrink: 0 }}>
+          {isOpen ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+        </span>
+        <span style={{ fontWeight: 600, fontSize: 'var(--ds-font-size-400)', lineHeight: 'var(--ds-line-height-body)', flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+          {okr.name}
+        </span>
+        {objectiveName ? (
+          <span style={{ fontSize: 'var(--ds-font-size-100)', color: T.subtle, whiteSpace: 'nowrap' }}>
+            Objective · {objectiveName}
+          </span>
+        ) : null}
+        {confidenceText ? (
+          <span style={{ fontSize: 'var(--ds-font-size-100)', color: T.subtle, minWidth: 110, textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>
+            {confidenceText}
+          </span>
+        ) : null}
+        {status
+          ? <Lozenge appearance={status.appearance}>{status.label}</Lozenge>
+          : <Lozenge appearance="default">{labelize(okr.status)}</Lozenge>}
+      </button>
+      {isOpen ? (
+        <div style={{ padding: '0 8px 12px 32px' }}>
+          <KeyResultsList okrId={okr.id} />
+          {onAddKeyResult ? (
+            <div style={{ marginTop: 8 }}>
+              <Button
+                appearance="default"
+                spacing="compact"
+                iconBefore={<Plus size={14} />}
+                onClick={onAddKeyResult}
+                testId={`strata-add-kr-${okr.id}`}
+              >
+                Add key result
+              </Button>
+            </div>
+          ) : null}
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+// ── Project Card rollup + forecast resolver (canonical — shared by Execution ──
+//    page's own rollup panels and Theme detail's Execution Summary, CAT-STRATA
+//    -THEME-DETAIL-20260710-001 Slice 3. One definition, two call sites.) ──
+export interface CardRollup {
+  total: number;
+  onHold: number;
+  onTrack: number;
+  minorDelay: number;
+  majorDelay: number;
+  notStarted: number;
+  notAvailable: number;
+  avgProgress: number | null;
+  blockedDependencies: number;
+}
+
+/** Rule 2/14: On Hold projects are counted separately and excluded from
+ * overall progress rollups and the on-track/minor/major/not-started/
+ * not-available counts. Self-contained — does not depend on page-local
+ * healthBucketOf/isOpenBlocker helpers. */
+export function computeCardRollup(cards: StrataProjectCard[], dependencies: StrataDependency[]): CardRollup {
+  const ids = new Set(cards.map((c) => c.id));
+  let onHold = 0; let onTrack = 0; let minorDelay = 0; let majorDelay = 0; let notStarted = 0; let notAvailable = 0;
+  let progressSum = 0; let progressCount = 0;
+  cards.forEach((c) => {
+    const bucket = c.calculated_health ?? 'not_available';
+    if (bucket === 'on_hold') { onHold += 1; return; }
+    if (bucket === 'on_track') onTrack += 1;
+    else if (bucket === 'minor_delay') minorDelay += 1;
+    else if (bucket === 'major_delay') majorDelay += 1;
+    else if (bucket === 'not_started') notStarted += 1;
+    else notAvailable += 1;
+    const v = c.actual_progress;
+    const frac = v == null ? null : Math.max(0, Math.min(1, v > 1 ? v / 100 : v));
+    if (frac != null) { progressSum += frac; progressCount += 1; }
+  });
+  const isOpenBlocker = (d: StrataDependency) => d.is_blocker && d.status !== 'resolved' && d.status !== 'cancelled';
+  const blockedDependencies = dependencies.filter((d) => isOpenBlocker(d) && (
+    (d.requesting_type === 'project_card' && ids.has(d.requesting_id))
+    || (d.serving_type === 'project_card' && !!d.serving_id && ids.has(d.serving_id))
+  )).length;
+  return {
+    total: cards.length, onHold, onTrack, minorDelay, majorDelay, notStarted, notAvailable,
+    avgProgress: progressCount > 0 ? progressSum / progressCount : null, blockedDependencies,
+  };
+}
+
+/**
+ * Forecast source — `final_forecast_end` is already the canonical resolved
+ * value (server-computed as GREATEST(system_forecast_end, forecast_end) or
+ * whichever exists — "Rule 8",
+ * supabase/migrations/20260706231000_strata_execution_health_forecast_rpcs.sql:93-98).
+ * This does not recompute the forecast; it only reports which input won.
+ */
+export function forecastSource(card: StrataProjectCard): 'system' | 'manual' | null {
+  if (card.final_forecast_end == null) return null;
+  return card.final_forecast_end === card.system_forecast_end ? 'system' : 'manual';
+}

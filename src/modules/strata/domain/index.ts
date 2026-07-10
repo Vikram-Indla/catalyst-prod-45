@@ -987,13 +987,14 @@ export const governanceApi = {
   createDecision: (input: {
     title: string; decisionType?: 'governance' | 'gate' | 'escalation' | 'action_only';
     forum?: string; description?: string; ownerId?: string; dueDate?: string;
-    snapshotId?: string; evidenceRefs?: Record<string, unknown>;
+    snapshotId?: string; evidenceRefs?: Record<string, unknown>; elementId?: string;
   }): Promise<string> =>
     run(typedRpc('strata_create_decision', {
       p_title: input.title, p_decision_type: input.decisionType ?? 'governance',
       p_forum: input.forum ?? null, p_description: input.description ?? null,
       p_owner: input.ownerId ?? null, p_due_date: input.dueDate ?? null,
       p_snapshot: input.snapshotId ?? null, p_evidence_refs: input.evidenceRefs ?? null,
+      p_element: input.elementId ?? null,
     })),
   updateDecision: (decisionId: string, patch: {
     status?: 'open' | 'decided' | 'closed'; description?: string; ownerId?: string; dueDate?: string;
