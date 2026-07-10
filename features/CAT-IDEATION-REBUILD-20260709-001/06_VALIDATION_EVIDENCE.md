@@ -87,3 +87,24 @@ Notes: G1 first attempt failed on `created_by NOT NULL` (definer context has nul
 | Home surfaces | PASS — no trace (ss_1770ulmrs) |
 
 **Known env limitation**: vitest cannot start locally (rolldown `styleText` array arg vs Node 20.12) — pre-existing, affects all suites; HubSwitcher suite (updated hrefs + pinned flag mock) runs in CI.
+
+## Phase 2 Slice S1 — Inbox 2-pane triage · localhost:8082 (isolated instance) · 2026-07-10
+
+**Plan Lock**: `03_PLAN_LOCK_PHASE2_S1_INBOX.md`. Scope: real 2-pane triage queue (JiraTable + StatusLozenge, both canonical) reading live `idn_ideas`, replacing the Phase 1 empty-state stub. Design evidence: `features/CAT-IDEATION-DISCOVERY-20260709-001/05_MOBBIN_UX_EVIDENCE.md` §C row 1.
+
+**Data**: `idn_ideas` had 0 rows on staging pre-slice (S3 seed only touched scoring/workflow/notifications/roles). Seeded 6 demo rows directly via Supabase MCP (`execute_sql`, not a migration — content, not schema): IDEA-6..11, spanning submitted(2)/screening(2)/evaluation(2), real `submitter_id` FKs to approved staging profiles. Left in place for later Phase 2 slices (Explore/Portfolio/Detail) to build against.
+
+**Gates**: `npx tsc --noEmit` ✅ 0 errors · `node scripts/no-hardcoded-colors.cjs` ✅ 0 hits on touched files.
+
+**Isolated dev instance**: existing shared dev servers (8080, 8081) belong to other concurrent sessions per CLAUDE.md concurrent-sessions rule — not touched/restarted. Started a throwaway instance (`VITE_ENABLE_IDEATION=true npm run dev -- --port 8082 --strictPort`, killed after screenshotting) rather than editing the tracked `.env.development`.
+
+**Screenshots** (Chrome MCP, signed-in session, user authenticated the tab manually — no credentials entered by the assistant):
+| Surface | Outcome |
+|---|---|
+| /ideation (Inbox), light | PASS — 2-pane: JiraTable queue (Key/Class/Summary/Status) + counts header ("2 Submitted · 2 Screening · 2 Evaluation") + sticky preview pane, real idn_ideas rows (ss_99486r8yt initial, ss_0980zx4lt post column-width fix) |
+| Row-click interaction | PASS — clicking IDEA-9 updates the preview pane (title/class/problem-statement/Open-idea button) live (ss_232723g55) |
+| /ideation (Inbox), dark | PASS — StatusLozenge + ClassBadge + table chrome all hold contrast via ADS tokens, no new color logic (ss_8857wb15z) |
+
+**Bug found + fixed during this slice**: initial column widths (`flex: true` Summary column has a 640px `FLEX_SUM_FLOOR` in JiraTable) overflowed the 2-pane's `1fr` track, clipping the Status column behind the preview pane (ss_33657c2mw/ss_7185gww35 predecessor — actually first: ss_51519j54y showed the clipped state). Fixed by dropping the `created_at` column and switching Summary to a fixed `width: 42` instead of `flex`, rebalancing Key/Class/Status widths so the table's natural width fits the available track without internal scroll.
+
+**Not yet built this slice** (Phase 2 continues): Detail page (still placeholder), Explore/Portfolio real data, AI Copilot rail tab, vote/importance control, create modal.

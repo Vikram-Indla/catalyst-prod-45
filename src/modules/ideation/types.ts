@@ -25,3 +25,20 @@ export type VoteImportance = 'critical' | 'important' | 'nice' | 'none';
 
 /** Module key registered in admin_nav_modules / admin_role_module_permissions (S3). */
 export const IDEATION_MODULE_KEY = 'ideation';
+
+/** idn_ideas.idea_class (S1 enum). */
+export type IdeaClass = 'problem' | 'opportunity' | 'improvement';
+
+/** Row shape read from idn_ideas for the Inbox queue (Phase 2 S1). Only the
+ *  columns the Inbox actually renders — full detail shape lands with the
+ *  Detail page slice. */
+export interface IdeaRow {
+  id: string;
+  idea_key: string;
+  slug: string;
+  title: string;
+  problem_statement: unknown;
+  idea_class: IdeaClass;
+  workflow_status_key: IdeaStatusKey;
+  created_at: string;
+}
