@@ -13,7 +13,7 @@ import type {
   StrataGateModel, StrataGateModelStage, StrataInitiative, StrataInitiativeProject,
   StrataKeyResult, StrataKpi, StrataKpiActual, StrataKpiFormulaVersion, StrataKpiTarget,
   StrataKpiTypeConfig, StrataMapEdge, StrataMilestone, StrataModelPerspective, StrataOkr,
-  StrataPeriod, StrataPerspective, StrataPlayCharter, StrataPortfolio, StrataProjectCard,
+  StrataPeriod, StrataPerspective, StrataThemeCharter, StrataPortfolio, StrataProjectCard,
   StrataProjectCardFieldConfig, StrataProjectCardPicklist, StrataProjectCardSectionConfig,
   StrataProjectCardTabConfig, StrataRole, StrataScorecardInstance, StrataScorecardLine,
   StrataScorecardModel, StrataSnapshot, StrataStagingRow, StrataStrategyElement, StrataThresholdScheme,
@@ -117,8 +117,8 @@ export const strategyApi = {
     run(typedQuery('strata_strategy_elements').select('*').eq('slug', slug).maybeSingle()),
   edges: (cycleId: string): Promise<StrataMapEdge[]> =>
     run(typedQuery('strata_map_edges').select('*').eq('cycle_id', cycleId)),
-  charters: (): Promise<StrataPlayCharter[]> =>
-    run(typedQuery('strata_play_charters').select('*')),
+  charters: (): Promise<StrataThemeCharter[]> =>
+    run(typedQuery('strata_theme_charters').select('*')),
   elementKpis: (): Promise<Array<{ element_id: string; kpi_id: string; weight: number | null }>> =>
     run(typedQuery('strata_element_kpis').select('element_id, kpi_id, weight')),
   updateMapPosition: (elementId: string, pos: { x: number; y: number }) =>
@@ -180,7 +180,7 @@ export const strategyApi = {
     elementId: string; hypothesis?: string; scope?: string; valueThesis?: string;
     gateModelId?: string; ownerId?: string;
   }): Promise<string> =>
-    run(typedRpc('strata_upsert_play_charter', {
+    run(typedRpc('strata_upsert_theme_charter', {
       p_element: input.elementId, p_hypothesis: input.hypothesis ?? null,
       p_scope: input.scope ?? null, p_value_thesis: input.valueThesis ?? null,
       p_gate_model: input.gateModelId ?? null, p_owner: input.ownerId ?? null,

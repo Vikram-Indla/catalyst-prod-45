@@ -3,6 +3,9 @@
 ## Gate R1 — Contract (2026-07-09)
 Approved by user reply "approved": workspace = `features/CAT-STRATA-FOUNDATION-20260709-001/`, mode deep-discovery, repo-evidence-first, 0 web budget, research-only (no code/DB changes this phase).
 
+## Build authorization (2026-07-09)
+User `/goal` directive: "build it on the strata standalone branch … continue there with the complete goal … all micro-interactions addressed as acceptance criteria … always alerting on context health. feature CAT-STRATA-FOUNDATION." Treated as Plan Lock approval — `03_PLAN_LOCK.md` written and active. User switched the origin checkout to `strata-standalone` via GitHub Desktop; this session owns it. Research pack committed+pushed (d0d5ba2).
+
 ## Gate R2 — Baseline conflicts (2026-07-09, resume session, answered via structured question)
 
 | ID | Decision | Consequence |
@@ -18,3 +21,11 @@ Also resolved in analysis (no user decision needed):
 
 ## Gate R3 — Requirements freeze (2026-07-09)
 **FROZEN** by user selection "Freeze": REQ-001..023 locked with all mechanical checks passing. Post-freeze changes require an entry in `CONTRACT.md` amendments. Next: build session per `90_handoff/IMPLEMENTATION-PROMPT.md` — worktree from `strata-standalone`, W0 probes, `03_PLAN_LOCK.md`, STOP for approval before code.
+
+## AC6 interpretation (2026-07-09, session 007)
+Plan Lock micro-interaction AC6 asks for an Atlaskit flag on every mutation (success/error).
+The platform-wide doctrine in `src/hooks/use-toast.ts` — "DEPRECATED 2026-06-16 (Vikram):
+non-destructive confirmation badges are suppressed platform-wide. Only destructive (error)
+toasts render." — supersedes the success half. AC6 is therefore satisfied by: reload-consistent
+state via invalidate() (visible "Calculated <time>" refresh) + error feedback (inline message,
+error flags). No success flags added anywhere in STRATA.

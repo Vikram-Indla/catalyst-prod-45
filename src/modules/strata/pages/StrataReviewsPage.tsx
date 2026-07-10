@@ -50,6 +50,8 @@ import {
   StrataPanel,
   StrataDataStateLozenge,
   StrataBandLozenge,
+  StrataStatStrip,
+  type StrataStat,
   T,
 } from '@/modules/strata/components/shared';
 import { StrataFormModal } from '@/modules/strata/components/authoring';
@@ -124,6 +126,22 @@ function FactChip({ icon, value, label }: { icon: React.ReactNode; value: React.
       <strong style={{ color: T.text, fontWeight: 600, fontVariantNumeric: 'tabular-nums' }}>{value}</strong>
       {label}
     </span>
+  );
+}
+
+/** Editorial numbered section header (Command Room SRC-M7) — the board pack
+ *  reads like a document: "01 — Key metrics", "02 — Frozen evidence", … */
+function PackSection({ n, title }: { n: string; title: string }) {
+  return (
+    <div style={{ display: 'flex', alignItems: 'baseline', gap: 12, marginTop: 4 }}>
+      <span aria-hidden style={{
+        fontFamily: T.fontDisplay, fontSize: 26, fontWeight: 700, color: T.subtlest,
+        lineHeight: 1, fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.02em',
+      }}>
+        {n}
+      </span>
+      <Heading as="h3" size="small">{title}</Heading>
+    </div>
   );
 }
 
@@ -341,6 +359,62 @@ export default function StrataReviewsPage() {
   const boardPacksQ = useBoardPacks(selected?.id);
   const auditQ = useStrataAudit('strata_snapshots');
   const profilesQ = useProfileNames();
+
+  // Executive KPI band (Command Room SRC-M3) — derived from loaded governance
+  // data only; overdue = open/in-progress actions past their due date.
+  const governanceBand = useMemo((): StrataStat[] => {
+    const decisions = (decisionsQ.data ?? []) as StrataDecision[];
+    const actions = (actionsQ.data ?? []) as StrataAction[];
+    const openDecisions = decisions.filter((d) => d.status === 'open').length;
+    const today = new Date().toISOString().slice(0, 10);
+    const openActions = actions.filter((a) => a.status === 'open' || a.status === 'in_progress');
+    const overdue = openActions.filter((a) => a.due_date != null && a.due_date < today).length;
+    return [
+      {
+        key: 'snapshots', label: 'Snapshots', value: snapshots.length,
+        caption: snapshots[0] ? `latest ${snapshots[0].snapshot_key}` : 'none yet',
+      },
+      {
+        key: 'decisions', label: 'Open decisions', value: openDecisions,
+        caption: openDecisions > 0 ? 'awaiting a decision forum' : 'none open',
+        captionTone: openDecisions > 0 ? 'warning' : 'success',
+      },
+      {
+        key: 'actions', label: 'Overdue actions', value: overdue,
+        caption: overdue > 0 ? `of ${openActions.length} open actions` : `${openActions.length} open, none overdue`,
+        captionTone: overdue > 0 ? 'danger' : 'success',
+      },
+      {
+        key: 'period', label: 'Period close', value: activePeriod ? labelize(activePeriod.close_status) : '—',
+        caption: activePeriod ? activePeriod.name : 'no active period',
+        captionTone: activePeriod?.close_status === 'closed' ? 'success' : 'neutral',
+      },
+    ];
+  }, [decisionsQ.data, actionsQ.data, snapshots, activePeriod]);
+
+  // Board-pack "01 — Key metrics" (SRC-M7): oversized stat cards from the
+  // snapshot's own frozen payloads — value + governed band exactly as frozen,
+  // never recomputed. Zero-assumption: section renders only when values exist.
+  const keyMetrics = useMemo((): StrataStat[] => {
+    return items
+      .filter((i) => typeof i.payload?.value === 'number' || typeof i.payload?.value === 'string')
+      .slice(0, 4)
+      .map((i) => ({
+        key: i.id,
+        label: typeof i.payload?.entity_name === 'string' ? i.payload.entity_name : labelize(i.entity_type),
+        value: fmtUnit(
+          i.payload!.value as number | string,
+          typeof i.payload?.unit === 'string' ? i.payload.unit : null,
+        ),
+        caption: typeof i.payload?.name === 'string'
+          ? i.payload.name
+          : typeof i.payload?.metric_key === 'string' ? labelize(i.payload.metric_key) : undefined,
+        bandKey: typeof i.payload?.status_key === 'string' ? i.payload.status_key : null,
+      }));
+  }, [items]);
+  /** Editorial section number — shifts by one when "01 — Key metrics" renders. */
+  const packNo = (position: number): string =>
+    String(position + (keyMetrics.length > 0 ? 1 : 0)).padStart(2, '0');
 
   const [expandedDecisionId, setExpandedDecisionId] = useState<string | null>(null);
   const [lockOpen, setLockOpen] = useState(false);
@@ -675,6 +749,14 @@ export default function StrataReviewsPage() {
       state={selected?.status ?? null}
       testId="strata-reviews-shell"
     >
+      {/* Review Cadence (locked Governance area, REQ-015) — derived from the
+          active Strategy Cycle's period granularity; nothing fabricated. */}
+      {!isDetail && activeCycle ? (
+        <p style={{ margin: '0 0 12px', fontSize: 'var(--ds-font-size-100)', color: T.subtlest }} data-testid="strata-review-cadence">
+          Review cadence: <strong style={{ color: T.subtle }}>{labelize(activeCycle.period_granularity)}</strong>
+          {' '}· from Strategy Cycle <strong style={{ color: T.subtle }}>{activeCycle.name}</strong>
+        </p>
+      ) : null}
       {railError ? (
         <SectionMessage appearance="error" title="Could not load review data">
           <p>{railError.message}</p>
@@ -690,6 +772,7 @@ export default function StrataReviewsPage() {
         </div>
       ) : (
         <div style={{ display: 'grid', gap: 16 }}>
+          {!isDetail ? <StrataStatStrip items={governanceBand} testId="strata-reviews-band" /> : null}
           {/* ── Period governance (index only): close ritual lives with reviews ── */}
           {!isDetail && activePeriod ? (
             <StrataPanel
@@ -778,6 +861,14 @@ export default function StrataReviewsPage() {
                     </SectionMessage>
                   ) : null}
 
+                  {keyMetrics.length > 0 ? (
+                    <div style={{ display: 'grid', gap: 8 }} data-testid="strata-pack-key-metrics">
+                      <PackSection n="01" title="Key metrics" />
+                      <StrataStatStrip items={keyMetrics} />
+                    </div>
+                  ) : null}
+
+                  <PackSection n={packNo(1)} title="Frozen evidence" />
                   <StrataPanel title="Frozen evidence" icon={<Database size={16} />} count={items.length} noPadding testId="strata-reviews-evidence">
                     {items.length === 0 ? (
                       <div style={{ padding: 16 }}>
@@ -812,6 +903,7 @@ export default function StrataReviewsPage() {
                     </SectionMessage>
                   ) : null}
 
+                  <PackSection n={packNo(2)} title="Decisions & actions" />
                   <StrataPanel
                     title="Decisions"
                     icon={<FileBarChart size={16} />}
@@ -845,6 +937,7 @@ export default function StrataReviewsPage() {
                     </StrataPanel>
                   ) : null}
 
+                  <PackSection n={packNo(3)} title="Distribution & audit" />
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 16 }}>
                     <StrataPanel
                       title="Board packs"

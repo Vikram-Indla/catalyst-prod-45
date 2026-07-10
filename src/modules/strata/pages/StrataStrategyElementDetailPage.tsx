@@ -18,7 +18,7 @@ import { EmptyState, Lozenge, Spinner } from '@/components/ads';
 import { GitBranch, Network, Target } from '@/lib/atlaskit-icons';
 import { Routes } from '@/lib/routes';
 import {
-  useElementKpis, useKpis, useMapEdges, usePerspectives, usePlayCharters,
+  useElementKpis, useKpis, useMapEdges, usePerspectives, useThemeCharters,
   useProfileNames, useStrataAudit, useStrategyElementBySlug, useStrategyElements,
 } from '@/modules/strata/hooks/useStrata';
 import { StrataPageShell, StrataPanel, T } from '@/modules/strata/components/shared';
@@ -41,7 +41,7 @@ export default function StrataStrategyElementDetailPage() {
 
   const elementsQ = useStrategyElements(element?.cycle_id);
   const mapEdgesQ = useMapEdges(element?.cycle_id);
-  const chartersQ = usePlayCharters();
+  const chartersQ = useThemeCharters();
   const elementKpisQ = useElementKpis();
   const kpisQ = useKpis();
   const perspectivesQ = usePerspectives();
@@ -50,7 +50,7 @@ export default function StrataStrategyElementDetailPage() {
 
   const elements = elementsQ.data ?? [];
   const elementById = new Map(elements.map((e) => [e.id, e]));
-  const ownerName = (id: string | null) => (id ? profiles.data?.get(id) ?? '—' : '—');
+  const ownerName = (id: string | null) => (id ? profiles.data?.get(id)?.name ?? '—' : '—');
   const perspectiveName = (id: string | null) => {
     if (!id) return '—';
     return perspectivesQ.data?.find((p) => p.id === id)?.name ?? '—';

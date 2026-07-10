@@ -147,6 +147,11 @@ export function ProjectCardDetailView({ card, theme }: {
     (d) => (d.requesting_type === 'project_card' && d.requesting_id === card.id)
       || (d.serving_type === 'project_card' && d.serving_id === card.id),
   );
+  // Blockers are first-class on the executive card (locked goal §Project Card, REQ-011):
+  // blocking dependencies in either direction, until resolved/cancelled.
+  const blockers = projectDependencies.filter(
+    (d) => (d.is_blocker || d.status === 'blocked') && d.status !== 'resolved' && d.status !== 'cancelled',
+  );
 
   const fieldVisible = useMemo(() => {
     const map = new Map<string, boolean>();
@@ -235,6 +240,7 @@ export function ProjectCardDetailView({ card, theme }: {
           { key: 'variance', label: 'Variance', value: card.variance_pct == null ? '—' : `${card.variance_pct > 0 ? '+' : ''}${Math.round(card.variance_pct)}%` },
           { key: 'milestones', label: 'Milestones', value: milestones.length },
           { key: 'dependencies', label: 'Dependencies', value: projectDependencies.length },
+          { key: 'blockers', label: 'Blockers', value: blockers.length },
         ]}
       />
 
@@ -254,6 +260,16 @@ export function ProjectCardDetailView({ card, theme }: {
               {theme
                 ? <Button appearance="subtle" spacing="compact" onClick={() => window.location.assign(Routes.strata.strategy())}>{theme.name}</Button>
                 : <Dash />}
+            </SummaryField>
+            <SummaryField label="Linked Strategic Objective">
+              {(() => {
+                const obj = card.objective_element_id
+                  ? themeObjectives.find((o) => o.id === card.objective_element_id) ?? null
+                  : null;
+                return obj
+                  ? <Button appearance="subtle" spacing="compact" onClick={() => window.location.assign(Routes.strata.strategy())}>{obj.name}</Button>
+                  : <Dash />;
+              })()}
             </SummaryField>
             <SummaryField label="Business Owner">
               {profileName(card.business_owner_id) ? (
@@ -366,6 +382,16 @@ export function ProjectCardDetailView({ card, theme }: {
                   <EmptyState size="compact" header="No milestones" description="Milestones drive the server-calculated Delivery Health." />
                 ) : (
                   <JiraTable<StrataMilestone> columns={milestoneColumns} data={milestones} getRowId={(r) => r.id} density="compact" showRowCount={false} rowsPerPage={100} ariaLabel="Milestones" />
+                )}
+              </TabSection>
+            ) : null}
+
+            {sectionVisible('delivery', 'dependencies') ? (
+              <TabSection title={`Blockers (${blockers.length})`}>
+                {blockers.length === 0 ? (
+                  <EmptyState size="compact" header="No active blockers" description="Blocking dependencies in either direction surface here until resolved." />
+                ) : (
+                  <JiraTable<StrataDependency> columns={dependencyColumns} data={blockers} getRowId={(r) => r.id} density="compact" showRowCount={false} rowsPerPage={100} ariaLabel="Blockers" />
                 )}
               </TabSection>
             ) : null}

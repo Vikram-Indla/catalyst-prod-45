@@ -1,0 +1,34 @@
+# DRIFT LOG
+
+## D-BUILD-001 (2026-07-09) — legacy OKR stack is LIVE on strata-standalone
+Research (done on main) assumed StrategyCockpit had zero importers. On strata-standalone:
+`OKRHubV2.tsx` imports StrategyCockpit; `EnterpriseRoutesShell.tsx:39` routes
+`/enterprise/objectives`; `WorkTreeHierarchy.tsx:13-15` imports three okr-v2 shared
+pills (OkrStatusPill, OkrProgressCell, OkrThemeDot). REQ-016/022/023 therefore remain a
+FULL decommission+migrate slice on this branch (extract shared pills first), not a quick
+dead-code delete. REQ-017 (Astryx) verified zero importers → deleted this session.
+## D-BUILD-002 (2026-07-09) — canonical-chain seed no-op on reference tenant
+20260709172000 rule-5/6 UPDATE linked 0 cards: demo cards carried theme_id = ROOT theme (Digital
+Market Leadership) while all theme-context objectives are parented to child themes (B2B Growth
+Engine, Network Excellence). Rule-6 trigger (objective must belong to the card's own theme) made
+the seed a silent no-op. Repaired by 20260709180000 (cards → objective-bearing sub-themes, chain
+re-closed): 4/4 linked, proj-objective + rollup edges created. Detected only by post-apply SQL
+verification — screenshots would not have caught it.
+
+## D-BUILD-003 (2026-07-09, session 016) — theme detail crash after charter-owner backfill
+`/strata/strategy/elements/<theme-slug>` hit the error boundary ("Objects are not valid as a
+React child {name, avatarUrl}"). Cause: StrataStrategyElementDetailPage.ownerName returned the
+whole StrataProfileRef object instead of `.name` — latent since the page was written, but only
+triggered once session 006 backfilled charter owner_ids (session 005's 10/10 route sweep ran
+BEFORE the backfill, and objectives with NULL owners rendered '—'). One-line fix applied
+(`?.name`), verified live: theme detail renders Summary/Charter/KPI links/Map edges/Audit,
+charter owner shows as text. tsc clean, 67/67 green, gates at baseline after fix.
+
+## D-BUILD-004 (2026-07-09, session 018) — cross-theme guard hole on project-objective upward link
+Create/edit verification (60_delivery/CREATE_EDIT_VERIFICATION.md) exercised every authoring
+flow live. One rule-6-adjacent gap found: `strata_create_project_objective` accepts a
+`p_parent_theme_objective` from ANY theme (validates theme-context only, not theme match) and
+the card modal's "Link to Theme Objective" select is unfiltered. The sibling guard on
+`strata_project_cards.objective_element_id` (trigger strata_validate_card_objective) verified
+working both ways (cross-theme rejected, same-theme accepted). NOT fixed — needs a UI filter +
+one RPC clause (migration); flagged for PO decision. All ZZTEST test data deleted (0 rows).
