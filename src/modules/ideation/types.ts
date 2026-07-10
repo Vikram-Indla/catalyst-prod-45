@@ -42,3 +42,32 @@ export interface IdeaRow {
   workflow_status_key: IdeaStatusKey;
   created_at: string;
 }
+
+/** Row shape read from idn_ideas for the Detail page (Phase 2 S3). Superset
+ *  of IdeaRow's columns plus the rail fields (product, submitter). */
+export interface IdeaDetailRow {
+  id: string;
+  idea_key: string;
+  slug: string;
+  title: string;
+  problem_statement: unknown;
+  proposed_value: unknown;
+  idea_class: IdeaClass;
+  workflow_status_key: IdeaStatusKey;
+  submitter_id: string;
+  submitter_name: string | null;
+  product_id: string | null;
+  product_name: string | null;
+  created_at: string;
+}
+
+/** One idn_comments row, joined with the author's profile. */
+export interface IdeaCommentRow {
+  id: string;
+  idea_id: string;
+  user_id: string;
+  author_name: string | null;
+  content: unknown;
+  parent_comment_id: string | null;
+  created_at: string;
+}

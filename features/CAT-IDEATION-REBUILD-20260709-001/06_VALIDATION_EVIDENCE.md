@@ -108,3 +108,18 @@ Notes: G1 first attempt failed on `created_by NOT NULL` (definer context has nul
 **Bug found + fixed during this slice**: initial column widths (`flex: true` Summary column has a 640px `FLEX_SUM_FLOOR` in JiraTable) overflowed the 2-pane's `1fr` track, clipping the Status column behind the preview pane (ss_33657c2mw/ss_7185gww35 predecessor — actually first: ss_51519j54y showed the clipped state). Fixed by dropping the `created_at` column and switching Summary to a fixed `width: 42` instead of `flex`, rebalancing Key/Class/Status widths so the table's natural width fits the available track without internal scroll.
 
 **Not yet built this slice** (Phase 2 continues): Detail page (still placeholder), Explore/Portfolio real data, AI Copilot rail tab, vote/importance control, create modal.
+
+## Phase 2 Slice S3 — Idea Detail (read + comments) · localhost:8082 (isolated instance) · 2026-07-10
+
+**Plan Lock**: `03_PLAN_LOCK_PHASE2_S3_DETAIL.md`. Scope: real detail page for `/ideation/ideas/:slug` — problem/proposed-value ADF via canonical `DisplayView`, a read-only property rail, and working comments via canonical `ActivityPanel`/`CommentEditor`. Design evidence: `05_MOBBIN_UX_EVIDENCE.md` §C row 4 (Linear issue detail — "Structural 1:1 with C.4"). Deliberately touched none of the files `03_PLAN_LOCK_PHASE2_S2_CREATE.md` (a concurrent, unapproved session) claims, to avoid collision.
+
+**Gates**: `npx tsc --noEmit` ✅ 0 errors · `node scripts/no-hardcoded-colors.cjs` ✅ 0 hits on touched files.
+
+**Screenshots + live write-path proof** (Chrome MCP, signed-in session as Vikram Indla):
+| Surface | Outcome |
+|---|---|
+| `/ideation/ideas/bulk-re-assign-ideas-during-triage`, light | PASS — real title/problem/rail (Stage=Submitted, Class=Problem, Submitter=Jahanara Khan resolved from `profiles`), empty Activity state honest ("No activity yet") (ss_6404nco18) |
+| Comment write path | PASS — typed + saved a real comment through the canonical `CommentEditor`; UI updated live via query invalidation, author "Vikram Indla" resolved correctly (ss_6448ljdgk). **Independently verified in the DB**: `SELECT ... FROM idn_comments JOIN idn_ideas` returned the row with matching ADF content, `user_id` = Vikram's profile id, timestamped 2026-07-10 11:29:14 UTC |
+| Dark mode | PASS — rail, lozenges, comment thread all hold contrast via ADS tokens (ss_3567vvd06) |
+
+**Not yet built this slice**: AI Copilot rail tab, vote/importance control, evidence panel, scoring display, watchers, linked-BR block, owner/sponsor editing, comment mentions — all explicitly deferred in the Plan Lock's non-scope.
