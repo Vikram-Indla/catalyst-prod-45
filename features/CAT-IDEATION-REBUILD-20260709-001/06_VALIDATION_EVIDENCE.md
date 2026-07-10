@@ -124,6 +124,24 @@ Notes: G1 first attempt failed on `created_by NOT NULL` (definer context has nul
 
 **Not yet built this slice**: AI Copilot rail tab, vote/importance control, evidence panel, scoring display, watchers, linked-BR block, owner/sponsor editing, comment mentions — all explicitly deferred in the Plan Lock's non-scope.
 
+## Phase 2 Slice S4 — Explore (full list + filter chips + search) · localhost:8082 (isolated instance) · 2026-07-11
+
+**Plan Lock**: `03_PLAN_LOCK_PHASE2_S4_EXPLORE.md`. Scope: real browse/search surface — every `idn_ideas` row (not just Inbox's triage subset), a filter-chip row (Status + Class, Deel evidence 05 §C row 2), and a search box, in `JiraTable`. Built on top of the other session's S2 (`5c08c939d`, Create form) without touching any of its files — `ExplorePage.tsx`'s existing `CreateIdeaModal`/`useCreateIdeaParam` wiring from S2 was kept intact, not reverted.
+
+**Gates**: `npx tsc --noEmit` ✅ 0 errors · `node scripts/no-hardcoded-colors.cjs` ✅ 0 hits on touched files.
+
+**Data**: read live — by this slice `idn_ideas` had grown to 8 rows (IDEA-6..11 from S1's seed, plus IDEA-12/13 created for real through the other session's Create form) — confirms Explore reads genuinely live data, not just my own seeds.
+
+**Screenshots + interaction proof** (Chrome MCP, signed-in session):
+| Surface | Outcome |
+|---|---|
+| `/ideation/explore`, light, unfiltered | PASS — all 8 ideas, filter chips derived only from statuses/classes actually present (Draft/Submitted/Screening/Evaluation + Problem/Opportunity/Improvement — no fabricated "Approved" etc.) (ss_3306jpt33) |
+| Status filter chip ("Evaluation") | PASS — clicked, list narrowed live to 2 matching rows, footer correctly reads "2 of 8 items" via `totalRowCount` (ss_37030elg5) |
+| Search ("voice") | PASS — narrowed live to the 2 title-matching rows, chip filter independently clearable (ss_57679d1q6) |
+| Dark mode, filters cleared | PASS — back to all 8 items, chips/table hold contrast via ADS tokens (ss_43459krax) |
+
+**Not yet built this slice**: column customizer (already provided by `JiraTable` itself, no new work needed), votes/score columns, saved views — all deferred per the Plan Lock's non-scope.
+
 ## Phase 2 Slice S2 — Create/Submit Idea form · localhost:8082 (isolated instance, worktree ideation-s2-create) · 2026-07-10
 
 **Plan Lock**: `03_PLAN_LOCK_PHASE2_S2_CREATE.md` (APPROVED — D13/D14/D15 as recommended). First WRITE path over `idn_ideas`: CreateIdeaModal (PortalFix chrome + shared CreateIdeaForm), `?create=idea` deep link on Inbox/Explore/Portfolio, SubmitPage full-page host, "New idea" sidebar nav item.
