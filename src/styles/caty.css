@@ -69,10 +69,10 @@
   --caty-radius-full: 9999px;
   
   /* ==================== SHADOWS ==================== */
-  --caty-shadow-sm: 0 1px 2px var(--ds-shadow-raised, rgba(0, 0, 0, 0.05));
-  --caty-shadow-md: 0 4px 12px var(--ds-shadow-raised, rgba(0, 0, 0, 0.1));
-  --caty-shadow-lg: 0 8px 24px var(--ds-shadow-raised, rgba(0, 0, 0, 0.15));
-  --caty-shadow-focus: 0 0 0 3px var(--ds-background-information, rgba(37, 99, 235, 0.15));
+  --caty-shadow-sm: 0 1px 2px var(--ds-shadow-raised);
+  --caty-shadow-md: 0 4px 12px var(--ds-shadow-raised);
+  --caty-shadow-lg: 0 8px 24px var(--ds-shadow-raised);
+  --caty-shadow-focus: 0 0 0 3px var(--ds-background-information);
   
   /* ==================== TYPOGRAPHY ==================== */
   --caty-font-family: var(--cp-font-body);
@@ -113,10 +113,10 @@
   --caty-border: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle))));
   --caty-border-light: var(--ds-text);
   
-  --caty-status-critical-bg: var(--ds-background-danger-bold, rgba(220, 38, 38, 0.15));
-  --caty-status-warning-bg: var(--ds-background-warning-bold, rgba(234, 88, 12, 0.15));
+  --caty-status-critical-bg: var(--ds-background-danger-bold);
+  --caty-status-warning-bg: var(--ds-background-warning-bold);
   --caty-status-safe-bg: rgba(5, 150, 105, 0.15);
-  --caty-status-total-bg: var(--ds-background-information, rgba(37, 99, 235, 0.15));
+  --caty-status-total-bg: var(--ds-background-information);
 }
 
 /* ==================== REDUCED MOTION ==================== */
@@ -162,13 +162,13 @@
 }
 
 @keyframes catyFabBreathe {
-  0%, 100% { box-shadow: 0 4px 24px var(--ds-background-information, rgba(37, 99, 235, 0.4)), 0 0 60px var(--ds-background-information, rgba(37, 99, 235, 0.25)); }
-  50% { box-shadow: 0 4px 32px var(--ds-background-information, rgba(37, 99, 235, 0.5)), 0 0 80px var(--ds-background-information, rgba(37, 99, 235, 0.35)); }
+  0%, 100% { box-shadow: 0 4px 24px var(--ds-background-information), 0 0 60px var(--ds-background-information); }
+  50% { box-shadow: 0 4px 32px var(--ds-background-information), 0 0 80px var(--ds-background-information); }
 }
 
 @keyframes catyStatusPulse {
-  0%, 100% { box-shadow: 0 0 8px var(--ds-background-success-bold, rgba(34, 197, 94, 0.5)); }
-  50% { box-shadow: 0 0 15px var(--ds-background-success-bold, rgba(34, 197, 94, 0.8)); }
+  0%, 100% { box-shadow: 0 0 8px var(--ds-background-success-bold); }
+  50% { box-shadow: 0 0 15px var(--ds-background-success-bold); }
 }
 
 /* ==================== FAB BUTTON ==================== */
@@ -192,7 +192,7 @@
 
 .caty-fab:hover {
   transform: scale(1.08);
-  box-shadow: 0 6px 32px var(--ds-background-information, rgba(37, 99, 235, 0.5));
+  box-shadow: 0 6px 32px var(--ds-background-information);
 }
 
 .caty-fab-badge {
@@ -211,14 +211,14 @@
   justify-content: center;
   padding: 0 6px;
   border: 2px solid white;
-  box-shadow: 0 2px 8px var(--ds-background-danger-bold, rgba(220, 38, 38, 0.4));
+  box-shadow: 0 2px 8px var(--ds-background-danger-bold);
 }
 
 /* ==================== OVERLAY ==================== */
 .caty-overlay {
   position: fixed;
   inset: 0;
-  background: var(--ds-shadow-raised, rgba(0, 0, 0, 0.3));
+  background: var(--ds-shadow-raised);
   backdrop-filter: blur(2px);
   z-index: 999;
 }
@@ -233,7 +233,7 @@
   max-height: calc(100vh - 48px);
   background: var(--caty-surface-page);
   border-radius: var(--caty-radius-xl);
-  box-shadow: 0 25px 50px -12px var(--ds-shadow-raised, rgba(0, 0, 0, 0.25));
+  box-shadow: 0 25px 50px -12px var(--ds-shadow-raised);
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -263,7 +263,7 @@
   inset: 0;
   background: 
     radial-gradient(ellipse at 30% 0%, var(--ds-border-bold), transparent 50%),
-    radial-gradient(ellipse at 70% 100%, var(--ds-shadow-raised, rgba(0,0,0,0.1)), transparent 50%);
+    radial-gradient(ellipse at 70% 100%, var(--ds-shadow-raised), transparent 50%);
   pointer-events: none;
 }
 
@@ -291,7 +291,7 @@
   align-items: center;
   gap: 4px;
   font-size: var(--caty-font-size-sm);
-  color: var(--ds-surface, rgba(255, 255, 255, 0.8));
+  color: var(--ds-surface);
 }
 
 .caty-status-dot {
@@ -315,16 +315,16 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--ds-surface, rgba(255, 255, 255, 0.8));
-  background: var(--ds-surface, rgba(255, 255, 255, 0.1));
-  border: 1px solid var(--ds-surface, rgba(255, 255, 255, 0.1));
+  color: var(--ds-surface);
+  background: var(--ds-surface);
+  border: 1px solid var(--ds-surface);
   cursor: pointer;
   transition: all var(--caty-transition-fast);
 }
 
 .caty-header-btn:hover {
   color: white;
-  background: var(--ds-surface, rgba(255, 255, 255, 0.2));
+  background: var(--ds-surface);
 }
 
 .caty-header-btn:disabled {
@@ -584,17 +584,17 @@
 
 .caty-kpi-tile.critical {
   background: var(--caty-status-critical-bg);
-  border-color: var(--ds-background-danger-bold, rgba(220, 38, 38, 0.2));
+  border-color: var(--ds-background-danger-bold);
 }
 
 .caty-kpi-tile.warning {
   background: var(--caty-status-warning-bg);
-  border-color: var(--ds-background-warning-bold, rgba(234, 88, 12, 0.2));
+  border-color: var(--ds-background-warning-bold);
 }
 
 .caty-kpi-tile.total {
   background: var(--caty-status-total-bg);
-  border-color: var(--ds-background-information, rgba(37, 99, 235, 0.2));
+  border-color: var(--ds-background-information);
 }
 
 .caty-kpi-icon {
@@ -675,8 +675,8 @@
 
 .caty-dept-card.critical-dept {
   background: var(--caty-status-critical-bg);
-  border-color: var(--ds-background-danger-bold, rgba(220, 38, 38, 0.3));
-  box-shadow: 0 0 0 1px var(--ds-background-danger-bold, rgba(220, 38, 38, 0.2));
+  border-color: var(--ds-background-danger-bold);
+  box-shadow: 0 0 0 1px var(--ds-background-danger-bold);
 }
 
 .caty-dept-card.product { border-left-color: var(--caty-dept-product); }
@@ -781,12 +781,12 @@
 }
 
 .caty-dept-status.warning-light {
-  background: var(--ds-background-warning-bold, rgba(234, 88, 12, 0.1));
+  background: var(--ds-background-warning-bold);
   color: var(--caty-status-warning);
 }
 
 .caty-dept-status.warning-medium {
-  background: var(--ds-background-warning-bold, rgba(234, 88, 12, 0.2));
+  background: var(--ds-background-warning-bold);
   color: var(--caty-status-warning);
   font-weight: 600;
 }
@@ -1139,7 +1139,7 @@
   text-align: center;
   background: var(--caty-status-warning-bg);
   border-radius: var(--caty-radius-lg);
-  border: 1px solid var(--ds-background-warning-bold, rgba(234, 88, 12, 0.2));
+  border: 1px solid var(--ds-background-warning-bold);
   margin: var(--caty-space-4);
 }
 

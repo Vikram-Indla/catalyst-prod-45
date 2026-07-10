@@ -1,11 +1,11 @@
 {
-  "total": 11980,
+  "total": 9735,
   "byCategory": {
-    "fallback-hex": 5467,
+    "fallback-hex": 3251,
     "named": 357,
-    "tailwind": 5960,
-    "hex": 74,
-    "rgb": 120,
+    "tailwind": 5878,
+    "hex": 110,
+    "rgb": 137,
     "hsl": 2
   },
   "capturedOn": "2026-07-10",

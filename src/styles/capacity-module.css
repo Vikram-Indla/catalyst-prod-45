@@ -15,40 +15,40 @@
   /* Primary */
   --ct-primary: var(--ds-text-brand, var(--cp-workstream-catalyst-primary));
   --ct-primary-hover: var(--ds-background-brand-bold-hovered);
-  --ct-primary-light: var(--ds-background-information, rgba(37, 99, 235, 0.08));
-  --ct-primary-border: var(--ds-background-information, rgba(37, 99, 235, 0.2));
+  --ct-primary-light: var(--ds-background-information);
+  --ct-primary-border: var(--ds-background-information);
 
   /* Budget/Resource Type Colors */
   --ct-insourced: var(--ds-text-brand, var(--cp-workstream-catalyst-primary));
-  --ct-insourced-light: var(--ds-background-information, rgba(37, 99, 235, 0.08));
+  --ct-insourced-light: var(--ds-background-information);
   --ct-cosourced: var(--ds-background-discovery-bold);
-  --ct-cosourced-light: var(--ds-background-discovery-bold, rgba(139, 92, 246, 0.08));
+  --ct-cosourced-light: var(--ds-background-discovery-bold);
   --ct-outsourced: var(--ds-chart-teal-bold);
-  --ct-outsourced-light: var(--ds-background-success, rgba(13, 148, 136, 0.08));
+  --ct-outsourced-light: var(--ds-background-success);
 
   /* Resource Type Badge Colors */
   --ct-fixed: var(--ds-text-warning);
-  --ct-fixed-light: var(--ds-background-warning, rgba(217, 119, 6, 0.08));
+  --ct-fixed-light: var(--ds-background-warning);
   --ct-variable: var(--ds-text-brand, var(--cp-workstream-catalyst-primary));
-  --ct-variable-light: var(--ds-background-information, rgba(37, 99, 235, 0.08));
+  --ct-variable-light: var(--ds-background-information);
   --ct-freelance: var(--ds-background-discovery-bold);
-  --ct-freelance-light: var(--ds-background-discovery-bold, rgba(139, 92, 246, 0.08));
+  --ct-freelance-light: var(--ds-background-discovery-bold);
   --ct-permanent: var(--ds-chart-teal-bold);
-  --ct-permanent-light: var(--ds-background-success, rgba(13, 148, 136, 0.08));
+  --ct-permanent-light: var(--ds-background-success);
 
   /* Semantic Colors */
   --ct-teal: var(--ds-chart-teal-bold);
   --ct-teal-hover: var(--ds-chart-teal-bolder);
-  --ct-teal-light: var(--ds-background-success, rgba(13, 148, 136, 0.08));
+  --ct-teal-light: var(--ds-background-success);
   --ct-violet: var(--ds-background-discovery-bold);
   --ct-violet-hover: var(--ds-background-discovery-bold);
-  --ct-violet-light: var(--ds-background-discovery-bold, rgba(139, 92, 246, 0.08));
+  --ct-violet-light: var(--ds-background-discovery-bold);
   --ct-success: var(--ds-background-success-bold);
-  --ct-success-light: var(--ds-background-success-bold, rgba(16, 185, 129, 0.08));
+  --ct-success-light: var(--ds-background-success-bold);
   --ct-warning: var(--ds-text-warning);
-  --ct-warning-light: var(--ds-background-warning, rgba(217, 119, 6, 0.08));
+  --ct-warning-light: var(--ds-background-warning);
   --ct-danger: var(--ds-text-danger);
-  --ct-danger-light: var(--ds-background-danger, rgba(239, 68, 68, 0.08));
+  --ct-danger-light: var(--ds-background-danger);
 
   /* Neutral Colors */
   --ct-bg: var(--ds-surface-sunken);
@@ -669,25 +669,25 @@
 .ct-category-badge.blue {
   background: var(--ct-insourced-light);
   color: var(--ct-insourced);
-  border: 1px solid var(--ds-background-information, rgba(37, 99, 235, 0.2));
+  border: 1px solid var(--ds-background-information);
 }
 
 .ct-category-badge.violet {
   background: var(--ct-cosourced-light);
   color: var(--ct-cosourced);
-  border: 1px solid var(--ds-background-discovery-bold, rgba(139, 92, 246, 0.2));
+  border: 1px solid var(--ds-background-discovery-bold);
 }
 
 .ct-category-badge.teal {
   background: var(--ct-outsourced-light);
   color: var(--ct-outsourced);
-  border: 1px solid var(--ds-background-success, rgba(13, 148, 136, 0.2));
+  border: 1px solid var(--ds-background-success);
 }
 
 .ct-category-badge.orange {
   background: var(--ct-warning-light);
   color: var(--ct-warning);
-  border: 1px solid var(--ds-background-warning, rgba(217, 119, 6, 0.2));
+  border: 1px solid var(--ds-background-warning);
 }
 
 .ct-category-value {
@@ -888,7 +888,7 @@
   border-color: var(--ct-primary);
   color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-text-inverse))));
   font-weight: 600;
-  box-shadow: 0 2px 8px var(--ds-background-information, rgba(37, 99, 235, 0.25));
+  box-shadow: 0 2px 8px var(--ds-background-information);
 }
 
 .analytics-dept-pill.active:hover {

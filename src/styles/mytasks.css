@@ -884,19 +884,19 @@
    ============================================================================ */
 
 .dark .mytasks-row--completing {
-  background-color: var(--ds-background-success-bold, rgba(45, 212, 191, 0.15)) !important;  /* Subtle teal */
+  background-color: var(--ds-background-success-bold) !important;  /* Subtle teal */
 }
 
 /* Muted dark mode completed section — NOT green */
 .dark .mytasks-section-header--completed {
-  background-color: var(--ds-text-subtlest, rgba(100, 116, 139, 0.15));  /* slate muted */
-  border-bottom-color: var(--ds-text-subtlest, rgba(100, 116, 139, 0.25));
+  background-color: var(--ds-text-subtlest);  /* slate muted */
+  border-bottom-color: var(--ds-text-subtlest);
 }
 
 .dark .mytasks-completed-list {
-  background-color: var(--ds-text-subtlest, rgba(100, 116, 139, 0.05));  /* slate muted */
+  background-color: var(--ds-text-subtlest);  /* slate muted */
 }
 
 .dark .mytasks-row--completed-item:hover {
-  background-color: var(--ds-text-subtlest, rgba(100, 116, 139, 0.1));  /* slate muted */
+  background-color: var(--ds-text-subtlest);  /* slate muted */
 }

@@ -78,6 +78,18 @@ function fileList() {
   return out.split('\n').map((s) => s.trim()).filter(Boolean);
 }
 
+// Base (pre-change) content of a file, for net-new detection. Returns '' if
+// the file is new. --staged compares to HEAD; --since compares to the ref.
+function baseContent(rel) {
+  if (explicit.length) return null; // whole-file mode, no base comparison
+  const ref = argv.includes('--since') ? (sinceRef || 'origin/main') : 'HEAD';
+  try {
+    return execSync(`git show ${ref}:"${rel}"`, { cwd: REPO, encoding: 'utf-8', stdio: ['pipe', 'pipe', 'ignore'] });
+  } catch { return ''; } // not in base → brand-new file
+}
+
+const key = (v) => `${v.category}::${v.match.toLowerCase().replace(/\s+/g, '')}`;
+
 const added = addedLineMap();
 const files = fileList()
   .filter((f) => SCAN_EXTENSIONS.includes(path.extname(f)))
@@ -89,9 +101,34 @@ const report = [];
 for (const rel of files) {
   const abs = path.join(REPO, rel);
   if (!fs.existsSync(abs)) continue; // deleted/renamed-away
-  let vs = scanContent(rel, fs.readFileSync(abs, 'utf-8'));
-  if (added && added[rel]) vs = vs.filter((v) => added[rel].has(v.line)); // line-level: only added lines
-  else if (added && !added[rel]) vs = []; // in diff-mode but no added lines for this file
+  const curAll = scanContent(rel, fs.readFileSync(abs, 'utf-8'));
+
+  const base = baseContent(rel);
+  let vs;
+  if (base == null) {
+    // whole-file mode (explicit paths) — flag everything.
+    vs = curAll;
+  } else {
+    // Net-new + line-level. A colour fails only if it sits on a line this
+    // change ADDED *and* its (category,value) count rose vs the base file.
+    // Unchanged-line occurrences consume base "free slots" first, so pure
+    // removal / relocation (remediation) never fails; only genuine additions,
+    // duplications, or value changes do.
+    const baseCounts = {};
+    for (const bv of scanContent(rel, base)) baseCounts[key(bv)] = (baseCounts[key(bv)] || 0) + 1;
+    const onAdded = (v) => added && added[rel] && added[rel].has(v.line);
+    const otherCounts = {};
+    for (const v of curAll) if (!onAdded(v)) otherCounts[key(v)] = (otherCounts[key(v)] || 0) + 1;
+    const remaining = {};
+    for (const k of Object.keys(baseCounts)) remaining[k] = Math.max(0, baseCounts[k] - (otherCounts[k] || 0));
+    vs = curAll.filter((v) => {
+      if (!onAdded(v)) return false;
+      const k = key(v);
+      if (remaining[k] > 0) { remaining[k]--; return false; } // grandfathered
+      return true; // net-new on an added line
+    });
+  }
+
   if (vs.length) { total += vs.length; report.push({ rel, vs }); }
 }
 

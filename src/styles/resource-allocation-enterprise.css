@@ -323,7 +323,7 @@
   /* Reset solid fills to white */
   background: var(--ra-white) !important;
   color: var(--ra-text-percent) !important;
-  box-shadow: 0 1px 3px var(--ds-shadow-raised, rgba(0, 0, 0, 0.1)) !important;
+  box-shadow: 0 1px 3px var(--ds-shadow-raised) !important;
   border: 1px solid var(--ra-cell-border) !important;
 }
 
@@ -340,7 +340,7 @@
 }
 
 /* Committed status - solid bar */
-.ra-enterprise-clean [role="grid"] .absolute.rounded-md[style*="var(--ds-background-information, rgb(37, 99, 235))"]::after,
+.ra-enterprise-clean [role="grid"] .absolute.rounded-md[style*="var(--ds-background-information)"]::after,
 .ra-enterprise-clean [role="grid"] .absolute.rounded-md.text-white::after {
   background: var(--ra-project-sectorial) !important;
 }
@@ -399,7 +399,7 @@
 
 /* Override ANY blue background on cells */
 .ra-enterprise-clean td div[style*="var(--ds-text-brand)"],
-.ra-enterprise-clean td div[style*="var(--ds-background-information-bold, rgb(59, 130, 246))"],
+.ra-enterprise-clean td div[style*="var(--ds-background-information-bold)"],
 .ra-enterprise-clean td div[style*="BRAND_COLOR"],
 .ra-enterprise-clean td div.bg-blue-500,
 .ra-enterprise-clean td div.bg-blue-600,

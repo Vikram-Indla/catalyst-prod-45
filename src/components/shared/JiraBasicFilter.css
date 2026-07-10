@@ -25,12 +25,12 @@
   font-size: 14px;
   font-weight: 500;
   line-height: 20px;
-  color: var(--ds-text, rgb(41, 42, 46));
+  color: var(--ds-text);
   font-family: var(--cp-font-body);
   outline: none;
 }
 .jf-trigger-btn:hover {
-  background-color: var(--ds-background-neutral-subtle-hovered, rgba(9, 30, 66, 0.06));
+  background-color: var(--ds-background-neutral-subtle-hovered);
 }
 .jf-trigger-btn:focus-visible,
 .jf-trigger-btn[aria-expanded="true"],
@@ -75,8 +75,8 @@
   border-radius: 10px;
   border: 1px solid var(--ds-border, var(--cp-border, var(--cp-bg-sunken)));
   box-shadow:
-    0 4px 16px var(--ds-shadow-raised, rgba(0, 0, 0, 0.08)),
-    0 1px 3px var(--ds-shadow-raised, rgba(0, 0, 0, 0.06));
+    0 4px 16px var(--ds-shadow-raised),
+    0 1px 3px var(--ds-shadow-raised);
   overflow: hidden;
   z-index: 500;
   color: var(--ds-text, var(--cp-ink-1, var(--cp-ink-1)));
@@ -142,7 +142,7 @@
   margin-bottom: -2px; /* overlap the container bottom border */
 }
 .jf-tab:hover:not(.jf-tab--active):not(:disabled) {
-  background-color: var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06));
+  background-color: var(--ds-background-neutral-subtle-hovered);
   color: var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)));
 }
 .jf-tab--active {
@@ -225,7 +225,7 @@
 }
 .jf-category-item:hover:not(.jf-category-item--active) {
   /* ADS hover token: rgba(9,30,66,0.06) */
-  background-color: var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06));
+  background-color: var(--ds-background-neutral-subtle-hovered);
 }
 .jf-category-item--active {
   background-color: var(--ds-background-selected);
@@ -405,7 +405,7 @@
   transition: background-color 100ms;
 }
 .jf-option-item:hover .jf-option-inner {
-  background-color: var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06));
+  background-color: var(--ds-background-neutral-subtle-hovered);
 }
 .jf-option-item--checked .jf-option-inner {
   background-color: var(--ds-background-selected);
@@ -550,7 +550,7 @@
   background: var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface)));
   border-color: var(--ds-border, var(--cp-ink-1));
   color: var(--ds-text, var(--cp-bg-neutral));
-  box-shadow: 0 4px 24px var(--ds-shadow-raised, rgba(0, 0, 0, 0.5));
+  box-shadow: 0 4px 24px var(--ds-shadow-raised);
 }
 
 .dark .jf-tabs-container {

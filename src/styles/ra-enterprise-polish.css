@@ -51,7 +51,7 @@
     var(--ds-surface-sunken) 4px,
     var(--ds-surface-sunken) 8px
   );
-  --ra-end-text-bg: var(--ds-surface, rgba(255, 255, 255, 0.9));
+  --ra-end-text-bg: var(--ds-surface);
   
   /* Project Gradients */
   --ra-gradient-sectorial: linear-gradient(90deg, var(--ds-text-brand) 0%, var(--ds-text-brand, var(--cp-workstream-catalyst-primary)) 100%);

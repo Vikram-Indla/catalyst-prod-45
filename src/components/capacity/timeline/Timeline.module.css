@@ -23,12 +23,12 @@
   height: 100%;
   background: white;
   border-radius: 16px;
-  border: 1px solid var(--ds-shadow-raised, rgba(0, 0, 0, 0.08));
+  border: 1px solid var(--ds-shadow-raised);
   overflow: hidden;
   /* Multi-layer shadow for premium depth */
   box-shadow: 
-    0 1px 3px var(--ds-shadow-raised, rgba(0, 0, 0, 0.04)),
-    0 2px 6px var(--ds-shadow-raised, rgba(0, 0, 0, 0.02));
+    0 1px 3px var(--ds-shadow-raised),
+    0 2px 6px var(--ds-shadow-raised);
   position: relative;
 }
 
@@ -49,7 +49,7 @@
   display: flex;
   background: linear-gradient(180deg, rgba(250, 250, 250, 0.97) 0%, rgba(245, 245, 245, 0.97) 100%); /* ads-scanner:ignore-line — intentional design color, no ADS token equivalent */
   backdrop-filter: blur(8px);
-  border-bottom: 0px solid var(--ds-shadow-raised, rgba(0, 0, 0, 0.08));
+  border-bottom: 0px solid var(--ds-shadow-raised);
   /* GPU layer promotion to prevent flicker when portals mount */
   transform: translateZ(0);
   backface-visibility: hidden;
@@ -65,7 +65,7 @@
   letter-spacing: 0.05em;
   text-transform: uppercase;
   color: var(--ds-text-subtlest); /* gray-500 */
-  border-right: 0px solid var(--ds-shadow-raised, rgba(0, 0, 0, 0.08));
+  border-right: 0px solid var(--ds-shadow-raised);
   position: sticky;
   left: 0;
   background: linear-gradient(180deg, rgba(250, 250, 250, 0.97) 0%, rgba(245, 245, 245, 0.97) 100%); /* ads-scanner:ignore-line — intentional design color, no ADS token equivalent */
@@ -86,7 +86,7 @@
   flex-shrink: 0;
   padding: 12px 8px;
   text-align: center;
-  border-right: 0px solid var(--ds-shadow-raised, rgba(0, 0, 0, 0.04));
+  border-right: 0px solid var(--ds-shadow-raised);
   font-size: 12px;
   font-weight: 500;
   letter-spacing: 0.01em;
@@ -98,7 +98,7 @@
 }
 
 .monthHeaderCurrent {
-  background: var(--ds-background-information, rgba(37, 99, 235, 0.04)); /* primary with alpha */
+  background: var(--ds-background-information); /* primary with alpha */
   color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary)); /* primary-600 */
   position: relative;
 }
@@ -121,7 +121,7 @@
 
 .timelineRow {
   display: flex;
-  border-bottom: 0px solid var(--ds-shadow-raised, rgba(0, 0, 0, 0.05));
+  border-bottom: 0px solid var(--ds-shadow-raised);
   transition: 
     background-color 0.2s cubic-bezier(0.4, 0, 0.2, 1),
     transform 0.15s ease;
@@ -158,15 +158,15 @@
 .timelineRow:hover {
   background: linear-gradient(
     90deg,
-    var(--ds-background-information, rgba(37, 99, 235, 0.02)) 0%,
-    var(--ds-background-information, rgba(37, 99, 235, 0.01)) 30%,
+    var(--ds-background-information) 0%,
+    var(--ds-background-information) 30%,
     transparent 100%
   );
 }
 
 /* Focus state for keyboard navigation */
 .timelineRow:focus-within {
-  background: var(--ds-background-information, rgba(37, 99, 235, 0.02));
+  background: var(--ds-background-information);
   outline: 1px solid var(--ds-border-focused);
 }
 
@@ -176,11 +176,11 @@
 }
 
 .rowCritical {
-  background: linear-gradient(90deg, var(--ds-background-danger, rgba(239, 68, 68, 0.04)) 0%, transparent 40%); /* danger */
+  background: linear-gradient(90deg, var(--ds-background-danger) 0%, transparent 40%); /* danger */
 }
 
 .rowCritical:hover {
-  background: linear-gradient(90deg, var(--ds-background-danger, rgba(239, 68, 68, 0.06)) 0%, var(--ds-background-information, rgba(37, 99, 235, 0.015)) 40%);
+  background: linear-gradient(90deg, var(--ds-background-danger) 0%, var(--ds-background-information) 40%);
 }
 
 .rowCritical::before {
@@ -188,11 +188,11 @@
 }
 
 .rowAvailable {
-  background: linear-gradient(90deg, var(--ds-background-success, rgba(13, 148, 136, 0.03)) 0%, transparent 40%); /* teal */
+  background: linear-gradient(90deg, var(--ds-background-success) 0%, transparent 40%); /* teal */
 }
 
 .rowAvailable:hover {
-  background: linear-gradient(90deg, var(--ds-background-success, rgba(13, 148, 136, 0.05)) 0%, var(--ds-background-information, rgba(37, 99, 235, 0.015)) 40%);
+  background: linear-gradient(90deg, var(--ds-background-success) 0%, var(--ds-background-information) 40%);
 }
 
 .rowAvailable::before {
@@ -207,7 +207,7 @@
   width: 220px;
   min-width: 220px;
   flex-shrink: 0;
-  border-right: 0px solid var(--ds-shadow-raised, rgba(0, 0, 0, 0.08));
+  border-right: 0px solid var(--ds-shadow-raised);
   background: white;
   position: sticky;
   left: 0;
@@ -251,22 +251,22 @@
   background: var(--ds-text-brand, var(--cp-workstream-catalyst-primary)); /* primary-600 */
   /* Multi-layer shadow for premium depth */
   box-shadow: 
-    0 1px 2px var(--ds-background-information, rgba(37, 99, 235, 0.1)),
-    0 2px 4px var(--ds-background-information, rgba(37, 99, 235, 0.1));
+    0 1px 2px var(--ds-background-information),
+    0 2px 4px var(--ds-background-information);
 }
 
 .avatarOffshore {
   background: var(--ds-background-warning-bold); /* orange-600 */
   box-shadow: 
-    0 1px 2px var(--ds-background-warning-bold, rgba(234, 88, 12, 0.1)),
-    0 2px 4px var(--ds-background-warning-bold, rgba(234, 88, 12, 0.1));
+    0 1px 2px var(--ds-background-warning-bold),
+    0 2px 4px var(--ds-background-warning-bold);
 }
 
 .avatarTeal {
   background: linear-gradient(135deg, var(--ds-background-accent-teal-bolder) 0%, var(--ds-chart-teal-bold) 100%); /* teal gradient */
   box-shadow: 
-    0 1px 2px var(--ds-background-success, rgba(13, 148, 136, 0.1)),
-    0 2px 4px var(--ds-background-success, rgba(13, 148, 136, 0.1));
+    0 1px 2px var(--ds-background-success),
+    0 2px 4px var(--ds-background-success);
 }
 
 /* Contract Ring with improved animation */
@@ -293,12 +293,12 @@
   0%, 100% { 
     opacity: 1; 
     transform: scale(1);
-    box-shadow: 0 0 0 0 var(--ds-background-danger, rgba(239, 68, 68, 0.4));
+    box-shadow: 0 0 0 0 var(--ds-background-danger);
   }
   50% { 
     opacity: 0.8; 
     transform: scale(1.03);
-    box-shadow: 0 0 0 4px var(--ds-background-danger, rgba(239, 68, 68, 0));
+    box-shadow: 0 0 0 4px var(--ds-background-danger);
   }
 }
 
@@ -319,13 +319,13 @@
   width: 110px;
   min-width: 110px;
   flex-shrink: 0;
-  border-right: 0px solid var(--ds-shadow-raised, rgba(0, 0, 0, 0.04));
+  border-right: 0px solid var(--ds-shadow-raised);
   position: relative;
   min-height: 56px;
 }
 
 .timelineCellCurrent {
-  background: var(--ds-background-information, rgba(37, 99, 235, 0.04));
+  background: var(--ds-background-information);
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -369,14 +369,14 @@
    ═══════════════════════════════════════════════════════════════ */
 
 .barCommitted {
-  background: var(--ds-background-information, rgba(37, 99, 235, 0.22));
-  border: 2px solid var(--ds-background-information, rgba(37, 99, 235, 0.45));
+  background: var(--ds-background-information);
+  border: 2px solid var(--ds-background-information);
 }
 
 .barCommitted:hover {
-  background: var(--ds-background-information, rgba(37, 99, 235, 0.3));
-  border-color: var(--ds-background-information, rgba(37, 99, 235, 0.6));
-  box-shadow: 0 2px 8px var(--ds-background-information, rgba(37, 99, 235, 0.2));
+  background: var(--ds-background-information);
+  border-color: var(--ds-background-information);
+  box-shadow: 0 2px 8px var(--ds-background-information);
 }
 
 .barCommitted .barText {
@@ -399,14 +399,14 @@
    ═══════════════════════════════════════════════════════════════ */
 
 .barForecast {
-  background: var(--ds-background-information, rgba(37, 99, 235, 0.1));
-  border: 2px dashed var(--ds-background-information, rgba(37, 99, 235, 0.35));
+  background: var(--ds-background-information);
+  border: 2px dashed var(--ds-background-information);
 }
 
 .barForecast:hover {
-  background: var(--ds-background-information, rgba(37, 99, 235, 0.16));
-  border-color: var(--ds-background-information, rgba(37, 99, 235, 0.5));
-  box-shadow: 0 2px 8px var(--ds-background-information, rgba(37, 99, 235, 0.15));
+  background: var(--ds-background-information);
+  border-color: var(--ds-background-information);
+  box-shadow: 0 2px 8px var(--ds-background-information);
 }
 
 .barForecast .barText {
@@ -416,7 +416,7 @@
 }
 
 .barForecast .barBadge {
-  background: var(--ds-background-information, rgba(37, 99, 235, 0.6));
+  background: var(--ds-background-information);
   color: white;
   padding: 4px 8px;
   border-radius: 4px;
@@ -429,53 +429,53 @@
    ═══════════════════════════════════════════════════════════════ */
 
 .barPrimary {
-  background: var(--ds-background-information, rgba(37, 99, 235, 0.22));
-  border: 2px solid var(--ds-background-information, rgba(37, 99, 235, 0.45));
+  background: var(--ds-background-information);
+  border: 2px solid var(--ds-background-information);
 }
 .barPrimary:hover {
-  background: var(--ds-background-information, rgba(37, 99, 235, 0.3));
-  border-color: var(--ds-background-information, rgba(37, 99, 235, 0.6));
-  box-shadow: 0 2px 8px var(--ds-background-information, rgba(37, 99, 235, 0.2));
+  background: var(--ds-background-information);
+  border-color: var(--ds-background-information);
+  box-shadow: 0 2px 8px var(--ds-background-information);
 }
 
 .barTeal {
-  background: var(--ds-background-success, rgba(13, 148, 136, 0.22));
-  border: 2px solid var(--ds-background-success, rgba(13, 148, 136, 0.45));
+  background: var(--ds-background-success);
+  border: 2px solid var(--ds-background-success);
 }
 .barTeal:hover {
-  background: var(--ds-background-success, rgba(13, 148, 136, 0.3));
-  border-color: var(--ds-background-success, rgba(13, 148, 136, 0.6));
-  box-shadow: 0 2px 8px var(--ds-background-success, rgba(13, 148, 136, 0.2));
+  background: var(--ds-background-success);
+  border-color: var(--ds-background-success);
+  box-shadow: 0 2px 8px var(--ds-background-success);
 }
 
 .barWarning {
-  background: var(--ds-background-warning, rgba(217, 119, 6, 0.22));
-  border: 2px solid var(--ds-background-warning, rgba(217, 119, 6, 0.45));
+  background: var(--ds-background-warning);
+  border: 2px solid var(--ds-background-warning);
 }
 .barWarning:hover {
-  background: var(--ds-background-warning, rgba(217, 119, 6, 0.3));
-  border-color: var(--ds-background-warning, rgba(217, 119, 6, 0.6));
-  box-shadow: 0 2px 8px var(--ds-background-warning, rgba(217, 119, 6, 0.2));
+  background: var(--ds-background-warning);
+  border-color: var(--ds-background-warning);
+  box-shadow: 0 2px 8px var(--ds-background-warning);
 }
 
 .barSlate {
-  background: var(--ds-background-neutral, rgba(71, 85, 105, 0.22));
-  border: 2px solid var(--ds-background-neutral, rgba(71, 85, 105, 0.45));
+  background: var(--ds-background-neutral);
+  border: 2px solid var(--ds-background-neutral);
 }
 .barSlate:hover {
-  background: var(--ds-background-neutral, rgba(71, 85, 105, 0.3));
-  border-color: var(--ds-background-neutral, rgba(71, 85, 105, 0.6));
-  box-shadow: 0 2px 8px var(--ds-background-neutral, rgba(71, 85, 105, 0.2));
+  background: var(--ds-background-neutral);
+  border-color: var(--ds-background-neutral);
+  box-shadow: 0 2px 8px var(--ds-background-neutral);
 }
 
 .barDanger {
-  background: var(--ds-background-danger, rgba(239, 68, 68, 0.22));
-  border: 2px solid var(--ds-background-danger, rgba(239, 68, 68, 0.45));
+  background: var(--ds-background-danger);
+  border: 2px solid var(--ds-background-danger);
 }
 .barDanger:hover {
-  background: var(--ds-background-danger, rgba(239, 68, 68, 0.3));
-  border-color: var(--ds-background-danger, rgba(239, 68, 68, 0.6));
-  box-shadow: 0 2px 8px var(--ds-background-danger, rgba(239, 68, 68, 0.2));
+  background: var(--ds-background-danger);
+  border-color: var(--ds-background-danger);
+  box-shadow: 0 2px 8px var(--ds-background-danger);
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -484,47 +484,47 @@
 
 .barPrimaryForecast {
   background: transparent;
-  border: 3px dotted var(--ds-background-information, rgba(37, 99, 235, 0.7));
+  border: 3px dotted var(--ds-background-information);
 }
 .barPrimaryForecast:hover {
-  background: var(--ds-background-information, rgba(37, 99, 235, 0.08));
-  border-color: var(--ds-background-information, rgba(37, 99, 235, 0.9));
+  background: var(--ds-background-information);
+  border-color: var(--ds-background-information);
 }
 
 .barTealForecast {
   background: transparent;
-  border: 3px dotted var(--ds-background-success, rgba(13, 148, 136, 0.7));
+  border: 3px dotted var(--ds-background-success);
 }
 .barTealForecast:hover {
-  background: var(--ds-background-success, rgba(13, 148, 136, 0.08));
-  border-color: var(--ds-background-success, rgba(13, 148, 136, 0.9));
+  background: var(--ds-background-success);
+  border-color: var(--ds-background-success);
 }
 
 .barWarningForecast {
   background: transparent;
-  border: 3px dotted var(--ds-background-warning, rgba(217, 119, 6, 0.7));
+  border: 3px dotted var(--ds-background-warning);
 }
 .barWarningForecast:hover {
-  background: var(--ds-background-warning, rgba(217, 119, 6, 0.08));
-  border-color: var(--ds-background-warning, rgba(217, 119, 6, 0.9));
+  background: var(--ds-background-warning);
+  border-color: var(--ds-background-warning);
 }
 
 .barSlateForecast {
   background: transparent;
-  border: 3px dotted var(--ds-background-neutral, rgba(71, 85, 105, 0.7));
+  border: 3px dotted var(--ds-background-neutral);
 }
 .barSlateForecast:hover {
-  background: var(--ds-background-neutral, rgba(71, 85, 105, 0.08));
-  border-color: var(--ds-background-neutral, rgba(71, 85, 105, 0.9));
+  background: var(--ds-background-neutral);
+  border-color: var(--ds-background-neutral);
 }
 
 .barDangerForecast {
   background: transparent;
-  border: 3px dotted var(--ds-background-danger, rgba(239, 68, 68, 0.7));
+  border: 3px dotted var(--ds-background-danger);
 }
 .barDangerForecast:hover {
-  background: var(--ds-background-danger, rgba(239, 68, 68, 0.08));
-  border-color: var(--ds-background-danger, rgba(239, 68, 68, 0.9));
+  background: var(--ds-background-danger);
+  border-color: var(--ds-background-danger);
 }
 
 /* Bar text styling for legacy bars */
@@ -593,7 +593,7 @@
 }
 
 .availableCell:hover {
-  background: var(--ds-background-success, rgba(13, 148, 136, 0.06));
+  background: var(--ds-background-success);
 }
 
 /* Focus state for keyboard navigation */
@@ -608,7 +608,7 @@
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: var(--ds-background-success, rgba(13, 148, 136, 0.35)); /* teal */
+  background: var(--ds-background-success); /* teal */
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -617,8 +617,8 @@
   height: 10px;
   background: var(--ds-chart-teal-bold);
   box-shadow: 
-    0 0 0 4px var(--ds-background-success, rgba(13, 148, 136, 0.15)),
-    0 0 12px var(--ds-background-success, rgba(13, 148, 136, 0.3));
+    0 0 0 4px var(--ds-background-success),
+    0 0 12px var(--ds-background-success);
 }
 
 .availableLabel {
@@ -695,9 +695,9 @@
   gap: 4px;
   /* Multi-layer shadow for premium depth */
   box-shadow: 
-    0 1px 2px var(--ds-shadow-raised, rgba(0, 0, 0, 0.15)),
-    0 2px 4px var(--ds-shadow-raised, rgba(0, 0, 0, 0.1)),
-    inset 0 1px 0 var(--ds-surface, rgba(255, 255, 255, 0.2));
+    0 1px 2px var(--ds-shadow-raised),
+    0 2px 4px var(--ds-shadow-raised),
+    inset 0 1px 0 var(--ds-surface);
   /* Badge appear animation */
   animation: badgeAppear 0.2s ease-out;
 }
@@ -743,14 +743,14 @@
   bottom: 0;
   background: repeating-linear-gradient(
     135deg,
-    var(--ds-text-disabled, rgba(156, 163, 175, 0.08)) 0px,
-    var(--ds-text-disabled, rgba(156, 163, 175, 0.08)) 4px,
-    var(--ds-text-disabled, rgba(156, 163, 175, 0.02)) 4px,
-    var(--ds-text-disabled, rgba(156, 163, 175, 0.02)) 8px
+    var(--ds-text-disabled) 0px,
+    var(--ds-text-disabled) 4px,
+    var(--ds-text-disabled) 4px,
+    var(--ds-text-disabled) 8px
   );
   pointer-events: none;
   z-index: 2;
-  border-left: 0px dashed var(--ds-text-disabled, rgba(156, 163, 175, 0.4));
+  border-left: 0px dashed var(--ds-text-disabled);
 }
 
 .lockedZone::before {
@@ -760,7 +760,7 @@
   top: 0;
   bottom: 0;
   width: 32px;
-  background: linear-gradient(90deg, var(--ds-text-disabled, rgba(156, 163, 175, 0.15)) 0%, transparent 100%);
+  background: linear-gradient(90deg, var(--ds-text-disabled) 0%, transparent 100%);
 }
 
 .lockedZoneBadge {
@@ -775,7 +775,7 @@
   padding: 4px 8px;
   border-radius: 4px;
   white-space: nowrap;
-  box-shadow: 0 2px 4px var(--ds-shadow-raised, rgba(0, 0, 0, 0.15));
+  box-shadow: 0 2px 4px var(--ds-shadow-raised);
   z-index: 3;
 }
 
@@ -797,7 +797,7 @@
   opacity: 0;
   visibility: hidden;
   transition: all 0.2s ease;
-  box-shadow: 0 4px 8px var(--ds-shadow-raised, rgba(0,0,0,0.04)), 0 8px 16px var(--ds-shadow-raised, rgba(0,0,0,0.08)), 0 16px 32px var(--ds-shadow-raised, rgba(0,0,0,0.04));
+  box-shadow: 0 4px 8px var(--ds-shadow-raised), 0 8px 16px var(--ds-shadow-raised), 0 16px 32px var(--ds-shadow-raised);
   z-index: 50;
   pointer-events: none;
 }
@@ -832,14 +832,14 @@
 }
 
 .timelineBody::-webkit-scrollbar-thumb {
-  background: var(--ds-shadow-raised, rgba(0, 0, 0, 0.12));
+  background: var(--ds-shadow-raised);
   border-radius: 4px;
   border: 2px solid transparent;
   background-clip: content-box;
 }
 
 .timelineBody::-webkit-scrollbar-thumb:hover {
-  background: var(--ds-shadow-raised, rgba(0, 0, 0, 0.2));
+  background: var(--ds-shadow-raised);
   background-clip: content-box;
 }
 
@@ -882,7 +882,7 @@
   align-items: center;
   gap: 16px;
   padding: 12px 16px;
-  border-top: 0px solid var(--ds-shadow-raised, rgba(0, 0, 0, 0.06));
+  border-top: 0px solid var(--ds-shadow-raised);
   background: var(--ds-surface-sunken);
   font-size: 11px;
   color: var(--ds-text-subtlest);
@@ -922,8 +922,8 @@
   border-radius: 4px;
   background: repeating-linear-gradient(
     135deg,
-    var(--ds-text-disabled, rgba(156, 163, 175, 0.3)) 0px,
-    var(--ds-text-disabled, rgba(156, 163, 175, 0.3)) 2px,
+    var(--ds-text-disabled) 0px,
+    var(--ds-text-disabled) 2px,
     transparent 2px,
     transparent 4px
   );
@@ -994,10 +994,10 @@
   flex-shrink: 0;
   background: linear-gradient(
     180deg,
-    var(--ds-surface-sunken, rgba(249, 250, 251, 0.8)) 0%,
-    var(--ds-background-neutral-subtle, rgba(243, 244, 246, 0.9)) 100%
+    var(--ds-surface-sunken) 0%,
+    var(--ds-background-neutral-subtle) 100%
   );
-  border-left: 0px solid var(--ds-background-information, rgba(37, 99, 235, 0.1));
+  border-left: 0px solid var(--ds-background-information);
   position: sticky;
   right: 0;
   z-index: 5;
@@ -1094,7 +1094,7 @@
 
 :global(.dark) .monthHeaderCurrent,
 :global(.dark) .monthHeaderCurrent , [data-theme="dark"]) .monthHeaderCurrent {
-  background: var(--ds-background-information, rgba(37, 99, 235, 0.15));
+  background: var(--ds-background-information);
   color: var(--ds-text-brand);
 }
 
@@ -1132,12 +1132,12 @@
 
 :global(.dark) .rowCritical,
 :global(.dark) .rowCritical , [data-theme="dark"]) .rowCritical {
-  background: linear-gradient(90deg, var(--ds-background-danger, rgba(239, 68, 68, 0.12)) 0%, transparent 40%);
+  background: linear-gradient(90deg, var(--ds-background-danger) 0%, transparent 40%);
 }
 
 :global(.dark) .rowAvailable,
 :global(.dark) .rowAvailable , [data-theme="dark"]) .rowAvailable {
-  background: linear-gradient(90deg, var(--ds-background-success, rgba(13, 148, 136, 0.08)) 0%, transparent 40%);
+  background: linear-gradient(90deg, var(--ds-background-success) 0%, transparent 40%);
 }
 
 /* Timeline Cells */
@@ -1148,7 +1148,7 @@
 
 :global(.dark) .timelineCellCurrent,
 :global(.dark) .timelineCellCurrent , [data-theme="dark"]) .timelineCellCurrent {
-  background: var(--ds-background-information, rgba(37, 99, 235, 0.08));
+  background: var(--ds-background-information);
 }
 
 /* Allocation Bar Text — CRITICAL: no dimming */
@@ -1180,12 +1180,12 @@
 /* Available Cell */
 :global(.dark) .availableCell:hover,
 :global(.dark) .availableCell:hover , [data-theme="dark"]) .availableCell:hover {
-  background: var(--ds-background-success, rgba(13, 148, 136, 0.15));
+  background: var(--ds-background-success);
 }
 
 :global(.dark) .availableDot,
 :global(.dark) .availableDot , [data-theme="dark"]) .availableDot {
-  background: var(--ds-background-success, rgba(13, 148, 136, 0.5));
+  background: var(--ds-background-success);
 }
 
 :global(.dark) .availableLabel,

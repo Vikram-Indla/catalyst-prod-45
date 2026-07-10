@@ -16,30 +16,30 @@
      ═══════════════════════════════════════════════════════════ */
   --ct-primary: var(--ds-text-brand, var(--cp-workstream-catalyst-primary));
   --ct-primary-hover: var(--ds-background-brand-bold-hovered);
-  --ct-primary-light: var(--ds-background-information, rgba(37, 99, 235, 0.08));
-  --ct-primary-lighter: var(--ds-background-information, rgba(37, 99, 235, 0.04));
+  --ct-primary-light: var(--ds-background-information);
+  --ct-primary-lighter: var(--ds-background-information);
 
   /* ═══════════════════════════════════════════════════════════
      SEMANTIC COLORS
      ═══════════════════════════════════════════════════════════ */
   --ct-teal: var(--ds-chart-teal-bold);
-  --ct-teal-light: var(--ds-background-success, rgba(13, 148, 136, 0.08));
+  --ct-teal-light: var(--ds-background-success);
 
   --ct-violet: var(--ds-background-discovery-bold);
   --ct-violet-dark: var(--ds-background-discovery-bold);
-  --ct-violet-light: var(--ds-background-discovery-bold, rgba(139, 92, 246, 0.08));
+  --ct-violet-light: var(--ds-background-discovery-bold);
 
   --ct-warning: var(--ds-text-warning);
   --ct-warning-dark: var(--ds-background-warning-bold);
-  --ct-warning-light: var(--ds-background-warning, rgba(217, 119, 6, 0.08));
+  --ct-warning-light: var(--ds-background-warning);
 
   --ct-danger: var(--ds-text-danger);
   --ct-danger-dark: var(--ds-text-danger);
-  --ct-danger-light: var(--ds-background-danger, rgba(239, 68, 68, 0.08));
+  --ct-danger-light: var(--ds-background-danger);
 
   --ct-success: var(--ds-background-success-bold);
   --ct-success-dark: var(--quality-high, var(--ds-background-success-bold));
-  --ct-success-light: var(--ds-background-success-bold, rgba(16, 185, 129, 0.08));
+  --ct-success-light: var(--ds-background-success-bold);
 
   /* ═══════════════════════════════════════════════════════════
      NEUTRAL PALETTE (V8 6-LEVEL TEXT HIERARCHY)
@@ -154,13 +154,13 @@
   --ct-shadow-md: none;
   --ct-shadow-lg: none;
   --ct-shadow-xl: none;
-  --ct-primary-light: var(--ds-background-information-bold, rgba(59,130,246, 0.12));
-  --ct-primary-lighter: var(--ds-background-information-bold, rgba(59,130,246, 0.06));
-  --ct-teal-light: var(--ds-background-success, rgba(13,148,136, 0.12));
-  --ct-violet-light: var(--ds-background-discovery-bold, rgba(139,92,246, 0.12));
-  --ct-warning-light: var(--ds-background-warning, rgba(217,119,6, 0.12));
-  --ct-danger-light: var(--ds-background-danger, rgba(239,68,68, 0.12));
-  --ct-success-light: var(--ds-background-success-bold, rgba(16,185,129, 0.12));
+  --ct-primary-light: var(--ds-background-information-bold);
+  --ct-primary-lighter: var(--ds-background-information-bold);
+  --ct-teal-light: var(--ds-background-success);
+  --ct-violet-light: var(--ds-background-discovery-bold);
+  --ct-warning-light: var(--ds-background-warning);
+  --ct-danger-light: var(--ds-background-danger);
+  --ct-success-light: var(--ds-background-success-bold);
   background: var(--cp-bg-page, var(--ds-surface));
   color: var(--ds-text-subtlest);
 }
@@ -696,8 +696,8 @@
   font-family: var(--usr-font-sans);
   font-size: var(--ct-text-sm);
   font-weight: 500;
-  background: var(--ds-surface, rgba(255, 255, 255, 0.15));
-  border: 1px solid var(--ds-surface, rgba(255, 255, 255, 0.25));
+  background: var(--ds-surface);
+  border: 1px solid var(--ds-surface);
   border-radius: var(--ct-radius-md);
   color: white;
   cursor: pointer;
@@ -705,7 +705,7 @@
 }
 
 .ct-bulk-btn:hover {
-  background: var(--ds-surface, rgba(255, 255, 255, 0.25));
+  background: var(--ds-surface);
 }
 
 .ct-bulk-btn svg {
@@ -1499,7 +1499,7 @@
 .ct-badge.fixed,
 .users-module .ct-badge.fixed,
 [class*="badge"][class*="fixed"] {
-  background: var(--ds-background-warning, rgba(217, 119, 6, 0.08)) !important;
+  background: var(--ds-background-warning) !important;
   color: var(--ds-background-warning-bold) !important;
   border: none !important;
 }
@@ -1512,7 +1512,7 @@
 .ct-badge.freelance,
 .users-module .ct-badge.freelance,
 [class*="badge"][class*="freelance"] {
-  background: var(--ds-background-discovery-bold, rgba(139, 92, 246, 0.08)) !important;
+  background: var(--ds-background-discovery-bold) !important;
   color: var(--ds-background-discovery-bold) !important;
   border: none !important;
 }
@@ -1524,7 +1524,7 @@
 /* Variable Badge — BLUE */
 .ct-badge.variable,
 .users-module .ct-badge.variable {
-  background: var(--ds-background-information, rgba(37, 99, 235, 0.08)) !important;
+  background: var(--ds-background-information) !important;
   color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary)) !important;
 }
 .ct-badge.variable .ct-badge-dot {
@@ -1534,7 +1534,7 @@
 /* Permanent Badge — TEAL */
 .ct-badge.permanent,
 .users-module .ct-badge.permanent {
-  background: var(--ds-background-success, rgba(13, 148, 136, 0.08)) !important;
+  background: var(--ds-background-success) !important;
   color: var(--ds-chart-teal-bold) !important;
 }
 .ct-badge.permanent .ct-badge-dot {
@@ -1591,7 +1591,7 @@
   align-items: center;
   gap: 4px;
   padding: 4px 10px;
-  background: var(--ct-primary-light, var(--ds-background-information, rgba(37, 99, 235, 0.08)));
+  background: var(--ct-primary-light, var(--ds-background-information));
   border-radius: var(--ct-radius-md, 6px);
   font-size: var(--ct-text-xs, 11px);
   font-weight: 600;
@@ -1630,7 +1630,7 @@
 
 .ct-runrate-card:hover {
   transform: translateY(-2px);
-  box-shadow: var(--ct-shadow-md, 0 4px 12px var(--ds-shadow-raised, rgba(0, 0, 0, 0.08)));
+  box-shadow: var(--ct-shadow-md, 0 4px 12px var(--ds-shadow-raised));
   border-color: var(--ct-primary, var(--cp-workstream-catalyst-primary, var(--ds-link)));
   cursor: pointer;
 }
@@ -1642,8 +1642,8 @@
 /* Active state when filtering */
 .ct-runrate-card.active {
   border-color: var(--ct-primary, var(--cp-workstream-catalyst-primary, var(--ds-link)));
-  background: var(--ds-background-information, rgba(37, 99, 235, 0.04));
-  box-shadow: var(--ct-shadow-md, 0 4px 12px var(--ds-shadow-raised, rgba(0, 0, 0, 0.08)));
+  background: var(--ds-background-information);
+  box-shadow: var(--ct-shadow-md, 0 4px 12px var(--ds-shadow-raised));
 }
 
 .ct-runrate-card.active::before {
@@ -1717,7 +1717,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 4px 10px;
-  background: var(--ds-background-information, rgba(37, 99, 235, 0.06));
+  background: var(--ds-background-information);
   border-radius: var(--ct-radius-md, 6px);
   font-variant-numeric: tabular-nums;
 }
@@ -1802,7 +1802,7 @@
 
 .ct-licenses-widget:hover {
   transform: translateY(-2px);
-  box-shadow: var(--ct-shadow-md, 0 4px 12px var(--ds-shadow-raised, rgba(0, 0, 0, 0.08)));
+  box-shadow: var(--ct-shadow-md, 0 4px 12px var(--ds-shadow-raised));
   border-color: var(--ct-success, var(--ds-chart-teal-bold));
 }
 
@@ -1823,7 +1823,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--ds-background-success, rgba(13, 148, 136, 0.1));
+  background: var(--ds-background-success);
   border-radius: var(--ct-radius-md, 6px);
   color: var(--ct-success, var(--ds-chart-teal-bold));
 }
@@ -1887,7 +1887,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 4px 10px;
-  background: var(--ds-background-success, rgba(13, 148, 136, 0.06));
+  background: var(--ds-background-success);
   border-radius: var(--ct-radius-md, 6px);
   font-variant-numeric: tabular-nums;
 }

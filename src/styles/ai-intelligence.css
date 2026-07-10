@@ -449,7 +449,7 @@
 .rai-callout {
   margin-top: 16px;
   background: var(--rai-warning-bg);
-  border: 1px solid var(--ds-background-warning, rgba(217, 119, 6, 0.2));
+  border: 1px solid var(--ds-background-warning);
   border-radius: 8px;
   padding: 12px 16px;
   display: flex;
@@ -774,7 +774,7 @@
 .rai-teaser {
   position: relative;
   background: linear-gradient(135deg, var(--rai-primary-bg) 0%, var(--ds-background-discovery) 100%);
-  border: 1px solid var(--ds-background-information, rgba(37, 99, 235, 0.12));
+  border: 1px solid var(--ds-background-information);
   border-radius: 8px;
   padding: 16px 16px;
   display: flex;
@@ -786,8 +786,8 @@
 }
 
 .rai-teaser:hover {
-  border-color: var(--ds-background-information, rgba(37, 99, 235, 0.3));
-  box-shadow: 0 2px 12px var(--ds-background-information, rgba(37, 99, 235, 0.08));
+  border-color: var(--ds-background-information);
+  box-shadow: 0 2px 12px var(--ds-background-information);
 }
 
 .rai-teaser::after {
@@ -808,7 +808,7 @@
   width: 36px;
   height: 36px;
   background: var(--rai-surface);
-  border: 1px solid var(--ds-background-information, rgba(37, 99, 235, 0.15));
+  border: 1px solid var(--ds-background-information);
   border-radius: 8px;
   display: flex;
   align-items: center;
@@ -873,7 +873,7 @@
   font-weight: 600;
   color: var(--rai-primary);
   background: var(--rai-surface);
-  border: 1px solid var(--ds-background-information, rgba(37, 99, 235, 0.25));
+  border: 1px solid var(--ds-background-information);
   border-radius: 9999px;
   padding: 8px 16px;
   box-shadow: var(--ds-shadow-overlay);
@@ -974,17 +974,17 @@
   --rai-border-strong: var(--ds-border-bold);
   --rai-primary: var(--ds-text-brand);
   --rai-primary-hover: var(--ds-text-brand);
-  --rai-primary-bg: var(--ds-background-information-bold, rgba(59,130,246,0.10));
+  --rai-primary-bg: var(--ds-background-information-bold);
   --rai-teal: var(--ds-background-success);
   --rai-teal-bg: rgba(94,234,212,0.10);
   --rai-success: var(--ds-background-success);
-  --rai-success-bg: var(--ds-background-success-bold, rgba(74,222,128,0.12));
+  --rai-success-bg: var(--ds-background-success-bold);
   --rai-warning: var(--ds-background-warning);
-  --rai-warning-bg: var(--ds-background-warning, rgba(253,230,138,0.10));
+  --rai-warning-bg: var(--ds-background-warning);
   --rai-danger: var(--ds-border-danger);
-  --rai-danger-bg: var(--ds-background-danger, rgba(239,68,68,0.10));
+  --rai-danger-bg: var(--ds-background-danger);
   --rai-purple: var(--ds-background-discovery);
-  --rai-purple-bg: var(--ds-background-discovery-bold, rgba(167,139,250,0.10));
+  --rai-purple-bg: var(--ds-background-discovery-bold);
 }
 
 /* Loading skeleton */

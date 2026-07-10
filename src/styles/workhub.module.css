@@ -21,16 +21,16 @@
   /* ── STATUS SEMANTIC ── */
   --wh-success: var(--ds-text-success);
   --wh-success-light: var(--ds-background-success);
-  --wh-success-bg: var(--ds-background-success-bold, rgba(22, 163, 74, 0.1));
+  --wh-success-bg: var(--ds-background-success-bold);
   --wh-warning: var(--ds-text-warning);
   --wh-warning-light: var(--ds-background-warning);
-  --wh-warning-bg: var(--ds-background-warning, rgba(217, 119, 6, 0.1));
+  --wh-warning-bg: var(--ds-background-warning);
   --wh-danger: var(--ds-text-danger);
   --wh-danger-light: var(--ds-background-danger);
-  --wh-danger-bg: var(--ds-background-danger, rgba(239, 68, 68, 0.1));
+  --wh-danger-bg: var(--ds-background-danger);
   --wh-info: var(--ds-background-discovery-bold);
   --wh-info-light: var(--ds-background-discovery);
-  --wh-info-bg: var(--ds-background-discovery-bold, rgba(124, 58, 237, 0.1));
+  --wh-info-bg: var(--ds-background-discovery-bold);
 
   /* ── SURFACES ── */
   --wh-bg: var(--ds-surface-sunken);
@@ -71,7 +71,7 @@
   --wh-shadow-md: var(--ds-shadow-overlay);
   --wh-shadow-lg: var(--ds-shadow-overlay);
   --wh-shadow-xl: var(--ds-shadow-overlay);
-  --wh-shadow-focus: 0 0 0 3px var(--ds-background-information, rgba(37, 99, 235, 0.15));
+  --wh-shadow-focus: 0 0 0 3px var(--ds-background-information);
 
   /* ── LAYOUT ── */
   --wh-topnav-height: 48px;
@@ -144,12 +144,12 @@
   --wh-shadow-sm: none;
   --wh-shadow-md: none;
   --wh-shadow-lg: none;
-  --wh-primary-light: var(--ds-background-information, rgba(37,99,235,0.12));
-  --wh-teal-light: var(--ds-background-success, rgba(13,148,136,0.12));
-  --wh-success-light: var(--ds-background-success-bold, rgba(22,163,74,0.12));
-  --wh-warning-light: var(--ds-background-warning, rgba(217,119,6,0.12));
-  --wh-danger-light: var(--ds-background-danger, rgba(239,68,68,0.12));
-  --wh-info-light: var(--ds-background-discovery-bold, rgba(124,58,237,0.12));
+  --wh-primary-light: var(--ds-background-information);
+  --wh-teal-light: var(--ds-background-success);
+  --wh-success-light: var(--ds-background-success-bold);
+  --wh-warning-light: var(--ds-background-warning);
+  --wh-danger-light: var(--ds-background-danger);
+  --wh-info-light: var(--ds-background-discovery-bold);
 }
 
 .workhub-display {

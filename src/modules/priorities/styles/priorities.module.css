@@ -75,10 +75,10 @@
   --pri-border-light: var(--ds-background-neutral-subtle);
 
   /* Shadows */
-  --pri-shadow-sm: 0 1px 2px var(--ds-shadow-raised, rgba(0, 0, 0, 0.05));
-  --pri-shadow-md: 0 4px 12px var(--ds-shadow-raised, rgba(0, 0, 0, 0.08));
-  --pri-shadow-lg: 0 8px 24px var(--ds-shadow-raised, rgba(0, 0, 0, 0.12));
-  --pri-shadow-lift: 0 8px 20px var(--ds-shadow-raised, rgba(0, 0, 0, 0.10));
+  --pri-shadow-sm: 0 1px 2px var(--ds-shadow-raised);
+  --pri-shadow-md: 0 4px 12px var(--ds-shadow-raised);
+  --pri-shadow-lg: 0 8px 24px var(--ds-shadow-raised);
+  --pri-shadow-lift: 0 8px 20px var(--ds-shadow-raised);
 
   /* Radius */
   --pri-radius-sm: 6px;
@@ -319,7 +319,7 @@
 
 .pri-search-input:focus {
   border-color: var(--pri-primary);
-  box-shadow: 0 0 0 3px var(--ds-background-information, rgba(37, 99, 235, 0.1));
+  box-shadow: 0 0 0 3px var(--ds-background-information);
 }
 
 .pri-filters {
@@ -709,7 +709,7 @@
   border-radius: 4px;
   padding: 0px 6px;
   outline: none;
-  box-shadow: 0 0 0 3px var(--ds-background-information, rgba(37, 99, 235, 0.1));
+  box-shadow: 0 0 0 3px var(--ds-background-information);
 }
 
 .pri-card-meta {
@@ -1098,7 +1098,7 @@
 .pri-panel-overlay {
   position: fixed;
   inset: 0;
-  background: var(--ds-shadow-raised, rgba(0, 0, 0, 0.3));
+  background: var(--ds-shadow-raised);
   z-index: 90;
   opacity: 0;
   pointer-events: none;
@@ -1188,7 +1188,7 @@
 
 .pri-field-input:focus {
   border-color: var(--pri-primary);
-  box-shadow: 0 0 0 3px var(--ds-background-information, rgba(37, 99, 235, 0.1));
+  box-shadow: 0 0 0 3px var(--ds-background-information);
 }
 
 .pri-field-textarea {
@@ -1209,7 +1209,7 @@
 .pri-modal-overlay {
   position: fixed;
   inset: 0;
-  background: var(--ds-shadow-raised, rgba(0, 0, 0, 0.5));
+  background: var(--ds-shadow-raised);
   z-index: 200;
   display: flex;
   align-items: center;

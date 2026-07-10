@@ -177,10 +177,10 @@
   border-radius: 16px;
   background: var(--ds-surface-overlay);
   color: var(--ds-text);
-  border: 1px solid var(--ds-border, rgba(9, 30, 66, 0.08));
+  border: 1px solid var(--ds-border);
   box-shadow:
-    0 8px 24px var(--ds-shadow-raised, rgba(9, 30, 66, 0.15)),
-    0 0 1px var(--ds-background-neutral-subtle-pressed, rgba(9, 30, 66, 0.1));
+    0 8px 24px var(--ds-shadow-raised),
+    0 0 1px var(--ds-background-neutral-subtle-pressed);
   font-family: inherit;
   font-size: 14px;
   white-space: nowrap;
@@ -254,5 +254,5 @@
   padding: 4px 12px;
   border-radius: 4px;
   border: 1px solid var(--ds-border-information);
-  background: var(--ds-background-information, rgba(132, 169, 255, 0.18));
+  background: var(--ds-background-information);
 }

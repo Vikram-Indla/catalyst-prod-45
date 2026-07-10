@@ -97,20 +97,28 @@ function stripComments(src) {
   return out.join('');
 }
 
-// A hex/color at index `idx` on `line` is inside a var()/token() fallback if a
-// `var(--` or `token(` opens before it and its close paren is after it.
+// A colour at index `idx` is inside a var()/token() FALLBACK position iff, when
+// we walk the line up to idx with a paren stack, some still-open var(/token(
+// frame has already seen a comma (i.e. we're past the first argument of a var
+// or token call). Balanced-paren aware, so a colour AFTER a closed
+// `var(--x, #a)` on the same line is NOT treated as a fallback.
 function fallbackWrap(line, idx) {
-  const before = line.slice(0, idx);
-  const varOpen = before.lastIndexOf('var(');
-  const tokOpen = before.lastIndexOf('token(');
-  const open = Math.max(varOpen, tokOpen);
-  if (open === -1) return false;
-  // must contain a comma between the open and the colour (fallback position)
-  const seg = line.slice(open, idx);
-  if (!seg.includes(',')) return false;
-  // and there must be a var-ref / token key start right after open
-  const head = line.slice(open).match(/^(var\(\s*--|token\(\s*['"])/);
-  return !!head;
+  const stack = [];
+  for (let i = 0; i < idx; i++) {
+    const ch = line[i];
+    if (ch === '(') {
+      const head = line.slice(Math.max(0, i - 5), i + 1);
+      if (/var\($/.test(head)) stack.push({ fb: false, kind: 'var' });
+      else if (/token\($/.test(head)) stack.push({ fb: false, kind: 'token' });
+      else stack.push({ fb: false, kind: 'other' });
+    } else if (ch === ')') {
+      stack.pop();
+    } else if (ch === ',' && stack.length) {
+      const top = stack[stack.length - 1];
+      if (top.kind === 'var' || top.kind === 'token') top.fb = true;
+    }
+  }
+  return stack.some((f) => (f.kind === 'var' || f.kind === 'token') && f.fb);
 }
 
 function scanContent(relPath, content) {

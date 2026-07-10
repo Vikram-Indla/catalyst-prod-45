@@ -51,13 +51,13 @@
   border: none;
   padding: 0;
   cursor: pointer;
-  color: var(--ds-text-subtle, #505258);
+  color: var(--ds-text-subtle);
   border-radius: 3px;
   transition: background-color 150ms ease;
 }
 
 .lwi-header__toggle:hover {
-  background-color: var(--ds-background-neutral-subtle-hovered, rgba(9, 30, 66, 0.06));
+  background-color: var(--ds-background-neutral-subtle-hovered);
 }
 
 .lwi-header__toggle:focus-visible {
@@ -71,7 +71,7 @@
   font-size: 16px;
   font-weight: 600;
   line-height: 20px;
-  color: var(--ds-text, #292A2E);
+  color: var(--ds-text);
   padding: 0 4px;
 }
 
@@ -82,7 +82,7 @@
   display: inline;
   font-size: 14px;
   font-weight: 400;
-  color: var(--ds-text-subtlest, #626F86);
+  color: var(--ds-text-subtlest);
   margin-left: 4px;
 }
 
@@ -99,16 +99,16 @@
   border-radius: 3px;
   font-family: "Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", sans-serif;
   font-size: 14px;
-  color: var(--ds-text-subtle, #44546f);
+  color: var(--ds-text-subtle);
   cursor: pointer;
   transition: background 100ms ease, color 100ms ease;
 }
 .lwi-add-link:hover {
-  background: var(--ds-background-neutral-subtle-hovered, #f1f2f4);
-  color: var(--ds-text, #172b4d);
+  background: var(--ds-background-neutral-subtle-hovered);
+  color: var(--ds-text);
 }
 .lwi-add-link:focus-visible {
-  outline: 1px solid var(--ds-border-focused, #4c9aff);
+  outline: 1px solid var(--ds-border-focused);
   outline-offset: 1px;
 }
 
@@ -121,7 +121,7 @@
   border: none;
   background: transparent;
   border-radius: 4px;
-  color: var(--ds-text-subtle, #42526E);
+  color: var(--ds-text-subtle);
   font-size: 13px;
   font-weight: 400;
   cursor: pointer;
@@ -130,7 +130,7 @@
 }
 
 .lwi-header__add:hover {
-  background-color: var(--ds-shadow-raised, rgba(0, 0, 0, 0.04));
+  background-color: var(--ds-shadow-raised);
   color: var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)));
 }
 
@@ -169,7 +169,7 @@
 .lwi-group__header {
   font-size: 14px;
   font-weight: 600;
-  color: var(--ds-text-subtle, #505258);
+  color: var(--ds-text-subtle);
   padding: 0 0 2px;
   letter-spacing: 0;
 }
@@ -184,7 +184,7 @@
   overflow-x: auto;
   overflow-y: hidden;
   padding: 0;
-  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))));
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))));
 }
 
 /* ── Row ──────────────────────────────────── */
@@ -195,7 +195,7 @@
   gap: 12px;
   height: 36px;
   padding: 0 12px;
-  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))));
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))));
   transition: background-color 120ms ease;
 }
 
@@ -217,12 +217,12 @@
    inside the group's rounded border — matches Jira "is implemented by"
    linked-items block. */
 .lwi-row + .lwi-row {
-  border-top: 1px solid var(--ds-border, #DFE1E6);
+  border-top: 1px solid var(--ds-border);
 }
 
 .lwi-row:hover,
 .lwi-row:focus-within {
-  background-color: var(--ds-shadow-raised, rgba(0, 0, 0, 0.03));
+  background-color: var(--ds-shadow-raised);
 }
 
 .lwi-row[data-state='pending'] {
@@ -269,7 +269,7 @@
 
 .lwi-row__key[data-done='true'] {
   text-decoration: line-through;
-  color: var(--ds-text-subtle, #505258);
+  color: var(--ds-text-subtle);
 }
 
 .lwi-row__key[data-done='true']:hover {
@@ -317,7 +317,7 @@
 .lwi-row__status-caret {
   display: inline-flex;
   align-items: center;
-  color: var(--ds-text-subtle, #505258);
+  color: var(--ds-text-subtle);
 }
 
 .lwi-row__assignee {
@@ -354,8 +354,8 @@
   width: 24px;
   height: 24px;
   border-radius: 50%;
-  background: var(--ds-background-neutral, #DFE1E6);
-  color: var(--ds-text-subtle, #505258);
+  background: var(--ds-background-neutral);
+  color: var(--ds-text-subtle);
 }
 
 .lwi-row__avatar-empty > span {
@@ -392,7 +392,7 @@
 }
 
 .lwi-row__action-btn:hover {
-  background-color: var(--ds-shadow-raised, rgba(0, 0, 0, 0.06));
+  background-color: var(--ds-shadow-raised);
   color: var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)));
 }
 
@@ -413,7 +413,7 @@
 .lwi-empty__heading {
   font-size: 13px;
   font-weight: 600;
-  color: var(--ds-text-subtle, #42526E);
+  color: var(--ds-text-subtle);
 }
 
 .lwi-empty__sub {
@@ -430,8 +430,8 @@
   align-items: center;
   gap: 8px;
   padding: 8px 12px;
-  background: var(--ds-background-danger, #FFECEB);
-  color: var(--ds-text-danger, #AE2A19);
+  background: var(--ds-background-danger);
+  color: var(--ds-text-danger);
   border-radius: 4px;
   font-size: 13px;
 }
@@ -451,7 +451,7 @@
   padding: 0 10px;
   border: 1px solid var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7));
   border-radius: 4px;
-  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))));
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))));
 }
 
 .lwi-skeleton__pulse {
@@ -513,7 +513,7 @@
   gap: 4px;
   border: none;
   background: transparent;
-  color: var(--cp-text-secondary, var(--cp-text-secondary, var(--ds-icon, #44546F)));
+  color: var(--cp-text-secondary, var(--cp-text-secondary, var(--ds-icon)));
   font-size: 14px;
   font-family: inherit;
   cursor: pointer;
@@ -524,7 +524,7 @@
 }
 
 .lwi-toolbar__create:hover:not(:disabled) {
-  background-color: var(--ds-shadow-raised, rgba(0, 0, 0, 0.04));
+  background-color: var(--ds-shadow-raised);
   color: var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)));
   text-decoration: underline;
 }
@@ -565,7 +565,7 @@
   font-family: var(--cp-font-mono);
   font-size: 12px;
   font-weight: 600;
-  color: var(--ds-text-accent-gray, #505258);
+  color: var(--ds-text-accent-gray);
   flex-shrink: 0;
 }
 
@@ -583,38 +583,38 @@
 }
 
 .dark .lwi-header__title { color: var(--ds-text, var(--cp-bg-neutral, #EDEDED)); }
-.dark .lwi-header__count { background: none; color: var(--ds-text-subtlest, #A1A1A1); }
-.dark .lwi-header__toggle:hover { background-color: var(--ds-surface-overlay, #1F1F1F); }
-.dark .lwi-header__add { color: var(--ds-text-subtlest, #A1A1A1); }
-.dark .lwi-header__add:hover { background-color: var(--ds-surface-overlay, #1F1F1F); color: var(--ds-text, var(--cp-bg-neutral, #EDEDED)); }
+.dark .lwi-header__count { background: none; color: var(--ds-text-subtlest); }
+.dark .lwi-header__toggle:hover { background-color: var(--ds-surface-overlay); }
+.dark .lwi-header__add { color: var(--ds-text-subtlest); }
+.dark .lwi-header__add:hover { background-color: var(--ds-surface-overlay); color: var(--ds-text, var(--cp-bg-neutral, #EDEDED)); }
 
-.dark .lwi-group__header { color: var(--ds-text-subtlest, #A1A1A1); }
-.dark .lwi-group__rows { background: var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface, #FFFFFF))); border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)); }
-.dark .lwi-row { background: var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface, #FFFFFF))); }
+.dark .lwi-group__header { color: var(--ds-text-subtlest); }
+.dark .lwi-group__rows { background: var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface))); border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)); }
+.dark .lwi-row { background: var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface))); }
 .dark .lwi-row + .lwi-row { border-top-color: var(--ds-border, var(--cp-ink-1, #292929)); }
 .dark .lwi-row:hover,
-.dark .lwi-row:focus-within { background-color: var(--ds-surface-overlay, #1F1F1F); }
-.dark .lwi-row__key { color: var(--ds-background-information-bold, #0C66E4); }
+.dark .lwi-row:focus-within { background-color: var(--ds-surface-overlay); }
+.dark .lwi-row__key { color: var(--ds-background-information-bold); }
 .dark .lwi-row__summary { color: var(--ds-text, var(--cp-bg-neutral, #EDEDED)); }
 .dark .lwi-row__avatar-empty { border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)); }
-.dark .lwi-row__action-btn { color: var(--ds-text-subtlest, #A1A1A1); }
+.dark .lwi-row__action-btn { color: var(--ds-text-subtlest); }
 .dark .lwi-row__action-btn:hover { background-color: var(--ds-border, var(--cp-ink-1, #292929)); color: var(--ds-text, var(--cp-bg-neutral, #EDEDED)); }
 
 .dark .lwi-empty__heading { color: var(--ds-text, var(--cp-bg-neutral, #EDEDED)); }
-.dark .lwi-empty__sub { color: var(--ds-text-subtlest, #A1A1A1); }
+.dark .lwi-empty__sub { color: var(--ds-text-subtlest); }
 .dark .lwi-error { background: var(--ds-background-danger); color: var(--ds-text-danger); }
 
-.dark .lwi-skeleton__row { background: var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface, #FFFFFF))); border-color: var(--ds-border, var(--cp-ink-1, #292929)); }
+.dark .lwi-skeleton__row { background: var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface))); border-color: var(--ds-border, var(--cp-ink-1, #292929)); }
 .dark .lwi-skeleton__pulse { background: var(--ds-border, var(--cp-ink-1, #292929)); }
 
 .dark .lwi-toolbar { border-top-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)); }
-.dark .lwi-toolbar__create { color: var(--ds-text-subtlest, #A1A1A1); }
+.dark .lwi-toolbar__create { color: var(--ds-text-subtlest); }
 .dark .lwi-toolbar__create:hover:not(:disabled) {
-  background-color: var(--ds-surface-overlay, #1F1F1F);
+  background-color: var(--ds-surface-overlay);
   color: var(--ds-text, var(--cp-bg-neutral, #EDEDED));
 }
 
-.dark .lwi-option__key { color: var(--ds-text-subtlest, #A1A1A1); }
+.dark .lwi-option__key { color: var(--ds-text-subtlest); }
 .dark .lwi-option__summary { color: var(--ds-text, var(--cp-bg-neutral, #EDEDED)); }
 
 /* ── DynamicTable overrides (jira-compare DC4 2026-05-11) ─────────────────
@@ -655,7 +655,7 @@
    (2026-06-21, Vikram screenshot). */
 .lwi-group__rows table tbody tr {
   height: 36px;
-  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))));
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))));
   transition: background-color 120ms ease;
   border-block-end: none !important;
 }
@@ -663,12 +663,12 @@
 /* Divider between rows — 1px hairline edge-to-edge inside the group's
    rounded card. Jira parity: "is implemented by" block. */
 .lwi-group__rows table tbody tr + tr {
-  border-top: 1px solid var(--ds-border, #DFE1E6);
+  border-top: 1px solid var(--ds-border);
 }
 
 .lwi-group__rows table tbody tr:hover,
 .lwi-group__rows table tbody tr:focus-within {
-  background-color: var(--ds-shadow-raised, rgba(0, 0, 0, 0.03));
+  background-color: var(--ds-shadow-raised);
 }
 
 .lwi-group__rows table tbody td {
@@ -743,7 +743,7 @@
 
 /* Dark mode DynamicTable overrides */
 .dark .lwi-group__rows table tbody tr {
-  background: var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface, #FFFFFF)));
+  background: var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface)));
 }
 
 .dark .lwi-group__rows table tbody tr + tr {
@@ -752,5 +752,5 @@
 
 .dark .lwi-group__rows table tbody tr:hover,
 .dark .lwi-group__rows table tbody tr:focus-within {
-  background-color: var(--ds-surface-overlay, #1F1F1F);
+  background-color: var(--ds-surface-overlay);
 }

@@ -25,28 +25,28 @@
   --roadmap-type-enhancement-bg:    var(--cp-teal-5);        /* var(--ds-background-success) */
   --roadmap-type-enhancement-bar:   linear-gradient(135deg, var(--cp-teal-60, var(--ds-chart-teal-bold)), var(--ds-chart-teal-bolder));
   --roadmap-type-enhancement-hover: var(--cp-teal-70);       /* var(--ds-chart-teal-bolder) */
-  --roadmap-type-enhancement-light: var(--ds-background-success, rgba(13, 148, 136, 0.12));
+  --roadmap-type-enhancement-light: var(--ds-background-success);
 
   /* Project = Deep Slate/Navy (NOT blue—reserved for avatar; NOT purple—AI color) */
   --roadmap-type-project:           var(--ds-text-subtle);
   --roadmap-type-project-bg:        var(--ds-surface-sunken);
   --roadmap-type-project-bar:       linear-gradient(135deg, var(--ds-text-subtle), var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle)))));
   --roadmap-type-project-hover:     var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle))));
-  --roadmap-type-project-light:     var(--ds-background-neutral, rgba(71, 85, 105, 0.12));
+  --roadmap-type-project-light:     var(--ds-background-neutral);
 
   /* Entity Integration = Amber/Warning (NOT purple—AI color) */
   --roadmap-type-entity:            var(--cp-warning-60);    /* var(--ds-text-warning, var(--cp-warning)) */
   --roadmap-type-entity-bg:         var(--cp-warning-5);     /* var(--ds-background-warning) */
   --roadmap-type-entity-bar:        linear-gradient(135deg, var(--ds-text-warning, var(--cp-warning)), var(--ds-background-warning-bold));
   --roadmap-type-entity-hover:      var(--cp-warning-70);    /* var(--ds-background-warning-bold) */
-  --roadmap-type-entity-light:      var(--ds-background-warning, rgba(217, 119, 6, 0.12));
+  --roadmap-type-entity-light:      var(--ds-background-warning);
 
   /* Improvement = Success Green */
   --roadmap-type-improvement:       var(--cp-success-60);    /* var(--ds-text-success, var(--cp-success)) */
   --roadmap-type-improvement-bg:    var(--ds-background-success);
   --roadmap-type-improvement-bar:   linear-gradient(135deg, var(--ds-text-success, var(--cp-success)), var(--ds-background-success-bold));
   --roadmap-type-improvement-hover: var(--ds-background-success-bold);
-  --roadmap-type-improvement-light: var(--ds-background-success-bold, rgba(22, 163, 74, 0.12));
+  --roadmap-type-improvement-light: var(--ds-background-success-bold);
 
   /* ─── AVATAR ──────────────────────────────────────────────────── */
   --roadmap-avatar-bg:              var(--cp-primary-60);    /* var(--ds-text-brand, var(--cp-workstream-catalyst-primary)) — always blue */
@@ -100,8 +100,8 @@
   --roadmap-bar-radius:             5px;
   --roadmap-bar-font-size:          11px;
   --roadmap-bar-font-weight:        600;
-  --roadmap-bar-shadow:             0 1px 3px var(--ds-shadow-raised, rgba(0,0,0,0.12)), 0 1px 2px var(--ds-shadow-raised, rgba(0,0,0,0.06));
-  --roadmap-bar-shadow-hover:       0 4px 8px var(--ds-shadow-raised, rgba(0,0,0,0.15)), 0 2px 4px var(--ds-shadow-raised, rgba(0,0,0,0.08));
+  --roadmap-bar-shadow:             0 1px 3px var(--ds-shadow-raised), 0 1px 2px var(--ds-shadow-raised);
+  --roadmap-bar-shadow-hover:       0 4px 8px var(--ds-shadow-raised), 0 2px 4px var(--ds-shadow-raised);
   --roadmap-bar-date-font-size:     9px;
   --roadmap-bar-date-opacity:       0.7;
 
@@ -134,19 +134,19 @@
 .dark [data-theme="dark"],
 .dark , [data-theme="dark"] {
   --roadmap-type-enhancement:       var(--cp-teal-40);
-  --roadmap-type-enhancement-bg:    var(--ds-background-success, rgba(13, 148, 136, 0.15));
+  --roadmap-type-enhancement-bg:    var(--ds-background-success);
   --roadmap-type-enhancement-bar:   linear-gradient(135deg, var(--ds-background-accent-teal-bolder), var(--cp-teal-60, var(--ds-chart-teal-bold)));
   
   --roadmap-type-project:           var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)));
-  --roadmap-type-project-bg:        var(--ds-background-neutral, rgba(71, 85, 105, 0.15));
+  --roadmap-type-project-bg:        var(--ds-background-neutral);
   --roadmap-type-project-bar:       linear-gradient(135deg, var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light))), var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary))));
   
   --roadmap-type-entity:            var(--cp-warning-40);
-  --roadmap-type-entity-bg:         var(--ds-background-warning, rgba(217, 119, 6, 0.15));
+  --roadmap-type-entity-bg:         var(--ds-background-warning);
   --roadmap-type-entity-bar:        linear-gradient(135deg, var(--ds-background-warning-bold), var(--ds-text-warning, var(--cp-warning)));
   
   --roadmap-type-improvement:       var(--ds-background-success);
-  --roadmap-type-improvement-bg:    var(--ds-background-success-bold, rgba(22, 163, 74, 0.15));
+  --roadmap-type-improvement-bg:    var(--ds-background-success-bold);
   --roadmap-type-improvement-bar:   linear-gradient(135deg, var(--ds-background-success), var(--ds-text-success));
 
   --roadmap-timeline-header-bg:     var(--ds-surface-overlay);
@@ -164,7 +164,7 @@
   --roadmap-kpi-border:             var(--ds-border, var(--cp-ink-1));
   
   --roadmap-bar-shadow:             none;
-  --roadmap-bar-shadow-hover:       0 4px 12px var(--ds-shadow-raised, rgba(0,0,0,0.3));
+  --roadmap-bar-shadow-hover:       0 4px 12px var(--ds-shadow-raised);
 }
 .dark .roadmap-group-header:hover,
 .dark .roadmap-group-header:hover , [data-theme="dark"] .roadmap-group-header:hover {

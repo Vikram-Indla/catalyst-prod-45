@@ -59,10 +59,10 @@
   --cp-color-grey-50: var(--ds-surface-sunken);
 
   /* ============= CATALYST BG COLORS (with alpha) ============= */
-  --cp-bg-teal-light: var(--ds-background-success, rgba(13, 148, 136, 0.08));
-  --cp-bg-blue-light: var(--ds-background-information, rgba(37, 99, 235, 0.08));
-  --cp-bg-orange-light: var(--ds-background-warning, rgba(217, 119, 6, 0.08));
-  --cp-bg-red-light: var(--ds-background-danger, rgba(239, 68, 68, 0.08));
+  --cp-bg-teal-light: var(--ds-background-success);
+  --cp-bg-blue-light: var(--ds-background-information);
+  --cp-bg-orange-light: var(--ds-background-warning);
+  --cp-bg-red-light: var(--ds-background-danger);
 
   /* ============= TEST STATUS COLORS ============= */
   --cp-status-passed-bg: var(--ds-background-success);
@@ -143,87 +143,87 @@
   --cp-severity-critical-dot: var(--ds-background-danger-bold);
   --cp-severity-critical-bg: var(--ds-background-danger);
   --cp-severity-critical-text: var(--ds-background-danger-bold);
-  --cp-severity-critical-border: var(--ds-background-danger, rgba(239, 68, 68, 0.19));
+  --cp-severity-critical-border: var(--ds-background-danger);
 
   --cp-severity-high-dot: var(--ds-background-warning-bold);
   --cp-severity-high-bg: var(--ds-background-warning);
   --cp-severity-high-text: var(--ds-background-warning-bold);
-  --cp-severity-high-border: var(--ds-background-warning, rgba(217, 119, 6, 0.19));
+  --cp-severity-high-border: var(--ds-background-warning);
 
   --cp-severity-medium-dot: var(--cp-workstream-catalyst-primary, var(--ds-link));
   --cp-severity-medium-bg: var(--ds-background-information);
   --cp-severity-medium-text: var(--cp-workstream-catalyst-primary, var(--ds-link));
-  --cp-severity-medium-border: var(--ds-background-information, rgba(37, 99, 235, 0.19));
+  --cp-severity-medium-border: var(--ds-background-information);
 
   --cp-severity-low-dot: var(--ds-text-disabled);
   --cp-severity-low-bg: var(--ds-surface-sunken);
   --cp-severity-low-text: var(--ds-text-subtlest);
-  --cp-severity-low-border: var(--ds-background-neutral, rgba(148, 163, 184, 0.19));
+  --cp-severity-low-border: var(--ds-background-neutral);
 
   --cp-severity-major-dot: var(--ds-background-warning-bold);
   --cp-severity-major-bg: var(--ds-background-warning);
   --cp-severity-major-text: var(--ds-background-warning-bold);
-  --cp-severity-major-border: var(--ds-background-warning, rgba(217, 119, 6, 0.19));
+  --cp-severity-major-border: var(--ds-background-warning);
 
   --cp-severity-minor-dot: var(--cp-workstream-catalyst-primary, var(--ds-link));
   --cp-severity-minor-bg: var(--ds-background-information);
   --cp-severity-minor-text: var(--cp-workstream-catalyst-primary, var(--ds-link));
-  --cp-severity-minor-border: var(--ds-background-information, rgba(37, 99, 235, 0.19));
+  --cp-severity-minor-border: var(--ds-background-information);
 
   --cp-severity-trivial-dot: var(--ds-text-disabled);
   --cp-severity-trivial-bg: var(--ds-surface-sunken);
   --cp-severity-trivial-text: var(--ds-text-subtlest);
-  --cp-severity-trivial-border: var(--ds-background-neutral, rgba(148, 163, 184, 0.19));
+  --cp-severity-trivial-border: var(--ds-background-neutral);
 
   /* ============= DEFECT STATUS COLORS ============= */
   --cp-defect-status-new-bg: var(--ds-background-danger);
   --cp-defect-status-new-text: var(--ds-background-danger-bold);
-  --cp-defect-status-new-border: var(--ds-background-danger, rgba(239, 68, 68, 0.19));
+  --cp-defect-status-new-border: var(--ds-background-danger);
 
   --cp-defect-status-open-bg: var(--ds-background-danger);
   --cp-defect-status-open-text: var(--ds-background-danger-bold);
-  --cp-defect-status-open-border: var(--ds-background-danger, rgba(239, 68, 68, 0.19));
+  --cp-defect-status-open-border: var(--ds-background-danger);
 
   --cp-defect-status-triaged-bg: var(--ds-background-warning);
   --cp-defect-status-triaged-text: var(--ds-background-warning-bold);
-  --cp-defect-status-triaged-border: var(--ds-background-warning, rgba(217, 119, 6, 0.19));
+  --cp-defect-status-triaged-border: var(--ds-background-warning);
 
   --cp-defect-status-in-progress-bg: var(--ds-background-information);
   --cp-defect-status-in-progress-text: var(--cp-workstream-catalyst-primary, var(--ds-link));
-  --cp-defect-status-in-progress-border: var(--ds-background-information, rgba(37, 99, 235, 0.19));
+  --cp-defect-status-in-progress-border: var(--ds-background-information);
 
   --cp-defect-status-fixed-bg: var(--ds-background-success);
   --cp-defect-status-fixed-text: var(--ds-chart-teal-bold);
-  --cp-defect-status-fixed-border: var(--ds-background-success, rgba(13, 148, 136, 0.19));
+  --cp-defect-status-fixed-border: var(--ds-background-success);
 
   --cp-defect-status-verified-bg: var(--ds-background-success);
   --cp-defect-status-verified-text: var(--ds-chart-teal-bold);
-  --cp-defect-status-verified-border: var(--ds-background-success, rgba(13, 148, 136, 0.19));
+  --cp-defect-status-verified-border: var(--ds-background-success);
 
   --cp-defect-status-resolved-bg: var(--ds-background-success);
   --cp-defect-status-resolved-text: var(--ds-chart-teal-bold);
-  --cp-defect-status-resolved-border: var(--ds-background-success, rgba(13, 148, 136, 0.19));
+  --cp-defect-status-resolved-border: var(--ds-background-success);
 
   --cp-defect-status-closed-bg: var(--ds-surface-sunken);
   --cp-defect-status-closed-text: var(--ds-text-subtlest);
-  --cp-defect-status-closed-border: var(--ds-background-neutral, rgba(203, 213, 225, 0.19));
+  --cp-defect-status-closed-border: var(--ds-background-neutral);
 
   --cp-defect-status-rejected-bg: var(--ds-surface-sunken);
   --cp-defect-status-rejected-text: var(--ds-text-subtlest);
-  --cp-defect-status-rejected-border: var(--ds-background-neutral, rgba(203, 213, 225, 0.19));
+  --cp-defect-status-rejected-border: var(--ds-background-neutral);
 
   --cp-defect-status-reopened-bg: var(--ds-background-warning);
   --cp-defect-status-reopened-text: var(--ds-background-warning-bold);
-  --cp-defect-status-reopened-border: var(--ds-background-warning, rgba(217, 119, 6, 0.19));
+  --cp-defect-status-reopened-border: var(--ds-background-warning);
 
   /* ============= DEFECT PRIORITY COLORS ============= */
   --cp-defect-priority-critical-bg: var(--ds-background-danger);
   --cp-defect-priority-critical-text: var(--ds-background-danger-bold);
-  --cp-defect-priority-critical-border: var(--ds-background-danger, rgba(225, 29, 72, 0.19));
+  --cp-defect-priority-critical-border: var(--ds-background-danger);
 
   --cp-defect-priority-high-bg: var(--ds-background-warning);
   --cp-defect-priority-high-text: var(--ds-background-warning-bold);
-  --cp-defect-priority-high-border: var(--ds-background-warning, rgba(217, 119, 6, 0.19));
+  --cp-defect-priority-high-border: var(--ds-background-warning);
 
   --cp-defect-priority-medium-bg: transparent;
   --cp-defect-priority-medium-text: var(--ds-text-subtle);

@@ -28,14 +28,14 @@
   align-items: center !important;
   gap: 8px !important;
   cursor: pointer !important;
-  box-shadow: 0 1px 3px var(--ds-shadow-raised, rgba(0, 0, 0, 0.08)) !important;
+  box-shadow: 0 1px 3px var(--ds-shadow-raised) !important;
   transition: all 0.15s ease !important;
 }
 
 .task-bar:hover,
 [class*="task-bar"]:hover,
 [class*="gantt-bar"]:hover {
-  box-shadow: 0 3px 8px var(--ds-shadow-raised, rgba(0, 0, 0, 0.15)) !important;
+  box-shadow: 0 3px 8px var(--ds-shadow-raised) !important;
   transform: translateY(-1px) !important;
 }
 
@@ -425,7 +425,7 @@
 }
 
 .dark .date-column-header.today {
-  background-color: var(--ds-background-information-bold, rgba(59, 130, 246, 0.15)) !important;
+  background-color: var(--ds-background-information-bold) !important;
 }
 
 /* Today badge */
@@ -440,7 +440,7 @@
 }
 
 .dark .date-column-header.weekend {
-  background-color: var(--ds-background-neutral, rgba(51, 65, 85, 0.3)) !important;
+  background-color: var(--ds-background-neutral) !important;
 }
 
 /* ============================================================================
@@ -474,7 +474,7 @@
 
 .task-bar:hover {
   transform: translateY(-1px) !important;
-  box-shadow: 0 4px 12px -2px var(--ds-shadow-raised, rgba(0, 0, 0, 0.12)) !important;
+  box-shadow: 0 4px 12px -2px var(--ds-shadow-raised) !important;
 }
 
 /* Workstream row hover */
@@ -538,7 +538,7 @@
 [style*="background-color: rgb(253, 164, 175)"], /* pink/salmon */
 [style*="background-color: rgb(34, 211, 238)"],  /* bright cyan */
 [style*="background-color: rgb(251, 207, 232)"], /* light pink */
-[style*="background: var(--ds-chart-blue-bold, rgb(14, 165, 233))"],
+[style*="background: var(--ds-chart-blue-bold)"],
 [style*="background: rgb(253, 164, 175)"] /* ads-scanner:ignore-line — dark-mode attr selector, Tailwind rose-300 */ {
   background-color: var(--ds-border, var(--cp-bg-sunken)) !important;
 }

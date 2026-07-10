@@ -51,12 +51,12 @@
   --pc-surface-tertiary: var(--ds-surface-overlay);
   --pc-border: var(--ds-border, var(--cp-ink-1));
   --pc-border-strong: var(--ds-border-bold);
-  --pc-primary-bg: var(--ds-background-information-bold, rgba(59,130,246,0.12));
-  --pc-teal-bg: var(--ds-background-success, rgba(13,148,136,0.12));
-  --pc-success-bg: var(--ds-background-success-bold, rgba(22,163,74,0.12));
-  --pc-warning-bg: var(--ds-background-warning, rgba(217,119,6,0.12));
-  --pc-danger-bg: var(--ds-background-danger-bold, rgba(220,38,38,0.12));
-  --pc-purple-bg: var(--ds-background-discovery-bold, rgba(124,58,237,0.12));
+  --pc-primary-bg: var(--ds-background-information-bold);
+  --pc-teal-bg: var(--ds-background-success);
+  --pc-success-bg: var(--ds-background-success-bold);
+  --pc-warning-bg: var(--ds-background-warning);
+  --pc-danger-bg: var(--ds-background-danger-bold);
+  --pc-purple-bg: var(--ds-background-discovery-bold);
 }
 .dark .pc-card:hover,
 .dark .pc-card:hover , [data-theme="dark"] .pc-card:hover {
@@ -64,7 +64,7 @@
 }
 .dark .pc-card--selected,
 .dark .pc-card--selected , [data-theme="dark"] .pc-card--selected {
-  box-shadow: 0 0 0 2px var(--ds-background-information, rgba(37, 99, 235, 0.25));
+  box-shadow: 0 0 0 2px var(--ds-background-information);
 }
 
 /* ---- Page Header ---- */
@@ -183,7 +183,7 @@
 .pc-search-input::placeholder { color: var(--pc-ink-muted); }
 .pc-search-input:focus {
   border-color: var(--pc-primary);
-  box-shadow: 0 0 0 2px var(--ds-background-information, rgba(37, 99, 235, 0.12));
+  box-shadow: 0 0 0 2px var(--ds-background-information);
 }
 .pc-search-kbd {
   position: absolute;
@@ -254,7 +254,7 @@
   font-family: var(--cp-font-mono);
   font-size: 10px;
   font-weight: 600;
-  background: var(--ds-background-information, rgba(37, 99, 235, 0.1));
+  background: var(--ds-background-information);
   padding: 0px 6px;
   border-radius: var(--pc-r-full);
 }
@@ -312,12 +312,12 @@
 }
 .pc-card:hover {
   border-color: var(--pc-border-strong);
-  box-shadow: 0 2px 8px var(--ds-shadow-raised, rgba(0, 0, 0, 0.04));
+  box-shadow: 0 2px 8px var(--ds-shadow-raised);
 }
 .pc-card--selected {
   border-color: var(--pc-primary);
   background: var(--pc-primary-bg);
-  box-shadow: 0 0 0 2px var(--ds-background-information, rgba(37, 99, 235, 0.12));
+  box-shadow: 0 0 0 2px var(--ds-background-information);
 }
 
 /* Card header */

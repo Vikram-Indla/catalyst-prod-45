@@ -303,7 +303,7 @@
 .ws-search-input input:focus {
   outline: 1px solid var(--ds-border-focused);
   border-color: var(--ws-primary);
-  box-shadow: 0 0 0 3px var(--ds-background-information, rgba(37, 99, 235, 0.1));
+  box-shadow: 0 0 0 3px var(--ds-background-information);
 }
 
 .ws-search-input input::placeholder {
@@ -990,7 +990,7 @@
 .ws-form-input:focus {
   outline: 1px solid var(--ds-border-focused);
   border-color: var(--ws-primary);
-  box-shadow: 0 0 0 3px var(--ds-background-information, rgba(37, 99, 235, 0.1));
+  box-shadow: 0 0 0 3px var(--ds-background-information);
 }
 
 .ws-form-input::placeholder {
@@ -1053,7 +1053,7 @@
 .ws-stepper-circle.active {
   background: var(--ws-primary);
   color: white;
-  box-shadow: 0 0 0 4px var(--ds-background-information, rgba(37, 99, 235, 0.2));
+  box-shadow: 0 0 0 4px var(--ds-background-information);
 }
 
 .ws-stepper-circle.pending {
@@ -1320,7 +1320,7 @@
 
 .ws-card-v2:hover {
   border-color: var(--ws-primary);
-  box-shadow: 0 4px 12px var(--ds-background-information, rgba(37, 99, 235, 0.1));
+  box-shadow: 0 4px 12px var(--ds-background-information);
   transform: translateY(-2px);
 }
 
