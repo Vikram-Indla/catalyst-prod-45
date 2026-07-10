@@ -19,22 +19,23 @@ import { StatusLozenge } from '@/components/shared/StatusLozenge';
 import type { LozengeAppearance } from '@/components/shared/StatusLozenge';
 import { Routes } from '@/lib/routes';
 import {
-  BarChart3, CheckCircle2, Clock, Gem, GitBranch, Layers, ListChecks,
+  BarChart3, Bell, CheckCircle2, Clock, Gem, GitBranch, Layers, ListChecks,
   MoveRight, Rocket, Scale, ShieldCheck, Upload, Users,
 } from '@/lib/atlaskit-icons';
+import Toggle from '@atlaskit/toggle';
 import { configApi, governanceApi } from '@/modules/strata/domain';
 import {
   useChangeRequests, useGateModels, useInvalidateStrata, useKpiTypes, useModelPerspectives,
   usePerspectives, useProfileNames, useProjectCardFieldConfigs, useProjectCardPicklists,
   useProjectCardSectionConfigs, useProjectCardTabConfigs, useRoleAssignments, useScorecardModels,
-  useStrataAudit, useStrataRoles, useThresholdSchemes, useUploadTemplates, useValueCategories,
+  useStrataAudit, useStrataNotificationRules, useStrataRoles, useThresholdSchemes, useUploadTemplates, useValueCategories,
   useWorkflowConfigs,
 } from '@/modules/strata/hooks/useStrata';
 import { StrataPageShell, StrataPanel, T } from '@/modules/strata/components/shared';
 import { StrataFormModal } from '@/modules/strata/components/authoring';
 import { fmtDate, fmtDateTime, labelize } from '@/modules/strata/components/format';
 import type {
-  GovernedEnvelope, GovernedStatus, StrataChangeRequest, StrataProjectCardFieldConfig,
+  GovernedEnvelope, GovernedStatus, StrataChangeRequest, StrataNotificationRule, StrataProjectCardFieldConfig,
   StrataProjectCardPicklist, StrataRole, StrataScorecardModel,
 } from '@/modules/strata/types';
 
@@ -1025,6 +1026,66 @@ function ProjectCardConfigSection({ onError }: { onError: OnError }) {
 }
 
 // ── Section registry + page ──────────────────────────────────────────────────
+// ── Notifications (CAT-STRATA-CLOSEOUT-20260710-001 W3) ───────────────────────
+function NotificationsSection({ onError }: { onError: OnError }) {
+  const rulesQ = useStrataNotificationRules();
+  const roles = useStrataRoles();
+  const invalidate = useInvalidateStrata();
+  const [busyEvent, setBusyEvent] = useState<string | null>(null);
+  // UI gating only — strata_set_notification_rule also authorises platform admins server-side.
+  const isStrataAdmin = (roles.data ?? []).includes('strata_admin');
+  const rules = (rulesQ.data ?? []) as StrataNotificationRule[];
+
+  const toggle = async (rule: StrataNotificationRule) => {
+    setBusyEvent(rule.event_type);
+    onError(null);
+    try {
+      await governanceApi.setNotificationRule(rule.event_type, !rule.enabled);
+      invalidate();
+    } catch (e) {
+      onError(e instanceof Error ? e.message : String(e));
+    } finally {
+      setBusyEvent(null);
+    }
+  };
+
+  return (
+    <StrataPanel title="Notifications" icon={<Bell size={16} />} count={rules.length} testId="strata-admin-notifications">
+      <p style={captionStyle}>
+        In-app alerts for pending approvals, assignments, blockers and validation requests.
+        Toggling a rule takes effect immediately and is written to the audit trail (admin only).
+      </p>
+      {rulesQ.isLoading ? (
+        <div style={{ padding: 16 }}><Spinner size="small" /></div>
+      ) : rules.length === 0 ? (
+        <EmptyState size="compact" header="No notification rules" description="Nothing has been configured in this section." />
+      ) : (
+        rules.map((r) => (
+          <div
+            key={r.event_type}
+            data-testid={`strata-admin-notif-rule-${r.event_type}`}
+            style={{ display: 'flex', alignItems: 'center', gap: 12, padding: 'var(--ds-space-100) var(--ds-space-050)', borderBottom: `1px solid ${T.border}` }}
+          >
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <span style={{ fontWeight: 600, color: T.text }}>{r.label}</span>
+                <CatalystTag text={labelize(r.audience.replace('role:', ''))} />
+              </div>
+              {r.description ? <div style={{ ...metaStyle, marginTop: 'var(--ds-space-025)' }}>{r.description}</div> : null}
+            </div>
+            <Toggle
+              isChecked={r.enabled}
+              isDisabled={!isStrataAdmin || busyEvent === r.event_type}
+              onChange={() => void toggle(r)}
+              label={`Toggle ${r.label}`}
+            />
+          </div>
+        ))
+      )}
+    </StrataPanel>
+  );
+}
+
 const SECTIONS: Array<{
   key: string;
   label: string;
@@ -1041,6 +1102,7 @@ const SECTIONS: Array<{
   { key: 'workflows', label: 'Workflows', icon: GitBranch, render: (e) => <WorkflowsSection onError={e} /> },
   { key: 'project-card', label: 'Project Card', icon: Rocket, render: (e) => <ProjectCardConfigSection onError={e} /> },
   { key: 'roles', label: 'Roles', icon: Users, render: (e) => <RolesSection onError={e} /> },
+  { key: 'notifications', label: 'Notifications', icon: Bell, render: (e) => <NotificationsSection onError={e} /> },
   { key: 'change-log', label: 'Change log', icon: Clock, render: () => <ChangeLogSection /> },
 ];
 

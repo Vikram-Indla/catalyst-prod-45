@@ -12,7 +12,7 @@ import type {
   StrataCycle, StrataDataSource, StrataDecision, StrataDependency, StrataGateInstance,
   StrataGateModel, StrataGateModelStage, StrataInitiative, StrataInitiativeProject,
   StrataKeyResult, StrataKpi, StrataKpiActual, StrataKpiFormulaVersion, StrataKpiTarget,
-  StrataKpiTypeConfig, StrataMapEdge, StrataMilestone, StrataModelPerspective, StrataOkr,
+  StrataKpiTypeConfig, StrataMapEdge, StrataMilestone, StrataModelPerspective, StrataNotification, StrataNotificationRule, StrataOkr,
   StrataPeriod, StrataPerspective, StrataThemeCharter, StrataPortfolio, StrataProjectCard,
   StrataProjectCardFieldConfig, StrataProjectCardPicklist, StrataProjectCardSectionConfig,
   StrataProjectCardTabConfig, StrataRole, StrataScorecardInstance, StrataScorecardLine,
@@ -970,6 +970,17 @@ export const governanceApi = {
     if (error || !data?.signedUrl) throw new Error(`Could not sign pack download: ${error?.message ?? 'no URL returned'}`);
     return data.signedUrl;
   },
+  // ── Notifications (CAT-STRATA-CLOSEOUT-20260710-001 W3) ────────────────────
+  notifications: (): Promise<StrataNotification[]> =>
+    run(typedQuery('strata_notifications').select('*').order('created_at', { ascending: false }).limit(50)),
+  markNotificationRead: (id: string): Promise<void> =>
+    run(typedRpc('strata_mark_notification_read', { p_id: id })),
+  markAllNotificationsRead: (): Promise<void> =>
+    run(typedRpc('strata_mark_all_notifications_read', {})),
+  notificationRules: (): Promise<StrataNotificationRule[]> =>
+    run(typedQuery('strata_notification_rules').select('*').order('label')),
+  setNotificationRule: (eventType: string, enabled: boolean, reason?: string): Promise<void> =>
+    run(typedRpc('strata_set_notification_rule', { p_event_type: eventType, p_enabled: enabled, p_reason: reason ?? null })),
   aiOutputs: (): Promise<StrataAiOutput[]> =>
     run(typedQuery('strata_ai_outputs').select('*').order('generated_at', { ascending: false })),
   // ── Authoring write paths (Recovery: Lane G) ──────────────────────────────

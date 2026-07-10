@@ -19,6 +19,7 @@ import {
 import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
 import { ChevronDown } from '@/lib/atlaskit-icons';
 import { useBandResolver, useStrataContext } from '../hooks/useStrata';
+import { StrataNotificationBell } from './StrataNotificationBell';
 import { fmtSarCompact, fmtScore } from './format';
 import type { DataState, ThresholdBand } from '../types';
 
@@ -433,7 +434,14 @@ export function StrataPageShell({
         * so overhanging it clips the header's left edge (the "TRATA" bug —
         * CAT-STRATA-ADS-UPLIFT-20260706-001). Align to the content grid instead. */}
       <div style={{ margin: '-12px 0 0' }}>
-        <ProjectPageHeader hubType="strata" paddingX={0} trail={trail} title={title} hideTitle={hideTitle} actions={headerActions} />
+        <ProjectPageHeader
+          hubType="strata"
+          paddingX={0}
+          trail={trail}
+          title={title}
+          hideTitle={hideTitle}
+          actions={<span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}><StrataNotificationBell />{headerActions}</span>}
+        />
       </div>
       <div style={{ margin: '8px 0 16px' }}>
         <StrataContextToolbar modelLabel={modelLabel} extra={

@@ -714,6 +714,32 @@ export interface StrataBoardPack {
   generated_at: string | null;
 }
 
+// ── Notifications (CAT-STRATA-CLOSEOUT-20260710-001 W3) ──────────────────────
+export interface StrataNotification {
+  id: string;
+  user_id: string;
+  event_type: string;
+  entity_table: string | null;
+  entity_id: string | null;
+  title: string;
+  body: string | null;
+  read_at: string | null;
+  created_at: string;
+}
+
+export interface StrataNotificationRule {
+  id: string;
+  event_type: string;
+  label: string;
+  description: string | null;
+  audience: string;
+  channel: string;
+  enabled: boolean;
+  status: string;
+  change_reason: string | null;
+  updated_at: string;
+}
+
 export interface StrataAiOutput {
   id: string;
   use_case: string;

@@ -468,6 +468,11 @@ export const useBoardPacks = (snapshotId?: string) =>
   });
 export const useAiOutputs = () =>
   useQuery({ queryKey: ['strata', 'ai-outputs'], queryFn: governanceApi.aiOutputs, staleTime: STALE });
+// ── Notifications (CAT-STRATA-CLOSEOUT-20260710-001 W3) ──────────────────────
+export const useStrataNotifications = () =>
+  useQuery({ queryKey: ['strata', 'notifications'], queryFn: governanceApi.notifications, staleTime: STALE });
+export const useStrataNotificationRules = () =>
+  useQuery({ queryKey: ['strata', 'notification-rules'], queryFn: governanceApi.notificationRules, staleTime: STALE });
 
 // ── Recovery additions (CAT-STRATA-20260705-001 session 004) ─────────────────
 /** Rule-driven Needs Attention feed (F-REP-004) — replaces seeded exceptions. */
