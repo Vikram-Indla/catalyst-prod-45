@@ -110,40 +110,50 @@ interface SectionHeaderProps {
   collapsed: boolean;
   unreadInSection?: number;
   onToggle: () => void;
+  /** Inline "›" next to the title → opens the section's browse-detail screen. */
+  onBrowse?: () => void;
   actions?: React.ReactNode;
 }
 
-function SectionHeader({ label, count, collapsed, unreadInSection, onToggle, actions }: SectionHeaderProps) {
+function SectionHeader({ label, count, collapsed, unreadInSection, onToggle, onBrowse, actions }: SectionHeaderProps) {
   return (
     <div className="cc-dir__section cc-dir__section--collapsible">
+      {/* Title + inline "›" → browse-detail screen (Slack pattern). Falls back
+          to collapse when the section isn't browsable. */}
       <button
         type="button"
-        className="cc-dir__section-toggle"
-        onClick={onToggle}
-        aria-expanded={!collapsed}
-        aria-label={`${collapsed ? 'Expand' : 'Collapse'} ${label} section`}
+        className="cc-dir__section-title"
+        onClick={onBrowse ?? onToggle}
+        aria-label={onBrowse ? `Browse ${label}` : `${collapsed ? 'Expand' : 'Collapse'} ${label} section`}
       >
-        <svg
-          width={12}
-          height={12}
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth={2.5}
-          className={collapsed ? 'cc-dir__chevron cc-dir__chevron--collapsed' : 'cc-dir__chevron'}
-          aria-hidden
-        >
-          <polyline points="6 9 12 15 18 9" />
-        </svg>
-        {label}
+        <span>{label}</span>
+        {onBrowse && (
+          <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} className="cc-dir__section-go" aria-hidden>
+            <polyline points="9 18 15 12 9 6" />
+          </svg>
+        )}
+      </button>
+      <div className="cc-dir__section-right">
         {collapsed && unreadInSection != null && unreadInSection > 0 && (
           <Badge appearance="important" max={99}>{unreadInSection}</Badge>
         )}
         {!collapsed && count != null && (
           <span className="cc-dir__section-count">{count}</span>
         )}
-      </button>
-      {actions}
+        {actions}
+        {/* Far-right chevron → collapse / expand */}
+        <button
+          type="button"
+          className="cc-dir__section-collapse"
+          onClick={onToggle}
+          aria-expanded={!collapsed}
+          aria-label={`${collapsed ? 'Expand' : 'Collapse'} ${label} section`}
+        >
+          <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} aria-hidden>
+            <polyline points={collapsed ? '6 9 12 15 18 9' : '6 15 12 9 18 15'} />
+          </svg>
+        </button>
+      </div>
     </div>
   );
 }
@@ -156,14 +166,14 @@ function DmStackAvatar({ c, onCall = false }: { c: ChatConversation; onCall?: bo
   const inner = (c.kind === 'group_dm' && names.length >= 2) ? (
     <span aria-label={c.title} className="cc-dir__dm-stack">
       <span className="cc-dir__dm-stack__top">
-        <AtlaskitAvatar name={names[0]} seed={names[0]} pixelSize={18} />
+        <AtlaskitAvatar name={names[0]} seed={names[0]} pixelSize={18} shape="square" />
       </span>
       <span className="cc-dir__dm-stack__bottom">
-        <AtlaskitAvatar name={names[1]} seed={names[1]} pixelSize={18} />
+        <AtlaskitAvatar name={names[1]} seed={names[1]} pixelSize={18} shape="square" />
       </span>
     </span>
   ) : (
-    <AtlaskitAvatar name={c.title} seed={c.id} className="cc-dir__avatar" />
+    <AtlaskitAvatar name={c.title} seed={c.id} shape="square" className="cc-dir__avatar" />
   );
   if (!onCall) return inner;
   return (
@@ -196,10 +206,12 @@ interface ConvRowProps {
   glyph: React.ReactNode;
   titleOverride?: string;
   previewOverride?: string;
+  hidePreview?: boolean;
+  hideMeta?: boolean;
   onTogglePin?: (id: string, next: boolean) => void;
 }
 
-function ConvRow({ conversation: c, isActive, onSelect, onArchive, onUnarchive, isArchived, glyph, titleOverride, previewOverride, onTogglePin }: ConvRowProps) {
+function ConvRow({ conversation: c, isActive, onSelect, onArchive, onUnarchive, isArchived, glyph, titleOverride, previewOverride, hidePreview, hideMeta, onTogglePin }: ConvRowProps) {
   const [hovered, setHovered] = useState(false);
 
   return (
@@ -230,16 +242,20 @@ function ConvRow({ conversation: c, isActive, onSelect, onArchive, onUnarchive, 
               )}
             </span>
           </div>
-          <div className="cc-dir__preview">
-            {previewOverride ?? c.lastMessagePreview ?? 'No messages yet'}
-          </div>
-        </div>
-        <div className="cc-dir__meta">
-          <span className="cc-dir__time">{relativeShort(c.lastMessageAt)}</span>
-          {c.unreadCount > 0 && !hovered && (
-            <Badge appearance="important" max={99}>{c.unreadCount}</Badge>
+          {!hidePreview && (
+            <div className="cc-dir__preview">
+              {previewOverride ?? c.lastMessagePreview ?? 'No messages yet'}
+            </div>
           )}
         </div>
+        {!hideMeta && (
+          <div className="cc-dir__meta">
+            <span className="cc-dir__time">{relativeShort(c.lastMessageAt)}</span>
+            {c.unreadCount > 0 && (
+              <Badge appearance="important" max={99}>{c.unreadCount}</Badge>
+            )}
+          </div>
+        )}
       </button>
       {hovered && (
         <div className="cc-dir__row-actions">
@@ -289,9 +305,11 @@ interface DockDirectoryProps {
   onSelectConversation: (id: string) => void;
   /** Incremented each time the + button is pressed — auto-focuses search input. */
   focusTick?: number;
+  /** Fires when the browse-detail screen opens/closes so the shell can go full-screen. */
+  onBrowseChange?: (open: boolean) => void;
 }
 
-export function DockDirectory({ conversations, activeId, onSelectConversation, focusTick }: DockDirectoryProps) {
+export function DockDirectory({ conversations, activeId, onSelectConversation, focusTick, onBrowseChange }: DockDirectoryProps) {
   const { user } = useAuth();
   const { role } = useUserRole();
   const isAdmin = role === 'admin';
@@ -316,12 +334,19 @@ export function DockDirectory({ conversations, activeId, onSelectConversation, f
   const [channelCreatedCount, setChannelCreatedCount] = useState<number | null>(null);
   const [browseChannelsOpen, setBrowseChannelsOpen] = useState(false);
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>(loadCollapsed);
+  const [browseKey, setBrowseKey] = useState<string | null>(null);
   const searchRef = React.useRef<HTMLInputElement>(null);
 
   // Focus search input whenever the + button is clicked (focusTick increments).
   useEffect(() => {
     if (focusTick && focusTick > 0) searchRef.current?.focus();
   }, [focusTick]);
+
+  // Tell the shell to go full-screen while the browse-detail screen is open.
+  useEffect(() => {
+    onBrowseChange?.(!!browseKey);
+    return () => onBrowseChange?.(false);
+  }, [browseKey, onBrowseChange]);
 
   const toggleSection = useCallback((key: string) => {
     setCollapsed((prev) => {
@@ -544,7 +569,7 @@ export function DockDirectory({ conversations, activeId, onSelectConversation, f
         <AtlaskitAvatar
           name={c.assigneeName ?? c.ticketKey ?? 'Ticket'}
           seed={c.assigneeName ?? c.id}
-          className="cc-dir__avatar"
+          shape="square" className="cc-dir__avatar"
         />
       );
     }
@@ -554,20 +579,78 @@ export function DockDirectory({ conversations, activeId, onSelectConversation, f
     return <DmStackAvatar c={c} onCall={dmOnCall(c)} />;
   };
 
-  const renderMixedRow = (c: ChatConversation) => (
+  const renderMixedRow = (c: ChatConversation, opts?: { nameOnly?: boolean }) => (
     <ConvRow
       key={c.id}
       conversation={c}
       isActive={activeId === c.id}
       onSelect={onSelectConversation}
       onArchive={(id) => archive.mutate(id)}
-      onTogglePin={handleTogglePin}
-
+      onTogglePin={opts?.nameOnly ? undefined : handleTogglePin}
+      hidePreview={opts?.nameOnly}
+      hideMeta={opts?.nameOnly}
       glyph={convGlyph(c)}
       titleOverride={c.kind === 'ticket' ? (c.ticketKey ?? c.title) : undefined}
       previewOverride={c.kind === 'ticket' ? (c.lastMessagePreview ?? c.title) : undefined}
     />
   );
+
+  // Browse-detail screen (Slack "Browse Sections") — opened via a section's "›".
+  // Fixed section chips (always shown, Slack-style) with leading icons.
+  const chipIcon = (key: string) => {
+    const p = { width: 15, height: 15, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 2, strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const, 'aria-hidden': true };
+    if (key === 'pinned') return <svg {...p}><polygon points="12 2 15 8.5 22 9.3 17 14 18.5 21 12 17.3 5.5 21 7 14 2 9.3 9 8.5 12 2" /></svg>;
+    if (key === 'dms') return <svg {...p}><path d="M3 14v-2a9 9 0 0 1 18 0v2" /><path d="M21 15a2 2 0 0 1-2 2h-1v-5h1a2 2 0 0 1 2 2zM3 15a2 2 0 0 0 2 2h1v-5H5a2 2 0 0 0-2 2z" /></svg>;
+    if (key === 'channels') return <svg {...p}><line x1="4" y1="9" x2="20" y2="9" /><line x1="4" y1="15" x2="20" y2="15" /><line x1="10" y1="3" x2="8" y2="21" /><line x1="16" y1="3" x2="14" y2="21" /></svg>;
+    return <svg {...p}><rect x="3" y="7" width="18" height="13" rx="2" /><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" /></svg>;
+  };
+  const browseSections = [
+    { key: 'pinned', label: 'Starred', items: filtered.pinned },
+    { key: 'dms', label: 'Direct Messages', items: filtered.dms },
+    { key: 'channels', label: 'Channels', items: filtered.customChannels },
+    { key: 'tickets', label: 'Work items', items: filtered.tickets },
+  ];
+
+  if (browseKey) {
+    const active = browseSections.find((s) => s.key === browseKey) ?? browseSections[0];
+    return (
+      <div className="cc-dir">
+        <div className="cc-dir__browse-head">
+          <button
+            type="button"
+            className="cc-dir__browse-back"
+            onClick={() => setBrowseKey(null)}
+            aria-label="Back"
+          >
+            <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" aria-hidden>
+              <polyline points="15 18 9 12 15 6" />
+            </svg>
+          </button>
+          <span className="cc-dir__browse-title">Browse Sections</span>
+        </div>
+        <div className="cc-dir__browse-chips" role="tablist" aria-label="Sections">
+          {browseSections.map((s) => (
+            <button
+              key={s.key}
+              type="button"
+              role="tab"
+              aria-selected={active?.key === s.key}
+              className={`cc-dir__browse-chip${active?.key === s.key ? ' cc-dir__browse-chip--active' : ''}`}
+              onClick={() => setBrowseKey(s.key)}
+            >
+              <span className="cc-dir__browse-chip-icon">{chipIcon(s.key)}</span>
+              {s.label}
+            </button>
+          ))}
+        </div>
+        <div className="cc-dir__scroll">
+          {active && active.items.length > 0
+            ? active.items.map((c) => renderMixedRow(c, { nameOnly: true }))
+            : <div className="cc-dir__section-empty">Nothing here yet</div>}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="cc-dir">
@@ -597,8 +680,10 @@ export function DockDirectory({ conversations, activeId, onSelectConversation, f
         onOpenChannel={(id) => onSelectConversation(id)}
       />
 
-      {/* Search — @atlaskit/textfield (canonical) */}
-      <div style={{ padding: 'var(--ds-space-100) var(--ds-space-150)' }}>
+      {/* Search — @atlaskit/textfield (canonical). Hidden in the Slack-style dock:
+          search lives in the bottom nav Search circle. Kept mounted so the
+          directory's search state/logic stays intact. */}
+      <div className="cc-dir__searchwrap" style={{ padding: 'var(--ds-space-100) var(--ds-space-150)' }}>
         <Textfield
           ref={searchRef}
           value={query}
@@ -640,7 +725,7 @@ export function DockDirectory({ conversations, activeId, onSelectConversation, f
                 <div className="cc-dir__section">Messages<span className="cc-dir__section-count">{searchGroups.messages.length}</span></div>
                 {searchGroups.messages.map((h) => (
                   <button key={`m:${h.id}`} type="button" className="cc-dir__row" onClick={() => h.conversationId && onSelectConversation(h.conversationId)}>
-                    <AtlaskitAvatar name={h.subtitle ?? '?'} seed={h.conversationId ?? h.id} className="cc-dir__avatar" />
+                    <AtlaskitAvatar name={h.subtitle ?? '?'} seed={h.conversationId ?? h.id} shape="square" className="cc-dir__avatar" />
                     <div className="cc-dir__body">
                       <div className="cc-dir__top"><span className="cc-dir__name">{h.subtitle ?? 'Conversation'}</span></div>
                       <div className="cc-dir__preview">{h.title}</div>
@@ -688,7 +773,7 @@ export function DockDirectory({ conversations, activeId, onSelectConversation, f
                       .catch((e) => { console.error('Start DM (search) failed:', e); setDmError('Could not start conversation. Try again.'); setTimeout(() => setDmError(null), 4000); })
                       .finally(() => setBusyId(null));
                   }}>
-                    <AtlaskitAvatar name={h.title} seed={h.id} className="cc-dir__avatar" />
+                    <AtlaskitAvatar name={h.title} seed={h.id} shape="square" className="cc-dir__avatar" />
                     <div className="cc-dir__body">
                       <div className="cc-dir__top"><span className="cc-dir__name">{h.title}</span></div>
                       <div className="cc-dir__preview">{h.subtitle ?? ''}</div>
@@ -801,8 +886,9 @@ export function DockDirectory({ conversations, activeId, onSelectConversation, f
               collapsed={!!collapsed['pinned']}
               unreadInSection={filtered.pinned.reduce((s, c) => s + c.unreadCount, 0)}
               onToggle={() => toggleSection('pinned')}
+              onBrowse={() => setBrowseKey('pinned')}
             />
-            {!collapsed['pinned'] && filtered.pinned.map(renderMixedRow)}
+            {!collapsed['pinned'] && filtered.pinned.map((c) => renderMixedRow(c))}
           </>
         )}
 
@@ -815,6 +901,7 @@ export function DockDirectory({ conversations, activeId, onSelectConversation, f
           collapsed={!!collapsed['dms']}
           unreadInSection={dmUnread}
           onToggle={() => toggleSection('dms')}
+          onBrowse={() => setBrowseKey('dms')}
           actions={
             <button
               type="button"
@@ -838,7 +925,7 @@ export function DockDirectory({ conversations, activeId, onSelectConversation, f
             onSelect={onSelectConversation}
             onArchive={(id) => archive.mutate(id)}
             onTogglePin={handleTogglePin}
-
+            hidePreview
             glyph={<DmStackAvatar c={c} onCall={dmOnCall(c)} />}
           />
         ))}
@@ -857,6 +944,7 @@ export function DockDirectory({ conversations, activeId, onSelectConversation, f
             collapsed={!!collapsed['channels']}
             unreadInSection={filtered.customChannels.reduce((s, c) => s + c.unreadCount, 0)}
             onToggle={() => toggleSection('channels')}
+            onBrowse={() => setBrowseKey('channels')}
             actions={
               <button
                 type="button"
@@ -900,6 +988,7 @@ export function DockDirectory({ conversations, activeId, onSelectConversation, f
               collapsed={!!collapsed['tickets']}
               unreadInSection={ticketUnread}
               onToggle={() => toggleSection('tickets')}
+              onBrowse={() => setBrowseKey('tickets')}
             />
             {!collapsed['tickets'] && filtered.tickets.map((c) => (
               <ConvRow
@@ -1022,7 +1111,7 @@ export function DockDirectory({ conversations, activeId, onSelectConversation, f
                   onClick={() => handleStartDm(p)}
                   aria-label={`Message ${p.name}`}
                 >
-                  <AtlaskitAvatar name={p.name} seed={p.id} className="cc-dir__avatar" presence={PRESENCE_TONE[p.presence]} />
+                  <AtlaskitAvatar name={p.name} seed={p.id} shape="square" className="cc-dir__avatar" presence={PRESENCE_TONE[p.presence]} />
                   <div className="cc-dir__body">
                     <div className="cc-dir__top">
                       <span className="cc-dir__name">{p.name}</span>

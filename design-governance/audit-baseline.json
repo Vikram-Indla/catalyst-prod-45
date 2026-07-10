@@ -1,9 +1,9 @@
 {
-  "tokens": 22469,
-  "typography": 1427,
+  "tokens": 22291,
+  "typography": 1405,
   "spacing": 0,
   "fontImports": 0,
-  "capturedOn": "2026-07-08",
+  "capturedOn": "2026-07-09",
   "audit": "design-governance/rules/audit.js src",
   "gate": "scripts/ads-audit-gate.cjs",
   "scanner": "design-governance/rules/audit.js",
