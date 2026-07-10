@@ -61,6 +61,20 @@ export interface IdeaDetailRow {
   created_at: string;
 }
 
+/** Client-supplied columns for a new idn_ideas row (Phase 2 S2 create form).
+ *  Everything else is trigger/default-owned: idea_key + slug (BEFORE INSERT
+ *  triggers — never send, the guard is soft), submitter_id (auth.uid()
+ *  default, pinned by RLS WITH CHECK), workflow_status_key ('draft' default —
+ *  submit is a second, audited update per D13), origin_channel ('form'). */
+export interface CreateIdeaInput {
+  title: string;
+  idea_class: IdeaClass;
+  /** ADF jsonb — omit when empty (zero-assumption: no fabricated empty docs). */
+  problem_statement?: unknown;
+  proposed_value?: unknown;
+  product_id?: string | null;
+}
+
 /** One idn_comments row, joined with the author's profile. */
 export interface IdeaCommentRow {
   id: string;

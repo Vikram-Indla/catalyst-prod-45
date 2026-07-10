@@ -14,7 +14,7 @@
  * (zero lucide per the Phase 1 Plan Lock).
  */
 
-import { Inbox, Search, ScatterChart, Settings } from '@/lib/atlaskit-icons';
+import { Inbox, Plus, Search, ScatterChart, Settings } from '@/lib/atlaskit-icons';
 import { Routes } from '@/lib/routes';
 import { SidebarBase, SidebarConfig } from './SidebarBase';
 
@@ -31,6 +31,9 @@ const IDEATION_CONFIG: SidebarConfig = {
     {
       title: '',
       items: [
+        // D14 (Phase 2 S2): create entry is a nav item — SidebarBase has no
+        // action-button slot, and query-string paths break active-state logic.
+        { id: 'idn-new',       title: 'New idea',  path: Routes.ideation.submit(),    icon: Plus,         exact: true },
         { id: 'idn-inbox',     title: 'Inbox',     path: Routes.ideation.inbox(),     icon: Inbox,        exact: true },
         { id: 'idn-explore',   title: 'Explore',   path: Routes.ideation.explore(),   icon: Search,       exact: true },
         { id: 'idn-portfolio', title: 'Portfolio', path: Routes.ideation.portfolio(), icon: ScatterChart, exact: true },

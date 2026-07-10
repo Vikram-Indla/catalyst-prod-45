@@ -123,3 +123,36 @@ Notes: G1 first attempt failed on `created_by NOT NULL` (definer context has nul
 | Dark mode | PASS — rail, lozenges, comment thread all hold contrast via ADS tokens (ss_3567vvd06) |
 
 **Not yet built this slice**: AI Copilot rail tab, vote/importance control, evidence panel, scoring display, watchers, linked-BR block, owner/sponsor editing, comment mentions — all explicitly deferred in the Plan Lock's non-scope.
+
+## Phase 2 Slice S2 — Create/Submit Idea form · localhost:8082 (isolated instance, worktree ideation-s2-create) · 2026-07-10
+
+**Plan Lock**: `03_PLAN_LOCK_PHASE2_S2_CREATE.md` (APPROVED — D13/D14/D15 as recommended). First WRITE path over `idn_ideas`: CreateIdeaModal (PortalFix chrome + shared CreateIdeaForm), `?create=idea` deep link on Inbox/Explore/Portfolio, SubmitPage full-page host, "New idea" sidebar nav item.
+
+**Gates**: `npx tsc --noEmit` ✅ 0 errors · `npm run lint:colors:gate` ✅ 0 = baseline 0 · touched files clean in full color scan.
+
+**Isolation**: implemented + validated in git worktree `ideation-s2-create` (branch `worktree-ideation-s2-create`, base origin/main `56d798c2a`) — origin checkout belongs to a parallel session. Dev instance: `VITE_ENABLE_IDEATION=true npm run dev -- --port 8082 --strictPort` from the worktree, killed after evidence; 8080/8081 untouched. Signed-in browser session reused (no credentials handled by the assistant).
+
+**DB probes (staging cyijbdeuehohvhnsywig, Supabase MCP)**:
+| Probe | Outcome |
+|---|---|
+| Baseline pre-test | 6 idn_ideas (2 submitted / 2 screening / 2 evaluation), 0 drafts |
+| UI Submit → IDEA-12 | PASS — key+slug trigger-generated (`let-submitters-attach-a-voice-note-to-an-idea`), status `submitted`, class `improvement`, origin_channel `form`, submitter_id set, 1 watcher row (reason `submitter`), audit_actions `[created, status_changed]` — D13 contract exact |
+| UI Save draft → IDEA-13 | PASS — status `draft`, audit `[created]` only (no transition row), watcher present |
+| Draft exclusion | PASS — Inbox header stayed "3 Submitted" with IDEA-13 existing; draft never rendered in queue |
+
+**Screenshots (Chrome MCP)**:
+| Surface | Outcome |
+|---|---|
+| ?create=idea deep link | PASS — modal opens, `create` param stripped via replace (URL clean) (ss_7095iit58 dark, ss_0160l5hwq light) |
+| Inline validation | PASS — empty submit blocks insert; "Give the idea a title" / "Describe the problem or opportunity" / "Pick a class" ErrorMessages (ss_87944wh29) |
+| Filled form | PASS — title-first + ADF editor + class select (ss_7251ucsa1, ss_0582ayoe7 open select) |
+| Submit → Detail | PASS — spinner (ss_4374w35q0) → navigated to slug URL, IDEA-12 SUBMITTED/IMPROVEMENT rendered (ss_8064fvtmp) |
+| Inbox refresh | PASS — IDEA-12 top row, counts "3 Submitted" (ss_1829rt7fp background) |
+| Create another (D15) | PASS — modal stays open, form fully reset, inline "IDEA-13 saved as draft" note (ss_5062s38bc) |
+| SubmitPage full page | PASS — dark ss_6753gk9zl, light ss_7966icd1r; "New idea" sidebar item active (D14) |
+
+**Recorded deviations (component-tier equivalent, not drift)**: (1) `@atlaskit/toggle` not installed → `@atlaskit/checkbox` "Create another" (Jira-parity); (2) success flag is a platform-wide no-op (suppressed 2026-06-16) → exemplar pattern: call kept + navigation/inline-note as confirmation.
+
+**Demo rows**: IDEA-12 (submitted) + IDEA-13 (draft) left on staging as realistic content for later slices (draft handling, Explore).
+
+**Not built this slice** (non-scope): voice capture, attachments/evidence, AI enrichment (static note only), ContextSwitcher entry, strategy/language pickers.

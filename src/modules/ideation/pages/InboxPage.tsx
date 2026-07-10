@@ -18,6 +18,8 @@ import { Routes } from '@/lib/routes';
 import { JiraTable, makeKeyCell, type Column } from '@/components/shared/JiraTable';
 import { StatusLozenge, humanizeStatus } from '@/components/shared/StatusLozenge/StatusLozenge';
 import { useIdeationInbox, useIdeationInboxCounts, adfToPlainText } from '@/hooks/useIdeationInbox';
+import { CreateIdeaModal } from '@/modules/ideation/components/CreateIdeaModal';
+import { useCreateIdeaParam } from '@/modules/ideation/hooks/useCreateIdeaParam';
 import type { IdeaRow } from '@/modules/ideation/types';
 
 const CLASS_LABEL: Record<IdeaRow['idea_class'], string> = {
@@ -46,6 +48,7 @@ export default function InboxPage() {
   const { data: rows, isLoading, isError } = useIdeationInbox();
   const counts = useIdeationInboxCounts(rows);
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const createModal = useCreateIdeaParam(); // ?create=idea deep link (D6)
 
   const selected = useMemo(
     () => rows?.find((r) => r.id === selectedId) ?? rows?.[0] ?? null,
@@ -122,6 +125,7 @@ export default function InboxPage() {
           }
           testId="ideation-inbox-empty"
         />
+        <CreateIdeaModal isOpen={createModal.isOpen} onClose={createModal.close} />
       </div>
     );
   }
@@ -211,6 +215,8 @@ export default function InboxPage() {
           )}
         </aside>
       </div>
+
+      <CreateIdeaModal isOpen={createModal.isOpen} onClose={createModal.close} />
     </div>
   );
 }
