@@ -15,22 +15,22 @@ export const catalystTokens = {
   status: {
     success: {
       base: 'var(--ds-chart-teal-bold)',
-      bg: 'var(--ds-background-success, rgba(13, 148, 136, 0.1))',
+      bg: 'var(--ds-background-success)',
       text: 'var(--ds-text-success)',
     },
     warning: {
       base: 'var(--ds-text-warning)',
-      bg: 'var(--ds-background-warning-bold, rgba(245, 158, 11, 0.1))',
+      bg: 'var(--ds-background-warning-bold)',
       text: 'var(--ds-background-warning-bold)',
     },
     danger: {
       base: 'var(--ds-text-danger)',
-      bg: 'var(--ds-background-danger, rgba(239, 68, 68, 0.1))',
+      bg: 'var(--ds-background-danger)',
       text: 'var(--ds-text-danger)',
     },
     info: {
       base: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))',
-      bg: 'var(--ds-background-information, rgba(37, 99, 235, 0.1))',
+      bg: 'var(--ds-background-information)',
       text: 'var(--ds-background-brand-bold-hovered)',
     },
   },
@@ -39,15 +39,15 @@ export const catalystTokens = {
   secondary: {
     blue: {
       base: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))',
-      bg: 'var(--ds-background-information, rgba(37, 99, 235, 0.15))',
+      bg: 'var(--ds-background-information)',
     },
     teal: {
       base: 'var(--ds-chart-teal-bold)',
-      bg: 'var(--ds-background-success, rgba(13, 148, 136, 0.15))',
+      bg: 'var(--ds-background-success)',
     },
     olive: {
       base: 'var(--ds-chart-teal-bold)',
-      bg: 'var(--ds-background-success, rgba(13, 148, 136, 0.15))',
+      bg: 'var(--ds-background-success)',
     },
     bronze: {
       base: 'var(--ds-text-subtlest)',
@@ -55,7 +55,7 @@ export const catalystTokens = {
     },
     champagne: {
       base: 'var(--ds-text-disabled)',
-      bg: 'var(--ds-text-disabled, rgba(156, 163, 175, 0.2))',
+      bg: 'var(--ds-text-disabled)',
     },
     grey: {
       base: 'var(--ds-border)',
@@ -74,7 +74,7 @@ export const catalystTokens = {
       bg: 'var(--ds-surface-sunken)',
       card: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
       hover: 'var(--ds-background-neutral)',
-      active: 'var(--ds-background-information, rgba(37, 99, 235, 0.12))',
+      active: 'var(--ds-background-information)',
     },
     border: {
       default: 'var(--ds-border)',
@@ -94,12 +94,12 @@ export const catalystTokens = {
       bg: 'var(--ds-surface)',
       card: 'var(--ds-surface-raised, var(--cp-ink-1))',
       hover: 'var(--ds-surface-raised, var(--cp-ink-1))',
-      active: 'var(--ds-background-information-bold, rgba(59, 130, 246, 0.2))',
+      active: 'var(--ds-background-information-bold)',
     },
     border: {
-      default: 'var(--ds-surface, rgba(255, 255, 255, 0.08))',
-      subtle: 'var(--ds-surface, rgba(255, 255, 255, 0.05))',
-      strong: 'var(--ds-surface, rgba(255, 255, 255, 0.12))',
+      default: 'var(--ds-surface)',
+      subtle: 'var(--ds-surface)',
+      strong: 'var(--ds-surface)',
     },
   },
 } as const;
@@ -120,8 +120,8 @@ export function getProductColor(productCode: string | null): string {
 
 // Timeline grid colors — DARK MODE
 export const TIMELINE_COLORS = {
-  gridLine: 'var(--ds-surface, rgba(255, 255, 255, 0.05))',
-  gridLineDark: 'var(--ds-surface, rgba(255, 255, 255, 0.05))',
+  gridLine: 'var(--ds-surface)',
+  gridLineDark: 'var(--ds-surface)',
   todayLine: 'var(--ds-text-danger)',      // Danger red
   milestoneMarker: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', // Primary blue
   barDefault: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))',      // Primary blue

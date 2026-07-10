@@ -33,7 +33,7 @@ export function PresentationModal({ ideas, onClose }: Props) {
       {/* Top bar */}
       <div style={{
         height: 48, display: 'flex', alignItems: 'center', padding: '0 24px', gap: 12,
-        background: 'var(--ds-shadow-overlay, rgba(15,23,42,0.95))', borderBottom: '1px solid var(--ds-text, var(--ds-text))',
+        background: 'var(--ds-shadow-overlay)', borderBottom: '1px solid var(--ds-text, var(--ds-text))',
         flexShrink: 0,
       }}>
         <div style={{
@@ -70,7 +70,7 @@ export function PresentationModal({ ideas, onClose }: Props) {
       {/* Navigation */}
       <div style={{
         height: 48, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 16, flexShrink: 0,
-        background: 'var(--ds-shadow-overlay, rgba(15,23,42,0.95))', borderTop: '1px solid var(--ds-text, var(--ds-text))',
+        background: 'var(--ds-shadow-overlay)', borderTop: '1px solid var(--ds-text, var(--ds-text))',
       }}>
         <button onClick={() => setSlide(s => Math.max(0, s - 1))} disabled={slide === 0}
           style={{
@@ -82,7 +82,7 @@ export function PresentationModal({ ideas, onClose }: Props) {
           {Array.from({ length: TOTAL_SLIDES }, (_, i) => (
             <div key={i} onClick={() => setSlide(i)} style={{
               width: 6, height: 6, borderRadius: '50%', cursor: 'pointer',
-              background: i === slide ? 'var(--sem-success)' : 'var(--ds-surface, rgba(255,255,255,0.2))',
+              background: i === slide ? 'var(--sem-success)' : 'var(--ds-surface)',
               transform: i === slide ? 'scale(1.4)' : 'scale(1)',
               transition: 'all 200ms',
             }} />

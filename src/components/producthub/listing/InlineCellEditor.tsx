@@ -36,7 +36,7 @@ function generateQuarters(): string[] {
 const editorStyles: React.CSSProperties = {
   border: '1.5px solid var(--ds-link)',
   borderRadius: 4,
-  boxShadow: '0 0 0 3px var(--ds-background-information, rgba(37,99,235,0.15))',
+  boxShadow: '0 0 0 3px var(--ds-background-information)',
   outline: 'none',
   fontFamily: 'var(--cp-font-body)',
   fontSize: 'var(--ds-font-size-300)',

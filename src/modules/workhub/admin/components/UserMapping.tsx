@@ -241,7 +241,7 @@ export function UserMapping() {
             key={s.label}
             onClick={s.mode ? () => setViewMode(s.mode!) : undefined}
             style={{
-              background: viewMode === s.mode ? 'var(--ds-background-information, rgba(37,99,235,0.04))' : cardBg,
+              background: viewMode === s.mode ? 'var(--ds-background-information)' : cardBg,
               border: `1px solid ${viewMode === s.mode ? 'var(--ds-background-information-bold)' : borderColor}`,
               borderRadius: 8, padding: '8px 16px', flex: 1,
               display: 'flex', alignItems: 'center', gap: 8,
@@ -388,7 +388,7 @@ export function UserMapping() {
       {/* Main mapping table */}
       <div style={{
         background: cardBg, border: `1px solid ${borderColor}`, borderRadius: 8,
-        boxShadow: '0 1px 3px var(--ds-shadow-raised, rgba(0,0,0,.04))',
+        boxShadow: '0 1px 3px var(--ds-shadow-raised)',
       }}>
         <div style={{ maxHeight: 600, overflowY: 'auto' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 'var(--ds-font-size-200)' }}>
@@ -439,9 +439,9 @@ export function UserMapping() {
                       {profile.department_name ? (
                         <span style={{
                           fontSize: 'var(--ds-font-size-50)', fontWeight: 600, padding: '0px 8px', borderRadius: 4,
-                          background: profile.department_name === 'Delivery' ? 'var(--ds-background-information, rgba(37,99,235,0.08))' :
-                            profile.department_name === 'Product' ? 'var(--ds-background-discovery-bold, rgba(139,92,246,0.08))' :
-                              'var(--ds-background-neutral, rgba(148,163,184,0.08))',
+                          background: profile.department_name === 'Delivery' ? 'var(--ds-background-information)' :
+                            profile.department_name === 'Product' ? 'var(--ds-background-discovery-bold)' :
+                              'var(--ds-background-neutral)',
                           color: profile.department_name === 'Delivery' ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' :
                             profile.department_name === 'Product' ? 'var(--ds-background-discovery-bold)' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))',
                         }}>
@@ -498,7 +498,7 @@ export function UserMapping() {
                       {suggestedJira && !isMapped ? (
                         <div style={{
                           display: 'flex', alignItems: 'center', gap: 8,
-                          background: suggestedJira.score >= 0.7 ? 'var(--ds-background-information, rgba(37,99,235,0.06))' : 'var(--ds-background-warning-bold, rgba(251,191,36,0.06))',
+                          background: suggestedJira.score >= 0.7 ? 'var(--ds-background-information)' : 'var(--ds-background-warning-bold)',
                           padding: '4px 10px', borderRadius: 6,
                           border: `1px solid ${suggestedJira.score >= 0.7 ? 'var(--ds-background-information-bold)' : 'var(--ds-background-warning)'}`,
                         }}>

@@ -280,14 +280,14 @@ export default function ReqAssistGenerate() {
             onChange={(e) => { setText(e.target.value); setQualifyResult(null); setGenResult(null); setGenError(null); setSavedDocId(null); setHasEpics(false); setDuplicateDoc(null); setWikiState('idle'); setShowSavedBanner(false); }}
             placeholder="Paste your requirements here..."
             style={{ width: '100%', minHeight: 200, padding: 12, fontSize: 'var(--ds-font-size-400)', lineHeight: 1.65, border: `0.75px solid ${'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, var(--ds-border))))'}`, borderRadius: 4, outline: 'none', resize: 'vertical', fontFamily: 'var(--cp-font-body)', color: 'var(--cp-text-primary, var(--ds-text))', transition: 'border-color 150ms, box-shadow 150ms' }}
-            onFocus={(e) => { e.currentTarget.style.borderColor = 'var(--cp-purple-60, var(--ds-background-discovery-bold))'; e.currentTarget.style.boxShadow = '0 0 0 2px var(--ds-background-discovery-bold, rgba(124,58,237,0.10))'; }}
+            onFocus={(e) => { e.currentTarget.style.borderColor = 'var(--cp-purple-60, var(--ds-background-discovery-bold))'; e.currentTarget.style.boxShadow = '0 0 0 2px var(--ds-background-discovery-bold)'; }}
             onBlur={(e) => { e.currentTarget.style.borderColor = 'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, var(--ds-border))))'; e.currentTarget.style.boxShadow = 'none'; }}
           />
           <p style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--cp-text-tertiary, var(--ds-text-subtlest))', margin: '4px 0 0', fontFamily: 'var(--cp-font-body)' }}>The AI will first qualify whether this text contains enough structured requirements.</p>
 
           {/* Qualify fail */}
           {qualifyResult && !qualifyResult.qualified && (
-            <div style={{ marginTop: 12, padding: '12px 16px', background: 'var(--ds-background-danger)', border: '0.75px solid var(--ds-background-danger-bold, rgba(220,38,38,0.12))', borderRadius: 6, display: 'flex', gap: 8 }}>
+            <div style={{ marginTop: 12, padding: '12px 16px', background: 'var(--ds-background-danger)', border: '0.75px solid var(--ds-background-danger-bold)', borderRadius: 6, display: 'flex', gap: 8 }}>
               <div style={{ width: 20, height: 20, borderRadius: '50%', background: 'var(--ds-background-danger)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}><X size={12} color="var(--ds-text-danger, var(--cp-danger))" /></div>
               <div>
                 <div style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--ds-text-danger, var(--cp-danger))', fontFamily: 'var(--cp-font-body)' }}>✗ Not Qualified</div>
@@ -312,7 +312,7 @@ export default function ReqAssistGenerate() {
 
           {/* Error */}
           {genError && (
-            <div style={{ marginTop: 12, padding: '12px 16px', background: 'var(--ds-background-danger)', border: '0.75px solid var(--ds-background-danger-bold, rgba(220,38,38,0.12))', borderRadius: 6 }}>
+            <div style={{ marginTop: 12, padding: '12px 16px', background: 'var(--ds-background-danger)', border: '0.75px solid var(--ds-background-danger-bold)', borderRadius: 6 }}>
               <div style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--ds-text-danger, var(--cp-danger))', fontFamily: 'var(--cp-font-body)' }}>Generation Error</div>
               <p style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-danger)', margin: '4px 0 0', fontFamily: 'var(--cp-font-body)' }}>{sanitiseError(genError)}</p>
             </div>
@@ -360,7 +360,7 @@ export default function ReqAssistGenerate() {
                 <div key={i} style={{
                   marginBottom: i < genResult.sections.length - 1 ? 20 : 0,
                   paddingBottom: i < genResult.sections.length - 1 ? 20 : 0,
-                  borderBottom: i < genResult.sections.length - 1 ? '0.75px solid var(--ds-shadow-raised, rgba(0,0,0,0.06))' : 'none',
+                  borderBottom: i < genResult.sections.length - 1 ? '0.75px solid var(--ds-shadow-raised)' : 'none',
                 }}>
                   <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: 'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, var(--ds-text-disabled))))', textTransform: 'uppercase' as const, letterSpacing: '0.06em', fontFamily: 'var(--cp-font-body)' }}>SECTION {section.sectionNumber}</span>
                   <h4 style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 650, color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, var(--ds-text))))', margin: '4px 0 8px', fontFamily: 'var(--cp-font-heading)' }}>{section.title}</h4>
@@ -644,7 +644,7 @@ function BtnDanger({ children, ...props }: React.ButtonHTMLAttributes<HTMLButton
 
 function ModalOverlay({ children }: { children: React.ReactNode }) {
   return (
-    <div style={{ position: 'fixed', inset: 0, zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--ds-shadow-raised, rgba(0,0,0,0.4))' }}>
+    <div style={{ position: 'fixed', inset: 0, zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--ds-shadow-raised)' }}>
       {children}
     </div>
   );

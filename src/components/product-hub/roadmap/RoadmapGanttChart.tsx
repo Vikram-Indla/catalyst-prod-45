@@ -116,7 +116,7 @@ export function RoadmapGanttChart({ groups, timelineStart, timelineEnd, zoom, zo
   const hoverRowBg = 'var(--cp-bg-page)';
   const selectedRowBg = 'var(--cp-interact-selected, rgba(37,99,235,0.06))';
   const currentPeriodBg = 'var(--cp-interact-selected, rgba(37,99,235,0.04))';
-  const currentPeriodGridBg = isDark ? 'var(--ds-background-information-bold, rgba(59,130,246,0.04))' : 'var(--ds-background-information, rgba(37,99,235,0.03))';
+  const currentPeriodGridBg = isDark ? 'var(--ds-background-information-bold)' : 'var(--ds-background-information)';
 
   return (
     <div className="flex-1 flex flex-col min-w-0 overflow-hidden roadmap-scroll" style={{ background: surface.card }}>
@@ -192,7 +192,7 @@ export function RoadmapGanttChart({ groups, timelineStart, timelineEnd, zoom, zo
                 </div>
                 <div style={{
                   width: 2, height: '100%', margin: '0 auto', marginTop: 16,
-                  background: 'linear-gradient(180deg, var(--ds-text-danger) 0%, var(--ds-background-danger, rgba(239,68,68,0.15)) 100%)',
+                  background: 'linear-gradient(180deg, var(--ds-text-danger) 0%, var(--ds-background-danger) 100%)',
                 }} />
               </div>
             )}

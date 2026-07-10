@@ -550,7 +550,7 @@ export function StandupModal({ issues, avatarsByName, tk, onClose, onPersonChang
             borderRadius: 4, cursor: 'pointer', padding: 0,
             color: tk.textSecondary,
           }}
-          onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))'; }}
+          onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-background-neutral-subtle-hovered)'; }}
           onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
         >
           <IcShuffle size={16} color="var(--ds-text-subtle)" />
@@ -718,7 +718,7 @@ export function StandupModal({ issues, avatarsByName, tk, onClose, onPersonChang
             color: tk.textSecondary,
             fontFamily: 'var(--cp-font-body)',
           }}
-          onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))'; }}
+          onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-background-neutral-subtle-hovered)'; }}
           onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
         >
           <FeedbackIcon label="" size="small" primaryColor="var(--ds-text-subtle)" />
@@ -855,7 +855,7 @@ function panelWrapStyle(tk: KanbanThemeTokens, docked?: boolean): React.CSSPrope
     width: 280,
     background: tk.surfaceBg,
     borderRight: `1px solid ${tk.border}`,
-    boxShadow: '4px 0 16px var(--ds-shadow-raised, rgba(9,30,66,0.18))',
+    boxShadow: '4px 0 16px var(--ds-shadow-raised)',
     display: 'flex', flexDirection: 'column',
     zIndex: 300,
     fontFamily: 'var(--cp-font-body)',
@@ -908,7 +908,7 @@ function SettingsTrigger({
       onMouseEnter={(e) => {
         (e.currentTarget as HTMLButtonElement).style.background = active
           ? 'var(--ds-background-information-hovered)'
-          : 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))';
+          : 'var(--ds-background-neutral-subtle-hovered)';
       }}
       onMouseLeave={(e) => {
         (e.currentTarget as HTMLButtonElement).style.background = active
@@ -975,7 +975,7 @@ function SettingsDropdown({
         borderRadius: 6,
         padding: '8px 0',
         zIndex: 10000,
-        boxShadow: '0 8px 24px var(--ds-shadow-raised, rgba(9,30,66,0.16))',
+        boxShadow: '0 8px 24px var(--ds-shadow-raised)',
         fontFamily: 'var(--cp-font-body)',
       }}
       onMouseDown={(e) => e.stopPropagation()}
@@ -1046,7 +1046,7 @@ function SettingsDropdown({
                 onMouseEnter={(e) => {
                   (e.currentTarget as HTMLButtonElement).style.background = selected
                     ? 'var(--ds-background-information-hovered)'
-                    : 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))';
+                    : 'var(--ds-background-neutral-subtle-hovered)';
                 }}
                 onMouseLeave={(e) => {
                   (e.currentTarget as HTMLButtonElement).style.background = selected
@@ -1221,7 +1221,7 @@ function NavStepBtn({
       }}
       onMouseEnter={(e) => {
         if (disabled) return;
-        (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))';
+        (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-background-neutral-subtle-hovered)';
       }}
       onMouseLeave={(e) => {
         (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-surface)';
@@ -1254,7 +1254,7 @@ function CircleCtrlBtn({
         cursor: 'pointer', padding: 0,
         color: glyphColor,
       }}
-      onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))'; }}
+      onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-background-neutral-subtle-hovered)'; }}
       onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-surface)'; }}
     >
       {kind === 'play' && <VidPlayIcon label="" size="small" primaryColor={glyphColor} />}
@@ -1281,7 +1281,7 @@ function BuzzerBtn({
         borderRadius: 4, cursor: 'pointer', padding: 0,
         color: tk.textSecondary,
       }}
-      onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))'; }}
+      onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-background-neutral-subtle-hovered)'; }}
       onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
     >
       <IcSpeaker size={20} color="var(--ds-text-subtle)" muted={muted} />

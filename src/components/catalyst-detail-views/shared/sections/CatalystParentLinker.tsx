@@ -67,7 +67,7 @@ function SidebarAddTrigger({
       }}
       onMouseEnter={(e) => {
         e.currentTarget.style.background =
-          "var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))";
+          "var(--ds-background-neutral-subtle-hovered)";
       }}
       onMouseLeave={(e) => {
         e.currentTarget.style.background = "none";
@@ -504,7 +504,7 @@ function BusinessRequestParentPicker({
               border:
                 "1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border)))",
               borderRadius: 6,
-              boxShadow: "0 8px 16px var(--ds-shadow-raised, rgba(9,30,66,0.15))",
+              boxShadow: "0 8px 16px var(--ds-shadow-raised)",
               zIndex: 1000,
               maxHeight: 400,
               display: "flex",
@@ -961,7 +961,7 @@ function SingleParentPicker({
               border:
                 "1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border)))",
               borderRadius: 6,
-              boxShadow: "0 8px 16px var(--ds-shadow-raised, rgba(9,30,66,0.15))",
+              boxShadow: "0 8px 16px var(--ds-shadow-raised)",
               zIndex: 1000,
               maxHeight: 400,
               display: "flex",
@@ -1239,7 +1239,7 @@ function MultiLinkPicker({
                 border:
                   "1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border)))",
                 borderRadius: 6,
-                boxShadow: "0 8px 16px var(--ds-shadow-raised, rgba(9,30,66,0.15))",
+                boxShadow: "0 8px 16px var(--ds-shadow-raised)",
                 zIndex: 1000,
                 maxHeight: 400,
                 display: "flex",

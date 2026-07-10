@@ -301,11 +301,11 @@ export function WorkItemTableRow({
 
   return (
     <tr
-      className={`group cursor-pointer ${isConflict ? 'bg-[var(--ds-background-danger-bold, rgba(220,38,38,0.03))]' : isSelected ? 'bg-[var(--ds-background-information, rgba(37,99,235,0.08))]' : isHighlighted ? 'bg-[var(--ds-shadow-overlay, rgba(15,23,42,0.04))]' : ''}`}
+      className={`group cursor-pointer ${isConflict ? 'bg-[var(--ds-background-danger-bold)]' : isSelected ? 'bg-[var(--ds-background-information)]' : isHighlighted ? 'bg-[var(--ds-shadow-overlay)]' : ''}`}
       style={{
         height: 50,
         maxHeight: 50,
-        borderBottom: '0.75px solid var(--ds-shadow-overlay, rgba(15,23,42,0.07))',
+        borderBottom: '0.75px solid var(--ds-shadow-overlay)',
         transition: 'background 80ms ease',
       }}
       onClick={onClick}

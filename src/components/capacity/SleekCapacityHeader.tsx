@@ -429,8 +429,8 @@ function UtilizationBadge({ value }: { value: number }) {
   
   return (
     <div className="flex items-center gap-2.5 px-3.5 py-2 rounded-lg border" style={{
-      background: 'var(--ds-background-information, rgba(37, 99, 235, 0.12))',
-      borderColor: 'var(--ds-background-information, rgba(37, 99, 235, 0.3))',
+      background: 'var(--ds-background-information)',
+      borderColor: 'var(--ds-background-information)',
     }}>
       <div className="flex flex-col items-end">
         <span className="text-xl font-extrabold tabular-nums leading-none" style={{ color: 'var(--ds-link-pressed)' }}>
@@ -440,7 +440,7 @@ function UtilizationBadge({ value }: { value: number }) {
           Utilization
         </span>
       </div>
-      <div className="w-1 h-7 rounded-sm overflow-hidden" style={{ background: 'var(--ds-background-information, rgba(37,99,235,0.25))' }}>
+      <div className="w-1 h-7 rounded-sm overflow-hidden" style={{ background: 'var(--ds-background-information)' }}>
         <div 
           className={cn("w-full rounded-sm transition-all duration-500", bgColor)}
           style={{ height: `${Math.min(value, 100)}%`, marginTop: `${100 - Math.min(value, 100)}%` }}

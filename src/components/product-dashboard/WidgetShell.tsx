@@ -71,7 +71,7 @@ export function WidgetShell({
       style={{
         background: token('elevation.surface', 'var(--ds-surface)'),
         borderRadius: 8,
-        boxShadow: '0 1px 1px var(--ds-shadow-raised, rgba(9,30,66,0.25)), 0 0 1px var(--ds-shadow-raised, rgba(9,30,66,0.31))',
+        boxShadow: '0 1px 1px var(--ds-shadow-raised), 0 0 1px var(--ds-shadow-raised)',
         overflow: 'hidden',
         display: 'flex',
         flexDirection: 'column',

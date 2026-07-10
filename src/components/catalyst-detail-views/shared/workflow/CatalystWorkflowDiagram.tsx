@@ -249,7 +249,7 @@ export function CatalystWorkflowDiagram({
               {/* Connect-target hint — faint highlight on non-source nodes */}
               {isConnectTarget && (
                 <rect x={node.pos.x - 2} y={node.pos.y - 2} width={NODE_W + 4} height={NODE_H + 4}
-                  rx={6} fill="var(--ds-link, rgba(12,102,228,0.08))" stroke="none" />
+                  rx={6} fill="var(--ds-link)" stroke="none" />
               )}
               <rect
                 x={node.pos.x} y={node.pos.y} width={NODE_W} height={NODE_H} rx={4}

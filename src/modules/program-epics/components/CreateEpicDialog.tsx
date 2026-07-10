@@ -139,7 +139,7 @@ const CatalystInput = React.forwardRef<
       backgroundColor: 'var(--dialog-input-bg)',
       border: '1px solid var(--dialog-input-border)',
       color: 'var(--dialog-title-color)',
-      boxShadow: 'inset 0 1px 2px var(--ds-shadow-raised, rgba(0, 0, 0, 0.1))'
+      boxShadow: 'inset 0 1px 2px var(--ds-shadow-raised)'
     }}
     {...props}
   />
@@ -497,7 +497,7 @@ export function CreateEpicDialog({
                     style={{ 
                       backgroundColor: 'var(--dialog-section-bg)',
                       border: '1px solid var(--dialog-input-border)',
-                      boxShadow: '0 10px 40px -10px var(--ds-shadow-raised, rgba(0, 0, 0, 0.5))'
+                      boxShadow: '0 10px 40px -10px var(--ds-shadow-raised)'
                     }}
                   >
                     <Command>
@@ -509,14 +509,14 @@ export function CreateEpicDialog({
                             const isActive = theme.status === 'active';
                             const statusStyle = isActive 
                               ? {
-                                  backgroundColor: 'var(--ds-background-success, rgba(13, 148, 136, 0.1))',
+                                  backgroundColor: 'var(--ds-background-success)',
                                   color: 'var(--ds-chart-teal-bold)',
-                                  border: '1px solid var(--ds-background-success, rgba(13, 148, 136, 0.3))'
+                                  border: '1px solid var(--ds-background-success)'
                                 }
                               : {
-                                  backgroundColor: 'var(--ds-background-warning-bold, rgba(245, 158, 11, 0.1))',
+                                  backgroundColor: 'var(--ds-background-warning-bold)',
                                   color: 'var(--ds-background-warning-bold)',
-                                  border: '1px solid var(--ds-background-warning-bold, rgba(245, 158, 11, 0.25))'
+                                  border: '1px solid var(--ds-background-warning-bold)'
                                 };
                             
                             return (
@@ -529,7 +529,7 @@ export function CreateEpicDialog({
                                 }}
                                 className={cn(
                                   "cursor-pointer transition-colors py-3 px-4",
-                                  themeId === theme.id && "!bg-[var(--ds-background-information, rgba(37,99,235,0.08))]"
+                                  themeId === theme.id && "!bg-[var(--ds-background-information)]"
                                 )}
                                 style={{
                                   borderLeft: themeId === theme.id ? '3px solid var(--ds-link)' : '3px solid transparent'
@@ -593,7 +593,7 @@ export function CreateEpicDialog({
                     style={{ 
                       backgroundColor: 'var(--dialog-section-bg)',
                       border: '1px solid var(--dialog-input-border)',
-                      boxShadow: '0 10px 40px -10px var(--ds-shadow-raised, rgba(0, 0, 0, 0.5))'
+                      boxShadow: '0 10px 40px -10px var(--ds-shadow-raised)'
                     }}
                   >
                     <Command>
@@ -626,7 +626,7 @@ export function CreateEpicDialog({
                               }}
                               className={cn(
                                 "cursor-pointer transition-colors py-3 px-4",
-                                linkedBusinessRequestId === br.id && "!bg-[var(--ds-background-information, rgba(37,99,235,0.08))]"
+                                linkedBusinessRequestId === br.id && "!bg-[var(--ds-background-information)]"
                               )}
                               style={{
                                 borderLeft: linkedBusinessRequestId === br.id ? '3px solid var(--ds-link)' : '3px solid transparent'
@@ -660,9 +660,9 @@ export function CreateEpicDialog({
                                   <span
                                     className="px-2 py-0.5 rounded text-[10px] font-medium"
                                     style={{
-                                      backgroundColor: 'var(--ds-background-information, rgba(37, 99, 235, 0.1))',
+                                      backgroundColor: 'var(--ds-background-information)',
                                       color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))',
-                                      border: '1px solid var(--ds-background-information, rgba(37, 99, 235, 0.25))'
+                                      border: '1px solid var(--ds-background-information)'
                                     }}
                                   >
                                     Score: {br.business_score}
@@ -734,7 +734,7 @@ export function CreateEpicDialog({
                         sf.status === 'error' && 'border-destructive'
                       )}
                       style={{
-                        backgroundColor: sf.status === 'error' ? 'var(--ds-background-danger, rgba(239, 68, 68, 0.1))' : 'var(--dialog-input-bg)',
+                        backgroundColor: sf.status === 'error' ? 'var(--ds-background-danger)' : 'var(--dialog-input-bg)',
                         border: `1px solid ${sf.status === 'error' ? 'var(--status-danger)' : 'var(--dialog-section-border)'}`
                       }}
                     >

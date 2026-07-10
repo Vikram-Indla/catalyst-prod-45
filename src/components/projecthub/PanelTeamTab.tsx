@@ -223,7 +223,7 @@ export function PanelTeamTab({ members, isLoading, projectId }: Props) {
             <div key={g.category} className="mt-4">
               <div className="flex items-center gap-2 mb-3">
                 <span className="text-[var(--ds-text-subtlest,var(--cp-ink-3, var(--cp-text-secondary)))] dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary))]" style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em' }}>{g.category}</span>
-                <span className="rounded-full bg-[var(--ds-background-selected)] dark:bg-[var(--ds-background-information-bold, rgba(59,130,246,0.15))] text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))] dark:text-[var(--ds-text-brand)]" style={{ padding: '0px 7px', fontSize: 'var(--ds-font-size-50)', fontWeight: 700 }}>{g.members.length}</span>
+                <span className="rounded-full bg-[var(--ds-background-selected)] dark:bg-[var(--ds-background-information-bold)] text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))] dark:text-[var(--ds-text-brand)]" style={{ padding: '0px 7px', fontSize: 'var(--ds-font-size-50)', fontWeight: 700 }}>{g.members.length}</span>
                 <div className="flex-1 bg-[var(--ds-border,var(--cp-border, var(--cp-bg-sunken)))] dark:bg-[var(--ds-border,var(--cp-ink-1))]" style={{ height: 1 }} />
               </div>
 
@@ -250,7 +250,7 @@ export function PanelTeamTab({ members, isLoading, projectId }: Props) {
 
                     <button
                       onClick={e => { e.stopPropagation(); removeMember.mutate(m.user_id); }}
-                      className="opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center rounded-md flex-shrink-0 bg-[var(--ds-background-danger)] dark:bg-[var(--ds-background-danger-bold, rgba(220,38,38,0.10))] border border-[var(--ds-background-danger, var(--ds-background-danger))] dark:border-[var(--ds-background-danger-bold, rgba(220,38,38,0.20))]"
+                      className="opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center rounded-md flex-shrink-0 bg-[var(--ds-background-danger)] dark:bg-[var(--ds-background-danger-bold)] border border-[var(--ds-background-danger, var(--ds-background-danger))] dark:border-[var(--ds-background-danger-bold)]"
                       style={{ width: 28, height: 28, cursor: 'pointer' }}
                       title="Remove member"
                     >

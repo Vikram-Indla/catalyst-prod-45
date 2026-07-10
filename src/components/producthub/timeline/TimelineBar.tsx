@@ -34,8 +34,8 @@ export const TimelineBar: React.FC<TimelineBarProps> = ({ request, rowIndex }) =
   const topOffset = (rowHeight - barHeight) / 2;
 
   // Use type color for bar, override with red for overdue
-  const bgGradient = overdue ? 'linear-gradient(90deg, var(--ds-background-danger, rgba(239,68,68,0.15)), var(--ds-background-danger, rgba(239,68,68,0.08)))' : typeColor.gradient;
-  const fillColor = overdue ? 'var(--ds-background-danger, rgba(239,68,68,0.25))' : `${typeColor.hex}33`;
+  const bgGradient = overdue ? 'linear-gradient(90deg, var(--ds-background-danger), var(--ds-background-danger))' : typeColor.gradient;
+  const fillColor = overdue ? 'var(--ds-background-danger)' : `${typeColor.hex}33`;
   const borderColor = overdue ? 'var(--ds-text-danger)' : typeColor.border;
 
   const handleMouseEnter = useCallback((e: React.MouseEvent) => {
@@ -83,7 +83,7 @@ export const TimelineBar: React.FC<TimelineBarProps> = ({ request, rowIndex }) =
     display: 'flex',
     alignItems: 'center',
     isolation: 'isolate',
-    boxShadow: isHovered ? '0 4px 12px var(--ds-shadow-raised, rgba(0,0,0,0.12))' : 'none',
+    boxShadow: isHovered ? '0 4px 12px var(--ds-shadow-raised)' : 'none',
     transition: 'box-shadow 0.15s',
   };
 
@@ -130,7 +130,7 @@ export const TimelineBar: React.FC<TimelineBarProps> = ({ request, rowIndex }) =
               textOverflow: 'ellipsis',
               lineHeight: `${barHeight}px`,
               pointerEvents: 'none',
-              textShadow: '0 1px 2px var(--ds-shadow-raised, rgba(0,0,0,0.3))',
+              textShadow: '0 1px 2px var(--ds-shadow-raised)',
             }}
           >
             {request.title}

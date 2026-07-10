@@ -87,7 +87,7 @@ function PortalMenu({ isOpen, onClose, triggerRef, children }: PortalMenuProps) 
         background: T.surface,
         border: `1px solid ${T.border}`,
         borderRadius: 4,
-        boxShadow: '0 8px 24px var(--ds-shadow-raised, rgba(9,30,66,0.2))',
+        boxShadow: '0 8px 24px var(--ds-shadow-raised)',
         padding: '4px 0',
         minWidth: 160,
         zIndex: 9999,
@@ -253,14 +253,14 @@ function FieldDrawer({ open, onClose, initial }: FieldDrawerProps) {
     <div style={{ position: 'fixed', inset: 0, zIndex: 1000, display: 'flex' }}>
       {/* Backdrop */}
       <div
-        style={{ position: 'absolute', inset: 0, background: 'var(--ds-shadow-raised, rgba(9,30,66,0.4))' }}
+        style={{ position: 'absolute', inset: 0, background: 'var(--ds-shadow-raised)' }}
         onClick={onClose}
       />
       {/* Drawer panel */}
       <div style={{
         position: 'absolute', right: 0, top: 0, bottom: 0,
         width: 520, background: T.surface,
-        boxShadow: '-4px 0 24px var(--ds-shadow-raised, rgba(9,30,66,0.15))',
+        boxShadow: '-4px 0 24px var(--ds-shadow-raised)',
         display: 'flex', flexDirection: 'column',
         overflow: 'hidden',
       }}>
@@ -520,7 +520,7 @@ export default function FieldRegistryPage() {
             display: 'grid',
             gridTemplateColumns: '2fr 1.4fr 2fr 1fr 48px',
             padding: '8px 16px',
-            borderBottom: `1.67px solid var(--ds-border-subtle, rgba(11,18,14,0.14))`,
+            borderBottom: `1.67px solid var(--ds-border-subtle)`,
             background: T.surfaceSunken,
           }}>
             {['Name', 'Field type', 'Applies to', 'Status', ''].map(h => (

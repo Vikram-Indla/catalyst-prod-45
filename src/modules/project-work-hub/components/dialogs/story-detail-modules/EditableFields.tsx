@@ -924,7 +924,7 @@ export function EditablePriority({
               background: "var(--ds-surface)",
               border: "1px solid var(--ds-border)",
               borderRadius: 6,
-              boxShadow: "0 8px 16px var(--ds-shadow-raised, rgba(9,30,66,0.15))",
+              boxShadow: "0 8px 16px var(--ds-shadow-raised)",
               zIndex: 1000,
               padding: "4px 0",
             }}
@@ -1664,7 +1664,7 @@ export function EditableSprintReleases({
           multiValue: (base) => ({
             ...base,
             background: "transparent",
-            border: "0.556px solid var(--ds-border-neutral, rgb(183,185,190))",
+            border: "0.556px solid var(--ds-border-neutral)",
             borderRadius: 4,
             margin: "0 4px 0 0",
             padding: "0px 4px",
@@ -1686,7 +1686,7 @@ export function EditableSprintReleases({
             marginLeft: 4,
             ":hover": {
               backgroundColor:
-                "var(--ds-background-neutral-subtle-hovered, rgba(9, 30, 66, 0.08))",
+                "var(--ds-background-neutral-subtle-hovered)",
               color: "var(--ds-text-subtle)",
             },
           }),

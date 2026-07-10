@@ -56,7 +56,7 @@ export function HuddleScreenView() {
     if (!s || !s.id || !Array.isArray(s.points)) return;
     const arr = strokesRef.current;
     const i = arr.findIndex((x) => x.id === s.id);
-    const next: MarkerStroke = { id: s.id, color: s.color || 'var(--ds-background-danger-bold, #C9372C)', points: s.points, t: Date.now() };
+    const next: MarkerStroke = { id: s.id, color: s.color || 'var(--ds-background-danger-bold)', points: s.points, t: Date.now() };
     if (i >= 0) arr[i] = next; else arr.push(next);
   }), []);
 
@@ -202,7 +202,7 @@ export function HuddleScreenView() {
         autoPlay
         playsInline
         muted
-        style={{ flex: 1, width: '100%', height: '100%', objectFit: 'contain', background: 'var(--ds-surface, #000)', display: 'block', minHeight: 0 }}
+        style={{ flex: 1, width: '100%', height: '100%', objectFit: 'contain', background: 'var(--ds-surface)', display: 'block', minHeight: 0 }}
       />
       {/* annotation overlay — captures pointer only when MY pen is enabled */}
       <canvas
@@ -230,19 +230,19 @@ export function HuddleScreenView() {
       style={{
         flex: '0 0 auto', height: 36, display: 'flex', alignItems: 'center', gap: 8,
         padding: '0 10px', cursor: maximized ? 'default' : 'grab', touchAction: 'none',
-        background: 'var(--ds-surface-overlay, #FFFFFF)',
-        borderBottom: '1px solid var(--ds-border, #DFE1E6)',
+        background: 'var(--ds-surface-overlay)',
+        borderBottom: '1px solid var(--ds-border)',
       }}
     >
-      <span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--ds-icon-success, #22A06B)', flex: '0 0 auto' }} />
-      <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--ds-text, #172B4D)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+      <span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--ds-icon-success)', flex: '0 0 auto' }} />
+      <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--ds-text)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
         {title}
       </span>
       <span style={{ marginLeft: 'auto', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
         {localSharing && (
           <button type="button" data-huddle-btn onClick={() => { void stopScreen(); }}
             style={{ border: 'none', cursor: 'pointer', borderRadius: 6, padding: '4px 10px', fontSize: 12, fontWeight: 600,
-              background: 'var(--ds-background-danger-bold, #C9372C)', color: 'var(--ds-text-inverse, #FFFFFF)', marginRight: 4 }}>
+              background: 'var(--ds-background-danger-bold)', color: 'var(--ds-text-inverse)', marginRight: 4 }}>
             Stop
           </button>
         )}
@@ -257,10 +257,10 @@ export function HuddleScreenView() {
   if (maximized) {
     return (
       <div role="dialog" aria-label="Shared screen (maximized)"
-        style={{ position: 'fixed', inset: 0, zIndex: 200, background: 'var(--ds-shadow-raised, rgba(9,30,66,.75))',
+        style={{ position: 'fixed', inset: 0, zIndex: 200, background: 'var(--ds-shadow-raised)',
           display: 'flex', flexDirection: 'column', padding: 24 }}>
         <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0,
-          background: 'var(--ds-surface, #000)', borderRadius: 12, overflow: 'hidden', boxShadow: 'var(--ds-shadow-overlay, 0 20px 60px rgba(0,0,0,.5))' }}>
+          background: 'var(--ds-surface)', borderRadius: 12, overflow: 'hidden', boxShadow: 'var(--ds-shadow-overlay, 0 20px 60px rgba(0,0,0,.5))' }}>
           {titleBar}
           {videoEl}
         </div>
@@ -278,8 +278,8 @@ export function HuddleScreenView() {
         position: 'fixed', top: pos.top, left: pos.left, zIndex: 65,
         width: size.w, height: size.h, minWidth: 240, minHeight: 160,
         resize: 'both', overflow: 'hidden',
-        background: 'var(--ds-surface, #000)', borderRadius: 12,
-        border: '1.5px solid var(--ds-border, #DFE1E6)',
+        background: 'var(--ds-surface)', borderRadius: 12,
+        border: '1.5px solid var(--ds-border)',
         boxShadow: 'var(--ds-shadow-overlay, 0 12px 34px rgba(9,30,66,.28))',
         display: 'flex', flexDirection: 'column',
       }}
@@ -293,7 +293,7 @@ export function HuddleScreenView() {
 const winBtn: React.CSSProperties = {
   width: 26, height: 26, borderRadius: 6, border: 'none', cursor: 'pointer',
   display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-  background: 'var(--ds-surface-sunken, #F7F8F9)', color: 'var(--ds-text, #172B4D)',
+  background: 'var(--ds-surface-sunken)', color: 'var(--ds-text)',
 };
 
 const MinIcon = () => (

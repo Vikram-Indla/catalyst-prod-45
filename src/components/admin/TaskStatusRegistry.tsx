@@ -44,7 +44,7 @@ const TH: React.CSSProperties = {
   color: 'var(--ds-text-subtle)',
   textAlign: 'left',
   padding: '4px 12px 4px 0',
-  borderBottom: '1.67px solid var(--ds-text, rgba(11,18,14,0.14))',
+  borderBottom: '1.67px solid var(--ds-text)',
   whiteSpace: 'nowrap',
 };
 const TD: React.CSSProperties = {

@@ -175,7 +175,7 @@ export function PHBacklogView({ issues, releases, loading, onSelectIssue }: Prop
                             height: 44, maxHeight: 44,
                             borderBottom: '1px solid var(--cp-bd-zone)',
                             borderLeft: `3px solid ${accentColor}`,
-                            background: isHovered ? 'var(--ds-background-information, rgba(37,99,235,.03))' : undefined,
+                            background: isHovered ? 'var(--ds-background-information)' : undefined,
                             fontFamily: 'var(--cp-font-body)',
                             transition: 'background 120ms ease',
                           }}

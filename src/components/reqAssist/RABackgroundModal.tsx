@@ -149,7 +149,7 @@ export default function RABackgroundModal({ type, doc, onClose }: Props) {
 
   return (
     <>
-      <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'var(--ds-shadow-raised, rgba(0,0,0,0.5))', zIndex: 60 }} />
+      <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'var(--ds-shadow-raised)', zIndex: 60 }} />
       <div style={{ position: 'fixed', top: '48%', left: '48%', transform: 'translate(-50%, -50%)', width: 500, background: 'var(--cp-float)', borderRadius: 8, zIndex: 70, padding: 24, border: '0.75px solid var(--divider)' }}>
         <div style={{ width: 48, height: 48, borderRadius: 12, background: jobStatus === 'failed' ? 'var(--ds-background-danger)' : jobStatus === 'done' ? 'var(--ds-background-success)' : 'var(--cp-primary-5)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}>
           {jobStatus === 'failed' ? (
@@ -187,7 +187,7 @@ export default function RABackgroundModal({ type, doc, onClose }: Props) {
                 transition: 'width 800ms ease', position: 'relative', overflow: 'hidden',
               }}>
                 {jobStatus !== 'done' && (
-                  <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(90deg, transparent, var(--ds-surface, rgba(255,255,255,0.3)), transparent)', animation: 'ra-shimmer 1.5s ease-in-out infinite' }} />
+                  <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(90deg, transparent, var(--ds-surface), transparent)', animation: 'ra-shimmer 1.5s ease-in-out infinite' }} />
                 )}
               </div>
             </div>
@@ -220,18 +220,18 @@ export default function RABackgroundModal({ type, doc, onClose }: Props) {
           </div>
         )}
 
-        <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end', borderTop: '1px solid var(--ds-shadow-overlay, rgba(15,23,42,0.06))', paddingTop: 16 }}>
+        <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end', borderTop: '1px solid var(--ds-shadow-overlay)', paddingTop: 16 }}>
           {jobStatus === 'failed' ? (
             <>
-              <button onClick={onClose} style={{ padding: '8px 16px', fontSize: 'var(--ds-font-size-300)', fontWeight: 500, border: '1px solid var(--ds-shadow-overlay, rgba(15,23,42,0.12))', borderRadius: 'var(--ra-radius-btn)', background: 'var(--bg-app)', color: 'var(--fg-2)', cursor: 'pointer', fontFamily: 'var(--cp-font-body)' }}>Close</button>
+              <button onClick={onClose} style={{ padding: '8px 16px', fontSize: 'var(--ds-font-size-300)', fontWeight: 500, border: '1px solid var(--ds-shadow-overlay)', borderRadius: 'var(--ra-radius-btn)', background: 'var(--bg-app)', color: 'var(--fg-2)', cursor: 'pointer', fontFamily: 'var(--cp-font-body)' }}>Close</button>
               <button onClick={handleRetry} style={{ padding: '8px 16px', fontSize: 'var(--ds-font-size-300)', fontWeight: 500, border: 'none', borderRadius: 'var(--ra-radius-btn)', background: 'var(--cp-blue)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', cursor: 'pointer', fontFamily: 'var(--cp-font-body)' }}>Retry</button>
             </>
           ) : jobStatus === 'done' ? (
             <button onClick={onClose} style={{ padding: '8px 16px', fontSize: 'var(--ds-font-size-300)', fontWeight: 500, border: 'none', borderRadius: 'var(--ra-radius-btn)', background: 'var(--sem-success)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', cursor: 'pointer', fontFamily: 'var(--cp-font-body)' }}>Done</button>
           ) : (
             <>
-              <button onClick={onClose} style={{ padding: '8px 16px', fontSize: 'var(--ds-font-size-300)', fontWeight: 500, border: '1px solid var(--ds-shadow-overlay, rgba(15,23,42,0.12))', borderRadius: 'var(--ra-radius-btn)', background: 'var(--bg-app)', color: 'var(--fg-2)', cursor: 'pointer', fontFamily: 'var(--cp-font-body)' }}>Stay on this page</button>
-              <button onClick={handleLeave} style={{ padding: '8px 16px', fontSize: 'var(--ds-font-size-300)', fontWeight: 500, border: '0.75px solid var(--ds-border)', borderRadius: 'var(--ra-radius-btn)', background: 'var(--bg-app)', color: 'var(--fg-2)', cursor: 'pointer', fontFamily: 'var(--cp-font-body)' }} onMouseEnter={e => e.currentTarget.style.background = 'var(--ds-shadow-raised, rgba(0,0,0,0.04))'} onMouseLeave={e => e.currentTarget.style.background = 'var(--bg-app)'}>Leave & Notify Me When Done</button>
+              <button onClick={onClose} style={{ padding: '8px 16px', fontSize: 'var(--ds-font-size-300)', fontWeight: 500, border: '1px solid var(--ds-shadow-overlay)', borderRadius: 'var(--ra-radius-btn)', background: 'var(--bg-app)', color: 'var(--fg-2)', cursor: 'pointer', fontFamily: 'var(--cp-font-body)' }}>Stay on this page</button>
+              <button onClick={handleLeave} style={{ padding: '8px 16px', fontSize: 'var(--ds-font-size-300)', fontWeight: 500, border: '0.75px solid var(--ds-border)', borderRadius: 'var(--ra-radius-btn)', background: 'var(--bg-app)', color: 'var(--fg-2)', cursor: 'pointer', fontFamily: 'var(--cp-font-body)' }} onMouseEnter={e => e.currentTarget.style.background = 'var(--ds-shadow-raised)'} onMouseLeave={e => e.currentTarget.style.background = 'var(--bg-app)'}>Leave & Notify Me When Done</button>
             </>
           )}
         </div>

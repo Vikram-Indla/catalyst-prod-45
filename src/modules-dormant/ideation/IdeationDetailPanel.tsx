@@ -99,11 +99,11 @@ function PriorityLozenge({ priority }: { priority: string }) {
 // ─── Shared styles ───────────────────────────────────────────────
 // Note: selectStyle/inputStyle are used in edit mode — dark mode applied inline via isDark
 const selectStyle: React.CSSProperties = {
-  height: '32px', borderRadius: '4px', border: '1px solid var(--ds-shadow-overlay, rgba(15,23,42,0.14))',
+  height: '32px', borderRadius: '4px', border: '1px solid var(--ds-shadow-overlay)',
   padding: '0 8px', fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1)))', width: '100%', outline: 'none',
 };
 const inputStyle: React.CSSProperties = {
-  height: '32px', borderRadius: '4px', border: '1px solid var(--ds-shadow-overlay, rgba(15,23,42,0.14))',
+  height: '32px', borderRadius: '4px', border: '1px solid var(--ds-shadow-overlay)',
   padding: '0 8px', fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1)))', width: '100%', outline: 'none',
 };
 
@@ -230,7 +230,7 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
   if (!ideaKey) return null;
   if (isLoading) return (
     <>
-      <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'var(--ds-shadow-raised, rgba(0,0,0,0.25))', zIndex: 200 }} />
+      <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'var(--ds-shadow-raised)', zIndex: 200 }} />
       <div style={{ position: 'fixed', top: 0, right: 0, bottom: 0, width: '480px', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', zIndex: 201, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <span style={{ color: dk.t3, fontSize: 'var(--ds-font-size-400)' }}>Loading...</span>
       </div>
@@ -246,10 +246,10 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
 
   return (
     <>
-      <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'var(--ds-shadow-raised, rgba(0,0,0,0.40))', zIndex: 200 }} />
+      <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'var(--ds-shadow-raised)', zIndex: 200 }} />
       <div style={{
         position: 'fixed', top: 0, right: 0, bottom: 0, width: '480px',
-        background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', zIndex: 201, boxShadow: isDark ? 'none' : '-8px 0 32px var(--ds-shadow-raised, rgba(0,0,0,0.12))',
+        background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', zIndex: 201, boxShadow: isDark ? 'none' : '-8px 0 32px var(--ds-shadow-raised)',
         display: 'flex', flexDirection: 'column',
         animation: 'slideInRight 0.25s ease forwards',
       }}>
@@ -457,7 +457,7 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
                     position: 'absolute', top: '4px',
                     left: localIsCommitted ? '23px' : '3px',
                     transition: 'left 200ms ease',
-                    boxShadow: '0 1px 3px var(--ds-shadow-raised, rgba(0,0,0,0.2))',
+                    boxShadow: '0 1px 3px var(--ds-shadow-raised)',
                   }} />
                 </button>
               </div>

@@ -291,16 +291,16 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
 
   return (
     <>
-      <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: isDark ? 'var(--ds-shadow-raised, rgba(0,0,0,0.50))' : 'var(--ds-shadow-raised, rgba(0,0,0,0.3))', zIndex: 40 }} />
+      <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: isDark ? 'var(--ds-shadow-raised)' : 'var(--ds-shadow-raised)', zIndex: 40 }} />
       <div style={{
         position: 'fixed', top: 0, right: 0, bottom: 0, width: 420,
         background: 'var(--cp-float)', zIndex: 50, display: 'flex', flexDirection: 'column',
-        borderLeft: isDark ? '0.75px solid var(--ds-background-neutral)' : '0.75px solid var(--ds-shadow-overlay, rgba(15,23,42,0.12))',
-        boxShadow: isDark ? '-4px 0 24px var(--ds-shadow-raised, rgba(0,0,0,0.30))' : '-4px 0 24px var(--ds-shadow-overlay, rgba(15,23,42,0.08))',
+        borderLeft: isDark ? '0.75px solid var(--ds-background-neutral)' : '0.75px solid var(--ds-shadow-overlay)',
+        boxShadow: isDark ? '-4px 0 24px var(--ds-shadow-raised)' : '-4px 0 24px var(--ds-shadow-overlay)',
         animation: 'ra-slide-left 200ms ease-out',
       }}>
         {/* ── HEADER ── */}
-        <div style={{ padding: '16px 20px 14px', borderBottom: isDark ? '0.75px solid var(--ds-background-neutral)' : '0.75px solid var(--ds-shadow-overlay, rgba(15,23,42,0.10))', flexShrink: 0 }}>
+        <div style={{ padding: '16px 20px 14px', borderBottom: isDark ? '0.75px solid var(--ds-background-neutral)' : '0.75px solid var(--ds-shadow-overlay)', flexShrink: 0 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
               <a
@@ -309,7 +309,7 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
                 rel="noopener noreferrer"
                 style={{
                   display: 'inline-flex', alignItems: 'center', gap: 4,
-                  background: 'var(--cp-primary-5)', border: isDark ? '0.75px solid var(--ds-background-information, rgba(37,99,235,0.30))' : '0.75px solid var(--ds-border)', borderRadius: 4,
+                  background: 'var(--cp-primary-5)', border: isDark ? '0.75px solid var(--ds-background-information)' : '0.75px solid var(--ds-border)', borderRadius: 4,
                   padding: '0px 8px', textDecoration: 'none', cursor: doc.jira_ticket_url ? 'pointer' : 'default',
                 }}
               >
@@ -365,7 +365,7 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
         {brdData.rawTextSource === 'title_only' && (
           <div style={{
             margin: '0 20px', marginTop: 12, padding: '8px 12px', borderRadius: 6,
-            background: 'var(--cp-warning-light, var(--ds-background-warning))', border: isDark ? '0.75px solid var(--ds-background-warning, rgba(217,119,6,0.25))' : '0.75px solid var(--ds-background-warning, var(--ds-background-warning))',
+            background: 'var(--cp-warning-light, var(--ds-background-warning))', border: isDark ? '0.75px solid var(--ds-background-warning)' : '0.75px solid var(--ds-background-warning, var(--ds-background-warning))',
             fontSize: 'var(--ds-font-size-200)', color: 'var(--cp-warning-text, var(--ds-text-warning))', fontFamily: 'var(--cp-font-body)',
             display: 'flex', alignItems: 'center', gap: 4,
           }}>
@@ -411,7 +411,7 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
               style={{
                 display: 'inline-flex', alignItems: 'center', gap: 4,
                 padding: '4px 12px', height: 28, borderRadius: 6,
-                border: isDark ? '0.75px solid var(--ds-background-neutral)' : '0.75px solid var(--ds-shadow-overlay, rgba(15,23,42,0.15))', background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface)))' : 'var(--bg-app)',
+                border: isDark ? '0.75px solid var(--ds-background-neutral)' : '0.75px solid var(--ds-shadow-overlay)', background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface)))' : 'var(--bg-app)',
                 fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: 'var(--fg-2)', cursor: reimporting ? 'not-allowed' : 'pointer',
                 fontFamily: 'var(--cp-font-body)', opacity: reimporting ? 0.6 : 1,
               }}
@@ -426,9 +426,9 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
         <div style={{ flex: 1, overflowY: 'auto' }}>
 
           {/* ── PIPELINE STEPPER ── */}
-          <div style={{ padding: '16px 20px', borderBottom: isDark ? '0.75px solid var(--ds-text)' : '0.75px solid var(--ds-shadow-overlay, rgba(15,23,42,0.06))' }}>
+          <div style={{ padding: '16px 20px', borderBottom: isDark ? '0.75px solid var(--ds-text)' : '0.75px solid var(--ds-shadow-overlay)' }}>
             <div style={{
-              background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface)))' : 'var(--bg-1)', border: isDark ? '0.75px solid var(--ds-background-neutral)' : '0.75px solid var(--ds-shadow-overlay, rgba(15,23,42,0.08))', borderRadius: 8,
+              background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface)))' : 'var(--bg-1)', border: isDark ? '0.75px solid var(--ds-background-neutral)' : '0.75px solid var(--ds-shadow-overlay)', borderRadius: 8,
               padding: '12px 16px',
             }}>
               <div style={{ display: 'flex', alignItems: 'flex-start' }}>
@@ -471,7 +471,7 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
           </div>
 
           {/* ── JIRA METADATA ── */}
-          <div style={{ padding: '16px 20px', borderBottom: isDark ? '0.75px solid var(--ds-text)' : '0.75px solid var(--ds-shadow-overlay, rgba(15,23,42,0.06))' }}>
+          <div style={{ padding: '16px 20px', borderBottom: isDark ? '0.75px solid var(--ds-text)' : '0.75px solid var(--ds-shadow-overlay)' }}>
             <SectionHeader>Jira Metadata</SectionHeader>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 8 }}>
               <MetaRow label="Ticket">
@@ -481,7 +481,7 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
                   rel="noopener noreferrer"
                   style={{
                     display: 'inline-flex', alignItems: 'center', gap: 4,
-                    background: 'var(--cp-primary-5)', border: isDark ? '0.75px solid var(--ds-background-information, rgba(37,99,235,0.30))' : '0.75px solid var(--ds-border)', borderRadius: 4,
+                    background: 'var(--cp-primary-5)', border: isDark ? '0.75px solid var(--ds-background-information)' : '0.75px solid var(--ds-border)', borderRadius: 4,
                     padding: '0px 8px', textDecoration: 'none',
                     fontFamily: 'var(--cp-font-mono)', fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: 'var(--cp-blue)',
                     cursor: doc.jira_ticket_url ? 'pointer' : 'default',
@@ -497,7 +497,7 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
                 <MetaRow label="Description">
                   <div style={{ flex: 1 }}>
                     <div style={{
-                      background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface)))' : 'var(--bg-1)', border: isDark ? '0.75px solid var(--ds-background-neutral)' : '0.75px solid var(--ds-shadow-overlay, rgba(15,23,42,0.08))', borderRadius: 6,
+                      background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface)))' : 'var(--bg-1)', border: isDark ? '0.75px solid var(--ds-background-neutral)' : '0.75px solid var(--ds-shadow-overlay)', borderRadius: 6,
                       padding: '8px 12px', fontSize: 'var(--ds-font-size-300)', color: 'var(--fg-2)', lineHeight: 1.6,
                       fontFamily: 'var(--cp-font-body)',
                       maxHeight: descExpanded ? 'none' : 100, overflow: 'hidden',
@@ -587,13 +587,13 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
           </div>
 
           {/* ── SOURCE ATTACHMENTS ── */}
-          <div style={{ padding: '16px 20px', borderBottom: isDark ? '0.75px solid var(--ds-text)' : '0.75px solid var(--ds-shadow-overlay, rgba(15,23,42,0.06))' }}>
+          <div style={{ padding: '16px 20px', borderBottom: isDark ? '0.75px solid var(--ds-text)' : '0.75px solid var(--ds-shadow-overlay)' }}>
             <SectionHeader>Source Attachments</SectionHeader>
             <div style={{ marginTop: 8 }}>
               {doc.pdf_url ? (
                 <div style={{
                   height: 48, display: 'flex', alignItems: 'center', gap: 12,
-                  background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface)))' : 'var(--bg-app)', border: isDark ? '0.75px solid var(--ds-background-neutral)' : '0.75px solid var(--ds-shadow-overlay, rgba(15,23,42,0.10))',
+                  background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface)))' : 'var(--bg-app)', border: isDark ? '0.75px solid var(--ds-background-neutral)' : '0.75px solid var(--ds-shadow-overlay)',
                   borderRadius: 6, padding: '0 14px',
                 }}>
                   <FileText size={18} color="var(--sem-danger)" />
@@ -607,7 +607,7 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
                   </div>
                   <button onClick={onOpenPdf} style={{
                     height: 26, padding: '0 10px', borderRadius: 6,
-                    border: isDark ? '0.75px solid var(--ds-background-neutral)' : '0.75px solid var(--ds-shadow-overlay, rgba(15,23,42,0.15))', background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface)))' : 'var(--bg-app)',
+                    border: isDark ? '0.75px solid var(--ds-background-neutral)' : '0.75px solid var(--ds-shadow-overlay)', background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface)))' : 'var(--bg-app)',
                     fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: 'var(--fg-2)', cursor: 'pointer',
                     fontFamily: 'var(--cp-font-body)',
                   }}>View</button>
@@ -626,7 +626,7 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
           </div>
 
           {/* ── DOCUMENT CONTENT ── */}
-          <div style={{ padding: '16px 20px', borderBottom: isDark ? '0.75px solid var(--ds-text)' : '0.75px solid var(--ds-shadow-overlay, rgba(15,23,42,0.06))' }}>
+          <div style={{ padding: '16px 20px', borderBottom: isDark ? '0.75px solid var(--ds-text)' : '0.75px solid var(--ds-shadow-overlay)' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <SectionHeader>Document Content</SectionHeader>
               {brdData.raw_text && (
@@ -639,7 +639,7 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
               {brdData.raw_text ? (
                 <>
                   <div style={{
-                    background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface)))' : 'var(--bg-1)', border: isDark ? '0.75px solid var(--ds-background-neutral)' : '0.75px solid var(--ds-shadow-overlay, rgba(15,23,42,0.08))', borderRadius: 6,
+                    background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface)))' : 'var(--bg-1)', border: isDark ? '0.75px solid var(--ds-background-neutral)' : '0.75px solid var(--ds-shadow-overlay)', borderRadius: 6,
                     padding: '12px 14px', fontSize: 'var(--ds-font-size-300)', color: 'var(--fg-2)', lineHeight: 1.6,
                     fontFamily: 'var(--cp-font-body)',
                     maxHeight: contentExpanded ? 'none' : 120, overflow: 'hidden',
@@ -671,7 +671,7 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
             <div style={{ marginTop: 8, display: 'flex', flexDirection: 'column' }}>
 
               {/* Epics Row — ALL BLUE */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '8px 0', borderBottom: isDark ? '0.75px solid var(--ds-text)' : '0.75px solid var(--ds-shadow-overlay, rgba(15,23,42,0.06))' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '8px 0', borderBottom: isDark ? '0.75px solid var(--ds-text)' : '0.75px solid var(--ds-shadow-overlay)' }}>
                 <div style={{ width: 28, height: 28, borderRadius: 6, background: 'var(--cp-primary-5)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                   <Zap size={15} color="var(--cp-blue)" />
                 </div>
@@ -686,7 +686,7 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
                 ) : (
                   <span style={{
                     display: 'inline-flex', alignItems: 'center', padding: '0px 10px', borderRadius: 12,
-                    background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, var(--ds-surface-sunken))))', color: 'var(--fg-4)', border: isDark ? '0.75px solid var(--ds-background-neutral)' : '0.75px solid var(--ds-shadow-overlay, rgba(15,23,42,0.12))',
+                    background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, var(--ds-surface-sunken))))', color: 'var(--fg-4)', border: isDark ? '0.75px solid var(--ds-background-neutral)' : '0.75px solid var(--ds-shadow-overlay)',
                     fontSize: 'var(--ds-font-size-100)', fontWeight: 500, fontFamily: 'var(--cp-font-body)',
                   }}>None yet</span>
                 )}
@@ -710,7 +710,7 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
               </div>
 
               {/* Wiki Chunks Row — D04: renamed link */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '8px 0', borderBottom: isDark ? '0.75px solid var(--ds-text)' : '0.75px solid var(--ds-shadow-overlay, rgba(15,23,42,0.06))' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '8px 0', borderBottom: isDark ? '0.75px solid var(--ds-text)' : '0.75px solid var(--ds-shadow-overlay)' }}>
                 <div style={{ width: 28, height: 28, borderRadius: 6, background: 'var(--cp-success-light, var(--ds-background-success))', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                   <BookOpen size={16} color="var(--cp-teal-60, var(--ds-chart-teal-bold))" />
                 </div>
@@ -718,14 +718,14 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
                 {wikiCount > 0 ? (
                   <span style={{
                     display: 'inline-flex', alignItems: 'center', padding: '0px 10px', borderRadius: 12,
-                    background: 'var(--cp-success-light, var(--ds-background-success))', border: isDark ? '0.75px solid var(--ds-background-success, rgba(13,148,136,0.25))' : '0.75px solid var(--ds-background-success)',
+                    background: 'var(--cp-success-light, var(--ds-background-success))', border: isDark ? '0.75px solid var(--ds-background-success)' : '0.75px solid var(--ds-background-success)',
                     fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: 'var(--ds-text-success)',
                     fontFamily: 'var(--cp-font-body)',
                   }}>{pluralise(wikiCount, 'chunk', 'chunks')} indexed</span>
                 ) : (
                   <span style={{
                     display: 'inline-flex', alignItems: 'center', padding: '0px 10px', borderRadius: 12,
-                    background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, var(--ds-surface-sunken))))', color: 'var(--fg-4)', border: isDark ? '0.75px solid var(--ds-background-neutral)' : '0.75px solid var(--ds-shadow-overlay, rgba(15,23,42,0.12))',
+                    background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, var(--ds-surface-sunken))))', color: 'var(--fg-4)', border: isDark ? '0.75px solid var(--ds-background-neutral)' : '0.75px solid var(--ds-shadow-overlay)',
                     fontSize: 'var(--ds-font-size-100)', fontWeight: 500, fontFamily: 'var(--cp-font-body)',
                   }}>Not indexed</span>
                 )}
@@ -769,14 +769,14 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
                 {uatCount > 0 ? (
                   <span style={{
                     display: 'inline-flex', alignItems: 'center', padding: '0px 10px', borderRadius: 12,
-                    background: 'var(--cp-success-light, var(--ds-background-success))', border: isDark ? '0.75px solid var(--ds-background-success-bold, rgba(22,163,74,0.25))' : '0.75px solid var(--ds-background-success)',
+                    background: 'var(--cp-success-light, var(--ds-background-success))', border: isDark ? '0.75px solid var(--ds-background-success-bold)' : '0.75px solid var(--ds-background-success)',
                     fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: 'var(--sem-success)',
                     fontFamily: 'var(--cp-font-body)',
                   }}>{pluralise(uatCount, 'scenario', 'scenarios')}</span>
                 ) : (
                   <span style={{
                     display: 'inline-flex', alignItems: 'center', padding: '0px 10px', borderRadius: 12,
-                    background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, var(--ds-surface-sunken))))', color: 'var(--fg-4)', border: isDark ? '0.75px solid var(--ds-background-neutral)' : '0.75px solid var(--ds-shadow-overlay, rgba(15,23,42,0.12))',
+                    background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, var(--ds-surface-sunken))))', color: 'var(--fg-4)', border: isDark ? '0.75px solid var(--ds-background-neutral)' : '0.75px solid var(--ds-shadow-overlay)',
                     fontSize: 'var(--ds-font-size-100)', fontWeight: 500, fontFamily: 'var(--cp-font-body)', whiteSpace: 'nowrap', flexShrink: 0,
                   }}>Not generated</span>
                 )}
@@ -836,7 +836,7 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
                       return (
                         <div key={s.id || i} style={{
                           display: 'flex', alignItems: 'center', gap: 8, height: 50,
-                          borderBottom: i < uatScenarios.length - 1 ? (isDark ? '0.75px solid var(--ds-text)' : '0.75px solid var(--ds-shadow-overlay, rgba(15,23,42,0.06))') : 'none',
+                          borderBottom: i < uatScenarios.length - 1 ? (isDark ? '0.75px solid var(--ds-text)' : '0.75px solid var(--ds-shadow-overlay)') : 'none',
                           padding: '8px 12px',
                         }}>
                           <span style={{
@@ -864,19 +864,19 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
         </div>
 
         {/* ── FOOTER CTA ── */}
-        <div style={{ padding: '12px 20px', borderTop: isDark ? '0.75px solid var(--ds-background-neutral)' : '0.75px solid var(--ds-shadow-overlay, rgba(15,23,42,0.10))', flexShrink: 0, background: isDark ? 'var(--cp-bg-page, var(--ds-surface))' : 'var(--bg-app)' }}>
+        <div style={{ padding: '12px 20px', borderTop: isDark ? '0.75px solid var(--ds-background-neutral)' : '0.75px solid var(--ds-shadow-overlay)', flexShrink: 0, background: isDark ? 'var(--cp-bg-page, var(--ds-surface))' : 'var(--bg-app)' }}>
           {epicCount === 0 ? (
             <button onClick={() => onGenerate('epics')} style={{
               width: '100%', height: 40, fontSize: 'var(--ds-font-size-400)', fontWeight: 600, borderRadius: 6,
               border: 'none', background: 'var(--cp-blue)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))', cursor: 'pointer',
-              fontFamily: 'var(--cp-font-body)', boxShadow: '0 1px 3px var(--ds-background-information, rgba(37,99,235,0.35))',
+              fontFamily: 'var(--cp-font-body)', boxShadow: '0 1px 3px var(--ds-background-information)',
             }}>
               Generate Epics for this BRD
             </button>
           ) : (
             <button onClick={() => { if (brdData.id && onViewDrafts) { onClose(); onViewDrafts(brdData.id); } }} style={{
               width: '100%', height: 40, fontSize: 'var(--ds-font-size-400)', fontWeight: 600, borderRadius: 6,
-              border: isDark ? '0.75px solid var(--ds-background-neutral)' : '0.75px solid var(--ds-shadow-overlay, rgba(15,23,42,0.15))', background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface)))' : 'var(--bg-app)', color: 'var(--fg-2)',
+              border: isDark ? '0.75px solid var(--ds-background-neutral)' : '0.75px solid var(--ds-shadow-overlay)', background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface)))' : 'var(--bg-app)', color: 'var(--fg-2)',
               cursor: 'pointer', fontFamily: 'var(--cp-font-body)',
             }}>
               View All Epics →
@@ -926,9 +926,9 @@ function TicketTypeBadgeDrawer({ type }: { type: string | null }) {
   if (!type) return null;
   const dark = document.documentElement.classList.contains('dark');
   const map: Record<string, { bg: string; color: string; label: string }> = {
-    subtask: { bg: dark ? 'var(--ds-background-warning, rgba(217,119,6,0.15))' : 'var(--ds-surface)', color: dark ? 'var(--ds-text-warning)' : 'var(--ds-text-warning)', label: 'SUBTASK' },
-    story: { bg: dark ? 'var(--ds-background-information, rgba(37,99,235,0.12))' : 'var(--ds-background-selected)', color: dark ? 'var(--ds-text-brand)' : 'var(--ds-background-brand-bold-hovered)', label: 'STORY' },
-    epic: { bg: dark ? 'var(--ds-background-discovery-bold, rgba(124,58,237,0.15))' : 'var(--ds-surface)', color: dark ? 'var(--ds-text-discovery)' : 'var(--ds-text-discovery)', label: 'EPIC' },
+    subtask: { bg: dark ? 'var(--ds-background-warning)' : 'var(--ds-surface)', color: dark ? 'var(--ds-text-warning)' : 'var(--ds-text-warning)', label: 'SUBTASK' },
+    story: { bg: dark ? 'var(--ds-background-information)' : 'var(--ds-background-selected)', color: dark ? 'var(--ds-text-brand)' : 'var(--ds-background-brand-bold-hovered)', label: 'STORY' },
+    epic: { bg: dark ? 'var(--ds-background-discovery-bold)' : 'var(--ds-surface)', color: dark ? 'var(--ds-text-discovery)' : 'var(--ds-text-discovery)', label: 'EPIC' },
     task: { bg: dark ? 'var(--ds-surface-raised, var(--cp-ink-1))' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))', color: 'var(--fg-2)', label: 'TASK' },
   };
   const s = map[type] || map['task']!;

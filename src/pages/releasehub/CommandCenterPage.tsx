@@ -55,7 +55,7 @@ const T = {
   danger: 'var(--ds-text-danger)',
   success: 'var(--ds-text-success)',
   warning: 'var(--ds-text-warning)',
-  hover: 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))',
+  hover: 'var(--ds-background-neutral-subtle-hovered)',
   mono: 'var(--ds-font-family-code, monospace)',
 };
 

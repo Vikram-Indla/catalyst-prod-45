@@ -508,7 +508,7 @@ export function T10LandingPageV3() {
           maxWidth: '1100px',
           minHeight: 'calc(100vh - 64px)',
           borderRadius: '20px 20px 0 0',
-          boxShadow: '0 -2px 20px var(--ds-shadow-raised, rgba(0,0,0,0.04))',
+          boxShadow: '0 -2px 20px var(--ds-shadow-raised)',
           padding: '32px 40px',
         }}
       >

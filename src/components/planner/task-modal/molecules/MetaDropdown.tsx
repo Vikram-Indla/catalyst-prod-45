@@ -72,7 +72,7 @@ export const MetaDropdown: React.FC<MetaDropdownProps> = ({
           borderRadius: '12px',
           cursor: 'pointer',
           transition: 'all 0.15s ease',
-          boxShadow: isOpen ? '0 0 0 3px var(--ds-background-information-bold, rgba(59, 130, 246, 0.15))' : 'none'
+          boxShadow: isOpen ? '0 0 0 3px var(--ds-background-information-bold)' : 'none'
         }}
       >
         {/* DOT — 10px */}
@@ -110,7 +110,7 @@ export const MetaDropdown: React.FC<MetaDropdownProps> = ({
             backgroundColor: COLORS.surfaceCard,
             border: `1px solid ${COLORS.borderDefault}`,
             borderRadius: '12px',
-            boxShadow: '0 10px 40px var(--ds-shadow-raised, rgba(0, 0, 0, 0.15))',
+            boxShadow: '0 10px 40px var(--ds-shadow-raised)',
             zIndex: 99999,
             padding: '4px',
             maxHeight: '280px',

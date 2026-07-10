@@ -72,7 +72,7 @@ export function StageDrillDownDrawer({ stageValue, stageLabel, onClose }: StageD
         height: '100%',
         background: token('elevation.surface.overlay', 'var(--ds-surface)'),
         borderLeft: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral))')}`,
-        boxShadow: token('elevation.shadow.overlay', '-4px 0 12px var(--ds-shadow-raised, rgba(0,0,0,0.12))'),
+        boxShadow: token('elevation.shadow.overlay', '-4px 0 12px var(--ds-shadow-raised)'),
         display: 'flex',
         flexDirection: 'column',
         zIndex: 400,

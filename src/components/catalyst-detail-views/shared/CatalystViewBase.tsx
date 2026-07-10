@@ -424,7 +424,7 @@ export function CatalystViewBase({
   } : {
     position: 'fixed', inset: 0, zIndex: 1000,
     display: 'flex', alignItems: 'flex-start', justifyContent: 'center',
-    background: 'var(--ds-blanket, rgba(9,30,66,.54))',
+    background: 'var(--ds-blanket)',
     padding: '40px 16px', overflowY: 'auto',
     animation: 'cv-overlay-in 200ms ease-out',
   };
@@ -601,7 +601,7 @@ export function CatalystViewBase({
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
                       color: 'var(--ds-text-subtle)',
                     }}
-                    onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,.06))')}
+                    onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered)')}
                     onMouseLeave={e => (e.currentTarget.style.background = 'none')}
                   >
                     <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">

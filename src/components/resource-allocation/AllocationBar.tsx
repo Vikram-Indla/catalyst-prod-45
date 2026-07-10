@@ -64,7 +64,7 @@ export function AllocationBar({ bar, columnWidth, onClick, onDelete, stackIndex 
               "focus:outline-none focus:ring-2 focus:ring-offset-2",
               // Committed = solid with white text, Forecast = light fill with dotted border
               isCommitted
-                ? "shadow-[0_2px_6px_var(--ds-shadow-raised, rgba(0,0,0,0.15))] text-white"
+                ? "shadow-[0_2px_6px_var(--ds-shadow-raised)] text-white"
                 : "text-foreground"
             )}
             style={{

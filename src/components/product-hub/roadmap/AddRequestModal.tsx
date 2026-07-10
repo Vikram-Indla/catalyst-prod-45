@@ -76,7 +76,7 @@ export function AddRequestModal({ isOpen, onClose }: AddRequestModalProps) {
       <div
         onClick={onClose}
         className="animate-fade-in"
-        style={{ position: 'fixed', inset: 0, backgroundColor: 'var(--ds-shadow-raised, rgba(0,0,0,0.3))', backdropFilter: 'blur(4px)', WebkitBackdropFilter: 'blur(4px)', zIndex: 300 }}
+        style={{ position: 'fixed', inset: 0, backgroundColor: 'var(--ds-shadow-raised)', backdropFilter: 'blur(4px)', WebkitBackdropFilter: 'blur(4px)', zIndex: 300 }}
       />
 
       {/* Modal — scale entrance */}
@@ -90,7 +90,7 @@ export function AddRequestModal({ isOpen, onClose }: AddRequestModalProps) {
           position: 'fixed', top: '48%', left: '48%', transform: 'translate(-50%, -50%)',
           width: 640, maxWidth: '90vw', maxHeight: '80vh',
           background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', borderRadius: 12, border: `1px solid ${SURFACE.border}`,
-          boxShadow: '0 25px 50px -12px var(--ds-shadow-raised, rgba(0,0,0,0.25))', zIndex: 301,
+          boxShadow: '0 25px 50px -12px var(--ds-shadow-raised)', zIndex: 301,
           display: 'flex', flexDirection: 'column', overflow: 'hidden',
           fontFamily: FONT.body,
         }}

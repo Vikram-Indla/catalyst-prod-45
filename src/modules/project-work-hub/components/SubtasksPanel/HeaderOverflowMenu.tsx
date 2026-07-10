@@ -74,7 +74,7 @@ function MenuItem({
       onMouseEnter={(e) => {
         if (!disabled) {
           (e.currentTarget as HTMLButtonElement).style.background =
-            'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))';
+            'var(--ds-background-neutral-subtle-hovered)';
         }
       }}
       onMouseLeave={(e) => {
@@ -150,7 +150,7 @@ export function HeaderOverflowMenu({
           background: 'var(--ds-surface-overlay)',
           border: '1px solid var(--ds-border)',
           borderRadius: 6,
-          boxShadow: '0 8px 28px var(--ds-shadow-raised, rgba(9,30,66,0.25))',
+          boxShadow: '0 8px 28px var(--ds-shadow-raised)',
           padding: '4px 0',
           minWidth: 200,
           zIndex: 9999,
@@ -251,7 +251,7 @@ export function HeaderOverflowMenu({
           background: 'var(--ds-surface-overlay)',
           border: '1px solid var(--ds-border)',
           borderRadius: 6,
-          boxShadow: '0 8px 28px var(--ds-shadow-raised, rgba(9,30,66,0.25))',
+          boxShadow: '0 8px 28px var(--ds-shadow-raised)',
           padding: '4px 0',
           minWidth: 220,
           zIndex: 10000,

@@ -420,7 +420,7 @@ export function TimelineView({ resources, period, groupBy, groupedByAssignment, 
                       color: isForecast ? projectColor.bg : projectColor.text,
                       border: isForecast ? `3px dotted ${projectColor.bg}` : 'none',
                       boxSizing: 'border-box',
-                      boxShadow: !isForecast ? '0 1px 3px var(--ds-shadow-raised, rgba(0,0,0,0.15))' : 'none',
+                      boxShadow: !isForecast ? '0 1px 3px var(--ds-shadow-raised)' : 'none',
                     }}
                     title={`${isForecast ? '[Forecast] ' : ''}${tooltipText}`}
                     onClick={() => onEditResource?.(resource.id)}

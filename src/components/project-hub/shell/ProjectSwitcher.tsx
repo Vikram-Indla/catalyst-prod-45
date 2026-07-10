@@ -52,7 +52,7 @@ export function ProjectSwitcher({ projects, currentKey, isOpen, onClose, onSelec
       style={{
         width: 280,
         borderRadius: 8,
-        boxShadow: isDark ? '0 8px 24px var(--ds-shadow-raised, rgba(0,0,0,0.60))' : '0 4px 6px -1px var(--ds-shadow-raised, rgba(0,0,0,.07)), 0 2px 4px -2px var(--ds-shadow-raised, rgba(0,0,0,.05))',
+        boxShadow: isDark ? '0 8px 24px var(--ds-shadow-raised)' : '0 4px 6px -1px var(--ds-shadow-raised), 0 2px 4px -2px var(--ds-shadow-raised)',
         fontFamily: 'var(--cp-font-body)',
       }}
     >
@@ -114,7 +114,7 @@ function ProjectRow({
       onClick={() => onSelect(project.key)}
       className={`flex items-center gap-2.5 w-full px-3 py-1.5 transition-colors ${
         isCurrent
-          ? 'bg-[var(--cp-blue-wash)] dark:bg-[var(--ds-background-information-bold, rgba(59,130,246,0.10))]'
+          ? 'bg-[var(--cp-blue-wash)] dark:bg-[var(--ds-background-information-bold)]'
           : 'hover:bg-[var(--cp-blue-wash)] dark:hover:bg-[var(--ds-surface-overlay)]'
       }`}
       style={{

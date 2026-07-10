@@ -134,7 +134,7 @@ export function AvatarStack({ names }: { names: string[] }) {
             fontFamily: 'var(--cp-font-body)',
             zIndex: show - i,
             position: 'relative',
-            boxShadow: '0 0 0 1px var(--ds-shadow-raised, rgba(0,0,0,0.06))',
+            boxShadow: '0 0 0 1px var(--ds-shadow-raised)',
           }}
         >
           {getInitials(name)}
@@ -154,7 +154,7 @@ export function AvatarStack({ names }: { names: string[] }) {
             fontWeight: 700,
             border: '2px solid var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
             fontFamily: 'var(--cp-font-body)',
-            boxShadow: '0 0 0 1px var(--ds-shadow-raised, rgba(0,0,0,0.06))',
+            boxShadow: '0 0 0 1px var(--ds-shadow-raised)',
           }}
         >
           +{overflow}

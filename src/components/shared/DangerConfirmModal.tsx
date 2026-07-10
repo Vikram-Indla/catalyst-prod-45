@@ -241,7 +241,7 @@ export function DangerConfirmModal({
           // loaded the dark theme — elevation.surface.overlay flips natively.
           background: token('elevation.surface.overlay', 'var(--ds-surface)'),
           borderRadius: 8,
-          boxShadow: '0 8px 32px var(--ds-shadow-raised, rgba(9, 30, 66, 0.25))',
+          boxShadow: '0 8px 32px var(--ds-shadow-raised)',
           display: 'flex',
           flexDirection: 'column',
           maxHeight: 'calc(100vh - 120px)',

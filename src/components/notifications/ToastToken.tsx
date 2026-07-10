@@ -48,10 +48,10 @@ export default function ToastToken({ toast: t, onDismiss, onPause, onResume }: T
       style={{
         width: TOAST_WIDTH,
         background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
-        border: '0.5px solid var(--ds-shadow-overlay, rgba(15,23,42,.08))',
+        border: '0.5px solid var(--ds-shadow-overlay)',
         borderRadius: 6,
         borderLeft: `3px solid ${accentColor}`,
-        boxShadow: '0 4px 16px var(--ds-shadow-overlay, rgba(15,23,42,.12))',
+        boxShadow: '0 4px 16px var(--ds-shadow-overlay)',
         overflow: 'hidden',
         cursor: 'pointer',
         animation: 'toast-in 250ms cubic-bezier(0.16,1,0.3,1) forwards',
@@ -113,7 +113,7 @@ export default function ToastToken({ toast: t, onDismiss, onPause, onResume }: T
                   onClick={(e) => { e.stopPropagation(); if (label.includes('Mark')) onDismiss(t.id); }}
                   style={{
                     padding: '4px 10px', borderRadius: 4,
-                    border: '0.5px solid var(--ds-shadow-overlay, rgba(15,23,42,.12))', background: 'transparent',
+                    border: '0.5px solid var(--ds-shadow-overlay)', background: 'transparent',
                     cursor: 'pointer', fontFamily: 'var(--cp-font-body)', fontSize: 'var(--ds-font-size-200)', fontWeight: 500,
                     color: 'var(--ds-text-subtle)',
                     minHeight: 44, // responsive: min tap target
@@ -142,7 +142,7 @@ export default function ToastToken({ toast: t, onDismiss, onPause, onResume }: T
       </div>
 
       {/* Progress bar — JS-driven */}
-      <div style={{ height: 2, background: 'var(--ds-shadow-overlay, rgba(15,23,42,.04))' }}>
+      <div style={{ height: 2, background: 'var(--ds-shadow-overlay)' }}>
         <div style={{
           height: '100%',
           width: `${progress * 100}%`,

@@ -47,7 +47,7 @@ export function BulkFooterBar({
         backgroundColor: token('color.background.neutral.subtle', 'var(--ds-surface-sunken)'),
         borderTop: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral))')}`,
         zIndex: 100,
-        boxShadow: token('elevation.shadow.raised', '0 1px 1px var(--ds-background-neutral-subtle-pressed, rgba(9,30,66,0.13))'),
+        boxShadow: token('elevation.shadow.raised', '0 1px 1px var(--ds-background-neutral-subtle-pressed)'),
       }}
     >
       {/* Count and Select All */}

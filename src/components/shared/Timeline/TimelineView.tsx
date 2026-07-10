@@ -1364,7 +1364,7 @@ export default function TimelineView(props: TimelineViewProps) {
               onMouseEnter={(e) => {
                 if (!depMode)
                   e.currentTarget.style.background =
-                    "var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))";
+                    "var(--ds-background-neutral-subtle-hovered)";
               }}
               onMouseLeave={(e) => {
                 if (!depMode)
@@ -1454,7 +1454,7 @@ export default function TimelineView(props: TimelineViewProps) {
                         }}
                         onMouseEnter={(e) => {
                           e.currentTarget.style.background =
-                            "var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))";
+                            "var(--ds-background-neutral-subtle-hovered)";
                         }}
                         onMouseLeave={(e) => {
                           e.currentTarget.style.background = "transparent";
@@ -1557,7 +1557,7 @@ export default function TimelineView(props: TimelineViewProps) {
                         }}
                         onMouseEnter={(e) => {
                           e.currentTarget.style.background =
-                            "var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))";
+                            "var(--ds-background-neutral-subtle-hovered)";
                         }}
                         onMouseLeave={(e) => {
                           e.currentTarget.style.background = "transparent";
@@ -1686,7 +1686,7 @@ export default function TimelineView(props: TimelineViewProps) {
                           e.currentTarget.style.background =
                             assigneeFilter === opt.name
                               ? "var(--ds-background-selected)"
-                              : "var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))";
+                              : "var(--ds-background-neutral-subtle-hovered)";
                         }}
                         onMouseLeave={(e) => {
                           e.currentTarget.style.background =
@@ -2039,7 +2039,7 @@ export default function TimelineView(props: TimelineViewProps) {
                 style={{
                   position: "fixed",
                   inset: 0,
-                  background: "var(--ds-blanket, rgba(9,30,66,0.54))",
+                  background: "var(--ds-blanket)",
                   zIndex: 9998,
                 }}
               />
@@ -2405,7 +2405,7 @@ export default function TimelineView(props: TimelineViewProps) {
                       }}
                       onMouseEnter={(e) => {
                         e.currentTarget.style.background =
-                          "var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))";
+                          "var(--ds-background-neutral-subtle-hovered)";
                       }}
                       onMouseLeave={(e) => {
                         e.currentTarget.style.background = "transparent";
@@ -2433,7 +2433,7 @@ export default function TimelineView(props: TimelineViewProps) {
                       gap: 4,
                       borderBottom: depMode
                         ? "none"
-                        : "1px solid var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))",
+                        : "1px solid var(--ds-background-neutral-subtle-hovered)",
                       background:
                         "var(--ds-background-neutral-subtle)",
                       cursor: "pointer",
@@ -2509,7 +2509,7 @@ export default function TimelineView(props: TimelineViewProps) {
                         }}
                         onMouseEnter={(e) => {
                           e.currentTarget.style.background =
-                            "var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))";
+                            "var(--ds-background-neutral-subtle-hovered)";
                         }}
                         onMouseLeave={(e) => {
                           e.currentTarget.style.background = "transparent";
@@ -2612,7 +2612,7 @@ export default function TimelineView(props: TimelineViewProps) {
                       paddingRight: 4,
                       gap: 4,
                       borderBottom:
-                        "1px solid var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))",
+                        "1px solid var(--ds-background-neutral-subtle-hovered)",
                     }}
                   >
                     {creatingEpic ? (
@@ -2699,7 +2699,7 @@ export default function TimelineView(props: TimelineViewProps) {
                         }}
                         onMouseEnter={(e) => {
                           e.currentTarget.style.background =
-                            "var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))";
+                            "var(--ds-background-neutral-subtle-hovered)";
                         }}
                         onMouseLeave={(e) => {
                           e.currentTarget.style.background = "transparent";
@@ -2971,7 +2971,7 @@ export default function TimelineView(props: TimelineViewProps) {
                       background:
                         "var(--ds-background-neutral-subtle)",
                       borderBottom:
-                        "1px solid var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))",
+                        "1px solid var(--ds-background-neutral-subtle-hovered)",
                       display: "flex",
                       alignItems: "center",
                     }}
@@ -3010,7 +3010,7 @@ export default function TimelineView(props: TimelineViewProps) {
                           height: ROW_H,
                           background: "transparent",
                           borderBottom:
-                            "1px solid var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))",
+                            "1px solid var(--ds-background-neutral-subtle-hovered)",
                         }}
                       />
                     );
@@ -3079,7 +3079,7 @@ export default function TimelineView(props: TimelineViewProps) {
                                 cursor: "pointer",
                                 zIndex: 2,
                                 boxShadow:
-                                  "0 1px 2px var(--ds-shadow-raised, rgba(9,30,66,0.18))",
+                                  "0 1px 2px var(--ds-shadow-raised)",
                               }}
                             />
                           </TimelineBarPopover>

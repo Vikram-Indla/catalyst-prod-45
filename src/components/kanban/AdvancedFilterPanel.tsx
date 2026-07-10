@@ -181,7 +181,7 @@ export function AdvancedFilterPanel({ projectKey, filters, onChange, onClose, tk
         position: 'absolute', top: '48%', right: 0, marginTop: 4,
         width: 400, background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
         border: '1px solid var(--ds-border)', borderRadius: 10,
-        boxShadow: '0 12px 36px var(--ds-shadow-raised, rgba(9,30,66,0.15)), 0 2px 8px var(--ds-background-neutral-subtle-pressed, rgba(9,30,66,0.08))',
+        boxShadow: '0 12px 36px var(--ds-shadow-raised), 0 2px 8px var(--ds-background-neutral-subtle-pressed)',
         zIndex: 60, fontFamily: 'var(--cp-font-body)',
         maxHeight: 'calc(100vh - 200px)', overflowY: 'auto',
       }}
@@ -359,7 +359,7 @@ function MultiSelectFilterSection({
                   onClick={() => toggle(opt)}
                   className="flex items-center gap-3 w-full"
                   style={{
-                    padding: '8px 8px', background: isSelected ? 'var(--ds-background-information, rgba(37,99,235,0.06))' : 'transparent',
+                    padding: '8px 8px', background: isSelected ? 'var(--ds-background-information)' : 'transparent',
                     border: 'none', cursor: 'pointer', fontSize: 13.5,
                     color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))', textAlign: 'left', borderRadius: 4,
                     fontWeight: isSelected ? 600 : 400,

@@ -83,7 +83,7 @@ export function IncidentModalSidebar({ incident, onFieldChange }: IncidentModalS
             <div>
               <div className="text-[11px] text-muted-foreground mb-1">Release version</div>
               <div 
-                className="text-sm text-foreground p-1.5 -mx-1.5 rounded border-2 border-transparent hover:bg-muted hover:border-border cursor-text focus-within:border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))] focus-within:shadow-[0_0_0_2px_var(--ds-background-information, rgba(37,99,235,0.3))] focus-within:bg-card"
+                className="text-sm text-foreground p-1.5 -mx-1.5 rounded border-2 border-transparent hover:bg-muted hover:border-border cursor-text focus-within:border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))] focus-within:shadow-[0_0_0_2px_var(--ds-background-information)] focus-within:bg-card"
                 contentEditable
                 suppressContentEditableWarning
               >

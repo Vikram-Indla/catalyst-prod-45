@@ -24,7 +24,7 @@ export function ConfirmDialog({
     <div style={{
       position: 'fixed', inset: 0, zIndex: 10000,
       display: 'flex', alignItems: 'center', justifyContent: 'center',
-      background: 'var(--ds-shadow-raised, rgba(9, 30, 66, 0.4))',
+      background: 'var(--ds-shadow-raised)',
     }} onClick={onCancel}>
       <div onClick={e => e.stopPropagation()} style={{
         background: 'var(--ds-surface)', borderRadius: 8, padding: 24, width: 400, maxWidth: '95vw',

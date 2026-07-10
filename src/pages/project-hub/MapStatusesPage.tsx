@@ -360,7 +360,7 @@ function DeleteConfirm({
     <div style={{
       position: 'fixed', inset: 0, zIndex: 100,
       display: 'flex', alignItems: 'center', justifyContent: 'center',
-      background: 'var(--ds-shadow-raised, rgba(0,0,0,0.4))',
+      background: 'var(--ds-shadow-raised)',
     }}>
       <div style={{
         background: tk.surfaceBg, border: `1px solid ${tk.border}`,

@@ -97,7 +97,7 @@ export function ReleaseModal({ isOpen, onClose, release }: ReleaseModalProps) {
       position: 'fixed', inset: 0, zIndex: 'var(--wh-z-modal, 1000)' as any,
       display: 'flex', alignItems: 'center', justifyContent: 'center',
     }}>
-      <div onClick={onClose} style={{ position: 'absolute', inset: 0, background: 'var(--ds-shadow-raised, rgba(0,0,0,0.4))' }} />
+      <div onClick={onClose} style={{ position: 'absolute', inset: 0, background: 'var(--ds-shadow-raised)' }} />
       <div style={{
         position: 'relative', background: 'var(--cp-float)',
         borderRadius: 'var(--wh-radius-xl, 12px)', boxShadow: 'var(--wh-shadow-xl)',

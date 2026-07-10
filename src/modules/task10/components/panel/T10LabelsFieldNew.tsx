@@ -106,7 +106,7 @@ export function T10LabelsFieldNew({
         backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
         border: '1px solid var(--ds-border)',
         borderRadius: '8px',
-        boxShadow: '0 10px 25px -5px var(--ds-shadow-raised, rgba(0,0,0,0.15)), 0 4px 6px -2px var(--ds-shadow-raised, rgba(0,0,0,0.08))',
+        boxShadow: '0 10px 25px -5px var(--ds-shadow-raised), 0 4px 6px -2px var(--ds-shadow-raised)',
         // Must be above the side panel overlay (z=100000) and panel (z=100001)
         zIndex: 100002,
         pointerEvents: 'auto',
@@ -150,7 +150,7 @@ export function T10LabelsFieldNew({
                   backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
                   border: '1px solid var(--ds-border)',
                   borderRadius: '8px',
-                  boxShadow: '0 10px 25px -5px var(--ds-shadow-raised, rgba(0,0,0,0.15))',
+                  boxShadow: '0 10px 25px -5px var(--ds-shadow-raised)',
                   padding: '8px',
                   zIndex: 200,
                 }}

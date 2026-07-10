@@ -331,7 +331,7 @@ function UnifiedDataGrid({
   const groupedItems = groupItemsByTimePeriod(items);
 
   return (
-    <div className="mt-2 rounded-xl border border-[var(--border-color)] overflow-hidden bg-[var(--card-bg)] shadow-sm dark:shadow-[0_1px_3px_var(--ds-shadow-raised, rgba(0,0,0,0.4))]">
+    <div className="mt-2 rounded-xl border border-[var(--border-color)] overflow-hidden bg-[var(--card-bg)] shadow-sm dark:shadow-[0_1px_3px_var(--ds-shadow-raised)]">
       {/* Sticky Header */}
       <div 
         className="grid items-center py-2.5 px-4 text-[11px] font-semibold uppercase tracking-[0.08em] sticky top-0 z-10"

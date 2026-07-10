@@ -603,7 +603,7 @@ function CatalystEnterpriseTableInner<T extends { id: string }>({
               <span
                 className={cn(
                   column.editable && "inline-block px-2 py-1 -mx-2 -my-1 rounded border border-transparent transition-all cursor-pointer",
-                  column.editable && "hover:border-[var(--ds-background-information, rgba(37,99,235,0.3))] hover:bg-[var(--ds-background-information, rgba(37,99,235,0.05))]"
+                  column.editable && "hover:border-[var(--ds-background-information)] hover:bg-[var(--ds-background-information)]"
                 )}
               >
                 {value ?? <span className="text-[var(--table-text-muted)]">—</span>}

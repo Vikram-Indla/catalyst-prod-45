@@ -68,7 +68,7 @@ export function StatusSelect({ value, onChange, disabled }: StatusSelectProps) {
         className="w-full flex items-center justify-between px-3 py-2.5 bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1))] border rounded-lg text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         style={{
           borderColor: open ? 'var(--cp-blue)' : 'var(--divider)',
-          boxShadow: open ? '0 0 0 3px var(--ds-background-information, rgba(37,99,235,0.1))' : 'none',
+          boxShadow: open ? '0 0 0 3px var(--ds-background-information)' : 'none',
           color: selected ? 'var(--ds-text)' : 'var(--ds-text-subtlest)',
           fontWeight: 500,
           fontFamily: 'var(--cp-font-body)',
@@ -89,7 +89,7 @@ export function StatusSelect({ value, onChange, disabled }: StatusSelectProps) {
           className="absolute z-50 mt-1 w-full bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1))] border dark:border-[var(--ds-border,var(--cp-ink-1))] rounded-lg overflow-hidden max-h-72 overflow-y-auto"
           style={{
             borderColor: 'var(--divider)',
-            boxShadow: '0 12px 40px var(--ds-shadow-raised, rgba(0,0,0,0.14))',
+            boxShadow: '0 12px 40px var(--ds-shadow-raised)',
             borderRadius: 8,
           }}
         >

@@ -38,7 +38,7 @@ export default function ReactionBar({ reactions = {}, onReact, onReply, onViewTh
               padding: '4px 8px',
               border: `0.5px solid ${isHov ? 'var(--ds-link)' : 'var(--ds-border)'}`,
               borderRadius: 20,
-              background: isHov ? 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))' : 'transparent',
+              background: isHov ? 'var(--ds-background-neutral-subtle-hovered)' : 'transparent',
               cursor: 'pointer',
               fontSize: 'var(--ds-font-size-300)',
               transition: 'all 150ms ease',

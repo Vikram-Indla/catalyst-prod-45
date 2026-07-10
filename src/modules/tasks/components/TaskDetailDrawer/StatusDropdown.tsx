@@ -76,7 +76,7 @@ export function StatusDropdown({ currentStatusId, currentStatus, onChange }: Sta
           borderRadius: '8px',
           cursor: 'pointer',
           transition: 'all 0.15s ease',
-          boxShadow: isOpen ? '0 0 0 3px var(--ds-background-information-bold, rgba(59, 130, 246, 0.15))' : 'none',
+          boxShadow: isOpen ? '0 0 0 3px var(--ds-background-information-bold)' : 'none',
           minWidth: '120px',
         }}
       >
@@ -105,7 +105,7 @@ export function StatusDropdown({ currentStatusId, currentStatus, onChange }: Sta
             backgroundColor: COLORS.surfaceCard,
             border: `1px solid ${COLORS.borderDefault}`,
             borderRadius: '12px',
-            boxShadow: '0 10px 40px var(--ds-shadow-raised, rgba(0, 0, 0, 0.2))',
+            boxShadow: '0 10px 40px var(--ds-shadow-raised)',
             zIndex: 100001,
             padding: '4px',
             minWidth: '160px',

@@ -17,8 +17,8 @@ const T = {
   selected: 'var(--ds-background-selected)',
   link:     'var(--ds-link)',
   danger:   'var(--ds-text-danger)',
-  dangerBg: 'var(--ds-background-danger, rgba(174,42,25,0.08))',
-  dangerBorder: 'var(--ds-border-danger, rgba(174,42,25,0.30))',
+  dangerBg: 'var(--ds-background-danger)',
+  dangerBorder: 'var(--ds-border-danger)',
 };
 
 const BAR = {
@@ -168,7 +168,7 @@ export function ReleaseTimeline() {
               <div style={{
                 position: 'absolute', left: 0, height: '100%',
                 width: `${progressPct}%`,
-                background: 'var(--ds-surface, rgba(255,255,255,0.22))',
+                background: 'var(--ds-surface)',
                 borderRadius: '3px 0 0 3px',
               }} />
             )}

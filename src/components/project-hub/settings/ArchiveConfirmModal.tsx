@@ -28,7 +28,7 @@ export function ArchiveConfirmModal({ open, projectName, onClose, onConfirm, loa
         className="bg-[var(--cp-float)] dark:bg-[var(--ds-surface-raised,var(--cp-ink-1))]"
         style={{
           width: 440, borderRadius: 12, padding: '24px',
-          boxShadow: '0 20px 25px -5px var(--ds-shadow-raised, rgba(0,0,0,.1))',
+          boxShadow: '0 20px 25px -5px var(--ds-shadow-raised)',
           fontFamily: 'var(--cp-font-body)',
         }}
       >

@@ -375,7 +375,7 @@ export function MessageStream({
             cursor: 'pointer',
             fontSize: 'var(--ds-font-size-200)',
             fontWeight: 600,
-            boxShadow: '0 2px 8px var(--ds-shadow-raised, rgba(9,30,66,0.20))',
+            boxShadow: '0 2px 8px var(--ds-shadow-raised)',
           }}
           aria-label="Jump to unread messages"
         >

@@ -79,7 +79,7 @@ export function FilterDropdown({ filters, onChange }: FilterDropdownProps) {
             borderRadius: 8,
             borderWidth: 1,
             borderStyle: 'solid',
-            boxShadow: dark ? '0 2px 8px var(--ds-shadow-raised, rgba(0,0,0,0.4))' : '0 4px 6px -1px var(--ds-shadow-raised, rgba(0,0,0,.07)), 0 2px 4px -2px var(--ds-shadow-raised, rgba(0,0,0,.05))',
+            boxShadow: dark ? '0 2px 8px var(--ds-shadow-raised)' : '0 4px 6px -1px var(--ds-shadow-raised), 0 2px 4px -2px var(--ds-shadow-raised)',
             fontFamily: 'var(--cp-font-body)',
           }}
         >

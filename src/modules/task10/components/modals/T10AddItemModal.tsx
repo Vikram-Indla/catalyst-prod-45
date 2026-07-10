@@ -97,7 +97,7 @@ export function T10AddItemModal({
         style={{
           position: 'fixed',
           inset: 0,
-          backgroundColor: 'var(--ds-shadow-raised, rgba(0, 0, 0, 0.4))',
+          backgroundColor: 'var(--ds-shadow-raised)',
           zIndex: 600,
           animation: isClosing ? undefined : 't10-fadeIn 200ms ease',
         }}
@@ -115,7 +115,7 @@ export function T10AddItemModal({
           maxWidth: '480px',
           backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
           borderRadius: '12px',
-          boxShadow: '0 25px 50px -12px var(--ds-shadow-raised, rgba(0, 0, 0, 0.25))',
+          boxShadow: '0 25px 50px -12px var(--ds-shadow-raised)',
           zIndex: 601,
           overflow: 'hidden',
           animation: isClosing

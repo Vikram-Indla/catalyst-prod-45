@@ -67,7 +67,7 @@ function LinkTypeDropdown({ value, onChange }: { value: string; onChange: (v: st
         <div style={{
           position: 'absolute', top: 'calc(100% + 2px)', left: 0, minWidth: 200,
           background: 'var(--ds-surface)', border: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))', borderRadius: 4,
-          boxShadow: '0 4px 8px var(--ds-shadow-raised, rgba(9,30,66,.25))', zIndex: 60, overflow: 'hidden',
+          boxShadow: '0 4px 8px var(--ds-shadow-raised)', zIndex: 60, overflow: 'hidden',
           maxHeight: 320, overflowY: 'auto',
         }}>
           {JIRA_LINK_TYPES.map(opt => (
@@ -270,7 +270,7 @@ function AddLinkRow({ issueKey, onClose, onSuccess, onCreateNew, existingLinkedK
 
       {/* Search results dropdown */}
       {showDropdown && filteredResults.length > 0 && (
-        <div ref={dropdownRef} style={{ maxHeight: 320, overflowY: 'auto', border: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))', borderRadius: 3, background: 'var(--ds-surface)', marginBottom: 8, boxShadow: '0 4px 8px var(--ds-background-neutral-subtle-pressed, rgba(9,30,66,.13))' }}>
+        <div ref={dropdownRef} style={{ maxHeight: 320, overflowY: 'auto', border: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))', borderRadius: 3, background: 'var(--ds-surface)', marginBottom: 8, boxShadow: '0 4px 8px var(--ds-background-neutral-subtle-pressed)' }}>
           <div style={{ padding: '8px 12px 4px', fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: 'var(--ds-text-subtlest, var(--cp-text-secondary))', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
             {search.trim() ? 'Search results' : 'Recently viewed'}
           </div>

@@ -351,7 +351,7 @@ function SettingsDropdown({
       ref={panelRef}
       role="menu"
       onMouseDown={(e) => e.stopPropagation()}
-      style={{ position: 'fixed', top, left, width: PANEL_W, background: token('elevation.surface.overlay', 'var(--ds-surface)'), border: `1px solid ${token('color.border', 'var(--ds-border)')}`, borderRadius: 6, padding: '8px 0', zIndex: 10000, boxShadow: token('elevation.shadow.overlay', '0 8px 24px var(--ds-shadow-raised, rgba(9,30,66,0.16))') }}
+      style={{ position: 'fixed', top, left, width: PANEL_W, background: token('elevation.surface.overlay', 'var(--ds-surface)'), border: `1px solid ${token('color.border', 'var(--ds-border)')}`, borderRadius: 6, padding: '8px 0', zIndex: 10000, boxShadow: token('elevation.shadow.overlay', '0 8px 24px var(--ds-shadow-raised)') }}
     >
       <div style={{ padding: '0 14px 8px' }}>
         <SectionLabel>Density</SectionLabel>

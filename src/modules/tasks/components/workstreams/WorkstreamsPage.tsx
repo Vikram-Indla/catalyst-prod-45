@@ -407,7 +407,7 @@ export function WorkstreamsPage() {
               color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
               cursor: 'pointer',
               fontFamily: 'inherit',
-              boxShadow: '0 1px 3px var(--ds-background-information, rgba(37, 99, 235, 0.2))',
+              boxShadow: '0 1px 3px var(--ds-background-information)',
             }}
           >
             <Plus size={16} />
@@ -548,7 +548,7 @@ export function WorkstreamsPage() {
                     backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
                     border: `1px solid ${COLORS.borderDefault}`,
                     borderRadius: '12px',
-                    boxShadow: '0 4px 16px var(--ds-shadow-raised, rgba(0,0,0,0.12))',
+                    boxShadow: '0 4px 16px var(--ds-shadow-raised)',
                     zIndex: 9999,
                     overflow: 'hidden',
                   }}
@@ -643,7 +643,7 @@ export function WorkstreamsPage() {
                     backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
                     border: `1px solid ${COLORS.borderDefault}`,
                     borderRadius: '12px',
-                    boxShadow: '0 4px 16px var(--ds-shadow-raised, rgba(0,0,0,0.12))',
+                    boxShadow: '0 4px 16px var(--ds-shadow-raised)',
                     zIndex: 9999,
                     overflow: 'hidden',
                   }}

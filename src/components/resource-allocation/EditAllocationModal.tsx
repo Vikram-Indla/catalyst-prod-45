@@ -79,7 +79,7 @@ export function EditAllocationModal({
         className="fixed inset-0 z-[1101] flex items-center justify-center p-4 animate-in fade-in slide-in-from-bottom-2 duration-200"
       >
         <div 
-          className="bg-card rounded-xl w-full max-w-[340px] shadow-[0_16px_48px_var(--ds-shadow-raised, rgba(0,0,0,0.2))] border border-border"
+          className="bg-card rounded-xl w-full max-w-[340px] shadow-[0_16px_48px_var(--ds-shadow-raised)] border border-border"
           onClick={(e) => e.stopPropagation()}
           role="dialog"
           aria-modal="true"
@@ -210,7 +210,7 @@ export function EditAllocationModal({
                   <div 
                     className="w-full h-2 rounded border border-dashed border-primary"
                     style={{
-                      background: 'repeating-linear-gradient(-45deg, var(--ds-background-information, rgba(37,99,235,0.3)), var(--ds-background-information, rgba(37,99,235,0.3)) 2px, var(--ds-background-information, rgba(37,99,235,0.5)) 2px, var(--ds-background-information, rgba(37,99,235,0.5)) 4px)'
+                      background: 'repeating-linear-gradient(-45deg, var(--ds-background-information), var(--ds-background-information) 2px, var(--ds-background-information) 2px, var(--ds-background-information) 4px)'
                     }}
                   />
                 </button>

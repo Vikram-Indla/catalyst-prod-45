@@ -185,7 +185,7 @@ export function ProjectChromeBand({
         />
 
         {/* H1. 20px / weight 653 / -0.003em — exact Jira parity probe at
-            "Senaei BAU" 20px/653 color var(--ds-text, rgb(41,42,46)). Inline so it sits on
+            "Senaei BAU" 20px/653 color var(--ds-text). Inline so it sits on
             the same row as the icon and actions. */}
         <h1
           style={{
@@ -235,7 +235,7 @@ export function ProjectChromeBand({
             page-chrome right-edge icon CTAs. Probed Jira positions at
             x=1118 (Give feedback) and x=1158 (Enter full screen) on a
             1214px viewport — both 31×31, fontWeight 500, color
-            var(--ds-text-subtle, rgb(80,82,88)). Caller passes pre-built buttons; band only
+            var(--ds-text-subtle). Caller passes pre-built buttons; band only
             renders the wrapper row. */}
         {pageChromeRightCtas != null && (
           <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginLeft: 8 }}>
@@ -247,7 +247,7 @@ export function ProjectChromeBand({
       {/* Apr 27 2026 (regression iter 2 — tabs row landed): Row C tabs,
           matching Jira parity probe at y=127 with anchor links "All
           work" (x=87, w=97) and "Releases" (x=189, w=104), color
-          var(--ds-text-subtle, rgb(80,82,88)), fontWeight 500. Skipped when undefined. */}
+          var(--ds-text-subtle), fontWeight 500. Skipped when undefined. */}
       {tabs && tabs.length > 0 && (
         <nav
           aria-label="Project sub-navigation"
@@ -311,7 +311,7 @@ export function ProjectChromeBand({
                 cursor: 'pointer',
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9, 30, 66, 0.06))';
+                e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered)';
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.background = 'transparent';

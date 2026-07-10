@@ -404,7 +404,7 @@ function MoreActionsButton() {
             background: token('elevation.surface.overlay', 'var(--ds-surface)'),
             border: `1px solid ${token('color.border', 'var(--ds-border)')}`,
             borderRadius: 6,
-            boxShadow: '0 8px 28px var(--ds-shadow-raised, rgba(9,30,66,0.25))',
+            boxShadow: '0 8px 28px var(--ds-shadow-raised)',
             padding: '4px 0',
             minWidth: 180,
             zIndex: 9999,
@@ -430,7 +430,7 @@ function MoreActionsButton() {
               transition: 'background 120ms',
             }}
             onMouseEnter={(e) => {
-              (e.target as HTMLElement).style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))');
+              (e.target as HTMLElement).style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle-hovered)');
             }}
             onMouseLeave={(e) => {
               (e.target as HTMLElement).style.background = 'none';
@@ -458,7 +458,7 @@ function MoreActionsButton() {
               transition: 'background 120ms',
             }}
             onMouseEnter={(e) => {
-              (e.target as HTMLElement).style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))');
+              (e.target as HTMLElement).style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle-hovered)');
             }}
             onMouseLeave={(e) => {
               (e.target as HTMLElement).style.background = 'none';

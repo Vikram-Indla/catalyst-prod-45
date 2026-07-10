@@ -161,7 +161,7 @@ export const R360ChronologyView: React.FC<Props> = ({ items, onItemClick, member
                       border: '1px solid var(--divider)', borderRadius: '8px', cursor: 'pointer', position: 'relative',
                       transition: 'border-color .15s, box-shadow .15s',
                     }}
-                      onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--fg-4)'; e.currentTarget.style.boxShadow = '0 1px 4px var(--ds-shadow-overlay, rgba(15,23,42,.06))'; }}
+                      onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--fg-4)'; e.currentTarget.style.boxShadow = '0 1px 4px var(--ds-shadow-overlay)'; }}
                       onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--divider)'; e.currentTarget.style.boxShadow = 'none'; }}
                     >
                       {/* 3px ACCENT BAR */}

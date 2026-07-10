@@ -87,10 +87,10 @@ export function GenerationOverlay({ document, onComplete }: GenerationOverlayPro
   const secs = (elapsed % 60).toString().padStart(2, '0');
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center" style={{ backgroundColor: 'var(--ds-shadow-raised, rgba(0,0,0,0.2))' }}>
+    <div className="fixed inset-0 z-[100] flex items-center justify-center" style={{ backgroundColor: 'var(--ds-shadow-raised)' }}>
       <div
         className="bg-white rounded-2xl w-[600px] max-h-[90vh] overflow-y-auto animate-scale-in"
-        style={{ boxShadow: '0 25px 50px var(--ds-shadow-raised, rgba(0,0,0,0.15))', padding: '32px' }}
+        style={{ boxShadow: '0 25px 50px var(--ds-shadow-raised)', padding: '32px' }}
       >
         {/* Title */}
         <h2 className="text-xl font-extrabold text-foreground">
@@ -212,8 +212,8 @@ export function GenerationOverlay({ document, onComplete }: GenerationOverlayPro
 
       <style>{`
         @keyframes ra-pulse {
-          0%, 100% { box-shadow: 0 0 0 0 var(--ds-background-information, rgba(37, 99, 235, 0.3)); }
-          50% { box-shadow: 0 0 0 8px var(--ds-background-information, rgba(37, 99, 235, 0)); }
+          0%, 100% { box-shadow: 0 0 0 0 var(--ds-background-information); }
+          50% { box-shadow: 0 0 0 8px var(--ds-background-information); }
         }
       `}</style>
     </div>

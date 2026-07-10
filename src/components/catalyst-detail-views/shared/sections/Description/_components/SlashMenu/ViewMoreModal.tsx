@@ -221,7 +221,7 @@ export function ViewMoreModal({ isOpen, onClose, editor, onExternalAction }: Pro
       style={{
         position: 'fixed',
         inset: 0,
-        background: 'var(--ds-shadow-raised, rgba(9,30,66,0.54))',
+        background: 'var(--ds-shadow-raised)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -238,7 +238,7 @@ export function ViewMoreModal({ isOpen, onClose, editor, onExternalAction }: Pro
           borderRadius: 8,
           /* Drop shadow only — removed the 1px hairline ring so the modal
              has no border, just elevation. */
-          boxShadow: '0 12px 24px -8px var(--ds-shadow-raised, rgba(9,30,66,0.30))',
+          boxShadow: '0 12px 24px -8px var(--ds-shadow-raised)',
           display: 'flex',
           flexDirection: 'column',
           overflow: 'hidden',
@@ -274,7 +274,7 @@ export function ViewMoreModal({ isOpen, onClose, editor, onExternalAction }: Pro
             }}
             onMouseEnter={(e) => {
               e.currentTarget.style.background =
-                'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))';
+                'var(--ds-background-neutral-subtle-hovered)';
             }}
             onMouseLeave={(e) => {
               e.currentTarget.style.background = 'transparent';
@@ -340,7 +340,7 @@ export function ViewMoreModal({ isOpen, onClose, editor, onExternalAction }: Pro
                   onMouseEnter={(e) => {
                     if (active) return;
                     e.currentTarget.style.background =
-                      'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))';
+                      'var(--ds-background-neutral-subtle-hovered)';
                   }}
                   onMouseLeave={(e) => {
                     if (active) return;
@@ -441,7 +441,7 @@ export function ViewMoreModal({ isOpen, onClose, editor, onExternalAction }: Pro
                       onMouseEnter={(e) => {
                         if (active) return;
                         e.currentTarget.style.background =
-                          'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))';
+                          'var(--ds-background-neutral-subtle-hovered)';
                       }}
                       onMouseLeave={(e) => {
                         if (active) return;

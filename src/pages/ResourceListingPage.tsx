@@ -102,7 +102,7 @@ function useTokens(dk: boolean) {
     tooltipBg:    dk ? 'var(--ds-surface-raised, var(--cp-ink-1))' : 'var(--ds-text)',
     tooltipText:  dk ? 'var(--ds-text, var(--cp-bg-neutral))' : 'var(--ds-surface-sunken)',
     divider:      dk ? 'var(--ds-border, var(--cp-ink-1))' : 'var(--ds-border, var(--cp-border, var(--cp-bg-sunken)))',
-    focusShadow:  dk ? '0 0 0 3px var(--ds-background-information, rgba(37,99,235,.2))' : '0 0 0 3px var(--ds-background-information, rgba(37,99,235,.1))',
+    focusShadow:  dk ? '0 0 0 3px var(--ds-background-information)' : '0 0 0 3px var(--ds-background-information)',
   }), [dk]);
 }
 
@@ -341,7 +341,7 @@ export default function ResourceListingPage() {
                 {pill.label}
                 {showBadge && (
                   <span style={{
-                    background: isActive ? ('var(--cp-border-subtle, var(--ds-shadow-raised, rgba(0,0,0,0.06)))') : t.badgeBg,
+                    background: isActive ? ('var(--cp-border-subtle, var(--ds-shadow-raised))') : t.badgeBg,
                     color: isActive ? 'inherit' : t.text3,
                     borderRadius: 3, padding: '0 5px',
                     fontSize: 'var(--ds-font-size-100)', fontWeight: 600,
@@ -496,7 +496,7 @@ export default function ResourceListingPage() {
                         <ActionBtn
                           tooltip="Open Intelligence"
                           bg="var(--cp-purple-60, var(--ds-background-discovery-bold))" bgHover="var(--ds-background-discovery-bold)"
-                          shadowColor="var(--ds-background-discovery-bold, rgba(124,58,237,0.2))"
+                          shadowColor="var(--ds-background-discovery-bold)"
                           icon={<Zap size={13} strokeWidth={1.9} />}
                           onClick={(e) => {
                             e.stopPropagation();
@@ -512,14 +512,14 @@ export default function ResourceListingPage() {
                         <ActionBtn
                           tooltip="Chronology View"
                           bg="var(--ds-text-brand, var(--cp-workstream-catalyst-primary))" bgHover="var(--ds-background-brand-bold-hovered)"
-                          shadowColor="var(--ds-background-information, rgba(37,99,235,0.2))"
+                          shadowColor="var(--ds-background-information)"
                           icon={<Clock size={13} strokeWidth={1.9} />}
                           onClick={(e) => { e.stopPropagation(); navTo(r.id, 'chronology'); }}
                         />
                         <ActionBtn
                           tooltip="Board View"
                           bg="var(--ds-chart-teal-bold)" bgHover="var(--ds-chart-teal-bolder)"
-                          shadowColor="var(--ds-background-success, rgba(13,148,136,0.2))"
+                          shadowColor="var(--ds-background-success)"
                           icon={<LayoutGrid size={13} strokeWidth={1.9} />}
                           onClick={(e) => { e.stopPropagation(); navTo(r.id, 'board'); }}
                         />
@@ -706,7 +706,7 @@ function ActionBtn({
         onMouseEnter={e => {
           e.currentTarget.style.background = bg;
           e.currentTarget.style.color = 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))';
-          e.currentTarget.style.boxShadow = `0 2px 8px ${shadowColor || 'var(--ds-shadow-raised, rgba(0,0,0,0.12))'}`;
+          e.currentTarget.style.boxShadow = `0 2px 8px ${shadowColor || 'var(--ds-shadow-raised)'}`;
           e.currentTarget.style.transform = 'translateY(-1px)';
         }}
         onMouseLeave={e => {

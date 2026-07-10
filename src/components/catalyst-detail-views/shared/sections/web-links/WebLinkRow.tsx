@@ -123,7 +123,7 @@ export function WebLinkRow({ link, onUnlink }: WebLinkRowProps) {
             ? 'var(--ds-background-neutral-hovered)'
             : 'var(--cp-bg-elevated)',
           border: '1px solid var(--ds-border)',
-          boxShadow: '0 1px 2px var(--ds-background-neutral-subtle-pressed, rgba(9, 30, 66, 0.08))',
+          boxShadow: '0 1px 2px var(--ds-background-neutral-subtle-pressed)',
           transition: 'background 0.12s, box-shadow 0.12s',
           cursor: 'default',
         }}
@@ -183,7 +183,7 @@ export function WebLinkRow({ link, onUnlink }: WebLinkRowProps) {
               padding: 0,
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))';
+              e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered)';
             }}
             onMouseLeave={(e) => {
               e.currentTarget.style.background = 'transparent';

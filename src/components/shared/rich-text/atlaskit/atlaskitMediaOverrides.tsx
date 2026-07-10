@@ -120,7 +120,7 @@ function ImageLightbox({ src, onClose }: { src: string; onClose: () => void }) {
       onClick={onClose}
       style={{
         position: 'fixed', inset: 0,
-        background: 'var(--ds-shadow-raised, rgba(0,0,0,0.85))',
+        background: 'var(--ds-shadow-raised)',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         zIndex: 1000, cursor: 'zoom-out',
       }}
@@ -246,14 +246,14 @@ function MediaImageCard({ src, alt, onClick }: { src: string; alt?: string; onCl
           style={{
             position: 'absolute', top: 8, right: 8,
             width: 32, height: 32, borderRadius: 4,
-            background: 'var(--ds-shadow-raised, rgba(9, 30, 66, 0.54))',
+            background: 'var(--ds-shadow-raised)',
             border: 'none', cursor: 'pointer',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', transition: 'background 0.15s',
             zIndex: 2,
           }}
-          onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-shadow-raised, rgba(9, 30, 66, 0.71))'; }}
-          onMouseLeave={e => { e.currentTarget.style.background = 'var(--ds-shadow-raised, rgba(9, 30, 66, 0.54))'; }}
+          onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-shadow-raised)'; }}
+          onMouseLeave={e => { e.currentTarget.style.background = 'var(--ds-shadow-raised)'; }}
         >
           <Download size={16} />
         </button>

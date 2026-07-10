@@ -289,7 +289,7 @@ export function T10EnterpriseSidePanel({
         style={{
           position: 'fixed',
           inset: 0,
-          background: 'var(--ds-shadow-overlay, rgba(15, 23, 42, 0.5))',
+          background: 'var(--ds-shadow-overlay)',
           backdropFilter: 'blur(4px)',
           WebkitBackdropFilter: 'blur(4px)',
           zIndex: 9998,
@@ -308,7 +308,7 @@ export function T10EnterpriseSidePanel({
           width: '480px',
           maxWidth: '100vw',
           background: COLORS.white,
-          boxShadow: '-8px 0 32px var(--ds-shadow-raised, rgba(0, 0, 0, 0.12))',
+          boxShadow: '-8px 0 32px var(--ds-shadow-raised)',
           zIndex: 9999,
           display: 'flex',
           flexDirection: 'column',
@@ -348,7 +348,7 @@ export function T10EnterpriseSidePanel({
                     : 'transparent',
                 border: rankTier === 'buffer' ? `2px dashed ${COLORS.gray300}` : 'none',
                 color: rankTier === 'buffer' ? COLORS.gray400 : 'white',
-                boxShadow: rankTier === 'top' ? '0 4px 12px var(--ds-background-information-bold, rgba(59, 130, 246, 0.3))' : 'none',
+                boxShadow: rankTier === 'top' ? '0 4px 12px var(--ds-background-information-bold)' : 'none',
               }}
             >
               {item.rank}
@@ -965,7 +965,7 @@ export function T10EnterpriseSidePanel({
                   onFocus={e => {
                     if (!isReadOnly) {
                       e.currentTarget.style.borderColor = COLORS.blue;
-                      e.currentTarget.style.boxShadow = '0 0 0 3px var(--ds-background-information-bold, rgba(59, 130, 246, 0.1))';
+                      e.currentTarget.style.boxShadow = '0 0 0 3px var(--ds-background-information-bold)';
                     }
                   }}
                   onBlur={e => {
@@ -1190,7 +1190,7 @@ function Dropdown({ children, style }: { children: React.ReactNode; style?: Reac
         background: COLORS.white,
         border: `1px solid ${COLORS.gray200}`,
         borderRadius: '12px',
-        boxShadow: '0 10px 40px var(--ds-shadow-raised, rgba(0,0,0,0.12))',
+        boxShadow: '0 10px 40px var(--ds-shadow-raised)',
         zIndex: 100,
         overflow: 'hidden',
         ...style,

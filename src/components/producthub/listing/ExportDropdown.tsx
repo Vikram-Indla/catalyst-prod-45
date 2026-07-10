@@ -102,7 +102,7 @@ export function ExportDropdown({ data, anchorRef, isOpen, onClose }: ExportDropd
         left: anchorRect.right - 160,
         width: 160,
         border: '1px solid var(--ds-border)',
-        boxShadow: '0 8px 24px var(--ds-shadow-raised, rgba(0,0,0,0.18))',
+        boxShadow: '0 8px 24px var(--ds-shadow-raised)',
         zIndex: 500,
         background: 'var(--bg-app)',
       }}

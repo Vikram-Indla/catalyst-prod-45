@@ -57,7 +57,7 @@ export function Swimlane({
       border: `1px solid ${KANBAN_COLORS.borderLight}`,
       marginBottom: '16px',
       overflow: 'hidden',
-      boxShadow: '0 1px 3px var(--ds-shadow-raised, rgba(0,0,0,0.04))',
+      boxShadow: '0 1px 3px var(--ds-shadow-raised)',
     }}>
       {/* Swimlane Header */}
       <div

@@ -22,7 +22,7 @@ export function RoadmapKPIStrip({ stats }: RoadmapKPIStripProps) {
     border: `1px solid ${'var(--cp-border, var(--cp-border, var(--cp-bg-sunken)))'}`,
     borderRadius: 12,
     padding: '12px 18px',
-    boxShadow: isDark ? 'none' : '0 1px 3px var(--ds-shadow-raised, rgba(0,0,0,0.06))',
+    boxShadow: isDark ? 'none' : '0 1px 3px var(--ds-shadow-raised)',
   };
 
   const labelStyle: React.CSSProperties = {

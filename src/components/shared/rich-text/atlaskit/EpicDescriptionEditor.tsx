@@ -170,7 +170,7 @@ if (typeof document !== 'undefined' && !document.getElementById(TOOLBAR_STYLE_ID
       cursor: pointer;
     }
     .cv-tfmt-trigger:hover {
-      background: var(--ds-background-neutral-subtle-hovered, rgba(9, 30, 66, 0.06));
+      background: var(--ds-background-neutral-subtle-hovered);
     }
     .cv-tfmt-trigger[aria-expanded="true"] {
       background: var(--ds-background-selected);
@@ -192,7 +192,7 @@ if (typeof document !== 'undefined' && !document.getElementById(TOOLBAR_STYLE_ID
       background: var(--ds-surface-overlay);
       border: 1px solid var(--ds-border);
       border-radius: 4px;
-      box-shadow: 0 4px 8px -2px var(--ds-shadow-raised, rgba(9,30,66,0.25)), 0 0 1px var(--ds-shadow-raised, rgba(9,30,66,0.31));
+      box-shadow: 0 4px 8px -2px var(--ds-shadow-raised), 0 0 1px var(--ds-shadow-raised);
       padding: 4px 0;
       font-family: "Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", sans-serif;
     }
@@ -210,7 +210,7 @@ if (typeof document !== 'undefined' && !document.getElementById(TOOLBAR_STYLE_ID
       text-align: left;
     }
     .cv-tfmt-item:hover {
-      background: var(--ds-background-neutral-subtle-hovered, rgba(9, 30, 66, 0.06));
+      background: var(--ds-background-neutral-subtle-hovered);
     }
     .cv-tfmt-glyph {
       display: inline-flex;

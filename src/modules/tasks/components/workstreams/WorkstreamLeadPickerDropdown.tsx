@@ -80,7 +80,7 @@ export const LeadPickerDropdown: React.FC<{
         backgroundColor: COLORS.surfaceWhite,
         border: `1px solid ${COLORS.borderLight}`,
         borderRadius: '12px',
-        boxShadow: '0 10px 40px var(--ds-shadow-raised, rgba(0, 0, 0, 0.12))',
+        boxShadow: '0 10px 40px var(--ds-shadow-raised)',
         zIndex: 99999,
         overflow: 'hidden',
       }}

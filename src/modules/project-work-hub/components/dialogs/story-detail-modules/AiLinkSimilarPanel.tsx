@@ -206,7 +206,7 @@ function LinkAsSplitButton({
             border:
               "1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))",
             borderRadius: 4,
-            boxShadow: "0 4px 8px var(--ds-shadow-raised, rgba(9,30,66,.25))",
+            boxShadow: "0 4px 8px var(--ds-shadow-raised)",
             zIndex: 70,
             maxHeight: 320,
             overflowY: "auto",

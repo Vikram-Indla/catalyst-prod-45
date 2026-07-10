@@ -117,18 +117,18 @@ function RoadmapCard({ idea, onClick, isDark, dk }: { idea: IdeaRow; onClick: ()
       borderRadius: '6px',
       padding: '12px', marginBottom: '8px', cursor: 'pointer',
       transition: 'box-shadow 150ms ease, transform 150ms ease',
-      boxShadow: isDark ? 'none' : '0 1px 3px var(--ds-shadow-raised, rgba(0,0,0,0.06))',
+      boxShadow: isDark ? 'none' : '0 1px 3px var(--ds-shadow-raised)',
     }}
       onMouseEnter={e => {
         if (!isDark) {
-          e.currentTarget.style.boxShadow = '0 4px 12px var(--ds-shadow-raised, rgba(0,0,0,0.10))';
+          e.currentTarget.style.boxShadow = '0 4px 12px var(--ds-shadow-raised)';
           e.currentTarget.style.transform = 'translateY(-1px)';
         }
-        e.currentTarget.style.borderColor = isDark ? 'var(--ds-border-bold)' : 'var(--ds-background-information, rgba(37,99,235,0.3))';
+        e.currentTarget.style.borderColor = isDark ? 'var(--ds-border-bold)' : 'var(--ds-background-information)';
       }}
       onMouseLeave={e => {
         if (!isDark) {
-          e.currentTarget.style.boxShadow = '0 1px 3px var(--ds-shadow-raised, rgba(0,0,0,0.06))';
+          e.currentTarget.style.boxShadow = '0 1px 3px var(--ds-shadow-raised)';
           e.currentTarget.style.transform = 'none';
         }
         e.currentTarget.style.borderColor = 'var(--cp-border-default, rgba(15,23,42,0.12))';

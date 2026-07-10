@@ -154,7 +154,7 @@ export function DesignsSection({ workItemId }: DesignsSectionProps) {
             color: 'var(--ds-text-subtle)',
           }}
           onMouseEnter={(e) => {
-            e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))';
+            e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered)';
           }}
           onMouseLeave={(e) => {
             e.currentTarget.style.background = 'transparent';

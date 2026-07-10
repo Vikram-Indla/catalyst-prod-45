@@ -35,7 +35,7 @@ const buttonVariants = cva(
         success: "bg-[var(--ds-chart-teal-bold)] text-white hover:bg-[var(--ds-chart-teal-bolder)] shadow-sm",
         
         // AI - Purple gradient
-        ai: "bg-gradient-to-r from-[var(--ds-background-discovery-bold)] to-[var(--ds-background-discovery-bold)] text-white hover:from-[var(--ds-background-discovery-bold)] hover:to-[var(--ds-background-discovery-bold)] shadow-[0_4px_14px_-2px_var(--ds-background-discovery-bold, rgba(124,58,237,0.3))]",
+        ai: "bg-gradient-to-r from-[var(--ds-background-discovery-bold)] to-[var(--ds-background-discovery-bold)] text-white hover:from-[var(--ds-background-discovery-bold)] hover:to-[var(--ds-background-discovery-bold)] shadow-[0_4px_14px_-2px_var(--ds-background-discovery-bold)]",
         
         // Link style
         link: "text-brand-primary underline-offset-4 hover:underline p-0 h-auto",

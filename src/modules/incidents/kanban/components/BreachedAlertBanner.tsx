@@ -23,8 +23,8 @@ export const BreachedAlertBanner = memo(function BreachedAlertBanner({
     <div 
       className={cn(
         "mx-4 sm:mx-6 mb-4 px-4 py-3.5 flex items-center justify-between rounded-[10px]",
-        "bg-[var(--ds-background-danger, rgba(239,68,68,0.06))] dark:bg-[var(--ds-background-danger, rgba(239,68,68,0.15))]",
-        "border border-[var(--ds-background-danger, rgba(239,68,68,0.15))] dark:border-[var(--ds-background-danger, rgba(239,68,68,0.3))]"
+        "bg-[var(--ds-background-danger)] dark:bg-[var(--ds-background-danger)]",
+        "border border-[var(--ds-background-danger)] dark:border-[var(--ds-background-danger)]"
       )}
     >
       <div className="flex items-center gap-3">
@@ -33,7 +33,7 @@ export const BreachedAlertBanner = memo(function BreachedAlertBanner({
           <span className="text-[15px] font-bold text-[var(--ds-text-danger)] dark:text-[var(--ds-background-danger)]">
             {breachedCount} SLA {breachedCount === 1 ? 'Breach' : 'Breaches'}
           </span>
-          <span className="text-sm text-[var(--ds-background-danger, rgba(239,68,68,0.8))] dark:text-[rgba(248,113,113,0.8)]">
+          <span className="text-sm text-[var(--ds-background-danger)] dark:text-[rgba(248,113,113,0.8)]">
             Immediate attention required
           </span>
         </div>

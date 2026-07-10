@@ -190,7 +190,7 @@ export default function ImportJiraDrawer({ open, onOpenChange }: Props) {
               left: 0,
               right: 600,
               bottom: 0,
-              background: 'var(--ds-shadow-raised, rgba(0,0,0,0.4))',
+              background: 'var(--ds-shadow-raised)',
               zIndex: 49,
             }}
           />
@@ -214,7 +214,7 @@ export default function ImportJiraDrawer({ open, onOpenChange }: Props) {
               display: 'flex',
               flexDirection: 'column',
               borderLeft: '0.75px solid var(--ds-border)',
-              boxShadow: '-4px 0 24px var(--ds-shadow-raised, rgba(0,0,0,0.08))',
+              boxShadow: '-4px 0 24px var(--ds-shadow-raised)',
               background: 'var(--bg-app)',
               outline: 'none',
             }}
@@ -371,12 +371,12 @@ function Step1({
                 onClick={() => onSelect(p.project_key)}
                 style={{
                   height: 48, border: selected ? '1.5px solid var(--cp-blue)' : '0.75px solid var(--ds-border)',
-                  borderRadius: 6, background: selected ? 'var(--ds-background-information, rgba(37,99,235,0.04))' : 'var(--bg-app)',
+                  borderRadius: 6, background: selected ? 'var(--ds-background-information)' : 'var(--bg-app)',
                   padding: '8px 12px', display: 'flex', alignItems: 'center', gap: 12,
                   cursor: 'pointer', width: '100%', textAlign: 'left',
                   transition: 'background 0.1s',
                 }}
-                onMouseEnter={e => { if (!selected) (e.currentTarget as HTMLElement).style.background = 'var(--ds-shadow-raised, rgba(0,0,0,0.02))'; }}
+                onMouseEnter={e => { if (!selected) (e.currentTarget as HTMLElement).style.background = 'var(--ds-shadow-raised)'; }}
                 onMouseLeave={e => { if (!selected) (e.currentTarget as HTMLElement).style.background = 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))'; }}
               >
                 {/* Avatar */}
@@ -614,11 +614,11 @@ function Step2({
                   display: 'flex', alignItems: 'center', height: 50,
                   borderBottom: '0.75px solid var(--ds-background-neutral)',
                   cursor: 'pointer',
-                  background: checked ? 'var(--ds-background-information, rgba(37,99,235,0.04))' : 'transparent',
+                  background: checked ? 'var(--ds-background-information)' : 'transparent',
                   transition: 'background 0.1s',
                 }}
-                onMouseEnter={e => { if (!checked) (e.currentTarget as HTMLElement).style.background = 'var(--ds-shadow-raised, rgba(0,0,0,0.02))'; }}
-                onMouseLeave={e => { if (!checked) (e.currentTarget as HTMLElement).style.background = checked ? 'var(--ds-background-information, rgba(37,99,235,0.04))' : 'transparent'; }}
+                onMouseEnter={e => { if (!checked) (e.currentTarget as HTMLElement).style.background = 'var(--ds-shadow-raised)'; }}
+                onMouseLeave={e => { if (!checked) (e.currentTarget as HTMLElement).style.background = checked ? 'var(--ds-background-information)' : 'transparent'; }}
               >
                 <div style={{ width: 32, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   <input

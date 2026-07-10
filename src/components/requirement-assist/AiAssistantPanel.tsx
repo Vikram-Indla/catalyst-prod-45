@@ -121,7 +121,7 @@ export function AiAssistantPanel({ qualityScore, qualityBreakdown, verdict }: Ai
       {/* Generate Artifacts */}
       <button className={cn(
         'w-full h-10 flex items-center justify-center gap-2 rounded-[10px] text-sm font-bold text-white transition-all',
-        'bg-blue-600 hover:bg-blue-700 shadow-[0_2px_8px_var(--ds-background-information, rgba(37,99,235,0.18))]'
+        'bg-blue-600 hover:bg-blue-700 shadow-[0_2px_8px_var(--ds-background-information)]'
       )}>
         Generate Artifacts ▾
       </button>

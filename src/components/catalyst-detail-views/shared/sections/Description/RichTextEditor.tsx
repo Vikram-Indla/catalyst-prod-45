@@ -452,7 +452,7 @@ export function RichTextEditor({
               borderRadius: 999,
               background: 'var(--ds-surface-overlay)',
               border: '1px solid var(--ds-border)',
-              boxShadow: '0 2px 8px var(--ds-background-neutral-subtle-pressed, rgba(9,30,66,0.12))',
+              boxShadow: '0 2px 8px var(--ds-background-neutral-subtle-pressed)',
               animation: 'caty-pill-enter 220ms ease forwards',
               maxWidth: 420,
             }}

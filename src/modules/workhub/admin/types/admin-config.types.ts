@@ -21,11 +21,11 @@ export interface StatusMapping {
 }
 
 export const CATALYST_CATEGORY_COLORS: Record<CatalystCategory, { bg: string; text: string }> = {
-  'To Do':       { bg: 'var(--ds-background-neutral, rgba(148,163,184,0.12))', text: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))' },
-  'In Progress': { bg: 'var(--ds-background-information, rgba(37,99,235,0.1))',     text: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' },
-  'Blocked':     { bg: 'var(--ds-background-danger, rgba(239,68,68,0.1))',     text: 'var(--ds-text-danger)' },
-  'In Review':   { bg: 'var(--ds-background-discovery-bold, rgba(139,92,246,0.1))',    text: 'var(--ds-background-discovery-bold)' },
-  'Done':        { bg: 'var(--ds-background-success-bold, rgba(16,185,129,0.1))',    text: 'var(--quality-high)' },
+  'To Do':       { bg: 'var(--ds-background-neutral)', text: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))' },
+  'In Progress': { bg: 'var(--ds-background-information)',     text: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' },
+  'Blocked':     { bg: 'var(--ds-background-danger)',     text: 'var(--ds-text-danger)' },
+  'In Review':   { bg: 'var(--ds-background-discovery-bold)',    text: 'var(--ds-background-discovery-bold)' },
+  'Done':        { bg: 'var(--ds-background-success-bold)',    text: 'var(--quality-high)' },
 }
 
 // User mapping

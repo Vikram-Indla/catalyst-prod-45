@@ -85,7 +85,7 @@ function ProjectFilterDropdown({ value, options, onChange }: {
             background: token('elevation.surface.overlay', 'var(--ds-surface)'),
             border: `1px solid ${token('color.border', 'var(--ds-border)')}`,
             borderRadius: 8,
-            boxShadow: token('elevation.shadow.overlay', '0 8px 16px var(--ds-shadow-raised, rgba(9,30,66,0.15))'),
+            boxShadow: token('elevation.shadow.overlay', '0 8px 16px var(--ds-shadow-raised)'),
             minWidth: 200, padding: '4px 0', maxHeight: 320, overflowY: 'auto',
           }}
         >
@@ -109,7 +109,7 @@ function ProjectFilterDropdown({ value, options, onChange }: {
                     ? token('color.text.selected', 'var(--ds-link)')
                     : token('color.text', 'var(--ds-text)'),
                 }}
-                onMouseEnter={e => { if (!selected) (e.currentTarget as HTMLButtonElement).style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))'); }}
+                onMouseEnter={e => { if (!selected) (e.currentTarget as HTMLButtonElement).style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle-hovered)'); }}
                 onMouseLeave={e => { if (!selected) (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
               >
                 {opt

@@ -200,12 +200,12 @@ export function RequestListPanel({
                       )}
 
                       {(request.autoPriority === 'High' || request.autoPriority === 'high') && (
-                        <span className="px-1.5 py-0.5 rounded text-[10px] font-bold uppercase bg-[var(--ds-background-danger, rgba(239,68,68,0.08))] text-[var(--ds-text-danger)] border border-[var(--ds-background-danger, rgba(239,68,68,0.2))]">
+                        <span className="px-1.5 py-0.5 rounded text-[10px] font-bold uppercase bg-[var(--ds-background-danger)] text-[var(--ds-text-danger)] border border-[var(--ds-background-danger)]">
                           HIGH
                         </span>
                       )}
                       {(request.autoPriority === 'Critical' || request.autoPriority === 'critical') && (
-                        <span className="px-1.5 py-0.5 rounded text-[10px] font-bold uppercase bg-[var(--ds-background-danger, rgba(239,68,68,0.08))] text-[var(--ds-text-danger)] border border-[var(--ds-background-danger, rgba(239,68,68,0.2))]">
+                        <span className="px-1.5 py-0.5 rounded text-[10px] font-bold uppercase bg-[var(--ds-background-danger)] text-[var(--ds-text-danger)] border border-[var(--ds-background-danger)]">
                           CRITICAL
                         </span>
                       )}

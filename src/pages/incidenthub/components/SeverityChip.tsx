@@ -8,8 +8,8 @@ import { useTheme } from '@/hooks/useTheme';
 
 const SEV_STYLES: Record<string, { bg: string; text: string; border: string; darkBg: string; darkText: string; darkBorder: string }> = {
   SEV1: { bg: 'var(--ds-background-danger)', text: 'var(--ds-text-danger)', border: 'var(--ds-background-danger)', darkBg: 'rgba(248,113,113,0.12)', darkText: 'var(--ds-border-danger)', darkBorder: 'rgba(248,113,113,0.25)' },
-  SEV2: { bg: 'var(--ds-background-warning)', text: 'var(--ds-text-warning)', border: 'var(--ds-background-warning)', darkBg: 'var(--ds-background-warning-bold, rgba(251,191,36,0.12))', darkText: 'var(--ds-background-warning, var(--ds-background-warning))', darkBorder: 'var(--ds-background-warning-bold, rgba(251,191,36,0.25))' },
-  SEV3: { bg: 'var(--ds-background-information)', text: 'var(--ds-link-pressed)', border: 'var(--ds-background-information)', darkBg: 'var(--ds-background-information-bold, rgba(59,130,246,0.12))', darkText: 'var(--ds-background-information-bold, var(--ds-link))', darkBorder: 'var(--ds-background-information-bold, rgba(59,130,246,0.25))' },
+  SEV2: { bg: 'var(--ds-background-warning)', text: 'var(--ds-text-warning)', border: 'var(--ds-background-warning)', darkBg: 'var(--ds-background-warning-bold)', darkText: 'var(--ds-background-warning, var(--ds-background-warning))', darkBorder: 'var(--ds-background-warning-bold)' },
+  SEV3: { bg: 'var(--ds-background-information)', text: 'var(--ds-link-pressed)', border: 'var(--ds-background-information)', darkBg: 'var(--ds-background-information-bold)', darkText: 'var(--ds-background-information-bold, var(--ds-link))', darkBorder: 'var(--ds-background-information-bold)' },
   SEV4: { bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))', text: 'var(--ds-text-subtle)', border: 'var(--ds-border, var(--cp-border, var(--cp-bg-sunken)))', darkBg: 'var(--ds-border, var(--cp-ink-1))', darkText: 'var(--ds-text-subtlest)', darkBorder: 'var(--ds-border, var(--cp-ink-1))' },
 };
 

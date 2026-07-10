@@ -120,7 +120,7 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
           aria-hidden="true"
           style={{
             position: 'fixed', inset: 0, top: 48,
-            background: 'var(--ds-shadow-overlay, rgba(15,23,42,0.30))', zIndex: 49,
+            background: 'var(--ds-shadow-overlay)', zIndex: 49,
             animation: 'ka-overlay-in 200ms ease',
           }}
         />
@@ -134,8 +134,8 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
           position: 'fixed', top: 48, right: 0, bottom: 0,
           width: '50vw', minWidth: 480, maxWidth: 960,
           background: 'var(--bg-1)',
-          borderLeft: '1px solid var(--ds-shadow-overlay, rgba(15,23,42,0.12))',
-          boxShadow: '-4px 0 24px var(--ds-shadow-raised, rgba(0,0,0,0.06))',
+          borderLeft: '1px solid var(--ds-shadow-overlay)',
+          boxShadow: '-4px 0 24px var(--ds-shadow-raised)',
           zIndex: 50, display: 'flex', flexDirection: 'column',
           transform: isOpen ? 'translateX(0)' : 'translateX(100%)',
           transition: 'transform 300ms cubic-bezier(0,0,0.2,1)',
@@ -162,10 +162,10 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
               display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
             }}>
               <svg width="22" height="22" viewBox="0 0 100 100" fill="none">
-                <line x1="50" y1="50" x2="22" y2="22" stroke="var(--ds-surface, rgba(255,255,255,0.45))" strokeWidth="4" strokeLinecap="round"/>
-                <line x1="50" y1="50" x2="78" y2="22" stroke="var(--ds-surface, rgba(255,255,255,0.45))" strokeWidth="4" strokeLinecap="round"/>
-                <line x1="50" y1="50" x2="22" y2="78" stroke="var(--ds-surface, rgba(255,255,255,0.45))" strokeWidth="4" strokeLinecap="round"/>
-                <line x1="50" y1="50" x2="78" y2="78" stroke="var(--ds-surface, rgba(255,255,255,0.45))" strokeWidth="4" strokeLinecap="round"/>
+                <line x1="50" y1="50" x2="22" y2="22" stroke="var(--ds-surface)" strokeWidth="4" strokeLinecap="round"/>
+                <line x1="50" y1="50" x2="78" y2="22" stroke="var(--ds-surface)" strokeWidth="4" strokeLinecap="round"/>
+                <line x1="50" y1="50" x2="22" y2="78" stroke="var(--ds-surface)" strokeWidth="4" strokeLinecap="round"/>
+                <line x1="50" y1="50" x2="78" y2="78" stroke="var(--ds-surface)" strokeWidth="4" strokeLinecap="round"/>
                 <circle cx="22" cy="22" r="10" fill="white" opacity="0.9"/>
                 <circle cx="78" cy="22" r="10" fill="white" opacity="0.9"/>
                 <circle cx="22" cy="78" r="10" fill="white" opacity="0.9"/>
@@ -309,7 +309,7 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
               style={{
                 width: 36, height: 50, borderRadius: 8, flexShrink: 0,
                 border: 'none',
-                background: input.trim() ? 'var(--cp-blue)' : 'var(--ds-shadow-overlay, rgba(15,23,42,0.06))',
+                background: input.trim() ? 'var(--cp-blue)' : 'var(--ds-shadow-overlay)',
                 cursor: input.trim() ? 'pointer' : 'default',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 transition: 'background 80ms',
@@ -339,8 +339,8 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
           .ka-icon-btn:focus-visible { outline: 2px solid var(--ds-background-discovery-bold); outline-offset: 2px; }
           .ka-scroll-area::-webkit-scrollbar { width: 4px; }
           .ka-scroll-area::-webkit-scrollbar-track { background: transparent; }
-          .ka-scroll-area::-webkit-scrollbar-thumb { background: var(--ds-shadow-overlay, rgba(15,23,42,0.18)); border-radius: 4px; }
-          .ka-scroll-area::-webkit-scrollbar-thumb:hover { background: var(--ds-shadow-overlay, rgba(15,23,42,0.28)); }
+          .ka-scroll-area::-webkit-scrollbar-thumb { background: var(--ds-shadow-overlay); border-radius: 4px; }
+          .ka-scroll-area::-webkit-scrollbar-thumb:hover { background: var(--ds-shadow-overlay); }
         `}</style>
       </div>
     </>

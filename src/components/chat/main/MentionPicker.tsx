@@ -104,7 +104,7 @@ export function MentionPicker({ textareaRef, value, onChange }: MentionPickerPro
         background: 'var(--ds-surface-overlay)',
         border: '1px solid var(--ds-border)',
         borderRadius: 6,
-        boxShadow: '0 4px 8px var(--ds-shadow-raised, rgba(9,30,66,0.15))',
+        boxShadow: '0 4px 8px var(--ds-shadow-raised)',
         width: 260,
         maxHeight: 240,
         overflowY: 'auto',

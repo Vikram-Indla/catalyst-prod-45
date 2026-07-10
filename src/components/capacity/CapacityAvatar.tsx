@@ -71,7 +71,7 @@ export function CapacityAvatar({
           backgroundColor: safeAvatarUrl ? 'transparent' : 'var(--cp-blue-wash)',
           color: 'var(--cp-blue)',
           border: '2px solid var(--ds-background-information-bold)',
-          boxShadow: '0 1px 3px var(--ds-background-information-bold, rgba(59, 130, 246, 0.1))',
+          boxShadow: '0 1px 3px var(--ds-background-information-bold)',
         }}
       >
         {safeAvatarUrl ? (
@@ -89,7 +89,7 @@ export function CapacityAvatar({
             styles.flag
           )}
           style={{
-            boxShadow: '0 1px 3px var(--ds-shadow-raised, rgba(0,0,0,0.2))',
+            boxShadow: '0 1px 3px var(--ds-shadow-raised)',
             border: '1.5px solid white',
           }}
         >

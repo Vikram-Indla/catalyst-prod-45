@@ -378,8 +378,8 @@ export function HierarchyMapping() {
 
       {/* Delete modal */}
       {deletingLevel !== null && (
-        <div style={{ position: 'fixed', inset: 0, background: 'var(--ds-shadow-raised, rgba(9,30,66,0.54))', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <div style={{ background: 'var(--ds-surface-overlay)', border: '1px solid var(--ds-border)', borderRadius: 8, padding: 24, maxWidth: 400, width: '90%', boxShadow: '0 8px 28px var(--ds-shadow-raised, rgba(9,30,66,0.25))' }}>
+        <div style={{ position: 'fixed', inset: 0, background: 'var(--ds-shadow-raised)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div style={{ background: 'var(--ds-surface-overlay)', border: '1px solid var(--ds-border)', borderRadius: 8, padding: 24, maxWidth: 400, width: '90%', boxShadow: '0 8px 28px var(--ds-shadow-raised)' }}>
             <h3 style={{ margin: '0 0 8px', fontSize: 'var(--ds-font-size-500)', fontWeight: 600, color: 'var(--ds-text)' }}>
               Delete "{levels.find(l => l.level === deletingLevel)?.name}"?
             </h3>

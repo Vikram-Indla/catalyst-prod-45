@@ -38,7 +38,7 @@ export function QuickFilterAvatars({ members, selected, onToggle }: QuickFilterA
                 objectFit: 'cover',
                 cursor: 'pointer',
                 border: '2px solid white',
-                boxShadow: '0 1px 3px var(--ds-shadow-raised, rgba(0,0,0,0.1))',
+                boxShadow: '0 1px 3px var(--ds-shadow-raised)',
               }}
             />
           ) : (
@@ -56,7 +56,7 @@ export function QuickFilterAvatars({ members, selected, onToggle }: QuickFilterA
                 fontWeight: 600,
                 cursor: 'pointer',
                 border: '2px solid white',
-                boxShadow: '0 1px 3px var(--ds-shadow-raised, rgba(0,0,0,0.1))',
+                boxShadow: '0 1px 3px var(--ds-shadow-raised)',
               }}
               title={member.name}
             >
@@ -158,7 +158,7 @@ export function FilterDropdown({
           backgroundColor: KANBAN_COLORS.bgCard,
           border: `1px solid ${KANBAN_COLORS.borderLight}`,
           borderRadius: '12px',
-          boxShadow: '0 8px 24px var(--ds-shadow-raised, rgba(0,0,0,0.12))',
+          boxShadow: '0 8px 24px var(--ds-shadow-raised)',
           zIndex: 100,
           overflow: 'hidden',
         }}>
@@ -300,7 +300,7 @@ export function GroupByDropdown({ value, onChange, iconOnly }: GroupByDropdownPr
           backgroundColor: KANBAN_COLORS.bgCard,
           border: `1px solid ${KANBAN_COLORS.borderLight}`,
           borderRadius: '12px',
-          boxShadow: '0 8px 24px var(--ds-shadow-raised, rgba(0,0,0,0.12))',
+          boxShadow: '0 8px 24px var(--ds-shadow-raised)',
           zIndex: 100,
           overflow: 'hidden',
         }}>

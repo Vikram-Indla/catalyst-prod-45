@@ -51,7 +51,7 @@ export function BrTranslateButton({ loading, label, onClick }: BrTranslateButton
         if (!loading) {
           e.currentTarget.style.background = token(
             'color.background.neutral.hovered',
-            'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))',
+            'var(--ds-background-neutral-subtle-hovered)',
           );
         }
       }}

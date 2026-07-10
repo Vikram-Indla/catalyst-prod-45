@@ -259,7 +259,7 @@ export function JiraConnection() {
               <div style={{
                 marginTop: 16, padding: '12px 14px',
                 background: 'var(--wh-dng-bg)', borderRadius: 'var(--wh-rad)',
-                border: '1px solid var(--ds-background-danger, rgba(239,68,68,0.2))',
+                border: '1px solid var(--ds-background-danger)',
               }}>
                 <div style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--wh-dng)', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 4 }}>
                   ❌ Connection failed

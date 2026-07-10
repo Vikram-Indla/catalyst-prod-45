@@ -1256,9 +1256,9 @@ function ReplyComposer({
                   Left:  [BETA] pill · ℹ︎ icon · "Uses AI. Verify results."
                   Right: Caty logo + "Caty" text (replaces Rovo branding)
                 Font/color/padding from Jira DOM probe 2026-05-28:
-                  footer border-top: 0.556px solid var(--ds-text, rgba(11,18,14,0.14))
+                  footer border-top: 0.556px solid var(--ds-text)
                   footer padding:    4px 12px  ·  height: ~40px
-                  text color:        var(--ds-text, rgb(41,42,46))  14px/400 */}
+                  text color:        var(--ds-text)  14px/400 */}
             {suggestionPhase === 'done' && (
               <div
                 style={{
@@ -1707,7 +1707,7 @@ function EmojiPickerPopover({
               transition: 'background 100ms ease',
               fontFamily: '"Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif',
             }}
-            onMouseEnter={e => ((e.target as HTMLElement).style.background = token('color.background.neutral.hovered', 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))'))}
+            onMouseEnter={e => ((e.target as HTMLElement).style.background = token('color.background.neutral.hovered', 'var(--ds-background-neutral-subtle-hovered)'))}
             onMouseLeave={e => ((e.target as HTMLElement).style.background = 'transparent')}
           >
             {em.char}

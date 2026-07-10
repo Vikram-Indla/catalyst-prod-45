@@ -214,7 +214,7 @@ export function dateLabelStyle(x: number, barTop: number, side: 'start' | 'end')
     border: '1px solid var(--ds-border)',
     borderRadius: 3, padding: '0px 5px',
     whiteSpace: 'nowrap', pointerEvents: 'none', zIndex: 11,
-    boxShadow: '0 1px 3px var(--ds-shadow-overflow, rgba(9,30,66,0.12))',
+    boxShadow: '0 1px 3px var(--ds-shadow-overflow)',
     fontFamily: 'var(--ds-font-family-body)',
   };
 }

@@ -130,8 +130,8 @@ export function BoardColumn({
             'flex-1 p-2 rounded-b-lg min-h-[200px]',
             'bg-gray-50 dark:bg-gray-900',
             isDragOver && 'bg-yellow-50 dark:bg-yellow-900/20',
-            isAtLimit && 'bg-[var(--ds-background-warning-bold, rgba(245,158,11,0.1))]',
-            isOverLimit && 'bg-[var(--ds-background-danger, rgba(239,68,68,0.1))]'
+            isAtLimit && 'bg-[var(--ds-background-warning-bold)]',
+            isOverLimit && 'bg-[var(--ds-background-danger)]'
           )}
         >
           {features.map((feature) => (

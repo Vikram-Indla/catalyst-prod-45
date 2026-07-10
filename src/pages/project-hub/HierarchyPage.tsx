@@ -124,11 +124,11 @@ function FilterTrigger({ label, values, onClear, onClick, isOpen }: {
         height: 32, padding: `${token('space.100', '8px')} ${token('space.150', '12px')}`, display: 'inline-flex', alignItems: 'center', gap: token('space.075', '6px'),
         fontSize: 'var(--ds-font-size-200)', fontWeight: 500, fontFamily: 'var(--cp-font-body)',
         color: active ? token('color.text.brand', 'var(--cp-workstream-catalyst-primary, var(--ds-link))') : token('color.text.subtle', 'var(--cp-text-secondary)'),
-        background: active ? token('color.background.selected', 'var(--ds-background-information, rgba(37,99,235,0.06))') : token('elevation.surface', 'var(--cp-bg-elevated)'),
-        border: `1px solid ${active ? token('color.border.selected', 'var(--ds-background-information, rgba(37,99,235,0.3))') : token('color.border', 'var(--cp-border-default)')}`,
+        background: active ? token('color.background.selected', 'var(--ds-background-information)') : token('elevation.surface', 'var(--cp-bg-elevated)'),
+        border: `1px solid ${active ? token('color.border.selected', 'var(--ds-background-information)') : token('color.border', 'var(--cp-border-default)')}`,
         borderRadius: 6, cursor: 'pointer', whiteSpace: 'nowrap',
         transition: 'all 80ms ease',
-        boxShadow: isOpen ? `0 0 0 3px ${token('color.border.focused', 'var(--ds-background-information, rgba(37,99,235,0.08))')}` : 'none',
+        boxShadow: isOpen ? `0 0 0 3px ${token('color.border.focused', 'var(--ds-background-information)')}` : 'none',
       }}
     >
       {label}
@@ -210,7 +210,7 @@ function FilterDropdown({ options, selected, onChange, onClose, searchable = fal
       <div ref={ref} style={{
         position: 'absolute', top: 'calc(100% + 6px)', left: 0, width: variant === 'assignee' ? 280 : 260,
         background: token('elevation.surface.overlay', 'var(--cp-bg-elevated)'), border: `1px solid ${token('color.border', 'var(--cp-border-default)')}`, borderRadius: 12,
-        boxShadow: token('elevation.shadow.overlay', 'var(--cp-shadow-popover, 0 12px 40px var(--ds-shadow-raised, rgba(0,0,0,0.10)))'), zIndex: 100, maxHeight: 360,
+        boxShadow: token('elevation.shadow.overlay', 'var(--cp-shadow-popover, 0 12px 40px var(--ds-shadow-raised))'), zIndex: 100, maxHeight: 360,
         display: 'flex', flexDirection: 'column', overflow: 'hidden',
       }}>
         {/* Search */}
@@ -252,10 +252,10 @@ function FilterDropdown({ options, selected, onChange, onClose, searchable = fal
                   display: 'flex', alignItems: 'center', gap: token('space.100', '8px'), padding: `${token('space.075', '6px')} ${token('space.150', '12px')}`,
                   cursor: 'pointer', fontSize: 'var(--ds-font-size-300)', color: token('color.text', 'var(--cp-text-primary)'), fontFamily: 'var(--cp-font-body)',
                   transition: 'background 80ms', borderRadius: 0,
-                  background: isSelected ? token('color.background.selected', 'var(--ds-background-information, rgba(37,99,235,0.04))') : 'transparent',
+                  background: isSelected ? token('color.background.selected', 'var(--ds-background-information)') : 'transparent',
                 }}
-                onMouseEnter={e => (e.currentTarget.style.background = isSelected ? token('color.background.selected.hovered', 'var(--ds-background-information, rgba(37,99,235,0.08))') : token('color.background.neutral.subtle.hovered', 'var(--cp-interact-hover)'))}
-                onMouseLeave={e => (e.currentTarget.style.background = isSelected ? token('color.background.selected', 'var(--ds-background-information, rgba(37,99,235,0.04))') : 'transparent')}
+                onMouseEnter={e => (e.currentTarget.style.background = isSelected ? token('color.background.selected.hovered', 'var(--ds-background-information)') : token('color.background.neutral.subtle.hovered', 'var(--cp-interact-hover)'))}
+                onMouseLeave={e => (e.currentTarget.style.background = isSelected ? token('color.background.selected', 'var(--ds-background-information)') : 'transparent')}
               >
                 <div style={{
                   width: 16, height: 16, borderRadius: 4, border: `1.5px solid ${isSelected ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' : 'var(--ds-text-disabled)'}`,
@@ -391,7 +391,7 @@ export default function HierarchyPage() {
       <div style={{
         height: 48, padding: `0 ${token('space.300', '24px')}`, borderBottom: `1px solid ${token('color.border', 'var(--cp-border-default)')}`, background: token('elevation.surface', 'var(--cp-bg-elevated)'),
         display: 'flex', alignItems: 'center', gap: token('space.100', '8px'),
-        boxShadow: token('elevation.shadow.raised', '0 1px 2px var(--ds-shadow-raised, rgba(0,0,0,0.03))'),
+        boxShadow: token('elevation.shadow.raised', '0 1px 2px var(--ds-shadow-raised)'),
       }}>
         {/* Search */}
         <div style={{
@@ -399,7 +399,7 @@ export default function HierarchyPage() {
           padding: `0 ${token('space.100', '8px')}`, background: token('color.background.neutral.subtle', 'var(--cp-bg-page)'), border: `1px solid ${token('color.border', 'var(--cp-border-default)')}`, borderRadius: 6,
           transition: 'border-color 80ms, box-shadow 80ms',
         }}
-          onFocus={e => { e.currentTarget.style.borderColor = token('color.border.focused', 'var(--ds-link)'); e.currentTarget.style.boxShadow = `0 0 0 3px ${token('color.border.focused', 'var(--ds-background-information, rgba(37,99,235,0.08))')}`; }}
+          onFocus={e => { e.currentTarget.style.borderColor = token('color.border.focused', 'var(--ds-link)'); e.currentTarget.style.boxShadow = `0 0 0 3px ${token('color.border.focused', 'var(--ds-background-information)')}`; }}
           onBlur={e => { e.currentTarget.style.borderColor = token('color.border', 'var(--cp-border-default)'); e.currentTarget.style.boxShadow = 'none'; }}
         >
           <Search size={14} color={token('color.icon.subtle', 'var(--ds-text-disabled)')} style={{ flexShrink: 0 }} />

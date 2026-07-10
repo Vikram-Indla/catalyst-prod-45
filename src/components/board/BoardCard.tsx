@@ -87,7 +87,7 @@ export function BoardCard({
           <span
             className="px-1.5 py-0.5 rounded text-[10px]"
             style={{
-              background: 'var(--ds-background-information-bold, rgba(59, 130, 246, 0.1))',
+              background: 'var(--ds-background-information-bold)',
               color: 'var(--ds-text-brand)'
             }}
           >

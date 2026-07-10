@@ -100,7 +100,7 @@ const submenuShellStyle: React.CSSProperties = {
   background: 'var(--ds-surface-overlay)',
   border: '1px solid var(--ds-border)',
   borderRadius: 6,
-  boxShadow: '0 8px 28px var(--ds-shadow-overlay, rgba(9,30,66,0.25))',
+  boxShadow: '0 8px 28px var(--ds-shadow-overlay)',
   padding: '4px 0',
   zIndex: 10000,
   fontFamily: 'var(--ds-font-family-body)',
@@ -158,7 +158,7 @@ function MenuRow({
         ...rowBaseStyle,
         cursor: disabled ? 'not-allowed' : 'pointer',
         color: disabled ? 'var(--ds-text-disabled)' : 'var(--ds-text)',
-        background: showHover ? 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))' : 'transparent',
+        background: showHover ? 'var(--ds-background-neutral-subtle-hovered)' : 'transparent',
       }}
     >
       <span style={{ flex: 1 }}>{label}</span>
@@ -620,7 +620,7 @@ function ParentRow({ candidate, onPick }: { candidate: TimelineIssue; onPick: ()
       style={{
         display: 'flex', alignItems: 'center', gap: 8,
         padding: '8px 12px', cursor: 'pointer',
-        background: hovered ? 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))' : 'transparent',
+        background: hovered ? 'var(--ds-background-neutral-subtle-hovered)' : 'transparent',
         fontFamily: 'var(--ds-font-family-body)',
       }}
     >

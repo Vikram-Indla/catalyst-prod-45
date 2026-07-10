@@ -83,7 +83,7 @@ export function GlobalMobileDrawer({
         style={{
           position: 'absolute',
           inset: 0,
-          background: 'var(--ds-blanket, rgba(9, 30, 66, 0.54))',
+          background: 'var(--ds-blanket)',
           // Reduced-motion: no fade
           animation: 'cpDrawerFadeIn 160ms ease-out',
         }}
@@ -147,7 +147,7 @@ export function GlobalMobileDrawer({
             }}
             onMouseEnter={(e) => {
               e.currentTarget.style.background =
-                'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))';
+                'var(--ds-background-neutral-subtle-hovered)';
             }}
             onMouseLeave={(e) => {
               e.currentTarget.style.background = 'transparent';

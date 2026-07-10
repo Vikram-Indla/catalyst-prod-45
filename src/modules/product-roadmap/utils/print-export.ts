@@ -6,15 +6,15 @@ import type { RoadmapDemand } from '../types/roadmap';
 import { format, parseISO } from 'date-fns';
 
 const STATUS_PRINT_COLORS: Record<string, { bg: string; c: string }> = {
-  new_request: { bg: 'var(--ds-background-information-bold, rgba(59,130,246,0.12))', c: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' },
+  new_request: { bg: 'var(--ds-background-information-bold)', c: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' },
   draft: { bg: 'rgba(115,115,115,0.12)', c: 'var(--ds-text-subtlest, var(--ds-text-subtlest))' },
-  submitted: { bg: 'var(--ds-background-information-bold, rgba(59,130,246,0.12))', c: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' },
-  in_review: { bg: 'var(--ds-background-warning-bold, rgba(245,158,11,0.12))', c: 'var(--ds-text-warning, var(--cp-warning))' },
-  approved: { bg: 'var(--ds-background-success-bold, rgba(34,197,94,0.12))', c: 'var(--ds-background-success-bold, var(--ds-background-success-bold))' },
-  rejected: { bg: 'var(--ds-background-danger, rgba(239,68,68,0.12))', c: 'var(--ds-text-danger, var(--cp-danger))' },
-  in_progress: { bg: 'var(--ds-background-discovery-bold, rgba(139,92,246,0.12))', c: 'var(--cp-purple-60)' },
+  submitted: { bg: 'var(--ds-background-information-bold)', c: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' },
+  in_review: { bg: 'var(--ds-background-warning-bold)', c: 'var(--ds-text-warning, var(--cp-warning))' },
+  approved: { bg: 'var(--ds-background-success-bold)', c: 'var(--ds-background-success-bold, var(--ds-background-success-bold))' },
+  rejected: { bg: 'var(--ds-background-danger)', c: 'var(--ds-text-danger, var(--cp-danger))' },
+  in_progress: { bg: 'var(--ds-background-discovery-bold)', c: 'var(--cp-purple-60)' },
   completed: { bg: 'rgba(21,128,61,0.12)', c: 'var(--ds-background-success-bold, var(--ds-background-success-bold))' },
-  cancelled: { bg: 'var(--ds-background-danger-bold, rgba(220,38,38,0.12))', c: 'var(--ds-text-danger, var(--cp-danger))' },
+  cancelled: { bg: 'var(--ds-background-danger-bold)', c: 'var(--ds-text-danger, var(--cp-danger))' },
 };
 
 function fdf(dateStr: string | null): string {

@@ -113,7 +113,7 @@ export function T10EditableTitle({
         display: 'inline-block',
       }}
       onMouseEnter={(e) => {
-        (e.currentTarget as HTMLSpanElement).style.backgroundColor = 'var(--ds-background-information, rgba(37, 99, 235, 0.05))';
+        (e.currentTarget as HTMLSpanElement).style.backgroundColor = 'var(--ds-background-information)';
       }}
       onMouseLeave={(e) => {
         (e.currentTarget as HTMLSpanElement).style.backgroundColor = 'transparent';

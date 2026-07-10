@@ -923,7 +923,7 @@ const VirtualizedColumnBody = memo(forwardRef(function VirtualizedColumnBody(
           aria-hidden="true"
           style={{
             position: 'absolute', top: 0, left: 0, right: 0, height: 20, zIndex: 2,
-            background: 'linear-gradient(to bottom, var(--ds-overlay, rgba(9,30,66,0.08)) 0%, transparent 100%)',
+            background: 'linear-gradient(to bottom, var(--ds-overlay) 0%, transparent 100%)',
             pointerEvents: 'none', borderRadius: '0 0 0 0',
           }}
         />
@@ -934,7 +934,7 @@ const VirtualizedColumnBody = memo(forwardRef(function VirtualizedColumnBody(
           aria-hidden="true"
           style={{
             position: 'absolute', bottom: 0, left: 0, right: 0, height: 20, zIndex: 2,
-            background: 'linear-gradient(to top, var(--ds-overlay, rgba(9,30,66,0.08)) 0%, transparent 100%)',
+            background: 'linear-gradient(to top, var(--ds-overlay) 0%, transparent 100%)',
             pointerEvents: 'none',
           }}
         />

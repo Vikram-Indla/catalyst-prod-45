@@ -24,7 +24,7 @@ const T = {
   border:      'var(--ds-border)',
   selected:    'var(--ds-background-selected)',
   brandBorder: 'var(--ds-border-brand)',
-  hover:       'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))',
+  hover:       'var(--ds-background-neutral-subtle-hovered)',
 };
 
 export function RbacRolesTable({

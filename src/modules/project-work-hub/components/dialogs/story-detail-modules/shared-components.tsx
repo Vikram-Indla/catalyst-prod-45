@@ -126,7 +126,7 @@ export function IssueRow({ item, columns, onDelete, onCopyLink }: IssueRowProps)
     <div className="sdm-child-row" role="listitem">
       <span className="sdm-drag-handle"><DragHandlerIcon label="Drag" /></span>
       <span className="sdm-type-icon" dangerouslySetInnerHTML={{ __html: WORK_ITEM_ICONS[item.issue_type] ?? WORK_ITEM_ICONS.task }} />
-      <span className="sdm-child-key" style={isDone ? { color: 'var(--ds-shadow-raised, rgba(9,30,66,0.4))' } : {}}>{item.issue_key}</span>
+      <span className="sdm-child-key" style={isDone ? { color: 'var(--ds-shadow-raised)' } : {}}>{item.issue_key}</span>
       <span className={`sdm-child-summary${isDone ? ' sdm-child-summary--done' : ''}`}>{item.summary}</span>
       {columns.status && (
         <span className="sdm-status-lozenge">
@@ -177,14 +177,14 @@ export function ColumnPicker({ columns, onChange }: { columns: ColumnConfig; onC
         <SettingsIcon label="Columns" /> Columns
       </button>
       {open && (
-        <div style={{ position: 'absolute', top: 'calc(100% + 4px)', right: 0, width: 200, background: 'var(--ds-surface)', border: '1px solid var(--ds-shadow-raised, rgba(9,30,66,.24))', borderRadius: 6, boxShadow: '0 6px 16px var(--ds-shadow-raised, rgba(9,30,66,.15))', zIndex: 60, overflow: 'hidden', paddingBottom: 4 }}>
-          <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: 'var(--ds-text-subtlest, var(--cp-text-secondary))', textTransform: 'uppercase', letterSpacing: '.05em', padding: '4px 12px 6px', borderBottom: '1px solid var(--ds-background-neutral-subtle-pressed, rgba(9,30,66,.1))' }}>Visible columns</div>
+        <div style={{ position: 'absolute', top: 'calc(100% + 4px)', right: 0, width: 200, background: 'var(--ds-surface)', border: '1px solid var(--ds-shadow-raised)', borderRadius: 6, boxShadow: '0 6px 16px var(--ds-shadow-raised)', zIndex: 60, overflow: 'hidden', paddingBottom: 4 }}>
+          <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: 'var(--ds-text-subtlest, var(--cp-text-secondary))', textTransform: 'uppercase', letterSpacing: '.05em', padding: '4px 12px 6px', borderBottom: '1px solid var(--ds-background-neutral-subtle-pressed)' }}>Visible columns</div>
           {COLS.map(col => (
             <div key={col.key} onClick={() => toggle(col.key)} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '4px 12px', cursor: 'pointer', transition: 'background .12s' }}
-              onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,.04))')}
+              onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered)')}
               onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
             >
-              <div style={{ width: 14, height: 14, borderRadius: 3, border: `1.5px solid ${columns[col.key] ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' : 'var(--ds-shadow-raised, rgba(9,30,66,.24))'}`, background: columns[col.key] ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' : 'var(--ds-surface)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, transition: 'background .12s, border-color .12s' }}>
+              <div style={{ width: 14, height: 14, borderRadius: 3, border: `1.5px solid ${columns[col.key] ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' : 'var(--ds-shadow-raised)'}`, background: columns[col.key] ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' : 'var(--ds-surface)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, transition: 'background .12s, border-color .12s' }}>
                 {columns[col.key] && <CheckMarkIcon label="" color="var(--ds-surface)" />}
               </div>
               <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))' }}>{col.label}</span>

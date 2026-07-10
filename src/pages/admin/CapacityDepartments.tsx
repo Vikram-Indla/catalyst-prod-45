@@ -141,9 +141,9 @@ export default function CapacityDepartmentsPage() {
             <thead style={{ background: 'var(--ds-background-neutral)' }}>
               <tr>
                 <th style={{ width: 40, padding: "8px 16px" }}></th>
-                <th style={{ textAlign: "left", padding: "8px 16px", fontSize: 12, fontWeight: 653, color: "var(--ds-text-subtle)", width: 96, borderBottom: "1.67px solid var(--ds-text, rgba(11, 18, 14, 0.14))" }}>DID</th>
-                <th style={{ textAlign: "left", padding: "8px 16px", fontSize: 12, fontWeight: 653, color: "var(--ds-text-subtle)", borderBottom: "1.67px solid var(--ds-text, rgba(11, 18, 14, 0.14))" }}>Name</th>
-                <th style={{ textAlign: "center", padding: "8px 16px", fontSize: 12, fontWeight: 653, color: "var(--ds-text-subtle)", borderBottom: "1.67px solid var(--ds-text, rgba(11, 18, 14, 0.14))" }}>Actions</th>
+                <th style={{ textAlign: "left", padding: "8px 16px", fontSize: 12, fontWeight: 653, color: "var(--ds-text-subtle)", width: 96, borderBottom: "1.67px solid var(--ds-text)" }}>DID</th>
+                <th style={{ textAlign: "left", padding: "8px 16px", fontSize: 12, fontWeight: 653, color: "var(--ds-text-subtle)", borderBottom: "1.67px solid var(--ds-text)" }}>Name</th>
+                <th style={{ textAlign: "center", padding: "8px 16px", fontSize: 12, fontWeight: 653, color: "var(--ds-text-subtle)", borderBottom: "1.67px solid var(--ds-text)" }}>Actions</th>
               </tr>
             </thead>
             <tbody>

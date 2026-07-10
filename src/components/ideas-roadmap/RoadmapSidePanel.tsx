@@ -97,14 +97,14 @@ export function RoadmapSidePanel({
         onClick={handleClose}
         style={{
           position: 'absolute', inset: 0,
-          background: visible ? 'var(--ds-shadow-overlay, rgba(15,23,42,0.2))' : 'transparent',
+          background: visible ? 'var(--ds-shadow-overlay)' : 'transparent',
           transition: 'background 200ms',
         }}
       />
 
       <div ref={panelRef} style={{
         position: 'absolute', top: 0, right: 0, bottom: 0, width: 480,
-        background: 'var(--bg-app)', boxShadow: '-4px 0 24px var(--ds-shadow-raised, rgba(0,0,0,.12))',
+        background: 'var(--bg-app)', boxShadow: '-4px 0 24px var(--ds-shadow-raised)',
         transform: visible ? 'translateX(0)' : 'translateX(100%)',
         transition: 'transform 200ms ease',
         display: 'flex', flexDirection: 'column', fontFamily: 'var(--cp-font-body)',

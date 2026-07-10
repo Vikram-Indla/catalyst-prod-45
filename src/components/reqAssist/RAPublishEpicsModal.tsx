@@ -116,7 +116,7 @@ export default function RAPublishEpicsModal({ brdId, epics, onClose, onPublished
   return (
     <>
       {/* Backdrop on top of drawer */}
-      <div style={{ position: 'fixed', inset: 0, background: 'var(--ds-shadow-raised, rgba(0,0,0,0.35))', zIndex: 80 }} onClick={onClose} />
+      <div style={{ position: 'fixed', inset: 0, background: 'var(--ds-shadow-raised)', zIndex: 80 }} onClick={onClose} />
 
       <div style={{
         position: 'fixed', top: '48%', left: '48%', transform: 'translate(-50%, -50%)',
@@ -158,10 +158,10 @@ export default function RAPublishEpicsModal({ brdId, epics, onClose, onPublished
                   style={{
                     display: 'flex', justifyContent: 'space-between', alignItems: 'center',
                     padding: '8px 10px', borderRadius: 4, cursor: 'pointer',
-                    background: selectedProject?.id === p.id ? 'var(--ds-background-information, rgba(37,99,235,0.08))' : 'transparent',
+                    background: selectedProject?.id === p.id ? 'var(--ds-background-information)' : 'transparent',
                     transition: 'background 100ms',
                   }}
-                  onMouseEnter={e => { if (selectedProject?.id !== p.id) e.currentTarget.style.background = 'var(--ds-shadow-raised, rgba(0,0,0,0.04))'; }}
+                  onMouseEnter={e => { if (selectedProject?.id !== p.id) e.currentTarget.style.background = 'var(--ds-shadow-raised)'; }}
                   onMouseLeave={e => { if (selectedProject?.id !== p.id) e.currentTarget.style.background = 'transparent'; }}
                 >
                   <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: 'var(--fg-1)' }}>{p.name}</span>

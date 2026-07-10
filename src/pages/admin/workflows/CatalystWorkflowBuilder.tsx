@@ -83,7 +83,7 @@ export function StatusNode({ data, selected }: NodeProps) {
     : colors.border;
 
   const boxShadow = d.isCurrent
-    ? '0 0 0 3px var(--ds-link, rgba(12,102,228,0.45)), 0 0 12px var(--ds-link, rgba(12,102,228,0.25))'
+    ? '0 0 0 3px var(--ds-link), 0 0 12px var(--ds-link)'
     : selected
     ? `0 0 0 2px ${DARK.borderHover}40`
     : 'none';

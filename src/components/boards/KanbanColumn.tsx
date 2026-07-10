@@ -36,7 +36,7 @@ export default function KanbanColumn({ column, cards, maxWip, onCardClick }: Pro
         <div style={{
           minHeight: 60, display: 'flex', flexDirection: 'column',
           alignItems: 'center', justifyContent: 'center', gap: 4,
-          border: `0.75px dashed ${isOver ? 'var(--cp-blue)' : 'var(--ds-shadow-overlay, rgba(15,23,42,0.12))'}`,
+          border: `0.75px dashed ${isOver ? 'var(--cp-blue)' : 'var(--ds-shadow-overlay)'}`,
           borderRadius: 6,
           background: isOver ? 'var(--cp-blue-wash)' : 'transparent',
           transition: 'all 150ms',
@@ -53,7 +53,7 @@ export default function KanbanColumn({ column, cards, maxWip, onCardClick }: Pro
         <div style={{
           height: 2, background: 'var(--cp-blue)',
           borderRadius: 1, margin: '4px 0',
-          boxShadow: '0 0 4px var(--ds-background-information, rgba(37,99,235,0.5))',
+          boxShadow: '0 0 4px var(--ds-background-information)',
         }} />
       )}
 
@@ -65,7 +65,7 @@ export default function KanbanColumn({ column, cards, maxWip, onCardClick }: Pro
         fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-4)', fontFamily: 'var(--cp-font-body)',
         borderRadius: 4, transition: 'background 80ms',
       }}
-        onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-shadow-overlay, rgba(15,23,42,0.04))'; }}
+        onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-shadow-overlay)'; }}
         onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
       >
         <Plus size={13} /> Create issue

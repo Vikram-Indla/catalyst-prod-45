@@ -143,7 +143,7 @@ export function TableView({ resources, projects, groupBy, groupedByAssignment, g
                 {flagUrl && (
                   <span
                     className="absolute -bottom-0.5 -right-1 w-5 h-5 rounded-full bg-white flex items-center justify-center shadow-sm"
-                    style={{ boxShadow: '0 1px 3px var(--ds-shadow-raised, rgba(0,0,0,0.15))' }}
+                    style={{ boxShadow: '0 1px 3px var(--ds-shadow-raised)' }}
                   >
                     <img
                       src={flagUrl}
@@ -292,13 +292,13 @@ export function TableView({ resources, projects, groupBy, groupedByAssignment, g
 
         // Department-specific colors from style guide
         const deptStyles: Record<string, { bg: string; text: string }> = {
-          'OPERATIONS': { bg: 'var(--ds-background-success, rgba(13,148,136,0.15))', text: 'var(--ds-text-success, var(--ds-chart-green-bold))' },
+          'OPERATIONS': { bg: 'var(--ds-background-success)', text: 'var(--ds-text-success, var(--ds-chart-green-bold))' },
           'PRODUCT': { bg: 'rgba(109,40,217,0.12)', text: 'var(--ds-background-discovery-bold, var(--ds-background-discovery-bold))' },
           'DELIVERY': { bg: 'rgba(14,116,144,0.12)', text: '#0e7490' }, // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
-          'SUPPORT': { bg: 'var(--ds-background-success-bold, rgba(16,185,129,0.12))', text: 'var(--quality-high)' },
+          'SUPPORT': { bg: 'var(--ds-background-success-bold)', text: 'var(--quality-high)' },
         };
 
-        const style = deptStyles[deptUpper] || { bg: 'var(--ds-text-subtlest, rgba(100,116,139,0.12))', text: 'var(--ds-text-subtle, var(--ds-text-subtle))' };
+        const style = deptStyles[deptUpper] || { bg: 'var(--ds-text-subtlest)', text: 'var(--ds-text-subtle, var(--ds-text-subtle))' };
 
         return (
           <span

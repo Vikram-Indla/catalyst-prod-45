@@ -92,7 +92,7 @@ export function T10ListCardV3({
       }}
       onMouseEnter={(e) => {
         e.currentTarget.style.borderColor = 'var(--ds-text-disabled)';
-        e.currentTarget.style.boxShadow = '0 2px 8px var(--ds-shadow-raised, rgba(0,0,0,0.04))';
+        e.currentTarget.style.boxShadow = '0 2px 8px var(--ds-shadow-raised)';
       }}
       onMouseLeave={(e) => {
         e.currentTarget.style.borderColor = 'var(--ds-border, var(--cp-bg-sunken))';
@@ -110,8 +110,8 @@ export function T10ListCardV3({
               fontWeight: 600,
               fontFamily: 'monospace',
               color: 'var(--ds-text-brand)',
-              backgroundColor: 'var(--ds-background-information-bold, rgba(59, 130, 246, 0.08))',
-              border: '1px solid var(--ds-background-information-bold, rgba(59, 130, 246, 0.2))',
+              backgroundColor: 'var(--ds-background-information-bold)',
+              border: '1px solid var(--ds-background-information-bold)',
               borderRadius: '6px',
             }}
           >
@@ -140,7 +140,7 @@ export function T10ListCardV3({
               textTransform: 'uppercase',
               letterSpacing: '0.05em',
               color: list.status === 'active' ? 'var(--ds-text-success)' : 'var(--ds-text-subtlest)',
-              backgroundColor: list.status === 'active' ? 'var(--ds-background-success-bold, rgba(22, 163, 74, 0.08))' : 'var(--ds-surface-sunken)',
+              backgroundColor: list.status === 'active' ? 'var(--ds-background-success-bold)' : 'var(--ds-surface-sunken)',
               borderRadius: '99px',
             }}
           >
@@ -197,7 +197,7 @@ export function T10ListCardV3({
                   backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
                   border: '1px solid var(--ds-border)',
                   borderRadius: '8px',
-                  boxShadow: '0 4px 12px var(--ds-shadow-raised, rgba(0,0,0,0.1))',
+                  boxShadow: '0 4px 12px var(--ds-shadow-raised)',
                   zIndex: 50,
                   padding: '4px',
                 }}
@@ -377,7 +377,7 @@ export function T10ListCardV3({
                 fontSize: 'var(--ds-font-size-100)',
                 fontWeight: 600,
                 color: 'var(--ds-text-brand)',
-                backgroundColor: 'var(--ds-background-information-bold, rgba(59, 130, 246, 0.08))',
+                backgroundColor: 'var(--ds-background-information-bold)',
                 borderRadius: '4px',
               }}
             >

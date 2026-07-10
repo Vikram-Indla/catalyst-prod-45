@@ -465,8 +465,8 @@ interface Member {
 
    2026-05-03 (re-probe Round 4): Atlaskit Button "subtle" appearance
    sets color: var(--ds-text) via an atomic class that beats inline
-   `style`, so the icon picks up var(--ds-text, rgb(41,42,46)) instead of Jira's
-   var(--ds-text-subtle, rgb(80,82,88)). Pass color directly on each core icon to bypass
+   `style`, so the icon picks up var(--ds-text) instead of Jira's
+   var(--ds-text-subtle). Pass color directly on each core icon to bypass
    the inheritance entirely. The text label is wrapped in a span at
    the call site for matching reasons. */
 const SUBTLE = "var(--ds-text-subtle)";

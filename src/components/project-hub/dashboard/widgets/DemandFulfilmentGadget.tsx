@@ -2016,7 +2016,7 @@ export default function DemandFulfilmentGadget({ projectId, projectKey, collapse
           alignItems: 'center',
           gap: 12,
           padding: `4px ${token('space.300', '24px')}`,
-          borderBottom: '0.5px solid var(--ds-text, rgba(11,18,14,0.14))',
+          borderBottom: '0.5px solid var(--ds-text)',
           background: token('elevation.surface.sunken', 'var(--ds-surface-sunken)'),
           ...SMALL_STRONG,
           fontWeight: 500,

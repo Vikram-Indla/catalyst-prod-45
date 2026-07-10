@@ -184,7 +184,7 @@ export const EditableAssignee = memo(function EditableAssignee({
                 background: 'var(--ds-surface)',
                 borderRadius: 8,
                 border: '1px solid var(--ds-border)',
-                boxShadow: '0 8px 24px var(--ds-shadow-raised, rgba(9,30,66,0.15))',
+                boxShadow: '0 8px 24px var(--ds-shadow-raised)',
                 overflow: 'hidden',
               }}
             >

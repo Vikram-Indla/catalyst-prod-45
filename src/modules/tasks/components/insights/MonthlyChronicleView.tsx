@@ -109,7 +109,7 @@ export function MonthlyChronicleView() {
           {/* Chronicle Hero - Dark Gradient */}
           <div className="relative px-14 py-12 bg-gradient-to-br from-slate-900 to-[#1a2744] text-white overflow-hidden"> // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
             {/* Radial overlays */}
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_50%,var(--ds-background-information, rgba(37,99,235,0.15)),transparent_50%),radial-gradient(circle_at_80%_50%,var(--ds-background-success, rgba(13,148,136,0.1)),transparent_50%)]" />
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_50%,var(--ds-background-information),transparent_50%),radial-gradient(circle_at_80%_50%,var(--ds-background-success),transparent_50%)]" />
             
             <div className="relative">
               {/* Masthead */}

@@ -91,9 +91,9 @@ function SortablePriorityItem({ item, onClick, onToggleStatus, onLabelsChange, o
     opacity: isDragging ? 0.5 : 1,
     zIndex: isDragging ? 1000 : undefined,
     boxShadow: isDragging 
-      ? '0 8px 24px var(--ds-background-information, rgba(37, 99, 235, 0.2))' 
+      ? '0 8px 24px var(--ds-background-information)' 
       : isHovered 
-        ? '0 2px 8px var(--ds-shadow-raised, rgba(0,0,0,0.06))' 
+        ? '0 2px 8px var(--ds-shadow-raised)' 
         : undefined,
   };
 
@@ -765,7 +765,7 @@ export const T10WeekViewV3 = memo(function T10WeekViewV3() {
     border: 'none',
     borderRadius: 8,
     cursor: 'pointer',
-    boxShadow: '0 2px 10px var(--ds-background-information, rgba(37, 99, 235, 0.35))',
+    boxShadow: '0 2px 10px var(--ds-background-information)',
     transition: 'all 0.15s',
   };
 

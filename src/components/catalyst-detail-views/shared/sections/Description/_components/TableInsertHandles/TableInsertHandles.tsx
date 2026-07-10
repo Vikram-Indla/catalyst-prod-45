@@ -309,7 +309,7 @@ function ColumnInsertDot({
               alignItems: 'center',
               justifyContent: 'center',
               color: activeHover ? 'var(--ds-text-inverse)' : PLUS_IDLE_COLOR,
-              boxShadow: '0 1px 3px var(--ds-shadow-raised, rgba(9,30,66,0.18))',
+              boxShadow: '0 1px 3px var(--ds-shadow-raised)',
               transition: 'background-color 80ms ease, color 80ms ease',
               overflow: 'hidden',
             }}
@@ -412,7 +412,7 @@ function RowInsertDot({
               alignItems: 'center',
               justifyContent: 'center',
               color: activeHover ? 'var(--ds-text-inverse)' : PLUS_IDLE_COLOR,
-              boxShadow: '0 1px 3px var(--ds-shadow-raised, rgba(9,30,66,0.18))',
+              boxShadow: '0 1px 3px var(--ds-shadow-raised)',
               transition: 'background-color 80ms ease, color 80ms ease',
               overflow: 'hidden',
             }}

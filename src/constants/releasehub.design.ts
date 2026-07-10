@@ -9,9 +9,9 @@ export const RH = {
   sunkenBg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))',
 
   // Borders
-  borderDefault: 'var(--ds-shadow-overlay, rgba(15,23,42,0.12))',
-  borderSubtle: 'var(--ds-shadow-overlay, rgba(15,23,42,0.06))',
-  borderStrong: 'var(--ds-shadow-overlay, rgba(15,23,42,0.20))',
+  borderDefault: 'var(--ds-shadow-overlay)',
+  borderSubtle: 'var(--ds-shadow-overlay)',
+  borderStrong: 'var(--ds-shadow-overlay)',
 
   // Colors
   primary: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))',

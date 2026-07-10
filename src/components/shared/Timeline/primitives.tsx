@@ -64,7 +64,7 @@ export function PortalMenu({ isOpen, onClose, triggerRef, minWidth = 200, alignR
         background: 'var(--ds-surface-overlay)',
         border: '1px solid var(--ds-border)',
         borderRadius: 6,
-        boxShadow: '0 8px 28px var(--ds-shadow-overlay, rgba(9,30,66,0.25))',
+        boxShadow: '0 8px 28px var(--ds-shadow-overlay)',
         padding: '4px 0',
         minWidth,
         zIndex: 9999,
@@ -99,7 +99,7 @@ export function MenuItemRow({
         fontFamily: 'var(--ds-font-family-body)',
         opacity: disabled ? 0.6 : 1,
       }}
-      onMouseEnter={e => { if (!disabled) e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))'; }}
+      onMouseEnter={e => { if (!disabled) e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered)'; }}
       onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
     >
       {isChecked !== undefined && (
@@ -306,7 +306,7 @@ export function ViewSettingsPanel({ showProgress, showReleases, onToggleProgress
       position: 'fixed', top: rect.bottom + 4, right: window.innerWidth - rect.right,
       background: 'var(--ds-surface-overlay)',
       border: '1px solid var(--ds-border)', borderRadius: 8,
-      boxShadow: '0 8px 28px var(--ds-shadow-overlay, rgba(9,30,66,0.25))', padding: '12px 0',
+      boxShadow: '0 8px 28px var(--ds-shadow-overlay)', padding: '12px 0',
       minWidth: 220, zIndex: 9999,
     }}>
       <div style={{ padding: '0 12px 8px', fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: 'var(--ds-text-subtlest)', letterSpacing: '0.06em', fontFamily: 'var(--ds-font-family-body)' }}>
@@ -385,7 +385,7 @@ export function TimelineBarPopover({ issue, disabled, children }: {
             background: 'var(--ds-surface-overlay)',
             border: '1px solid var(--ds-border)',
             borderRadius: 6,
-            boxShadow: '0 8px 28px var(--ds-shadow-raised, rgba(9,30,66,0.2))',
+            boxShadow: '0 8px 28px var(--ds-shadow-raised)',
             padding: '12px 14px',
             zIndex: 9999,
             fontFamily: 'var(--ds-font-family-body)',

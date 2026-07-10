@@ -90,7 +90,7 @@ export function ColumnManagerDropdown({ visibleColumns, onChange }: ColumnManage
         <div style={{
           position: 'absolute', top: '48%', right: 0, marginTop: 4, width: 220,
           background: 'var(--cp-float)', border: '1px solid var(--divider)', borderRadius: 6,
-          boxShadow: '0 4px 16px var(--ds-shadow-raised, rgba(0,0,0,0.10))', zIndex: 100, padding: '8px 0',
+          boxShadow: '0 4px 16px var(--ds-shadow-raised)', zIndex: 100, padding: '8px 0',
           fontFamily: 'var(--cp-font-body)',
         }}>
           <div style={{ padding: '4px 12px 8px', fontSize: 'var(--ds-font-size-100)', fontWeight: 600, textTransform: 'uppercase', color: 'var(--fg-3)', letterSpacing: '0.06em' }}>

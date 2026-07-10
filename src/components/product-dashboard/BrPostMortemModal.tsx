@@ -35,7 +35,7 @@ export function BrPostMortemModal({ brId, brTitle, onClose }: BrPostMortemModalP
       style={{
         position: 'fixed',
         inset: 0,
-        background: 'var(--ds-shadow-raised, rgba(9,30,66,0.54))',
+        background: 'var(--ds-shadow-raised)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -48,7 +48,7 @@ export function BrPostMortemModal({ brId, brTitle, onClose }: BrPostMortemModalP
         style={{
           background: token('elevation.surface.overlay', 'var(--ds-surface)'),
           borderRadius: 8,
-          boxShadow: token('elevation.shadow.overlay', '0 8px 24px var(--ds-shadow-raised, rgba(0,0,0,0.20))'),
+          boxShadow: token('elevation.shadow.overlay', '0 8px 24px var(--ds-shadow-raised)'),
           width: '100%',
           maxWidth: 560,
           maxHeight: '80vh',

@@ -582,7 +582,7 @@ const drawerCSS = `
 .um-drawer-overlay {
   position: fixed;
   inset: 0;
-  background: var(--ds-shadow-overlay, rgba(15, 23, 42, 0.4));
+  background: var(--ds-shadow-overlay);
   backdrop-filter: blur(2px);
   z-index: 100;
   opacity: 0;
@@ -608,7 +608,7 @@ const drawerCSS = `
   transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
   flex-direction: column;
-  box-shadow: -12px 0 40px var(--ds-shadow-raised, rgba(0,0,0,0.15));
+  box-shadow: -12px 0 40px var(--ds-shadow-raised);
 }
 .um-drawer.visible {
   transform: translateX(0);
@@ -716,10 +716,10 @@ const drawerCSS = `
 .um-form-group select:focus {
   outline: 1px solid var(--ds-border-focused);
   border-color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary));
-  box-shadow: 0 0 0 3px var(--ds-background-information, rgba(37, 99, 235, 0.08));
+  box-shadow: 0 0 0 3px var(--ds-background-information);
 }
 .um-form-group input:disabled {
-  background: var(--ds-background-information, rgba(37, 99, 235, 0.08));
+  background: var(--ds-background-information);
   color: var(--ds-text-subtlest);
   border-color: transparent;
   cursor: not-allowed;
@@ -772,7 +772,7 @@ const drawerCSS = `
    are intentional brand accents in both modes. */
 .dark .um-drawer {
   background: var(--ds-surface-overlay) !important;
-  box-shadow: -12px 0 40px var(--ds-shadow-raised, rgba(0,0,0,0.5)) !important;
+  box-shadow: -12px 0 40px var(--ds-shadow-raised) !important;
 }
 .dark .um-drawer .um-drawer-header {
   border-color: var(--ds-border) !important;

@@ -63,7 +63,7 @@ export default function CreateBoardModal({ projectId, basePath, onClose, onCreat
     <div
       style={{
         position: 'fixed', inset: 0, zIndex: 1000,
-        background: 'var(--ds-blanket, rgba(9,30,66,0.54))',
+        background: 'var(--ds-blanket)',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
       }}
       onClick={onClose}

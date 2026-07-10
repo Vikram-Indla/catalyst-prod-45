@@ -705,7 +705,7 @@ export default function R360MemberDetail({ resourceId: resourceIdProp, projectSc
                       fontSize: 'var(--ds-font-size-200)',
                       fontWeight: 500,
                       fontFamily: 'var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif',
-                      boxShadow: token('elevation.shadow.raised', '0 1px 1px var(--ds-background-neutral-subtle-pressed, rgba(9,30,66,0.12))'),
+                      boxShadow: token('elevation.shadow.raised', '0 1px 1px var(--ds-background-neutral-subtle-pressed)'),
                       pointerEvents: 'none',
                       whiteSpace: 'nowrap',
                     }}>
@@ -746,7 +746,7 @@ export default function R360MemberDetail({ resourceId: resourceIdProp, projectSc
               position: 'fixed',
               inset: 0,
               top: 48,
-              backgroundColor: 'var(--ds-shadow-raised, rgba(0, 0, 0, 0.15))',
+              backgroundColor: 'var(--ds-shadow-raised)',
               zIndex: 300,
             }}
           />
@@ -780,7 +780,7 @@ export default function R360MemberDetail({ resourceId: resourceIdProp, projectSc
               position: 'fixed',
               inset: 0,
               top: 48,
-              backgroundColor: 'var(--ds-shadow-raised, rgba(0, 0, 0, 0.15))',
+              backgroundColor: 'var(--ds-shadow-raised)',
               zIndex: 300,
             }}
           />

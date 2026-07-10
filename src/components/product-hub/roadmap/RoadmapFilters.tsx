@@ -60,7 +60,7 @@ export function RoadmapFilters({
           }}
           onFocus={e => {
             e.currentTarget.style.borderColor = 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))';
-            e.currentTarget.style.boxShadow = '0 0 0 3px var(--ds-background-information, rgba(37,99,235,0.1))';
+            e.currentTarget.style.boxShadow = '0 0 0 3px var(--ds-background-information)';
           }}
           onBlur={e => {
             e.currentTarget.style.borderColor = surface.border;

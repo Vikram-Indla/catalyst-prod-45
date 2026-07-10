@@ -128,7 +128,7 @@ function RangeCalendar({ pickedFor, startIso, dueIso, minDate, onPick }: RangeCa
         background: 'var(--ds-surface-overlay)',
         border: '1px solid var(--ds-border)',
         borderRadius: 6,
-        boxShadow: '0 8px 28px var(--ds-shadow-overlay, rgba(9,30,66,0.25))',
+        boxShadow: '0 8px 28px var(--ds-shadow-overlay)',
         padding: 12,
         fontFamily: 'var(--ds-font-family-body)',
         userSelect: 'none',
@@ -202,7 +202,7 @@ function NavBtn({ label, onClick, children }: { label: string; onClick: () => vo
         background: 'transparent', border: 'none', cursor: 'pointer',
         color: 'var(--ds-text-subtle)', fontSize: 'var(--ds-font-size-400)', lineHeight: 1,
       }}
-      onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))'; }}
+      onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered)'; }}
       onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
     >
       {children}
@@ -223,7 +223,7 @@ function DayCell({
   if (disabled) color = 'var(--ds-text-disabled)';
   if (inRange) bg = 'var(--ds-background-selected)';
   if (selected) { bg = 'var(--ds-background-selected-bold, var(--ds-link))'; color = 'var(--ds-text-inverse)'; }
-  if (hover && !disabled && !selected) bg = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))';
+  if (hover && !disabled && !selected) bg = 'var(--ds-background-neutral-subtle-hovered)';
   return (
     <button
       type="button"

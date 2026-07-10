@@ -154,7 +154,7 @@ function LocationRowTitle({ location }: { location: RecentLocation }) {
         width: '100%',
         // Rail indent: left border signals hierarchy under the group header
         paddingLeft: token('space.150', '12px'),
-        borderLeft: '1.5px solid var(--ds-border, rgba(9,30,66,0.14))',
+        borderLeft: '1.5px solid var(--ds-border)',
       }}
     >
       <span

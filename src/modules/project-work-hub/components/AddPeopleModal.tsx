@@ -82,7 +82,7 @@ export function AddPeopleModal() {
       style={{
         position: 'fixed',
         inset: 0,
-        background: 'var(--ds-shadow-raised, rgba(9, 30, 66, 0.54))',
+        background: 'var(--ds-shadow-raised)',
         zIndex: 9999,
         display: 'flex',
         alignItems: 'flex-start',
@@ -99,7 +99,7 @@ export function AddPeopleModal() {
           maxWidth: 'calc(100vw - 48px)',
           background: token('elevation.surface', 'var(--ds-surface)'),
           borderRadius: 8,
-          boxShadow: '0 8px 32px var(--ds-shadow-raised, rgba(9, 30, 66, 0.25))',
+          boxShadow: '0 8px 32px var(--ds-shadow-raised)',
           display: 'flex',
           flexDirection: 'column',
           maxHeight: 'calc(100vh - 120px)',

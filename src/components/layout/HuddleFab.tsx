@@ -215,7 +215,7 @@ export function HuddleFab() {
         borderRadius: 999,
         background: 'var(--ds-surface-overlay)',
         border: `1.5px solid ${connecting ? 'var(--ds-border)' : 'var(--ds-border-success)'}`,
-        boxShadow: 'var(--ds-shadow-overlay, 0 8px 28px rgba(9,30,66,.18)), 0 2px 6px var(--ds-shadow-raised, rgba(9,30,66,.12))',
+        boxShadow: 'var(--ds-shadow-overlay, 0 8px 28px rgba(9,30,66,.18)), 0 2px 6px var(--ds-shadow-raised)',
         transition: 'gap .18s ease, padding .18s ease, border-radius .18s ease',
         userSelect: 'none',
       }}

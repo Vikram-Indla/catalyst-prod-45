@@ -145,7 +145,7 @@ export const drawBlur = (
   ctx.fillRect(x, y, w, h);
   
   // Add grid pattern to indicate blur
-  ctx.strokeStyle = 'var(--ds-surface, rgba(255, 255, 255, 0.3))';
+  ctx.strokeStyle = 'var(--ds-surface)';
   ctx.lineWidth = 1;
   const blockSize = 8;
   for (let py = y; py < y + h; py += blockSize) {

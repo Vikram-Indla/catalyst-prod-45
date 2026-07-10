@@ -107,7 +107,7 @@ export function GeneralTab({ project, onSaved }: GeneralTabProps) {
 
   const inputFocusHandler = (e: React.FocusEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     e.currentTarget.style.borderColor = 'var(--cp-blue)';
-    e.currentTarget.style.boxShadow = '0 0 0 3px var(--ds-background-information, rgba(37,99,235,0.1))';
+    e.currentTarget.style.boxShadow = '0 0 0 3px var(--ds-background-information)';
   };
   const inputBlurHandler = (e: React.FocusEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     e.currentTarget.style.borderColor = 'var(--divider)';
@@ -196,7 +196,7 @@ export function GeneralTab({ project, onSaved }: GeneralTabProps) {
                 className={`flex-shrink-0 rounded-full transition-colors ${form.feature_layer ? 'bg-[var(--cp-blue)]' : 'bg-[var(--divider)] dark:bg-[var(--ds-border,var(--cp-ink-1))]'}`}
                 style={{ width: 40, height: 22, borderRadius: 11, border: 'none', cursor: 'pointer', position: 'relative' }}
               >
-                <span className="rounded-full bg-[var(--bg-app)] dark:bg-[var(--ds-surface)]" style={{ width: 16, height: 16, borderRadius: '50%', position: 'absolute', top: 4, left: form.feature_layer ? 21 : 3, transition: 'left 150ms ease', boxShadow: '0 1px 2px var(--ds-shadow-raised, rgba(0,0,0,0.15))' }} />
+                <span className="rounded-full bg-[var(--bg-app)] dark:bg-[var(--ds-surface)]" style={{ width: 16, height: 16, borderRadius: '50%', position: 'absolute', top: 4, left: form.feature_layer ? 21 : 3, transition: 'left 150ms ease', boxShadow: '0 1px 2px var(--ds-shadow-raised)' }} />
               </button>
             </div>
 
@@ -211,7 +211,7 @@ export function GeneralTab({ project, onSaved }: GeneralTabProps) {
                 className={`flex-shrink-0 rounded-full transition-colors ${form.ai_assist ? 'bg-[var(--cp-blue)]' : 'bg-[var(--divider)] dark:bg-[var(--ds-border,var(--cp-ink-1))]'}`}
                 style={{ width: 40, height: 22, borderRadius: 11, border: 'none', cursor: 'pointer', position: 'relative' }}
               >
-                <span className="rounded-full bg-[var(--bg-app)] dark:bg-[var(--ds-surface)]" style={{ width: 16, height: 16, borderRadius: '50%', position: 'absolute', top: 4, left: form.ai_assist ? 21 : 3, transition: 'left 150ms ease', boxShadow: '0 1px 2px var(--ds-shadow-raised, rgba(0,0,0,0.15))' }} />
+                <span className="rounded-full bg-[var(--bg-app)] dark:bg-[var(--ds-surface)]" style={{ width: 16, height: 16, borderRadius: '50%', position: 'absolute', top: 4, left: form.ai_assist ? 21 : 3, transition: 'left 150ms ease', boxShadow: '0 1px 2px var(--ds-shadow-raised)' }} />
               </button>
             </div>
           </div>

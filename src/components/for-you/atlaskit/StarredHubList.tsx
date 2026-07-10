@@ -32,7 +32,7 @@ import type { StarredHubRow } from '@/hooks/home/useStarredHub';
 const TEXT = 'var(--ds-text)';
 const TEXT_SUBTLE = 'var(--ds-text-subtle)';
 const TEXT_SUBTLEST = 'var(--ds-text-subtlest)';
-const HOVER = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))';
+const HOVER = 'var(--ds-background-neutral-subtle-hovered)';
 const GOLD = 'var(--ds-icon-accent-yellow)';
 const SURFACE_TILE_BG = 'var(--ds-background-neutral)';
 const SURFACE_TILE_FG = 'var(--ds-icon-subtle)';

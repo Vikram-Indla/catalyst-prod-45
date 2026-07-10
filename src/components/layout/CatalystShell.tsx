@@ -867,7 +867,7 @@ function CatalystShellContent() {
               alignItems: "center",
               justifyContent: "center",
               borderRadius: 4,
-              background: "var(--ds-background-neutral-subtle, transparent)",
+              background: "var(--ds-background-neutral-subtle)",
               border: "none",
               cursor: "pointer",
               color:
@@ -922,7 +922,7 @@ function CatalystShellContent() {
                   left: 0,
                   bottom: 0,
                   zIndex: 40,
-                  boxShadow: "0 8px 24px var(--ds-shadow-raised, rgba(0,0,0,0.15))",
+                  boxShadow: "0 8px 24px var(--ds-shadow-raised)",
                 }
               : {}),
             // Loop 2 (2026-04-30): hide the inline rail at <1024px. The same

@@ -183,7 +183,7 @@ export default function RAStatsBar({ totalDocuments, wikihubSynced, loading }: S
             </div>
             <span style={{
               display: 'inline-flex', alignItems: 'center', gap: 4,
-              background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))', border: '0.75px solid var(--ds-shadow-overlay, rgba(15,23,42,0.12))',
+              background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))', border: '0.75px solid var(--ds-shadow-overlay)',
               borderRadius: 12, padding: '0px 10px',
               fontSize: 'var(--ds-font-size-100)', fontWeight: 500, color: 'var(--fg-3)',
               fontFamily: 'var(--cp-font-body)',
@@ -191,7 +191,7 @@ export default function RAStatsBar({ totalDocuments, wikihubSynced, loading }: S
               <span style={{
                 width: 4, height: 4, borderRadius: '50%', flexShrink: 0,
                 background: queueRunning > 0 ? 'var(--sem-success)' : 'var(--fg-4)',
-                boxShadow: queueRunning > 0 ? '0 0 0 3px var(--ds-background-success-bold, rgba(22,163,74,0.15))' : 'none',
+                boxShadow: queueRunning > 0 ? '0 0 0 3px var(--ds-background-success-bold)' : 'none',
                 animation: queueRunning > 0 ? 'ra-pulse-dot 1.2s ease-in-out infinite' : 'none',
               }} />
               {queueRunning > 0 ? 'Indexing...' : 'Idle'}
@@ -238,7 +238,7 @@ export default function RAStatsBar({ totalDocuments, wikihubSynced, loading }: S
                   display: 'flex', alignItems: 'center', gap: 8,
                   height: 32, fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-2)',
                   fontFamily: 'var(--cp-font-body)',
-                  borderTop: idx > 0 ? '0.75px solid var(--ds-shadow-overlay, rgba(15,23,42,0.06))' : 'none',
+                  borderTop: idx > 0 ? '0.75px solid var(--ds-shadow-overlay)' : 'none',
                   animation: idx === 0 ? 'ra-slide-up 200ms ease-out' : undefined,
                 }}>
                   <span style={{
@@ -284,10 +284,10 @@ function activityDotColor(eventType: string): string {
 
 const cardStyle: React.CSSProperties = {
   background: 'var(--bg-app)',
-  border: '0.75px solid var(--ds-shadow-overlay, rgba(15,23,42,0.10))',
+  border: '0.75px solid var(--ds-shadow-overlay)',
   borderRadius: 8,
   padding: '16px 20px',
-  boxShadow: '0 1px 3px var(--ds-shadow-overlay, rgba(15,23,42,0.06)), 0 1px 2px var(--ds-shadow-overlay, rgba(15,23,42,0.04))',
+  boxShadow: '0 1px 3px var(--ds-shadow-overlay), 0 1px 2px var(--ds-shadow-overlay)',
   display: 'flex',
   flexDirection: 'column',
   transition: 'box-shadow 150ms ease',

@@ -152,7 +152,7 @@ export default function ClaimDrillInPanel({ resourceName, claimText, weekStart, 
         onClick={onClose}
         style={{
           position: 'fixed', inset: 0, top: 48,
-          background: 'var(--ds-shadow-raised, rgba(0,0,0,0.12))',
+          background: 'var(--ds-shadow-raised)',
           zIndex: 600,
         }}
       />
@@ -162,7 +162,7 @@ export default function ClaimDrillInPanel({ resourceName, claimText, weekStart, 
         position: 'fixed', right: 0, top: 48,
         width: 520, height: 'calc(100vh - 48px)',
         background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
-        boxShadow: '-8px 0 24px var(--ds-shadow-raised, rgba(0,0,0,0.08))',
+        boxShadow: '-8px 0 24px var(--ds-shadow-raised)',
         zIndex: 601,
         display: 'flex', flexDirection: 'column',
         fontFamily: 'var(--cp-font-body)',

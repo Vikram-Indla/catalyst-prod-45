@@ -46,7 +46,7 @@ export function TimelineSidebar({
               style={{
                 background: release.id === 'unassigned' 
                   ? 'rgba(200, 204, 208, 0.15)' // ads-scanner:ignore-line — semi-transparent overlay, no ADS token for alpha variant
-                  : 'var(--ds-background-success-bold, rgba(34, 197, 94, 0.1))',
+                  : 'var(--ds-background-success-bold)',
                 color: release.id === 'unassigned' ? 'var(--ds-text-subtlest)' : 'var(--ds-background-success-bold)'
               }}
             >
@@ -68,7 +68,7 @@ export function TimelineSidebar({
               <div
                 key={feature.id}
                 onClick={() => onFeatureClick?.(feature.id)}
-                className="h-12 flex items-center px-3 border-b hover:bg-[var(--ds-background-information, rgba(37,99,235,0.08))] cursor-pointer"
+                className="h-12 flex items-center px-3 border-b hover:bg-[var(--ds-background-information)] cursor-pointer"
               >
                 <div
                   className="w-1 h-6 rounded mr-3"

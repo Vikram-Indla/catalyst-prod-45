@@ -221,8 +221,8 @@ export const StandupHistoryPanel: React.FC<Props> = ({ projectKey, open, onClose
 
   return createPortal(
     <>
-      <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: token('color.blanket', 'var(--ds-shadow-raised, rgba(9,30,66,0.36))'), zIndex: 9998 }} />
-      <aside style={{ position: 'fixed', top: 0, right: 0, bottom: 0, width: 440, maxWidth: '92vw', background: token('elevation.surface', 'var(--ds-surface)'), borderLeft: `1px solid ${token('color.border', 'var(--ds-border)')}`, boxShadow: token('elevation.shadow.overlay', '-8px 0 24px var(--ds-shadow-raised, rgba(9,30,66,0.16))'), zIndex: 9999, display: 'flex', flexDirection: 'column' }}>
+      <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: token('color.blanket', 'var(--ds-shadow-raised)'), zIndex: 9998 }} />
+      <aside style={{ position: 'fixed', top: 0, right: 0, bottom: 0, width: 440, maxWidth: '92vw', background: token('elevation.surface', 'var(--ds-surface)'), borderLeft: `1px solid ${token('color.border', 'var(--ds-border)')}`, boxShadow: token('elevation.shadow.overlay', '-8px 0 24px var(--ds-shadow-raised)'), zIndex: 9999, display: 'flex', flexDirection: 'column' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 16px 12px', borderBottom: `1px solid ${token('color.border', '#091E4224')}` }}>
           <span style={{ fontSize: 'var(--ds-font-size-500)', fontWeight: 600, color: token('color.text', 'var(--ds-text)') }}>Standup history</span>
           <button type="button" aria-label="Close" onClick={onClose}

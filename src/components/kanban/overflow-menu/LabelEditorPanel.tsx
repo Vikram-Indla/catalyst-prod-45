@@ -97,7 +97,7 @@ export function LabelEditorPanel({ issueId, issueKey, currentLabels, tk, onClose
         position: 'absolute', left: '48%', top: 0, zIndex: 10000,
         width: 260, maxHeight: 400, display: 'flex', flexDirection: 'column',
         background: tk.surfaceBg, border: `1px solid ${tk.border}`,
-        borderRadius: 8, boxShadow: '0 4px 16px var(--ds-shadow-raised, rgba(0,0,0,0.24))',
+        borderRadius: 8, boxShadow: '0 4px 16px var(--ds-shadow-raised)',
         overflow: 'hidden',
       }}
       onClick={e => e.stopPropagation()}

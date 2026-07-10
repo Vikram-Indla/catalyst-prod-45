@@ -251,7 +251,7 @@ export function BrAttachmentsSection({ request }: Props) {
               color: 'var(--ds-text-subtle)', borderRadius: 3,
               transition: 'background-color 150ms ease',
             }}
-            onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9, 30, 66, 0.06))'; }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered)'; }}
             onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
           >
             {collapsed

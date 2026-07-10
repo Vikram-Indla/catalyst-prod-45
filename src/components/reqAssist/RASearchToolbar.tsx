@@ -37,14 +37,14 @@ export default function RASearchToolbar({ tab, onTabChange, search, onSearchChan
       display: 'flex', alignItems: 'center', gap: 12,
       padding: '12px 28px',
       background: 'var(--bg-app)',
-      borderBottom: '0.75px solid var(--ds-shadow-overlay, rgba(15,23,42,0.08))',
+      borderBottom: '0.75px solid var(--ds-shadow-overlay)',
     }}>
       {/* Search Input */}
       <div style={{
         display: 'flex', alignItems: 'center', gap: 8,
         width: 280, height: 50, borderRadius: 6,
-        border: `0.75px solid ${focused ? 'var(--cp-blue)' : 'var(--ds-shadow-overlay, rgba(15,23,42,0.15))'}`,
-        boxShadow: focused ? '0 0 0 3px var(--ds-background-information, rgba(37,99,235,0.12))' : 'none',
+        border: `0.75px solid ${focused ? 'var(--cp-blue)' : 'var(--ds-shadow-overlay)'}`,
+        boxShadow: focused ? '0 0 0 3px var(--ds-background-information)' : 'none',
         padding: '8px 12px', background: 'var(--bg-app)',
         transition: 'border-color 150ms, box-shadow 150ms',
       }}
@@ -81,11 +81,11 @@ export default function RASearchToolbar({ tab, onTabChange, search, onSearchChan
                 border: 'none', cursor: 'pointer',
                 background: active ? 'var(--bg-app)' : 'transparent',
                 color: active ? 'var(--fg-1)' : 'var(--fg-3)',
-                boxShadow: active ? '0 1px 3px var(--ds-shadow-overlay, rgba(15,23,42,0.10))' : 'none',
+                boxShadow: active ? '0 1px 3px var(--ds-shadow-overlay)' : 'none',
                 fontFamily: 'var(--cp-font-body)',
                 transition: 'all 120ms ease',
               }}
-              onMouseEnter={e => { if (!active) e.currentTarget.style.background = 'var(--ds-surface, rgba(255,255,255,0.6))'; e.currentTarget.style.color = active ? 'var(--fg-1)' : 'var(--fg-2)'; }}
+              onMouseEnter={e => { if (!active) e.currentTarget.style.background = 'var(--ds-surface)'; e.currentTarget.style.color = active ? 'var(--fg-1)' : 'var(--fg-2)'; }}
               onMouseLeave={e => { if (!active) e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = active ? 'var(--fg-1)' : 'var(--fg-3)'; }}
             >
               {t.label}
@@ -113,15 +113,15 @@ export default function RASearchToolbar({ tab, onTabChange, search, onSearchChan
             background: syncingAll
               ? 'var(--fg-4)'
               : 'linear-gradient(135deg, var(--ds-text-brand, var(--cp-workstream-catalyst-primary)) 0%, var(--ds-background-brand-bold-hovered) 100%)',
-            boxShadow: syncingAll ? 'none' : '0 1px 3px var(--ds-background-information, rgba(37,99,235,0.35))',
+            boxShadow: syncingAll ? 'none' : '0 1px 3px var(--ds-background-information)',
             color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
             cursor: syncingAll ? 'not-allowed' : 'pointer',
             fontFamily: 'var(--cp-font-body)',
             whiteSpace: 'nowrap', flexShrink: 0,
             transition: 'box-shadow 150ms ease',
           }}
-          onMouseEnter={e => { if (!syncingAll) { e.currentTarget.style.background = 'linear-gradient(135deg, var(--ds-background-brand-bold-hovered) 0%, var(--ds-link-pressed, var(--ds-link-pressed)) 100%)'; e.currentTarget.style.boxShadow = '0 2px 6px var(--ds-background-information, rgba(37,99,235,0.45))'; } }}
-          onMouseLeave={e => { if (!syncingAll) { e.currentTarget.style.background = 'linear-gradient(135deg, var(--ds-text-brand, var(--cp-workstream-catalyst-primary)) 0%, var(--ds-background-brand-bold-hovered) 100%)'; e.currentTarget.style.boxShadow = '0 1px 3px var(--ds-background-information, rgba(37,99,235,0.35))'; } }}
+          onMouseEnter={e => { if (!syncingAll) { e.currentTarget.style.background = 'linear-gradient(135deg, var(--ds-background-brand-bold-hovered) 0%, var(--ds-link-pressed, var(--ds-link-pressed)) 100%)'; e.currentTarget.style.boxShadow = '0 2px 6px var(--ds-background-information)'; } }}
+          onMouseLeave={e => { if (!syncingAll) { e.currentTarget.style.background = 'linear-gradient(135deg, var(--ds-text-brand, var(--cp-workstream-catalyst-primary)) 0%, var(--ds-background-brand-bold-hovered) 100%)'; e.currentTarget.style.boxShadow = '0 1px 3px var(--ds-background-information)'; } }}
         >
           {syncingAll ? (
             <>

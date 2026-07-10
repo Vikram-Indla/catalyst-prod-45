@@ -226,10 +226,10 @@ export default function AllWork() {
 /** 12-row skeleton matching 44px row height */
 const TableSkeleton = memo(function TableSkeleton() {
   return (
-    <div className="rounded-lg border overflow-hidden" style={{ borderColor: 'var(--ds-shadow-overlay, rgba(15,23,42,0.12))' }}>
+    <div className="rounded-lg border overflow-hidden" style={{ borderColor: 'var(--ds-shadow-overlay)' }}>
       <div
         className="flex items-center gap-4 px-4"
-        style={{ height: 44, backgroundColor: 'var(--bg-1)', borderBottom: '1px solid var(--ds-shadow-overlay, rgba(15,23,42,0.08))' }}
+        style={{ height: 44, backgroundColor: 'var(--bg-1)', borderBottom: '1px solid var(--ds-shadow-overlay)' }}
       >
         {Array.from({ length: 8 }).map((_, i) => (
           <Skeleton key={i} className="h-3 rounded" style={{ width: `${40 + i * 14}px` }} />
@@ -239,7 +239,7 @@ const TableSkeleton = memo(function TableSkeleton() {
         <div
           key={i}
           className="flex items-center gap-4 px-4"
-          style={{ height: 44, borderBottom: '1px solid var(--ds-shadow-overlay, rgba(15,23,42,0.06))' }}
+          style={{ height: 44, borderBottom: '1px solid var(--ds-shadow-overlay)' }}
         >
           <Skeleton className="h-4 w-4 rounded" />
           <Skeleton className="h-3.5 w-20 rounded" />

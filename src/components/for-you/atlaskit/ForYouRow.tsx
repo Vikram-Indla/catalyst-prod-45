@@ -156,7 +156,7 @@ function ForYouRowImpl({ item, alwaysShowStar = false, onSelect, onToggleStar, h
         borderBottom: 'none',
         cursor: 'pointer',
         backgroundColor: isActive
-          ? token('elevation.surface.hovered', 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))')
+          ? token('elevation.surface.hovered', 'var(--ds-background-neutral-subtle-hovered)')
           : 'transparent',
         color: token('color.text', 'var(--ds-text)'),
         transition: 'background-color 150ms cubic-bezier(0.15, 1, 0.3, 1), box-shadow 120ms ease',
@@ -173,7 +173,7 @@ function ForYouRowImpl({ item, alwaysShowStar = false, onSelect, onToggleStar, h
       {/* Left — work item type icon.
           jira-assigned variant: 32x32 rounded grey tile (border-radius 25%)
           containing the type icon. Confirmed via 2026-05-17 LIVE Jira DOM
-          probe: tile bg `var(--ds-shadow-overlay, rgba(5,21,36,0.06))`, dimensions 32px square.
+          probe: tile bg `var(--ds-shadow-overlay)`, dimensions 32px square.
           Default variant: 20px naked icon (legacy compact rail layout). */}
       {isJiraAssigned ? (
         <div className="cp-feed-type-tile" style={{
@@ -474,7 +474,7 @@ function RowActionsMenu({ actions, isRowHovered }: { actions: ForYouRowAction[];
             background: token('elevation.surface.overlay', 'var(--ds-surface)'),
             border: `1px solid ${token('color.border', 'var(--ds-border)')}`,
             borderRadius: 4,
-            boxShadow: token('elevation.shadow.overlay', '0 1px 1px var(--ds-shadow-raised, rgba(9,30,66,0.25)), 0 8px 24px -4px var(--ds-shadow-raised, rgba(9,30,66,0.18))'),
+            boxShadow: token('elevation.shadow.overlay', '0 1px 1px var(--ds-shadow-raised), 0 8px 24px -4px var(--ds-shadow-raised)'),
             padding: 4,
             fontFamily: '"Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", sans-serif',
             color: token('color.text', 'var(--ds-text)'),
@@ -572,7 +572,7 @@ function StarButton({
           alignItems: 'center',
           justifyContent: 'center',
           background: hover
-            ? token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))')
+            ? token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle-hovered)')
             : 'transparent',
           border: 'none',
           borderRadius: 4,

@@ -33,7 +33,7 @@ export function ForYouLightBulkBar({
       height: 48, padding: '0 8px',
       backgroundColor: 'var(--ds-surface-raised)', border: '1px solid var(--ds-border)',
       borderRadius: 12,
-      boxShadow: '0 8px 32px var(--ds-shadow-raised, rgba(0,0,0,0.12)), 0 2px 8px var(--ds-shadow-raised, rgba(0,0,0,0.04))',
+      boxShadow: '0 8px 32px var(--ds-shadow-raised), 0 2px 8px var(--ds-shadow-raised)',
       zIndex: 90, animation: 'fy-dropIn 0.2s ease',
     }}>
       <span style={{

@@ -67,7 +67,7 @@ export const WorkstreamCard: React.FC<WorkstreamCardProps> = ({
         borderRadius: '12px',
         padding: '16px',
         transition: 'all 0.15s ease',
-        boxShadow: isHovered ? '0 4px 12px var(--ds-shadow-raised, rgba(0, 0, 0, 0.08))' : 'none',
+        boxShadow: isHovered ? '0 4px 12px var(--ds-shadow-raised)' : 'none',
         transform: isHovered ? 'translateY(-2px)' : 'none',
         borderLeftWidth: '4px',
         borderLeftColor: healthConfig.color,
@@ -270,7 +270,7 @@ export const WorkstreamCard: React.FC<WorkstreamCardProps> = ({
                 backgroundColor: COLORS.surfaceCard,
                 border: `1px solid ${COLORS.borderDefault}`,
                 borderRadius: '12px',
-                boxShadow: '0 10px 40px var(--ds-shadow-raised, rgba(0, 0, 0, 0.12))',
+                boxShadow: '0 10px 40px var(--ds-shadow-raised)',
                 zIndex: 100,
                 padding: '4px',
                 overflow: 'hidden'

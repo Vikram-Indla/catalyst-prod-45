@@ -150,7 +150,7 @@ export function SidebarProjectNav({
             style={{
               width: 30, height: 30, backgroundColor: projectColor, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
               fontSize: 'var(--ds-font-size-100)', fontWeight: 700, borderRadius: 6,
-              fontFamily: 'var(--cp-font-heading)', boxShadow: '0 1px 3px var(--ds-shadow-raised, rgba(0,0,0,0.12))',
+              fontFamily: 'var(--cp-font-heading)', boxShadow: '0 1px 3px var(--ds-shadow-raised)',
             }}
           >
             {projectKey.slice(0, 2)}
@@ -298,7 +298,7 @@ export function SidebarProjectNav({
                       margin: '0 4px',
                     }}
                     onClick={() => handleRecentClick(item)}
-                    onMouseEnter={e => { e.currentTarget.style.backgroundColor = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.08))'; }}
+                    onMouseEnter={e => { e.currentTarget.style.backgroundColor = 'var(--ds-background-neutral-subtle-hovered)'; }}
                     onMouseLeave={e => { e.currentTarget.style.backgroundColor = 'transparent'; }}
                   >
                     <span style={{ flexShrink: 0, marginTop: 0, lineHeight: 0 }}>

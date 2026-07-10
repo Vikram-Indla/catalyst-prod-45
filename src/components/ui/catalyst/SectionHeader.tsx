@@ -11,7 +11,7 @@ export const SectionHeader = ({ icon: Icon, title, className }: SectionHeaderPro
   <div className={cn("flex items-center gap-3 mb-5", className)}>
     <div className={cn(
       "w-7 h-7 rounded-lg flex items-center justify-center",
-      "bg-[var(--ds-background-information, rgba(37,99,235,0.1))] dark:bg-[var(--ds-background-information-bold, rgba(96,165,250,0.15))]"
+      "bg-[var(--ds-background-information)] dark:bg-[var(--ds-background-information-bold)]"
     )}>
       <Icon className="w-3.5 h-3.5 text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))] dark:text-[var(--ds-text-brand)]" />
     </div>

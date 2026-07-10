@@ -145,7 +145,7 @@ export const LabelsManager: React.FC<LabelsManagerProps> = ({
             backgroundColor: COLORS.surfaceCard,
             border: `1px solid ${COLORS.borderDefault}`,
             borderRadius: '12px',
-            boxShadow: '0 10px 40px var(--ds-shadow-raised, rgba(0, 0, 0, 0.15))',
+            boxShadow: '0 10px 40px var(--ds-shadow-raised)',
             zIndex: 99999,
             overflow: 'hidden'
           }}

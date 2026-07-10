@@ -1131,7 +1131,7 @@ export function SidebarRow({
             aria-label={`Add child issue to ${issue.issueKey}`}
             onMouseEnter={(e) => {
               e.currentTarget.style.background =
-                "var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.08))";
+                "var(--ds-background-neutral-subtle-hovered)";
             }}
             onMouseLeave={(e) => {
               e.currentTarget.style.background = "transparent";
@@ -1174,7 +1174,7 @@ export function SidebarRow({
             }}
             onMouseEnter={(e) => {
               e.currentTarget.style.background =
-                "var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.08))";
+                "var(--ds-background-neutral-subtle-hovered)";
             }}
             onMouseLeave={(e) => {
               e.currentTarget.style.background = "transparent";
@@ -1220,7 +1220,7 @@ export function SidebarRow({
             aria-expanded={menuOpen}
             onMouseEnter={(e) => {
               e.currentTarget.style.background =
-                "var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.08))";
+                "var(--ds-background-neutral-subtle-hovered)";
             }}
             onMouseLeave={(e) => {
               e.currentTarget.style.background = "transparent";
@@ -1533,7 +1533,7 @@ export function SidebarRow({
                     }}
                     onMouseEnter={(e) => {
                       (e.currentTarget as HTMLElement).style.background =
-                        "var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))";
+                        "var(--ds-background-neutral-subtle-hovered)";
                     }}
                     onMouseLeave={(e) => {
                       (e.currentTarget as HTMLElement).style.background =
@@ -1577,7 +1577,7 @@ export function SidebarRow({
                       }}
                       onMouseEnter={(e) => {
                         (e.currentTarget as HTMLElement).style.background =
-                          "var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))";
+                          "var(--ds-background-neutral-subtle-hovered)";
                       }}
                       onMouseLeave={(e) => {
                         (e.currentTarget as HTMLElement).style.background =
@@ -1686,7 +1686,7 @@ export function SidebarRow({
                         }}
                         onMouseEnter={(e) => {
                           (e.currentTarget as HTMLElement).style.background =
-                            "var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))";
+                            "var(--ds-background-neutral-subtle-hovered)";
                         }}
                         onMouseLeave={(e) => {
                           (e.currentTarget as HTMLElement).style.background =
@@ -2140,7 +2140,7 @@ export function SidebarRow({
                       }}
                       onMouseEnter={(e) => {
                         (e.currentTarget as HTMLElement).style.background =
-                          "var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))";
+                          "var(--ds-background-neutral-subtle-hovered)";
                       }}
                       onMouseLeave={(e) => {
                         (e.currentTarget as HTMLElement).style.background =

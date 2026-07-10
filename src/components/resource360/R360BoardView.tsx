@@ -109,7 +109,7 @@ export const R360BoardView: React.FC<Props> = ({ items, onItemClick, memberName 
                 <div key={item.id} onClick={() => onItemClick(item)} style={{
                   background: 'var(--bg-app)', border: '1px solid var(--divider)', borderRadius: '8px',
                   padding: '12px 12px 12px 15px', cursor: 'pointer', position: 'relative',
-                  boxShadow: '0 1px 3px var(--ds-shadow-overlay, rgba(15,23,42,.05))', transition: 'border-color .15s',
+                  boxShadow: '0 1px 3px var(--ds-shadow-overlay)', transition: 'border-color .15s',
                 }}
                   onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--fg-4)'; }}
                   onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--divider)'; }}

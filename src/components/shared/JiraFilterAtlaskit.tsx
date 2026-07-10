@@ -282,7 +282,7 @@ export function JiraFilterAtlaskit(props: JiraFilterAtlaskitProps) {
             background: token('elevation.surface.overlay', 'var(--ds-surface)'),
             border: `1px solid ${token('color.border', 'var(--ds-border)')}`,
             borderRadius: 4,
-            boxShadow: token('elevation.shadow.overlay', '0 8px 24px -4px var(--ds-shadow-raised, rgba(9,30,66,0.18))'),
+            boxShadow: token('elevation.shadow.overlay', '0 8px 24px -4px var(--ds-shadow-raised)'),
             color: token('color.text', 'var(--ds-text)'),
             fontFamily: '"Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", sans-serif',
             fontSize: 'var(--ds-font-size-400)',

@@ -15,7 +15,7 @@ interface IconProps {
 }
 
 /* jira-compare 2026-05-02 — measured Jira chip icons:
-     16×16 stroke, color var(--ds-text-subtle, rgb(80,82,88)) = --ds-text-subtle.
+     16×16 stroke, color var(--ds-text-subtle) = --ds-text-subtle.
    IconButton parent doesn't pass colour into custom icons, so the icon
    declares its own stroke explicitly to match Jira's subtle tone. */
 const baseProps = {

@@ -72,8 +72,8 @@ export default function BoardCard({ board, projectId, onOpen, onSettings }: Boar
   };
 
   const visibilityChip = () => {
-    if (board.visibility === 'private') return { label: '🔒 Private', bg: 'var(--ds-background-warning, rgba(217,119,6,0.06))', color: 'var(--ds-text-warning, var(--cp-warning))' };
-    if (board.visibility === 'global') return { label: '🌐 Organisation', bg: 'var(--ds-background-information, rgba(37,99,235,0.06))', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' };
+    if (board.visibility === 'private') return { label: '🔒 Private', bg: 'var(--ds-background-warning)', color: 'var(--ds-text-warning, var(--cp-warning))' };
+    if (board.visibility === 'global') return { label: '🌐 Organisation', bg: 'var(--ds-background-information)', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' };
     return { label: 'Project', bg: 'var(--bg-1)', color: 'var(--fg-3)' };
   };
 
@@ -87,10 +87,10 @@ export default function BoardCard({ board, projectId, onOpen, onSettings }: Boar
         onMouseLeave={() => setHover(false)}
         style={{
           background: 'var(--bg-app)',
-          border: `0.75px solid ${isDark ? (hover ? 'var(--ds-border-bold)' : 'var(--ds-border, var(--cp-ink-1))') : (hover ? 'var(--ds-shadow-overlay, rgba(15,23,42,0.18))' : 'var(--ds-shadow-overlay, rgba(15,23,42,0.12))')}`,
+          border: `0.75px solid ${isDark ? (hover ? 'var(--ds-border-bold)' : 'var(--ds-border, var(--cp-ink-1))') : (hover ? 'var(--ds-shadow-overlay)' : 'var(--ds-shadow-overlay)')}`,
           borderRadius: 8, cursor: 'pointer', position: 'relative',
           transition: 'box-shadow 150ms, border-color 150ms',
-          boxShadow: hover ? (isDark ? '0 4px 16px var(--ds-shadow-raised, rgba(0,0,0,0.30))' : '0 4px 16px var(--ds-shadow-overlay, rgba(15,23,42,0.10))') : 'none',
+          boxShadow: hover ? (isDark ? '0 4px 16px var(--ds-shadow-raised)' : '0 4px 16px var(--ds-shadow-overlay)') : 'none',
           overflow: 'hidden', display: 'flex', flexDirection: 'column',
         }}
       >
@@ -138,8 +138,8 @@ export default function BoardCard({ board, projectId, onOpen, onSettings }: Boar
               <div style={{
                 position: 'absolute', top: 24, right: 0,
                 width: 172, background: 'var(--cp-float)',
-                border: isDark ? '0.75px solid var(--ds-background-neutral)' : '0.75px solid var(--ds-shadow-overlay, rgba(15,23,42,0.12))',
-                borderRadius: 6, boxShadow: isDark ? '0 4px 16px var(--ds-shadow-raised, rgba(0,0,0,0.30))' : '0 4px 16px var(--ds-shadow-overlay, rgba(15,23,42,0.14))',
+                border: isDark ? '0.75px solid var(--ds-background-neutral)' : '0.75px solid var(--ds-shadow-overlay)',
+                borderRadius: 6, boxShadow: isDark ? '0 4px 16px var(--ds-shadow-raised)' : '0 4px 16px var(--ds-shadow-overlay)',
                 zIndex: 50, padding: '4px 0',
               }}>
                 <MenuItem onClick={() => { navigator.clipboard.writeText(window.location.origin + `/projects/${projectId}/boards/${board.slug}`); setMenuOpen(false); }}>
@@ -196,7 +196,7 @@ export default function BoardCard({ board, projectId, onOpen, onSettings }: Boar
             <div style={{
               fontSize: 'var(--ds-font-size-100)', color: 'var(--fg-4)', fontFamily: 'ui-monospace, SFMono-Regular, monospace',
               marginBottom: 8, padding: '4px 6px', borderRadius: 3,
-              background: isDark ? 'var(--ds-surface, rgba(255,255,255,0.04))' : 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.04))',
+              background: isDark ? 'var(--ds-surface)' : 'var(--ds-background-neutral-subtle-hovered)',
               overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
             }} title={board.boardQuery}>
               {board.boardQuery.length > 60 ? board.boardQuery.slice(0, 57) + '…' : board.boardQuery}
@@ -205,7 +205,7 @@ export default function BoardCard({ board, projectId, onOpen, onSettings }: Boar
 
           <div style={{
             display: 'flex', alignItems: 'center', gap: 12,
-            borderTop: isDark ? '0.75px solid var(--ds-background-neutral)' : '0.75px solid var(--ds-shadow-overlay, rgba(15,23,42,0.08))', paddingTop: 8,
+            borderTop: isDark ? '0.75px solid var(--ds-background-neutral)' : '0.75px solid var(--ds-shadow-overlay)', paddingTop: 8,
             fontSize: 11.5, color: 'var(--fg-3)', fontFamily: 'var(--cp-font-body)',
           }}>
             <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
@@ -221,11 +221,11 @@ export default function BoardCard({ board, projectId, onOpen, onSettings }: Boar
         <div style={{
           display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 8,
           padding: '8px 12px',
-          background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1))' : 'var(--bg-1)', borderTop: isDark ? '0.75px solid var(--ds-text)' : '0.75px solid var(--ds-shadow-overlay, rgba(15,23,42,0.08))',
+          background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1))' : 'var(--bg-1)', borderTop: isDark ? '0.75px solid var(--ds-text)' : '0.75px solid var(--ds-shadow-overlay)',
         }}>
           <button onClick={e => { e.stopPropagation(); onSettings(); }} style={{
             display: 'flex', alignItems: 'center', gap: 4, height: 30, padding: '0 10px',
-            background: isDark ? 'var(--cp-bg-page)' : 'var(--bg-app)', border: isDark ? '0.75px solid var(--ds-text)' : '0.75px solid var(--ds-shadow-overlay, rgba(15,23,42,0.12))',
+            background: isDark ? 'var(--cp-bg-page)' : 'var(--bg-app)', border: isDark ? '0.75px solid var(--ds-text)' : '0.75px solid var(--ds-shadow-overlay)',
             borderRadius: 6, cursor: 'pointer', fontSize: 11.5, fontWeight: 500,
             color: 'var(--fg-2)', fontFamily: 'var(--cp-font-body)',
           }}>
@@ -244,12 +244,12 @@ export default function BoardCard({ board, projectId, onOpen, onSettings }: Boar
       {/* Delete confirmation modal */}
       {deleteModal && (
         <>
-          <div style={{ position: 'fixed', inset: 0, background: isDark ? 'var(--ds-shadow-raised, rgba(0,0,0,0.50))' : 'var(--ds-shadow-overlay, rgba(15,23,42,0.30))', zIndex: 80 }}
+          <div style={{ position: 'fixed', inset: 0, background: isDark ? 'var(--ds-shadow-raised)' : 'var(--ds-shadow-overlay)', zIndex: 80 }}
             onClick={() => setDeleteModal(false)} />
           <div style={{
             position: 'fixed', top: '48%', left: '48%', transform: 'translate(-50%, -50%)',
             width: 420, background: 'var(--cp-float)', borderRadius: 8, zIndex: 90,
-            padding: 24, border: isDark ? '0.75px solid var(--ds-background-neutral)' : '0.75px solid var(--ds-shadow-overlay, rgba(15,23,42,0.12))',
+            padding: 24, border: isDark ? '0.75px solid var(--ds-background-neutral)' : '0.75px solid var(--ds-shadow-overlay)',
           }} onClick={e => e.stopPropagation()}>
             <h3 style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 700, color: 'var(--fg-1)', margin: '0 0 8px', fontFamily: 'var(--cp-font-heading)' }}>
               Delete Board
@@ -264,7 +264,7 @@ export default function BoardCard({ board, projectId, onOpen, onSettings }: Boar
               placeholder={board.name}
               style={{
                 width: '100%', height: 50, padding: '8px 12px', boxSizing: 'border-box',
-                border: isDark ? '0.75px solid var(--ds-background-neutral)' : '0.75px solid var(--ds-shadow-overlay, rgba(15,23,42,0.15))', borderRadius: 6,
+                border: isDark ? '0.75px solid var(--ds-background-neutral)' : '0.75px solid var(--ds-shadow-overlay)', borderRadius: 6,
                 fontSize: 'var(--ds-font-size-300)', fontFamily: 'var(--cp-font-body)', color: 'var(--fg-1)',
                 outline: 'none', background: isDark ? 'var(--cp-bg-page)' : 'var(--bg-app)', marginBottom: 16,
               }}
@@ -272,7 +272,7 @@ export default function BoardCard({ board, projectId, onOpen, onSettings }: Boar
             <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
               <button onClick={() => { setDeleteModal(false); setDeleteConfirm(''); }} style={{
                 padding: '8px 16px', fontSize: 'var(--ds-font-size-300)', fontWeight: 500, borderRadius: 6,
-                border: isDark ? '0.75px solid var(--ds-background-neutral)' : '0.75px solid var(--ds-shadow-overlay, rgba(15,23,42,0.15))', background: isDark ? 'var(--cp-bg-page, var(--ds-surface))' : 'var(--bg-app)',
+                border: isDark ? '0.75px solid var(--ds-background-neutral)' : '0.75px solid var(--ds-shadow-overlay)', background: isDark ? 'var(--cp-bg-page, var(--ds-surface))' : 'var(--bg-app)',
                 color: 'var(--fg-2)', cursor: 'pointer', fontFamily: 'var(--cp-font-body)',
               }}>Cancel</button>
               <button onClick={handleDelete}
@@ -304,7 +304,7 @@ function MenuItem({ children, onClick, danger }: { children: React.ReactNode; on
       color: danger ? 'var(--sem-danger)' : 'var(--fg-2)',
       fontFamily: 'var(--cp-font-body)', textAlign: 'left',
     }}
-      onMouseEnter={e => (e.currentTarget.style.background = danger ? (document.documentElement.classList.contains('dark') ? 'var(--ds-background-danger-bold, rgba(220,38,38,0.10))' : 'var(--ds-background-danger)') : (document.documentElement.classList.contains('dark') ? 'var(--ds-surface-overlay)' : 'var(--ds-shadow-overlay, rgba(15,23,42,0.04))'))}
+      onMouseEnter={e => (e.currentTarget.style.background = danger ? (document.documentElement.classList.contains('dark') ? 'var(--ds-background-danger-bold)' : 'var(--ds-background-danger)') : (document.documentElement.classList.contains('dark') ? 'var(--ds-surface-overlay)' : 'var(--ds-shadow-overlay)'))}
       onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
     >
       {children}
@@ -317,7 +317,7 @@ function Chip({ children, bg, color }: { children: React.ReactNode; bg: string; 
     <span style={{
       display: 'inline-flex', alignItems: 'center', height: 20, padding: '0 8px',
       borderRadius: 12, fontSize: 'var(--ds-font-size-100)', fontWeight: 500,
-      background: bg, color, border: document.documentElement.classList.contains('dark') ? '0.75px solid var(--ds-background-neutral, var(--ds-background-neutral))' : '0.75px solid var(--ds-shadow-overlay, rgba(15,23,42,0.08))',
+      background: bg, color, border: document.documentElement.classList.contains('dark') ? '0.75px solid var(--ds-background-neutral, var(--ds-background-neutral))' : '0.75px solid var(--ds-shadow-overlay)',
       fontFamily: 'var(--cp-font-body)',
     }}>{children}</span>
   );

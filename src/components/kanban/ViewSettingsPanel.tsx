@@ -47,7 +47,7 @@ function Toggle({ checked, onChange, tk }: { checked: boolean; onChange: (v: boo
         position: 'absolute',
         left: checked ? 18 : 2,
         transition: 'left 150ms',
-        boxShadow: '0 1px 3px var(--ds-shadow-raised, rgba(0,0,0,0.2))',
+        boxShadow: '0 1px 3px var(--ds-shadow-raised)',
       }} />
     </button>
   );

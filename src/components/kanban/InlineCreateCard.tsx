@@ -121,7 +121,7 @@ function SmartPopover({
         background: 'var(--ds-surface-overlay)',
         border: '1px solid var(--ds-border)',
         borderRadius: 6,
-        boxShadow: '0 4px 16px var(--ds-shadow-raised, rgba(9,30,66,0.16))',
+        boxShadow: '0 4px 16px var(--ds-shadow-raised)',
       }}
     >
       {children}
@@ -632,7 +632,7 @@ function InlineCreateCardComponent({
     background: 'var(--ds-surface-overlay)',
     border: '1px solid var(--ds-border)',
     borderRadius: 6,
-    boxShadow: '0 4px 16px var(--ds-shadow-raised, rgba(9,30,66,0.16))',
+    boxShadow: '0 4px 16px var(--ds-shadow-raised)',
   };
 
   return (
@@ -648,7 +648,7 @@ function InlineCreateCardComponent({
         borderRadius: 6,
         /* Jira-parity: full clean blue outline around the whole card. */
         border: '2px solid var(--ds-border-selected)',
-        boxShadow: '0 2px 8px var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))',
+        boxShadow: '0 2px 8px var(--ds-background-neutral-subtle-hovered)',
       }}
       onMouseDown={e => e.stopPropagation()}
       onClick={e => e.stopPropagation()}
@@ -710,7 +710,7 @@ function InlineCreateCardComponent({
             style={{ ...iconBtnStyle, width: 'auto', padding: '0 4px', gap: 2 }}
             aria-label={`Type: ${issueName}`}
             title={issueName}
-            onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))'; }}
+            onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-background-neutral-subtle-hovered)'; }}
             onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
           >
             <JiraIssueTypeIcon type={issueName.toLowerCase()} size={16} />
@@ -764,7 +764,7 @@ function InlineCreateCardComponent({
             title="Due date"
             aria-haspopup="dialog"
             aria-expanded={showDatePicker}
-            onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))'; }}
+            onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-background-neutral-subtle-hovered)'; }}
             onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
           >
             <svg width={16} height={16} viewBox="0 0 16 16" fill="none" aria-hidden>
@@ -800,7 +800,7 @@ function InlineCreateCardComponent({
             style={{ ...iconBtnStyle, width: 'auto', padding: '0 8px', gap: 4 }}
             aria-label={assigneeName ? `Assigned to ${assigneeName}` : 'Unassigned'}
             title={assigneeName || 'Unassigned'}
-            onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))'; }}
+            onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-background-neutral-subtle-hovered)'; }}
             onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
           >
             {assigneeName ? (

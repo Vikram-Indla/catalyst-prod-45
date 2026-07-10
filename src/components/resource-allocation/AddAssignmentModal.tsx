@@ -167,7 +167,7 @@ export function AddAssignmentModal({
         className="fixed inset-0 z-[1101] flex items-center justify-center p-4 animate-in fade-in slide-in-from-bottom-2 duration-200"
       >
         <div 
-          className="bg-card rounded-2xl w-full max-w-[420px] shadow-[0_20px_60px_var(--ds-shadow-raised, rgba(0,0,0,0.25))] border border-border"
+          className="bg-card rounded-2xl w-full max-w-[420px] shadow-[0_20px_60px_var(--ds-shadow-raised)] border border-border"
           onClick={(e) => e.stopPropagation()}
           role="dialog"
           aria-modal="true"

@@ -9,14 +9,14 @@ const T = {
   subtle: 'var(--ds-text-subtle)',
   subtlest: 'var(--ds-text-subtlest)',
   success: 'var(--ds-icon-success)',
-  successBg: 'var(--ds-background-success, rgba(34,160,107,0.12))',
+  successBg: 'var(--ds-background-success)',
   successBorder: 'var(--ds-border-success)',
   warning: 'var(--ds-icon-warning)',
-  warningBg: 'var(--ds-background-warning, rgba(255,153,31,0.12))',
+  warningBg: 'var(--ds-background-warning)',
   warningBorder: 'var(--ds-border-warning)',
   danger: 'var(--ds-icon-danger)',
-  dangerBg: 'var(--ds-background-danger, rgba(174,42,25,0.10))',
-  dangerBorder: 'var(--ds-border-danger, rgba(174,42,25,0.35))',
+  dangerBg: 'var(--ds-background-danger)',
+  dangerBorder: 'var(--ds-border-danger)',
   bgNeutral: 'var(--ds-background-neutral)',
 };
 
@@ -39,16 +39,16 @@ const TIER_COLOR: Record<SignoffTier, string> = {
 };
 
 const TIER_BG: Record<SignoffTier, string> = {
-  complete: 'var(--ds-background-success, rgba(34,160,107,0.12))',
-  partial:  'var(--ds-background-warning, rgba(255,153,31,0.12))',
-  none:     'var(--ds-background-danger, rgba(174,42,25,0.10))',
+  complete: 'var(--ds-background-success)',
+  partial:  'var(--ds-background-warning)',
+  none:     'var(--ds-background-danger)',
   unknown:  'var(--ds-background-neutral)',
 };
 
 const TIER_BORDER: Record<SignoffTier, string> = {
   complete: 'var(--ds-border-success)',
   partial:  'var(--ds-border-warning)',
-  none:     'var(--ds-border-danger, rgba(174,42,25,0.35))',
+  none:     'var(--ds-border-danger)',
   unknown:  'var(--ds-border)',
 };
 

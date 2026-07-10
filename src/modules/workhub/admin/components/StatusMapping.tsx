@@ -87,7 +87,7 @@ export function StatusMapping() {
 
       <div style={{
         background: 'var(--bg-app)', border: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken)))', borderRadius: 8,
-        padding: 16, boxShadow: '0 1px 2px var(--ds-shadow-raised, rgba(0,0,0,.05))',
+        padding: 16, boxShadow: '0 1px 2px var(--ds-shadow-raised)',
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
           <h2 style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: 'var(--fg-1, var(--cp-ink-1, var(--cp-ink-1)))', margin: 0 }}>
@@ -106,7 +106,7 @@ export function StatusMapping() {
             <div
               key={category}
               style={{ marginBottom: 16 }}
-              onDragOver={e => { e.preventDefault(); e.currentTarget.style.background = 'var(--ds-background-information, rgba(37,99,235,0.03))' }}
+              onDragOver={e => { e.preventDefault(); e.currentTarget.style.background = 'var(--ds-background-information)' }}
               onDragLeave={e => { e.currentTarget.style.background = 'transparent' }}
               onDrop={e => {
                 e.currentTarget.style.background = 'transparent'

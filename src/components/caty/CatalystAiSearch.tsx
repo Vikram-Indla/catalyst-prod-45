@@ -180,7 +180,7 @@ export function CatalystAiSearch({
           cursor: 'pointer',
         }}
         onMouseEnter={(e) => {
-          e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))');
+          e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle-hovered)');
         }}
         onMouseLeave={(e) => {
           e.currentTarget.style.background = token('elevation.surface', 'var(--ds-surface)');

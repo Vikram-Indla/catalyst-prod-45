@@ -241,7 +241,7 @@ function UserChip({
       }}
       onMouseEnter={(e) => {
         e.currentTarget.style.background =
-          "var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))";
+          "var(--ds-background-neutral-subtle-hovered)";
       }}
       onMouseLeave={(e) => {
         e.currentTarget.style.background = "var(--ds-surface)";

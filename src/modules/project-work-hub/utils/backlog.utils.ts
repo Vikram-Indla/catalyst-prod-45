@@ -33,11 +33,11 @@ const LOZENGE_STYLES_LIGHT: Record<LozengeColor, { bg: string; text: string }> =
 
 const LOZENGE_STYLES_DARK: Record<LozengeColor, { bg: string; text: string }> = {
   default:    { bg: 'var(--ds-border, var(--cp-ink-1))',            text: 'var(--ds-text-subtlest)' },
-  inprogress: { bg: 'var(--ds-background-information-bold, rgba(59,130,246,0.10))',  text: 'var(--ds-background-information-bold, var(--ds-link))' },
-  success:    { bg: 'var(--ds-background-success-bold, rgba(74,222,128,0.10))',  text: 'var(--ds-background-success)' },
+  inprogress: { bg: 'var(--ds-background-information-bold)',  text: 'var(--ds-background-information-bold, var(--ds-link))' },
+  success:    { bg: 'var(--ds-background-success-bold)',  text: 'var(--ds-background-success)' },
   removed:    { bg: 'rgba(248,113,113,0.10)', text: 'var(--ds-background-danger, var(--ds-background-danger))' },
   moved:      { bg: 'rgba(234,179,8,0.10)',   text: '#FACC15' }, // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
-  new:        { bg: 'var(--ds-background-discovery-bold, rgba(167,139,250,0.10))', text: 'var(--ds-background-discovery)' },
+  new:        { bg: 'var(--ds-background-discovery-bold)', text: 'var(--ds-background-discovery)' },
 };
 
 export function getLozengeStyle(color: LozengeColor) {

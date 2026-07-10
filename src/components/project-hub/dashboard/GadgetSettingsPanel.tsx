@@ -286,7 +286,7 @@ export default function GadgetSettingsPanel({
 
           {openField === 'date' && (
             <div style={{ background: 'var(--ds-surface)', border: '1px solid var(--ds-border)',
-                          borderRadius: 3, boxShadow: '0 6px 16px var(--ds-shadow-raised, rgba(9,30,66,.15))',
+                          borderRadius: 3, boxShadow: '0 6px 16px var(--ds-shadow-raised)',
                           overflow: 'hidden' }}>
               {/* This period group */}
               <div style={{ borderBottom: '1px solid var(--ds-border)' }}>
@@ -841,7 +841,7 @@ function MultiSelectGeneric({
             background: 'var(--ds-surface)',
             border: '1px solid var(--ds-border)',
             borderRadius: 4,
-            boxShadow: '0 8px 24px var(--ds-shadow-raised, rgba(9,30,66,.18))',
+            boxShadow: '0 8px 24px var(--ds-shadow-raised)',
             maxHeight: 224,
             overflowY: 'auto',
           }}
@@ -1014,7 +1014,7 @@ function MultiSelectStatus({
             background: 'var(--ds-surface)',
             border: '1px solid var(--ds-border)',
             borderRadius: 4,
-            boxShadow: '0 8px 24px var(--ds-shadow-raised, rgba(9,30,66,.18))',
+            boxShadow: '0 8px 24px var(--ds-shadow-raised)',
             maxHeight: 280,
             overflowY: 'auto',
           }}
@@ -1548,7 +1548,7 @@ function ColumnsSection({
                 background: 'var(--ds-surface)',
                 border: '1px solid var(--ds-border)',
                 borderRadius: 4,
-                boxShadow: '0 8px 24px var(--ds-shadow-raised, rgba(9,30,66,.18))',
+                boxShadow: '0 8px 24px var(--ds-shadow-raised)',
                 maxHeight: 220,
                 display: 'flex',
                 flexDirection: 'column',

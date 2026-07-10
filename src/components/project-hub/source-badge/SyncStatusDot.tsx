@@ -108,7 +108,7 @@ export function SyncStatusDot({ status, lastSyncedAt }: SyncStatusDotProps) {
               fontSize: 'var(--ds-font-size-100)',
               fontFamily: 'var(--cp-font-body)',
               zIndex: 100,
-              boxShadow: '0 2px 8px var(--ds-shadow-raised, rgba(0,0,0,0.15))',
+              boxShadow: '0 2px 8px var(--ds-shadow-raised)',
             }}
           >
             {exactDateTime(lastSyncedAt)}

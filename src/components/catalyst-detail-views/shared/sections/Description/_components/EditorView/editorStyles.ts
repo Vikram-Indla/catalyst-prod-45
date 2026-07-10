@@ -417,7 +417,7 @@ export function injectEditorStyles(): void {
       0% {
         box-shadow:
           0 0 0 2px var(--ds-link),
-          0 0 14px 3px var(--ds-link, rgba(12,102,228,0.30));
+          0 0 14px 3px var(--ds-link);
       }
       33% {
         box-shadow:
@@ -432,7 +432,7 @@ export function injectEditorStyles(): void {
       100% {
         box-shadow:
           0 0 0 2px var(--ds-link),
-          0 0 14px 3px var(--ds-link, rgba(12,102,228,0.30));
+          0 0 14px 3px var(--ds-link);
       }
     }
 

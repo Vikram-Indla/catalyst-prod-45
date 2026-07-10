@@ -655,7 +655,7 @@ export function IncidentListTable({
                       className={cn(
                         "min-w-[32px] h-8 px-2 rounded text-sm font-medium transition-all duration-150",
                         page === pageNum
-                          ? "text-white shadow-[0_2px_8px_var(--ds-background-information, rgba(37,99,235,0.18))]"
+                          ? "text-white shadow-[0_2px_8px_var(--ds-background-information)]"
                           : "text-text-secondary hover:bg-surface-hover"
                       )}
                       style={page === pageNum ? {

@@ -63,16 +63,16 @@ const STATUS_CONFIG: Record<string, {
     dotColor: 'var(--ds-text-warning)',
     bgColor: 'var(--ds-background-warning)',
     borderColor: 'var(--ds-background-warning)',
-    darkBgColor: 'var(--ds-background-warning-bold, rgba(251,191,36,0.08))',
-    darkBorderColor: 'var(--ds-background-warning-bold, rgba(251,191,36,0.2))',
+    darkBgColor: 'var(--ds-background-warning-bold)',
+    darkBorderColor: 'var(--ds-background-warning-bold)',
   },
   'in progress': {
     label: 'In Progress',
     dotColor: 'var(--ds-text-warning)',
     bgColor: 'var(--ds-background-warning)',
     borderColor: 'var(--ds-background-warning)',
-    darkBgColor: 'var(--ds-background-warning-bold, rgba(251,191,36,0.08))',
-    darkBorderColor: 'var(--ds-background-warning-bold, rgba(251,191,36,0.2))',
+    darkBgColor: 'var(--ds-background-warning-bold)',
+    darkBorderColor: 'var(--ds-background-warning-bold)',
   },
   'review': {
     label: 'Review',
@@ -87,8 +87,8 @@ const STATUS_CONFIG: Record<string, {
     dotColor: 'var(--ds-text-success)',
     bgColor: 'var(--ds-background-success)',
     borderColor: 'var(--ds-background-success)',
-    darkBgColor: 'var(--ds-background-success-bold, rgba(74,222,128,0.08))',
-    darkBorderColor: 'var(--ds-background-success-bold, rgba(74,222,128,0.2))',
+    darkBgColor: 'var(--ds-background-success-bold)',
+    darkBorderColor: 'var(--ds-background-success-bold)',
   },
 };
 

@@ -62,7 +62,7 @@ if (typeof document !== 'undefined' && !document.getElementById(CAPSULE_STYLE_ID
       gap: 8px;
       background: rgba(16, 20, 36, 0.82); // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
       border: 1px solid rgba(255, 255, 255, 0.18); /* ads-scanner:ignore-line — always-dark Wispr overlay */
-      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06), 0 4px 24px var(--ds-shadow-raised, rgba(0, 0, 0, 0.28));
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06), 0 4px 24px var(--ds-shadow-raised);
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
       border-radius: 999px;

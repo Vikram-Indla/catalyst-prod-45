@@ -141,7 +141,7 @@ export function OperationsGridRow({
           "hidden md:grid items-center px-4 transition-all duration-150 cursor-pointer group",
           rowHeight,
           // Blue-tinted hover states
-          "hover:bg-[var(--ds-background-information, rgba(37,99,235,0.04))] dark:hover:bg-[var(--ds-background-information, rgba(37,99,235,0.08))]"
+          "hover:bg-[var(--ds-background-information)] dark:hover:bg-[var(--ds-background-information)]"
         )}
         style={{ 
           gridTemplateColumns: GRID_COLS,
@@ -333,7 +333,7 @@ export function DeliveryGridRow({
           "hidden md:grid items-center px-4 transition-all duration-150 cursor-pointer group",
           rowHeight,
           // Blue-tinted hover states
-          "hover:bg-[var(--ds-background-information, rgba(37,99,235,0.04))] dark:hover:bg-[var(--ds-background-information, rgba(37,99,235,0.08))]"
+          "hover:bg-[var(--ds-background-information)] dark:hover:bg-[var(--ds-background-information)]"
         )}
         style={{ 
           gridTemplateColumns: GRID_COLS,
@@ -533,7 +533,7 @@ export function PlannerGridRow({
           "hidden md:grid items-center px-4 transition-all duration-150 cursor-pointer group",
           rowHeight,
           // Blue-tinted hover states
-          "hover:bg-[var(--ds-background-information, rgba(37,99,235,0.04))] dark:hover:bg-[var(--ds-background-information, rgba(37,99,235,0.08))]"
+          "hover:bg-[var(--ds-background-information)] dark:hover:bg-[var(--ds-background-information)]"
         )}
         style={{ 
           gridTemplateColumns: GRID_COLS,

@@ -1318,7 +1318,7 @@ function ToolbarMenu({ trigger, children, anchor = 'left', width = 220 }: Toolba
             background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
             border: '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral))',
             borderRadius: 4,
-            boxShadow: '0 1px 1px var(--ds-shadow-raised, rgba(9,30,66,0.25)), 0 8px 24px -4px var(--ds-shadow-raised, rgba(9,30,66,0.18))',
+            boxShadow: '0 1px 1px var(--ds-shadow-raised), 0 8px 24px -4px var(--ds-shadow-raised)',
             padding: 4,
           }}
         >

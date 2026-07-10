@@ -290,7 +290,7 @@ function NotificationItemInner({
     press: "var(--cp-border-subtle, rgba(15,23,42,0.08))",
     borderStrong: isDark
       ? "var(--ds-border-bold)"
-      : "var(--ds-shadow-overlay, rgba(15,23,42,0.2))",
+      : "var(--ds-shadow-overlay)",
     checkStroke:
       "var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary)))",
   };
@@ -652,7 +652,7 @@ function NotificationItemInner({
                 alignItems: "center",
                 gap: 4,
                 marginTop: 8,
-                background: "var(--ds-background-warning, rgba(217,119,6,.08))",
+                background: "var(--ds-background-warning)",
                 borderRadius: 4,
                 padding: "4px 8px",
               }}

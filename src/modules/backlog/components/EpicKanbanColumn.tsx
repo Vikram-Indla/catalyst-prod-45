@@ -267,7 +267,7 @@ export function EpicKanbanColumn({
         ref={listRef}
         className={cn(
           'flex-1 overflow-y-auto p-3 flex flex-col gap-2.5',
-          isOver && 'bg-[var(--ds-background-information, rgba(37,99,235,0.08))] dark:bg-[var(--ds-background-information, rgba(37,99,235,0.1))]'
+          isOver && 'bg-[var(--ds-background-information)] dark:bg-[var(--ds-background-information)]'
         )}
         style={{ minHeight: 0 }}
       >

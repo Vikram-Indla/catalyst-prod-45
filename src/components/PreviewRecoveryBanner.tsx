@@ -89,7 +89,7 @@ export function PreviewRecoveryBanner() {
         fontFamily: 'var(--cp-font-body)',
         fontSize: 'var(--ds-font-size-300)',
         fontWeight: 600,
-        boxShadow: "0 2px 12px var(--ds-shadow-raised, rgba(0,0,0,0.35))",
+        boxShadow: "0 2px 12px var(--ds-shadow-raised)",
       }}
     >
       <AlertTriangle size={16} style={{ flexShrink: 0 }} />

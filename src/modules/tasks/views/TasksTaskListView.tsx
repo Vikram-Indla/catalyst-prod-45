@@ -231,7 +231,7 @@ function TasksGroupByControl({
             background: token('elevation.surface.overlay', 'var(--ds-surface)'),
             border: `1px solid ${token('color.border', 'var(--ds-border)')}`,
             borderRadius: 4,
-            boxShadow: token('elevation.shadow.overlay', '0 8px 16px var(--ds-shadow-raised, rgba(9,30,66,0.15))'),
+            boxShadow: token('elevation.shadow.overlay', '0 8px 16px var(--ds-shadow-raised)'),
             padding: '8px 0',
             zIndex: 9999,
             fontFamily: 'var(--cp-font-body)',
@@ -409,7 +409,7 @@ function TasksSavedFiltersControl({
             background: token('elevation.surface.overlay', 'var(--ds-surface)'),
             border: `1px solid ${token('color.border', 'var(--ds-border)')}`,
             borderRadius: 4,
-            boxShadow: token('elevation.shadow.overlay', '0 8px 16px var(--ds-shadow-raised, rgba(9,30,66,0.15))'),
+            boxShadow: token('elevation.shadow.overlay', '0 8px 16px var(--ds-shadow-raised)'),
             padding: '4px 0', zIndex: 9999, fontFamily: 'var(--cp-font-body)',
             maxHeight: 400, overflowY: 'auto',
           }}
@@ -794,7 +794,7 @@ function TasksInlineCreateRow({
             flexShrink: 0,
             maxWidth: 160,
           }}
-          onMouseEnter={(e) => { e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))'); }}
+          onMouseEnter={(e) => { e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle-hovered)'); }}
           onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
         >
           {activeWs?.color && (
@@ -823,7 +823,7 @@ function TasksInlineCreateRow({
               background: token('elevation.surface.overlay', 'var(--ds-surface)'),
               border: `1px solid ${token('color.border', 'var(--ds-border)')}`,
               borderRadius: 4,
-              boxShadow: token('elevation.shadow.overlay', '0 8px 16px var(--ds-shadow-raised, rgba(9,30,66,0.15))'),
+              boxShadow: token('elevation.shadow.overlay', '0 8px 16px var(--ds-shadow-raised)'),
               padding: '4px 0',
               zIndex: 9999,
               fontFamily: 'var(--cp-font-body)',
@@ -929,7 +929,7 @@ function TasksInlineCreateRow({
               background: token('elevation.surface.overlay', 'var(--ds-surface)'),
               border: `1px solid ${token('color.border', 'var(--ds-border)')}`,
               borderRadius: 4,
-              boxShadow: token('elevation.shadow.overlay', '0 8px 16px var(--ds-shadow-raised, rgba(9,30,66,0.15))'),
+              boxShadow: token('elevation.shadow.overlay', '0 8px 16px var(--ds-shadow-raised)'),
               zIndex: 9999,
               fontFamily: 'var(--cp-font-body)',
             }}
@@ -1106,7 +1106,7 @@ function TasksInlineCreateRow({
               background: token('elevation.surface.overlay', 'var(--ds-surface)'),
               border: `1px solid ${token('color.border', 'var(--ds-border)')}`,
               borderRadius: 4,
-              boxShadow: token('elevation.shadow.overlay', '0 8px 16px var(--ds-shadow-raised, rgba(9,30,66,0.15))'),
+              boxShadow: token('elevation.shadow.overlay', '0 8px 16px var(--ds-shadow-raised)'),
               padding: 8,
               zIndex: 9999,
               fontFamily: 'var(--cp-font-body)',

@@ -600,7 +600,7 @@ function buildDragPreview(
     'opacity: 0.55',
     'pointer-events: none',
     'z-index: 2147483645',
-    'box-shadow: 0 6px 20px var(--ds-shadow-raised, rgba(9,30,66,0.2))',
+    'box-shadow: 0 6px 20px var(--ds-shadow-raised)',
     'overflow: hidden',
     'background: var(--ds-surface)',
   ].join(';');

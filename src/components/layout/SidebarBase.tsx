@@ -849,7 +849,7 @@ function renderMenuItem(
           onMouseEnter={(e) => {
             if (!starred) {
               e.currentTarget.style.color = 'var(--ds-text-warning)';
-              e.currentTarget.style.background = 'var(--ds-background-warning-subtle, rgba(245,158,11,0.1))';
+              e.currentTarget.style.background = 'var(--ds-background-warning-subtle)';
             }
           }}
           onMouseLeave={(e) => {
@@ -879,7 +879,7 @@ function renderMenuItem(
             fontFamily: item.textBadge === 'AI' ? 'var(--cp-font-heading)' : 'var(--cp-font-body)',
             background: item.textBadge === 'AI'
               // ADS color.background.accent.purple.subtlest
-              ? 'var(--ds-background-accent-purple-subtlest, rgba(124,58,237,0.06))'
+              ? 'var(--ds-background-accent-purple-subtlest)'
               : item.textBadgeVariant === 'new'
               // ADS color.background.success.bold
               ? 'var(--ds-background-success-bold)'
@@ -890,7 +890,7 @@ function renderMenuItem(
               ? 'var(--cp-purple-60)'
               : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
             // ADS color.border.accent.purple
-            border: item.textBadge === 'AI' ? '1px solid var(--ds-border-accent-purple, rgba(124,58,237,0.12))' : 'none',
+            border: item.textBadge === 'AI' ? '1px solid var(--ds-border-accent-purple)' : 'none',
             position: expanded ? 'relative' : 'absolute',
             top: expanded ? 'auto' : '4px',
             right: expanded ? 'auto' : '4px',
