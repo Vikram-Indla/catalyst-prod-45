@@ -42,6 +42,7 @@ import {
   useStrataAudit,
   useStrataRoles,
   useInvalidateStrata,
+  useNeedsAttention,
 } from '@/modules/strata/hooks/useStrata';
 import { generateBoardPackPdf, generateBoardPackPptx } from '@/modules/strata/lib/boardPack';
 import type { BoardPackData } from '@/modules/strata/lib/boardPack';
@@ -362,6 +363,23 @@ export default function StrataReviewsPage() {
   const boardPacksQ = useBoardPacks(selected?.id);
   const auditQ = useStrataAudit('strata_snapshots');
   const profilesQ = useProfileNames();
+  // Period-close readiness (CLOSEOUT W5): advisory only — reuses the period-scoped
+  // needs-attention feed; the DB still enforces the real attestation guard on close.
+  const readinessQ = useNeedsAttention(activePeriod?.id);
+  const readinessChecks = useMemo(() => {
+    const rows = readinessQ.data ?? [];
+    const n = (type: string) => rows.filter((r) => r.item_type === type).length;
+    const openDecisions = ((decisionsQ.data ?? []) as StrataDecision[]).filter((d) => d.status === 'open').length;
+    return [
+      { key: 'missing_actual', label: 'KPI actuals submitted', pending: n('missing_actual') },
+      { key: 'pending_attestation', label: 'Actuals attested', pending: n('pending_attestation') },
+      { key: 'pending_benefit_validation', label: 'Benefit values validated', pending: n('pending_benefit_validation') },
+      { key: 'overdue_action', label: 'Actions cleared', pending: n('overdue_action') },
+      { key: 'overdue_gate', label: 'Gates decided', pending: n('overdue_gate') },
+      { key: 'open_decisions', label: 'Decisions resolved', pending: openDecisions },
+    ];
+  }, [readinessQ.data, decisionsQ.data]);
+  const readinessBlockers = readinessChecks.reduce((sum, c) => sum + c.pending, 0);
 
   // Executive KPI band (Command Room SRC-M3) — derived from loaded governance
   // data only; overdue = open/in-progress actions past their due date.
@@ -825,6 +843,35 @@ export default function StrataReviewsPage() {
                     : 'Closing is blocked while attestations are pending; overrides are audited.'}
                 </span>
               </div>
+              {activePeriod.close_status !== 'closed' ? (
+                <div style={{ marginTop: 'var(--ds-space-200)' }} data-testid="strata-reviews-close-readiness">
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 'var(--ds-space-100)' }}>
+                    <span style={{ ...bodyStyle, fontWeight: 600 }}>Close readiness</span>
+                    <StatusLozenge
+                      status={readinessBlockers === 0 ? 'ready' : 'attention'}
+                      label={readinessBlockers === 0 ? 'Ready to close' : `${readinessBlockers} to resolve`}
+                      appearance={readinessBlockers === 0 ? 'success' : 'moved'}
+                    />
+                    <span style={captionStyle}>Advisory — closing is still possible; the database enforces the attestation guard.</span>
+                  </div>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: 'var(--ds-space-100)' }}>
+                    {readinessChecks.map((c) => (
+                      <div
+                        key={c.key}
+                        data-testid={`strata-reviews-readiness-${c.key}`}
+                        style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, padding: 'var(--ds-space-100) var(--ds-space-150)', border: `1px solid ${T.border}`, borderRadius: 6 }}
+                      >
+                        <span style={bodyStyle}>{c.label}</span>
+                        <StatusLozenge
+                          status={c.pending === 0 ? 'clear' : 'pending'}
+                          label={c.pending === 0 ? 'Clear' : String(c.pending)}
+                          appearance={c.pending === 0 ? 'success' : 'moved'}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ) : null}
             </StrataPanel>
           ) : null}
 
