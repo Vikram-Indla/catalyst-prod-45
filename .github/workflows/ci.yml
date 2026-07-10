@@ -11,6 +11,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          # Full history so the ADS color HARD GATE can diff origin/main...HEAD.
+          fetch-depth: 0
 
       - uses: actions/setup-node@v4
         with:
@@ -68,6 +71,21 @@ jobs:
         # baseline (design-governance/color-baseline.json). Existing debt does
         # not block; regressions do. CAT-ADS-COMPLIANCE-20260627-001.
         run: npm run lint:colors:gate
+
+      - name: ADS color HARD GATE (zero-tolerance on changed files)
+        # CAT-ADS-HARDGATE-20260710-001. Block-new / grandfather-old: any
+        # hard-coded colour (hex/rgb/hsl/named/tailwind/var-fallback) in a file
+        # this branch TOUCHES fails the build. Pre-existing debt is untouched.
+        # This is the check to mark REQUIRED in branch protection so no dev can
+        # merge a new colour — not even with --no-verify on their local hook.
+        run: |
+          git rev-parse --verify origin/main >/dev/null 2>&1 || \
+            git fetch --no-tags origin main:refs/remotes/origin/main
+          npm run lint:colors:changed:ci
+
+      - name: ADS color strict ratchet (accurate full-tree, down-only)
+        # Belt-and-suspenders: total + per-category color debt can only shrink.
+        run: npm run lint:colors:strict:gate
 
       - name: ADS fallback-hex ratchet (blocks on NEW var(--ds-*, #hex) / token('x','#hex'))
         # lint:colors:gate whitelists this pattern; CAT-AUDIT-0100 tracks it

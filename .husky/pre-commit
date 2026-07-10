@@ -15,6 +15,19 @@ echo ""
 echo "🎨 ADS color ratchet (blocks on NEW hard-coded colors)…"
 node scripts/ads-color-gate.cjs || exit 1
 
+# --- HARD GATE (CAT-ADS-HARDGATE-20260710-001) ---------------------------
+# Block-new / grandfather-old. ANY hard-coded colour (hex, rgb, hsl, named,
+# tailwind util, OR var(--ds-*,#hex) fallback) in a STAGED file fails the
+# commit. The 11,980 pre-existing debt is untouched; no NEW colour lands.
+echo ""
+echo "🚫 ADS color HARD GATE (zero-tolerance on staged files)…"
+node scripts/ads-color-changed-gate.cjs --staged || exit 1
+
+# Accurate full-tree ratchet — total/per-category can only go down.
+echo ""
+echo "📉 ADS color strict ratchet (accurate full-tree, down-only)…"
+node scripts/ads-color-strict-gate.cjs || exit 1
+
 echo ""
 echo "🎨 ADS fallback-hex ratchet (blocks on NEW var(--ds-*, #hex) / token('x','#hex'))…"
 node scripts/ads-fallback-hex-gate.cjs || exit 1
