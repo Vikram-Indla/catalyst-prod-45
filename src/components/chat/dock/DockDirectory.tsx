@@ -307,9 +307,13 @@ interface DockDirectoryProps {
   focusTick?: number;
   /** Fires when the browse-detail screen opens/closes so the shell can go full-screen. */
   onBrowseChange?: (open: boolean) => void;
+  /** Rendered at the very top of the scroll (e.g. Home cards rail) so it scrolls with the list. */
+  headerSlot?: React.ReactNode;
+  /** Fires as the list scrolls past a threshold — lets the shell collapse its header. */
+  onScrolled?: (scrolled: boolean) => void;
 }
 
-export function DockDirectory({ conversations, activeId, onSelectConversation, focusTick, onBrowseChange }: DockDirectoryProps) {
+export function DockDirectory({ conversations, activeId, onSelectConversation, focusTick, onBrowseChange, headerSlot, onScrolled }: DockDirectoryProps) {
   const { user } = useAuth();
   const { role } = useUserRole();
   const isAdmin = role === 'admin';
@@ -716,7 +720,11 @@ export function DockDirectory({ conversations, activeId, onSelectConversation, f
         <div className="cc-dir__error-toast" role="alert">{dmError}</div>
       )}
 
-      <div className="cc-dir__scroll">
+      <div
+        className="cc-dir__scroll"
+        onScroll={onScrolled ? (e) => onScrolled((e.currentTarget as HTMLElement).scrollTop > 40) : undefined}
+      >
+        {headerSlot}
         {/* Global search results */}
         {searchActive && searchHits.length > 0 && (
           <>

@@ -61,6 +61,7 @@ export function DockSearchTab({ conversations, onSelect }: DockSearchTabProps) {
 
   return (
     <div className="cc-search">
+      <div className="cc-tab-hdr">Search</div>
       <div className="cc-search__field">
         <Textfield
           ref={inputRef}

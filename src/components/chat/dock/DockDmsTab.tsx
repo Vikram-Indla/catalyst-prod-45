@@ -10,7 +10,7 @@
  */
 import React, { useMemo, useState } from "react";
 import Badge from "@atlaskit/badge";
-import { AtlaskitAvatar, type AvatarPresenceColor } from "@/components/chat/main/AtlaskitAvatar";
+import { AtlaskitAvatar } from "@/components/chat/main/AtlaskitAvatar";
 import { CatyMoodFace } from "../caty-mood/CatyMoodFace";
 import { useChatPeople } from "@/hooks/chat/useChatPeople";
 import { useStartDm } from "@/hooks/chat/useStartDm";
@@ -18,12 +18,12 @@ import type { ChatConversation, ChatPerson, ChatPresence } from "@/types/chat";
 
 type DmFilter = "all" | "vip" | "unreads" | "external";
 
-/** Chat presence → avatar dot colour. */
-const PRESENCE_COLOR: Record<ChatPresence, AvatarPresenceColor> = {
-  onsite: "green",
-  remote: "blue",
-  away: "amber",
-  on_leave: "grey",
+/** Chat presence → dot colour (ADS semantic tokens; matches the You modal). */
+const PRESENCE_DOT: Record<ChatPresence, string> = {
+  onsite: "var(--ds-icon-success)",
+  remote: "var(--ds-icon-information)",
+  away: "var(--ds-icon-warning)",
+  on_leave: "var(--ds-icon-disabled)",
 };
 
 const CHIPS: { key: DmFilter; label: string }[] = [
@@ -133,6 +133,7 @@ export function DockDmsTab({ conversations, activeId, onSelect, onOpenCaty }: Do
 
   return (
     <div className="cc-dms">
+      <div className="cc-tab-hdr">DMs</div>
       <div className="cc-dms__rail" role="list" aria-label="Members">
         <button
           type="button"
@@ -153,13 +154,10 @@ export function DockDmsTab({ conversations, activeId, onSelect, onOpenCaty }: Do
             onClick={() => openPerson(p)}
             title={p.name}
           >
-            <AtlaskitAvatar
-              name={p.name}
-              seed={p.profileId ?? p.id}
-              pixelSize={44}
-              shape="square"
-              presence={PRESENCE_COLOR[p.presence]}
-            />
+            <span className="cc-ava">
+              <AtlaskitAvatar name={p.name} seed={p.profileId ?? p.id} pixelSize={40} shape="square" />
+              <span className="cc-ava-dot" style={{ background: PRESENCE_DOT[p.presence] }} aria-hidden />
+            </span>
             <span className="cc-dms__rail-name">{firstName(p.name)}</span>
           </button>
         ))}

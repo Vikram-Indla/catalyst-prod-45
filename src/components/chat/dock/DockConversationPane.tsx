@@ -20,6 +20,10 @@ import {
 } from "@/hooks/chat/usePinsBookmarks";
 import type { ChatConversation, ChatMessage } from "@/types/chat";
 import { ConversationHeader } from "@/components/chat/main/ConversationHeader";
+import { DockConvHeader } from "./DockConvHeader";
+import { DockCatySheet } from "./DockCatySheet";
+import { useHuddleActions } from "@/hooks/chat/useHuddleData";
+import { catalystToast } from "@/lib/catalystToast";
 import { ThreadPanel } from "@/components/chat/main/ThreadPanel";
 import { DmSummarizePanel } from "./DmSummarizePanel";
 import { MessageList } from "@/features/chat-v2/components/MessagePanel/MessageList";
@@ -119,6 +123,18 @@ export function DockConversationPane({
   // switches to a different conversation.
   const isDm = conversation.kind === "dm";
   const [summarizeOpen, setSummarizeOpen] = useState(false);
+  const [catyOpen, setCatyOpen] = useState(false);
+  const [huddleBusy, setHuddleBusy] = useState(false);
+  const { startOrJoin } = useHuddleActions();
+  const startHuddle = useCallback(async () => {
+    if (huddleBusy) return;
+    setHuddleBusy(true);
+    try { await startOrJoin(conversation); }
+    catch (e) {
+      const msg = e instanceof Error ? e.message : String(e);
+      catalystToast.error(msg === "HUDDLE_FULL" ? "Huddle is full" : "Could not start huddle", msg);
+    } finally { setHuddleBusy(false); }
+  }, [huddleBusy, startOrJoin, conversation]);
   useEffect(() => {
     setSummarizeOpen(false);
   }, [conversation.id]);
@@ -252,13 +268,13 @@ export function DockConversationPane({
       data-cv2-theme={theme}
       style={{ height: '100%', minHeight: 0 }}
     >
-      <ConversationHeader
+      <DockConvHeader
         conversation={conversation}
-        currentUserMuted={conversation.isMuted ?? false}
-        currentUserStarred={conversation.isStarred ?? false}
+        isThread={!!threadParent}
         onBack={onBack}
-        onSummarize={isDm ? () => setSummarizeOpen((v) => !v) : undefined}
-        summarizeActive={summarizeOpen}
+        onCaty={() => setCatyOpen(true)}
+        onHuddle={startHuddle}
+        huddleBusy={huddleBusy}
       />
 
 
@@ -335,6 +351,8 @@ export function DockConversationPane({
           />
         </div>
       )}
+
+      {catyOpen && <DockCatySheet conversation={conversation} onClose={() => setCatyOpen(false)} />}
     </div>
   );
 }

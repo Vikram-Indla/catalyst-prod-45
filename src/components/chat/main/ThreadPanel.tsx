@@ -45,6 +45,7 @@ export function ThreadPanel({
       }}
     >
       <div
+        className="cv2-thread-header"
         style={{
           display: 'flex',
           alignItems: 'center',
@@ -115,11 +116,11 @@ export function ThreadPanel({
       {/* Reply composer — canonical MessageComposer (same as main conversation) */}
       <div style={{ borderTop: '1px solid var(--ds-border)' }}>
         {onAlsoSendToConversation && (
-          <div style={{ padding: '4px 12px 0' }}>
+          <div className="cv2-alsosend" style={{ padding: '4px 12px 0' }}>
             <Checkbox
               isChecked={alsoSend}
               onChange={(e) => setAlsoSend(e.currentTarget.checked)}
-              label={`Also send to ${conversationTitle ?? 'conversation'}`}
+              label="Also Send in chat"
             />
           </div>
         )}

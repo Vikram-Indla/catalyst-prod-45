@@ -95,6 +95,7 @@ export function DockActivityTab({ conversations, onSelect }: DockActivityTabProp
 
   return (
     <div className="cc-dms">
+      <div className="cc-tab-hdr">Activity</div>
       <div className="cc-dms__chips" role="tablist" aria-label="Filter activity">
         {CHIPS.map((ch) => (
           <button

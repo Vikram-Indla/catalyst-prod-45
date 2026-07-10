@@ -17,9 +17,12 @@ const svg = (path: React.ReactNode) => (
 
 interface DockHomeCardsProps {
   onOpenCaty: () => void;
+  onThreads: () => void;
+  onHuddles: () => void;
+  onLater: () => void;
 }
 
-export function DockHomeCards({ onOpenCaty }: DockHomeCardsProps) {
+export function DockHomeCards({ onOpenCaty, onThreads, onHuddles, onLater }: DockHomeCardsProps) {
   return (
     <div className="cc-cards" role="list" aria-label="Quick access">
       <button type="button" role="listitem" className="cc-cards__card" onClick={onOpenCaty}>
@@ -30,7 +33,7 @@ export function DockHomeCards({ onOpenCaty }: DockHomeCardsProps) {
         <span className="cc-cards__sub">Ask anything</span>
       </button>
 
-      <button type="button" role="listitem" className="cc-cards__card">
+      <button type="button" role="listitem" className="cc-cards__card" onClick={onThreads}>
         <span className="cc-cards__icon" aria-hidden>
           {svg(<><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" /></>)}
         </span>
@@ -38,15 +41,15 @@ export function DockHomeCards({ onOpenCaty }: DockHomeCardsProps) {
         <span className="cc-cards__sub">View replies</span>
       </button>
 
-      <button type="button" role="listitem" className="cc-cards__card">
+      <button type="button" role="listitem" className="cc-cards__card" onClick={onHuddles}>
         <span className="cc-cards__icon" aria-hidden>
           {svg(<><path d="M3 14v-2a9 9 0 0 1 18 0v2" /><path d="M21 15a2 2 0 0 1-2 2h-1v-5h1a2 2 0 0 1 2 2z" /><path d="M3 15a2 2 0 0 0 2 2h1v-5H5a2 2 0 0 0-2 2z" /></>)}
         </span>
         <span className="cc-cards__title">Huddles</span>
-        <span className="cc-cards__sub">Start a call</span>
+        <span className="cc-cards__sub">Recent calls</span>
       </button>
 
-      <button type="button" role="listitem" className="cc-cards__card">
+      <button type="button" role="listitem" className="cc-cards__card" onClick={onLater}>
         <span className="cc-cards__icon" aria-hidden>
           {svg(<path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />)}
         </span>

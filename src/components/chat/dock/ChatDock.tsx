@@ -26,7 +26,13 @@ import { DockDmsTab } from "./DockDmsTab";
 import { DockSearchTab } from "./DockSearchTab";
 import { DockActivityTab } from "./DockActivityTab";
 import { DockMoreTab } from "./DockMoreTab";
+import { DockYouModal } from "./DockYouModal";
+import { DockComposeMenu } from "./DockComposeMenu";
+import { DockNewMessageModal } from "./DockNewMessageModal";
+import { DockCreateChannelModal } from "./DockCreateChannelModal";
+import { DockNewHuddleModal } from "./DockNewHuddleModal";
 import { DockHomeCards } from "./DockHomeCards";
+import { DockCardSheet, type CardKind } from "./DockCardSheet";
 import { DockTabBar, type DockTab } from "./DockTabBar";
 // ads-scanner:ignore-next-line — dock.css is a tokens-only stylesheet (audited clean)
 import "./dock.css";
@@ -143,6 +149,20 @@ export function ChatDock({
   // True while the directory's full-screen Browse Sections view is open — the
   // shell hides its header, cards rail and FAB so browse takes the whole panel.
   const [dirBrowsing, setDirBrowsing] = useState(false);
+  const [youOpen, setYouOpen] = useState(false);
+  const [cardSheet, setCardSheet] = useState<CardKind | null>(null);
+  const [composeOpen, setComposeOpen] = useState(false);
+  const [newMsgOpen, setNewMsgOpen] = useState(false);
+  const [channelOpen, setChannelOpen] = useState(false);
+  const [huddleOpen, setHuddleOpen] = useState(false);
+
+  // "New message" — focus the directory so a DM/search can start.
+  const startNew = () => {
+    onFocusDirectory?.();
+    setActiveTab("home");
+    setSearchOpen(false);
+    setDirFocusTick((t) => t + 1);
+  };
 
   // Inside a conversation (DM/channel) the DockConversationPane owns its own
   // header (back + ConversationHeader), so the shared Caty branding is redundant
@@ -152,21 +172,77 @@ export function ChatDock({
   // Slack-style per-tab purple header. Home keeps the Caty brand; the other
   // destinations show a big title. Detail (inConversation) uses a white back bar.
   const isHome = !searchOpen && activeTab === "home";
-  const headerTitle = searchOpen
-    ? "Search"
-    : activeTab === "dms"
-      ? "DMs"
-      : activeTab === "activity"
-        ? "Activity"
-        : activeTab === "more"
-          ? "You"
-          : "Home";
 
   // Slack shows the current user's avatar top-right on every primary tab.
   const { user } = useAuth();
   const meMeta = (user?.user_metadata ?? {}) as { full_name?: string; name?: string };
   const meName = meMeta.full_name || meMeta.name || user?.email || "You";
   const meSeed = user?.id ?? meName;
+
+  // Primary list view (any tab, incl. search) — each tab's title header scrolls
+  // away with the content while the action cluster stays sticky (Slack style).
+  const primaryList = !inConversation && !dirBrowsing;
+
+  // Action cluster (expand + close + filter/avatar pill). Reused by the fixed
+  // header (other tabs) and the sticky floating cluster (Home).
+  const headerActions = (
+    <div className="cc-dock__actions">
+      <button
+        type="button"
+        className="cc-dock__hdr-btn"
+        aria-label="Open full screen"
+        title="Open full screen"
+        onClick={onPopOut}
+      >
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden>
+          <polyline points="15 3 21 3 21 9" />
+          <polyline points="9 21 3 21 3 15" />
+          <line x1="21" y1="3" x2="14" y2="10" />
+          <line x1="3" y1="21" x2="10" y2="14" />
+        </svg>
+      </button>
+      <button
+        type="button"
+        className="cc-dock__hdr-btn"
+        aria-label="Close"
+        title="Close"
+        onClick={onToggleCollapsed}
+      >
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden>
+          <line x1="6" y1="6" x2="18" y2="18" />
+          <line x1="18" y1="6" x2="6" y2="18" />
+        </svg>
+      </button>
+      {!inConversation && (
+        <div className={`cc-dock__hdr-pill${isHome ? "" : " cc-dock__hdr-pill--solo"}`}>
+          {isHome && (
+            <button
+              type="button"
+              className="cc-dock__hdr-pill-btn"
+              aria-label="Filter conversations"
+              title="Filter"
+              onClick={() => { setSearchOpen(true); }}
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden>
+                <line x1="4" y1="7" x2="20" y2="7" />
+                <line x1="7" y1="12" x2="17" y2="12" />
+                <line x1="10" y1="17" x2="14" y2="17" />
+              </svg>
+            </button>
+          )}
+          <button
+            type="button"
+            className="cc-dock__hdr-avatar"
+            aria-label="Open You menu"
+            title="You"
+            onClick={() => setYouOpen(true)}
+          >
+            <AtlaskitAvatar name={meName} seed={meSeed} pixelSize={28} presence="green" />
+          </button>
+        </div>
+      )}
+    </div>
+  );
 
   const { pos, isDragging, isSnapping, didMove, handlers: dragHandlers } = useDraggableFab();
 
@@ -316,87 +392,11 @@ export function ChatDock({
         aria-label="Messages"
         style={{ display: collapsed ? 'none' : undefined }}
       >
-        {/* Shared header — hidden while the full-screen Browse Sections view is open */}
-        {!dirBrowsing && (
-        <div
-          className={`cc-dock__headerwrap${!inConversation ? " cc-dock__headerwrap--purple" : ""}`}
-          role="banner"
-        >
-          {/* Static gradient hairline — Caty AI signifier (no motion, CLAUDE.md AI-CTA carve-out) */}
-          <div className="cc-dock__accent" aria-hidden />
+        {/* Every primary tab: sticky floating action cluster. Each tab renders its
+            own purple title header inside its scroll so the title scrolls away. */}
+        {primaryList && <div className="cc-dock__hdr-float">{headerActions}</div>}
 
-          {/* Row 1 — brand identity / title + action icons */}
-          <div className="cc-dock__titlebar">
-            {inConversation ? (
-              // Inside a conversation the back affordance lives here, sharing the
-              // row with the +/expand/minimize actions (no separate back row).
-              <button
-                type="button"
-                className="cc-conv-pane__back"
-                onClick={() => onFocusDirectory?.()}
-                aria-label="Back to directory"
-              >
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden>
-                  <polyline points="15 18 9 12 15 6" />
-                </svg>
-                <span>All messages</span>
-              </button>
-            ) : isHome ? (
-              <>
-                <span className="cc-dock__wslogo" aria-hidden>
-                  <CatyMoodFace state="content" size={22} />
-                </span>
-                <div className="cc-dock__title">
-                  <span className="cc-dock__wordmark">Catalyst</span>
-                </div>
-              </>
-            ) : (
-              <div className="cc-dock__title">
-                <span className="cc-dock__bigtitle">{headerTitle}</span>
-              </div>
-            )}
-            <div className="cc-dock__actions">
-              {!inConversation && (
-                <div className="cc-dock__hdr-pill">
-                  <button
-                    type="button"
-                    className="cc-dock__hdr-pill-btn"
-                    aria-label="Filter conversations"
-                    title="Filter"
-                    onClick={() => { setSearchOpen(true); }}
-                  >
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden>
-                      <line x1="4" y1="7" x2="20" y2="7" />
-                      <line x1="7" y1="12" x2="17" y2="12" />
-                      <line x1="10" y1="17" x2="14" y2="17" />
-                    </svg>
-                  </button>
-                  <button
-                    type="button"
-                    className="cc-dock__hdr-avatar"
-                    aria-label="Open You menu"
-                    title="You"
-                    onClick={() => { setActiveTab("more"); setSearchOpen(false); }}
-                  >
-                    <AtlaskitAvatar name={meName} seed={meSeed} pixelSize={24} shape="square" presence="green" />
-                  </button>
-                </div>
-              )}
-              <button
-                type="button"
-                className="cc-dock__hdr-btn cc-dock__hdr-btn--minimize"
-                aria-label="Minimize"
-                title="Minimize"
-                onClick={onToggleCollapsed}
-              >
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden>
-                  <line x1="5" y1="12" x2="19" y2="12" />
-                </svg>
-              </button>
-            </div>
-          </div>
-        </div>
-        )}
+        {/* Detail view owns its header (DockConvHeader) — no separate back bar. */}
 
         {/* Body — conversation pane (detail) OR the active nav tab + bottom nav */}
         <div className="cc-dock__messages-body">
@@ -431,13 +431,28 @@ export function ChatDock({
             ) : (activeTab === "home") ? (
               <ChatDirectoryErrorBoundary>
                 <div className="cc-home">
-                  {!dirBrowsing && <DockHomeCards onOpenCaty={() => onSelect(CATY_ID)} />}
                   <DockDirectory
                     conversations={listConversations}
                     activeId={activeId}
                     onSelectConversation={onSelect}
                     focusTick={dirFocusTick}
                     onBrowseChange={setDirBrowsing}
+                    headerSlot={
+                      <>
+                        <div className="cc-dock__scroll-hdr">
+                          <span className="cc-dock__wslogo" aria-hidden>
+                            <CatyMoodFace state="content" size={22} />
+                          </span>
+                          <span className="cc-dock__wordmark">Catalyst</span>
+                        </div>
+                        <DockHomeCards
+                          onOpenCaty={() => onSelect(CATY_ID)}
+                          onThreads={() => setCardSheet("threads")}
+                          onHuddles={() => setCardSheet("huddles")}
+                          onLater={() => setCardSheet("later")}
+                        />
+                      </>
+                    }
                   />
                 </div>
               </ChatDirectoryErrorBoundary>
@@ -466,14 +481,9 @@ export function ChatDock({
             <button
               type="button"
               className="cc-dock__compose-fab"
-              aria-label="New message"
-              title="New message"
-              onClick={() => {
-                onFocusDirectory?.();
-                setActiveTab("home");
-                setSearchOpen(false);
-                setDirFocusTick((t) => t + 1);
-              }}
+              aria-label="New"
+              title="New"
+              onClick={() => setComposeOpen(true)}
             >
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" aria-hidden>
                 <line x1="12" y1="5" x2="12" y2="19" />
@@ -492,6 +502,42 @@ export function ChatDock({
             />
           )}
         </div>
+
+        {youOpen && <DockYouModal onClose={() => setYouOpen(false)} />}
+        {cardSheet && (
+          <DockCardSheet
+            kind={cardSheet}
+            onClose={() => setCardSheet(null)}
+            onSelect={onSelect}
+          />
+        )}
+        {composeOpen && (
+          <DockComposeMenu
+            onClose={() => setComposeOpen(false)}
+            onMessage={() => { setComposeOpen(false); setNewMsgOpen(true); }}
+            onChannel={() => { setComposeOpen(false); setChannelOpen(true); }}
+            onHuddle={() => { setComposeOpen(false); setHuddleOpen(true); }}
+          />
+        )}
+        {newMsgOpen && (
+          <DockNewMessageModal
+            conversations={listConversations}
+            onClose={() => setNewMsgOpen(false)}
+            onSelect={onSelect}
+          />
+        )}
+        {channelOpen && (
+          <DockCreateChannelModal
+            onClose={() => setChannelOpen(false)}
+            onSelect={onSelect}
+          />
+        )}
+        {huddleOpen && (
+          <DockNewHuddleModal
+            conversations={listConversations}
+            onClose={() => setHuddleOpen(false)}
+          />
+        )}
       </div>
     </>
   );
