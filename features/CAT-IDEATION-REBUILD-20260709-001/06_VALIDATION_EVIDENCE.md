@@ -202,3 +202,27 @@ Notes: G1 first attempt failed on `created_by NOT NULL` (definer context has nul
 **Not yet built this slice**: Funnel/board toggle, inline decide actions (Approve/Park/Decline — needs Phase 3 workflow guards), votes-as-bubble-size, model switcher (only one model exists) — all explicitly deferred in the Plan Lock's non-scope.
 
 **Open question flagged, not silently resolved**: the 04 §C.7 ASCII mock's exact left/right quadrant placement is ambiguous against a literal "Effort ▶" reading (see code comment in `PortfolioPage.tsx`) — this build used the industry-standard mapping (Quick Win = high value + low effort) since that's the meaning "Quick Win" carries everywhere else in the design pack; worth a quick confirm with Vikram rather than treated as settled.
+
+## Phase 3 Slice S1 — Workflow guards, real evidence + Decision UI · localhost:8083 (isolated instance) · 2026-07-11
+
+**Plan Lock**: `03_PLAN_LOCK_PHASE3_S1_GUARDS.md`. Closed a real gap: `GUARD_EVIDENCE_REGISTRY` already documented `strategy_link_present`/`scores_complete`/`duplicate_review_complete` as `evidence: 'real'`, but `evaluateGuardsReal`'s switch statement had no case for any of the three — silent fallthrough to `passed: null`. Wired the three real evaluators plus a Decision UI (Approve/Decline/Park) on the Detail page.
+
+**Also fixed in passing**: `contracts.ts`'s `EntityKey`/`GuardType` unions didn't include `'ideation'` or the three ideation-specific guard types — a type-level gap that would have made this uncompilable; additive, no other entity affected.
+
+**Data setup for a real 3-state proof** (Supabase MCP `execute_sql`, data not schema): `idn_idea_scores` already had rows for IDEA-10/IDEA-11 from the Portfolio slice (both 2/2 drivers scored). Linked IDEA-10's `strategy_element_id` to a real `strata_strategy_elements` row ("Accelerate Digital Channels") so it would show **all 3 guards passing**; left IDEA-11 unlinked so it would show the **mixed pass/fail** state — both are real DB states, not staged UI mocks.
+
+**Gates**: `npx tsc --noEmit` ✅ 0 errors · `node scripts/no-hardcoded-colors.cjs` ✅ 0 hits on touched files.
+
+**Isolated dev instance**: `VITE_ENABLE_IDEATION=true npm run dev -- --port 8083 --strictPort`, killed after screenshotting. No shared dev server touched.
+
+**Mid-session correction**: another concurrent session flagged (cross-session message) that `idn_ideas`' SELECT RLS has no draft/ownership clause, so their Explore slice (S4) had been surfacing other users' private drafts org-wide — fixed on their end as D16, landed on `main` as `588e825c7`. Verified the claim independently (re-read the RLS policy text, confirmed no ownership/status clause) before trusting it, confirmed the fix commit didn't touch any file this slice was mid-editing, then fast-forward pulled it into this checkout. No conflict, no data loss.
+
+**Screenshots + interaction proof** (Chrome MCP, signed-in session, user authenticated the tab manually):
+| Surface | Outcome |
+|---|---|
+| IDEA-11 detail, evaluation stage, mixed guard state | PASS — real inline warning SectionMessage: "strategy link present: no strategy element linked" (fail) · "scores complete: 2/2 drivers scored" (pass) · "duplicate review complete: no outstanding duplicate suggestions" (pass) (ss_54403g92r) |
+| Approve clicked despite failing guard | PASS — transitioned anyway (advisory, not blocking, as designed): lozenge → APPROVED, rail Decision row shows "approved" (ss_5177lud78). DB verified: `workflow_status_key='approved', decision='approved', decided_by=<real auth uid>, decided_at=<real timestamp>` |
+| IDEA-10 detail, all guards passing | PASS — green success SectionMessage, all 3 guards pass with real detail strings (ss_6995802gr) |
+| Decline → ReasonCaptureModal → confirm | PASS — canonical `ReasonCaptureModal` opened with the correct generic copy ("Moving ideation IDEA-10 from evaluation to declined requires a reason"), typed reason, confirmed (ss_8442l8uf5) → lozenge → DECLINED, rail Decision row shows "declined — <reason text>" (ss_22995bmpy). DB verified: `workflow_status_key='declined', decision='declined', decision_reason=<exact typed text>, decided_by`/`decided_at` populated |
+
+**Not yet built this slice**: blocking enforcement (no `ph_wf_enforcement_config` row for `ideation` — governance decision, not this slice's), merge flow (`screening → merged`, needs a merge-target picker), role-gating the Approve/Decline/Park buttons by `ph_wf_transition_roles` (pre-existing gap across the whole canonical workflow system — role groups aren't mapped to `product_roles.code` anywhere yet, for any entity). RLS remains the real access-control backstop, same posture as every other advisory guard in the registry.

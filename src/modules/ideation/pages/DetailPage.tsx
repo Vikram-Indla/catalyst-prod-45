@@ -7,20 +7,28 @@
  * ActivityPanel + rail) — confirmed"). AI Copilot rail tab, votes, evidence,
  * and scoring stay out of scope (see 03_PLAN_LOCK_PHASE2_S3_DETAIL.md).
  */
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import Button from '@atlaskit/button/new';
 import { useNavigate, useParams } from 'react-router-dom';
 import Spinner from '@atlaskit/spinner';
 import { token } from '@atlaskit/tokens';
 import { HubPageHeader } from '@/components/layout/HubPageHeader';
 import { EmptyState } from '@/components/ads/EmptyState';
+import { SectionMessage } from '@/components/ads/SectionMessage';
 import { Routes } from '@/lib/routes';
 import { DisplayView } from '@/components/catalyst-detail-views/shared/sections/Description/_components/DisplayView/DisplayView';
 import { ActivityPanel } from '@/components/catalyst-ds/activity/ActivityPanel';
 import type { CdsComment, CdsUser } from '@/components/catalyst-ds/types';
 import { StatusLozenge } from '@/components/shared/StatusLozenge/StatusLozenge';
+import { ReasonCaptureModal } from '@/components/catalyst-detail-views/shared/workflow/ReasonCaptureModal';
 import { useAuth } from '@/hooks/useAuth';
-import { useIdeationIdea, useIdeationComments, useAddIdeationComment } from '@/hooks/useIdeationDetail';
+import {
+  useIdeationIdea,
+  useIdeationComments,
+  useAddIdeationComment,
+  useIdeaApprovalGuardCheck,
+  useDecideIdeaTransition,
+} from '@/hooks/useIdeationDetail';
 import type { IdeaDetailRow } from '@/modules/ideation/types';
 
 const CLASS_LABEL: Record<IdeaDetailRow['idea_class'], string> = {
@@ -61,6 +69,93 @@ function RailRow({ label, children }: { label: string; children: React.ReactNode
       <div style={{ color: token('color.text', 'var(--ds-text)'), font: '400 14px/20px var(--ds-font-family-body, "Atlassian Sans")' }}>
         {children}
       </div>
+    </div>
+  );
+}
+
+/** Approve/Decline/Park — Phase 3 S1. Advisory only (see Plan Lock non-scope:
+ *  ph_wf_enforcement_config has no 'ideation' row, so gateTransition never
+ *  blocks here); guard results render inline so reviewers see the real
+ *  strategy-link/scores/duplicate-review evidence before deciding, not just
+ *  after. Merge is excluded — needs a merge-target picker (own C.6 surface). */
+function DecisionArea({ idea }: { idea: IdeaDetailRow }) {
+  const { data: guardResults, isLoading: guardsLoading } = useIdeaApprovalGuardCheck(idea);
+  const decide = useDecideIdeaTransition(idea);
+  const [reasonTarget, setReasonTarget] = useState<'declined' | 'parked' | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  const failing = (guardResults ?? []).filter((g) => g.passed === false);
+  const passing = (guardResults ?? []).filter((g) => g.passed === true);
+
+  const handleDecide = async (toStatusKey: string, reason?: { code: string | null; text: string | null }) => {
+    setError(null);
+    try {
+      await decide.mutateAsync({ toStatusKey, reasonCode: reason?.code, reasonText: reason?.text });
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Could not update the decision.');
+    }
+  };
+
+  return (
+    <div style={{ marginTop: 32, borderTop: `1px solid ${token('color.border', 'var(--ds-border)')}`, paddingTop: 20 }}>
+      <div
+        style={{
+          font: '600 12px/16px var(--ds-font-family-body, "Atlassian Sans")',
+          color: token('color.text.subtle', 'var(--ds-text-subtle)'),
+          textTransform: 'uppercase',
+          letterSpacing: '0.04em',
+          marginBottom: 12,
+        }}
+      >
+        Decision
+      </div>
+
+      {!guardsLoading && (passing.length > 0 || failing.length > 0) && (
+        <div style={{ marginBottom: 12 }}>
+          <SectionMessage appearance={failing.length > 0 ? 'warning' : 'success'}>
+            <ul style={{ margin: 0, paddingLeft: 18 }}>
+              {[...failing, ...passing].map((g, i) => (
+                <li key={i}>
+                  {g.guardType.replace(/_/g, ' ')}: {g.detail}
+                </li>
+              ))}
+            </ul>
+          </SectionMessage>
+        </div>
+      )}
+
+      {error && (
+        <div style={{ marginBottom: 12 }}>
+          <SectionMessage appearance="error">{error}</SectionMessage>
+        </div>
+      )}
+
+      <div style={{ display: 'flex', gap: 8 }}>
+        <Button appearance="primary" isDisabled={decide.isPending} onClick={() => handleDecide('approved')}>
+          Approve
+        </Button>
+        <Button isDisabled={decide.isPending} onClick={() => setReasonTarget('declined')}>
+          Decline
+        </Button>
+        <Button isDisabled={decide.isPending} onClick={() => setReasonTarget('parked')}>
+          Park
+        </Button>
+      </div>
+
+      {reasonTarget && (
+        <ReasonCaptureModal
+          entityType="ideation"
+          itemKey={idea.idea_key}
+          itemTitle={idea.title}
+          fromStatus={idea.workflow_status_key}
+          toStatus={reasonTarget}
+          onSubmit={(reason) => {
+            setReasonTarget(null);
+            void handleDecide(reasonTarget, reason);
+          }}
+          onCancel={() => setReasonTarget(null)}
+        />
+      )}
     </div>
   );
 }
@@ -188,6 +283,8 @@ export default function DetailPage() {
               />
             )}
           </div>
+
+          {idea.workflow_status_key === 'evaluation' && <DecisionArea idea={idea} />}
         </div>
 
         <aside
@@ -205,6 +302,12 @@ export default function DetailPage() {
           </RailRow>
           {idea.submitter_name && <RailRow label="Submitter">{idea.submitter_name}</RailRow>}
           {idea.product_name && <RailRow label="Product">{idea.product_name}</RailRow>}
+          {idea.decision && (
+            <RailRow label="Decision">
+              {idea.decision}
+              {idea.decision_reason && ` — ${idea.decision_reason}`}
+            </RailRow>
+          )}
         </aside>
       </div>
     </div>

@@ -6,7 +6,7 @@
 export type EntityKey =
   | 'business_request' | 'product_milestone' | 'epic' | 'feature' | 'story'
   | 'subtask' | 'defect' | 'incident' | 'release' | 'sprint' | 'task'
-  | 'test_case' | 'test_plan' | 'test_cycle' | 'test_run';
+  | 'test_case' | 'test_plan' | 'test_cycle' | 'test_run' | 'ideation';
 
 export type WorkflowMode = 'advisory' | 'blocking';
 export type WorkflowStatusCategory = 'todo' | 'in_progress' | 'done';
@@ -18,7 +18,8 @@ export type GuardType =
   | 'acceptance_criteria_present' | 'assignee_required' | 'child_completion'
   | 'test_coverage' | 'qa_signoff' | 'uat_signoff' | 'no_open_blocker_critical'
   | 'release_readiness' | 'deployment_window' | 'deployment_evidence' | 'rca'
-  | 'reason_required' | 'comment_required' | 'smoke_evidence';
+  | 'reason_required' | 'comment_required' | 'smoke_evidence'
+  | 'strategy_link_present' | 'scores_complete' | 'duplicate_review_complete';
 export type RoleDecision = 'allow' | 'deny' | 'bypass' | 'waiver';
 export type AdapterStorageOption = 'native' | 'A' | 'A_lite' | 'A_projection';
 

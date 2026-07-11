@@ -337,6 +337,31 @@ export function evaluateGuardsReal(
       }
       case 'required_field':
         return { ...base, passed: null, detail: 'required field check not configured — advisory' };
+      case 'strategy_link_present': {
+        // Real evidence from idn_ideas.strategy_element_id, injected by
+        // gateTransition (no extra query needed — it's a column on issueRow).
+        const linked = (issueRow as any)?._strategyLinked;
+        if (linked == null) return { ...base, passed: null, detail: 'no strategy-link evidence available' };
+        return { ...base, passed: linked, detail: linked ? 'linked to a strategy element' : 'no strategy element linked' };
+      }
+      case 'scores_complete': {
+        // Real evidence from idn_idea_scores vs the approved model's driver
+        // count, injected by gateTransition.
+        const complete = (issueRow as any)?._scoresComplete;
+        const detail = (issueRow as any)?._scoresCompleteDetail;
+        if (complete == null) return { ...base, passed: null, detail: 'no scoring evidence available' };
+        return { ...base, passed: complete, detail: detail ?? (complete ? 'all drivers scored' : 'not all drivers scored') };
+      }
+      case 'duplicate_review_complete': {
+        // Real evidence from idn_ai_suggestions (kind='duplicate', status='proposed'),
+        // injected by gateTransition. Zero outstanding suggestions = nothing to
+        // review = passes (Phase 4 AI copilot generates these; none yet is honest,
+        // not a false failure).
+        const outstanding = (issueRow as any)?._duplicateSuggestionsOutstanding;
+        if (outstanding == null) return { ...base, passed: null, detail: 'no duplicate-review evidence available' };
+        const ok = Number(outstanding) === 0;
+        return { ...base, passed: ok, detail: ok ? 'no outstanding duplicate suggestions' : `${outstanding} duplicate suggestion(s) awaiting review` };
+      }
       case 'comment_required': {
         // Real evidence from ph_comments (FK'd to ph_issues.id), injected by
         // gateTransition.
@@ -351,7 +376,14 @@ export function evaluateGuardsReal(
   });
 }
 
-export interface GateResult { mode: EnforcementMode; blocked: boolean; message: string | null; auditId: string | null; reasonRequired: boolean; }
+export interface GateResult {
+  mode: EnforcementMode; blocked: boolean; message: string | null; auditId: string | null; reasonRequired: boolean;
+  /** Per-guard pass/fail/advisory detail for the matched transition — additive,
+   *  undefined on the two early-return paths (no version / no target status)
+   *  where no transition was ever matched. Lets callers render an inline
+   *  explain without a second round trip. */
+  guardResults?: GuardEvaluation[];
+}
 
 export async function gateTransition(args: {
   entityKey: EntityKey; issueRow: any; toStatusRaw: string;
@@ -454,6 +486,47 @@ export async function gateTransition(args: {
         (args.issueRow as any)._commentCount = count ?? 0;
       } catch { /* leave undefined → advisory */ }
     }
+    // Real strategy-link + scoring evidence for ideation's guards.
+    if (args.entityKey === 'ideation' && args.issueRow) {
+      if (match?.guards.some((g) => g.guardType === 'strategy_link_present')) {
+        (args.issueRow as any)._strategyLinked = !!args.issueRow.strategy_element_id;
+      }
+      if (match?.guards.some((g) => g.guardType === 'scores_complete') && args.issueRow.id) {
+        try {
+          const { data: model } = await supabase
+            .from('idn_scoring_models' as any)
+            .select('id, version')
+            .eq('status', 'approved')
+            .maybeSingle();
+          if (model) {
+            const { count: driverCount } = await supabase
+              .from('idn_scoring_drivers' as any)
+              .select('id', { count: 'exact', head: true })
+              .eq('model_id', (model as any).id);
+            const { data: scoredDrivers } = await supabase
+              .from('idn_idea_scores' as any)
+              .select('driver_id')
+              .eq('idea_id', args.issueRow.id)
+              .eq('model_version', (model as any).version);
+            const distinctScored = new Set((scoredDrivers ?? []).map((r: any) => r.driver_id)).size;
+            const total = driverCount ?? 0;
+            (args.issueRow as any)._scoresComplete = total > 0 && distinctScored >= total;
+            (args.issueRow as any)._scoresCompleteDetail = `${distinctScored}/${total} drivers scored`;
+          }
+        } catch { /* leave undefined → advisory */ }
+      }
+      if (match?.guards.some((g) => g.guardType === 'duplicate_review_complete') && args.issueRow.id) {
+        try {
+          const { count } = await supabase
+            .from('idn_ai_suggestions' as any)
+            .select('id', { count: 'exact', head: true })
+            .eq('idea_id', args.issueRow.id)
+            .eq('kind', 'duplicate')
+            .eq('status', 'proposed');
+          (args.issueRow as any)._duplicateSuggestionsOutstanding = count ?? 0;
+        } catch { /* leave undefined → advisory */ }
+      }
+    }
     const guardResults = evaluateGuardsReal(match, args.issueRow, effReason);
     const failingGuards = guardResults.filter((g) => g.isBlocking && g.passed === false);
 
@@ -498,7 +571,7 @@ export async function gateTransition(args: {
     });
 
     const reasonRequired = !!match?.requires_reason;
-    return { mode, blocked: enforce && wouldBlock, message: enforce && wouldBlock ? tooltip : null, auditId, reasonRequired };
+    return { mode, blocked: enforce && wouldBlock, message: enforce && wouldBlock ? tooltip : null, auditId, reasonRequired, guardResults };
   } catch (err) {
     console.warn('[canonical-workflow] gateTransition error — proceeding', err);
     return { mode: 'advisory', blocked: false, message: null, auditId: null, reasonRequired: false };

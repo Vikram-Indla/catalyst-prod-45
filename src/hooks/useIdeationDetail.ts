@@ -7,6 +7,8 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
+import { gateTransition, resolveCanonicalVersion } from '@/lib/workflow/canonical/runtime';
+import type { GuardEvaluation } from '@/lib/workflow/canonical/contracts';
 import type { IdeaCommentRow, IdeaDetailRow } from '@/modules/ideation/types';
 
 export const ideaDetailKey = (slug: string) => ['ideation', 'idea', slug] as const;
@@ -18,7 +20,7 @@ export function useIdeationIdea(slug: string | undefined) {
     queryFn: async (): Promise<IdeaDetailRow | null> => {
       const { data, error } = await typedQuery('idn_ideas')
         .select(
-          'id, idea_key, slug, title, problem_statement, proposed_value, idea_class, workflow_status_key, submitter_id, product_id, products(name)'
+          'id, idea_key, slug, title, problem_statement, proposed_value, idea_class, workflow_status_key, submitter_id, product_id, strategy_element_id, decision, decision_reason, products(name)'
         )
         .eq('slug', slug)
         .maybeSingle();
@@ -44,6 +46,9 @@ export function useIdeationIdea(slug: string | undefined) {
         submitter_name: submitterProfile?.full_name ?? null,
         product_id: data.product_id,
         product_name: (data as { products?: { name: string } | null }).products?.name ?? null,
+        strategy_element_id: data.strategy_element_id,
+        decision: data.decision,
+        decision_reason: data.decision_reason,
         created_at: data.created_at,
       } as IdeaDetailRow;
     },
@@ -75,6 +80,97 @@ export function useIdeationComments(ideaId: string | undefined) {
     },
     enabled: !!ideaId,
     staleTime: 10_000,
+  });
+}
+
+/** Canonical ph_wf_* version for entity_key 'ideation' (S3 seed) — same
+ *  resolveCanonicalVersion every other entity uses, no project scoping. */
+export function useIdeationWorkflowVersion() {
+  return useQuery({
+    queryKey: ['ideation', 'workflow-version'],
+    queryFn: () => resolveCanonicalVersion('ideation', null),
+    staleTime: 5 * 60_000,
+  });
+}
+
+const DECISION_STATUSES = new Set(['approved', 'declined', 'parked']);
+
+/** Pre-check the 'approved' transition's guard evidence without deciding
+ *  anything — lets the Detail rail show pass/fail state before the reviewer
+ *  clicks a button (gateTransition doesn't write to idn_ideas, only reads +
+ *  audits, so this is safe to run read-only on every evaluation-stage idea). */
+export function useIdeaApprovalGuardCheck(idea: IdeaDetailRow | null | undefined) {
+  return useQuery({
+    queryKey: ['ideation', 'guard-check', idea?.id],
+    queryFn: async (): Promise<GuardEvaluation[]> => {
+      if (!idea) return [];
+      const gate = await gateTransition({
+        entityKey: 'ideation',
+        issueRow: { ...idea, status: idea.workflow_status_key },
+        toStatusRaw: 'approved',
+        sourceSurface: 'ideation_detail_rail_precheck',
+      });
+      return gate.guardResults ?? [];
+    },
+    enabled: !!idea && idea.workflow_status_key === 'evaluation',
+    staleTime: 30_000,
+  });
+}
+
+/** Evaluation → decision transition (Approve/Decline/Park), gated through the
+ *  canonical runtime (advisory-only for ideation — see Plan Lock non-scope).
+ *  Merge is excluded — needs a merge-target picker, its own C.6 surface. */
+export function useDecideIdeaTransition(idea: IdeaDetailRow | null | undefined) {
+  const queryClient = useQueryClient();
+  const { user } = useAuth();
+  return useMutation({
+    mutationFn: async ({
+      toStatusKey,
+      reasonCode,
+      reasonText,
+    }: {
+      toStatusKey: string;
+      reasonCode?: string | null;
+      reasonText?: string | null;
+    }) => {
+      if (!idea) throw new Error('No idea loaded');
+
+      const gate = await gateTransition({
+        entityKey: 'ideation',
+        // gateTransition's fromKey resolution reads issueRow.status by
+        // convention (matches every other entity's row shape) — idn_ideas
+        // calls that column workflow_status_key, so alias it here.
+        issueRow: { ...idea, status: idea.workflow_status_key },
+        toStatusRaw: toStatusKey,
+        reasonCode: reasonCode ?? null,
+        reasonText: reasonText ?? null,
+        sourceSurface: 'ideation_detail_rail',
+      });
+      if (gate.blocked) throw new Error(gate.message ?? 'Transition blocked by workflow guards.');
+      if (gate.reasonRequired && !reasonCode && !reasonText) {
+        throw new Error('This transition requires a reason.');
+      }
+
+      const patch: Record<string, unknown> = { workflow_status_key: toStatusKey };
+      if (DECISION_STATUSES.has(toStatusKey)) {
+        patch.decision = toStatusKey;
+        patch.decision_reason = reasonText ?? reasonCode ?? null;
+        patch.decided_by = user?.id ?? null;
+        patch.decided_at = new Date().toISOString();
+      } else if (toStatusKey === 'evaluation' && idea.decision) {
+        // Reopen (declined/parked → evaluation): clear the prior decision so
+        // it doesn't read as still-decided while back in evaluation.
+        patch.decision = null;
+        patch.decision_reason = null;
+      }
+
+      const { error } = await typedQuery('idn_ideas').update(patch).eq('id', idea.id);
+      if (error) throw error;
+      return gate;
+    },
+    onSuccess: () => {
+      if (idea) queryClient.invalidateQueries({ queryKey: ideaDetailKey(idea.slug) });
+    },
   });
 }
 

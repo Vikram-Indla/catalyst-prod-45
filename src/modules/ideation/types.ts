@@ -58,6 +58,11 @@ export interface IdeaDetailRow {
   submitter_name: string | null;
   product_id: string | null;
   product_name: string | null;
+  /** D7 guard input — strategy_link_present checks this is non-null before Approve. */
+  strategy_element_id: string | null;
+  /** GovernedEnvelope decision fields (S1 schema) — null until evaluation is decided. */
+  decision: 'approved' | 'declined' | 'parked' | 'merged' | null;
+  decision_reason: string | null;
   created_at: string;
 }
 
