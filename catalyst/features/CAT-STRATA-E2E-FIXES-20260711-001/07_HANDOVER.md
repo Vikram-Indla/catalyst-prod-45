@@ -68,7 +68,28 @@ partially and remain OPEN** pending backend/schema decisions + QA retest.
   required. Both are data/product calls, not UI query changes.
 - **Close only when:** the data/schema decision is implemented and QA re-runs the selector scoping.
 
-## Follow-up 3 — Vitest verification risk (carry forward)
+## QA posture (Vikram directive 2026-07-11) — NOTHING is closed
+- 011 / 012 / 014 are NOT "not-a-defect" until QA validates the implemented behaviour against
+  the documented acceptance criteria. Do not mark them resolved on this session's analysis alone.
+- 006 and every claimed fix (015 + the 010/013 partials) stay PENDING independent QA retest.
+- 010 and 013 additionally stay OPEN pending backend/schema decisions (above).
+
+## Follow-up 4 — FeatureGate version-skew cleanup (OPEN, not started)
+- Two majors coexist on disk: `@atlaskit/feature-gate-js-client` 5.7.0 (top-level) and 6.0.0
+  (nested under progress-tracker/primitives/tokens/react-compiler-gating chains). This is the
+  source of the runtime "FeatureGateClients version skew" console warning (009 reported 5.6.0
+  vs 5.8.0 at runtime).
+- No `resolutions` field and no feature-gate entry in the package.json `overrides` block — nothing
+  dedupes it. Fix = add an overrides/resolutions pin to a single major + reinstall, then re-verify
+  the warning is gone. The 009 commit (`68939c1b0`) documented this as a deferred follow-up.
+
+## Build/version note
+Repo has no semver (`package.json` version `0.0.0`); the build identifier is the git SHA. There is
+NO verified staging deploy record — the dev app only targets staging Supabase `cyijbdeuehohvhnsywig`.
+As of 2026-07-11 `main` tip is `68939c1b0` and moves under concurrent sessions; treat it as "latest",
+not an attested stable release. A pinned QA target needs a tag/deploy that has not been cut.
+
+## Follow-up 5 — Vitest verification risk (carry forward)
 Vitest will not start in this env (rolldown/Node `styleText` crash,
 `ERR_INVALID_ARG_VALUE … ['underline','gray']`). The REQ-019 seam guard was verified by reading,
 not running. Record as a VERIFICATION RISK — not a passed test — until the toolchain is fixed.
