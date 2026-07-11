@@ -1,3 +1,27 @@
+# Drift Event 8 — Review Start URL did not control the workspace (RESOLVED 2026-07-11)
+
+**Finding:** Review Start emitted `view=findings`, but the old uncontrolled workspace always opened
+Evidence and still labelled the underlying review panel Facts.
+
+**Impact:** The customer action and resulting screen contradicted each other.
+
+**Resolution:** Pulled forward only stable query-state tab selection and the Findings label. Default
+and unknown views remain Evidence; all seven existing capabilities remain reachable.
+
+**Decision:** Decision 15.
+
+# Drift Event 7 — Slice 3 omitted its required route mount (RESOLVED 2026-07-11)
+
+**Finding:** Slice 3 authorized a real Review Start page but did not list `DocintelRoutes.tsx` or
+its route test, while Slice 1 had mounted a pending placeholder at the only Review URL.
+
+**Impact:** The Slice 3 page could pass isolated tests and remain unreachable to customers.
+
+**Resolution:** Added only the missing route mount and route-test files to the active Slice 3
+contract. URL, collision-safe namespace, backend and permissions remain unchanged.
+
+**Decision:** Decision 14.
+
 # Drift Log — CAT-DOCINTEL-V2-20260709-001
 
 ## 2026-07-11 Drift Event 6 — User requires knowledge-first visual baseline before route execution

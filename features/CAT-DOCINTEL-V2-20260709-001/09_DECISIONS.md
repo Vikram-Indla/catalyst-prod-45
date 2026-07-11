@@ -2,6 +2,37 @@
 
 Permanent record. Do not re-litigate entries here without a new explicit decision.
 
+## Decision 15 — 2026-07-11 — Pull forward query-addressable Findings
+
+### Decision
+
+Add the minimum controlled workspace-tab wiring to Slice 3: stable view keys, `view=findings`
+selecting the existing facts-review panel, and a user-facing Findings tab label.
+
+### Rationale
+
+Without this, Start Review visibly lands on Evidence and the Slice 3 contract is false. The change
+is neutral: hooks, payloads, panel order and the default Evidence behavior remain unchanged. The
+final five-destination workbench is still delivered in Slice 5A.
+
+## Decision 14 — 2026-07-11 — Review Start must replace its pending route
+
+### Decision
+
+Add `DocintelRoutes.tsx` and `DocintelRoutes.test.tsx` to Slice 3 so the delivered Review Start page
+replaces the Slice 1 placeholder at `/doc-intelligence/actions/review`.
+
+### Rationale
+
+The approved Slice 3 acceptance criterion is impossible while the route continues mounting a
+placeholder. This is a surgical implementation correction, not a scope expansion.
+
+### Version truth constraint
+
+The current Findings contract is document-current. Review Start may display the latest available
+version number, but it must not offer historical version selection until version-scoped Findings
+exists; doing so would falsely imply the selected historical version controls the review.
+
 ## Decision 1 — 2026-07-09
 
 ### Question

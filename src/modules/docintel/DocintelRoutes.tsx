@@ -9,11 +9,7 @@ import { Routes, Route, Link, useLocation } from "react-router-dom";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 
 const HomePage = lazy(() => import("./pages/DocintelHomePage"));
-const ReviewPendingPage = lazy(() =>
-  import("./pages/DocintelHomePage").then((module) => ({
-    default: module.DocintelReviewPendingPage,
-  })),
-);
+const ReviewStartPage = lazy(() => import("./pages/DocintelReviewStartPage"));
 const ThemesPendingPage = lazy(() =>
   import("./pages/DocintelHomePage").then((module) => ({
     default: module.DocintelThemesPendingPage,
@@ -32,11 +28,11 @@ const WorkspacePage = lazy(() => import("./pages/DocintelWorkspacePage"));
 function DocintelNotFound() {
   const location = useLocation();
   return (
-    <div style={{ padding: 32, color: "var(--ds-text-subtle)" }}>
-      <p style={{ color: "var(--ds-text)", fontWeight: 600, marginBottom: 8 }}>
+    <div style={{ padding: "var(--ds-space-400)", color: "var(--ds-text-subtle)" }}>
+      <p style={{ color: "var(--ds-text)", font: "var(--ds-font-heading-small)", marginBottom: "var(--ds-space-100)" }}>
         This Document Intelligence page doesn't exist
       </p>
-      <p style={{ marginBottom: 16 }}>
+      <p style={{ marginBottom: "var(--ds-space-200)" }}>
         No route matches <code>{location.pathname}</code>.
       </p>
       <Link to="/doc-intelligence" style={{ color: "var(--ds-text-brand)" }}>
@@ -50,7 +46,7 @@ const S = ({ children }: { children: React.ReactNode }) => (
   <ErrorBoundary>
     <Suspense
       fallback={
-        <div style={{ padding: 32, color: "var(--ds-text-subtle)" }}>
+        <div style={{ padding: "var(--ds-space-400)", color: "var(--ds-text-subtle)" }}>
           Loading Document Intelligence…
         </div>
       }
@@ -67,7 +63,7 @@ export function DocintelRoutes() {
       <Route path="views/library" element={<S><LibraryPage /></S>} />
       <Route path="views/themes" element={<S><ThemesPendingPage /></S>} />
       <Route path="views/deliverables" element={<S><DeliverablesPendingPage /></S>} />
-      <Route path="actions/review" element={<S><ReviewPendingPage /></S>} />
+      <Route path="actions/review" element={<S><ReviewStartPage /></S>} />
       <Route path="upload" element={<S><UploadPage /></S>} />
       <Route path="health" element={<S><HealthPage /></S>} />
       <Route path="source/:slug" element={<S><WorkspacePage /></S>} />

@@ -1,5 +1,34 @@
 # Validation Evidence — CAT-DOCINTEL-V2-20260709-001
 
+## UI revamp Slice 4A — Source Overview (2026-07-11) ✅ COMPLETE
+
+- Overview is selected for missing/unknown view keys; all existing panels remain reachable.
+- Live Audio Test source rendered one real unreviewed finding and zero deliverables.
+- No uncited summary, readiness score or invented next action is rendered.
+- Header title/status, version menu, upload and themes remained intact.
+- Workspace tests 7/7, TypeScript, ADS/color gates and full pre-commit passed.
+
+## UI revamp Slice 3 — Review Start → Findings (2026-07-11) ✅ COMPLETE
+
+- 43/43 combined tests passed; TypeScript and complete pre-commit passed.
+- Live page rendered exactly three decisions with Audio Test — Revenue Target and latest v1.
+- Historical version selection and Compare versions are absent by design.
+- Start navigated to `/source/audio-test-revenue-target?project=BAU&view=findings`.
+- Workspace selected Findings (`aria-selected=true`) and deselected Evidence.
+- Back/Forward restored both scoped URLs and Findings selection.
+- No review/analysis row, UUID or version claim was created.
+
+## UI revamp Slice 2 — intent-first Home (2026-07-11) ✅ COMPLETE
+
+- 33/33 route/composer/citation tests passed; TypeScript and full pre-commit passed.
+- Authenticated staging rendered Senaei BAU scope and eight real recent items: four sources plus
+  Test Cases, Epic, Document Summary and Epic deliverables.
+- Selecting Audio Test — Revenue Target updated the visible scope before action.
+- Review routed with explicit project/source parameters; the verified Test Cases deliverable opened
+  in the existing evidence-backed ArtifactView.
+- Light, dark and 1280×720 passed; exactly one H1 and no page-level horizontal overflow.
+- Design critique: 28/30, no P0/P1 blockers.
+
 ## UI revamp Slice 1 — navigation and collision-safe routes (2026-07-11) ✅ COMPLETE
 
 - 12/12 route tests passed; TypeScript passed; color and ADS ratchet gates passed.

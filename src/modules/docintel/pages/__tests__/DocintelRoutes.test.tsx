@@ -7,11 +7,15 @@ import { docintelRoutes } from "@/lib/routes";
 vi.mock("../DocintelHomePage", () => ({
   __esModule: true,
   default: () => <div data-testid="docintel-home">For you</div>,
-  DocintelReviewPendingPage: () => <div data-testid="docintel-review">Review</div>,
   DocintelThemesPendingPage: () => <div data-testid="docintel-themes">Themes</div>,
   DocintelDeliverablesPendingPage: () => (
     <div data-testid="docintel-deliverables">Deliverables</div>
   ),
+}));
+
+vi.mock("../DocintelReviewStartPage", () => ({
+  __esModule: true,
+  default: () => <div data-testid="docintel-review">Review</div>,
 }));
 
 vi.mock("../DocintelLibraryPage", () => ({

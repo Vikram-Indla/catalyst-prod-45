@@ -2,9 +2,12 @@
 
 ## Active v2 BRD Review Workbench checklist
 
-- [ ] Home, 1440×900 light/dark: outcome composer dominates; Upload, scope and library remain visible.
-- [ ] Home, 1280×720 plus no-project, empty, loading, error and active-theme states.
-- [ ] Workspace Overview preserves title, status, version, upload and theme controls.
+- [x] Home, 1440×900 light/dark: outcome composer dominates; Upload, scope and library remain visible.
+- [ ] Home, 1280×720 plus no-project, empty, loading, error and active-theme states. (1280×720 and
+      selected-source complete; remaining state matrix stays open.)
+- [x] Workspace Overview preserves title, status, version, upload and theme controls.
+- [x] Review Start: exactly three decisions, current version truth, Start visible, and selected
+      source opens Findings without a persisted review claim.
 - [ ] Overview/Ask/Findings/Deliverables/Work items plus contextual readable source/exact evidence.
 - [ ] Deliverables: empty, generating, error, history and opened artifact.
 - [ ] Ask with citation drawer, Escape close/focus return, and Arabic RTL evidence.

@@ -1,12 +1,12 @@
 # CAT-DOCINTEL-V2-20260709-001 — READ ME FIRST
 
-**Status:** Plan v2.1 APPROVED; Slice 1 suspended pending Drift Event 5 rebaseline
+**Status:** Plan v2.1 APPROVED; UI Slices 1–4A complete; Slice 4B active
 **Slice 1 result:** 3 correctness bugs already fixed+deployed 2026-07-07; verified live (no code). Residual: 78 stale citation rows on 2 pre-fix demo artifacts (accepted historical, Decision 11).
 **Slice 4a result (2026-07-11):** prompt registry live for `docintel-ask` — self-seeds byte-faithfully, stamps truthful `prompt_id`; proven end-to-end (seeded row 31483425… stamped on a live Ask run). Fine-tuning enabler live (tune = UPDATE + version bump, no redeploy). Deployed via local CLI token (CI deploy still broken — expired GitHub secret, Drift Event 2).
 **Deploy note:** repo-wide CI edge-fn deploy is DOWN (expired `SUPABASE_ACCESS_TOKEN` GitHub secret). Deploy via local `~/.config/supabase/access-token` + `supabase functions deploy` until rotated.
 **Last updated:** 2026-07-11
 **Active Plan Lock:** 03_PLAN_LOCK.md (v2.1 complete BRD Review Workbench journey, 15 work units, APPROVED 2026-07-11)
-**Last session:** sessions/003_docintel-ui-journey-council.md
+**Last session:** sessions/008_ui_slice4a_source_overview.md
 
 ## UI journey rebaseline — 2026-07-11
 
@@ -42,5 +42,5 @@ spike (mandatory — Vikram: "you must try").
 
 ## Next action
 
-Approve the Drift Event 5 route/evidence micro-rebaseline, then begin Slice 1. The approved Admin
+Execute Slice 4B — contextual readable source and exact evidence drawer. The approved Admin
 boundary remains legacy `admin` OR product `super_admin`.

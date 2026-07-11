@@ -9,7 +9,7 @@ backend-authorized Admin experience; exact citations remain part of the user tru
 
 Active UI acceptance criteria:
 
-- [ ] Home communicates the job and offers scoped Ask/upload/task starters before the library.
+- [x] Home communicates the job and offers scoped Ask/upload/task starters before the library.
 - [ ] A source opens on Overview, not raw page extraction.
 - [ ] Findings remains a primary destination; readable source/exact evidence stay contextual; Links
       and Traceability remain reachable under Work items.

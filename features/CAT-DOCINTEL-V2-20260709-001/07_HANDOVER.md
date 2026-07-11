@@ -1,5 +1,31 @@
 # Handover — CAT-DOCINTEL-V2-20260709-001
 
+## Active handover — Session 008, UI through Slice 4A complete (2026-07-11)
+
+The source workspace now opens on a truthful Overview instead of raw extraction. Real counts and
+existing actions are visible; title/status/version/upload/themes and all legacy capabilities remain.
+Next exact action: Slice 4B contextual readable source and exact evidence drawer.
+
+## Active handover — Session 007, UI Slices 1–3 complete (2026-07-11)
+
+The goal remains active. A customer can now land on the intent-first Home, choose a real source,
+start a three-decision BRD review and arrive on that source's real Findings data. Historical version
+selection is intentionally absent until Findings can be version-scoped. Route, viewport and
+query-state blockers are closed; 43 tests and authenticated staging proof passed.
+
+Next exact action: Plan v2.1 Slice 4A — make Source Overview the default, using only truthful
+existing counts/actions and preserving current title/status/version/upload/theme controls.
+
+## Active handover — Session 006, UI Slices 1–2 complete (2026-07-11)
+
+The goal is active. The customer now lands on an intent-first Home backed by real staging projects,
+sources, themes and deliverables. Ask remains grounded/cited; Review and Create require an explicit
+source; real recent deliverables reopen. Route and visual blockers are closed. Slice 2 passed
+33 tests, full pre-commit and authenticated light/dark/responsive screenshot sign-off.
+
+Next exact action: Plan v2.1 Slice 3 — implement the three-decision BRD review start, navigate Start
+to the chosen source Findings view, and do not claim a persisted review record.
+
 ## Active handover — Session 005, goal resumed and UI Slice 1 complete (2026-07-11)
 
 The former blocker is resolved. Vikram approved the knowledge-first visual direction and explicitly

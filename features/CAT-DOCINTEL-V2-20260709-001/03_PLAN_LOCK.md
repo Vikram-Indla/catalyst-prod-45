@@ -7,6 +7,7 @@
 **Timebox:** maximum 2 hours per implementation slice
 **Implementation allowed now:** YES — active v2.1 slices only; Slice 1 resumed after the approved
 collision-safe route rebaseline in `19_ROUTE_REBASELINE_AND_GOAL_RESUME.md`
+**Execution status:** Slices 1–4A COMPLETE; Slice 4B ACTIVE.
 
 > The original backend V2 roadmap is retained below as historical evidence. It is not the active
 > implementation contract. The active contract begins here and supersedes the backend-shaped UI
@@ -148,6 +149,8 @@ health routes are not shadowed; browser back/forward works; no UUID route is int
 
 ### SLICE 2 — Intent-first For you (2h, ADDITIVE)
 
+**Status:** COMPLETE — 2026-07-11; validation and staging screenshots in Session 006.
+
 **Purpose:** Make Ask, Review and Create understandable without training while showing only truthful
 recent sources/deliverables and needs-attention states.
 
@@ -169,6 +172,8 @@ visible before submit; no source/project state is honest and actionable; no oper
 
 ### SLICE 3 — Three-decision BRD review start (2h, ADDITIVE)
 
+**Status:** COMPLETE — 2026-07-11; route/workspace micro-rebaselines resolved and proven end-to-end.
+
 **Purpose:** Start a useful review without inventing a persisted analysis entity.
 
 **Files to touch:**
@@ -179,11 +184,30 @@ visible before submit; no source/project state is honest and actionable; no oper
 3. `src/modules/docintel/pages/DocintelHomePage.tsx` — Review starter navigation only.
 4. `src/modules/docintel/pages/__tests__/DocintelReviewStartPage.test.tsx` — NEW.
 5. `src/stories/audit-grade/22-DocintelReviewStart.stories.tsx` — NEW.
+6. `src/modules/docintel/DocintelRoutes.tsx` — replace the Slice 1 pending Review mount with the
+   delivered Review Start page.
+7. `src/modules/docintel/pages/__tests__/DocintelRoutes.test.tsx` — prove the collision-safe Review
+   route now resolves the delivered page.
+8. `src/modules/docintel/pages/DocintelWorkspacePage.tsx` — minimum neutral query-state wiring so
+   `view=findings` selects the existing facts-review capability under the Findings label.
+9. `src/modules/docintel/pages/__tests__/DocintelWorkspacePage.test.tsx` — prove Findings deep-link,
+   Evidence fallback, query preservation and seven-panel reachability.
+
+**Micro-rebaseline (2026-07-11):** Files 6–7 were omitted from the original Slice 3 list even
+though its binary acceptance is unreachable without replacing the pending route. The user directed
+the goal to resolve all blockers and continue to delivery; this surgical mount/test correction does
+not change product scope, URLs, data or permissions.
+
+**Second micro-rebaseline (2026-07-11):** Files 8–9 were required because the existing workspace
+ignored `view=findings`, which made Start Review land on Evidence. The pull-forward is limited to
+stable query selection and label truth; the five-destination workbench remains Slice 5A.
 
 **Binary acceptance:** a user starts in at most three decisions; existing source and Upload paths
 work; Start navigates to the chosen source's Findings view; no durable “review” record is claimed.
 
 ### SLICE 4A — Source Overview (2h, ADDITIVE)
+
+**Status:** COMPLETE — 2026-07-11; truthful default Overview proven against staging.
 
 **Purpose:** Opening a source communicates truthful review progress and next action rather than raw
 extraction.

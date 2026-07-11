@@ -1,5 +1,36 @@
 # Karpathy Loop Log — CAT-DOCINTEL-V2-20260709-001
 
+## Loop 12 — 2026-07-11 — “Does emitting `view=findings` deliver Findings?”
+
+**Hypothesis:** The Review Start URL is sufficient for the existing workspace to open the review
+panel.
+
+**Experiment:** Clicked Start Review on the authenticated staging flow and inspected the resulting
+selected tab and query state.
+
+**Measure:** The URL contained `view=findings`, but the uncontrolled workspace ignored it and
+selected Evidence. The initial vertical review layout also placed Start below the fold.
+
+**Keep/Discard:** **Discard.** Added neutral controlled tab query keys, renamed Facts to Findings,
+and used a three-column decision layout. Live proof now reaches Findings, preserves Back/Forward,
+and keeps Start visible in one viewport.
+
+## Loop 11 — 2026-07-11 — “Does the inherited Ask empty state work as a Home hero?”
+
+**Hypothesis:** Reusing the inline Ask empty state inside the new Home composer will communicate
+grounding without additional design work.
+
+**Experiment:** Implemented the approved intent composer and captured the authenticated staging
+Home at the default desktop viewport.
+
+**Measure:** The full EmptyState created a large dead area around one small input, recreating the
+old sparse/silly feeling. Review and Create inherited the same problem; the Ask input also occupied
+only 320px inside a 1,094px composer.
+
+**Keep/Discard:** **Discard.** Hero mode now uses a compact grounding hint, all composer prompts use
+compact ADS composition, and the tab panel is full width. Re-measurement: Ask input 986px inside the
+1,094px composer; light/dark/1280 screenshots passed.
+
 ## Loop 10 — 2026-07-11 — “Are one-segment static Doc Intel destinations safe?”
 
 **Hypothesis:** Static routes before `:slug` safely introduce Library, Review, Themes and Deliverables.

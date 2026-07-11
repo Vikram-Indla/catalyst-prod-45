@@ -1,5 +1,33 @@
 # Execution Log — CAT-DOCINTEL-V2-20260709-001
 
+## 2026-07-11 — Session 008 — UI Slice 4A COMPLETE
+
+- Made Overview the default source view while preserving all source controls and legacy panels.
+- Added only existing actions and proven fact/artifact counts; no summary or score was fabricated.
+- Authenticated staging and 7 workspace tests passed with full ADS/pre-commit validation.
+
+## 2026-07-11 — Session 007 — UI Slice 3 COMPLETE
+
+- Delivered the three-decision Review Start using real project sources and current version truth.
+- Refused historical-version selection because Findings is document-current.
+- Replaced the pending Review route and pulled forward only the query-state wiring required for
+  Start Review to open Findings today.
+- Browser critique caught Start below the fold; corrected to a one-viewport three-column layout.
+- Authenticated staging proved Review Start → Audio Test → Findings plus Back/Forward restoration.
+- 43 tests, TypeScript, ADS/color ratchets and full pre-commit passed.
+
+## 2026-07-11 — Session 006 — UI Slice 2 COMPLETE
+
+- Built the intent-first Home with real project/source/theme scope and existing Ask/Review/Create
+  contracts.
+- Added project-scoped recent artifact read and a canonical JiraTable of real recent sources and
+  deliverables.
+- Authenticated staging validation proved scoped Review routing and reopened a verified Test Cases
+  deliverable with citations.
+- Screenshot review caught and removed inherited EmptyState voids and widened the Ask field to the
+  full composer width before acceptance.
+- 33 tests, TypeScript, ADS/color ratchets and the complete pre-commit hook passed.
+
 ## 2026-07-11 — Session 005 — UI revamp goal resumed, Slice 1 COMPLETE
 
 - User approval resumed the previously blocked goal.
