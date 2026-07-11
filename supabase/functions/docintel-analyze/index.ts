@@ -432,6 +432,9 @@ Deno.serve(async (req) => {
       (mimeType === XLSX_MIME || (storagePath?.toLowerCase().endsWith(".xlsx") ?? false));
     const isPptx = !isPdf && !isDocx && !isXlsx &&
       (mimeType.includes("presentation") || (storagePath?.toLowerCase().endsWith(".pptx") ?? false));
+    const isAudio = !isPdf && !isDocx && !isXlsx && !isPptx &&
+      (mimeType.startsWith("audio/") ||
+        /\.(m4a|mp3|wav|aiff|aif|ogg|flac|aac)$/i.test(storagePath ?? ""));
     const isImage = IMAGE_MIMES.has(mimeType);
 
     // 2) Load the page rows for this range (need their ids to persist against).
@@ -477,6 +480,8 @@ Deno.serve(async (req) => {
       nativeText = await extractDocxPageText(fileBytes);
     } else if (isPptx) {
       nativeText = await extractPptxPageText(fileBytes);
+    } else if (isAudio) {
+      nativeText = await extractAudioPageText(fileBytes, mimeType);
     } else if (isPdf) {
       nativeText = await extractNativePageText(fileBytes);
     } else {
@@ -491,17 +496,17 @@ Deno.serve(async (req) => {
     // Load the active extract + translate prompts from the registry (self-seeds on first run).
     await loadPromptsForRequest(admin);
 
-    const ctx: AnalyzeCtx = { admin, documentId, isPdf, isDocx, isXlsx, isPptx, isImage, mimeType, fileBytes, nativeText };
+    const ctx: AnalyzeCtx = { admin, documentId, isPdf, isDocx, isXlsx, isPptx, isAudio, isImage, mimeType, fileBytes, nativeText };
 
     // Route each owned page: native (has usable text layer) vs sparse (needs
     // OCR). DOCX is handled entirely by the native segment-and-translate path
     // below (page 1), so it never enters the sparse (image) loop. XLSX is
     // handled entirely by the deterministic SheetJS path (6a-bis) — neither
     // loop. A standalone image (PNG/JPEG) is one sparse page (whole-image OCR).
-    const nativePages = isXlsx ? [] : (isDocx || isPptx)
+    const nativePages = isXlsx ? [] : (isDocx || isPptx || isAudio)
       ? rangeNumbers.filter((n) => nativeText.has(n))
       : rangeNumbers.filter((n) => hasNativeText(nativeText, n));
-    const sparsePages = (isDocx || isXlsx || isPptx)
+    const sparsePages = (isDocx || isXlsx || isPptx || isAudio)
       ? []
       : rangeNumbers.filter((n) => !hasNativeText(nativeText, n));
 
@@ -825,6 +830,39 @@ async function extractPptxPageText(fileBytes: Uint8Array): Promise<Map<number, s
   const map = new Map<number, string>();
   const slides = await pptxSlides(fileBytes);
   slides.forEach((s, i) => map.set(i + 1, s));
+  return map;
+}
+
+// AUDIO → one page from a verbatim Gemini transcription (multimodal inlineData, same channel as
+// image OCR). Brings meeting recordings / voice notes into the RAG substrate. Slice 3.
+async function extractAudioPageText(
+  fileBytes: Uint8Array,
+  mimeType: string,
+): Promise<Map<number, string>> {
+  const map = new Map<number, string>();
+  try {
+    const result = await generateText({
+      messages: [
+        {
+          role: "system",
+          parts: [{
+            text:
+              "Transcribe the audio to text verbatim. Preserve the speaker's words and numbers. Return ONLY the transcript text, no commentary.",
+          }],
+        },
+        {
+          role: "user",
+          parts: [{ inlineData: { mimeType: mimeType || "audio/mp4", data: encodeBase64(fileBytes) } }],
+        },
+      ],
+      temperature: 0,
+      maxOutputTokens: 4096,
+      timeoutMs: ANALYZE_TIMEOUT_MS,
+    });
+    map.set(1, (result.text ?? "").trim());
+  } catch (_e) {
+    return new Map<number, string>();
+  }
   return map;
 }
 
@@ -1319,6 +1357,7 @@ type AnalyzeCtx = {
   isDocx: boolean;
   isXlsx: boolean;
   isPptx: boolean;
+  isAudio: boolean;
   isImage: boolean;
   mimeType: string;
   fileBytes: Uint8Array;

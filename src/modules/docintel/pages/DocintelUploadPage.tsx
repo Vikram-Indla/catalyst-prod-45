@@ -44,6 +44,9 @@ const ACCEPT = {
   "application/vnd.openxmlformats-officedocument.presentationml.presentation": [".pptx"],
   "image/png": [".png"],
   "image/jpeg": [".jpg", ".jpeg"],
+  "audio/mpeg": [".mp3"],
+  "audio/mp4": [".m4a"],
+  "audio/wav": [".wav"],
 };
 
 type WizardStep = "upload" | "processing" | "review";

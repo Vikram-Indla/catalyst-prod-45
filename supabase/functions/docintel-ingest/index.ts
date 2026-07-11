@@ -327,6 +327,12 @@ Deno.serve(async (req) => {
           // PPTX: one logical page per slide (shared splitter, matches docintel-analyze). Slice 3.
           const slides = await pptxSlides(bytes);
           pageCount = slides.length > 0 ? slides.length : 1;
+        } else if (
+          file.mimeType.startsWith("audio/") ||
+          /\.(m4a|mp3|wav|aiff|aif|ogg|flac|aac)$/i.test(file.fileName ?? "")
+        ) {
+          // AUDIO: one page — docintel-analyze transcribes it via Gemini. Slice 3.
+          pageCount = 1;
         } else {
           // Any other non-PDF: one logical page. page_count stays null.
           pageCount = null;
