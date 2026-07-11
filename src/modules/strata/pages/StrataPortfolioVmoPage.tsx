@@ -7,7 +7,7 @@
  * renders them with lineage (evidence drawer). Zero-assumption: '—' for unknowns.
  */
 import React, { useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import {
   Button, CatalystTag, EmptyState,
@@ -39,7 +39,7 @@ import {
   useStrataContext, useStrataRoles, useValueAtRisk, useValueCategories,
 } from '@/modules/strata/hooks/useStrata';
 import type {
-  StrataAssumption, StrataBenefit, StrataBenefitValue, StrataGateInstance, StrataGateModelStage,
+  StrataAssumption, StrataBenefit, StrataBenefitValue, StrataGateInstance, StrataGateModelStage, StrataPortfolio,
 } from '@/modules/strata/types';
 
 // ── System-state appearance maps (mirror DB CHECK constraints) ───────────────
@@ -747,10 +747,24 @@ export default function StrataPortfolioVmoPage() {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
 
+  const [searchParams, setSearchParams] = useSearchParams();
   const portfoliosQ = usePortfolios();
   const portfolios = portfoliosQ.data ?? [];
-  const [portfolioOverride, setPortfolioOverride] = useState<string | null>(null);
-  const portfolio = portfolios.find((p) => p.id === portfolioOverride) ?? portfolios[0] ?? null;
+  // Selected portfolio is URL-persisted (?portfolio=<slug>) so it survives
+  // refresh, deep links and back/forward instead of resetting to the first
+  // portfolio (V3-OPEN-018). Token is the slug, with an id fallback for the
+  // rare null-slug row. Cycle/Period already persist via ?cycle=/?period=.
+  const portfolioToken = (p: StrataPortfolio) => p.slug ?? p.id;
+  const portfolioParam = searchParams.get('portfolio');
+  const portfolio =
+    portfolios.find((p) => portfolioToken(p) === portfolioParam) ?? portfolios[0] ?? null;
+  const selectPortfolio = (p: StrataPortfolio) => {
+    setSearchParams((prev) => {
+      const next = new URLSearchParams(prev);
+      next.set('portfolio', portfolioToken(p));
+      return next;
+    });
+  };
 
   const benefitsQ = useBenefits(portfolio?.id);
   const categoriesQ = useValueCategories();
@@ -859,7 +873,7 @@ export default function StrataPortfolioVmoPage() {
       testId="strata-portfolio-switcher"
       aria-label="Select portfolio"
       options={portfolios.map((p) => ({
-        key: p.id, label: p.name, isSelected: p.id === portfolio?.id, onClick: () => setPortfolioOverride(p.id),
+        key: p.id, label: p.name, isSelected: p.id === portfolio?.id, onClick: () => selectPortfolio(p),
       }))}
     />
   ) : null;
