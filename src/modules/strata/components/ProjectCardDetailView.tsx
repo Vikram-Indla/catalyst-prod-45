@@ -40,6 +40,10 @@ import { StrataExecutionHealthLozenge, StrataPanel, StrataStatStrip, T } from '.
 const WRITE_ROLES: StrataRole[] = ['strategy_office', 'vmo_validator', 'data_steward', 'strata_admin'];
 const ARCHIVE_ROLES: StrataRole[] = ['strategy_office', 'vmo_validator', 'strata_admin'];
 const KPI_WRITE_ROLES: StrataRole[] = ['strategy_office', 'kpi_owner', 'strata_admin'];
+// Project Objective creation is narrower than general write: strata_create_project_objective
+// rejects everyone but strategy_office + admin. Gate the button to match the RPC so
+// vmo_validator / data_steward don't see an action that always fails (STRATA-E2E-003).
+const OBJECTIVE_WRITE_ROLES: StrataRole[] = ['strategy_office', 'strata_admin'];
 
 const MILESTONE_STATUS: Record<StrataMilestone['status'], React.ComponentProps<typeof Lozenge>['appearance']> = {
   done: 'success', in_progress: 'inprogress', planned: 'default', missed: 'removed', descoped: 'default',
@@ -113,6 +117,7 @@ export function ProjectCardDetailView({ card, theme }: {
   const roles = useStrataRoles().data ?? [];
   const canWrite = roles.some((r) => WRITE_ROLES.includes(r));
   const canWriteKpi = roles.some((r) => KPI_WRITE_ROLES.includes(r));
+  const canWriteObjective = roles.some((r) => OBJECTIVE_WRITE_ROLES.includes(r));
   const canArchive = roles.some((r) => ARCHIVE_ROLES.includes(r));
   const { activeCycle } = useStrataContext();
 
@@ -328,7 +333,7 @@ export function ProjectCardDetailView({ card, theme }: {
             {sectionVisible('scope_measures', 'project_objectives') ? (
               <TabSection
                 title={`Project Objectives (${objectives.length})`}
-                action={canWrite ? <Button spacing="compact" onClick={() => setForm('new-objective')} testId="strata-new-project-objective">New objective</Button> : undefined}
+                action={canWriteObjective ? <Button spacing="compact" onClick={() => setForm('new-objective')} testId="strata-new-project-objective">New objective</Button> : undefined}
               >
                 {objectives.length === 0 ? (
                   <EmptyState size="compact" header="No project objectives" description="Project Objectives use the same framework as Theme Objectives and may link upward to one." />
@@ -522,13 +527,13 @@ export function ProjectCardDetailView({ card, theme }: {
         fields={[
           { key: 'name', label: 'Milestone Name', kind: 'text', required: true },
           { key: 'ownerId', label: 'Milestone Owner', kind: 'user' },
-          { key: 'baselineStart', label: 'Baseline Start Date', kind: 'date' },
+          { key: 'baselineStart', label: 'Baseline Start Date', kind: 'date', helper: 'Add both baseline dates to unlock schedule health & variance. Progress still rolls up by Weight without them.' },
           { key: 'baselineEnd', label: 'Baseline End Date', kind: 'date' },
           { key: 'forecastDate', label: 'Forecast End Date', kind: 'date' },
           { key: 'actualDate', label: 'Actual End Date', kind: 'date' },
           { key: 'status', label: 'Status', kind: 'select', options: MILESTONE_STATUS_OPTIONS.map((s) => ({ value: s, label: labelize(s) })) },
           { key: 'progress', label: 'Progress %', kind: 'number', min: 0, max: 100 },
-          { key: 'weight', label: 'Weight', kind: 'number', min: 0 },
+          { key: 'weight', label: 'Weight', kind: 'number', min: 0, helper: 'Relative weight for progress roll-up (default 1).' },
         ]}
         initial={{ status: 'planned' }}
         onSubmit={submitAndRefresh((v) => executionApi.createMilestone({
@@ -548,13 +553,13 @@ export function ProjectCardDetailView({ card, theme }: {
         fields={[
           { key: 'name', label: 'Milestone Name', kind: 'text', required: true },
           { key: 'ownerId', label: 'Milestone Owner', kind: 'user' },
-          { key: 'baselineStart', label: 'Baseline Start Date', kind: 'date' },
+          { key: 'baselineStart', label: 'Baseline Start Date', kind: 'date', helper: 'Add both baseline dates to unlock schedule health & variance. Progress still rolls up by Weight without them.' },
           { key: 'baselineEnd', label: 'Baseline End Date', kind: 'date' },
           { key: 'forecastDate', label: 'Forecast End Date', kind: 'date' },
           { key: 'actualDate', label: 'Actual End Date', kind: 'date' },
           { key: 'status', label: 'Status', kind: 'select', options: MILESTONE_STATUS_OPTIONS.map((s) => ({ value: s, label: labelize(s) })) },
           { key: 'progress', label: 'Progress %', kind: 'number', min: 0, max: 100 },
-          { key: 'weight', label: 'Weight', kind: 'number', min: 0 },
+          { key: 'weight', label: 'Weight', kind: 'number', min: 0, helper: 'Relative weight for progress roll-up (default 1).' },
         ]}
         initial={editMilestone ? {
           name: editMilestone.name, ownerId: editMilestone.owner_id,
