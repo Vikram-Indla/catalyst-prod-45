@@ -26,7 +26,16 @@ import { WatchControl } from '@/modules/ideation/components/WatchControl';
 import { useAuth } from '@/hooks/useAuth';
 import { useConvertIdeaToBusinessRequest } from '@/hooks/useIdeationConvert';
 import { useMergeIdea } from '@/hooks/useIdeationMerge';
+import {
+  useIdeationEvidence,
+  useAddIdeationEvidence,
+  useDeleteIdeationEvidence,
+  type EvidenceKind,
+} from '@/hooks/useIdeationEvidence';
 import Textfield from '@atlaskit/textfield';
+import LinkIcon from '@atlaskit/icon/core/link';
+import DeleteIcon from '@atlaskit/icon/core/delete';
+import AddIcon from '@atlaskit/icon/core/add';
 import {
   useIdeationIdea,
   useIdeationComments,
@@ -306,6 +315,145 @@ function MergeArea({ idea }: { idea: IdeaDetailRow }) {
   );
 }
 
+const EVIDENCE_KIND_LABEL: Record<EvidenceKind, string> = { snippet: 'Snippet', link: 'Link' };
+
+/** "Decisions cite sources" (P0) — Phase 3 S6. Snippet + link kinds only;
+ *  document/voice_transcript/image need separate infra not built yet. */
+function EvidenceArea({ idea }: { idea: IdeaDetailRow }) {
+  const { data: evidence, isLoading } = useIdeationEvidence(idea.id);
+  const addEvidence = useAddIdeationEvidence(idea.id);
+  const deleteEvidence = useDeleteIdeationEvidence(idea.id);
+  const [isAdding, setIsAdding] = useState(false);
+  const [kind, setKind] = useState<EvidenceKind>('snippet');
+  const [body, setBody] = useState('');
+  const [url, setUrl] = useState('');
+  const [attribution, setAttribution] = useState('');
+  const [error, setError] = useState<string | null>(null);
+
+  const reset = () => {
+    setIsAdding(false);
+    setBody('');
+    setUrl('');
+    setAttribution('');
+    setError(null);
+  };
+
+  const handleAdd = async () => {
+    setError(null);
+    try {
+      await addEvidence.mutateAsync({ kind, body, url, sourceAttribution: attribution });
+      reset();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Could not add evidence.');
+    }
+  };
+
+  return (
+    <div style={{ marginTop: 32, borderTop: `1px solid ${token('color.border', 'var(--ds-border)')}`, paddingTop: 20 }}>
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          font: '600 12px/16px var(--ds-font-family-body, "Atlassian Sans")',
+          color: token('color.text.subtle', 'var(--ds-text-subtle)'),
+          textTransform: 'uppercase',
+          letterSpacing: '0.04em',
+          marginBottom: 12,
+        }}
+      >
+        Evidence {evidence && evidence.length > 0 ? `(${evidence.length})` : ''}
+        {!isAdding && (
+          <Button appearance="subtle" iconBefore={AddIcon} onClick={() => setIsAdding(true)} testId="ideation-evidence-add-toggle">
+            Add
+          </Button>
+        )}
+      </div>
+
+      {isLoading ? (
+        <Spinner size="small" />
+      ) : evidence && evidence.length > 0 ? (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: isAdding ? 16 : 0 }}>
+          {evidence.map((e) => (
+            <div
+              key={e.id}
+              style={{
+                display: 'flex',
+                alignItems: 'flex-start',
+                gap: 8,
+                padding: 12,
+                background: token('color.background.neutral', 'var(--ds-background-neutral)'),
+                borderRadius: 3,
+              }}
+            >
+              {e.kind === 'link' && <LinkIcon label="" color={token('color.icon.subtle', 'var(--ds-icon-subtle)')} />}
+              <div style={{ flex: 1, minWidth: 0 }}>
+                {e.kind === 'link' ? (
+                  <a href={e.url ?? '#'} target="_blank" rel="noreferrer" style={{ color: token('color.link', 'var(--ds-link)') }}>
+                    {e.url}
+                  </a>
+                ) : (
+                  <span style={{ color: token('color.text', 'var(--ds-text)') }}>{e.body}</span>
+                )}
+                <div style={{ marginTop: 4, font: '400 12px/16px var(--ds-font-family-body, "Atlassian Sans")', color: token('color.text.subtlest', 'var(--ds-text-subtlest)') }}>
+                  {EVIDENCE_KIND_LABEL[e.kind as EvidenceKind] ?? e.kind}
+                  {e.source_attribution && ` · ${e.source_attribution}`}
+                  {e.added_by_name && ` · ${e.added_by_name}`}
+                </div>
+              </div>
+              <Button
+                appearance="subtle"
+                iconBefore={DeleteIcon}
+                onClick={() => deleteEvidence.mutate(e.id)}
+                isDisabled={deleteEvidence.isPending}
+                testId={`ideation-evidence-delete-${e.id}`}
+              >
+                {''}
+              </Button>
+            </div>
+          ))}
+        </div>
+      ) : !isAdding ? (
+        <div style={{ color: token('color.text.subtlest', 'var(--ds-text-subtlest)'), font: '400 13px/20px var(--ds-font-family-body, "Atlassian Sans")' }}>
+          No evidence attached yet.
+        </div>
+      ) : null}
+
+      {isAdding && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8, maxWidth: 480 }}>
+          {error && <SectionMessage appearance="error">{error}</SectionMessage>}
+          <div style={{ display: 'flex', gap: 8 }}>
+            <Button appearance={kind === 'snippet' ? 'primary' : 'default'} onClick={() => setKind('snippet')}>
+              Snippet
+            </Button>
+            <Button appearance={kind === 'link' ? 'primary' : 'default'} onClick={() => setKind('link')}>
+              Link
+            </Button>
+          </div>
+          {kind === 'snippet' ? (
+            <Textfield placeholder="Verbatim quote or note…" value={body} onChange={(e) => setBody((e.target as HTMLInputElement).value)} />
+          ) : (
+            <Textfield placeholder="https://…" value={url} onChange={(e) => setUrl((e.target as HTMLInputElement).value)} />
+          )}
+          <Textfield
+            placeholder="Source (optional) — e.g. Sara, support thread"
+            value={attribution}
+            onChange={(e) => setAttribution((e.target as HTMLInputElement).value)}
+          />
+          <div style={{ display: 'flex', gap: 8 }}>
+            <Button appearance="primary" isDisabled={addEvidence.isPending} onClick={handleAdd}>
+              Save
+            </Button>
+            <Button isDisabled={addEvidence.isPending} onClick={reset}>
+              Cancel
+            </Button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function DetailPage() {
   const navigate = useNavigate();
   const { slug } = useParams<{ slug: string }>();
@@ -412,6 +560,8 @@ export default function DetailPage() {
               <DisplayView adf={idea.proposed_value as never} issueKey={idea.idea_key} />
             </div>
           )}
+
+          <EvidenceArea idea={idea} />
 
           <div style={{ marginTop: 32 }}>
             {commentsLoading ? (

@@ -305,4 +305,17 @@ No explicit `WITH CHECK` — Postgres reuses `USING`, evaluated against the **ne
 
 **Gates**: `npx tsc --noEmit` — 0 errors. `node scripts/no-hardcoded-colors.cjs` — 0 hits.
 
+## Phase 3 Slice S6 — Evidence panel · 2026-07-11
+
+**Objective**: `idn_evidence` (P0, "Decisions cite sources") had real schema since S1 but zero UI. Built snippet + link kinds (document/voice_transcript/image correctly excluded — no upload/docintel/voice infra wired to evidence yet). Checked the RLS first: `idn_evidence_insert`'s `WITH CHECK` only tests `added_by = auth.uid()` and the idea's *current* lock state, not any field this insert itself sets — no risk of the Merge/Conversion self-referential bug here, confirmed clean before building.
+
+**Live DB proof** (IDEA-6, real staging idea):
+| Action | Result |
+|---|---|
+| Add snippet ("Customer support ticket #4821…", attribution "Support ticket #4821") | Real `idn_evidence` row: `kind='snippet'`, `body`=exact text, `url=null`, `source_attribution` matches. Renders correctly in the list |
+| Add link (`https://example.com/support/thread-4821`, attribution "Zendesk thread") | Real `idn_evidence` row: `kind='link'`, `url`=exact value, `body=null`. Renders as a clickable link with the link icon |
+| Delete the link row | Row count went from `EVIDENCE (2)` → `EVIDENCE (1)` live, correct row removed, snippet remained |
+
+**Gates**: `npx tsc --noEmit` — 0 errors. `node scripts/no-hardcoded-colors.cjs` — 0 hits.
+
 **Follow-up required, tracked here so it isn't lost**: live screenshot pass on all 5 surfaces (light + dark), interaction proof (vote cast, watch toggled, merge completed, conversion completed) with DB verification after each — same bar every earlier slice met.

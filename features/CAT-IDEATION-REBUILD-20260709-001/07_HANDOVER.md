@@ -13,8 +13,9 @@
   - S5 Merge: ⚠️ **UI/UX confirmed correct; the actual database write is blocked for every user, always** — see "⚠️ Confirmed blocker" below.
 - **Phase 5** S1 Conversion: ⚠️ same status as Merge — UI correct, DB write blocked by the identical root cause.
 - **Phase 6** S1 (notification dispatch — `idea_comment_added`, `idea_decision`): ✅ committed, **live DB-verified**. Found and fixed a real `status_type` CHECK constraint violation along the way (see `11_KARPATHY_LOOP_LOG.md` #22).
+- **Phase 3** S6 (Evidence panel — snippet + link kinds): ✅ committed, **live DB-verified** (add snippet, add link, delete — all confirmed against real `idn_evidence` rows). Checked the RLS for the same self-referential lock bug Merge/Conversion hit *before* building — confirmed clean (see `11_KARPATHY_LOOP_LOG.md` #23).
 - **Phase 4** (AI Copilot): **not started.** Needs LLM gateway wiring, prompt versioning, suggestion ledger UI — genuinely a multi-slice undertaking, correctly deferred in every Plan Lock so far, not attempted under time pressure.
-- **Remaining known gaps** (see `04_ELITE_DESIGN_BLUEPRINT.md`'s P0/P1 table for the full list): Evidence panel (idn_evidence has no UI at all), remaining notification events (`idea_submitted`/`idea_triage_assigned`/`idea_mentioned`/`idea_vote_milestone`/`idea_merged`/`idea_converted`/`idea_delivered`/`idea_ai_suggestions_ready` — see Phase 6 S1's Plan Lock non-scope for why each is deferred), scoring-model editing/publish flow (Admin page is read-only), role-gating the workflow action buttons (pre-existing gap across the *whole* canonical workflow system, not ideation-specific — `ph_wf_transition_roles` role groups aren't mapped to `product_roles.code` anywhere), Homepage widgets/ForYou section, AR/RTL pass.
+- **Remaining known gaps** (see `04_ELITE_DESIGN_BLUEPRINT.md`'s P0/P1 table for the full list): evidence `document`/`voice_transcript`/`image` kinds (need docintel/voice-flow/attachment infra), remaining notification events (`idea_submitted`/`idea_triage_assigned`/`idea_mentioned`/`idea_vote_milestone`/`idea_merged`/`idea_converted`/`idea_delivered`/`idea_ai_suggestions_ready` — see Phase 6 S1's Plan Lock non-scope for why each is deferred), scoring-model editing/publish flow (Admin page is read-only), role-gating the workflow action buttons (pre-existing gap across the *whole* canonical workflow system, not ideation-specific — `ph_wf_transition_roles` role groups aren't mapped to `product_roles.code` anywhere), Homepage widgets/ForYou section, AR/RTL pass.
 
 ## ⚠️ Confirmed blocker — needs a migration + Vikram's review, this is the #1 next-session priority
 
@@ -32,7 +33,8 @@ Merge and Conversion are **fully built and UI-tested**, but their final `idn_ide
 - `d3a20cfcd` (rebased from a locally-unpushed `493013d30`) Phase 3 S1 — workflow guards real evidence + Decision UI. **Screenshot-verified.**
 - `76a36591d` Phase 3 S2–S5 + Phase 5 S1 — Votes/Watchers/Admin/Merge/Conversion (initial commit).
 - `6214b8ff3` Live-verification fixes: `VoteControl`'s `@atlaskit/popup` → manual-position rewrite, error-surfacing fix in `useIdeationMerge.ts`/`useIdeationConvert.ts` (was throwing raw Postgrest objects, not `Error` instances — masked the real RLS error behind a generic message), compensating-cleanup fix attempt in Conversion (confirmed still non-functional due to the second RLS gap, documented not hidden).
-- (uncommitted as of this handover — see below) Phase 6 S1 notification dispatch.
+- `7952b5828` Phase 6 S1 — notification dispatch (comment + decision), live DB-verified.
+- (uncommitted as of this handover — see below) Phase 3 S6 Evidence panel.
 
 ## Cautions carried forward
 
