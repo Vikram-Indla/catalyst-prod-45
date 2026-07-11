@@ -271,6 +271,7 @@ export default function StrataStrategyElementDetailPage() {
               </div>
             ) : (
               <EmptyState
+                size="compact"
                 header="No charter yet"
                 description={canAuthor ? 'Author a charter for this Theme.' : 'No charter has been authored for this Theme yet.'}
                 primaryAction={canAuthor ? (
@@ -285,6 +286,7 @@ export default function StrataStrategyElementDetailPage() {
           <StrataPanel title="Objectives" icon={<Target size={16} />} count={objectives.length}>
             {objectives.length === 0 ? (
               <EmptyState
+                size="compact"
                 header="No Strategic Objectives yet"
                 description={canAuthor ? 'Add the first Objective for this Theme.' : 'No Strategic Objectives have been created for this Theme yet.'}
                 primaryAction={canAuthor ? (
@@ -387,7 +389,7 @@ export default function StrataStrategyElementDetailPage() {
         {isTheme ? (
           <StrataPanel title="Linked Project Cards" icon={<Briefcase size={16} />} count={themeCards.length}>
             {themeCards.length === 0 ? (
-              <EmptyState header="No Project Cards linked" description="Project Cards are linked to a Theme from the Execution workspace." />
+              <EmptyState size="compact" header="No Project Cards linked" description="Project Cards are linked to a Theme from the Execution workspace." />
             ) : (
               <div style={{ display: 'grid', gap: 10, minWidth: 0 }}>
                 {themeCards.map((card) => {
@@ -430,7 +432,7 @@ export default function StrataStrategyElementDetailPage() {
         {isTheme ? (
           <StrataPanel title="Execution Summary" icon={<Briefcase size={16} />} count={cardRollup.total}>
             {cardRollup.total === 0 ? (
-              <EmptyState header="No execution data" description="Link Project Cards to this Theme to see execution health here." />
+              <EmptyState size="compact" header="No execution data" description="Link Project Cards to this Theme to see execution health here." />
             ) : (
               <div style={{ display: 'grid', gap: 8, fontSize: 'var(--ds-font-size-100)' }}>
                 <div><span style={{ fontWeight: 600 }}>Total linked</span> {cardRollup.total}</div>
@@ -466,6 +468,7 @@ export default function StrataStrategyElementDetailPage() {
           >
             {themeDecisions.length === 0 ? (
               <EmptyState
+                size="compact"
                 header="No decisions recorded for this Theme yet."
                 description={canGovern ? undefined : 'Decisions and actions for this Theme will appear here.'}
                 primaryAction={canGovern ? (
@@ -522,7 +525,7 @@ export default function StrataStrategyElementDetailPage() {
 
         <StrataPanel title="Strategy relationships" icon={<Network size={16} />} count={incomingEdges.length + outgoingEdges.length}>
           {incomingEdges.length === 0 && outgoingEdges.length === 0 ? (
-            <EmptyState header="No strategy relationships" description="Create relationships on the Strategy Map." />
+            <EmptyState size="compact" header="No strategy relationships" description="Create relationships on the Strategy Map." />
           ) : (
             <div style={{ display: 'grid', gap: 10, fontSize: 'var(--ds-font-size-100)' }}>
               {incomingEdges.length > 0 ? (
@@ -559,7 +562,7 @@ export default function StrataStrategyElementDetailPage() {
 
         <StrataPanel title="Audit" icon={<GitBranch size={16} />} count={auditRows.length}>
           {auditRows.length === 0 ? (
-            <EmptyState header="No audit events" description="Changes to this element will appear here." />
+            <EmptyState size="compact" header="No audit events" description="Changes to this element will appear here." />
           ) : (
             <div style={{ display: 'grid', gap: 6, fontSize: 'var(--ds-font-size-050)' }}>
               {auditRows.map((a: { action: string | null; created_at: string; actor_id: string | null }, i: number) => (

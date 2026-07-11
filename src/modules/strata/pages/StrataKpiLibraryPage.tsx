@@ -502,6 +502,7 @@ export default function StrataKpiLibraryPage() {
               ariaLabel="KPI dictionary"
               emptyView={
                 <EmptyState
+                  size="compact"
                   header="No KPIs found"
                   description={search || statusFilter !== 'all'
                     ? 'No KPIs match the current search or status filter.'
