@@ -35,6 +35,22 @@
   --cc-fw-bold: 700;
 }
 
+/* Responsive: on a mobile viewport the dock fills the screen like the Slack
+   mobile app — no float, no rounded corners, no shadow. */
+@media (max-width: 600px) {
+  .cc-dock {
+    inset: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
+    max-height: 100%;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+  }
+}
+
 /* Stop wheel/touch scroll from chaining to the page behind the dock at
    each scroll container. overscroll-behavior must sit on the scroller
    itself, NOT on every descendant (that would swallow wheel events on
@@ -95,11 +111,28 @@
   min-width: 0;
 }
 
+/* Workspace logo squircle (Slack Home header) */
+.cc-dock__wslogo {
+  flex: 0 0 auto;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: var(--ds-surface);
+}
+
 .cc-dock__wordmark {
   font: var(--ds-font-body-large);
-  font-weight: var(--cc-fw-semibold);
+  font-size: var(--ds-font-size-500); /* 17px — Slack workspace title */
+  font-weight: var(--cc-fw-bold);
   letter-spacing: -0.01em;
   color: var(--ds-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .cc-dock__status {
@@ -146,6 +179,153 @@
   gap: 0px;
   flex: 0 0 auto;
   margin-left: auto;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   Slack-style purple per-tab header (CAT-CHAT-DOCK-SLACK, header slice).
+   Aubergine via ADS purple accent token; white via --ds-text-inverse.
+   ═══════════════════════════════════════════════════════════════════════ */
+.cc-dock__headerwrap--purple {
+  background: var(--ds-background-accent-purple-bolder);
+  border-bottom: none;
+}
+.cc-dock__headerwrap--purple .cc-dock__accent { display: none; }
+.cc-dock__headerwrap--purple .cc-dock__titlebar { height: 56px; }
+.cc-dock__headerwrap--purple .cc-dock__wordmark,
+.cc-dock__headerwrap--purple .cc-dock__bigtitle,
+.cc-dock__headerwrap--purple .cc-dock__hdr-btn {
+  color: var(--ds-text-inverse);
+}
+
+.cc-dock__bigtitle {
+  font: var(--ds-font-body-large); /* 16px */
+  font-weight: var(--cc-fw-semibold);
+  letter-spacing: -0.01em;
+  color: var(--ds-text);
+}
+
+/* Plain header action buttons (colourable via currentColor on purple) */
+.cc-dock__hdr-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border: none;
+  background: transparent;
+  border-radius: 8px;
+  color: var(--ds-icon);
+  cursor: pointer;
+  transition: background 0.12s;
+}
+.cc-dock__hdr-btn:hover { background: var(--ds-background-neutral-subtle-hovered); }
+.cc-dock__hdr-btn:focus-visible {
+  outline: 2px solid var(--ds-border-focused);
+  outline-offset: 1px;
+}
+.cc-dock__headerwrap--purple .cc-dock__hdr-btn:hover {
+  background: color-mix(in srgb, var(--ds-text-inverse) 18%, transparent);
+}
+/* Minimize — subtle (dock-only control, Slack has none) */
+.cc-dock__hdr-btn--minimize { width: 26px; height: 26px; }
+.cc-dock__headerwrap--purple .cc-dock__hdr-btn--minimize {
+  color: color-mix(in srgb, var(--ds-text-inverse) 70%, transparent);
+}
+
+/* User avatar button (Slack top-right) */
+.cc-dock__hdr-avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  padding: 0;
+  margin-right: var(--ds-space-050);
+  border-radius: 8px;
+  cursor: pointer;
+}
+.cc-dock__hdr-avatar:focus-visible {
+  outline: 2px solid var(--ds-border-focused);
+  outline-offset: 2px;
+}
+
+/* Slack-style right pill: [filter | avatar] */
+.cc-dock__hdr-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ds-space-050);
+  padding: var(--ds-space-025) var(--ds-space-050) var(--ds-space-025) var(--ds-space-100);
+  border-radius: 20px;
+  border: 1px solid var(--ds-border);
+}
+.cc-dock__hdr-pill .cc-dock__hdr-avatar { margin-right: 0; }
+.cc-dock__headerwrap--purple .cc-dock__hdr-pill {
+  border-color: color-mix(in srgb, var(--ds-text-inverse) 40%, transparent);
+}
+/* Non-Home tabs: no filter → just the avatar with a ring (Slack style) */
+.cc-dock__hdr-pill--solo {
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+}
+.cc-dock__hdr-pill--solo .cc-dock__hdr-avatar {
+  border-radius: 50%;
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--ds-text-inverse) 55%, transparent);
+}
+
+/* Home: purple brand bar lives inside the scroll and scrolls away */
+.cc-dock__scroll-hdr {
+  display: flex;
+  align-items: center;
+  gap: var(--ds-space-100);
+  padding: var(--ds-space-150);
+  background: var(--ds-background-accent-purple-bolder);
+}
+.cc-dock__scroll-hdr .cc-dock__wordmark { color: var(--ds-text-inverse); }
+.cc-dock__scroll-hdr .cc-dock__wslogo {
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--ds-text-inverse) 45%, transparent);
+}
+
+/* Home: sticky floating action cluster (frosted pill, readable on purple + white) */
+.cc-dock__hdr-float {
+  position: absolute;
+  top: var(--ds-space-100);
+  right: var(--ds-space-150);
+  z-index: 25;
+}
+.cc-dock__hdr-float .cc-dock__actions {
+  gap: var(--ds-space-025);
+  padding: var(--ds-space-025) var(--ds-space-050);
+  border-radius: 22px;
+  background: color-mix(in srgb, var(--ds-surface) 82%, transparent);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  box-shadow: var(--ds-shadow-overlay);
+}
+.cc-dock__hdr-float .cc-dock__hdr-btn { color: var(--ds-icon); }
+.cc-dock__hdr-float .cc-dock__hdr-pill { border-color: var(--ds-border); }
+.cc-dock__hdr-float .cc-dock__hdr-pill-btn { color: var(--ds-icon); }
+.cc-dock__hdr-pill-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border: none;
+  background: transparent;
+  color: var(--ds-icon);
+  border-radius: 6px;
+  cursor: pointer;
+}
+.cc-dock__headerwrap--purple .cc-dock__hdr-pill-btn { color: var(--ds-text-inverse); }
+.cc-dock__hdr-pill-btn:focus-visible {
+  outline: 2px solid var(--ds-border-focused);
+  outline-offset: 1px;
+}
+
+/* Workspace logo ring (Slack) */
+.cc-dock__headerwrap--purple .cc-dock__wslogo {
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--ds-text-inverse) 45%, transparent);
 }
 
 /* Dual-mode underline tabs — row 2 of the header (Slack/Jira nav style) */
@@ -611,7 +791,7 @@
   gap: 4px;
   padding: 8px 16px 4px;
   font: var(--ds-font-body-small);
-  font-weight: var(--cc-fw-bold);
+  font-weight: var(--cc-fw-semibold);
   letter-spacing: 0;
   text-transform: none;
   /* Stronger than subtlest — the old value read as barely-there ghost text. */
@@ -630,6 +810,123 @@
   margin-left: auto;
 }
 
+/* ── Section header v2: title + inline "›" (browse) + far-right collapse ── */
+.cc-dir__section-title {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex: 1;
+  min-width: 0;
+  background: transparent;
+  border: none;
+  padding: 0;
+  font: var(--ds-font-body-small);
+  font-weight: var(--cc-fw-semibold);
+  color: var(--ds-text-subtle);
+  cursor: pointer;
+  text-align: left;
+}
+.cc-dir__section-title > span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.cc-dir__section-title:hover .cc-dir__section-go { color: var(--ds-text); }
+.cc-dir__section-go { flex: 0 0 auto; color: var(--ds-icon-subtle); }
+
+.cc-dir__section-right {
+  display: flex;
+  align-items: center;
+  gap: var(--ds-space-025);
+  flex: 0 0 auto;
+}
+.cc-dir__section-right .cc-dir__section-count { margin-left: 0; }
+
+.cc-dir__section-collapse {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  background: transparent;
+  color: var(--ds-icon-subtle);
+  border-radius: 4px;
+  cursor: pointer;
+}
+.cc-dir__section-collapse:hover {
+  background: var(--ds-background-neutral-subtle-hovered);
+  color: var(--ds-text);
+}
+.cc-dir__section-collapse:focus-visible {
+  outline: 2px solid var(--ds-border-focused);
+  outline-offset: 1px;
+}
+
+/* ── Browse-detail screen (Slack "Browse Sections") — full-screen ── */
+.cc-dir__browse-head {
+  position: relative;
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  padding: var(--ds-space-150);
+}
+.cc-dir__browse-back {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border: none;
+  background: var(--ds-background-neutral-subtle);
+  color: var(--ds-icon);
+  border-radius: 50%;
+  cursor: pointer;
+}
+.cc-dir__browse-back:hover { background: var(--ds-background-neutral); }
+.cc-dir__browse-title {
+  position: absolute;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-size: var(--ds-font-size-400); /* match huddles/threads detail title */
+  font-weight: var(--cc-fw-bold);
+  color: var(--ds-text);
+  pointer-events: none;
+}
+.cc-dir__browse-chips {
+  flex: 0 0 auto;
+  display: flex;
+  gap: var(--ds-space-100);
+  padding: var(--ds-space-100) var(--ds-space-150) var(--ds-space-150);
+  overflow-x: auto;
+}
+.cc-dir__browse-chip {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ds-space-050);
+  height: 34px;
+  padding: 0 var(--ds-space-150);
+  border-radius: 18px;
+  border: 1px solid var(--ds-border);
+  background: var(--ds-surface);
+  font-size: var(--ds-font-size-200);
+  font-weight: var(--cc-fw-medium);
+  color: var(--ds-text-subtle);
+  cursor: pointer;
+  white-space: nowrap;
+}
+.cc-dir__browse-chip-icon { display: inline-flex; }
+.cc-dir__browse-chip--active {
+  background: var(--ds-background-accent-purple-bolder);
+  color: var(--ds-text-inverse);
+  border-color: transparent;
+  font-weight: var(--cc-fw-semibold);
+}
+
 .cc-dir__row {
   display: flex;
   align-items: center;
@@ -639,7 +936,7 @@
      with the section labels (also bumped to 20px). */
   width: calc(100% - 16px);
   margin-inline: 8px;
-  padding: 8px 12px;
+  padding: 4px 12px;
   border-radius: 6px;
   background: transparent;
   border: none;
@@ -694,9 +991,9 @@
   gap: 4px;
 }
 
+/* Slack-mobile compact: name 12px/regular (was 14/medium), lighter feel. */
 .cc-dir__name {
-  font: var(--ds-font-body);
-  font-weight: var(--cc-fw-medium);
+  font: var(--ds-font-body-small);
   color: var(--ds-text);
   flex: 1;
   white-space: nowrap;
@@ -706,12 +1003,14 @@
 
 .cc-dir__time {
   font: var(--ds-font-body-small);
+  font-size: var(--ds-font-size-50); /* 11px — meta floor */
   color: var(--ds-text-subtlest);
   flex: 0 0 auto;
 }
 
 .cc-dir__preview {
   font: var(--ds-font-body-small);
+  font-size: var(--ds-font-size-50); /* 11px */
   color: var(--ds-text-subtle);
   white-space: nowrap;
   overflow: hidden;
@@ -1135,7 +1434,7 @@
   background: transparent;
   border: none;
   font: var(--ds-font-body-small);
-  font-weight: var(--cc-fw-bold);
+  font-weight: var(--cc-fw-semibold);
   letter-spacing: 0;
   text-transform: none;
   color: var(--ds-text-subtle);
@@ -1238,6 +1537,10 @@
   display: flex;
   align-items: center;
   gap: 0px;
+  /* Solid overlay so the time/badge underneath is covered cleanly — no reflow */
+  padding-left: var(--ds-space-100);
+  border-radius: 6px;
+  background: var(--ds-background-neutral-subtle-hovered);
 }
 
 .cc-dir__rowact {
@@ -1271,10 +1574,10 @@
 /* Caty suggestion cards — rolling nudges */
 .cc-dir__caty {
   display: flex;
-  align-items: flex-start;
-  gap: 8px;
-  margin: 4px 8px;
-  padding: 8px;
+  align-items: center;
+  gap: var(--ds-space-075);
+  margin: var(--ds-space-025) var(--ds-space-100);
+  padding: var(--ds-space-075) var(--ds-space-100);
   border-radius: 6px;
   background: var(--ds-surface);
   /* ads-scanner:ignore-next-line */
@@ -1387,7 +1690,7 @@
 
 /* Unread visual bolding — name is heavier, preview is primary text (H6 recognition) */
 .cc-dir__row--unread .cc-dir__name {
-  font-weight: var(--cc-fw-bold);
+  font-weight: var(--cc-fw-medium);
   color: var(--ds-text);
 }
 
@@ -1732,8 +2035,8 @@
 /* ── DM stack avatar (overlapping group-DM avatars) ─────────── */
 .cc-dir__dm-stack {
   position: relative;
-  width: 28px;
-  height: 28px;
+  width: 36px;
+  height: 36px;
   flex: 0 0 auto;
   display: inline-block;
 }
@@ -1828,6 +2131,1299 @@
   border-top-color: var(--ds-border-brand);
   border-radius: 50%;
   animation: cc-dock-spin 0.8s linear infinite;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   Slack-mobile glassy bottom nav (CAT-CHAT-DOCK-SLACK-20260709-001, Slice 1)
+   Glass = backdrop-filter blur + color-mix(var(--ds-surface)…). No hex/rgba
+   literal → color gate green. Active = ADS purple accent tokens.
+   ═══════════════════════════════════════════════════════════════════════ */
+.cc-nav {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: var(--ds-space-100);
+  padding: var(--ds-space-100) var(--ds-space-150) var(--ds-space-200);
+  pointer-events: none;
+}
+.cc-nav > * { pointer-events: auto; }
+
+/* Frosted pill holding the four primary tabs */
+.cc-nav__pill {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  align-items: stretch;
+  height: 56px;
+  padding: var(--ds-space-050);
+  border-radius: 28px;
+  background: color-mix(in srgb, var(--ds-surface) 72%, transparent);
+  -webkit-backdrop-filter: blur(20px) saturate(1.8);
+  backdrop-filter: blur(20px) saturate(1.8);
+  border: 1px solid color-mix(in srgb, var(--ds-border) 60%, transparent);
+  box-shadow: var(--ds-shadow-overlay);
+}
+
+.cc-nav__tab {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--ds-space-025);
+  border: none;
+  background: transparent;
+  border-radius: 22px;
+  padding: var(--ds-space-050) 0;
+  cursor: pointer;
+  color: var(--ds-text-subtle);
+  transition: background 0.12s, color 0.12s;
+}
+.cc-nav__tab:hover:not(.cc-nav__tab--active) {
+  background: var(--ds-background-neutral-subtle-hovered);
+}
+.cc-nav__tab:focus-visible {
+  outline: 2px solid var(--ds-border-focused);
+  outline-offset: -2px;
+}
+.cc-nav__tab--active {
+  background: var(--ds-background-accent-purple-subtlest, var(--ds-background-selected));
+}
+
+.cc-nav__icon {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ds-icon-subtle);
+}
+.cc-nav__tab--active .cc-nav__icon {
+  color: var(--ds-text-accent-purple, var(--ds-text-selected));
+}
+
+.cc-nav__label {
+  font-size: var(--ds-font-size-50); /* 11px — nav rail label floor */
+  font-weight: 500;
+  line-height: 1;
+  color: var(--ds-text-subtle);
+  white-space: nowrap;
+}
+.cc-nav__tab--active .cc-nav__label {
+  color: var(--ds-text-accent-purple, var(--ds-text-selected));
+  font-weight: 600;
+}
+
+/* Unread dot on a tab icon */
+.cc-nav__dot {
+  position: absolute;
+  top: -2px;
+  right: -4px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--ds-background-danger-bold);
+  border: 2px solid var(--ds-surface);
+  box-sizing: border-box;
+}
+
+/* Separate frosted Search circle */
+.cc-nav__search {
+  flex: 0 0 auto;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: color-mix(in srgb, var(--ds-surface) 72%, transparent);
+  -webkit-backdrop-filter: blur(20px) saturate(1.8);
+  backdrop-filter: blur(20px) saturate(1.8);
+  border: 1px solid color-mix(in srgb, var(--ds-border) 60%, transparent);
+  box-shadow: var(--ds-shadow-overlay);
+  color: var(--ds-icon-subtle);
+  cursor: pointer;
+  transition: color 0.12s;
+}
+.cc-nav__search:hover { color: var(--ds-text); }
+.cc-nav__search:focus-visible {
+  outline: 2px solid var(--ds-border-focused);
+  outline-offset: 2px;
+}
+.cc-nav__search--active { color: var(--ds-text-accent-purple, var(--ds-text-selected)); }
+
+/* Clear the floating nav so the last list rows / stub content aren't hidden */
+.cc-dock .cc-dir__scroll { padding-bottom: var(--ds-space-1000); }
+
+/* Slack-style compose FAB — floats above the nav on Home / DMs */
+.cc-dock__compose-fab {
+  position: absolute;
+  right: var(--ds-space-200);
+  bottom: 88px;
+  z-index: 19;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--ds-background-accent-purple-bolder);
+  color: var(--ds-text-inverse);
+  box-shadow: var(--ds-shadow-overlay);
+  cursor: pointer;
+  transition: filter 0.12s;
+}
+.cc-dock__compose-fab:hover { filter: brightness(1.08); }
+.cc-dock__compose-fab:focus-visible {
+  outline: 2px solid var(--ds-border-focused);
+  outline-offset: 2px;
+}
+
+/* Compose popover (Slack "+" menu) — Huddle / Channel + Message pill */
+.cc-compose {
+  position: absolute;
+  inset: 0;
+  z-index: 25;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+.cc-compose__card {
+  width: calc(100% - 2 * var(--ds-space-200));
+  margin-bottom: calc(var(--ds-space-1000) + var(--ds-space-200));
+  background: var(--ds-surface);
+  border-radius: 18px;
+  box-shadow: var(--ds-shadow-overlay);
+  padding: var(--ds-space-100);
+  display: flex;
+  flex-direction: column;
+  gap: var(--ds-space-050);
+}
+.cc-compose__item {
+  display: flex;
+  align-items: center;
+  gap: var(--ds-space-150);
+  width: 100%;
+  padding: var(--ds-space-150);
+  border: none;
+  background: transparent;
+  border-radius: 12px;
+  cursor: pointer;
+  text-align: left;
+}
+.cc-compose__item:hover { background: var(--ds-background-neutral-subtle-hovered); }
+.cc-compose__icon {
+  flex: 0 0 auto;
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--ds-background-accent-purple-subtlest, var(--ds-background-selected));
+  color: var(--ds-text-accent-purple, var(--ds-text-selected));
+}
+.cc-compose__body {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+.cc-compose__label {
+  font-size: var(--ds-font-size-400);
+  font-weight: var(--cc-fw-bold);
+  color: var(--ds-text);
+}
+.cc-compose__sub {
+  font-size: var(--ds-font-size-100);
+  color: var(--ds-text-subtle);
+}
+.cc-compose__msg {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--ds-space-100);
+  margin-top: var(--ds-space-050);
+  height: 48px;
+  border: none;
+  border-radius: 24px;
+  background: var(--ds-background-accent-purple-bolder);
+  color: var(--ds-text-inverse);
+  font-size: var(--ds-font-size-400);
+  font-weight: var(--cc-fw-bold);
+  cursor: pointer;
+}
+.cc-compose__msg:hover { filter: brightness(1.06); }
+
+/* ── New Message modal (full screen) ── */
+.cc-nm {
+  position: absolute;
+  inset: 0;
+  z-index: 30;
+  background: var(--ds-surface);
+  display: flex;
+  flex-direction: column;
+}
+.cc-nm__head {
+  position: relative;
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  padding: var(--ds-space-150);
+}
+.cc-nm__close {
+  position: relative;
+  z-index: 1;
+  width: 34px;
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: var(--ds-background-neutral-subtle);
+  color: var(--ds-icon);
+  border-radius: 50%;
+  cursor: pointer;
+}
+.cc-nm__close:hover { background: var(--ds-background-neutral); }
+.cc-nm__title {
+  position: absolute;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-size: var(--ds-font-size-500);
+  font-weight: var(--cc-fw-bold);
+  color: var(--ds-text);
+  pointer-events: none;
+}
+.cc-nm__to {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: var(--ds-space-100);
+  padding: var(--ds-space-100) var(--ds-space-150);
+  border-bottom: 1px solid var(--ds-border);
+}
+.cc-nm__to-label {
+  flex: 0 0 auto;
+  font-size: var(--ds-font-size-300);
+  color: var(--ds-text-subtle);
+}
+.cc-nm__to > *:last-child { flex: 1; min-width: 0; }
+.cc-nm__list {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding-bottom: var(--ds-space-1000);
+}
+.cc-nm__row {
+  display: flex;
+  align-items: center;
+  gap: var(--ds-space-150);
+  width: 100%;
+  padding: var(--ds-space-100) var(--ds-space-150);
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+}
+.cc-nm__row:hover { background: var(--ds-background-neutral-subtle-hovered); }
+.cc-nm__name {
+  flex: 1;
+  min-width: 0;
+  font: var(--ds-font-body-small);
+  font-weight: var(--cc-fw-semibold);
+  color: var(--ds-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.cc-nm__radio {
+  flex: 0 0 auto;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid var(--ds-border-bold);
+}
+.cc-nm__next {
+  position: relative;
+  z-index: 1;
+  margin-left: auto;
+  border: none;
+  background: transparent;
+  color: var(--ds-text-brand);
+  font-size: var(--ds-font-size-300);
+  font-weight: var(--cc-fw-semibold);
+  cursor: pointer;
+  padding: var(--ds-space-050) var(--ds-space-100);
+}
+.cc-nm__next:disabled { color: var(--ds-text-disabled); cursor: default; }
+
+/* Create-a-Channel field + banner */
+.cc-cc__field {
+  padding: var(--ds-space-200) var(--ds-space-150);
+  border-bottom: 1px solid var(--ds-border);
+}
+.cc-cc__label {
+  margin-bottom: var(--ds-space-100);
+  font-size: var(--ds-font-size-300);
+  font-weight: var(--cc-fw-semibold);
+  color: var(--ds-text);
+}
+.cc-cc__input-wrap { display: flex; align-items: center; gap: var(--ds-space-100); }
+.cc-cc__hash { color: var(--ds-text-subtlest); font-size: var(--ds-font-size-500); }
+.cc-cc__input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: var(--ds-font-size-400);
+  color: var(--ds-text);
+}
+.cc-cc__input::placeholder { color: var(--ds-text-subtlest); }
+.cc-cc__banner {
+  display: flex;
+  gap: var(--ds-space-100);
+  margin: var(--ds-space-150);
+  padding: var(--ds-space-150);
+  border: 1px solid var(--ds-border);
+  border-radius: 8px;
+  background: var(--ds-background-neutral-subtle);
+  font-size: var(--ds-font-size-100);
+  color: var(--ds-text-subtle);
+}
+.cc-cc__banner-icon { flex: 0 0 auto; display: flex; color: var(--ds-icon-subtle); }
+.cc-cc__banner-text { min-width: 0; }
+
+/* Huddle confirmation sheet */
+.cc-huddle-sheet {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  background: color-mix(in srgb, var(--ds-text) 45%, transparent);
+  display: flex;
+  align-items: flex-end;
+}
+.cc-huddle-sheet__card {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--ds-space-100);
+  padding: var(--ds-space-400) var(--ds-space-200) var(--ds-space-200);
+  background: var(--ds-surface);
+  border-top-left-radius: 18px;
+  border-top-right-radius: 18px;
+  box-shadow: var(--ds-shadow-overlay);
+}
+.cc-huddle-sheet__avatars {
+  display: flex;
+  gap: var(--ds-space-050);
+  margin-bottom: var(--ds-space-100);
+}
+.cc-huddle-sheet__title {
+  font-size: var(--ds-font-size-500);
+  font-weight: var(--cc-fw-bold);
+  color: var(--ds-text);
+  text-align: center;
+}
+.cc-huddle-sheet__sub {
+  font-size: var(--ds-font-size-300);
+  color: var(--ds-text-subtle);
+  text-align: center;
+}
+.cc-huddle-sheet__btn {
+  margin-top: var(--ds-space-150);
+  width: 100%;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--ds-space-100);
+  border: none;
+  border-radius: 12px;
+  background: var(--ds-background-success-bold);
+  color: var(--ds-text-inverse);
+  font-size: var(--ds-font-size-400);
+  font-weight: var(--cc-fw-bold);
+  cursor: pointer;
+}
+.cc-huddle-sheet__btn:hover { filter: brightness(1.06); }
+.cc-huddle-sheet__btn:disabled { opacity: 0.7; cursor: default; }
+
+/* ── Dock conversation/thread header (Slack detail view) ── */
+.cc-cvh {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: var(--ds-space-100);
+  padding: var(--ds-space-100) var(--ds-space-150);
+  background: var(--ds-surface);
+}
+.cc-cvh__back {
+  flex: 0 0 auto;
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: var(--ds-background-neutral-subtle);
+  color: var(--ds-icon);
+  border-radius: 50%;
+  cursor: pointer;
+}
+.cc-cvh__pill {
+  flex: 0 1 auto;
+  min-width: 0;
+  max-width: 82%;
+  margin-inline: auto;
+  display: flex;
+  align-items: center;
+  gap: var(--ds-space-100);
+  padding: var(--ds-space-025) var(--ds-space-200) var(--ds-space-050) var(--ds-space-025);
+  border: 1px solid var(--ds-border);
+  border-radius: 28px;
+  background: var(--ds-surface);
+}
+.cc-cvh__hash { flex: 0 0 auto; color: var(--ds-text-subtle); font-size: var(--ds-font-size-400); }
+.cc-cvh__id { min-width: 0; display: flex; flex-direction: column; line-height: 1.2; }
+.cc-cvh__title {
+  font: var(--ds-font-body-small); /* 12px */
+  font-weight: var(--cc-fw-semibold);
+  color: var(--ds-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.cc-cvh__sub { font-size: var(--ds-font-size-50); color: var(--ds-text-subtle); }
+
+/* Header avatar (circle) + presence dot — bigger, spans name + status */
+.cc-cvh__ava {
+  position: relative;
+  display: block;
+  width: 40px;
+  height: 40px;
+  flex: 0 0 auto;
+}
+.cc-cvh__ava-dot {
+  position: absolute;
+  right: -1px;
+  bottom: -1px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 2px solid var(--ds-surface);
+  box-sizing: border-box;
+}
+.cc-cvh__actions { flex: 0 0 auto; display: flex; align-items: center; gap: var(--ds-space-050); }
+.cc-cvh__caty,
+.cc-cvh__btn {
+  width: 34px;
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+}
+.cc-cvh__caty { background: var(--ds-surface); box-shadow: inset 0 0 0 1px var(--ds-border); overflow: hidden; }
+.cc-cvh__btn { background: transparent; color: var(--ds-icon); }
+.cc-cvh__caty:hover,
+.cc-cvh__btn:hover { background: var(--ds-background-neutral-subtle-hovered); }
+
+/* ── Caty assistant sheet (Slackbot modal) ── */
+.cc-catys {
+  position: absolute;
+  inset: 0;
+  z-index: 40;
+  background: color-mix(in srgb, var(--ds-text) 45%, transparent);
+  display: flex;
+  align-items: flex-end;
+}
+.cc-catys__card {
+  width: 100%;
+  height: calc(100% - 48px);
+  display: flex;
+  flex-direction: column;
+  background: var(--ds-surface);
+  border-top-left-radius: 18px;
+  border-top-right-radius: 18px;
+  overflow: hidden;
+  box-shadow: var(--ds-shadow-overlay);
+}
+.cc-catys__head {
+  position: relative;
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: var(--ds-space-100);
+  padding: var(--ds-space-150);
+  border-bottom: 1px solid var(--ds-border);
+}
+.cc-catys__close,
+.cc-catys__hist {
+  flex: 0 0 auto;
+  width: 34px;
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: var(--ds-background-neutral-subtle);
+  color: var(--ds-icon);
+  border-radius: 50%;
+  cursor: pointer;
+}
+.cc-catys__hist { margin-left: auto; }
+.cc-catys__htitle {
+  position: absolute;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-size: var(--ds-font-size-500);
+  font-weight: var(--cc-fw-bold);
+  color: var(--ds-text);
+  pointer-events: none;
+}
+.cc-catys__id { flex: 1; min-width: 0; display: flex; align-items: center; gap: var(--ds-space-100); }
+.cc-catys__mark {
+  flex: 0 0 auto;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--ds-background-accent-purple-subtlest, var(--ds-background-selected));
+}
+.cc-catys__idtext { min-width: 0; display: flex; flex-direction: column; line-height: 1.15; }
+.cc-catys__name { font-size: var(--ds-font-size-300); font-weight: var(--cc-fw-bold); color: var(--ds-text); }
+.cc-catys__sub {
+  font-size: var(--ds-font-size-50);
+  color: var(--ds-text-subtle);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.cc-catys__body { flex: 1; min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
+.cc-cardsheet__list { flex: 1; min-height: 0; overflow-y: auto; padding: var(--ds-space-100) 0; }
+.cc-catys__empty {
+  padding: var(--ds-space-400);
+  text-align: center;
+  color: var(--ds-text-subtlest);
+  font-size: var(--ds-font-size-100);
+}
+
+/* ── Home-card full-screen detail (Later / Huddles / Threads) ── */
+.cc-cardv {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--ds-surface);
+}
+.cc-cardv__hdr {
+  position: relative;
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  padding: var(--ds-space-100) var(--ds-space-150);
+  background: var(--ds-surface);
+}
+.cc-cardv__title {
+  position: absolute;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-size: var(--ds-font-size-400);
+  font-weight: var(--cc-fw-bold);
+  color: var(--ds-text);
+  pointer-events: none;
+}
+.cc-cardv__body { flex: 1; min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
+
+/* ── Caty in DM-detail shell: single header (hide CatyPanel's own sub-header) ── */
+.cc-caty-pane .cp-sub-header { display: none; }
+.cc-caty-pane__face {
+  display: block;
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+/* Dock detail: DockConvHeader already shows the thread title — hide ThreadPanel's own header */
+.cc-conv-pane .cv2-thread-header { display: none !important; }
+
+/* Dock detail: square message avatars (match the DM list). Presence dot (2nd
+   child) stays a circle — only the photo/initials (first child) is squared. */
+.cc-conv-pane .cv2-avatar > img,
+.cc-conv-pane .cv2-avatar > span:first-child {
+  border-radius: 8px !important;
+}
+/* Thread rows use the legacy Avatar (.cc-av) — square it too */
+.cc-conv-pane .cc-av,
+.cc-conv-pane .cc-av__img {
+  border-radius: 8px !important;
+}
+
+/* "Also Send in chat" checkbox — smaller label */
+.cc-conv-pane .cv2-alsosend label { font-size: var(--ds-font-size-100); }
+
+/* Home "cards rail" (Caty / Threads / Huddles / Later) */
+.cc-cards {
+  flex: 0 0 auto;
+  display: flex;
+  gap: var(--ds-space-100);
+  padding: var(--ds-space-150);
+  overflow-x: auto;
+}
+.cc-cards__card {
+  flex: 0 0 auto;
+  width: 104px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--ds-space-025);
+  padding: var(--ds-space-100);
+  border: 1px solid var(--ds-border);
+  border-radius: 8px;
+  background: var(--ds-surface);
+  cursor: pointer;
+  text-align: left;
+}
+.cc-cards__card:hover { background: var(--ds-background-neutral-subtle-hovered); }
+.cc-cards__card:focus-visible {
+  outline: 2px solid var(--ds-border-focused);
+  outline-offset: 1px;
+}
+.cc-cards__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 18px;
+  margin-bottom: var(--ds-space-025);
+  color: var(--ds-icon-subtle);
+}
+.cc-cards__icon > svg { width: 16px; height: 16px; }
+.cc-cards__icon--caty {
+  width: 20px;
+  height: 20px;
+  border-radius: 6px;
+  background: var(--ds-background-accent-purple-subtlest, var(--ds-background-selected));
+}
+.cc-cards__title {
+  font-size: var(--ds-font-size-100); /* 12px */
+  font-weight: var(--cc-fw-medium);
+  color: var(--ds-text);
+}
+.cc-cards__sub {
+  font-size: var(--ds-font-size-50); /* 11px */
+  color: var(--ds-text-subtlest);
+}
+
+/* Live huddle state — Slack lights the card purple with count + avatars */
+.cc-cards__card--live {
+  background: var(--ds-background-selected);
+  border-color: var(--ds-border-selected);
+}
+.cc-cards__card--live:hover { background: var(--ds-background-selected-hovered); }
+.cc-cards__card--live .cc-cards__icon { color: var(--ds-text-selected); }
+.cc-cards__card--live .cc-cards__title { color: var(--ds-text-selected); font-weight: var(--cc-fw-bold); }
+.cc-cards__card--live .cc-cards__sub { color: var(--ds-text-selected); }
+.cc-cards__hrow {
+  display: flex;
+  align-items: center;
+  gap: var(--ds-space-100);
+  height: 18px;
+  margin-bottom: var(--ds-space-025);
+}
+.cc-cards__hrow .cc-cards__icon { margin-bottom: 0; }
+.cc-cards__stack { display: inline-flex; align-items: center; }
+.cc-cards__stack-ava {
+  display: inline-flex;
+  border-radius: 50%;
+  box-shadow: 0 0 0 2px var(--ds-background-selected);
+}
+.cc-cards__stack-ava > div,
+.cc-cards__stack-ava > div * { border-radius: 50% !important; }
+.cc-cards__stack-ava + .cc-cards__stack-ava { margin-left: calc(-1 * var(--ds-space-075)); }
+
+/* Home directory search field — hidden (search lives in the bottom nav) */
+.cc-dir__searchwrap { display: none; }
+
+/* Home tab wrapper — cards rail (fixed) above the scrolling directory */
+.cc-home {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Placeholder for tabs not yet built (DMs / Activity / More / Search) */
+.cc-tab-stub {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--ds-space-100);
+  padding: var(--ds-space-400) var(--ds-space-300) var(--ds-space-1000);
+  text-align: center;
+  color: var(--ds-text-subtlest);
+}
+.cc-tab-stub__title {
+  font-size: var(--ds-font-size-300);
+  font-weight: 600;
+  color: var(--ds-text-subtle);
+}
+.cc-tab-stub__sub {
+  font-size: var(--ds-font-size-100);
+  color: var(--ds-text-subtlest);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   DMs tab (Slice 2) — avatar rail + filter chips + DM list. Compact type
+   consistent with the directory (name 12/semibold, preview/time 11px).
+   ═══════════════════════════════════════════════════════════════════════ */
+.cc-dms {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  background: var(--ds-surface);
+}
+
+/* Purple tab title header — scrolls away with the content (DMs / Activity / …) */
+.cc-tab-hdr {
+  display: flex;
+  align-items: center;
+  padding: var(--ds-space-200) var(--ds-space-150) var(--ds-space-150);
+  background: var(--ds-background-accent-purple-bolder);
+  font-size: var(--ds-font-size-600);
+  font-weight: var(--cc-fw-bold);
+  color: var(--ds-text-inverse);
+}
+
+/* Horizontal rail of recent DM avatars */
+.cc-dms__rail {
+  flex: 0 0 auto;
+  display: flex;
+  gap: var(--ds-space-050);
+  padding: var(--ds-space-150) var(--ds-space-100);
+  overflow-x: auto;
+}
+.cc-dms__rail-item {
+  flex: 0 0 auto;
+  width: 50px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--ds-space-050);
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}
+.cc-dms__rail-item:focus-visible {
+  outline: 2px solid var(--ds-border-focused);
+  outline-offset: 2px;
+  border-radius: 8px;
+}
+.cc-dms__rail-name {
+  max-width: 50px;
+  font-size: var(--ds-font-size-50);
+  color: var(--ds-text-subtle);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Filter chips */
+.cc-dms__chips {
+  flex: 0 0 auto;
+  display: flex;
+  gap: var(--ds-space-100);
+  padding: 0 var(--ds-space-150) var(--ds-space-100);
+  overflow-x: auto;
+}
+/* Activity: chips sit directly under the purple header — add breathing room */
+.cc-tab-hdr + .cc-dms__chips { padding-top: var(--ds-space-150); }
+
+/* Dock-native New reminder modal (Later "+") */
+.cc-rem__body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--ds-space-100);
+  padding: var(--ds-space-200) var(--ds-space-200) 0;
+}
+.cc-rem__label {
+  font-size: var(--ds-font-size-75);
+  font-weight: var(--cc-fw-semibold);
+  color: var(--ds-text-subtle);
+}
+/* AK Textfield stretches to fill the flex column — pin it to one line. */
+.cc-rem__body [data-ds--text-field--container] { flex: 0 0 auto; height: 40px; }
+.cc-rem__chips { display: flex; flex-wrap: wrap; gap: var(--ds-space-100); }
+.cc-rem__footer {
+  flex: 0 0 auto;
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--ds-space-100);
+  padding: var(--ds-space-150) var(--ds-space-200);
+  border-top: 1px solid var(--ds-border);
+}
+.cc-rem__cancel,
+.cc-rem__save {
+  height: 32px;
+  padding: 0 var(--ds-space-200);
+  border-radius: 6px;
+  font-size: var(--ds-font-size-100);
+  font-weight: var(--cc-fw-semibold);
+  cursor: pointer;
+}
+.cc-rem__cancel { background: transparent; border: 1px solid var(--ds-border); color: var(--ds-text); }
+.cc-rem__cancel:hover { background: var(--ds-background-neutral-subtle-hovered); }
+.cc-rem__save { background: var(--ds-background-brand-bold); border: none; color: var(--ds-text-inverse); }
+.cc-rem__save:hover:not(:disabled) { background: var(--ds-background-brand-bold-hovered); }
+.cc-rem__save:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* Assigned-to-you rows (More → detail) */
+.cc-assign__row {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--ds-space-100);
+  width: 100%;
+  padding: var(--ds-space-100) var(--ds-space-150);
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+}
+.cc-assign__row:hover { background: var(--ds-background-neutral-subtle-hovered); }
+.cc-assign__icon { flex: 0 0 auto; margin-top: var(--ds-space-025); }
+.cc-assign__body { min-width: 0; display: flex; flex-direction: column; gap: var(--ds-space-050); }
+.cc-assign__title { font-size: var(--ds-font-size-100); color: var(--ds-text); line-height: 1.3; }
+.cc-assign__key { font-weight: var(--cc-fw-semibold); color: var(--ds-text-subtle); }
+.cc-assign__meta { display: flex; }
+.cc-dms__chip {
+  flex: 0 0 auto;
+  height: 32px;
+  padding: 0 var(--ds-space-150);
+  border-radius: 16px;
+  border: 1px solid var(--ds-border);
+  background: var(--ds-surface);
+  font-size: var(--ds-font-size-100);
+  font-weight: var(--cc-fw-medium);
+  color: var(--ds-text-subtle);
+  cursor: pointer;
+  white-space: nowrap;
+}
+.cc-dms__chip:hover:not(.cc-dms__chip--active) {
+  background: var(--ds-background-neutral-subtle-hovered);
+}
+.cc-dms__chip:focus-visible {
+  outline: 2px solid var(--ds-border-focused);
+  outline-offset: 1px;
+}
+.cc-dms__chip--active {
+  background: var(--ds-background-accent-purple-subtlest, var(--ds-background-selected));
+  color: var(--ds-text-accent-purple, var(--ds-text-selected));
+  border-color: transparent;
+  font-weight: var(--cc-fw-semibold);
+}
+
+/* DM list */
+.cc-dms__list {
+  padding-bottom: var(--ds-space-1000);
+}
+.cc-dms__row {
+  display: flex;
+  align-items: center;
+  gap: var(--ds-space-150);
+  width: 100%;
+  padding: var(--ds-space-100) var(--ds-space-150);
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+}
+.cc-dms__row:hover {
+  background: var(--ds-background-neutral-subtle-hovered);
+}
+.cc-dms__row:focus-visible {
+  outline: 2px solid var(--ds-border-focused);
+  outline-offset: -2px;
+}
+.cc-dms__row--active {
+  background: var(--ds-background-selected);
+}
+.cc-dms__avatar { flex: 0 0 auto; }
+
+/* Force Slack-style rounded-square avatars across the dock. @atlaskit/avatar
+   keeps initials-only avatars circular even with appearance="square"; this
+   dock-scoped override squares the wrapper AND every descendant (image or the
+   initials circle) so both photo and initials avatars render rounded-square.
+   Presence dots (.cc-ava-dot, a direct child span) are excluded. */
+.cc-dock .cc-dir__avatar,
+.cc-dock .cc-dir__avatar *,
+.cc-dock .cc-dms__avatar,
+.cc-dock .cc-dms__avatar *,
+.cc-dock .cc-dir__dm-stack *,
+.cc-dock .cc-dir__people-avatar,
+.cc-dock .cc-dir__people-avatar *,
+.cc-dock .cc-ava > div,
+.cc-dock .cc-ava > div * {
+  border-radius: 8px !important;
+}
+.cc-dms__caty-glyph {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px; /* Slack-style rounded square, matches @atlaskit square avatar */
+  overflow: hidden;
+  background: var(--ds-background-accent-purple-subtlest, var(--ds-background-selected));
+}
+.cc-dms__body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--ds-space-025);
+}
+.cc-dms__top {
+  display: flex;
+  align-items: baseline;
+  gap: var(--ds-space-100);
+}
+.cc-dms__name {
+  flex: 1;
+  min-width: 0;
+  font: var(--ds-font-body-small);
+  font-weight: var(--cc-fw-semibold);
+  color: var(--ds-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.cc-dms__time {
+  flex: 0 0 auto;
+  font-size: var(--ds-font-size-50);
+  color: var(--ds-text-subtlest);
+}
+.cc-dms__bottom {
+  display: flex;
+  align-items: center;
+  gap: var(--ds-space-100);
+}
+.cc-dms__preview {
+  flex: 1;
+  min-width: 0;
+  font: var(--ds-font-body-small);
+  font-size: var(--ds-font-size-50);
+  color: var(--ds-text-subtle);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.cc-dms__unread { flex: 0 0 auto; }
+.cc-dms__row--unread .cc-dms__name { font-weight: var(--cc-fw-bold); }
+.cc-dms__row--unread .cc-dms__preview { color: var(--ds-text); }
+.cc-dms__empty {
+  padding: var(--ds-space-400) var(--ds-space-300);
+  text-align: center;
+  font-size: var(--ds-font-size-100);
+  color: var(--ds-text-subtlest);
+}
+
+/* ── Search tab (Slice 3) — reuses .cc-dms__row / .cc-dir__section rows ── */
+.cc-search {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--ds-surface);
+}
+.cc-search__field {
+  flex: 0 0 auto;
+  padding: var(--ds-space-150);
+}
+.cc-search__scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding-bottom: var(--ds-space-1000);
+}
+
+/* ── Activity tab (Slice 4) — 3-line rows over the DMs row base ── */
+.cc-act__row { align-items: flex-start; }
+.cc-act__row .cc-dms__avatar { margin-top: var(--ds-space-025); }
+.cc-act__type {
+  font-size: var(--ds-font-size-50);
+  color: var(--ds-text-subtlest);
+}
+
+/* Search-result rows put name directly in the column body (no top/bottom
+   wrapper); stop the name flex-growing vertically. */
+.cc-dms__body > .cc-dms__name { flex: 0 0 auto; }
+
+/* ── More / "You" tab (Slice 4) ── */
+.cc-more {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  background: var(--ds-surface);
+  padding-bottom: var(--ds-space-1000);
+}
+.cc-more__head {
+  display: flex;
+  align-items: center;
+  gap: var(--ds-space-150);
+  padding: var(--ds-space-200) var(--ds-space-150);
+}
+.cc-more__ident { min-width: 0; }
+.cc-more__name {
+  font: var(--ds-font-body);
+  font-weight: var(--cc-fw-bold);
+  color: var(--ds-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.cc-more__status {
+  font-size: var(--ds-font-size-100);
+  color: var(--ds-text-subtle);
+}
+.cc-more__statusfield {
+  display: flex;
+  align-items: center;
+  gap: var(--ds-space-100);
+  margin: 0 var(--ds-space-150) var(--ds-space-150);
+  padding: var(--ds-space-100) var(--ds-space-150);
+  border: 1px solid var(--ds-border);
+  border-radius: 20px;
+  background: var(--ds-surface);
+  color: var(--ds-text-subtle);
+  font-size: var(--ds-font-size-100);
+  cursor: pointer;
+  width: calc(100% - 2 * var(--ds-space-150));
+  text-align: left;
+}
+.cc-more__statusfield:hover { background: var(--ds-background-neutral-subtle-hovered); }
+.cc-more__divider {
+  height: 1px;
+  background: var(--ds-border);
+  margin: var(--ds-space-100) var(--ds-space-150);
+}
+.cc-more__item {
+  display: flex;
+  align-items: center;
+  gap: var(--ds-space-150);
+  width: 100%;
+  padding: var(--ds-space-150);
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+  font-size: var(--ds-font-size-300);
+  color: var(--ds-text);
+}
+.cc-more__item:hover { background: var(--ds-background-neutral-subtle-hovered); }
+.cc-more__item:focus-visible {
+  outline: 2px solid var(--ds-border-focused);
+  outline-offset: -2px;
+}
+.cc-more__item-icon {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ds-icon-subtle);
+}
+.cc-more__item-label { flex: 1; min-width: 0; }
+.cc-more__item-value {
+  flex: 0 0 auto;
+  color: var(--ds-text-subtle);
+  font-size: var(--ds-font-size-100);
+}
+
+/* ── More tab entries (Files / Assigned to you) ── */
+.cc-more__entry {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--ds-space-150);
+  width: 100%;
+  padding: var(--ds-space-200) var(--ds-space-150);
+  border: none;
+  border-bottom: 1px solid var(--ds-border);
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+}
+.cc-more__entry:hover { background: var(--ds-background-neutral-subtle-hovered); }
+.cc-more__entry-icon {
+  flex: 0 0 auto;
+  display: flex;
+  margin-top: var(--ds-space-025);
+  color: var(--ds-icon);
+}
+.cc-more__entry-body {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--ds-space-025);
+}
+.cc-more__entry-label {
+  font-size: var(--ds-font-size-400);
+  font-weight: var(--cc-fw-medium);
+  color: var(--ds-text);
+}
+.cc-more__entry-sub {
+  font-size: var(--ds-font-size-100);
+  color: var(--ds-text-subtle);
+}
+
+/* ── "You" profile modal — Slack bottom sheet (header stays dimmed above) ── */
+.cc-you {
+  position: absolute;
+  inset: 0;
+  z-index: 30;
+  background: color-mix(in srgb, var(--ds-text) 45%, transparent);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+.cc-you__sheet {
+  flex: 0 0 auto;
+  height: calc(100% - 48px); /* tall like Slack — small top sliver shows the dimmed header */
+  display: flex;
+  flex-direction: column;
+  background: var(--ds-surface);
+  border-top-left-radius: 16px;
+  border-top-right-radius: 16px;
+  overflow: hidden;
+  box-shadow: var(--ds-shadow-overlay);
+}
+.cc-you__head {
+  position: relative;
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  padding: var(--ds-space-150);
+}
+.cc-you__close {
+  position: relative;
+  z-index: 1;
+  width: 34px;
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: var(--ds-background-neutral-subtle);
+  color: var(--ds-icon);
+  border-radius: 50%;
+  cursor: pointer;
+}
+.cc-you__close:hover { background: var(--ds-background-neutral); }
+.cc-you__title {
+  position: absolute;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-size: var(--ds-font-size-500);
+  font-weight: var(--cc-fw-bold);
+  color: var(--ds-text);
+  pointer-events: none;
+}
+.cc-you__scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+.cc-you__avail-label {
+  padding: var(--ds-space-150) var(--ds-space-150) var(--ds-space-050);
+  font-size: var(--ds-font-size-100);
+  font-weight: var(--cc-fw-semibold);
+  color: var(--ds-text-subtle);
+}
+.cc-you__avail-row {
+  display: flex;
+  align-items: center;
+  gap: var(--ds-space-150);
+  width: 100%;
+  padding: var(--ds-space-100) var(--ds-space-150);
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+  font-size: var(--ds-font-size-400);
+  color: var(--ds-text);
+}
+.cc-you__avail-row:hover { background: var(--ds-background-neutral-subtle-hovered); }
+.cc-you__dot {
+  flex: 0 0 auto;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+.cc-you__avail-row--active { font-weight: var(--cc-fw-semibold); }
+
+/* Modal avatar + presence dot — fully explicit sizing so the dot lands on the
+   bottom-right corner regardless of @atlaskit/avatar's internal wrapper. */
+/* Generic avatar + presence dot — same position everywhere (You modal, DM rail) */
+.cc-ava {
+  position: relative;
+  display: block;
+  width: 40px;
+  height: 40px;
+  flex: 0 0 auto;
+}
+.cc-ava > div {
+  width: 40px !important;
+  height: 40px !important;
+}
+.cc-ava-dot {
+  position: absolute;
+  right: -4px;
+  bottom: -4px;
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  border: 2px solid var(--ds-surface);
+  box-sizing: border-box;
+  z-index: 2;
+}
+
+/* Header avatar — round (person), 28px, Catalyst status dot (--ds-icon-* to
+   match the DM rail + You modal, not @atlaskit's pale presence token). */
+.cc-hava { position: relative; display: block; width: 28px; height: 28px; }
+.cc-hava-dot {
+  position: absolute;
+  right: -2px;
+  bottom: -2px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 2px solid var(--ds-surface);
+  box-sizing: border-box;
+  z-index: 2;
 }
 
 /* ── In-dock slide-over panel (replaces viewport-centered modals in the dock) ── */

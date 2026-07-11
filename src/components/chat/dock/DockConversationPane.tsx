@@ -20,6 +20,10 @@ import {
 } from "@/hooks/chat/usePinsBookmarks";
 import type { ChatConversation, ChatMessage } from "@/types/chat";
 import { ConversationHeader } from "@/components/chat/main/ConversationHeader";
+import { DockConvHeader } from "./DockConvHeader";
+import { DockCatySheet } from "./DockCatySheet";
+import { useHuddleActions } from "@/hooks/chat/useHuddleData";
+import { catalystToast } from "@/lib/catalystToast";
 import { ThreadPanel } from "@/components/chat/main/ThreadPanel";
 import { DmSummarizePanel } from "./DmSummarizePanel";
 import { MessageList } from "@/features/chat-v2/components/MessagePanel/MessageList";
@@ -38,6 +42,10 @@ import "@/features/chat-v2/tokens.css";
 interface DockConversationPaneProps {
   conversation: ChatConversation;
   onBack: () => void;
+  /** When set, jump to + outline this message once it's loaded (from Later). */
+  initialJumpMessageId?: string;
+  /** Called after the jump has been consumed so the parent can clear it. */
+  onJumpConsumed?: () => void;
 }
 
 const db = supabase as unknown as { from: (table: string) => any };
@@ -51,6 +59,8 @@ let cv2ThemeOwners = 0;
 export function DockConversationPane({
   conversation,
   onBack,
+  initialJumpMessageId,
+  onJumpConsumed,
 }: DockConversationPaneProps) {
   const { user } = useAuth();
   const queryClient = useQueryClient();
@@ -115,10 +125,39 @@ export function DockConversationPane({
   const [threadParent, setThreadParent] = useState<ChatMessage | null>(null);
   const [jumpHighlightId, setJumpHighlightId] = useState<string | null>(null);
 
+  // Jump-to + outline a specific message when opened from Later (parity with
+  // the /chat "jump to message" affordance). Runs once per target id.
+  const jumpedRef = useRef<string | null>(null);
+  useEffect(() => {
+    if (!initialJumpMessageId || jumpedRef.current === initialJumpMessageId) return;
+    if (!messages.some((m) => m.id === initialJumpMessageId)) return; // wait for load
+    jumpedRef.current = initialJumpMessageId;
+    setJumpHighlightId(initialJumpMessageId);
+    requestAnimationFrame(() => {
+      document
+        .querySelector(`.cc-conv-pane [data-message-id="${initialJumpMessageId}"]`)
+        ?.scrollIntoView({ behavior: "smooth", block: "center" });
+    });
+    window.setTimeout(() => setJumpHighlightId(null), 2400);
+    onJumpConsumed?.();
+  }, [initialJumpMessageId, messages, onJumpConsumed]);
+
   // DM-only "summarize" panel (shared work items). Reset when the pane
   // switches to a different conversation.
   const isDm = conversation.kind === "dm";
   const [summarizeOpen, setSummarizeOpen] = useState(false);
+  const [catyOpen, setCatyOpen] = useState(false);
+  const [huddleBusy, setHuddleBusy] = useState(false);
+  const { startOrJoin } = useHuddleActions();
+  const startHuddle = useCallback(async () => {
+    if (huddleBusy) return;
+    setHuddleBusy(true);
+    try { await startOrJoin(conversation); }
+    catch (e) {
+      const msg = e instanceof Error ? e.message : String(e);
+      catalystToast.error(msg === "HUDDLE_FULL" ? "Huddle is full" : "Could not start huddle", msg);
+    } finally { setHuddleBusy(false); }
+  }, [huddleBusy, startOrJoin, conversation]);
   useEffect(() => {
     setSummarizeOpen(false);
   }, [conversation.id]);
@@ -252,13 +291,13 @@ export function DockConversationPane({
       data-cv2-theme={theme}
       style={{ height: '100%', minHeight: 0 }}
     >
-      <ConversationHeader
+      <DockConvHeader
         conversation={conversation}
-        currentUserMuted={conversation.isMuted ?? false}
-        currentUserStarred={conversation.isStarred ?? false}
+        isThread={!!threadParent}
         onBack={onBack}
-        onSummarize={isDm ? () => setSummarizeOpen((v) => !v) : undefined}
-        summarizeActive={summarizeOpen}
+        onCaty={() => setCatyOpen(true)}
+        onHuddle={startHuddle}
+        huddleBusy={huddleBusy}
       />
 
 
@@ -335,6 +374,8 @@ export function DockConversationPane({
           />
         </div>
       )}
+
+      {catyOpen && <DockCatySheet conversation={conversation} onClose={() => setCatyOpen(false)} />}
     </div>
   );
 }

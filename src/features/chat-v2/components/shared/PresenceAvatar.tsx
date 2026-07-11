@@ -31,6 +31,7 @@ export function PresenceAvatar({ name, size = 36, presence = null, displayLabel 
   const photo = resolveAvatarUrl(name);
   return (
     <span
+      className="cv2-avatar"
       aria-label={name}
       style={{
         position: 'relative',
