@@ -247,13 +247,17 @@ function StartEvaluationArea({ idea }: { idea: IdeaDetailRow }) {
   };
 
   return (
-    <div style={{ marginTop: 32, borderTop: `1px solid ${token('color.border', 'var(--ds-border)')}`, paddingTop: 20 }}>
+    <div
+      style={{
+        marginTop: token('space.400', 'var(--ds-space-400)'),
+        borderTop: `1px solid ${token('color.border', 'var(--ds-border)')}`,
+        paddingTop: token('space.250', 'var(--ds-space-250)'),
+      }}
+    >
       <div
         style={{
           font: '600 12px/16px var(--ds-font-family-body, "Atlassian Sans")',
           color: token('color.text.subtle', 'var(--ds-text-subtle)'),
-          textTransform: 'uppercase',
-          letterSpacing: '0.04em',
           marginBottom: 12,
         }}
       >

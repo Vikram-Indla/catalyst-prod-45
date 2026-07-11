@@ -8,7 +8,23 @@ import { lazy, Suspense } from "react";
 import { Routes, Route, Link, useLocation } from "react-router-dom";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 
-const DocumentsPage = lazy(() => import("./pages/DocintelDocumentsPage"));
+const HomePage = lazy(() => import("./pages/DocintelHomePage"));
+const ReviewPendingPage = lazy(() =>
+  import("./pages/DocintelHomePage").then((module) => ({
+    default: module.DocintelReviewPendingPage,
+  })),
+);
+const ThemesPendingPage = lazy(() =>
+  import("./pages/DocintelHomePage").then((module) => ({
+    default: module.DocintelThemesPendingPage,
+  })),
+);
+const DeliverablesPendingPage = lazy(() =>
+  import("./pages/DocintelHomePage").then((module) => ({
+    default: module.DocintelDeliverablesPendingPage,
+  })),
+);
+const LibraryPage = lazy(() => import("./pages/DocintelLibraryPage"));
 const UploadPage = lazy(() => import("./pages/DocintelUploadPage"));
 const HealthPage = lazy(() => import("./pages/DocintelHealthPage"));
 const WorkspacePage = lazy(() => import("./pages/DocintelWorkspacePage"));
@@ -24,7 +40,7 @@ function DocintelNotFound() {
         No route matches <code>{location.pathname}</code>.
       </p>
       <Link to="/doc-intelligence" style={{ color: "var(--ds-text-brand)" }}>
-        Back to Documents
+        Back to Document Intelligence
       </Link>
     </div>
   );
@@ -47,10 +63,15 @@ const S = ({ children }: { children: React.ReactNode }) => (
 export function DocintelRoutes() {
   return (
     <Routes>
-      <Route path="" element={<S><DocumentsPage /></S>} />
+      <Route path="" element={<S><HomePage /></S>} />
+      <Route path="views/library" element={<S><LibraryPage /></S>} />
+      <Route path="views/themes" element={<S><ThemesPendingPage /></S>} />
+      <Route path="views/deliverables" element={<S><DeliverablesPendingPage /></S>} />
+      <Route path="actions/review" element={<S><ReviewPendingPage /></S>} />
       <Route path="upload" element={<S><UploadPage /></S>} />
-      {/* health before :slug so /doc-intelligence/health isn't caught as a slug */}
       <Route path="health" element={<S><HealthPage /></S>} />
+      <Route path="source/:slug" element={<S><WorkspacePage /></S>} />
+      {/* Legacy one-segment document URLs remain valid during the canonical source-path migration. */}
       <Route path=":slug" element={<S><WorkspacePage /></S>} />
       <Route path="*" element={<S><DocintelNotFound /></S>} />
     </Routes>

@@ -1,5 +1,16 @@
 # Execution Log — CAT-DOCINTEL-V2-20260709-001
 
+## 2026-07-11 — Session 005 — UI revamp goal resumed, Slice 1 COMPLETE
+
+- User approval resumed the previously blocked goal.
+- Resolved the frozen-slug/static-route collision with `views/*`, `actions/*` and canonical
+  `source/:slug` namespaces while retaining legacy `:slug` compatibility.
+- Added customer navigation and Home; moved the existing staging-backed documents surface to
+  Library without replacing JiraTable or its data behavior.
+- Added truthful pending states for later Review, Themes and Deliverables slices.
+- Passed route tests (12/12), TypeScript, ADS/color gates and visual checks in logged-in Chrome.
+- Next approved work: Slice 2, the buyer-facing knowledge-first Home using real staging sources.
+
 ## 2026-07-09 — Session 001
 
 - Feature activated. Discovery reused from same-session audit

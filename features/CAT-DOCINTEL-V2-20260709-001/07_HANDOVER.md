@@ -1,5 +1,59 @@
 # Handover — CAT-DOCINTEL-V2-20260709-001
 
+## Active handover — Session 005, goal resumed and UI Slice 1 complete (2026-07-11)
+
+The former blocker is resolved. Vikram approved the knowledge-first visual direction and explicitly
+resumed the goal. The route collision was removed with collision-safe namespaces; no schema change
+was required. Home and Library navigation now work against the staging-backed surface, canonical
+and legacy source URLs both resolve, and full Slice 1 validation/screenshots passed.
+
+The goal remains active. Next action is Plan v2.1 Slice 2: make Home the buyer-facing entry point
+from the accepted mockup, driven by real staging sources and without exposing extraction/admin
+machinery as the customer value proposition.
+
+## Active handover — Session 003, UI journey council (2026-07-11)
+
+The backend V2 capability is delivered, but the user journey is not fit for the capability. A live,
+code, staging, Rovo and Mobbin study is complete. The recommended product is a **BRD Review
+Workbench on the existing substrate**, with the contract: **Review a BRD and turn accepted findings
+into traceable work.** Rovo informs Home only; NotebookLM, Elicit, Dovetail and Productboard inform
+the bounded workspace, review rigor, insight model and governed handoff.
+
+Deliverables:
+
+- `13_DOCINTEL_UI_REVAMP_STUDY.md` — capability, current failure, top five, proposed screens and blind spots.
+- `14_ADVANCED_COUNCIL_UI_REVAMP.md` — 15-report verdict and advisor synthesis.
+- `15_SCREEN_BLUEPRINT_AND_LOCK_DECISIONS.md` — final hierarchy, state contract and capability map.
+- `03_PLAN_LOCK.md` active v2.1 — 15 two-hour work units with exact file lists and binary acceptance.
+- `16_GOAL_COMPLETION_AUDIT.md` — original-requirement evidence and remaining lock/implementation state.
+
+Critical blind spots that prevent a cosmetic-only declaration of done:
+
+1. User-triggered global re-sync is service-role-backed without a proven Admin backend boundary.
+2. Draft/verified artifacts can be offered for promotion, and provenance-link failure can be hidden.
+3. Jira/git source identity and anchors are incomplete; citations must remain truthful and user-facing.
+4. Ask has no persisted conversation/analysis; explicitly deferred until the initial journey is proven.
+
+Plan v2.1 was explicitly approved by Vikram on 2026-07-11 with the recommended Admin authority:
+legacy `admin` OR product `super_admin`. The prior Plan Lock blocker is resolved. Begin only active
+Slice 1, then validate and capture screenshots before continuing.
+
+Session 004 preflight suspended Slice 1 before source edits: top-level static routes can shadow
+unrestricted frozen document slugs, three registered destinations have no authorized pages yet, and
+the browser policy blocks design-intelligence's temporary SVG-arrow injection. Drift Events 4–5
+contain evidence and the recommended exact two-segment, no-schema route rebaseline.
+
+Design Intelligence Brief: `17_DESIGN_INTELLIGENCE_SLICE1.md` (9/15, HALT pending rebaseline).
+
+Latest user direction supersedes route-first discussion: agree the complete knowledge-first visual
+mental model first. See `18_VISUAL_BASELINE_FROM_ARABIC_BRD.md` and Drift Event 6. No source work
+resumes until that baseline is accepted.
+
+Environment confirmation received afterward: Vikram confirmed staging project
+`cyijbdeuehohvhnsywig`; the checkout's `supabase/.temp/project-ref` matches. A database password is
+available in the clipboard but was deliberately not read, logged or persisted. This confirms the
+target; Plan Lock approval was subsequently provided explicitly.
+
 ## State at end of Session 001 (2026-07-09)
 
 Feature activated. Discovery complete (reused from same-session audit, no duplicate agent spend).

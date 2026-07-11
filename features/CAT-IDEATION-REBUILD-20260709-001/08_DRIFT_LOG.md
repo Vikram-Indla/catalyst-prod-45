@@ -15,3 +15,19 @@
 **Resolution**: RED FLAG raised in session 004; Vikram approved all three recommendations → D10 (conditional notification seed with staging waiver), D11 (real product_roles codes: 7 full / rest view), D12 (nav core/main sort 8; work_item_type 'Idea'). Migration amended in place (same version 20260709160000 — never applied anywhere prior), re-applied to staging, ledger aligned, 12/12 probes green. Amendment commit pending approval.
 
 **Status**: ✅ RESOLVED 2026-07-09 (session 004).
+
+## DRIFT-002 — 2026-07-11 — ADS ratchet regression in StartEvaluationArea
+
+**What:** Commit `9b0f7ee62` added one token violation and one typography violation after the ADS
+baseline was captured. The global pre-commit gate correctly blocked a later documentation commit.
+
+**Evidence:** Current audit = tokens 19970 / typography 1367; committed baseline = 19969 / 1366.
+Scanning only files changed since the baseline isolated both deltas to
+`src/modules/ideation/pages/DetailPage.tsx` in `StartEvaluationArea`.
+
+**Resolution:** Replace the newly introduced spacing with ADS space tokens and remove the uppercase
+transformation. The baseline is not changed. See `03_PLAN_LOCK_ADS_GATE_REPAIR.md` and
+`sessions/009_ads_gate_repair.md`.
+
+**Status:** ✅ RESOLVED. Target block has zero scanner violations; color and ADS ratchet gates pass
+at their committed baselines without a baseline edit.

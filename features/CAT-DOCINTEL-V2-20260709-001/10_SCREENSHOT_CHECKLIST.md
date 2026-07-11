@@ -1,5 +1,26 @@
 # Screenshot Checklist — CAT-DOCINTEL-V2-20260709-001
 
+## Active v2 BRD Review Workbench checklist
+
+- [ ] Home, 1440×900 light/dark: outcome composer dominates; Upload, scope and library remain visible.
+- [ ] Home, 1280×720 plus no-project, empty, loading, error and active-theme states.
+- [ ] Workspace Overview preserves title, status, version, upload and theme controls.
+- [ ] Overview/Ask/Findings/Deliverables/Work items plus contextual readable source/exact evidence.
+- [ ] Deliverables: empty, generating, error, history and opened artifact.
+- [ ] Ask with citation drawer, Escape close/focus return, and Arabic RTL evidence.
+- [ ] Linked work empty/populated and unlink confirmation.
+- [ ] Promotion approved, blocked, partial-link-failure and retry.
+- [ ] Admin authorized view and ordinary-member denial.
+- [ ] No new console errors, horizontal page scroll, clipped actions or token violations.
+- [x] Slice 1: Home `/doc-intelligence` and Library `/doc-intelligence/views/library` at 1440×900
+      and 1280×720, light/dark, correct active navigation and exactly one H1.
+- [x] Slice 1: direct-load `/source/audio-test-revenue-target` plus legacy
+      `/audio-test-revenue-target`; both resolve the same source workspace.
+- [ ] Slice 1: Review/Themes/Deliverables pending routes are truthful and never fall through to a
+      source slug; browser back/forward updates the selected peer navigation.
+
+The table below is retained as historical backend-v1 evidence.
+
 | # | Item | Reference | Implementation | Status |
 |---|---|---|---|---|
 | 1 | Citation confidence — before (mis-scaled) | sessions/002/confidence-before.png | — | pending |

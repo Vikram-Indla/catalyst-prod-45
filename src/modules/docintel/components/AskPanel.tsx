@@ -158,9 +158,16 @@ export interface AskPanelProps {
   documentId?: string;
   /** Scope retrieval to one theme's documents; omitted → all documents. */
   themeId?: string;
+  /** Home composer treatment; the existing workspace treatment remains the default. */
+  mode?: "inline" | "hero";
 }
 
-export function AskPanel({ projectId, documentId, themeId }: AskPanelProps) {
+export function AskPanel({
+  projectId,
+  documentId,
+  themeId,
+  mode = "inline",
+}: AskPanelProps) {
   const ask = useAskDocintel();
   const [question, setQuestion] = useState("");
   const [history, setHistory] = useState<AskEntry[]>([]);
@@ -190,15 +197,35 @@ export function AskPanel({ projectId, documentId, themeId }: AskPanelProps) {
   };
 
   return (
-    <div style={{ paddingTop: 16 }}>
+    <div
+      data-docintel-ask-mode={mode}
+      style={{
+        width: "100%",
+        paddingTop: mode === "hero" ? 0 : "var(--ds-space-200)",
+      }}
+    >
       {/* Question input */}
-      <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+      <div
+        style={{
+          display: "flex",
+          gap: "var(--ds-space-100)",
+          alignItems: "center",
+        }}
+      >
         {/* data-voice-flow="off": Enter submits here — the global dictation
             hotkeys (double-space activate, Enter commit) must never bind. */}
-        <div style={{ flex: 1 }} dir={questionArabic ? "rtl" : "auto"} data-voice-flow="off">
+        <div
+          style={{ flex: 1, minWidth: 0 }}
+          dir={questionArabic ? "rtl" : "auto"}
+          data-voice-flow="off"
+        >
           <Textfield
             value={question}
-            placeholder="Ask a question about the source documents…"
+            placeholder={
+              mode === "hero"
+                ? "Ask a grounded question about your project sources…"
+                : "Ask a question about the source documents…"
+            }
             onChange={(e) => setQuestion(e.target.value)}
             onKeyDown={onKeyDown}
             isDisabled={ask.isPending}
@@ -219,10 +246,10 @@ export function AskPanel({ projectId, documentId, themeId }: AskPanelProps) {
           style={{
             display: "flex",
             alignItems: "center",
-            gap: 8,
-            marginTop: 12,
+            gap: "var(--ds-space-100)",
+            marginTop: "var(--ds-space-150)",
             color: "var(--ds-text-subtle)",
-            fontSize: 13,
+            font: "var(--ds-font-body-small)",
           }}
         >
           <Spinner size="small" />
@@ -232,17 +259,30 @@ export function AskPanel({ projectId, documentId, themeId }: AskPanelProps) {
 
       {/* Session Q&A history, newest first */}
       {history.length === 0 && !ask.isPending ? (
-        <div style={{ marginTop: 24 }}>
-          <EmptyState
-            size="compact"
-            header="Ask the documents"
-            description={
-              documentId
-                ? "Answers are grounded in this document's extracted evidence, with citations."
-                : "Answers are grounded in this project's document evidence, with citations."
-            }
-          />
-        </div>
+        mode === "hero" ? (
+          <p
+            style={{
+              marginBlockStart: "var(--ds-space-100)",
+              marginBlockEnd: 0,
+              color: "var(--ds-text-subtle)",
+              font: "var(--ds-font-body-small)",
+            }}
+          >
+            Answers stay inside the visible scope and include source citations.
+          </p>
+        ) : (
+          <div style={{ marginTop: "var(--ds-space-300)" }}>
+            <EmptyState
+              size="compact"
+              header="Ask the documents"
+              description={
+                documentId
+                  ? "Answers are grounded in this document's extracted evidence, with citations."
+                  : "Answers are grounded in this project's document evidence, with citations."
+              }
+            />
+          </div>
+        )
       ) : (
         <div style={{ display: "flex", flexDirection: "column", gap: "var(--ds-space-200)", marginTop: "var(--ds-space-250)" }}>
           {history.map((entry) => {
@@ -254,8 +294,8 @@ export function AskPanel({ projectId, documentId, themeId }: AskPanelProps) {
                 key={entry.id}
                 style={{
                   border: "1px solid var(--ds-border)",
-                  borderRadius: 8,
-                  padding: 16,
+                  borderRadius: "var(--ds-border-radius-100)",
+                  padding: "var(--ds-space-200)",
                   background: "var(--ds-surface-raised)",
                 }}
               >
@@ -263,10 +303,9 @@ export function AskPanel({ projectId, documentId, themeId }: AskPanelProps) {
                 <div
                   dir="auto"
                   style={{
-                    fontWeight: 600,
-                    fontSize: 14,
+                    font: "var(--ds-font-heading-xsmall)",
                     color: "var(--ds-text)",
-                    marginBottom: 8,
+                    marginBottom: "var(--ds-space-100)",
                     unicodeBidi: "plaintext",
                     ...(isArabicText(entry.question)
                       ? { fontFamily: ARABIC_FONT }
@@ -289,8 +328,7 @@ export function AskPanel({ projectId, documentId, themeId }: AskPanelProps) {
                     {...(answerArabic ? { dir: "rtl", lang: "ar" } : {})}
                     style={{
                       color: "var(--ds-text)",
-                      fontSize: 14,
-                      lineHeight: 1.7,
+                      font: "var(--ds-font-body)",
                       ...(answerArabic
                         ? {
                             fontFamily: ARABIC_FONT,
@@ -314,7 +352,7 @@ export function AskPanel({ projectId, documentId, themeId }: AskPanelProps) {
                   style={{
                     display: "flex",
                     alignItems: "center",
-                    gap: 10,
+                    gap: "var(--ds-space-100)",
                     flexWrap: "wrap",
                     marginTop: "var(--ds-space-100)",
                   }}
@@ -322,12 +360,12 @@ export function AskPanel({ projectId, documentId, themeId }: AskPanelProps) {
                   <Lozenge appearance={groundingAppearance(entry.result.confidence)}>
                     {`confidence ${pctLabel(entry.result.confidence)}`}
                   </Lozenge>
-                  <span style={{ fontSize: 12, color: "var(--ds-text-subtle)" }}>
+                  <span style={{ font: "var(--ds-font-body-small)", color: "var(--ds-text-subtle)" }}>
                     {entry.result.citations.length} source
                     {entry.result.citations.length === 1 ? "" : "s"} cited
                   </span>
                   {latestSourceAt && (
-                    <span style={{ fontSize: 12, color: "var(--ds-text-subtle)" }}>
+                    <span style={{ font: "var(--ds-font-body-small)", color: "var(--ds-text-subtle)" }}>
                       Sources updated{" "}
                       {formatDistanceToNow(new Date(latestSourceAt), { addSuffix: true })}
                     </span>
@@ -347,8 +385,8 @@ export function AskPanel({ projectId, documentId, themeId }: AskPanelProps) {
         width="medium"
       >
         {active && (
-          <div style={{ padding: 24 }}>
-            <div style={{ display: "flex", gap: 8, alignItems: "center", marginBottom: 12 }}>
+          <div style={{ padding: "var(--ds-space-300)" }}>
+            <div style={{ display: "flex", gap: "var(--ds-space-100)", alignItems: "center", marginBottom: "var(--ds-space-150)" }}>
               <Lozenge appearance="new">
                 {typeof active.page_number === "number"
                   ? `p.${active.page_number}`
@@ -356,8 +394,8 @@ export function AskPanel({ projectId, documentId, themeId }: AskPanelProps) {
               </Lozenge>
             </div>
 
-            <div style={{ marginBottom: 16 }}>
-              <div style={{ fontSize: 12, fontWeight: 600, color: "var(--ds-text-subtle)", marginBottom: 4 }}>
+            <div style={{ marginBottom: "var(--ds-space-200)" }}>
+              <div style={{ font: "var(--ds-font-heading-xxsmall)", color: "var(--ds-text-subtle)", marginBottom: "var(--ds-space-050)" }}>
                 Quoted from source
               </div>
               {active.quoted_text?.trim() ? (
@@ -368,9 +406,9 @@ export function AskPanel({ projectId, documentId, themeId }: AskPanelProps) {
                     padding: "var(--ds-space-100) var(--ds-space-150)",
                     borderInlineStart: "3px solid var(--ds-border-focused)",
                     background: "var(--ds-surface-sunken)",
-                    borderRadius: 6,
+                    borderRadius: "var(--ds-border-radius-100)",
                     color: "var(--ds-text)",
-                    fontSize: 14,
+                    font: "var(--ds-font-body)",
                     unicodeBidi: "plaintext",
                     whiteSpace: "pre-wrap",
                   }}
@@ -386,8 +424,8 @@ export function AskPanel({ projectId, documentId, themeId }: AskPanelProps) {
               style={{
                 display: "flex",
                 flexDirection: "column",
-                gap: 6,
-                fontSize: 13,
+                gap: "var(--ds-space-075)",
+                font: "var(--ds-font-body-small)",
                 color: "var(--ds-text-subtle)",
               }}
             >

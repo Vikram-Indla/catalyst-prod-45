@@ -1,12 +1,22 @@
 # CAT-DOCINTEL-V2-20260709-001 — READ ME FIRST
 
-**Status:** In Progress — Slice 1 done (verify-only), Slice 2 spike done, **Slice 4a DONE + live-verified**; Slices 4b/4c/3/5/6/7 pending
+**Status:** Plan v2.1 APPROVED; Slice 1 suspended pending Drift Event 5 rebaseline
 **Slice 1 result:** 3 correctness bugs already fixed+deployed 2026-07-07; verified live (no code). Residual: 78 stale citation rows on 2 pre-fix demo artifacts (accepted historical, Decision 11).
 **Slice 4a result (2026-07-11):** prompt registry live for `docintel-ask` — self-seeds byte-faithfully, stamps truthful `prompt_id`; proven end-to-end (seeded row 31483425… stamped on a live Ask run). Fine-tuning enabler live (tune = UPDATE + version bump, no redeploy). Deployed via local CLI token (CI deploy still broken — expired GitHub secret, Drift Event 2).
 **Deploy note:** repo-wide CI edge-fn deploy is DOWN (expired `SUPABASE_ACCESS_TOKEN` GitHub secret). Deploy via local `~/.config/supabase/access-token` + `supabase functions deploy` until rotated.
-**Last updated:** 2026-07-09
-**Active Plan Lock:** 03_PLAN_LOCK.md (v1, DRAFT)
-**Last session:** sessions/001_activation-and-plan-lock.md
+**Last updated:** 2026-07-11
+**Active Plan Lock:** 03_PLAN_LOCK.md (v2.1 complete BRD Review Workbench journey, 15 work units, APPROVED 2026-07-11)
+**Last session:** sessions/003_docintel-ui-journey-council.md
+
+## UI journey rebaseline — 2026-07-11
+
+The active user request is now an outcome-led revamp, not another backend capability slice. The
+study in `13_DOCINTEL_UI_REVAMP_STUDY.md` proves that the current seven-tab workspace exposes the
+internal processing model and defaults to extracted page evidence. The proposed product contract
+is: **Review a BRD and turn accepted findings into traceable work.** The Advanced Council verdict
+is recorded in `14_ADVANCED_COUNCIL_UI_REVAMP.md`; the exact screen contract is
+`15_SCREEN_BLUEPRINT_AND_LOCK_DECISIONS.md`. Requirement-by-requirement status is in
+`16_GOAL_COMPLETION_AUDIT.md`.
 
 ## Current state
 
@@ -20,8 +30,8 @@ rollback/alerting, unproven promote-to-work-item flow, and `kb_*` legacy cleanup
 
 ## Most important constraint right now
 
-**No code yet.** This session produced discovery + Plan Lock only, per CLAUDE.md
-"activate feature" contract — Plan Lock must be reviewed by Vikram before implementation starts.
+Plan v2.1 is approved. Implementation proceeds one active two-hour work unit at a time, beginning
+with Slice 1 only; every UI slice still requires tests and screenshot acceptance.
 
 ## Scope (locked by Vikram 2026-07-09: "take the hardest path")
 
@@ -32,7 +42,5 @@ spike (mandatory — Vikram: "you must try").
 
 ## Next action
 
-Vikram reviews `03_PLAN_LOCK.md` (Slice 1 locked detail + Slice 2 spike detail + 7-slice roadmap)
-and approves, then `continue feature CAT-DOCINTEL-V2-20260709-001` begins Slice 1 (correctness bugs).
-Slice 2 (MarkItDown spike) can run in parallel with Slice 1 since it's pure local measurement with
-no shared files.
+Approve the Drift Event 5 route/evidence micro-rebaseline, then begin Slice 1. The approved Admin
+boundary remains legacy `admin` OR product `super_admin`.

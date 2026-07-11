@@ -221,3 +221,17 @@ the RAG behaviour requires. Higher leverage than themes/ingestion as the immedia
 ### Impact on Plan Lock
 Slice 4 gets a detailed Plan Lock section written before any code; execution stops for go-ahead on
 that slice specifically.
+
+## Decision 13 — 2026-07-11 — Resume UI journey with collision-safe routes
+
+### Decision
+Resume the approved v2.1 UI implementation. Use `views/*` for peer pages, `actions/*` for review,
+and `source/:slug` for canonical document URLs. Retain the existing one-segment source route for
+compatibility. Dedicated later-slice destinations render truthful pending states until completed.
+
+### Rationale
+This permanently prevents new user routes from shadowing frozen document slugs, preserves every
+existing deep link, and removes the final external decision dependency after visual approval.
+
+### Approval
+Vikram: “Why is the goal blocked? And it has to be unblocked. You got to know what you have to.”

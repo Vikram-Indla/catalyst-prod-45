@@ -78,7 +78,9 @@ const BUCKET = "docintel-documents";
 
 // ai_document_links postdates the generated Supabase types in this repo; the
 // link surfaces use the same untyped escape hatch as src/hooks/useWiki.ts.
-const db = supabase as unknown as { from: (table: string) => any };
+const db = supabase as unknown as {
+  from: (table: string) => ReturnType<typeof supabase.from>;
+};
 
 /** entity_type values resolved against ph_issues / ph_work_items. */
 const WORK_ITEM_ENTITY_TYPES: DocintelLinkEntityType[] = [
@@ -503,6 +505,25 @@ export const docintelApi = {
       .eq("project_id", projectId)
       .contains("document_ids", [documentId])
       .order("created_at", { ascending: false });
+    if (error) throw new Error(error.message);
+    return (data ?? []) as DocintelArtifact[];
+  },
+
+  /**
+   * Most recently created artifacts for a project. This is intentionally a
+   * direct project-scoped read: source titles and other document metadata are
+   * not inferred or fabricated here, and RLS remains authoritative.
+   */
+  listRecentArtifacts: async (
+    projectId: string,
+    limit = 6,
+  ): Promise<DocintelArtifact[]> => {
+    const { data, error } = await supabase
+      .from("ai_generated_artifacts")
+      .select("*")
+      .eq("project_id", projectId)
+      .order("created_at", { ascending: false })
+      .limit(limit);
     if (error) throw new Error(error.message);
     return (data ?? []) as DocintelArtifact[];
   },

@@ -1,9 +1,687 @@
 # PLAN LOCK — CAT-DOCINTEL-V2-20260709-001
 
-**Status:** DRAFT — awaiting Vikram approval
-**Approved by:** (pending)
-**Timebox:** 2 hours from approval (per slice)
-**Slice:** 1 of 7 (full-scope roadmap below; only Slice 1 is locked in detail this session)
+**Active version:** v2.1 — Complete Doc Intel BRD Review Workbench journey
+**Status:** APPROVED — execution authorized by slice
+**Approved by:** Vikram, 2026-07-11
+**Debate mode:** WR
+**Timebox:** maximum 2 hours per implementation slice
+**Implementation allowed now:** YES — active v2.1 slices only; Slice 1 resumed after the approved
+collision-safe route rebaseline in `19_ROUTE_REBASELINE_AND_GOAL_RESUME.md`
+
+> The original backend V2 roadmap is retained below as historical evidence. It is not the active
+> implementation contract. The active contract begins here and supersedes the backend-shaped UI
+> assumptions in the historical sections.
+
+---
+
+## V2 ACTIVE OBJECTIVE — BRD REVIEW WORKBENCH
+
+Replace the current backend-shaped Doc Intel journey with a job-led, Rovo-inspired (not
+Rovo-cloned) BRD Review Workbench that lets a user understand a source, ask grounded questions,
+review findings, create cited deliverables, approve them, and convert approved outputs into
+traceable work. Preserve every delivered capability. Move extraction, provider, queue, prompt and
+processing diagnostics to a backend-enforced Admin surface while keeping user-facing citations and
+exact evidence one click away.
+
+**First user contract:** Review a BRD and turn accepted findings into traceable work.
+
+**Functionality verdict required:** ADDITIVE or NEUTRAL. Any subtractive result is a hard stop.
+
+## USER DECISION REQUIRED TO LOCK V2
+
+Admin authority boundary:
+
+- **Recommended:** global processing, re-sync, prompt/model and audit controls require either the
+  legacy `user_roles.role='admin'` role or the `super_admin` product role.
+- Ordinary project members retain user-facing Ask, review, generation, approval and linking only
+  where existing project RLS permits them.
+- Project-admin/owner authority is deferred because no canonical project-admin role contract was
+  proven in this discovery pass.
+
+Approved boundary: global processing controls require legacy `admin` OR product `super_admin`.
+`/admin` route placement or `AdminGuard` alone is not backend authorization.
+
+## NON-SCOPE
+
+- A pixel clone of Rovo.
+- A generic blank chat as the whole product.
+- A new persisted `analysis`/conversation entity in this phase.
+- True version diff/compare, collaborative annotations, mentions or reviewer assignment.
+- A rich BRD editor until ADF storage/conversion is separately Plan-Locked.
+- Agent/persona marketplace, lineage graph, theme analytics or readiness scorecards.
+- Automated Jira creation from unreviewed extraction.
+- Deleting the existing evidence, document, facts, artifact, traceability, Ask or link capability.
+
+## TARGET INFORMATION ARCHITECTURE
+
+User-facing:
+
+```text
+For you
+Library
+Themes
+Deliverables
+
+Source workbench
+  Overview
+  Ask
+  Findings
+  Deliverables
+  Work items
+    Linked work
+    Traceability
+
+Contextual
+  Source/evidence drawer
+    Readable source
+    Exact evidence
+  Version menu
+```
+
+Admin:
+
+```text
+Document Intelligence
+  Sources, ingestion and raw extraction
+  Processing health
+  Audit and retries
+
+Deferred behind a separate permission Plan Lock
+  Prompts and models
+```
+
+## CANONICAL COMPONENTS SELECTED
+
+| UI element | Canonical component | Evidence / decision |
+|---|---|---|
+| Page/workbench shell | `src/components/ads/AtlaskitPageShell.tsx` | Supports content and fixed side rail; extend, do not hand-roll |
+| Page header | `src/components/ads/PageHeader.tsx` | One semantic H1 and action slot |
+| Library/findings/deliverables lists | `src/components/shared/JiraTable/JiraTable.tsx` | Mandatory enterprise list candidate; audit-grade story exists |
+| List page chrome | `src/components/shared/CatalystListPage/CatalystListPageLayout.tsx` | Canonical toolbar/filter/table composition |
+| Source/evidence inspector | `src/components/ads/CatalystDrawer.tsx` | ADS Drawer wrapper; preserve citation focus/close contract |
+| Empty/loading/error | ADS `EmptyState`, `Spinner`, `SectionMessage` | No custom state widgets |
+| Status | `StatusLozenge` / ADS Lozenge | No hand-styled pills |
+| Peer navigation | `@atlaskit/tabs` | Only genuine peer views; Work items subviews remain keyboard accessible |
+| Work-item promotion | Existing `PromoteArtifactModal` + `ProposalTable` | Extend existing flow; no replacement modal/table |
+| Rich artifact editing | `AtlaskitEditor` + ADF | DEFER until storage/conversion contract exists |
+
+Explicit non-reuse: `UnifiedLinksTab`, `HubItemDetailPage`, `CatalystDetailPanel`, `CatyIconCTA` as
+the Home submit control, and `SurfaceCard`. Each is either coupled to another domain or violates the
+required ADS/canonical contract.
+
+The screen-level contract, hierarchy, states and capability-preservation map are locked from
+`15_SCREEN_BLUEPRINT_AND_LOCK_DECISIONS.md`. If this Plan Lock and that blueprint conflict, this
+Plan Lock wins; the work must stop and rebaseline rather than silently choosing.
+
+## ORDERED IMPLEMENTATION SLICES — ACTIVE V2.1 COMPLETION CORRECTION
+
+The first v2 draft preserved too much of the current backend-shaped navigation and omitted a real
+review start, dedicated Library, project Deliverables hub and resumable For-you content. The 15
+two-hour work units below supersede the obsolete v2.0 A–G2 draft retained later for audit history.
+Only these v2.1 slices are executable after approval.
+
+### SLICE 1 — Route and navigation foundation (2h, ADDITIVE)
+
+**Purpose:** Split For you from Library and register collision-safe destinations. User views live
+under `views/*`, review under `actions/*`, and canonical sources under `source/:slug`; the legacy
+one-segment source route remains compatible.
+
+**Files to touch:**
+
+1. `src/lib/routes.ts` — add `home`, `library`, `review`, `themes`, `deliverables` builders using
+   the approved namespaces; retain `list()` as a compatibility alias to Home; make `workspace()`
+   canonical at `source/:slug`.
+2. `src/modules/docintel/DocintelRoutes.tsx` — mount new routes before `source/:slug`, retain
+   legacy `:slug`, and use truthful pending states for routes delivered in later slices.
+3. `src/modules/docintel/components/DocintelNavigation.tsx` — NEW; peer navigation using canonical
+   ADS components.
+4. `src/modules/docintel/pages/DocintelHomePage.tsx` — NEW skeletal state-safe route.
+5. `src/modules/docintel/pages/DocintelLibraryPage.tsx` — NEW wrapper around the current library
+   behavior; no data contract change.
+6. `src/modules/docintel/pages/DocintelDocumentsPage.tsx` — move current library implementation to
+   the new Library page; retain only a compatibility export if imports require it.
+7. `src/modules/docintel/pages/__tests__/DocintelRoutes.test.tsx` — NEW.
+
+**Binary acceptance:** old `/doc-intelligence` and every existing one-segment source URL resolve;
+new source links use `/source/:slug`; view/action routes cannot shadow a frozen slug; upload and
+health routes are not shadowed; browser back/forward works; no UUID route is introduced.
+
+### SLICE 2 — Intent-first For you (2h, ADDITIVE)
+
+**Purpose:** Make Ask, Review and Create understandable without training while showing only truthful
+recent sources/deliverables and needs-attention states.
+
+**Files to touch:**
+
+1. `src/modules/docintel/components/DocintelIntentComposer.tsx` — NEW; modes, source scope and
+   proven task starters.
+2. `src/modules/docintel/components/DocintelRecentWork.tsx` — NEW; sources and deliverables only,
+   never fictional analyses.
+3. `src/modules/docintel/pages/DocintelHomePage.tsx` — complete Home composition.
+4. `src/modules/docintel/components/AskPanel.tsx` — additive `mode="hero"`; inline default unchanged.
+5. `src/modules/docintel/domain/index.ts` — project-scoped recent artifact read only; no write.
+6. `src/modules/docintel/hooks/useDocintel.tsx` — corresponding query hook.
+7. `src/modules/docintel/components/__tests__/DocintelIntentComposer.test.tsx` — NEW.
+8. `src/stories/audit-grade/21-DocintelForYou.stories.tsx` — NEW.
+
+**Binary acceptance:** each mode routes or submits through an existing proven contract; scope is
+visible before submit; no source/project state is honest and actionable; no operational telemetry.
+
+### SLICE 3 — Three-decision BRD review start (2h, ADDITIVE)
+
+**Purpose:** Start a useful review without inventing a persisted analysis entity.
+
+**Files to touch:**
+
+1. `src/modules/docintel/pages/DocintelReviewStartPage.tsx` — NEW; review job, source/version and
+   expected-output decisions.
+2. `src/modules/docintel/components/DocintelSourcePicker.tsx` — NEW; canonical selectable source list.
+3. `src/modules/docintel/pages/DocintelHomePage.tsx` — Review starter navigation only.
+4. `src/modules/docintel/pages/__tests__/DocintelReviewStartPage.test.tsx` — NEW.
+5. `src/stories/audit-grade/22-DocintelReviewStart.stories.tsx` — NEW.
+
+**Binary acceptance:** a user starts in at most three decisions; existing source and Upload paths
+work; Start navigates to the chosen source's Findings view; no durable “review” record is claimed.
+
+### SLICE 4A — Source Overview (2h, ADDITIVE)
+
+**Purpose:** Opening a source communicates truthful review progress and next action rather than raw
+extraction.
+
+**Files to touch:**
+
+1. `src/modules/docintel/components/DocintelWorkspaceOverview.tsx` — NEW; truthful counts/actions.
+2. `src/modules/docintel/pages/DocintelWorkspacePage.tsx` — Overview default and controlled view selection.
+3. `src/modules/docintel/pages/__tests__/DocintelWorkspacePage.test.tsx` — NEW.
+4. `src/stories/audit-grade/23-DocintelWorkspaceOverview.stories.tsx` — NEW.
+
+**Binary acceptance:** no uncited summary is fabricated; title/status/version/upload/themes remain;
+Overview counts/actions render only from existing data; Overview is the default.
+
+### SLICE 4B — Contextual source and evidence (2h, NEUTRAL)
+
+**Purpose:** Preserve readable source and exact evidence one click away without treating extraction
+as the product.
+
+**Files to touch:**
+
+1. `src/modules/docintel/components/DocintelSourceDrawer.tsx` — NEW; compose Readable source and only
+   the exact selected claim evidence with ADS Tabs inside `CatalystDrawer`; do not mount the full raw
+   `EvidenceViewer` in the final user drawer.
+2. `src/modules/docintel/pages/DocintelWorkspacePage.tsx` — View source action and drawer state.
+3. `src/modules/docintel/pages/__tests__/DocintelWorkspacePage.test.tsx` — drawer reachability/focus.
+4. `src/stories/audit-grade/23-DocintelWorkspaceOverview.stories.tsx` — drawer states.
+
+**Binary acceptance:** readable Document remains user-reachable; exact selected evidence remains
+user-reachable; full raw Evidence remains temporarily available until Slice 10 moves it to Admin;
+drawer closes on Escape, returns focus and hides technical citation machinery.
+
+### SLICE 5A — Findings and five-destination workbench (2h, NEUTRAL)
+
+**Purpose:** Make Findings a primary job and establish Overview, Ask, Findings, Deliverables and Work
+items as the only top-level source destinations.
+
+**Files to touch:**
+
+1. `src/modules/docintel/components/DocintelFindingsPanel.tsx` — NEW JiraTable composition over the
+   existing facts/review hooks.
+2. `src/modules/docintel/pages/DocintelWorkspacePage.tsx` — final five destinations and query-state
+   navigation.
+3. `src/modules/docintel/pages/__tests__/DocintelWorkspacePage.test.tsx` — reachability and keyboard
+   assertions.
+4. `src/modules/docintel/components/__tests__/DocintelFindingsPanel.test.tsx` — NEW.
+5. `src/stories/audit-grade/24-DocintelFindings.stories.tsx` — NEW.
+
+**Binary acceptance:** Facts becomes Findings with unchanged confirm/reject/reset payloads; Ask and
+Deliverables retain their existing contracts; navigation is keyboard reachable.
+
+### SLICE 5B — Work items and traceability composition (2h, NEUTRAL)
+
+**Purpose:** Compose current Links and Traceability into one user job without losing either.
+
+**Files to touch:**
+
+1. `src/modules/docintel/components/DocintelWorkItemsPanel.tsx` — NEW; ADS Tabs compose Linked work
+   and Traceability.
+2. `src/modules/docintel/pages/DocintelWorkspacePage.tsx` — mount final Work items destination.
+3. `src/modules/docintel/pages/__tests__/DocintelWorkspacePage.test.tsx` — exact-once reachability.
+4. `src/stories/audit-grade/24-DocintelFindings.stories.tsx` — Work items states.
+
+**Binary acceptance:** existing link/unlink/origin behavior and traceability matrix are reachable;
+Evidence, Document, Facts, Artifacts, Traceability, Ask and Links each map exactly once.
+
+### SLICE 6A — Source Deliverable Studio (2h, NEUTRAL)
+
+**Purpose:** Organize the exact 12 artifact values by user outcome inside the source workbench.
+
+**Files to touch:**
+
+1. `src/modules/docintel/components/artifactTypes.ts` — presentation group/description metadata only.
+2. `src/modules/docintel/components/GenerationPanel.tsx` — grouped creation and canonical history.
+3. `src/modules/docintel/components/__tests__/GenerationPanel.test.tsx` — NEW.
+4. `src/stories/audit-grade/25-DocintelDeliverables.stories.tsx` — NEW.
+
+**Binary acceptance:** all 12 exact values and generation payloads survive; empty, generating, error,
+history, open and review states are covered.
+
+### SLICE 6B — Project Deliverables hub (2h, ADDITIVE)
+
+**Purpose:** Make existing outputs resumable across a project without violating the slug contract.
+
+**Files to touch:**
+
+1. `src/modules/docintel/pages/DocintelDeliverablesPage.tsx` — NEW project JiraTable with drawer detail.
+2. `src/modules/docintel/domain/index.ts` — project artifact list read.
+3. `src/modules/docintel/hooks/useDocintel.tsx` — project artifact query.
+4. `src/modules/docintel/pages/__tests__/DocintelDeliverablesPage.test.tsx` — NEW.
+5. `src/stories/audit-grade/25-DocintelDeliverables.stories.tsx` — project states.
+
+**Binary acceptance:** source/title/type/review/grounding/updated state is truthful; details use a
+drawer, not a UUID route; no edit/persistence capability is implied.
+
+### SLICE 7 — Governed promotion and honest provenance (2h, NEUTRAL)
+
+**Purpose:** Enforce the human boundary and represent work-created/link-failed truthfully.
+
+**Files to touch:**
+
+1. `src/modules/docintel/components/ArtifactView.tsx` — Promote only when approved.
+2. `src/modules/docintel/components/PromoteArtifactModal.tsx` — persisted visible partial result and
+   retry/recovery; never full-success on provenance failure.
+3. `src/modules/docintel/components/__tests__/ArtifactPromotion.test.tsx` — NEW.
+4. `src/test/edge/docintel-contracts.test.ts` — approval/provenance invariants.
+
+**Binary acceptance:** draft/verified cannot promote; approved can; created-work/link-failed remains
+visible with retry; created work is not silently deleted.
+
+### SLICE 8A — Library and source identity (2h, ADDITIVE)
+
+**Purpose:** Make uploaded document, Jira and git sources distinct and useful in Library.
+
+**Files to touch:**
+
+1. `src/modules/docintel/types.ts` — map proven `source_type` and only returned anchor metadata.
+2. `src/modules/docintel/pages/DocintelLibraryPage.tsx` — canonical source/useful-state columns and filters.
+3. `src/modules/docintel/pages/__tests__/DocintelLibraryPage.test.tsx` — NEW.
+4. `src/stories/audit-grade/26-DocintelLibrary.stories.tsx` — NEW.
+
+**Binary acceptance:** all three live types are distinct; useful state never invents review or
+deliverable counts; existing project/theme filtering and row navigation survive.
+
+### SLICE 8B — Truthful citation source identity (2h, ADDITIVE)
+
+**Purpose:** Carry proven source identity and anchors into Ask and the source/evidence drawer.
+
+**Files to touch:**
+
+1. `src/modules/docintel/types.ts` — map only returned citation metadata.
+2. `src/modules/docintel/components/AskPanel.tsx` — source identity/freshness in evidence view.
+3. `src/modules/docintel/components/DocintelSourceDrawer.tsx` — truthful source/anchor labels.
+4. `supabase/functions/docintel-ask/index.ts` — return source type/title/slug and proven anchors; no
+   fabricated page, line or external URL.
+5. `src/modules/docintel/components/__tests__/citationMarkers.test.tsx` — source cases.
+6. `src/test/edge/docintel-contracts.test.ts` — citation contract.
+
+**Binary acceptance:** document citations retain exact pages; Jira/git show only available anchors;
+unknown metadata renders nothing; current citation marker resolution is unchanged.
+
+### SLICE 8C — Dedicated Themes destination (2h, ADDITIVE/NEUTRAL)
+
+**Purpose:** Make existing theme browse/create/tag capability discoverable without inventing theme
+analytics or approved automatic conclusions.
+
+**Files to touch:**
+
+1. `src/modules/docintel/pages/DocintelThemesPage.tsx` — NEW existing theme list/create composition.
+2. `src/modules/docintel/components/ThemeTags.tsx` — navigation affordance only if required.
+3. `src/modules/docintel/pages/DocintelLibraryPage.tsx` — theme filter/deep-link integration.
+4. `src/modules/docintel/pages/__tests__/DocintelThemesPage.test.tsx` — NEW.
+5. `src/stories/audit-grade/27-DocintelThemes.stories.tsx` — NEW.
+
+**Binary acceptance:** create/tag/untag/filter payloads remain unchanged; empty/populated/error
+states work; no theme score, clustering approval or fabricated count is displayed.
+
+### SLICE 9 — Admin authority and re-sync hardening (2h, SECURITY GATE)
+
+**Purpose:** Secure global operations before any operational UI is relocated.
+
+**Files to touch:**
+
+1. `supabase/functions/docintel-sync/index.ts` — manual calls require the approved backend role and
+   explicit project; cron/service-role path unchanged.
+2. `src/modules/docintel/domain/index.ts` — `triggerReindex(projectId)`.
+3. `src/modules/docintel/hooks/useDocintel.tsx` — scoped mutation.
+4. `src/modules/docintel/pages/DocintelHealthPage.tsx` — explicit active project and sanitized errors.
+5. `src/test/edge/docintel-contracts.test.ts` — 401, 403, wrong-scope, admin 200 and service-role cases.
+
+**Binary acceptance:** ordinary member=403; approved authority=200 only for explicit project;
+cron/service-role survives. Schema/RLS/grant change triggers a separate migration Plan Lock.
+
+### SLICE 10 — Admin operations surface and final user cleanup (2h, NEUTRAL)
+
+**Purpose:** Put processing detail where authorized operators expect it and remove machinery from
+the normal journey only after Slice 9 passes.
+
+**Files to touch:**
+
+1. `src/routes/FullAppRoutes.tsx` — guarded `/admin/document-intelligence` route.
+2. `src/lib/routes.ts` — Admin builder.
+3. `src/components/admin/AdminSidebarV2.tsx` — navigation entry.
+4. `src/modules/docintel/pages/DocintelAdminPage.tsx` — NEW; canonical tabs for sources/raw
+   extraction, health and audit/retries, exposing only currently real controls/data.
+5. `src/modules/docintel/pages/DocintelHealthPage.tsx` — reusable Admin composition and collapsed
+   sanitized provider detail.
+6. `src/modules/docintel/components/EvidenceViewer.tsx` — mount only in authorized Admin source
+   inspection after the exact-evidence user path is proven.
+7. `src/modules/docintel/pages/DocintelWorkspacePage.tsx` — remove the temporary full raw Evidence
+   entry only after Admin inspection and contextual exact-evidence both exist.
+8. `src/modules/docintel/pages/DocintelLibraryPage.tsx` — remove user Health entry only after Admin exists.
+9. `src/modules/docintel/pages/__tests__/DocintelAdminRoute.test.tsx` — NEW.
+
+**Binary acceptance:** approved operators retain health/retry/re-sync; ordinary users cannot reach
+the route or operation; Home/Library/workbench show no extraction, prompt, queue, embedding or raw
+provider machinery; raw extraction remains available to approved operators; all current user
+capabilities remain reachable in the location mapped by the blueprint. Prompt/model management is
+not shown until a separate permission Plan Lock secures its DB/API contract.
+
+### V2.1 FILE AUTHORIZATION RULE
+
+Each slice may touch only its explicit file list. All other repo files are forbidden for that slice.
+A newly discovered necessary file, new package, schema/RLS/grant change, shared canonical-component
+edit or payload change not stated above is a STOP and Plan Lock rebaseline.
+
+## OBSOLETE V2.0 DRAFT SLICES — RETAINED FOR AUDIT ONLY, NOT EXECUTABLE
+
+The A–G2 slices below were the first draft and are superseded by Active v2.1 above. They must not be
+used for implementation or file authorization.
+
+## ORDERED IMPLEMENTATION SLICES
+
+### SLICE A — Outcome-first Home (2h, ADDITIVE)
+
+**Purpose:** Make Doc Intel's value legible above the existing project/theme library without
+removing the JiraTable, Upload action or existing Ask drawer fallback.
+
+**Files to touch:**
+
+1. `src/modules/docintel/components/AskPanel.tsx` — additive `mode="hero"` and optional starter
+   prompts; preserve current inline behavior by default.
+2. `src/modules/docintel/components/DocintelHomeHero.tsx` — NEW; ADS composer and BRD-first task
+   starters only.
+3. `src/modules/docintel/pages/DocintelDocumentsPage.tsx` — mount hero; keep project/theme filters,
+   JiraTable, Upload and current Ask fallback.
+4. `src/modules/docintel/components/__tests__/AskPanel.hero.test.tsx` — NEW.
+5. `src/stories/audit-grade/21-DocintelHomeHero.stories.tsx` — NEW.
+
+**Binary acceptance:** Hero dominates above the fold; project/document/theme Ask payload is
+unchanged; existing list, row navigation, filter, upload, loading, error, empty and no-project states
+remain reachable.
+
+### SLICE B — Workspace Overview (2h, ADDITIVE)
+
+**Purpose:** Opening a source answers “what can I do?” rather than defaulting to extracted pages.
+
+**Files to touch:**
+
+1. `src/modules/docintel/components/DocintelWorkspaceOverview.tsx` — NEW; summary, review state,
+   source scope and navigation-only next actions.
+2. `src/modules/docintel/pages/DocintelWorkspacePage.tsx` — controlled ADS Tabs; add Overview as
+   default while retaining all seven existing panels untouched.
+3. `src/modules/docintel/pages/__tests__/DocintelWorkspacePage.test.tsx` — NEW.
+4. `src/stories/audit-grade/22-DocintelWorkspaceOverview.stories.tsx` — NEW.
+
+**Binary acceptance:** Overview actions only select existing destinations; title/status, versions,
+new-version upload, theme create/tag and every old capability remain present.
+
+### SLICE C — Consolidate the pipeline-shaped IA (2h, NEUTRAL)
+
+**Dependency:** Slice B screenshots accepted.
+
+**Purpose:** Replace seven equal implementation tabs with six job-level destinations while keeping
+Evidence, Facts and Traceability available under Analysis.
+
+**Files to touch:**
+
+1. `src/modules/docintel/components/DocintelAnalysisPanel.tsx` — NEW; compose EvidenceViewer,
+   FactsReviewPanel and TraceabilityMatrix behind secondary ADS Tabs.
+2. `src/modules/docintel/pages/DocintelWorkspacePage.tsx` — primary tabs become Overview,
+   Document, Deliverables, Ask, Linked work, Analysis.
+3. `src/modules/docintel/pages/__tests__/DocintelWorkspacePage.test.tsx` — assert every former
+   capability is present and keyboard-reachable exactly once.
+
+**Binary acceptance:** No component hook/callback changes; every former panel remains reachable;
+Evidence is not the default; no capability removal.
+
+### SLICE D — Deliverables by user goal (2h, NEUTRAL)
+
+**Purpose:** Replace the flat 12-button developer panel with governed outcome groups while
+preserving the exact artifact type and generation payload contract.
+
+**Groups:** Understand; Plan; Validate and ship.
+
+**Files to touch:**
+
+1. `src/modules/docintel/components/artifactTypes.ts` — presentation group/description metadata
+   only; exact values remain stable.
+2. `src/modules/docintel/components/GenerationPanel.tsx` — canonical grouped selector with existing
+   history/detail/generate behavior.
+3. `src/modules/docintel/components/__tests__/GenerationPanel.test.tsx` — NEW.
+4. `src/stories/audit-grade/23-DocintelDeliverables.stories.tsx` — NEW.
+
+**Binary acceptance:** All 12 types remain selectable and send
+`{projectId, documentIds:[documentId], artifactType}`; empty, generating, error, history and open
+artifact states survive.
+
+### SLICE E — Governed promotion and honest provenance (2h, NEUTRAL)
+
+**Purpose:** Enforce the human decision boundary and prevent the UI from reporting complete success
+when document-to-work provenance linking fails.
+
+**Files to touch:**
+
+1. `src/modules/docintel/components/ArtifactView.tsx` — promotion is available only for approved
+   artifacts; verified/draft remain reviewable, not promotable.
+2. `src/modules/docintel/components/PromoteArtifactModal.tsx` — record link failures, keep a partial
+   result visible, provide retry/recovery, and never emit full-success toast on failed provenance.
+3. `src/modules/docintel/components/__tests__/ArtifactPromotion.test.tsx` — NEW.
+4. `src/test/edge/docintel-contracts.test.ts` — add approval/provenance invariants where applicable.
+
+**Binary acceptance:** Draft/verified artifact cannot open Promote; approved artifact can; work item
+success + link failure renders partial success with retry; no created work is silently deleted.
+
+### SLICE F — Source identity and citation clarity (2h, ADDITIVE)
+
+**Purpose:** Stop rendering 25 Jira issues and 2 git files as anonymous documents, and show source
+identity inside the user trust layer without exposing block/model telemetry.
+
+**Files to touch:**
+
+1. `src/modules/docintel/types.ts` — map the existing `ai_documents.source_type`; extend citation
+   response type only with fields actually returned.
+2. `supabase/functions/docintel-ask/index.ts` — include `source_type`, slug/title and available
+   source anchor metadata in citation payload; no invented external URL.
+3. `src/modules/docintel/components/AskPanel.tsx` — source-type/freshness labelling in the existing
+   evidence drawer.
+4. `src/modules/docintel/pages/DocintelDocumentsPage.tsx` — visually distinguish document/Jira/git
+   using canonical icons/text; keep JiraTable.
+5. `src/modules/docintel/components/__tests__/citationMarkers.test.tsx` — extend source-type cases.
+6. `src/test/edge/docintel-contracts.test.ts` — citation contract cases.
+
+**Binary acceptance:** All three live source types render distinctly; document citations retain exact
+page evidence; Jira/git citations show truthful available anchors and never fabricate a page, line
+or external link.
+
+### SLICE G1 — Admin authority and re-sync hardening (2h, BLOCKED UNTIL PLAN APPROVAL)
+
+**Purpose:** Enforce the approved Admin authority before relocating any operational UI.
+
+**Files to touch:**
+
+1. `supabase/functions/docintel-sync/index.ts` — manual sweep requires the approved role and an
+   explicit project scope; cron/service-role paths remain unchanged.
+2. `src/modules/docintel/domain/index.ts` — `triggerReindex(projectId)`; no global `{}` user call.
+3. `src/modules/docintel/hooks/useDocintel.tsx` — pass project scope through `useTriggerReindex`.
+4. `src/modules/docintel/pages/DocintelHealthPage.tsx` — pass active project and sanitize user-facing
+   provider failures.
+5. `src/test/edge/docintel-contracts.test.ts` — unauthenticated, ordinary member, wrong-scope and
+   valid-admin cases.
+
+**Binary acceptance:** unauthenticated=401; ordinary member=403; approved admin authority=200 for an
+explicit project; cron/service-role behavior unchanged. If a migration or new permission table is
+required, STOP and create a separate migration Plan Lock.
+
+### SLICE G2 — Admin relocation (2h, after G1)
+
+**Purpose:** Remove embeddings/chunks/provider/prompt/job diagnostics from the normal user journey
+without deleting operational capability.
+
+**Files to touch:**
+
+1. `src/routes/FullAppRoutes.tsx` — guarded `/admin/document-intelligence` route.
+2. `src/components/admin/AdminSidebarV2.tsx` — canonical Admin navigation entry.
+3. `src/modules/docintel/pages/DocintelDocumentsPage.tsx` — remove primary Knowledge Health action
+   only after the Admin route exists; retain a sanitized needs-attention cue.
+4. `src/modules/docintel/pages/DocintelHealthPage.tsx` — Admin diagnostics wording and collapsed /
+   redacted raw provider error details.
+5. `src/modules/docintel/pages/__tests__/DocintelAdminRoute.test.tsx` — NEW.
+
+**Binary acceptance:** approved admins can reach operational detail; ordinary users cannot reach the
+route or call the privileged operation; user Home contains no embeddings, prompts, queues, provider
+payloads or raw extraction controls.
+
+## OBSOLETE V2.0 FILES-FORBIDDEN SECTION — AUDIT HISTORY ONLY
+
+- `src/modules/docintel/hooks/useDocintel.tsx`
+- `src/modules/docintel/hooks/useDocintelHealth.ts`
+- `src/modules/docintel/domain/index.ts`
+- `src/modules/docintel/domain/governance.ts`
+- `src/modules/docintel/types.ts`
+- `src/modules/docintel/DocintelRoutes.tsx`
+- `src/lib/routes.ts`
+- `src/routes/FullAppRoutes.tsx`
+- `src/components/admin/AdminSidebarV2.tsx`
+- `src/components/layout/CatalystShell.tsx`
+- `src/components/layout/WikiSidebar.tsx`
+- `src/components/shared/JiraTable/JiraTable.tsx`
+- `src/components/shared/JiraTable/index.ts`
+- `src/modules/docintel/components/EvidenceViewer.tsx`
+- `src/modules/docintel/components/FactsReviewPanel.tsx`
+- `src/modules/docintel/components/TraceabilityMatrix.tsx`
+- `src/modules/docintel/components/ArtifactView.tsx`
+- `src/modules/docintel/components/PromoteArtifactModal.tsx`
+- `src/modules/docintel/components/DocumentLinksPanel.tsx`
+- Every file under `supabase/`
+
+Later slices use only their explicit file lists. Any additional file requires a rebaseline.
+
+## DATA AND SECURITY RULES
+
+- Staging only: `cyijbdeuehohvhnsywig`, explicitly confirmed by Vikram on 2026-07-11 and verified
+  against `supabase/.temp/project-ref`; never prod `lmqwtldpfacrrlvdnmld` in these slices.
+- Do not read, print, persist or place the clipboard database password in commands, logs, feature
+  artifacts or source. Use the existing authenticated Supabase tooling/secure prompt only when an
+  approved slice actually requires it.
+- `source_type` is proven live and NOT NULL on `ai_documents`; do not add a redundant column.
+- No new analysis/conversation table in v2.
+- Raw DB fields remain snake_case; mapped UI objects use their proven current contract.
+- Admin UI guard and backend authorization must both pass.
+- Do not rely on `ModuleGuard`/`ModuleGate` for backend security.
+- Never expose service-role credentials or raw prompt/provider payloads to the user surface.
+- `ai_agent_prompts` management is deferred: its current broad authenticated SELECT policy must be
+  addressed by a separate RLS/grant Plan Lock before an Admin prompt/model UI is allowed.
+- Current broad Doc Intel `SECURITY DEFINER` EXECUTE grants are a security finding. Do not expand
+  them. Any change to grants/RLS requires a separate migration Plan Lock and anon/member probes.
+- Jira/git anchors render only when present; zero-assumption rendering applies.
+
+## UI / UX RULES
+
+- ADS tokens only; no raw colors, Tailwind colors or local palettes.
+- Canonical components first; no hand-rolled table, drawer, modal, tab, editor or status pill.
+- Sentence-case labels.
+- Citations remain user-facing; block/model internals do not.
+- Background processing is quiet unless blocked or failed.
+- “Not found in sources” remains a valid grounded result.
+- English/Arabic direction, logical CSS and citation placement must survive.
+- The strict targeted audit currently reports 43 pre-existing Doc Intel violations. Any touched
+  file must fix its own matching violations before commit; ratchet-pass alone is not compliance.
+
+## VALIDATION COMMANDS
+
+All applicable commands must exit 0 or the slice stops:
+
+```bash
+npx tsc --noEmit
+npx vitest run src/modules/docintel/components/__tests__/citationMarkers.test.tsx src/modules/docintel/components/__tests__/confidence.test.ts src/test/edge/docintel-contracts.test.ts
+npx vitest run src/modules/docintel/pages/__tests__/DocintelRoutes.test.tsx src/modules/docintel/components/__tests__/DocintelIntentComposer.test.tsx src/modules/docintel/pages/__tests__/DocintelReviewStartPage.test.tsx
+npx vitest run src/modules/docintel/pages/__tests__/DocintelWorkspacePage.test.tsx src/modules/docintel/components/__tests__/DocintelFindingsPanel.test.tsx src/modules/docintel/components/__tests__/GenerationPanel.test.tsx
+npx vitest run src/modules/docintel/pages/__tests__/DocintelDeliverablesPage.test.tsx src/modules/docintel/components/__tests__/ArtifactPromotion.test.tsx src/modules/docintel/pages/__tests__/DocintelAdminRoute.test.tsx
+npx vitest run src/modules/docintel/pages/__tests__/DocintelLibraryPage.test.tsx src/modules/docintel/pages/__tests__/DocintelThemesPage.test.tsx
+npm run lint:colors:gate
+npm run audit:ads:gate
+npm run scan:ads-violations
+npm run lint:accessibility
+npm run test:a11y
+npm run test:visual
+node scripts/ads-contrast-gate.cjs --live --routes /doc-intelligence,/doc-intelligence/library,/doc-intelligence/audio-test-revenue-target
+node design-governance/rules/audit.js <each-explicit-styled-file-touched-by-the-slice>
+```
+
+Slice-specific tests that do not exist yet are run only after their defining slice adds them.
+The repo-wide `npm run audit:contrast` and directory-wide strict Doc Intel audit currently fail on
+pre-existing debt, so they are evidence reports rather than impossible slice exit gates. A slice
+must instead pass the live route contrast gate and strict audit for every styled file it changes.
+
+Artifact contract gate:
+
+```bash
+node -e "const fs=require('fs');const s=fs.readFileSync('src/modules/docintel/components/artifactTypes.ts','utf8');for(const v of ['summary_en','summary_ar','epic','story','brd','gap_analysis','open_questions','business_process','acceptance_criteria','test_cases','release_notes','traceability'])if(!s.includes(v))process.exit(1)"
+```
+
+## SCREENSHOT CHECKLIST
+
+- [ ] Home 1440×900 light/dark: composer dominant; Upload, project/theme scope and first recent/attention
+      items visible without page overflow.
+- [ ] Home 1280×720: composer, one starter and recent-work heading visible.
+- [ ] Home no-project, empty, loading, error and active-theme states.
+- [ ] Review start: three decisions maximum; existing source and upload paths.
+- [ ] Library: uploaded document/Jira/git, filters, useful states and row actions.
+- [ ] Themes: empty/populated/create/tag/filter states.
+- [ ] Project Deliverables: empty/history/review-state/detail drawer.
+- [ ] Workspace Overview light/dark with title/status/version/theme/upload preserved.
+- [ ] Every primary destination plus Work items → Linked work/Traceability and contextual source/evidence.
+- [ ] Deliverables empty, generating, error, history and opened artifact.
+- [ ] English Ask with citations and evidence drawer; focus returns on Escape.
+- [ ] Arabic Ask/answer/citations in RTL without truncation.
+- [ ] Linked work empty/populated and unlink confirmation.
+- [ ] Promotion approved, blocked, partial-link-failure and retry states.
+- [ ] Admin authorized diagnostic view and non-admin denial.
+- [ ] Zero new browser console errors on every captured route.
+
+## ROLLBACK
+
+- One atomic commit per slice; presentation slices A–F roll back with `git revert <slice-commit>`.
+- G1 rollback must redeploy the prior staging function and re-probe cron/service-role/manual auth;
+  never reopen the any-authenticated global sweep silently.
+- G2 route/nav rollback is safe only while G1 security remains enforced.
+- No data deletion or destructive migration is authorized by v2.
+
+## STOP CONDITIONS
+
+- Plan Lock not approved.
+- Admin authority boundary not explicitly accepted or replaced.
+- A slice needs a file outside its explicit list.
+- A former capability becomes unreachable or needs a changed backend payload unexpectedly.
+- A hand-rolled interactive primitive or new ADS debt appears.
+- Any validation command exits non-zero.
+- A screenshot shows horizontal page scroll, clipped CTA, missing focus state, dark-mode or RTL
+  breakage.
+- Source/citation UI invents unknown metadata.
+- G1 requires schema/RLS migration without a separate Plan Lock.
+- The 2-hour slice ends before tests and screenshots are complete.
+
+---
+
+## HISTORICAL BACKEND V2 ROADMAP (RETAINED, NOT ACTIVE)
 
 ---
 

@@ -64,6 +64,8 @@ const keys = {
     ["docintel", "formatted", documentId] as const,
   artifacts: (projectId: string, documentId: string) =>
     ["docintel", "artifacts", projectId, documentId] as const,
+  recentArtifacts: (projectId: string, limit: number) =>
+    ["docintel", "artifacts", "recent", projectId, limit] as const,
   artifact: (artifactId: string) => ["docintel", "artifact", artifactId] as const,
   facts: (documentId: string) => ["docintel", "facts", documentId] as const,
   traceability: (documentId: string, projectId: string) =>
@@ -315,6 +317,19 @@ export function useArtifacts(
   });
 }
 
+/** Most recently created artifacts for a project, newest first. */
+export function useRecentArtifacts(
+  projectId: string | undefined,
+  limit = 6,
+) {
+  return useQuery({
+    queryKey: keys.recentArtifacts(projectId ?? "", limit),
+    queryFn: () => docintelApi.listRecentArtifacts(projectId!, limit),
+    enabled: !!projectId,
+    staleTime: STALE,
+  });
+}
+
 /** One artifact + its citations. */
 export function useArtifact(artifactId: string | undefined) {
   return useQuery({
@@ -345,6 +360,9 @@ export function useGenerateArtifact() {
           queryKey: keys.artifacts(variables.projectId, documentId),
         });
       }
+      qc.invalidateQueries({
+        queryKey: ["docintel", "artifacts", "recent", variables.projectId],
+      });
       catalystToast.success("Artifact generated", "Ready to review");
     },
     onError: (err: unknown) => {
