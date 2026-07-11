@@ -19,6 +19,25 @@ sync. Two self-documented bugs confirmed still open: citation confidence mis-sca
 - Whether `ai_theme_cache` (4 live rows) is repurposable for the theme-browsing gap or unrelated.
 - Whether `RAJiraSidePanel.tsx` (only live `kb_*` consumer) is itself dead code.
 
+## FINAL — ALL SLICES COMPLETE + live-verified (2026-07-11 autonomous /goal run)
+
+Every slice done and proven on staging cyij. Deploys via local CLI token (CI still needs the
+GitHub `SUPABASE_ACCESS_TOKEN` rotated). Highlights:
+- **1** correctness bugs — re-verified. **2** MarkItDown spike — verdict (later moot: everything
+  went Deno-native). **4** prompt registry live across ask/analyze/generate (fine-tuning enabler).
+- **5** themes — browse filter, tag/create UI, theme-scoped Ask ("Industrial Scanning" e2e).
+- **6** Jira + git → RAG — Ask cites `source_type='jira'` (BAU-6155) and `source_type='git'`
+  (docs/slug-contract.md). Also FIXED a critical Slice-5 hybrid_search regression that had broken
+  all Asks.
+- **3** ingestion — DOCX multi-section, PPTX per-slide, AUDIO (Gemini transcription) — all
+  Deno-native (no MarkItDown/Python service needed after all), audio proven end-to-end
+  (clip → "$4 million" answer, cited).
+- **7** ops — Health failure banner, member-triggered Re-sync, kb_* dead-code deleted, document-link
+  proof (201), promote-to-workitem proof (created epic `d98b52de`, link_origin='promotion').
+
+Only genuine follow-ups (NOT gaps in the delivered scope): a git PROVIDER auto-fetch (GitHub
+API/clone that feeds the source-agnostic git adapter), and the two standing infra items below.
+
 ## STATUS SNAPSHOT — 2026-07-11 (autonomous /goal run)
 
 | Slice | Scope | Status |
