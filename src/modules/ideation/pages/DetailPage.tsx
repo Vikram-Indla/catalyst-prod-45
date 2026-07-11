@@ -219,6 +219,70 @@ function ConvertArea({ idea }: { idea: IdeaDetailRow }) {
   );
 }
 
+/** screening → evaluation — Phase 3 S1 gap fix. The evaluation → decision
+ *  transition (Approve/Decline/Park) and the underlying mutation have existed
+ *  since Phase 3 S1 (useDecideIdeaTransition takes any toStatusKey), but no
+ *  UI ever called it for this specific hop — screening-stage ideas had no
+ *  way to reach 'evaluation' at all, silently blocking Decision and
+ *  Conversion for every real user, not just this session's testing. Reuses
+ *  the existing generic mutation; no new hook, no new RLS surface. */
+function StartEvaluationArea({ idea }: { idea: IdeaDetailRow }) {
+  const decide = useDecideIdeaTransition(idea);
+  const [showReason, setShowReason] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleStart = async (reason?: { code: string | null; text: string | null }) => {
+    setShowReason(false);
+    setError(null);
+    try {
+      await decide.mutateAsync({ toStatusKey: 'evaluation', reasonCode: reason?.code, reasonText: reason?.text });
+    } catch (e) {
+      const message = e instanceof Error ? e.message : 'Could not start evaluation.';
+      if (message === 'This transition requires a reason.') {
+        setShowReason(true);
+        return;
+      }
+      setError(message);
+    }
+  };
+
+  return (
+    <div style={{ marginTop: 32, borderTop: `1px solid ${token('color.border', 'var(--ds-border)')}`, paddingTop: 20 }}>
+      <div
+        style={{
+          font: '600 12px/16px var(--ds-font-family-body, "Atlassian Sans")',
+          color: token('color.text.subtle', 'var(--ds-text-subtle)'),
+          textTransform: 'uppercase',
+          letterSpacing: '0.04em',
+          marginBottom: 12,
+        }}
+      >
+        Screening
+      </div>
+      {error && (
+        <div style={{ marginBottom: 12 }}>
+          <SectionMessage appearance="error">{error}</SectionMessage>
+        </div>
+      )}
+      <Button appearance="primary" isDisabled={decide.isPending} onClick={() => handleStart()}>
+        Start evaluation
+      </Button>
+
+      {showReason && (
+        <ReasonCaptureModal
+          entityType="ideation"
+          itemKey={idea.idea_key}
+          itemTitle={idea.title}
+          fromStatus={idea.workflow_status_key}
+          toStatus="evaluation"
+          onSubmit={(reason) => void handleStart(reason)}
+          onCancel={() => setShowReason(false)}
+        />
+      )}
+    </div>
+  );
+}
+
 /** screening → merged — Phase 3 S5. Winner-takes V1: status transition +
  *  terminal lock only, no vote/evidence/watcher transfer (RLS blocks a
  *  client session from touching other users' rows — needs a migration-
@@ -566,6 +630,7 @@ export default function DetailPage() {
 
           {idea.workflow_status_key === 'evaluation' && <DecisionArea idea={idea} />}
           {idea.workflow_status_key === 'approved' && <ConvertArea idea={idea} />}
+          {idea.workflow_status_key === 'screening' && <StartEvaluationArea idea={idea} />}
           {idea.workflow_status_key === 'screening' && <MergeArea idea={idea} />}
         </div>
 
