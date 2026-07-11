@@ -57,8 +57,6 @@ function ClassBadge({ ideaClass }: { ideaClass: IdeaDetailRow['idea_class'] }) {
       style={{
         font: '600 11px/16px var(--ds-font-family-body, "Atlassian Sans", ui-sans-serif, sans-serif)',
         color: token('color.text.subtle', 'var(--ds-text-subtle)'),
-        textTransform: 'uppercase',
-        letterSpacing: '0.04em',
       }}
     >
       {CLASS_LABEL[ideaClass]}
@@ -73,8 +71,6 @@ function RailRow({ label, children }: { label: string; children: React.ReactNode
         style={{
           font: '600 11px/16px var(--ds-font-family-body, "Atlassian Sans")',
           color: token('color.text.subtlest', 'var(--ds-text-subtlest)'),
-          textTransform: 'uppercase',
-          letterSpacing: '0.04em',
           marginBottom: 4,
         }}
       >
@@ -116,8 +112,6 @@ function DecisionArea({ idea }: { idea: IdeaDetailRow }) {
         style={{
           font: '600 12px/16px var(--ds-font-family-body, "Atlassian Sans")',
           color: token('color.text.subtle', 'var(--ds-text-subtle)'),
-          textTransform: 'uppercase',
-          letterSpacing: '0.04em',
           marginBottom: 12,
         }}
       >
@@ -208,8 +202,6 @@ function ConvertArea({ idea }: { idea: IdeaDetailRow }) {
         style={{
           font: '600 12px/16px var(--ds-font-family-body, "Atlassian Sans")',
           color: token('color.text.subtle', 'var(--ds-text-subtle)'),
-          textTransform: 'uppercase',
-          letterSpacing: '0.04em',
           marginBottom: 12,
         }}
       >
@@ -263,8 +255,6 @@ function MergeArea({ idea }: { idea: IdeaDetailRow }) {
         style={{
           font: '600 12px/16px var(--ds-font-family-body, "Atlassian Sans")',
           color: token('color.text.subtle', 'var(--ds-text-subtle)'),
-          textTransform: 'uppercase',
-          letterSpacing: '0.04em',
           marginBottom: 12,
         }}
       >
@@ -357,8 +347,6 @@ function EvidenceArea({ idea }: { idea: IdeaDetailRow }) {
           justifyContent: 'space-between',
           font: '600 12px/16px var(--ds-font-family-body, "Atlassian Sans")',
           color: token('color.text.subtle', 'var(--ds-text-subtle)'),
-          textTransform: 'uppercase',
-          letterSpacing: '0.04em',
           marginBottom: 12,
         }}
       >
@@ -534,8 +522,6 @@ export default function DetailPage() {
               style={{
                 font: '600 12px/16px var(--ds-font-family-body, "Atlassian Sans")',
                 color: token('color.text.subtle', 'var(--ds-text-subtle)'),
-                textTransform: 'uppercase',
-                letterSpacing: '0.04em',
                 marginBottom: 4,
               }}
             >
@@ -550,8 +536,6 @@ export default function DetailPage() {
                 style={{
                   font: '600 12px/16px var(--ds-font-family-body, "Atlassian Sans")',
                   color: token('color.text.subtle', 'var(--ds-text-subtle)'),
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.04em',
                   marginBottom: 4,
                 }}
               >

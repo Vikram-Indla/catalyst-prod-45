@@ -1,0 +1,144 @@
+================================================================================
+MOBILE HANDOVER — ULTRA-QUICK VERSION (read in 2 minutes)
+================================================================================
+
+Feature: CAT-CONVERGENCE-UI-FIX-20260703-001
+Status: Discovery complete, 312 gaps found, awaiting 5 approvals
+Token budget: 2-3M for execution (RTK + caveman mode optimize)
+
+================================================================================
+COPY-PASTE THIS SCRIPT INTO YOUR MOBILE CLAUDE CODE SESSION
+================================================================================
+
+/caveman full
+rtk gain
+
+echo "Startup checks..."
+pwd && git branch && git status --short
+
+echo "Verifying discovery docs..."
+ls -lh docs/catalyst-ui-convergence/ | head -5
+
+echo "Verifying feature folder..."
+ls -lh ~/catalyst/features/CAT-CONVERGENCE-UI-FIX-20260703-001/
+
+continue feature CAT-CONVERGENCE-UI-FIX-20260703-001
+
+echo ""
+echo "=========================================="
+echo "MOBILE SESSION READY"
+echo "=========================================="
+echo ""
+echo "NEXT: Get approval on these 5 decisions"
+echo ""
+echo "DL-1: Converge incident data model (incidents → ph_issues)? [YES/NO]"
+echo "DL-2: Delete legacy /release/incidents stack (10 routes)? [YES/NO]"
+echo "DL-4: Unify test-case detail (CaseDrawer → CatalystDetailRouter)? [YES/NO]"
+echo "DL-5: Wire /testhub/defects/:key detail (inert row-click)? [YES/NO]"
+echo "DL-7: Fix aria-modal=false un-dismissable panel (a11y)? [YES/NO]"
+echo ""
+echo "Once approved, agents launch automatically."
+echo ""
+echo "Execution phases:"
+echo "  P0 (6 slices, 12hr): Critical fixes (defect detail, a11y, incident fork)"
+echo "  P1 (8 slices, 16hr): Delete dead code + structural (frees 7 top-20 ADS files)"
+echo "  P2 (6 slices, 12hr): Token cleanup (dark-mode reactive)"
+echo ""
+echo "Full plan: docs/catalyst-ui-convergence/HANDOVER.md"
+echo "Mobile complete handover: docs/catalyst-ui-convergence/MOBILE_COPY_PASTE_COMPLETE_HANDOVER.md"
+echo ""
+
+================================================================================
+WHAT TO DO NEXT
+================================================================================
+
+1. Copy-paste the script above into Claude Code on mobile
+2. Read: docs/catalyst-ui-convergence/README.md (quick nav)
+3. Get Vikram approval on DL-1/2/4/5/7 (copy the 5 questions in script above)
+4. Report back: "Approved on DL-1/2/4/5/7, activate agents"
+5. Watch agents spin up for P0 (6 parallel), P1 (8 sequential), P2 (6 parallel)
+
+================================================================================
+KEY NUMBERS
+================================================================================
+
+Total gaps: 312 (P0=21 critical, P1=118 important, P2=173 polish)
+Release Hub: 118 gaps (D grade) — delete src/pages/releases/* frees 7 worst files
+Test Hub: 58 gaps (C+ grade) — raw tables + dead details
+Incident Hub: 74 gaps (B grade) — create fork + legacy stack
+Defects: 17 gaps (C live / F dead)
+Project Hub: 28 gaps (bare hex)
+Cross-hub/a11y: 17 gaps (critical)
+
+Convergence grades:
+  Incident Hub new-gen: B (strongest, thin-mounts canon)
+  Test Hub: C+
+  Release Hub: D (epicenter)
+
+Execution time (parallelized):
+  P0: ~12 hours
+  P1: ~16 hours
+  P2: ~12 hours
+  Total: ~40 hours wall-clock
+
+Token spend (optimized with RTK + caveman):
+  Estimated: 2-3M tokens (vs 4-5M without optimization)
+
+================================================================================
+DISCOVERY DOCS LOCATION
+================================================================================
+
+docs/catalyst-ui-convergence/
+  README.md (folder nav)
+  HANDOVER.md (complete execution plan)
+  MOBILE_COPY_PASTE_COMPLETE_HANDOVER.md (full copy-paste for mobile)
+  00-DISCOVERY-CONSOLIDATED.md (executive summary)
+  COPY_PASTE_NEXT_SESSION.txt (backup copy-paste)
+  agents/
+    01-route-discovery-agent.md (routes)
+    02-project-hub-canonical-agent.md (canonical registry)
+    03-destination-hub-agent.md (per-hub inventory)
+    04-dom-probe-agent.md (DOM structure)
+    05-css-token-probe-agent.md (computed styles)
+    06-chrome-mcp-interaction-agent.md (live interactions)
+    07-component-mapping-agent.md (57 mappings)
+    08-accessibility-zindex-agent.md (a11y defects)
+    09-ads-rule-engine-agent.md (952 Tailwind color violations)
+    10-evidence-consolidation-agent.md (312-gap inventory)
+
+Feature folder:
+  ~/catalyst/features/CAT-CONVERGENCE-UI-FIX-20260703-001/
+    sessions/ (session logs auto-written here)
+    evidence/ (test evidence goes here)
+
+================================================================================
+BLOCKING DECISIONS (copy to Vikram)
+================================================================================
+
+Can you approve these 5 blocking decisions for CAT-CONVERGENCE-UI-FIX-20260703-001?
+
+DL-1: Converge incident data model — incidents table readers → ph_issues? [YES/NO]
+  (Eliminates NewIncidentModal fork, data consistency)
+
+DL-2: Delete legacy /release/incidents/* stack (10 routed surfaces)? [YES/NO]
+  (Full retirement, nav rewire to /incident-hub)
+
+DL-4: Unify test-case detail — CaseDrawer → CatalystDetailRouter? [YES/NO]
+  (MyWork/Board detail is currently dead)
+
+DL-5: Wire /testhub/defects/:key detail (currently inert row click)? [YES/NO]
+  (Make defect detail reachable)
+
+DL-7: Fix systemic aria-modal=false un-dismissable panel (a11y keyboard trap)? [YES/NO]
+  (CatalystViewBase detail panels need Escape close + scroll-lock)
+
+================================================================================
+GO GO GO
+================================================================================
+
+1. Paste the script (above) into mobile Claude Code
+2. Get approvals
+3. Report "Ready"
+4. Watch agents execute
+
+Ready for mobile session.

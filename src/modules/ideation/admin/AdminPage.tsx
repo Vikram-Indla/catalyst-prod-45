@@ -25,8 +25,6 @@ function SectionHeader({ children }: { children: React.ReactNode }) {
       style={{
         font: '600 12px/16px var(--ds-font-family-body, "Atlassian Sans")',
         color: token('color.text.subtle', 'var(--ds-text-subtle)'),
-        textTransform: 'uppercase',
-        letterSpacing: '0.04em',
         margin: '32px 16px 12px',
       }}
     >
@@ -91,7 +89,6 @@ function ScoringSection() {
                   borderBottom: `1px solid ${token('color.border', 'var(--ds-border)')}`,
                   font: '600 12px/16px var(--ds-font-family-body, "Atlassian Sans")',
                   color: token('color.text.subtle', 'var(--ds-text-subtle)'),
-                  textTransform: 'uppercase',
                 }}
               >
                 {h}

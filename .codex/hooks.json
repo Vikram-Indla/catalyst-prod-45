@@ -1,0 +1,57 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "mcp__Claude_in_Chrome__",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "'/Users/vikramindla/Documents/GitHub/catalyst-prod-45/.codex/hooks/chrome-mcp-health-check.sh'"
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "'/Users/vikramindla/Documents/GitHub/catalyst-prod-45/.codex/hooks/git-guard.sh'"
+          },
+          {
+            "type": "command",
+            "command": "'/Users/vikramindla/Documents/GitHub/catalyst-prod-45/.codex/hooks/rtk-optimize.sh'"
+          },
+          {
+            "type": "command",
+            "command": "'/Users/vikramindla/Documents/GitHub/catalyst-prod-45/.codex/hooks/supabase-linked-guard.sh'",
+            "statusMessage": "Checking supabase --linked target"
+          }
+        ]
+      },
+      {
+        "matcher": "Agent",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "'/Users/vikramindla/Documents/GitHub/catalyst-prod-45/.codex/hooks/delegation-guard.sh'",
+            "statusMessage": "Checking model-delegation policy"
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "'/Users/vikramindla/Documents/GitHub/catalyst-prod-45/.codex/hooks/session-start.sh'"
+          },
+          {
+            "type": "command",
+            "command": "'/Users/vikramindla/Documents/GitHub/catalyst-prod-45/.codex/hooks/record-session-model.sh'"
+          }
+        ]
+      }
+    ]
+  }
+}
