@@ -266,6 +266,90 @@ async function ingestJiraIssues(
   return { ingested, total_issues: totalIssues ?? rows.length, capped: (totalIssues ?? 0) > ingested };
 }
 
+// ── Git / markdown → RAG ingestion (Slice 6) ─────────────────────────────────
+// Ingest repo files (markdown/docs/code) supplied by the caller as {path, content} into the SAME
+// RAG substrate (ai_documents source_type='git' + chunk + embedding) so Ask/hybrid_search answers
+// over repo knowledge with citations. The git PROVIDER fetch (GitHub API / clone) is a separate
+// integration that feeds this adapter; the adapter is source-agnostic about how content arrives.
+const GIT_MAX_DOCS = 300;
+const GIT_CONTENT_CAP = 8000;
+
+async function ingestGitDocs(
+  admin: SupabaseClient,
+  projectId: string,
+  userId: string,
+  docs: Array<{ path?: string; content?: string }>,
+): Promise<{ ingested: number; received: number; capped: boolean }> {
+  const clean = docs
+    .filter((d) => (d.content ?? "").trim().length > 0)
+    .slice(0, GIT_MAX_DOCS)
+    .map((d) => ({
+      path: (d.path ?? "file").slice(0, 300),
+      content: (d.content ?? "").trim().slice(0, GIT_CONTENT_CAP),
+    }));
+  if (clean.length === 0) return { ingested: 0, received: docs.length, capped: false };
+
+  // Clean rebuild: drop existing git docs for the project (cascade drops chunks/embeddings).
+  const { error: delErr } = await admin
+    .from("ai_documents")
+    .delete()
+    .eq("project_id", projectId)
+    .eq("source_type", "git");
+  if (delErr) throw new Error(`cleanup failed: ${delErr.message}`);
+
+  const embedded = await embed(clean.map((d) => d.content));
+  if (embedded.embeddings.length !== clean.length) {
+    throw new Error(`embedding count mismatch: ${embedded.embeddings.length} vs ${clean.length}`);
+  }
+
+  let ingested = 0;
+  for (let i = 0; i < clean.length; i++) {
+    const d = clean[i];
+    const { data: docRow, error: docErr } = await admin
+      .from("ai_documents")
+      .insert({
+        project_id: projectId,
+        title: d.path,
+        status: "ready",
+        source_type: "git",
+        source_language: "en",
+        created_by: userId,
+      })
+      .select("id")
+      .single();
+    if (docErr) throw new Error(`doc insert failed (${d.path}): ${docErr.message}`);
+    const documentId = (docRow as { id: string }).id;
+
+    const { data: chunkRow, error: chunkErr } = await admin
+      .from("ai_document_chunks")
+      .insert({
+        document_id: documentId,
+        scope: "page",
+        lang: "en",
+        content: d.content,
+        char_count: d.content.length,
+        section_path: d.path,
+      })
+      .select("id")
+      .single();
+    if (chunkErr) throw new Error(`chunk insert failed (${d.path}): ${chunkErr.message}`);
+    const chunkId = (chunkRow as { id: string }).id;
+
+    const { error: embErr } = await admin.from("ai_document_embeddings").insert({
+      chunk_id: chunkId,
+      document_id: documentId,
+      project_id: projectId,
+      content_kind: "en_text",
+      embedding: embedded.embeddings[i] as unknown as string,
+      embedding_model: embedded.model,
+    });
+    if (embErr) throw new Error(`embedding insert failed (${d.path}): ${embErr.message}`);
+
+    ingested++;
+  }
+  return { ingested, received: docs.length, capped: docs.length > ingested };
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
@@ -294,7 +378,12 @@ Deno.serve(async (req) => {
   // Jira issues into the SAME RAG substrate (ai_documents source_type='jira' + chunk +
   // embedding) so Ask/hybrid_search can answer over them. Member-gated per project.
   const reqBody = (await req.clone().json().catch(() => null)) as
-    | { mode?: string; projectId?: string; limit?: number }
+    | {
+        mode?: string;
+        projectId?: string;
+        limit?: number;
+        docs?: Array<{ path?: string; content?: string }>;
+      }
     | null;
   if (reqBody?.mode === "jira") {
     const projectId = reqBody.projectId;
@@ -303,6 +392,18 @@ Deno.serve(async (req) => {
     if (!memberId) return json({ error: "FORBIDDEN" }, 403);
     try {
       const result = await ingestJiraIssues(admin, projectId, memberId, reqBody.limit);
+      return json(result);
+    } catch (e) {
+      return json({ error: e instanceof Error ? e.message : String(e) }, 500);
+    }
+  }
+  if (reqBody?.mode === "git") {
+    const projectId = reqBody.projectId;
+    if (!projectId) return json({ error: "projectId is required" }, 400);
+    const memberId = await requireMember(req, projectId, admin);
+    if (!memberId) return json({ error: "FORBIDDEN" }, 403);
+    try {
+      const result = await ingestGitDocs(admin, projectId, memberId, reqBody.docs ?? []);
       return json(result);
     } catch (e) {
       return json({ error: e instanceof Error ? e.message : String(e) }, 500);
