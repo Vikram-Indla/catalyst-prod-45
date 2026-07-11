@@ -385,29 +385,44 @@ export default function StrataExecutionPage() {
   const sectorPicklistQ = useProjectCardPicklists('sector');
   const portfoliosQ = usePortfolios();
   const profilesQ = useProfileNames();
-  const [railFilter, setRailFilter] = useState('');
-
-  // ── View switcher state (bookmarkable — same ?param= convention as ?period=) ──
-  const viewParam = searchParams.get('view');
-  const view: ExecutionView = isExecutionView(viewParam) ? viewParam : 'enterprise';
-  const setView = (next: ExecutionView) => {
+  // ── URL-backed view + filter state (V4-OPEN-020) ────────────────────────────
+  // Everything that shapes the dataset lives in the query string so it survives
+  // view switches, refresh, back/forward and deep links — same ?param convention
+  // as ?cycle=/?period=. Writes use { replace: true } so filtering never spams
+  // browser history, and setParam preserves every other param (view/cycle/period).
+  const setParam = (key: string, value: string) => {
     setSearchParams((prev) => {
-      const nextParams = new URLSearchParams(prev);
-      if (next === 'enterprise') nextParams.delete('view'); else nextParams.set('view', next);
-      return nextParams;
+      const next = new URLSearchParams(prev);
+      if (value) next.set(key, value); else next.delete(key);
+      return next;
     }, { replace: true });
   };
 
-  // ── Filters (narrow the dataset; independent of the view switcher's grouping) ──
-  const [lobFilter, setLobFilter] = useState('');
-  const [themeFilter, setThemeFilter] = useState('');
-  const [teamFilter, setTeamFilter] = useState('');
-  const [pmFilter, setPmFilter] = useState('');
-  const [healthFilter, setHealthFilter] = useState<HealthBucket | ''>('');
-  const [deliveryStatusFilter, setDeliveryStatusFilter] = useState('');
-  const [dependencyStatusFilter, setDependencyStatusFilter] = useState('');
-  const [blockerOnly, setBlockerOnly] = useState(false);
-  const [depDirection, setDepDirection] = useState<'requesting' | 'serving'>('requesting');
+  const viewParam = searchParams.get('view');
+  const view: ExecutionView = isExecutionView(viewParam) ? viewParam : 'enterprise';
+  const setView = (next: ExecutionView) => setParam('view', next === 'enterprise' ? '' : next);
+
+  // Filters narrow the dataset; independent of the view switcher's grouping.
+  const railFilter = searchParams.get('q') ?? '';
+  const setRailFilter = (v: string) => setParam('q', v);
+  const lobFilter = searchParams.get('lob') ?? '';
+  const setLobFilter = (v: string) => setParam('lob', v);
+  const themeFilter = searchParams.get('theme') ?? '';
+  const setThemeFilter = (v: string) => setParam('theme', v);
+  const teamFilter = searchParams.get('team') ?? '';
+  const setTeamFilter = (v: string) => setParam('team', v);
+  const pmFilter = searchParams.get('pm') ?? '';
+  const setPmFilter = (v: string) => setParam('pm', v);
+  const healthFilter = (searchParams.get('health') ?? '') as HealthBucket | '';
+  const setHealthFilter = (v: HealthBucket | '') => setParam('health', v);
+  const deliveryStatusFilter = searchParams.get('dstatus') ?? '';
+  const setDeliveryStatusFilter = (v: string) => setParam('dstatus', v);
+  const dependencyStatusFilter = searchParams.get('depstatus') ?? '';
+  const setDependencyStatusFilter = (v: string) => setParam('depstatus', v);
+  const blockerOnly = searchParams.get('blocker') === '1';
+  const setBlockerOnly = (v: boolean) => setParam('blocker', v ? '1' : '');
+  const depDirection: 'requesting' | 'serving' = searchParams.get('depdir') === 'serving' ? 'serving' : 'requesting';
+  const setDepDirection = (v: 'requesting' | 'serving') => setParam('depdir', v === 'serving' ? 'serving' : '');
 
   const invalidate = useInvalidateStrata();
   const roles = useStrataRoles().data ?? [];
@@ -431,8 +446,12 @@ export default function StrataExecutionPage() {
   const hasActiveFilters = !!(railFilter.trim() || lobFilter || themeFilter || teamFilter || pmFilter
     || healthFilter || deliveryStatusFilter || dependencyStatusFilter || blockerOnly);
   const clearFilters = () => {
-    setRailFilter(''); setLobFilter(''); setThemeFilter(''); setTeamFilter(''); setPmFilter('');
-    setHealthFilter(''); setDeliveryStatusFilter(''); setDependencyStatusFilter(''); setBlockerOnly(false);
+    // Drop every filter param in one write (keeps view/cycle/period/depdir).
+    setSearchParams((prev) => {
+      const next = new URLSearchParams(prev);
+      ['q', 'lob', 'theme', 'team', 'pm', 'health', 'dstatus', 'depstatus', 'blocker'].forEach((k) => next.delete(k));
+      return next;
+    }, { replace: true });
   };
 
   // Strategy elements (and therefore `themeById`) are scoped to the active cycle.
@@ -445,8 +464,26 @@ export default function StrataExecutionPage() {
   // Gated on elements having loaded so cards don't flash empty on first paint.
   const elementsReady = !elementsQ.isLoading;
   const search = railFilter.trim().toLowerCase();
+
+  // Cards belonging to the active cycle (theme resolves within this cycle).
+  // Dependencies are cycle-scoped against this set so cross-cycle rows never
+  // leak into the dependency section/counts (V3-OPEN-001).
+  const cycleCardIds = new Set(
+    projectCards.filter((c) => c.theme_id && themeById.has(c.theme_id)).map((c) => c.id),
+  );
+  // Cards touched by an active (unresolved, non-cancelled) blocker dependency.
+  // Blocker-only must narrow the CARDS — and every roll-up/group derived from
+  // them — not just the dependency list (V3-OPEN-016).
+  const blockedCardIds = new Set<string>();
+  for (const d of dependencies) {
+    if (!isOpenBlocker(d)) continue;
+    if (d.requesting_type === 'project_card') blockedCardIds.add(d.requesting_id);
+    if (d.serving_type === 'project_card' && d.serving_id) blockedCardIds.add(d.serving_id);
+  }
+
   const filteredCards = projectCards.filter((c) => {
     if (elementsReady && (!c.theme_id || !themeById.has(c.theme_id))) return false;
+    if (blockerOnly && !blockedCardIds.has(c.id)) return false;
     if (search && !c.name.toLowerCase().includes(search) && !(c.reference_id ?? '').toLowerCase().includes(search)) return false;
     if (lobFilter && (c.lead_business_unit ?? '') !== lobFilter) return false;
     if (themeFilter && c.theme_id !== themeFilter) return false;
@@ -469,6 +506,16 @@ export default function StrataExecutionPage() {
     if (search) {
       const haystack = `${d.name ?? ''} ${d.description ?? ''} ${d.serving_label ?? ''}`.toLowerCase();
       if (!haystack.includes(search)) return false;
+    }
+    // Cycle isolation (V3-OPEN-001): a dependency belongs to this cycle only if
+    // it touches an in-cycle project card. Applied always — independent of the
+    // user card filters below — so the dependency section/counts never surface
+    // other-cycle rows. Gated on elementsReady so nothing flashes empty before
+    // the cycle's themes have loaded.
+    if (elementsReady) {
+      const inCycleReq = d.requesting_type === 'project_card' && cycleCardIds.has(d.requesting_id);
+      const inCycleServ = d.serving_type === 'project_card' && !!d.serving_id && cycleCardIds.has(d.serving_id);
+      if (!inCycleReq && !inCycleServ) return false;
     }
     if (cardScopeActive) {
       const touchesRequesting = d.requesting_type === 'project_card' && filteredCardIds.has(d.requesting_id);
@@ -748,7 +795,7 @@ export default function StrataExecutionPage() {
             <Button
               appearance={blockerOnly ? 'primary' : 'default'}
               spacing="compact"
-              onClick={() => setBlockerOnly((v) => !v)}
+              onClick={() => setBlockerOnly(!blockerOnly)}
               testId="strata-filter-blocker-only"
               aria-pressed={blockerOnly}
             >
