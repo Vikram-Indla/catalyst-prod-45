@@ -60,6 +60,7 @@ import {
   stampLatency,
 } from "../_shared/docintel.ts";
 import { generateText, logUsage, type LlmMessage, type LlmResult } from "../_shared/llm.ts";
+import { loadActivePrompt } from "../_shared/prompts.ts";
 import { runEmbedStage } from "../_shared/embed_stage.ts";
 import { PDFDocument } from "https://esm.sh/pdf-lib@1.17.1";
 import { extractText, getDocumentProxy } from "https://esm.sh/unpdf@0.11.0";
@@ -274,6 +275,34 @@ const TRANSLATE_SYSTEM_PROMPT = [
   "- NEVER invent content. Translate only what the segment contains.",
 ].join("\n");
 
+// Prompt-registry wiring (CAT-DOCINTEL-V2 Slice 4b). The two prompts above are the
+// byte-faithful inline defaults; loadActivePrompt() self-seeds them into ai_agent_prompts
+// on first run, then serves the registry version (tunable — UPDATE + version bump, no redeploy).
+// Held in module vars: the active registry row is global, so concurrent requests in a warm
+// instance all resolve identical values — no per-request race. Loaded once per request at the
+// handler entry (loadPromptsForRequest) before any LLM call, and stamped on ai_agent_runs.
+const ANALYZE_EXTRACT_SLUG = "docintel.analyze.extract";
+const ANALYZE_TRANSLATE_SLUG = "docintel.analyze.translate";
+let ACTIVE_EXTRACT_PROMPT = SYSTEM_PROMPT;
+let ACTIVE_EXTRACT_ID: string | null = null;
+let ACTIVE_EXTRACT_VER: number | null = null;
+let ACTIVE_TRANSLATE_PROMPT = TRANSLATE_SYSTEM_PROMPT;
+let ACTIVE_TRANSLATE_ID: string | null = null;
+let ACTIVE_TRANSLATE_VER: number | null = null;
+
+async function loadPromptsForRequest(admin: SupabaseClient): Promise<void> {
+  const [ex, tr] = await Promise.all([
+    loadActivePrompt(admin, ANALYZE_EXTRACT_SLUG, SYSTEM_PROMPT),
+    loadActivePrompt(admin, ANALYZE_TRANSLATE_SLUG, TRANSLATE_SYSTEM_PROMPT),
+  ]);
+  ACTIVE_EXTRACT_PROMPT = ex.prompt;
+  ACTIVE_EXTRACT_ID = ex.id;
+  ACTIVE_EXTRACT_VER = ex.version;
+  ACTIVE_TRANSLATE_PROMPT = tr.prompt;
+  ACTIVE_TRANSLATE_ID = tr.id;
+  ACTIVE_TRANSLATE_VER = tr.version;
+}
+
 // ─────────────────────────────────────────────────────────────────────
 // Narrow shapes for the parsed result (post-validation).
 // ─────────────────────────────────────────────────────────────────────
@@ -453,6 +482,9 @@ Deno.serve(async (req) => {
     // Analyze context shared by the image OCR calls + retries. buildUserParts()
     // routes by mode: 'text' sends the supplied native text (legacy single-page
     // native retry), 'image' slices a sub-PDF → inlineData.
+    // Load the active extract + translate prompts from the registry (self-seeds on first run).
+    await loadPromptsForRequest(admin);
+
     const ctx: AnalyzeCtx = { admin, documentId, isPdf, isDocx, isXlsx, isImage, mimeType, fileBytes, nativeText };
 
     // Route each owned page: native (has usable text layer) vs sparse (needs
@@ -616,6 +648,8 @@ Deno.serve(async (req) => {
       output_tokens: batchOutputTokens,
       duration_ms: batchDurationMs,
       status: "ok",
+      prompt_id: ACTIVE_EXTRACT_ID,
+      prompt_version: ACTIVE_EXTRACT_VER,
     });
     await logUsage(admin, {
       source: "docintel-analyze",
@@ -648,6 +682,8 @@ Deno.serve(async (req) => {
       duration_ms: Date.now() - t0,
       status: "error",
       error_message: msg,
+      prompt_id: ACTIVE_EXTRACT_ID,
+      prompt_version: ACTIVE_EXTRACT_VER,
     }).then(() => {}, () => {});
     await markDocumentFailed(
       admin,
@@ -847,7 +883,7 @@ function buildTranslateUserText(segments: Segment[]): string {
 /** One strict-JSON translate call over a segment sub-batch (≤ TRANSLATE_MAX_SEGMENTS). */
 async function translateSegments(segments: Segment[]): Promise<LlmResult> {
   const messages: LlmMessage[] = [
-    { role: "system", parts: [{ text: TRANSLATE_SYSTEM_PROMPT }] },
+    { role: "system", parts: [{ text: ACTIVE_TRANSLATE_PROMPT }] },
     { role: "user", parts: [{ text: buildTranslateUserText(segments) }] },
   ];
   return await generateText({
@@ -1053,6 +1089,8 @@ async function analyzeNativePages(
     output_tokens: t.outputTokens,
     duration_ms: t.durationMs,
     status: "ok",
+    prompt_id: ACTIVE_TRANSLATE_ID,
+    prompt_version: ACTIVE_TRANSLATE_VER,
   }).then(() => {}, () => {});
 
   return {
@@ -1371,7 +1409,7 @@ async function analyzePages(
 ): Promise<LlmResult> {
   const userParts = await buildUserParts(ctx, pageNumbers, pageFrom, pageTo, mode);
   const messages: LlmMessage[] = [
-    { role: "system", parts: [{ text: SYSTEM_PROMPT }] },
+    { role: "system", parts: [{ text: ACTIVE_EXTRACT_PROMPT }] },
     { role: "user", parts: userParts },
   ];
   return await generateText({

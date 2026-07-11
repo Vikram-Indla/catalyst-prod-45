@@ -38,6 +38,7 @@ import {
   type LlmMessage,
   type LlmResult,
 } from "../_shared/llm.ts";
+import { loadActivePrompt } from "../_shared/prompts.ts";
 import { type SupabaseClient } from "https://esm.sh/@supabase/supabase-js@2.39.0";
 
 // ─────────────────────────────────────────────────────────────────────
@@ -249,17 +250,23 @@ type HybridRow = {
 // ─────────────────────────────────────────────────────────────────────
 // Grounding system prompt (shared) + per-type structure appended.
 // ─────────────────────────────────────────────────────────────────────
-function systemPrompt(artifactType: ArtifactType): string {
-  return [
-    "You are a senior business analyst.",
-    `Write a ${artifactType.replace(/_/g, " ")} STRICTLY grounded in the numbered EVIDENCE supplied by the user.`,
-    "After EVERY factual sentence, cite the evidence item(s) that support it using inline markers like [E3] or [E1][E4].",
-    "If the evidence does not support a needed point, write 'Not found in source' rather than inventing.",
-    "Do NOT use any knowledge beyond the evidence. Do not add facts, numbers, names, or requirements not present in the EVIDENCE.",
-    "Output GitHub-flavoured Markdown.",
-    "",
-    STRUCTURE_INSTRUCTIONS[artifactType],
-  ].join("\n");
+// Prompt-registry base (CAT-DOCINTEL-V2 Slice 4c). The {{ARTIFACT_TYPE}} token is substituted
+// per artifact type; the per-type STRUCTURE_INSTRUCTIONS tail stays in code (deterministic
+// scaffolding, not tunable prose). This template is the byte-faithful inline default that
+// loadActivePrompt() self-seeds; the registry version is tunable (UPDATE + version bump, no
+// redeploy). Byte-identical output to the pre-registry systemPrompt().
+const GENERATE_BASE_TEMPLATE = [
+  "You are a senior business analyst.",
+  "Write a {{ARTIFACT_TYPE}} STRICTLY grounded in the numbered EVIDENCE supplied by the user.",
+  "After EVERY factual sentence, cite the evidence item(s) that support it using inline markers like [E3] or [E1][E4].",
+  "If the evidence does not support a needed point, write 'Not found in source' rather than inventing.",
+  "Do NOT use any knowledge beyond the evidence. Do not add facts, numbers, names, or requirements not present in the EVIDENCE.",
+  "Output GitHub-flavoured Markdown.",
+].join("\n");
+
+function systemPrompt(artifactType: ArtifactType, baseTemplate: string): string {
+  const base = baseTemplate.replace("{{ARTIFACT_TYPE}}", artifactType.replace(/_/g, " "));
+  return base + "\n\n" + STRUCTURE_INSTRUCTIONS[artifactType];
 }
 
 /** Build the numbered EVIDENCE user message. Each chunk capped to CHUNK_CAP. */
@@ -580,6 +587,8 @@ async function persistArtifact(
       output_tokens: params.outputTokens,
       duration_ms: params.durationMs,
       status: "ok",
+      prompt_id: ACTIVE_GEN_BASE_ID,
+      prompt_version: ACTIVE_GEN_BASE_VER,
     })
     .select("id")
     .single();
@@ -685,6 +694,31 @@ const FACTS_SYSTEM_PROMPT = [
   "Extract ONLY facts grounded in the evidence — never invent. If nothing is found, return an empty facts array.",
 ].join("\n");
 
+// Prompt-registry wiring (Slice 4c). Module vars hold the active base + facts prompts; the
+// registry active row is global so concurrent warm-instance requests resolve identical values
+// (no race). Loaded once per request at handler entry (loadGeneratePrompts) before any LLM call.
+const GENERATE_BASE_SLUG = "docintel.generate.artifact";
+const GENERATE_FACTS_SLUG = "docintel.generate.facts";
+let ACTIVE_GEN_BASE = GENERATE_BASE_TEMPLATE;
+let ACTIVE_GEN_BASE_ID: string | null = null;
+let ACTIVE_GEN_BASE_VER: number | null = null;
+let ACTIVE_FACTS_PROMPT = FACTS_SYSTEM_PROMPT;
+let ACTIVE_FACTS_ID: string | null = null;
+let ACTIVE_FACTS_VER: number | null = null;
+
+async function loadGeneratePrompts(admin: SupabaseClient): Promise<void> {
+  const [base, facts] = await Promise.all([
+    loadActivePrompt(admin, GENERATE_BASE_SLUG, GENERATE_BASE_TEMPLATE),
+    loadActivePrompt(admin, GENERATE_FACTS_SLUG, FACTS_SYSTEM_PROMPT),
+  ]);
+  ACTIVE_GEN_BASE = base.prompt;
+  ACTIVE_GEN_BASE_ID = base.id;
+  ACTIVE_GEN_BASE_VER = base.version;
+  ACTIVE_FACTS_PROMPT = facts.prompt;
+  ACTIVE_FACTS_ID = facts.id;
+  ACTIVE_FACTS_VER = facts.version;
+}
+
 type RawFact = {
   kind?: unknown;
   statement_en?: unknown;
@@ -781,6 +815,8 @@ async function handleRequirementFacts(
         output_tokens: null,
         duration_ms: Date.now() - t0,
         status: "ok",
+        prompt_id: ACTIVE_FACTS_ID,
+        prompt_version: ACTIVE_FACTS_VER,
       })
       .then(() => {}, () => {});
     await logUsage(admin, {
@@ -794,7 +830,7 @@ async function handleRequirementFacts(
 
   // 2) Strict-JSON generation.
   const messages: LlmMessage[] = [
-    { role: "system", parts: [{ text: FACTS_SYSTEM_PROMPT }] },
+    { role: "system", parts: [{ text: ACTIVE_FACTS_PROMPT }] },
     { role: "user", parts: [{ text: evidenceMessage(evidence) }] },
   ];
 
@@ -823,6 +859,8 @@ async function handleRequirementFacts(
         duration_ms: result.durationMs,
         status: "error",
         error_message: msg,
+        prompt_id: ACTIVE_FACTS_ID,
+        prompt_version: ACTIVE_FACTS_VER,
       })
       .then(() => {}, () => {});
     await logUsage(admin, {
@@ -1016,6 +1054,8 @@ async function handleRequirementFacts(
       output_tokens: result.outputTokens ?? null,
       duration_ms: result.durationMs,
       status: "ok",
+      prompt_id: ACTIVE_FACTS_ID,
+      prompt_version: ACTIVE_FACTS_VER,
     })
     .then(() => {}, () => {});
   await logUsage(admin, {
@@ -1084,6 +1124,9 @@ Deno.serve(async (req) => {
   if (!userId) {
     return json({ error: "FORBIDDEN" }, 403);
   }
+
+  // Load active base + facts prompts from the registry (self-seed on first run).
+  await loadGeneratePrompts(admin);
 
   const t0 = Date.now();
 
@@ -1157,6 +1200,8 @@ Deno.serve(async (req) => {
           output_tokens: null,
           duration_ms: Date.now() - t0,
           status: "ok",
+          prompt_id: ACTIVE_GEN_BASE_ID,
+          prompt_version: ACTIVE_GEN_BASE_VER,
         })
         .select("id")
         .single();
@@ -1207,7 +1252,7 @@ Deno.serve(async (req) => {
 
     // 5) Build the grounded prompt.
     const messages: LlmMessage[] = [
-      { role: "system", parts: [{ text: systemPrompt(artifactTypeK) }] },
+      { role: "system", parts: [{ text: systemPrompt(artifactTypeK, ACTIVE_GEN_BASE) }] },
       { role: "user", parts: [{ text: evidenceMessage(evidence) }] },
     ];
 
@@ -1405,6 +1450,8 @@ async function handleStream(
             model: null,
             status: "error",
             error_message: msg,
+            prompt_id: ACTIVE_GEN_BASE_ID,
+            prompt_version: ACTIVE_GEN_BASE_VER,
           })
           .then(() => {}, () => {});
         await logUsage(admin, {
