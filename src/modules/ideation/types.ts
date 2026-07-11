@@ -85,3 +85,18 @@ export interface IdeaCommentRow {
   parent_comment_id: string | null;
   created_at: string;
 }
+
+/** An idea plotted on the Portfolio field chart (Phase 2 S5) — only ideas
+ *  with BOTH a value and effort score from the active model. Ideas missing
+ *  either score are never given a fabricated midpoint; they go in the
+ *  unscored tray instead (04 §C.7 "unscored ideas tray" state). */
+export interface PortfolioPoint {
+  id: string;
+  idea_key: string;
+  slug: string;
+  title: string;
+  idea_class: IdeaClass;
+  workflow_status_key: IdeaStatusKey;
+  value: number;
+  effort: number;
+}

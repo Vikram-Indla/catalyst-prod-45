@@ -174,3 +174,25 @@ Notes: G1 first attempt failed on `created_by NOT NULL` (definer context has nul
 **Demo rows**: IDEA-12 (submitted) + IDEA-13 (draft) left on staging as realistic content for later slices (draft handling, Explore).
 
 **Not built this slice** (non-scope): voice capture, attachments/evidence, AI enrichment (static note only), ContextSwitcher entry, strategy/language pickers.
+
+## Phase 2 Slice S5 — Portfolio (Value × Effort field chart) · localhost:8082 (isolated instance) · 2026-07-11
+
+**Plan Lock**: `03_PLAN_LOCK_PHASE2_S5_PORTFOLIO.md`. Scope: real scatter over `idn_idea_scores` for the `default-v1` model's value/effort drivers, quadrant labels verbatim from 04 §C.7's mock (Quick Wins/Big Bets/Fill-ins/Money Pit), empty-state coaching text adopted from Mobbin evidence 05 §C row 7 (TheyDo blank-matrix coaching), unscored-ideas tray per 04 §C.7's required state.
+
+**Gates**: `npx tsc --noEmit` ✅ 0 errors · `node scripts/no-hardcoded-colors.cjs` ✅ 0 hits on touched files.
+
+**Data**: `idn_idea_scores` had 0 rows pre-slice. Seeded 10 score rows (value + effort per idea) across 5 of the 8 `idn_ideas` via Supabase MCP `execute_sql` (data, not schema) — spanning all 4 quadrants by design. Verified the `idn_idea_scores_recompute` trigger fired correctly: `SELECT idea_key, score_total FROM idn_ideas` showed real computed totals for the 5 scored ideas and `NULL` for the 3 left deliberately unscored (IDEA-9/12/13).
+
+**Bug found + fixed during this slice**: the initial build colored scatter points via `<Scatter><Cell fill=.../></Scatter>` (the pattern recharts normally supports) — DOM inspection showed 5 `<g class="recharts-scatter-symbol">` groups existed with a valid `fill` and correct `transform` position, but their `<path>` geometry was a degenerate `d="M0,0"` (zero-size, invisible) in this recharts version. Root-caused via `javascript_tool` DOM inspection (`getBBox()` returned `{w:0,h:0}`), not guessed. Found the working precedent (`src/modules/epic-balancing/components/EpicBalancingChart.tsx`) already hit and solved the same issue with a custom `shape` render function instead of `Cell`; applied the same fix here (`PortfolioDot` component rendering an explicit `<circle>`). Re-verified after the fix: 5 visible, correctly positioned, correctly colored points.
+
+**Screenshots + interaction proof** (Chrome MCP, signed-in session):
+| Surface | Outcome |
+|---|---|
+| `/ideation/portfolio`, before fix | FAIL (documented, not shipped) — axes/quadrant labels/unscored tray rendered but 0 visible points despite 5 scored ideas (ss_6976ijwxc) |
+| `/ideation/portfolio`, light, after fix | PASS — 5 points visible, cross-checked by hand against seeded value/effort against each point's quadrant position and class color (ss_42065pa9z) |
+| Point click → navigate | PASS — clicked the green (Opportunity) point at (4, 4.5) → navigated to `/ideation/ideas/auto-flag-likely-duplicate-ideas-on-submit` (IDEA-7, the exact idea seeded at that position) |
+| Dark mode | PASS — axes, gridlines, quadrant labels, and points all hold contrast via ADS tokens (ss_4922r4vi7) |
+
+**Not yet built this slice**: Funnel/board toggle, inline decide actions (Approve/Park/Decline — needs Phase 3 workflow guards), votes-as-bubble-size, model switcher (only one model exists) — all explicitly deferred in the Plan Lock's non-scope.
+
+**Open question flagged, not silently resolved**: the 04 §C.7 ASCII mock's exact left/right quadrant placement is ambiguous against a literal "Effort ▶" reading (see code comment in `PortfolioPage.tsx`) — this build used the industry-standard mapping (Quick Win = high value + low effort) since that's the meaning "Quick Win" carries everywhere else in the design pack; worth a quick confirm with Vikram rather than treated as settled.
