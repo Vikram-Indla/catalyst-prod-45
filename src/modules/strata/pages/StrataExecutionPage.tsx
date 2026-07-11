@@ -32,10 +32,10 @@ import type { CardRollup } from '@/modules/strata/components/shared';
 import { StrataFormModal } from '@/modules/strata/components/authoring';
 import type { StrataFormValues } from '@/modules/strata/components/authoring';
 import { ProjectCardDetailView } from '@/modules/strata/components/ProjectCardDetailView';
-import { executionApi } from '@/modules/strata/domain';
+import { executionApi, valueApi } from '@/modules/strata/domain';
 import { fmtDate, fmtPct, fmtRatioPct, labelize } from '@/modules/strata/components/format';
 import {
-  useDependencies, useInvalidateStrata, useMilestones, useProfileNames, useProjectCardBySlug,
+  useDependencies, useInvalidateStrata, useMilestones, usePortfolios, useProfileNames, useProjectCardBySlug,
   useProjectCardPicklists, useProjectCards, useStrataContext, useStrataRoles, useStrategyElements,
 } from '@/modules/strata/hooks/useStrata';
 import type {
@@ -382,6 +382,8 @@ export default function StrataExecutionPage() {
   const deliveryStatusPicklistQ = useProjectCardPicklists('delivery_status');
   const lobPicklistQ = useProjectCardPicklists('lead_business_unit');
   const teamPicklistQ = useProjectCardPicklists('delivery_team');
+  const sectorPicklistQ = useProjectCardPicklists('sector');
+  const portfoliosQ = usePortfolios();
   const profilesQ = useProfileNames();
   const [railFilter, setRailFilter] = useState('');
 
@@ -433,8 +435,18 @@ export default function StrataExecutionPage() {
     setHealthFilter(''); setDeliveryStatusFilter(''); setDependencyStatusFilter(''); setBlockerOnly(false);
   };
 
+  // Strategy elements (and therefore `themeById`) are scoped to the active cycle.
+  // Project cards are fetched globally, so this view must show ONLY cards that
+  // belong to the active cycle — i.e. whose theme is one of this cycle's themes.
+  // A card whose theme belongs to another cycle, OR which has no theme at all
+  // (null theme_id = unattached to any cycle), does not belong here and is
+  // excluded — otherwise it contaminates the cycle's population and roll-ups
+  // (CAT-STRATA-E2E-FIXES-20260711-001: cross-cycle leak, incl. Unassigned cards).
+  // Gated on elements having loaded so cards don't flash empty on first paint.
+  const elementsReady = !elementsQ.isLoading;
   const search = railFilter.trim().toLowerCase();
   const filteredCards = projectCards.filter((c) => {
+    if (elementsReady && (!c.theme_id || !themeById.has(c.theme_id))) return false;
     if (search && !c.name.toLowerCase().includes(search) && !(c.reference_id ?? '').toLowerCase().includes(search)) return false;
     if (lobFilter && (c.lead_business_unit ?? '') !== lobFilter) return false;
     if (themeFilter && c.theme_id !== themeFilter) return false;
@@ -951,6 +963,10 @@ export default function StrataExecutionPage() {
           },
           { key: 'pmId', label: 'Project Manager', kind: 'user' },
           { key: 'businessOwnerId', label: 'Business Owner', kind: 'user' },
+          { key: 'leadBusinessUnit', label: 'Leading Business Unit / Team', kind: 'select', options: (lobPicklistQ.data ?? []).map((p) => ({ value: p.value, label: p.label })) },
+          { key: 'deliveryTeam', label: 'Delivery Team', kind: 'select', options: (teamPicklistQ.data ?? []).map((p) => ({ value: p.value, label: p.label })) },
+          { key: 'sector', label: 'Department / Sector', kind: 'select', options: (sectorPicklistQ.data ?? []).map((p) => ({ value: p.value, label: p.label })) },
+          { key: 'portfolioId', label: 'Portfolio', kind: 'select', options: (portfoliosQ.data ?? []).map((p) => ({ value: p.id, label: p.name })), helper: 'Optional — adds this card to a portfolio for value roll-up' },
           {
             key: 'stage', label: 'Delivery Status', kind: 'select',
             options: (deliveryStatusPicklistQ.data ?? []).map((p) => ({ value: p.value, label: p.label })),
@@ -967,13 +983,18 @@ export default function StrataExecutionPage() {
           if (sourceSystem !== 'manual' && !sourceKey) {
             throw new Error(`Source Reference Key is required for ${SOURCE_LABEL[sourceSystem]} project cards.`);
           }
-          return executionApi.createProjectCard({
+          const cardId = await executionApi.createProjectCard({
             name: String(v.name ?? '').trim(), sourceSystem,
             sourceKey: sourceSystem === 'manual' ? undefined : sourceKey,
             themeId: fvStr(v.themeId), pmId: fvStr(v.pmId), businessOwnerId: fvStr(v.businessOwnerId),
+            leadBusinessUnit: fvStr(v.leadBusinessUnit), deliveryTeam: fvStr(v.deliveryTeam), sector: fvStr(v.sector),
             stage: fvStr(v.stage), baselineStart: fvStr(v.baselineStart), baselineEnd: fvStr(v.baselineEnd),
             forecastEnd: fvStr(v.forecastEnd), scopeDescription: fvStr(v.scopeDescription),
           });
+          // Portfolio is a membership (join table), so it's applied after the card exists.
+          const portfolioId = fvStr(v.portfolioId);
+          if (portfolioId) await valueApi.addPortfolioMember(portfolioId, 'project_card', cardId);
+          return cardId;
         })}
         testId="strata-project-create-modal"
       />

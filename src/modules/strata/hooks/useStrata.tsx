@@ -29,8 +29,8 @@ interface StrataContextValue {
 
 const StrataContext = createContext<StrataContextValue | null>(null);
 
-/** URL-safe period token ("Q2 FY2026" → "q2-fy2026") — bookmarkable context. */
-const periodToken = (name: string) => name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+/** URL-safe context token ("Q2 FY2026" → "q2-fy2026") — bookmarkable cycle/period. */
+const ctxToken = (name: string) => name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 
 export function StrataProvider({ children }: { children: React.ReactNode }) {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -83,15 +83,38 @@ export function StrataProvider({ children }: { children: React.ReactNode }) {
     );
   }, [periods, periodOverride, instancesQ.data]);
 
-  // ?period= makes the governed context bookmarkable (route-first canon).
+  // ?cycle= / ?period= make the governed context bookmarkable (route-first canon).
   // Invalid/absent token → default logic above (zero-assumption).
+  React.useEffect(() => {
+    const token = searchParams.get('cycle');
+    if (!token || cycleOverride || cycles.length === 0) return;
+    const match = cycles.find((c) => ctxToken(c.name) === token);
+    if (match) setCycleOverride(match.id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cycles, searchParams]);
+
   React.useEffect(() => {
     const token = searchParams.get('period');
     if (!token || periodOverride || periods.length === 0) return;
-    const match = periods.find((p) => periodToken(p.name) === token);
+    const match = periods.find((p) => ctxToken(p.name) === token);
     if (match) setPeriodOverride(match.id);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [periods, searchParams]);
+
+  const setActiveCycleId = React.useCallback((id: string) => {
+    setCycleOverride(id);
+    const c = cycles.find((x) => x.id === id);
+    if (c) {
+      setSearchParams((prev) => {
+        const next = new URLSearchParams(prev);
+        next.set('cycle', ctxToken(c.name));
+        // Period tokens are cycle-scoped; a stale ?period= from the prior cycle
+        // would resolve to nothing — drop it so the new cycle picks its default.
+        next.delete('period');
+        return next;
+      }, { replace: true });
+    }
+  }, [cycles, setSearchParams]);
 
   const setActivePeriodId = React.useCallback((id: string) => {
     setPeriodOverride(id);
@@ -99,7 +122,7 @@ export function StrataProvider({ children }: { children: React.ReactNode }) {
     if (p) {
       setSearchParams((prev) => {
         const next = new URLSearchParams(prev);
-        next.set('period', periodToken(p.name));
+        next.set('period', ctxToken(p.name));
         return next;
       }, { replace: true });
     }
@@ -107,10 +130,10 @@ export function StrataProvider({ children }: { children: React.ReactNode }) {
 
   const value = useMemo<StrataContextValue>(() => ({
     cycles, periods, activeCycle, activePeriod,
-    setActiveCycleId: setCycleOverride,
+    setActiveCycleId,
     setActivePeriodId,
     isLoading: cyclesQ.isLoading || periodsQ.isLoading,
-  }), [cycles, periods, activeCycle, activePeriod, setActivePeriodId, cyclesQ.isLoading, periodsQ.isLoading]);
+  }), [cycles, periods, activeCycle, activePeriod, setActiveCycleId, setActivePeriodId, cyclesQ.isLoading, periodsQ.isLoading]);
 
   return <StrataContext.Provider value={value}>{children}</StrataContext.Provider>;
 }

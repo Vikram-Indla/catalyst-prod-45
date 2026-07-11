@@ -103,6 +103,11 @@ function FieldControl({
           shouldShowCalendarButton
           clearControlLabel={`Clear ${field.label}`}
           label={field.label}
+          // @atlaskit/datetime-picker falls back to its built-in placeholder
+          // (`new Date(1993, 1, 18)` → "2/18/1993") whenever no `placeholder`
+          // is supplied — an empty string is also treated as absent. Pass a
+          // real hint so empty optional date fields never show the 1993 value.
+          placeholder={field.placeholder ?? 'Select date'}
         />
       );
     case 'select': {
