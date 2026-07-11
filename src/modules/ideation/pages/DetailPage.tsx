@@ -21,7 +21,12 @@ import { ActivityPanel } from '@/components/catalyst-ds/activity/ActivityPanel';
 import type { CdsComment, CdsUser } from '@/components/catalyst-ds/types';
 import { StatusLozenge } from '@/components/shared/StatusLozenge/StatusLozenge';
 import { ReasonCaptureModal } from '@/components/catalyst-detail-views/shared/workflow/ReasonCaptureModal';
+import { VoteControl } from '@/modules/ideation/components/VoteControl';
+import { WatchControl } from '@/modules/ideation/components/WatchControl';
 import { useAuth } from '@/hooks/useAuth';
+import { useConvertIdeaToBusinessRequest } from '@/hooks/useIdeationConvert';
+import { useMergeIdea } from '@/hooks/useIdeationMerge';
+import Textfield from '@atlaskit/textfield';
 import {
   useIdeationIdea,
   useIdeationComments,
@@ -160,6 +165,147 @@ function DecisionArea({ idea }: { idea: IdeaDetailRow }) {
   );
 }
 
+/** Approved → Business Request — Phase 5 S1. Direct single-step conversion,
+ *  not the full AI-draft wizard (see Plan Lock non-scope). Shows the
+ *  created request_key as confirmation text — no deep link, since building
+ *  the /product-hub/:productCode/backlog/:key route needs a resolved
+ *  product code this idea may not have. */
+function ConvertArea({ idea }: { idea: IdeaDetailRow }) {
+  const convert = useConvertIdeaToBusinessRequest(idea);
+  const [error, setError] = useState<string | null>(null);
+  const [result, setResult] = useState<{ requestKey: string } | null>(null);
+
+  const handleConvert = async () => {
+    setError(null);
+    try {
+      const res = await convert.mutateAsync();
+      setResult({ requestKey: res.requestKey });
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Could not convert this idea.');
+    }
+  };
+
+  if (result) {
+    return (
+      <div style={{ marginTop: 32, borderTop: `1px solid ${token('color.border', 'var(--ds-border)')}`, paddingTop: 20 }}>
+        <SectionMessage appearance="success">Converted to {result.requestKey}.</SectionMessage>
+      </div>
+    );
+  }
+
+  return (
+    <div style={{ marginTop: 32, borderTop: `1px solid ${token('color.border', 'var(--ds-border)')}`, paddingTop: 20 }}>
+      <div
+        style={{
+          font: '600 12px/16px var(--ds-font-family-body, "Atlassian Sans")',
+          color: token('color.text.subtle', 'var(--ds-text-subtle)'),
+          textTransform: 'uppercase',
+          letterSpacing: '0.04em',
+          marginBottom: 12,
+        }}
+      >
+        Conversion
+      </div>
+      {error && (
+        <div style={{ marginBottom: 12 }}>
+          <SectionMessage appearance="error">{error}</SectionMessage>
+        </div>
+      )}
+      <Button appearance="primary" isDisabled={convert.isPending} onClick={handleConvert}>
+        Convert to Business Request
+      </Button>
+    </div>
+  );
+}
+
+/** screening → merged — Phase 3 S5. Winner-takes V1: status transition +
+ *  terminal lock only, no vote/evidence/watcher transfer (RLS blocks a
+ *  client session from touching other users' rows — needs a migration-
+ *  backed RPC, flagged honestly rather than faked). See Plan Lock. */
+function MergeArea({ idea }: { idea: IdeaDetailRow }) {
+  const merge = useMergeIdea(idea);
+  const [targetKey, setTargetKey] = useState('');
+  const [showReason, setShowReason] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [merged, setMerged] = useState<string | null>(null);
+
+  const handleMerge = async (reason: { code: string | null; text: string | null }) => {
+    setShowReason(false);
+    setError(null);
+    try {
+      const res = await merge.mutateAsync({ targetIdeaKey: targetKey, reason: reason.text ?? reason.code ?? '' });
+      setMerged(res.targetIdeaKey);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Could not merge this idea.');
+    }
+  };
+
+  if (merged) {
+    return (
+      <div style={{ marginTop: 32, borderTop: `1px solid ${token('color.border', 'var(--ds-border)')}`, paddingTop: 20 }}>
+        <SectionMessage appearance="success">Merged into {merged}.</SectionMessage>
+      </div>
+    );
+  }
+
+  return (
+    <div style={{ marginTop: 32, borderTop: `1px solid ${token('color.border', 'var(--ds-border)')}`, paddingTop: 20 }}>
+      <div
+        style={{
+          font: '600 12px/16px var(--ds-font-family-body, "Atlassian Sans")',
+          color: token('color.text.subtle', 'var(--ds-text-subtle)'),
+          textTransform: 'uppercase',
+          letterSpacing: '0.04em',
+          marginBottom: 12,
+        }}
+      >
+        Duplicate?
+      </div>
+      <div style={{ marginBottom: 12 }}>
+        <SectionMessage appearance="information">
+          Merging locks this idea as read-only and links it to the target. Votes, evidence, and watchers do not
+          transfer automatically yet — that needs a follow-up change.
+        </SectionMessage>
+      </div>
+      {error && (
+        <div style={{ marginBottom: 12 }}>
+          <SectionMessage appearance="error">{error}</SectionMessage>
+        </div>
+      )}
+      <div style={{ display: 'flex', gap: 8, alignItems: 'flex-end', maxWidth: 360 }}>
+        <div style={{ flex: 1 }}>
+          <label
+            htmlFor="merge-target-key"
+            style={{ display: 'block', font: '600 12px/16px var(--ds-font-family-body, "Atlassian Sans")', color: token('color.text.subtle', 'var(--ds-text-subtle)'), marginBottom: 4 }}
+          >
+            Merge into (idea key)
+          </label>
+          <Textfield
+            id="merge-target-key"
+            placeholder="IDEA-9"
+            value={targetKey}
+            onChange={(e) => setTargetKey((e.target as HTMLInputElement).value)}
+          />
+        </div>
+        <Button isDisabled={merge.isPending || !targetKey.trim()} onClick={() => setShowReason(true)}>
+          Merge
+        </Button>
+      </div>
+      {showReason && (
+        <ReasonCaptureModal
+          entityType="ideation"
+          itemKey={idea.idea_key}
+          itemTitle={idea.title}
+          fromStatus={idea.workflow_status_key}
+          toStatus="merged"
+          onSubmit={handleMerge}
+          onCancel={() => setShowReason(false)}
+        />
+      )}
+    </div>
+  );
+}
+
 export default function DetailPage() {
   const navigate = useNavigate();
   const { slug } = useParams<{ slug: string }>();
@@ -285,6 +431,8 @@ export default function DetailPage() {
           </div>
 
           {idea.workflow_status_key === 'evaluation' && <DecisionArea idea={idea} />}
+          {idea.workflow_status_key === 'approved' && <ConvertArea idea={idea} />}
+          {idea.workflow_status_key === 'screening' && <MergeArea idea={idea} />}
         </div>
 
         <aside
@@ -308,6 +456,12 @@ export default function DetailPage() {
               {idea.decision_reason && ` — ${idea.decision_reason}`}
             </RailRow>
           )}
+          <RailRow label="Community">
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              <VoteControl ideaId={idea.id} />
+              <WatchControl ideaId={idea.id} />
+            </div>
+          </RailRow>
         </aside>
       </div>
     </div>

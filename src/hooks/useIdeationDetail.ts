@@ -20,7 +20,7 @@ export function useIdeationIdea(slug: string | undefined) {
     queryFn: async (): Promise<IdeaDetailRow | null> => {
       const { data, error } = await typedQuery('idn_ideas')
         .select(
-          'id, idea_key, slug, title, problem_statement, proposed_value, idea_class, workflow_status_key, submitter_id, product_id, strategy_element_id, decision, decision_reason, products(name)'
+          'id, idea_key, slug, title, problem_statement, proposed_value, idea_class, workflow_status_key, submitter_id, product_id, strategy_element_id, decision, decision_reason, converted_business_request_id, products(name)'
         )
         .eq('slug', slug)
         .maybeSingle();
@@ -49,6 +49,7 @@ export function useIdeationIdea(slug: string | undefined) {
         strategy_element_id: data.strategy_element_id,
         decision: data.decision,
         decision_reason: data.decision_reason,
+        converted_business_request_id: data.converted_business_request_id,
         created_at: data.created_at,
       } as IdeaDetailRow;
     },

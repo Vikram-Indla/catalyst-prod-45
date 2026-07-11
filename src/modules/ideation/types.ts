@@ -63,6 +63,8 @@ export interface IdeaDetailRow {
   /** GovernedEnvelope decision fields (S1 schema) — null until evaluation is decided. */
   decision: 'approved' | 'declined' | 'parked' | 'merged' | null;
   decision_reason: string | null;
+  /** Conversion fields (S1 schema) — null until converted (Phase 5). */
+  converted_business_request_id: string | null;
   created_at: string;
 }
 
