@@ -286,4 +286,23 @@ No explicit `WITH CHECK` — Postgres reuses `USING`, evaluated against the **ne
 
 **Design evidence recap** (full detail in each slice's own Plan Lock): VoteControl/WatchControl are D9-approved non-canonical (no canonical vote+importance or watch control exists); Admin is a real read view, no fabricated toggles for config that doesn't exist (AI/Intake/Retention correctly excluded); Merge ships the status-transition half only by design — real vote/evidence/watcher transfer needs a separate `SECURITY DEFINER` RPC regardless of the bug above; Conversion is a direct single-step BR creation, not the full AI-draft wizard.
 
+## Phase 6 Slice S1 — Notification dispatch (comment + decision) · 2026-07-11
+
+**Objective**: `notification_trigger_config` had 11 IdeationHub events seeded since S3, but nothing in the app ever created a `notifications` row for any of them — confirmed that table is admin-catalog-only (grepped for `recipients_config`/`trigger_key` usage outside `useNotificationTriggers.ts`: zero hits anywhere else). Wired the two events fully backed by mutations already built this session: `idea_comment_added`, `idea_decision`.
+
+**Real pattern found, not invented**: `useInteractionRecorder.ts`'s `createMentionNotifications` — direct insert into `notifications`. Verified the LIVE schema via `information_schema.columns` on staging rather than trusting migration history, since two different `notifications` table shapes exist across migration files (an older `user_id`/`title`/`message` shape and the current `recipient_user_id`/`notification_type`/`entity_title` shape) — `workItemRepo.ts`'s `softDelete` still targets the superseded shape and would fail at runtime; not this feature's bug, noted for awareness only. RLS confirmed disabled on `notifications` (`pg_class.relrowsecurity = false`), so no policy work needed.
+
+**Bug found and fixed during live verification**: `status_type` has a real CHECK constraint (`ANY ['gray','blue','green','active','done','default']`) — my initial mapping used `'red'`/`'yellow'` for declined/parked, neither of which exist. Caught by an actual failed insert (console-logged the exact Postgres error), not read from a migration. Remapped both to `'default'`, re-verified live.
+
+**Live DB proof**:
+| Event | Test | Result |
+|---|---|---|
+| `idea_comment_added` | Commented as Vikram (actor) on IDEA-6, submitted by Jahanara Khan | Real `notifications` row: `recipient_user_id`=Jahanara, `actor_user_id`=Vikram, `notification_type='idea_comment_added'`, `hub_source='IdeationHub'`, `metadata.comment_preview` matches the typed text exactly |
+| `idea_decision` (before fix) | Declined a seeded evaluation-stage idea (IDEA-14, submitter Hadeel Alrdaddi) with a reason | Insert failed — `status_type_check` constraint violation, caught in console, **zero notification rows created** (correctly surfaced as a real gap, not silently swallowed) |
+| `idea_decision` (after fix) | Approved a second seeded idea (IDEA-15, same submitter) | Real `notifications` row: `notification_type='idea_decision'`, `status='approved'`, `status_type='green'`, `metadata={decision:'approved', reason:null}` |
+
+**Non-scope, explicitly** (see `03_PLAN_LOCK_PHASE6_S1_NOTIFICATIONS.md`): `idea_submitted`/`idea_triage_assigned`/`idea_status_changed` (no submit/triage mutation in this session's scope), `idea_mentioned` (needs ADF mention parsing), `idea_vote_milestone` (needs threshold-crossing detection), `idea_merged`/`idea_converted` (mutations exist and are correct, but blocked by the confirmed RLS bug above — wiring notifications for a write that can't complete would be unverifiable dead code), `idea_delivered`/`idea_ai_suggestions_ready` (no BR-terminal trigger or AI infra yet).
+
+**Gates**: `npx tsc --noEmit` — 0 errors. `node scripts/no-hardcoded-colors.cjs` — 0 hits.
+
 **Follow-up required, tracked here so it isn't lost**: live screenshot pass on all 5 surfaces (light + dark), interaction proof (vote cast, watch toggled, merge completed, conversion completed) with DB verification after each — same bar every earlier slice met.

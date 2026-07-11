@@ -10,6 +10,8 @@ import { useAuth } from '@/hooks/useAuth';
 import { gateTransition, resolveCanonicalVersion } from '@/lib/workflow/canonical/runtime';
 import type { GuardEvaluation } from '@/lib/workflow/canonical/contracts';
 import type { IdeaCommentRow, IdeaDetailRow } from '@/modules/ideation/types';
+import { adfToPlainText } from '@/hooks/useIdeationInbox';
+import { notifyIdeaComment, notifyIdeaDecision } from '@/hooks/useIdeationNotifications';
 
 export const ideaDetailKey = (slug: string) => ['ideation', 'idea', slug] as const;
 export const ideaCommentsKey = (ideaId: string) => ['ideation', 'idea-comments', ideaId] as const;
@@ -167,6 +169,19 @@ export function useDecideIdeaTransition(idea: IdeaDetailRow | null | undefined) 
 
       const { error } = await typedQuery('idn_ideas').update(patch).eq('id', idea.id);
       if (error) throw error;
+
+      if (DECISION_STATUSES.has(toStatusKey) && user?.id) {
+        await notifyIdeaDecision({
+          ideaId: idea.id,
+          ideaKey: idea.idea_key,
+          ideaTitle: idea.title,
+          submitterId: idea.submitter_id,
+          status: toStatusKey as IdeaDetailRow['workflow_status_key'],
+          actorId: user.id,
+          decisionReason: reasonText ?? reasonCode ?? null,
+        });
+      }
+
       return gate;
     },
     onSuccess: () => {
@@ -175,21 +190,33 @@ export function useDecideIdeaTransition(idea: IdeaDetailRow | null | undefined) 
   });
 }
 
-export function useAddIdeationComment(ideaId: string | undefined) {
+export function useAddIdeationComment(idea: IdeaDetailRow | null | undefined) {
   const queryClient = useQueryClient();
   const { user } = useAuth();
   return useMutation({
     mutationFn: async (adfContent: string) => {
-      if (!ideaId) throw new Error('No idea to comment on');
+      if (!idea) throw new Error('No idea to comment on');
+      if (!user?.id) throw new Error('Not signed in');
+      const parsedContent = JSON.parse(adfContent);
       const { error } = await typedQuery('idn_comments').insert({
-        idea_id: ideaId,
-        user_id: user?.id,
-        content: JSON.parse(adfContent),
+        idea_id: idea.id,
+        user_id: user.id,
+        content: parsedContent,
       });
       if (error) throw error;
+
+      await notifyIdeaComment({
+        ideaId: idea.id,
+        ideaKey: idea.idea_key,
+        ideaTitle: idea.title,
+        submitterId: idea.submitter_id,
+        status: idea.workflow_status_key,
+        actorId: user.id,
+        commentPreview: adfToPlainText(parsedContent) ?? '',
+      });
     },
     onSuccess: () => {
-      if (ideaId) queryClient.invalidateQueries({ queryKey: ideaCommentsKey(ideaId) });
+      if (idea) queryClient.invalidateQueries({ queryKey: ideaCommentsKey(idea.id) });
     },
   });
 }

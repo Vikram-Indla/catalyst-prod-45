@@ -313,7 +313,7 @@ export default function DetailPage() {
 
   const { data: idea, isLoading: ideaLoading, isError: ideaError } = useIdeationIdea(slug);
   const { data: comments, isLoading: commentsLoading } = useIdeationComments(idea?.id);
-  const addComment = useAddIdeationComment(idea?.id);
+  const addComment = useAddIdeationComment(idea);
 
   const currentUser: CdsUser | undefined = user
     ? { id: user.id, name: user.user_metadata?.full_name ?? user.email ?? 'You', email: user.email ?? undefined }
