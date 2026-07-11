@@ -220,7 +220,7 @@ export function ProjectCardDetailView({ card, theme }: {
   ], [canWrite]);
 
   const dependencyColumns = useMemo<Column<StrataDependency>[]>(() => [
-    { id: 'name', label: 'Dependency', flex: true, cell: ({ row }) => <span style={{ fontWeight: 600, color: T.text }}>{row.description ?? labelize(row.dependency_type)}</span> },
+    { id: 'name', label: 'Dependency', flex: true, cell: ({ row }) => <span style={{ fontWeight: 600, color: T.text }}>{row.name ?? row.description ?? labelize(row.dependency_type)}</span> },
     {
       id: 'direction', label: 'Direction', width: 10,
       cell: ({ row }) => <CatalystTag text={row.requesting_type === 'project_card' && row.requesting_id === card.id ? 'Requesting' : 'Serving'} />,
@@ -660,7 +660,7 @@ export function ProjectCardDetailView({ card, theme }: {
         onSubmit={submitAndRefresh((v) => executionApi.createDependency({
           requestingType: 'project_card', requestingId: card.id,
           servingType: 'external', servingLabel: fvStr(v.servingLabel),
-          description: fvStr(v.description) ?? fvStr(v.dependencyName),
+          name: fvStr(v.dependencyName), description: fvStr(v.description),
           dependencyType: fvStr(v.dependencyType), ownerId: fvStr(v.ownerId),
           baselineStart: fvStr(v.baselineStart), baselineEnd: fvStr(v.baselineEnd), dueDate: fvStr(v.dueDate),
           impact: fvStr(v.impact), isBlocker: Boolean(v.isBlocker),
@@ -674,6 +674,7 @@ export function ProjectCardDetailView({ card, theme }: {
         title="Edit delivery dependency"
         submitLabel="Save"
         fields={[
+          { key: 'dependencyName', label: 'Dependency Name', kind: 'text' },
           { key: 'description', label: 'Dependency Description', kind: 'textarea' },
           { key: 'status', label: 'Status', kind: 'select', required: true, options: DEPENDENCY_STATUS_OPTIONS.map((s) => ({ value: s, label: labelize(s) })) },
           { key: 'ownerId', label: 'Owner', kind: 'user' },
@@ -685,12 +686,13 @@ export function ProjectCardDetailView({ card, theme }: {
           { key: 'servingLabel', label: 'Serving Department / Team', kind: 'text' },
         ]}
         initial={editDependency ? {
-          description: editDependency.description, status: editDependency.status, ownerId: editDependency.owner_id,
+          dependencyName: editDependency.name, description: editDependency.description,
+          status: editDependency.status, ownerId: editDependency.owner_id,
           baselineStart: editDependency.baseline_start, baselineEnd: editDependency.baseline_end, dueDate: editDependency.due_date,
           impact: editDependency.impact, isBlocker: editDependency.is_blocker, servingLabel: editDependency.serving_label,
         } : undefined}
         onSubmit={submitAndRefresh((v) => executionApi.updateDependency(editDependency!.id, {
-          description: fvStr(v.description), status: fvStr(v.status), ownerId: fvStr(v.ownerId),
+          name: fvStr(v.dependencyName), description: fvStr(v.description), status: fvStr(v.status), ownerId: fvStr(v.ownerId),
           baselineStart: fvStr(v.baselineStart), baselineEnd: fvStr(v.baselineEnd), dueDate: fvStr(v.dueDate),
           impact: fvStr(v.impact), isBlocker: Boolean(v.isBlocker), servingLabel: fvStr(v.servingLabel),
           clearOwner: wasCleared(editDependency?.owner_id, v.ownerId),

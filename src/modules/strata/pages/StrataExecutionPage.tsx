@@ -1052,6 +1052,7 @@ export default function StrataExecutionPage() {
         title="New delivery dependency"
         submitLabel="Create"
         fields={[
+          { key: 'dependencyName', label: 'Dependency Name', kind: 'text' },
           { key: 'description', label: 'Dependency Description', kind: 'textarea' },
           {
             key: 'requestingProjectId', label: 'Requesting Project / Team', kind: 'select', required: true,
@@ -1072,7 +1073,7 @@ export default function StrataExecutionPage() {
           if (!requestingId) throw new Error('Pick the requesting project.');
           return executionApi.createDependency({
             requestingType: 'project_card', requestingId, servingType: 'external',
-            servingLabel: fvStr(v.servingLabel), description: fvStr(v.description),
+            servingLabel: fvStr(v.servingLabel), name: fvStr(v.dependencyName), description: fvStr(v.description),
             dependencyType: fvStr(v.dependencyType), ownerId: fvStr(v.ownerId),
             baselineStart: fvStr(v.baselineStart), baselineEnd: fvStr(v.baselineEnd), dueDate: fvStr(v.dueDate),
             impact: fvStr(v.impact), isBlocker: Boolean(v.isBlocker),

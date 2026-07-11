@@ -601,7 +601,7 @@ export const executionApi = {
     requestingType: 'initiative' | 'project_card'; requestingId: string;
     servingType: 'initiative' | 'project_card' | 'external'; servingId?: string; servingLabel?: string;
     dependencyType?: string; dueDate?: string; slaDays?: number; impact?: string;
-    isBlocker?: boolean; status?: string;
+    isBlocker?: boolean; status?: string; name?: string;
     description?: string; ownerId?: string; baselineStart?: string; baselineEnd?: string;
     sourceSystem?: string; sourceReferenceKey?: string; sourceIssueId?: string;
   }): Promise<string> =>
@@ -617,10 +617,11 @@ export const executionApi = {
       p_baseline_start: input.baselineStart ?? null, p_baseline_end: input.baselineEnd ?? null,
       p_source_system: input.sourceSystem ?? null, p_source_reference_key: input.sourceReferenceKey ?? null,
       p_source_issue_id: input.sourceIssueId ?? null,
+      p_name: input.name ?? null,
     })),
   updateDependency: (dependencyId: string, patch: {
     status?: string; dueDate?: string; slaDays?: number; impact?: string;
-    isBlocker?: boolean; servingLabel?: string;
+    isBlocker?: boolean; servingLabel?: string; name?: string;
     description?: string; ownerId?: string; baselineStart?: string; baselineEnd?: string;
     sourceSystem?: string; sourceReferenceKey?: string; sourceIssueId?: string; clearOwner?: boolean;
   }) =>
@@ -633,6 +634,7 @@ export const executionApi = {
       p_baseline_start: patch.baselineStart ?? null, p_baseline_end: patch.baselineEnd ?? null,
       p_source_system: patch.sourceSystem ?? null, p_source_reference_key: patch.sourceReferenceKey ?? null,
       p_source_issue_id: patch.sourceIssueId ?? null, p_clear_owner: patch.clearOwner ?? false,
+      p_name: patch.name ?? null,
     })),
   // ── Risks (STRATA-E2E-006) ────────────────────────────────────────────────
   risks: (projectCardId?: string): Promise<StrataRisk[]> => {
