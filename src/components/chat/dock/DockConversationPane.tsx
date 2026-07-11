@@ -42,6 +42,10 @@ import "@/features/chat-v2/tokens.css";
 interface DockConversationPaneProps {
   conversation: ChatConversation;
   onBack: () => void;
+  /** When set, jump to + outline this message once it's loaded (from Later). */
+  initialJumpMessageId?: string;
+  /** Called after the jump has been consumed so the parent can clear it. */
+  onJumpConsumed?: () => void;
 }
 
 const db = supabase as unknown as { from: (table: string) => any };
@@ -55,6 +59,8 @@ let cv2ThemeOwners = 0;
 export function DockConversationPane({
   conversation,
   onBack,
+  initialJumpMessageId,
+  onJumpConsumed,
 }: DockConversationPaneProps) {
   const { user } = useAuth();
   const queryClient = useQueryClient();
@@ -118,6 +124,23 @@ export function DockConversationPane({
 
   const [threadParent, setThreadParent] = useState<ChatMessage | null>(null);
   const [jumpHighlightId, setJumpHighlightId] = useState<string | null>(null);
+
+  // Jump-to + outline a specific message when opened from Later (parity with
+  // the /chat "jump to message" affordance). Runs once per target id.
+  const jumpedRef = useRef<string | null>(null);
+  useEffect(() => {
+    if (!initialJumpMessageId || jumpedRef.current === initialJumpMessageId) return;
+    if (!messages.some((m) => m.id === initialJumpMessageId)) return; // wait for load
+    jumpedRef.current = initialJumpMessageId;
+    setJumpHighlightId(initialJumpMessageId);
+    requestAnimationFrame(() => {
+      document
+        .querySelector(`.cc-conv-pane [data-message-id="${initialJumpMessageId}"]`)
+        ?.scrollIntoView({ behavior: "smooth", block: "center" });
+    });
+    window.setTimeout(() => setJumpHighlightId(null), 2400);
+    onJumpConsumed?.();
+  }, [initialJumpMessageId, messages, onJumpConsumed]);
 
   // DM-only "summarize" panel (shared work items). Reset when the pane
   // switches to a different conversation.

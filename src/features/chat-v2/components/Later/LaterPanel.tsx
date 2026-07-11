@@ -36,9 +36,17 @@ interface LaterPanelProps {
   selectedItemId: string | null;
   onSelectItem: (item: LaterItem) => void;
   showRightBorder?: boolean;
+  /** Optional element rendered at the start of the header (e.g. a dock back button). */
+  leftSlot?: React.ReactNode;
+  /** Override the "+ Add reminder" surface (dock renders an in-dock modal instead
+   *  of the shared viewport-centred CreateReminderModal). Same save contract. */
+  renderCreateModal?: (props: {
+    onCancel: () => void;
+    onSave: (input: { reminderText: string; remindAtIso: string }) => void;
+  }) => React.ReactNode;
 }
 
-export function LaterPanel({ selectedItemId, onSelectItem, showRightBorder = true }: LaterPanelProps) {
+export function LaterPanel({ selectedItemId, onSelectItem, showRightBorder = true, leftSlot, renderCreateModal }: LaterPanelProps) {
   const { user } = useAuth();
   const { toast } = useToast();
   const { items, counts, isLoading } = useLaterItems();
@@ -135,18 +143,21 @@ export function LaterPanel({ selectedItemId, onSelectItem, showRightBorder = tru
           padding: '12px 16px 6px',
         }}
       >
-        <h1
-          style={{
-            margin: 0,
-            fontFamily: 'var(--cv2-font)',
-            fontSize: 'var(--cv2-fs-sidebar-header)',
-            fontWeight: 700,
-            color: 'var(--cv2-text-strong)',
-            letterSpacing: '-0.01em',
-          }}
-        >
-          Later
-        </h1>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
+          {leftSlot}
+          <h1
+            style={{
+              margin: 0,
+              fontFamily: 'var(--cv2-font)',
+              fontSize: 'var(--cv2-fs-sidebar-header)',
+              fontWeight: 700,
+              color: 'var(--cv2-text-strong)',
+              letterSpacing: '-0.01em',
+            }}
+          >
+            Later
+          </h1>
+        </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
           {tab === 'completed' ? (
             <HeaderIconBtn
@@ -251,10 +262,17 @@ export function LaterPanel({ selectedItemId, onSelectItem, showRightBorder = tru
         />
       )}
       {createOpen && (
-        <CreateReminderModal
-          onCancel={() => setCreateOpen(false)}
-          onSave={input => void handleCreate(input)}
-        />
+        renderCreateModal
+          ? renderCreateModal({
+              onCancel: () => setCreateOpen(false),
+              onSave: input => void handleCreate(input),
+            })
+          : (
+            <CreateReminderModal
+              onCancel={() => setCreateOpen(false)}
+              onSave={input => void handleCreate(input)}
+            />
+          )
       )}
       {clearOpen && (
         <ClearCompletedDialog

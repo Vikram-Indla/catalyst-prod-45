@@ -846,8 +846,8 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 24px;
-  height: 24px;
+  width: 28px;
+  height: 28px;
   border: none;
   background: transparent;
   color: var(--ds-icon-subtle);
@@ -936,7 +936,7 @@
      with the section labels (also bumped to 20px). */
   width: calc(100% - 16px);
   margin-inline: 8px;
-  padding: 8px 12px;
+  padding: 4px 12px;
   border-radius: 6px;
   background: transparent;
   border: none;
@@ -2956,6 +2956,68 @@
   padding: 0 var(--ds-space-150) var(--ds-space-100);
   overflow-x: auto;
 }
+/* Activity: chips sit directly under the purple header — add breathing room */
+.cc-tab-hdr + .cc-dms__chips { padding-top: var(--ds-space-150); }
+
+/* Dock-native New reminder modal (Later "+") */
+.cc-rem__body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--ds-space-100);
+  padding: var(--ds-space-200) var(--ds-space-200) 0;
+}
+.cc-rem__label {
+  font-size: var(--ds-font-size-75);
+  font-weight: var(--cc-fw-semibold);
+  color: var(--ds-text-subtle);
+}
+/* AK Textfield stretches to fill the flex column — pin it to one line. */
+.cc-rem__body [data-ds--text-field--container] { flex: 0 0 auto; height: 40px; }
+.cc-rem__chips { display: flex; flex-wrap: wrap; gap: var(--ds-space-100); }
+.cc-rem__footer {
+  flex: 0 0 auto;
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--ds-space-100);
+  padding: var(--ds-space-150) var(--ds-space-200);
+  border-top: 1px solid var(--ds-border);
+}
+.cc-rem__cancel,
+.cc-rem__save {
+  height: 32px;
+  padding: 0 var(--ds-space-200);
+  border-radius: 6px;
+  font-size: var(--ds-font-size-100);
+  font-weight: var(--cc-fw-semibold);
+  cursor: pointer;
+}
+.cc-rem__cancel { background: transparent; border: 1px solid var(--ds-border); color: var(--ds-text); }
+.cc-rem__cancel:hover { background: var(--ds-background-neutral-subtle-hovered); }
+.cc-rem__save { background: var(--ds-background-brand-bold); border: none; color: var(--ds-text-inverse); }
+.cc-rem__save:hover:not(:disabled) { background: var(--ds-background-brand-bold-hovered); }
+.cc-rem__save:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* Assigned-to-you rows (More → detail) */
+.cc-assign__row {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--ds-space-100);
+  width: 100%;
+  padding: var(--ds-space-100) var(--ds-space-150);
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+}
+.cc-assign__row:hover { background: var(--ds-background-neutral-subtle-hovered); }
+.cc-assign__icon { flex: 0 0 auto; margin-top: var(--ds-space-025); }
+.cc-assign__body { min-width: 0; display: flex; flex-direction: column; gap: var(--ds-space-050); }
+.cc-assign__title { font-size: var(--ds-font-size-100); color: var(--ds-text); line-height: 1.3; }
+.cc-assign__key { font-weight: var(--cc-fw-semibold); color: var(--ds-text-subtle); }
+.cc-assign__meta { display: flex; }
 .cc-dms__chip {
   flex: 0 0 auto;
   height: 32px;
@@ -3343,6 +3405,21 @@
   bottom: -4px;
   width: 13px;
   height: 13px;
+  border-radius: 50%;
+  border: 2px solid var(--ds-surface);
+  box-sizing: border-box;
+  z-index: 2;
+}
+
+/* Header avatar — round (person), 28px, Catalyst status dot (--ds-icon-* to
+   match the DM rail + You modal, not @atlaskit's pale presence token). */
+.cc-hava { position: relative; display: block; width: 28px; height: 28px; }
+.cc-hava-dot {
+  position: absolute;
+  right: -2px;
+  bottom: -2px;
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
   border: 2px solid var(--ds-surface);
   box-sizing: border-box;

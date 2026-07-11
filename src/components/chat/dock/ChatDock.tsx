@@ -151,6 +151,8 @@ export function ChatDock({
   const [dirBrowsing, setDirBrowsing] = useState(false);
   const [youOpen, setYouOpen] = useState(false);
   const [cardSheet, setCardSheet] = useState<CardKind | null>(null);
+  // Pending message to jump-to + outline once its conversation opens (from Later).
+  const [jumpMsg, setJumpMsg] = useState<{ convId: string; messageId: string } | null>(null);
   const [composeOpen, setComposeOpen] = useState(false);
   const [newMsgOpen, setNewMsgOpen] = useState(false);
   const [channelOpen, setChannelOpen] = useState(false);
@@ -183,9 +185,14 @@ export function ChatDock({
   // back header — like a DM detail, but the bottom nav stays visible.
   const inCardView = !!cardSheet && !inConversation && !searchOpen;
 
+  // A full-cover overlay modal (profile / new message / new channel / new
+  // huddle) is open → hide the shell chrome (floating header, compose FAB,
+  // bottom nav) so the modal reads as a clean full-screen Slack surface.
+  const fullOverlay = youOpen || newMsgOpen || channelOpen || huddleOpen;
+
   // Primary list view (any tab, incl. search) — each tab's title header scrolls
   // away with the content while the action cluster stays sticky (Slack style).
-  const primaryList = !inConversation && !dirBrowsing && !inCardView;
+  const primaryList = !inConversation && !dirBrowsing && !inCardView && !fullOverlay;
 
   // Action cluster (expand + close + filter/avatar pill). Reused by the fixed
   // header (other tabs) and the sticky floating cluster (Home).
@@ -241,7 +248,10 @@ export function ChatDock({
             title="You"
             onClick={() => setYouOpen(true)}
           >
-            <AtlaskitAvatar name={meName} seed={meSeed} pixelSize={28} presence="green" />
+            <span className="cc-hava">
+              <AtlaskitAvatar name={meName} seed={meSeed} pixelSize={28} />
+              <span className="cc-hava-dot" style={{ background: "var(--ds-icon-success)" }} aria-hidden />
+            </span>
           </button>
         </div>
       )}
@@ -426,6 +436,8 @@ export function ChatDock({
                     projectName: null,
                   }}
                   onBack={() => onFocusDirectory?.()}
+                  initialJumpMessageId={jumpMsg && jumpMsg.convId === activeId ? jumpMsg.messageId : undefined}
+                  onJumpConsumed={() => setJumpMsg(null)}
                 />
               </ChatPaneErrorBoundary>
             ) : inCardView ? (
@@ -434,6 +446,11 @@ export function ChatDock({
                   kind={cardSheet!}
                   onBack={() => setCardSheet(null)}
                   onSelect={onSelect}
+                  onOpenMessage={(convId, messageId) => {
+                    setCardSheet(null);
+                    setJumpMsg({ convId, messageId });
+                    onSelect(convId);
+                  }}
                 />
               </ChatDirectoryErrorBoundary>
             ) : searchOpen ? (
@@ -490,7 +507,7 @@ export function ChatDock({
           </div>
 
           {/* Slack-style compose FAB — Home / DMs list view. */}
-          {!inConversation && !searchOpen && !dirBrowsing && !inCardView && (activeTab === "home" || activeTab === "dms") && (
+          {!inConversation && !searchOpen && !dirBrowsing && !inCardView && !fullOverlay && (activeTab === "home" || activeTab === "dms") && (
             <button
               type="button"
               className="cc-dock__compose-fab"
@@ -505,8 +522,8 @@ export function ChatDock({
             </button>
           )}
 
-          {/* Glassy bottom nav — list view only; hidden in detail + full-screen browse. */}
-          {!inConversation && !dirBrowsing && (
+          {/* Glassy bottom nav — list view only; hidden in detail, browse + overlays. */}
+          {!inConversation && !dirBrowsing && !fullOverlay && (
             <DockTabBar
               active={activeTab}
               searchActive={searchOpen}
