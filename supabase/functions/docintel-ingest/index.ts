@@ -35,6 +35,7 @@ import {
   requireMember,
   stampLatency,
 } from "../_shared/docintel.ts";
+import { docxSections } from "../_shared/docx.ts";
 
 interface IngestFile {
   storagePath: string;
@@ -308,8 +309,17 @@ Deno.serve(async (req) => {
         } else if (IMAGE_MIMES.has(file.mimeType)) {
           // Standalone image: exactly one scanned page.
           pageCount = 1;
+        } else if (
+          file.mimeType ===
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document" ||
+          (file.fileName ?? "").toLowerCase().endsWith(".docx")
+        ) {
+          // DOCX: one logical page per heading section (shared splitter, identical to the one
+          // docintel-analyze uses so page rows line up with per-section content). Slice 3.
+          const sections = await docxSections(bytes);
+          pageCount = sections.length > 0 ? sections.length : 1;
         } else {
-          // DOCX (and any other non-PDF): one logical page. page_count stays null.
+          // Any other non-PDF: one logical page. page_count stays null.
           pageCount = null;
         }
       } catch (e) {

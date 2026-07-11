@@ -61,6 +61,7 @@ import {
 } from "../_shared/docintel.ts";
 import { generateText, logUsage, type LlmMessage, type LlmResult } from "../_shared/llm.ts";
 import { loadActivePrompt } from "../_shared/prompts.ts";
+import { docxSections } from "../_shared/docx.ts";
 import { runEmbedStage } from "../_shared/embed_stage.ts";
 import { PDFDocument } from "https://esm.sh/pdf-lib@1.17.1";
 import { extractText, getDocumentProxy } from "https://esm.sh/unpdf@0.11.0";
@@ -791,17 +792,25 @@ async function extractNativePageText(fileBytes: Uint8Array): Promise<Map<number,
  */
 async function extractDocxPageText(fileBytes: Uint8Array): Promise<Map<number, string>> {
   const map = new Map<number, string>();
-  try {
-    const { value: rawText } = await mammoth.extractRawText({
-      arrayBuffer: fileBytes.buffer.slice(
-        fileBytes.byteOffset,
-        fileBytes.byteOffset + fileBytes.byteLength,
-      ),
-    });
-    map.set(1, rawText ?? "");
-  } catch (_e) {
-    return new Map<number, string>();
+  // Shared splitter (identical to what docintel-ingest used for page_count) → one logical
+  // page per heading section, fixing the prior 1-page collapse (Slice 3).
+  const sections = await docxSections(fileBytes);
+  if (sections.length === 0) {
+    // Splitter failed → preserve old behaviour: whole doc as a single page.
+    try {
+      const { value: rawText } = await mammoth.extractRawText({
+        arrayBuffer: fileBytes.buffer.slice(
+          fileBytes.byteOffset,
+          fileBytes.byteOffset + fileBytes.byteLength,
+        ),
+      });
+      map.set(1, rawText ?? "");
+    } catch (_e) {
+      return new Map<number, string>();
+    }
+    return map;
   }
+  sections.forEach((sec, i) => map.set(i + 1, sec));
   return map;
 }
 
