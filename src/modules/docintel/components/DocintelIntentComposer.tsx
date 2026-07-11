@@ -1,8 +1,8 @@
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
 import { Box, Stack, xcss } from '@atlaskit/primitives';
 import Tabs, { Tab, TabList, TabPanel } from '@atlaskit/tabs';
 import { useNavigate } from 'react-router-dom';
-import { Button, EmptyState, SectionMessage } from '@/components/ads';
+import { Button, Heading, SectionMessage } from '@/components/ads';
 import { Routes } from '@/lib/routes';
 import { AskPanel } from './AskPanel';
 
@@ -49,6 +49,24 @@ const composerStyles = xcss({
 const panelStyles = xcss({
   paddingBlockStart: 'space.200',
 });
+
+function ComposerPrompt({
+  title,
+  description,
+  action,
+}: {
+  title: string;
+  description: string;
+  action: ReactNode;
+}) {
+  return (
+    <Stack space="space.100">
+      <Heading as="h3" size="small">{title}</Heading>
+      <p style={{ margin: 0, color: 'var(--ds-text-subtle)' }}>{description}</p>
+      <div>{action}</div>
+    </Stack>
+  );
+}
 
 function scopeDescription(
   project: DocintelIntentProject,
@@ -112,29 +130,26 @@ export function DocintelIntentComposer({
   };
 
   const missingProject = (
-    <EmptyState
-      size="compact"
-      header="Choose a project to continue"
+    <ComposerPrompt
+      title="Choose a project to continue"
       description="Document Intelligence needs a project before it can show or use source material."
-      primaryAction={<Button onClick={openLibrary}>Open library</Button>}
+      action={<Button onClick={openLibrary}>Open library</Button>}
     />
   );
 
   const missingSources = (
-    <EmptyState
-      size="compact"
-      header="Add a source to continue"
-      description="Upload a source document before asking questions, reviewing findings, or creating an artifact."
-      primaryAction={<Button appearance="primary" onClick={openUpload}>Upload source</Button>}
+    <ComposerPrompt
+      title="Add a source to continue"
+      description="Upload a source document before asking questions, reviewing findings, or creating a deliverable."
+      action={<Button appearance="primary" onClick={openUpload}>Upload source</Button>}
     />
   );
 
   const chooseSource = (intent: 'review' | 'create') => (
-    <EmptyState
-      size="compact"
-      header={`Choose a source to ${intent}`}
+    <ComposerPrompt
+      title={`Choose a source to ${intent}`}
       description={`Select one existing source from the library before you ${intent}.`}
-      primaryAction={<Button appearance="primary" onClick={openLibrary}>Choose source</Button>}
+      action={<Button appearance="primary" onClick={openLibrary}>Choose source</Button>}
     />
   );
 
@@ -180,11 +195,10 @@ export function DocintelIntentComposer({
                   : !source
                     ? chooseSource('review')
                     : (
-                      <EmptyState
-                        size="compact"
-                        header={`Review ${source.title}`}
+                      <ComposerPrompt
+                        title={`Review ${source.title}`}
                         description="Open the review flow to inspect extracted findings and their source evidence."
-                        primaryAction={<Button appearance="primary" onClick={startReview}>Start review</Button>}
+                        action={<Button appearance="primary" onClick={startReview}>Start review</Button>}
                       />
                     )}
             </Box>
@@ -199,11 +213,10 @@ export function DocintelIntentComposer({
                   : !source
                     ? chooseSource('create')
                     : (
-                      <EmptyState
-                        size="compact"
-                        header={`Create from ${source.title}`}
-                        description="Open the source workspace to create an artifact from this document."
-                        primaryAction={<Button appearance="primary" onClick={openCreateWorkspace}>Open source workspace</Button>}
+                      <ComposerPrompt
+                        title={`Create from ${source.title}`}
+                        description="Open the source workspace to create a cited deliverable from this document."
+                        action={<Button appearance="primary" onClick={openCreateWorkspace}>Open source workspace</Button>}
                       />
                     )}
             </Box>
