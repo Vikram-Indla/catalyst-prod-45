@@ -575,13 +575,15 @@ export const docintelApi = {
     projectId,
     documentId,
     question,
+    themeId,
   }: {
     projectId: string;
     documentId?: string;
     question: string;
+    themeId?: string;
   }): Promise<DocintelAskResult> => {
     const { data, error } = await supabase.functions.invoke("docintel-ask", {
-      body: { projectId, documentId, question, stream: false },
+      body: { projectId, documentId, question, themeId, stream: false },
     });
     if (error) throw new Error(error.message);
     const res = data as Partial<DocintelAskResult> | null;

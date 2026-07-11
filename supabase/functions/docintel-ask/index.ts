@@ -331,12 +331,16 @@ Deno.serve(async (req) => {
         documentId?: string;
         question?: string;
         stream?: boolean;
+        themeId?: string;
       }
     | null;
 
   const projectId = body?.projectId;
   const documentId = typeof body?.documentId === "string" && body.documentId.length > 0
     ? body.documentId
+    : null;
+  const themeId = typeof body?.themeId === "string" && body.themeId.length > 0
+    ? body.themeId
     : null;
   const question = typeof body?.question === "string" ? body.question.trim() : "";
   const wantStream = body?.stream === true;
@@ -389,6 +393,7 @@ Deno.serve(async (req) => {
       p_content_kinds: arabic ? ["ar_text"] : ["en_text", "table_summary", "image_caption"],
       p_langs: arabic ? ["ar"] : null,
       match_count: MATCH_COUNT,
+      p_theme_id: themeId,
     });
     if (rpcErr) throw new Error(`hybrid_search failed: ${rpcErr.message}`);
 

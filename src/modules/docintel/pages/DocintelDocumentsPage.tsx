@@ -308,8 +308,11 @@ export default function DocintelDocumentsPage() {
           <div style={{ padding: 24 }}>
             <span style={{ fontWeight: 600, fontSize: 16, color: "var(--ds-text)" }}>
               Ask — {activeProject.name}
+              {selectedThemeId
+                ? ` · ${themes.find((t) => t.id === selectedThemeId)?.name ?? "theme"}`
+                : ""}
             </span>
-            <AskPanel projectId={activeProject.id} />
+            <AskPanel projectId={activeProject.id} themeId={selectedThemeId ?? undefined} />
           </div>
         )}
       </CatalystDrawer>

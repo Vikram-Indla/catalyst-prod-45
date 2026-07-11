@@ -372,6 +372,7 @@ export function useAskDocintel() {
       projectId: string;
       documentId?: string;
       question: string;
+      themeId?: string;
     }) => docintelApi.askQuestion(input),
     onError: (err: unknown) => {
       catalystToast.error(

@@ -156,9 +156,11 @@ export interface AskPanelProps {
   projectId: string;
   /** Scope the question to one document; omitted → project-wide Ask. */
   documentId?: string;
+  /** Scope retrieval to one theme's documents; omitted → all documents. */
+  themeId?: string;
 }
 
-export function AskPanel({ projectId, documentId }: AskPanelProps) {
+export function AskPanel({ projectId, documentId, themeId }: AskPanelProps) {
   const ask = useAskDocintel();
   const [question, setQuestion] = useState("");
   const [history, setHistory] = useState<AskEntry[]>([]);
@@ -170,7 +172,7 @@ export function AskPanel({ projectId, documentId }: AskPanelProps) {
     const q = question.trim();
     if (q.length === 0 || ask.isPending) return;
     ask.mutate(
-      { projectId, documentId, question: q },
+      { projectId, documentId, question: q, themeId },
       {
         onSuccess: (result) => {
           setHistory((prev) => [
