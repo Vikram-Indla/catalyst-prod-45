@@ -4,7 +4,7 @@
  * UI never computes achievement/RAG — per-row values come from
  * strata_calc_kpi_achievement via useKpiAchievement. Unknowns render '—'.
  */
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Avatar, Button, CatalystTag,
@@ -338,6 +338,10 @@ export default function StrataKpiLibraryPage() {
   const [sortKey, setSortKey] = useState<string>('name');
   const [sortOrder, setSortOrder] = useState<SortOrder>('ASC');
   const [newKpiOpen, setNewKpiOpen] = useState(false);
+  // Holds the id of a KPI already created this modal session, so a resubmit
+  // after a failed owner/link write (e.g. server SoD rejection) does not create
+  // a duplicate draft — createKpi fires at most once until the modal reopens.
+  const newKpiIdRef = useRef<string | null>(null);
 
   const canAuthor = (rolesQ.data ?? []).some((r) => (CREATE_ROLES as readonly string[]).includes(r));
 
@@ -480,7 +484,7 @@ export default function StrataKpiLibraryPage() {
                     appearance="primary"
                     spacing="compact"
                     iconBefore={<Plus size={14} />}
-                    onClick={() => setNewKpiOpen(true)}
+                    onClick={() => { newKpiIdRef.current = null; setNewKpiOpen(true); }}
                     testId="strata-new-kpi"
                   >
                     New KPI
@@ -521,24 +525,51 @@ export default function StrataKpiLibraryPage() {
         open={newKpiOpen}
         onClose={() => setNewKpiOpen(false)}
         title="New KPI"
-        description="Creates a draft KPI in the governed dictionary. Approval is a separate governed step."
+        description="Creates a draft KPI in the governed dictionary. Assign owners now, or later from the KPI page. Linking to the strategy hierarchy happens after approval, from the Strategy Room. Approval is a separate governed step."
+        width="large"
         fields={[
           { key: 'name', label: 'Name', kind: 'text', required: true, placeholder: 'KPI name' },
           { key: 'unit', label: 'Unit', kind: 'text', placeholder: 'e.g. %, days, count' },
           { key: 'direction', label: 'Direction', kind: 'select', options: DIRECTION_OPTIONS },
           { key: 'frequency', label: 'Frequency', kind: 'select', options: FREQUENCY_OPTIONS },
           { key: 'entryMethod', label: 'Entry method', kind: 'select', options: ENTRY_METHOD_OPTIONS },
+          { key: 'accountableOwnerId', label: 'Accountable owner', kind: 'user' },
+          { key: 'dataOwnerId', label: 'Data owner', kind: 'user' },
+          { key: 'reporterId', label: 'Reporter', kind: 'user' },
+          { key: 'validatorId', label: 'Validator', kind: 'user', helper: 'Must differ from the submitter — enforced server-side' },
+          { key: 'escalationOwnerId', label: 'Escalation owner', kind: 'user' },
         ]}
         initial={{ direction: 'higher_better', frequency: 'quarterly', entryMethod: 'upload' }}
         submitLabel="Create KPI"
         onSubmit={async (v) => {
-          await kpiApi.createKpi({
-            name: String(v.name),
-            unit: v.unit ? String(v.unit) : undefined,
-            direction: v.direction ? String(v.direction) : undefined,
-            frequency: v.frequency ? String(v.frequency) : undefined,
-            entryMethod: v.entryMethod ? String(v.entryMethod) : undefined,
-          });
+          // Create at most once per modal session (see newKpiIdRef): a failed
+          // owner/link write below keeps the modal open, and a resubmit must
+          // reuse the already-created draft rather than making a second one.
+          if (!newKpiIdRef.current) {
+            newKpiIdRef.current = await kpiApi.createKpi({
+              name: String(v.name),
+              unit: v.unit ? String(v.unit) : undefined,
+              direction: v.direction ? String(v.direction) : undefined,
+              frequency: v.frequency ? String(v.frequency) : undefined,
+              entryMethod: v.entryMethod ? String(v.entryMethod) : undefined,
+            });
+          }
+          const newKpiId = newKpiIdRef.current;
+          // Owners are a separate governed write (strata_update_kpi) — only fire
+          // when at least one was set, so an unowned draft still creates cleanly.
+          const hasOwner = v.accountableOwnerId || v.dataOwnerId || v.reporterId
+            || v.validatorId || v.escalationOwnerId;
+          if (hasOwner) {
+            await kpiApi.updateKpi(newKpiId, {
+              accountableOwnerId: v.accountableOwnerId ? String(v.accountableOwnerId) : undefined,
+              dataOwnerId: v.dataOwnerId ? String(v.dataOwnerId) : undefined,
+              reporterId: v.reporterId ? String(v.reporterId) : undefined,
+              validatorId: v.validatorId ? String(v.validatorId) : undefined,
+              escalationOwnerId: v.escalationOwnerId ? String(v.escalationOwnerId) : undefined,
+            });
+          }
+          // Full success — clear so the next New KPI opens a fresh create.
+          newKpiIdRef.current = null;
           invalidate();
         }}
         testId="strata-new-kpi-modal"
