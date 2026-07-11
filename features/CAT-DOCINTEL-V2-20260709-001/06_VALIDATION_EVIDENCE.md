@@ -79,3 +79,28 @@ max 0.0098 · Document Summary (07-09) 25 cites 0.73–1.0 · Epic (07-09) 21 ci
 
 **Residual (decision pending Vikram):** 78 stale citation rows on 2 historical pre-fix demo
 artifacts. Recommended: leave as historical (Option 1, `08_DRIFT_LOG.md`). Not silently deleted.
+
+---
+
+## SLICE 4a — prompt registry (docintel-ask) — COMPLETE + LIVE-VERIFIED (2026-07-11)
+
+Migration `20260711011626_docintel_prompt_registry` applied to staging cyij. `docintel-ask`
+deployed via Supabase CLI with the local access token (CI/GitHub token is expired — Drift Event 2).
+Byte-faithful bundle (index.ts + _shared/{llm,prompts,docintel}.ts uploaded from disk).
+
+**End-to-end proof (live Ask on localhost:8080 → staging cyij, 2026-07-11 01:31):**
+- Live Ask "What are the raw material requirements?" → grounded answer, page citations
+  (P.24/P.19/P.15), 4 sources, confidence 50%. Answer quality unchanged (no behaviour drift).
+- Registry self-seeded on that first call: `ai_agent_prompts` slug `docintel.ask.answer` v1,
+  is_active, id `31483425-9bbb-430f-8708-da404b9ba138`, prompt text = byte-faithful
+  `ASK_PROMPT_TEMPLATE` ("You are a document Q&A assistant.\nAnswer the user'…").
+- The run was stamped truthfully: `ai_agent_runs` latest agent='ask' row (2026-07-11 01:31:34)
+  carries `prompt_id=31483425-…` (exact match to the seeded row), `prompt_version=1`, status ok.
+- Contrast: the two prior ask runs (2026-07-09, pre-deploy) have `prompt_id=NULL` — provenance is
+  truthful only from the deployed version onward, exactly as designed.
+
+**Fine-tuning enabler is now live for the Q&A prompt:** tune = `UPDATE ai_agent_prompts SET prompt=…,
+version=version+1` (+ deactivate old / activate new) — no edge-function redeploy.
+
+Pattern proven. Next: propagate to `docintel-analyze` (2 prompts) and `docintel-generate`
+(per-type base + facts; NUL-safe via CLI/git deploy).

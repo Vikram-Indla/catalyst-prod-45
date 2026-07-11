@@ -19,3 +19,15 @@
   #2 and #3 working, #1 fixed for new artifacts (stale rows on 2 old demo artifacts only).
   **Drift Event 1 logged.** Slice 1 = complete-by-verification, no code changed. RTK grep proxy
   corrupts Bash grep on NUL-byte edge-fn files — used `/usr/bin/grep -a` to bypass.
+
+## 2026-07-11 — Session 002 — Slice 4a (prompt registry: docintel-ask) COMPLETE
+
+- Discovery: `ai_agent_prompts`=10 placeholder rows; prompts hardcoded inline; runs never stamped prompt_id.
+- Built: migration `20260711011626_docintel_prompt_registry` (applied cyij); `_shared/prompts.ts`
+  self-seeding loader; `docintel-ask` wired (registry load + byte-faithful template + prompt_id on all run inserts).
+- Committed + pushed `5d44c3363` (rebased over concurrent remote; foreign drift preserved in stash@{0}).
+- CI deploy FAILED 401 (expired GitHub `SUPABASE_ACCESS_TOKEN`) — Drift Event 2. Vikram: don't rotate.
+  Found valid local token `~/.config/supabase/access-token`; deployed docintel-ask via CLI byte-faithfully (verify_jwt kept true).
+- LIVE-VERIFIED end-to-end: live Ask seeded `docintel.ask.answer` v1 (id 31483425…) + stamped prompt_id
+  on the run; prior runs NULL. Answer quality unchanged. Fine-tuning enabler live.
+- Started local dev server (was down) for verification; left running.

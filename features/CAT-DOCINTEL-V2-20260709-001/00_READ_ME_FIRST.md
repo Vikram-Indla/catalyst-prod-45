@@ -1,7 +1,9 @@
 # CAT-DOCINTEL-V2-20260709-001 — READ ME FIRST
 
-**Status:** In Progress — Slice 1 COMPLETE (verify-only, drift), Slice 2 spike DONE; Slice 3+ pending
-**Slice 1 result:** all 3 correctness bugs already fixed+deployed 2026-07-07; verified live 2026-07-09 (no code needed). Residual: 78 stale citation rows on 2 pre-fix demo artifacts (Vikram decision pending).
+**Status:** In Progress — Slice 1 done (verify-only), Slice 2 spike done, **Slice 4a DONE + live-verified**; Slices 4b/4c/3/5/6/7 pending
+**Slice 1 result:** 3 correctness bugs already fixed+deployed 2026-07-07; verified live (no code). Residual: 78 stale citation rows on 2 pre-fix demo artifacts (accepted historical, Decision 11).
+**Slice 4a result (2026-07-11):** prompt registry live for `docintel-ask` — self-seeds byte-faithfully, stamps truthful `prompt_id`; proven end-to-end (seeded row 31483425… stamped on a live Ask run). Fine-tuning enabler live (tune = UPDATE + version bump, no redeploy). Deployed via local CLI token (CI deploy still broken — expired GitHub secret, Drift Event 2).
+**Deploy note:** repo-wide CI edge-fn deploy is DOWN (expired `SUPABASE_ACCESS_TOKEN` GitHub secret). Deploy via local `~/.config/supabase/access-token` + `supabase functions deploy` until rotated.
 **Last updated:** 2026-07-09
 **Active Plan Lock:** 03_PLAN_LOCK.md (v1, DRAFT)
 **Last session:** sessions/001_activation-and-plan-lock.md
