@@ -62,6 +62,7 @@ import {
 import { generateText, logUsage, type LlmMessage, type LlmResult } from "../_shared/llm.ts";
 import { loadActivePrompt } from "../_shared/prompts.ts";
 import { docxSections } from "../_shared/docx.ts";
+import { pptxSlides } from "../_shared/pptx.ts";
 import { runEmbedStage } from "../_shared/embed_stage.ts";
 import { PDFDocument } from "https://esm.sh/pdf-lib@1.17.1";
 import { extractText, getDocumentProxy } from "https://esm.sh/unpdf@0.11.0";
@@ -429,6 +430,8 @@ Deno.serve(async (req) => {
       (mimeType.includes("word") || (storagePath?.toLowerCase().endsWith(".docx") ?? false));
     const isXlsx = !isPdf && !isDocx &&
       (mimeType === XLSX_MIME || (storagePath?.toLowerCase().endsWith(".xlsx") ?? false));
+    const isPptx = !isPdf && !isDocx && !isXlsx &&
+      (mimeType.includes("presentation") || (storagePath?.toLowerCase().endsWith(".pptx") ?? false));
     const isImage = IMAGE_MIMES.has(mimeType);
 
     // 2) Load the page rows for this range (need their ids to persist against).
@@ -472,6 +475,8 @@ Deno.serve(async (req) => {
     let nativeText: Map<number, string>;
     if (isDocx) {
       nativeText = await extractDocxPageText(fileBytes);
+    } else if (isPptx) {
+      nativeText = await extractPptxPageText(fileBytes);
     } else if (isPdf) {
       nativeText = await extractNativePageText(fileBytes);
     } else {
@@ -486,17 +491,17 @@ Deno.serve(async (req) => {
     // Load the active extract + translate prompts from the registry (self-seeds on first run).
     await loadPromptsForRequest(admin);
 
-    const ctx: AnalyzeCtx = { admin, documentId, isPdf, isDocx, isXlsx, isImage, mimeType, fileBytes, nativeText };
+    const ctx: AnalyzeCtx = { admin, documentId, isPdf, isDocx, isXlsx, isPptx, isImage, mimeType, fileBytes, nativeText };
 
     // Route each owned page: native (has usable text layer) vs sparse (needs
     // OCR). DOCX is handled entirely by the native segment-and-translate path
     // below (page 1), so it never enters the sparse (image) loop. XLSX is
     // handled entirely by the deterministic SheetJS path (6a-bis) — neither
     // loop. A standalone image (PNG/JPEG) is one sparse page (whole-image OCR).
-    const nativePages = isXlsx ? [] : isDocx
+    const nativePages = isXlsx ? [] : (isDocx || isPptx)
       ? rangeNumbers.filter((n) => nativeText.has(n))
       : rangeNumbers.filter((n) => hasNativeText(nativeText, n));
-    const sparsePages = (isDocx || isXlsx)
+    const sparsePages = (isDocx || isXlsx || isPptx)
       ? []
       : rangeNumbers.filter((n) => !hasNativeText(nativeText, n));
 
@@ -811,6 +816,15 @@ async function extractDocxPageText(fileBytes: Uint8Array): Promise<Map<number, s
     return map;
   }
   sections.forEach((sec, i) => map.set(i + 1, sec));
+  return map;
+}
+
+// PPTX → one logical page per slide (shared pptxSlides splitter; identical to what
+// docintel-ingest used for page_count so page rows align with per-slide content). Slice 3.
+async function extractPptxPageText(fileBytes: Uint8Array): Promise<Map<number, string>> {
+  const map = new Map<number, string>();
+  const slides = await pptxSlides(fileBytes);
+  slides.forEach((s, i) => map.set(i + 1, s));
   return map;
 }
 
@@ -1304,6 +1318,7 @@ type AnalyzeCtx = {
   isPdf: boolean;
   isDocx: boolean;
   isXlsx: boolean;
+  isPptx: boolean;
   isImage: boolean;
   mimeType: string;
   fileBytes: Uint8Array;

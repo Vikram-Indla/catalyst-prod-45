@@ -121,7 +121,7 @@ export default function DocintelWorkspacePage() {
             <input
               ref={fileInputRef}
               type="file"
-              accept=".pdf,.docx,.xlsx,.png,.jpg,.jpeg"
+              accept=".pdf,.docx,.xlsx,.pptx,.png,.jpg,.jpeg"
               style={{ display: "none" }}
               aria-hidden
               onChange={(e) => {

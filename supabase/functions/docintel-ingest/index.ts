@@ -36,6 +36,7 @@ import {
   stampLatency,
 } from "../_shared/docintel.ts";
 import { docxSections } from "../_shared/docx.ts";
+import { pptxSlides } from "../_shared/pptx.ts";
 
 interface IngestFile {
   storagePath: string;
@@ -318,6 +319,14 @@ Deno.serve(async (req) => {
           // docintel-analyze uses so page rows line up with per-section content). Slice 3.
           const sections = await docxSections(bytes);
           pageCount = sections.length > 0 ? sections.length : 1;
+        } else if (
+          file.mimeType ===
+            "application/vnd.openxmlformats-officedocument.presentationml.presentation" ||
+          (file.fileName ?? "").toLowerCase().endsWith(".pptx")
+        ) {
+          // PPTX: one logical page per slide (shared splitter, matches docintel-analyze). Slice 3.
+          const slides = await pptxSlides(bytes);
+          pageCount = slides.length > 0 ? slides.length : 1;
         } else {
           // Any other non-PDF: one logical page. page_count stays null.
           pageCount = null;

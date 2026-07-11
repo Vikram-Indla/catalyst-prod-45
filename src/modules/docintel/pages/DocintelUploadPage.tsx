@@ -41,6 +41,7 @@ const ACCEPT = {
   "application/pdf": [".pdf"],
   "application/vnd.openxmlformats-officedocument.wordprocessingml.document": [".docx"],
   "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": [".xlsx"],
+  "application/vnd.openxmlformats-officedocument.presentationml.presentation": [".pptx"],
   "image/png": [".png"],
   "image/jpeg": [".jpg", ".jpeg"],
 };
@@ -254,7 +255,7 @@ export default function DocintelUploadPage() {
             <p style={{ margin: "8px 0 0", color: "var(--ds-text)" }}>
               {isDragActive
                 ? "Drop files here"
-                : "Drag PDF, Word, Excel, or image files here, or click to browse"}
+                : "Drag PDF, Word, Excel, PowerPoint, or image files here, or click to browse"}
             </p>
             <p style={{ margin: "4px 0 0", fontSize: 13 }}>
               Up to {MAX_FILES} files, 50MB each
