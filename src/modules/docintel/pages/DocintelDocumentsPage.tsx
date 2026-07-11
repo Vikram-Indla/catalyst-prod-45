@@ -25,7 +25,12 @@ import { JiraTable } from "@/components/shared/JiraTable";
 import type { Column } from "@/components/shared/JiraTable/types";
 import { useAuth } from "@/hooks/useAuth";
 import { docintelRoutes } from "@/lib/routes";
-import { useDocintelDocuments, useDocintelProjects } from "../hooks/useDocintel";
+import {
+  useDocintelDocuments,
+  useDocintelProjects,
+  useDocintelThemes,
+  useThemeDocumentIds,
+} from "../hooks/useDocintel";
 import { useActiveDocintelProject } from "../hooks/useActiveDocintelProject";
 import { AskPanel } from "../components/AskPanel";
 import type { DocintelDocument, DocintelStatus } from "../types";
@@ -78,6 +83,18 @@ export default function DocintelDocumentsPage() {
 
   const documentsQuery = useDocintelDocuments(activeProject?.id);
   const documents = documentsQuery.data ?? [];
+
+  // Theme filter (Slice 5): narrow the visible list to documents tagged with a theme.
+  const [selectedThemeId, setSelectedThemeId] = useState<string | null>(null);
+  const themesQuery = useDocintelThemes(activeProject?.id);
+  const themes = themesQuery.data ?? [];
+  const themeDocIdsQuery = useThemeDocumentIds(selectedThemeId ?? undefined);
+  const themeDocIds = themeDocIdsQuery.data;
+  const visibleDocuments = useMemo(() => {
+    if (!selectedThemeId || !themeDocIds) return documents;
+    const idSet = new Set(themeDocIds);
+    return documents.filter((d) => idSet.has(d.id));
+  }, [documents, selectedThemeId, themeDocIds]);
 
   const columns = useMemo<Column<DocintelDocument>[]>(
     () => [
@@ -201,17 +218,46 @@ export default function DocintelDocumentsPage() {
         }
       />
 
-      {projects.length > 1 && (
-        <div style={{ margin: "12px 0 20px", maxWidth: 320 }}>
-          <Select
-            options={projectOptions}
-            value={selectValue}
-            onChange={(next) => {
-              if (next) setActiveProjectKey(String(next.value));
-            }}
-            aria-label="Project"
-            isSearchable
-          />
+      {(projects.length > 1 || themes.length > 0) && (
+        <div style={{ display: "flex", gap: 12, margin: "12px 0 20px", flexWrap: "wrap" }}>
+          {projects.length > 1 && (
+            <div style={{ maxWidth: 320, minWidth: 220, flex: 1 }}>
+              <Select
+                options={projectOptions}
+                value={selectValue}
+                onChange={(next) => {
+                  if (next) setActiveProjectKey(String(next.value));
+                }}
+                aria-label="Project"
+                isSearchable
+              />
+            </div>
+          )}
+          {themes.length > 0 && (
+            <div style={{ maxWidth: 280, minWidth: 200, flex: 1 }}>
+              <Select
+                options={[
+                  { value: "", label: "All themes" },
+                  ...themes.map((t) => ({ value: t.id, label: t.name })),
+                ]}
+                value={
+                  selectedThemeId
+                    ? {
+                        value: selectedThemeId,
+                        label:
+                          themes.find((t) => t.id === selectedThemeId)?.name ?? "Theme",
+                      }
+                    : { value: "", label: "All themes" }
+                }
+                onChange={(next) => {
+                  const v = next ? String(next.value) : "";
+                  setSelectedThemeId(v === "" ? null : v);
+                }}
+                aria-label="Theme"
+                isSearchable
+              />
+            </div>
+          )}
         </div>
       )}
 
@@ -242,7 +288,7 @@ export default function DocintelDocumentsPage() {
       ) : (
         <JiraTable<DocintelDocument>
           columns={columns}
-          data={documents}
+          data={visibleDocuments}
           getRowId={(row) => row.id}
           onRowClick={(row) =>
             row.slug && navigate(docintelRoutes.workspace(row.slug))

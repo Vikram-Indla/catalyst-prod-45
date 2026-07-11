@@ -530,3 +530,68 @@ export function useTraceability(
     staleTime: STALE,
   });
 }
+
+// ── Themes (CAT-DOCINTEL-V2 Slice 5) ──────────────────────────────────────
+export function useDocintelThemes(projectId: string | undefined) {
+  return useQuery({
+    queryKey: ["docintel", "themes", projectId ?? ""],
+    queryFn: () => docintelApi.listThemes(projectId!),
+    enabled: !!projectId,
+    staleTime: STALE,
+  });
+}
+
+export function useDocumentThemeIds(documentId: string | undefined) {
+  return useQuery({
+    queryKey: ["docintel", "doc-themes", documentId ?? ""],
+    queryFn: () => docintelApi.listDocumentThemeIds(documentId!),
+    enabled: !!documentId,
+    staleTime: STALE,
+  });
+}
+
+export function useThemeDocumentIds(themeId: string | undefined) {
+  return useQuery({
+    queryKey: ["docintel", "theme-docs", themeId ?? ""],
+    queryFn: () => docintelApi.listThemeDocumentIds(themeId!),
+    enabled: !!themeId,
+    staleTime: STALE,
+  });
+}
+
+export function useCreateTheme(projectId: string | undefined) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ name, description }: { name: string; description?: string }) =>
+      docintelApi.createTheme(projectId!, name, description),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["docintel", "themes", projectId ?? ""] });
+    },
+  });
+}
+
+export function useTagDocumentTheme(projectId: string | undefined) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ documentId, themeId }: { documentId: string; themeId: string }) =>
+      docintelApi.tagDocumentTheme(documentId, themeId),
+    onSuccess: (_r, { documentId, themeId }) => {
+      qc.invalidateQueries({ queryKey: ["docintel", "doc-themes", documentId] });
+      qc.invalidateQueries({ queryKey: ["docintel", "theme-docs", themeId] });
+      qc.invalidateQueries({ queryKey: ["docintel", "themes", projectId ?? ""] });
+    },
+  });
+}
+
+export function useUntagDocumentTheme(projectId: string | undefined) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ documentId, themeId }: { documentId: string; themeId: string }) =>
+      docintelApi.untagDocumentTheme(documentId, themeId),
+    onSuccess: (_r, { documentId, themeId }) => {
+      qc.invalidateQueries({ queryKey: ["docintel", "doc-themes", documentId] });
+      qc.invalidateQueries({ queryKey: ["docintel", "theme-docs", themeId] });
+      qc.invalidateQueries({ queryKey: ["docintel", "themes", projectId ?? ""] });
+    },
+  });
+}

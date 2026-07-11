@@ -337,6 +337,18 @@ export interface DocintelDocumentLink {
   created_at: string;
 }
 
+/** A knowledge theme — a user-created, browsable grouping of documents (Slice 5). */
+export interface DocintelTheme {
+  id: string;
+  project_id: string;
+  name: string;
+  slug: string;
+  description: string | null;
+  created_by: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
 /**
  * A link joined with its resolved target — key/title looked up from the
  * canonical table for the entity_type (ph_issues / ph_work_items /

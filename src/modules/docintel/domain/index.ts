@@ -8,6 +8,7 @@
  */
 import { supabase } from "@/integrations/supabase/client";
 import type {
+  DocintelTheme,
   DocintelArtifact,
   DocintelArtifactCoverage,
   DocintelArtifactType,
@@ -945,6 +946,79 @@ export const docintelApi = {
       .from("ai_document_links")
       .delete()
       .eq("id", linkId);
+    if (error) throw new Error(error.message);
+  },
+
+  // ── Themes (CAT-DOCINTEL-V2 Slice 5) ──────────────────────────────────
+  /** List a project's knowledge themes, alphabetical. */
+  listThemes: async (projectId: string): Promise<DocintelTheme[]> => {
+    const { data, error } = await db
+      .from("docintel_themes")
+      .select("*")
+      .eq("project_id", projectId)
+      .order("name", { ascending: true });
+    if (error) throw new Error(error.message);
+    return (data ?? []) as DocintelTheme[];
+  },
+
+  /** Create a theme (slug auto-derived by DB trigger). */
+  createTheme: async (
+    projectId: string,
+    name: string,
+    description?: string,
+  ): Promise<DocintelTheme> => {
+    const { data: auth } = await supabase.auth.getUser();
+    const { data, error } = await db
+      .from("docintel_themes")
+      .insert({
+        project_id: projectId,
+        name,
+        description: description ?? null,
+        created_by: auth?.user?.id ?? null,
+      })
+      .select("*")
+      .single();
+    if (error) throw new Error(error.message);
+    return data as DocintelTheme;
+  },
+
+  /** Theme ids tagged on a document. */
+  listDocumentThemeIds: async (documentId: string): Promise<string[]> => {
+    const { data, error } = await db
+      .from("ai_document_themes")
+      .select("theme_id")
+      .eq("document_id", documentId);
+    if (error) throw new Error(error.message);
+    return ((data ?? []) as Array<{ theme_id: string }>).map((r) => r.theme_id);
+  },
+
+  /** Document ids tagged with a theme (for filtering the document list). */
+  listThemeDocumentIds: async (themeId: string): Promise<string[]> => {
+    const { data, error } = await db
+      .from("ai_document_themes")
+      .select("document_id")
+      .eq("theme_id", themeId);
+    if (error) throw new Error(error.message);
+    return ((data ?? []) as Array<{ document_id: string }>).map((r) => r.document_id);
+  },
+
+  /** Tag a document with a theme (idempotent). */
+  tagDocumentTheme: async (documentId: string, themeId: string): Promise<void> => {
+    const { data: auth } = await supabase.auth.getUser();
+    const { error } = await db.from("ai_document_themes").upsert(
+      { document_id: documentId, theme_id: themeId, created_by: auth?.user?.id ?? null },
+      { onConflict: "document_id,theme_id", ignoreDuplicates: true },
+    );
+    if (error) throw new Error(error.message);
+  },
+
+  /** Remove a document's theme tag. */
+  untagDocumentTheme: async (documentId: string, themeId: string): Promise<void> => {
+    const { error } = await db
+      .from("ai_document_themes")
+      .delete()
+      .eq("document_id", documentId)
+      .eq("theme_id", themeId);
     if (error) throw new Error(error.message);
   },
 };
