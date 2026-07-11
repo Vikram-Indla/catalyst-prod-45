@@ -21,6 +21,7 @@ import {
   Select,
   Spinner,
   EmptyState,
+  SectionMessage,
 } from "@/components/ads";
 import type { LozengeAppearance } from "@/components/ads";
 import { JiraTable } from "@/components/shared/JiraTable";
@@ -257,6 +258,29 @@ export default function DocintelHealthPage() {
             aria-label="Project"
             isSearchable
           />
+        </div>
+      )}
+
+      {/* Failure banner (Slice 7): surface failed ingests / open extraction issues /
+          a failed background sync so operators see problems without digging. */}
+      {health && (health.failed > 0 || health.openIssues > 0 || health.lastSyncRun?.status === "error") && (
+        <div style={{ marginBottom: 16 }}>
+          <SectionMessage appearance="warning" title="Attention needed">
+            <ul style={{ margin: 0, paddingInlineStart: 20 }}>
+              {health.failed > 0 && (
+                <li>{health.failed} document{health.failed === 1 ? "" : "s"} failed to ingest.</li>
+              )}
+              {health.openIssues > 0 && (
+                <li>{health.openIssues} open extraction issue{health.openIssues === 1 ? "" : "s"} pending resolution.</li>
+              )}
+              {health.lastSyncRun?.status === "error" && (
+                <li>
+                  Last background sync failed
+                  {health.lastSyncRun.error_message ? `: ${health.lastSyncRun.error_message}` : "."}
+                </li>
+              )}
+            </ul>
+          </SectionMessage>
         </div>
       )}
 
