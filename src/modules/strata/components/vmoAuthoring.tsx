@@ -186,11 +186,12 @@ interface PortfolioMemberRow {
   priority: number | null;
 }
 
-// Project Card first and default (REQ-019: memberships favor project_card
-// paths; Initiative remains selectable only for legacy rows).
+// Project Card is the only selectable new-member type (V3-OPEN-014, REQ-019
+// revised 2026-07-12): Initiative is legacy and read-only. Existing initiative
+// memberships still render read-only in the panel (memberName), but no NEW
+// initiative membership can be authored.
 const MEMBER_TYPE_OPTIONS: SelectOption<'initiative' | 'project_card'>[] = [
   { value: 'project_card', label: 'Project card' },
-  { value: 'initiative', label: 'Initiative (legacy)' },
 ];
 
 // Project Card selector options (STRATA-E2E-013). Cards carry no cycle/tenant

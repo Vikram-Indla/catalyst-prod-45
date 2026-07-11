@@ -39,11 +39,16 @@ describe('STRATA initiative seam guard (REQ-019)', () => {
     expect(src).not.toContain('useInitiatives(');
   });
 
-  it('portfolio member authoring defaults to project_card (memberships favor project_card)', () => {
+  it('portfolio member authoring offers project_card only — Initiative is legacy read-only (V3-OPEN-014, REQ-019 revised 2026-07-12)', () => {
     const src = readFileSync(join(STRATA_ROOT, 'components/vmoAuthoring.tsx'), 'utf8');
     expect(src).toContain("useState<'initiative' | 'project_card'>('project_card')");
-    // Project card is the first (default-ordered) member-type option
-    expect(src).toMatch(/MEMBER_TYPE_OPTIONS[\s\S]{0,200}?value: 'project_card'[\s\S]*?value: 'initiative'/);
+    // Project card is the ONLY selectable new-member type; the Initiative option
+    // was removed so no new initiative membership can be authored. Existing
+    // initiative rows still render read-only via memberName.
+    const opts = src.match(/const MEMBER_TYPE_OPTIONS[\s\S]*?\];/);
+    expect(opts, 'MEMBER_TYPE_OPTIONS not found').not.toBeNull();
+    expect(opts![0]).toContain("value: 'project_card'");
+    expect(opts![0]).not.toContain("value: 'initiative'");
   });
 
   it('the retired InitiativeDetailModal never returns', () => {
