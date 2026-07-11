@@ -539,6 +539,14 @@ export default defineConfig(({ mode, command }) => {
       'prosemirror-collab',
       'prosemirror-markdown',
       'prosemirror-trailing-node',
+      // @atlaskit/feature-gate-js-client is installed at two majors: 5.7.0
+      // (hoisted top-level, required by editor/renderer/smart-card/etc as ^5.x)
+      // and 6.0.0 (nested, pulled only by @atlaskit/react-compiler-gating@0.2.3 as
+      // ^6.0.0). Both register a FeatureGateClient singleton at load, so the client
+      // logs "Multiple versions of FeatureGateClients found on the current page".
+      // Dedupe to the single hoisted 5.7.0 copy. react-compiler-gating only calls
+      // FeatureGates.getExperimentValue (stable across 5.x/6.x), so this is safe.
+      '@atlaskit/feature-gate-js-client',
     ],
   },
   optimizeDeps: {
