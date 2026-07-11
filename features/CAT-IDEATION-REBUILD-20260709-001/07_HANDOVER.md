@@ -14,7 +14,7 @@
 - **Phase 5** S1 Conversion: ⚠️ same status as Merge — UI correct, DB write blocked by the identical root cause.
 - **Phase 6** S1 (notification dispatch — `idea_comment_added`, `idea_decision`): ✅ committed, **live DB-verified**. Found and fixed a real `status_type` CHECK constraint violation along the way (see `11_KARPATHY_LOOP_LOG.md` #22).
 - **Phase 3** S6 (Evidence panel — snippet + link kinds): ✅ committed, **live DB-verified** (add snippet, add link, delete — all confirmed against real `idn_evidence` rows). Checked the RLS for the same self-referential lock bug Merge/Conversion hit *before* building — confirmed clean (see `11_KARPATHY_LOOP_LOG.md` #23).
-- **Phase 4** (AI Copilot): **not started.** Needs LLM gateway wiring, prompt versioning, suggestion ledger UI — genuinely a multi-slice undertaking, correctly deferred in every Plan Lock so far, not attempted under time pressure.
+- **Phase 4** (AI Copilot): **not built, now scoped.** `03_PLAN_LOCK_PHASE4_S1_CLASSIFICATION_DRAFT.md` — a real, concrete first-slice plan (classification suggestion: one edge function call to the already-existing `_shared/llm.ts` gateway, one `idn_ai_suggestions` insert, one review card). Deliberately not built: deploying a real edge function is a live-infrastructure change with real LLM cost, same review-before-action category as the RLS migration below. Surfaces a real open question worth checking before any code: does `idn_ai_suggestions` need its own UPDATE RLS policy for the accept/reject path, and does it risk the same self-referential bug `idn_ideas_update` had? Check that line-by-line first.
 - **Remaining known gaps** (see `04_ELITE_DESIGN_BLUEPRINT.md`'s P0/P1 table for the full list): evidence `document`/`voice_transcript`/`image` kinds (need docintel/voice-flow/attachment infra), remaining notification events (`idea_submitted`/`idea_triage_assigned`/`idea_mentioned`/`idea_vote_milestone`/`idea_merged`/`idea_converted`/`idea_delivered`/`idea_ai_suggestions_ready` — see Phase 6 S1's Plan Lock non-scope for why each is deferred), scoring-model editing/publish flow (Admin page is read-only), role-gating the workflow action buttons (pre-existing gap across the *whole* canonical workflow system, not ideation-specific — `ph_wf_transition_roles` role groups aren't mapped to `product_roles.code` anywhere), Homepage widgets/ForYou section, AR/RTL pass.
 
 ## ⚠️ Confirmed blocker — needs a migration + Vikram's review, this is the #1 next-session priority
@@ -36,7 +36,9 @@ Merge and Conversion are **fully built and UI-tested**, but their final `idn_ide
 - `76a36591d` Phase 3 S2–S5 + Phase 5 S1 — Votes/Watchers/Admin/Merge/Conversion (initial commit).
 - `6214b8ff3` Live-verification fixes: `VoteControl`'s `@atlaskit/popup` → manual-position rewrite, error-surfacing fix in `useIdeationMerge.ts`/`useIdeationConvert.ts` (was throwing raw Postgrest objects, not `Error` instances — masked the real RLS error behind a generic message), compensating-cleanup fix attempt in Conversion (confirmed still non-functional due to the second RLS gap, documented not hidden).
 - `7952b5828` Phase 6 S1 — notification dispatch (comment + decision), live DB-verified.
-- (uncommitted as of this handover — see below) Phase 3 S6 Evidence panel.
+- `cf32e90ff` Phase 3 S6 — Evidence panel (snippet + link), live DB-verified.
+- `b33819295` RLS fix migration drafted (NOT applied) for Merge/Conversion.
+- (uncommitted as of this handover — see below) Phase 4 S1 classification — scoping draft only, no code.
 
 ## Cautions carried forward
 
