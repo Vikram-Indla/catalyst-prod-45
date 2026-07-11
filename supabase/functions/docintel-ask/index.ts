@@ -31,6 +31,7 @@ import {
   json,
   requireMember,
 } from "../_shared/docintel.ts";
+import { loadActivePrompt } from "../_shared/prompts.ts";
 import {
   embed,
   generateStream,
@@ -109,20 +110,30 @@ function isArabicQuestion(q: string): boolean {
 // Grounded Q&A prompt — same [E<n>] + "Not found in source" contract as
 // docintel-generate, specialised for direct question answering.
 // ─────────────────────────────────────────────────────────────────────
-function systemPrompt(arabic: boolean): string {
-  return [
-    "You are a document Q&A assistant.",
-    "Answer the user's QUESTION STRICTLY grounded in the numbered EVIDENCE supplied by the user.",
-    "After EVERY factual sentence, cite the evidence item(s) that support it using inline markers like [E3] or [E1][E4].",
-    arabic
-      ? "If the evidence does not contain the answer, write 'غير موجود في المصدر' rather than inventing."
-      : "If the evidence does not contain the answer, write 'Not found in source' rather than inventing.",
-    "Do NOT use any knowledge beyond the evidence. Do not add facts, numbers, names, or requirements not present in the EVIDENCE.",
-    arabic
-      ? "أجب باللغة العربية، لكن أبقِ علامات الأدلة بالصيغة اللاتينية [E<n>]."
-      : "Answer in English.",
-    "Output GitHub-flavoured Markdown. Keep the answer concise and directly responsive to the question.",
-  ].join("\n");
+// Tunable via the ai_agent_prompts registry (slug 'docintel.ask.answer'). This inline
+// constant is the byte-faithful default self-seeded on first run; the two {{TOKENS}} are
+// substituted per-language in systemPrompt() so the registry text stays language-agnostic
+// while output remains identical to the pre-registry behaviour. See _shared/prompts.ts.
+const ASK_PROMPT_TEMPLATE = [
+  "You are a document Q&A assistant.",
+  "Answer the user's QUESTION STRICTLY grounded in the numbered EVIDENCE supplied by the user.",
+  "After EVERY factual sentence, cite the evidence item(s) that support it using inline markers like [E3] or [E1][E4].",
+  "{{NOT_FOUND}}",
+  "Do NOT use any knowledge beyond the evidence. Do not add facts, numbers, names, or requirements not present in the EVIDENCE.",
+  "{{LANG}}",
+  "Output GitHub-flavoured Markdown. Keep the answer concise and directly responsive to the question.",
+].join("\n");
+
+const ASK_PROMPT_SLUG = "docintel.ask.answer";
+
+function systemPrompt(arabic: boolean, template: string): string {
+  const notFound = arabic
+    ? "If the evidence does not contain the answer, write 'غير موجود في المصدر' rather than inventing."
+    : "If the evidence does not contain the answer, write 'Not found in source' rather than inventing.";
+  const lang = arabic
+    ? "أجب باللغة العربية، لكن أبقِ علامات الأدلة بالصيغة اللاتينية [E<n>]."
+    : "Answer in English.";
+  return template.replace("{{NOT_FOUND}}", notFound).replace("{{LANG}}", lang);
 }
 
 /** Build the numbered EVIDENCE + QUESTION user message. Each chunk capped to CHUNK_CAP. */
@@ -281,6 +292,8 @@ async function recordRun(
     durationMs: number;
     status: "ok" | "error";
     errorMessage?: string;
+    promptId?: string | null;
+    promptVersion?: number | null;
   },
 ): Promise<void> {
   await admin
@@ -297,6 +310,8 @@ async function recordRun(
       duration_ms: params.durationMs,
       status: params.status,
       error_message: params.errorMessage ?? null,
+      prompt_id: params.promptId ?? null,
+      prompt_version: params.promptVersion ?? null,
     })
     .then(() => {}, () => {});
 }
@@ -429,9 +444,12 @@ Deno.serve(async (req) => {
         .map((d) => [d.id, { title: d.title, updated_at: d.updated_at }]),
     );
 
-    // 6) Build the grounded prompt.
+    // 6) Build the grounded prompt. Prompt text comes from the ai_agent_prompts
+    //    registry (self-seeded byte-faithfully from ASK_PROMPT_TEMPLATE on first run);
+    //    its id/version are stamped on the agent run for truthful provenance.
+    const askPrompt = await loadActivePrompt(admin, ASK_PROMPT_SLUG, ASK_PROMPT_TEMPLATE);
     const messages: LlmMessage[] = [
-      { role: "system", parts: [{ text: systemPrompt(arabic) }] },
+      { role: "system", parts: [{ text: systemPrompt(arabic, askPrompt.prompt) }] },
       { role: "user", parts: [{ text: userMessage(question, evidence) }] },
     ];
 
@@ -445,6 +463,8 @@ Deno.serve(async (req) => {
         evidence,
         docMeta,
         t0,
+        promptId: askPrompt.id,
+        promptVersion: askPrompt.version,
       });
     }
 
@@ -469,6 +489,8 @@ Deno.serve(async (req) => {
       outputTokens: result.outputTokens ?? null,
       durationMs: result.durationMs,
       status: "ok",
+      promptId: askPrompt.id,
+      promptVersion: askPrompt.version,
     });
     await logUsage(admin, {
       source: "docintel-ask",
@@ -532,6 +554,8 @@ function handleStream(
     evidence: EvidenceItem[];
     docMeta: Map<string, DocMeta>;
     t0: number;
+    promptId: string | null;
+    promptVersion: number | null;
   },
 ): Response {
   const enc = new TextEncoder();
@@ -573,6 +597,8 @@ function handleStream(
           outputTokens: m?.outputTokens ?? null,
           durationMs: m?.durationMs ?? Date.now() - params.t0,
           status: "ok",
+          promptId: params.promptId,
+          promptVersion: params.promptVersion,
         });
         await logUsage(admin, {
           source: "docintel-ask",
@@ -613,6 +639,8 @@ function handleStream(
           durationMs: Date.now() - params.t0,
           status: "error",
           errorMessage: msg,
+          promptId: params.promptId,
+          promptVersion: params.promptVersion,
         });
         await logUsage(admin, {
           source: "docintel-ask",

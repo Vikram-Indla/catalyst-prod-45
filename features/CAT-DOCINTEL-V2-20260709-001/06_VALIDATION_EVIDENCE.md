@@ -1,0 +1,81 @@
+# Validation Evidence — CAT-DOCINTEL-V2-20260709-001
+
+## Baseline (pre-fix), carried from discovery audit
+
+- `ai_document_embeddings`: 378 rows, all `vector(1536)`, spot-checked non-null (staging `cyij`).
+- `ai_requirement_facts`: 0 rows with embeddings — confirms `docintel_match_facts` has nothing to
+  match against.
+- Citation confidence display: self-documented as ~0.01 vs actual grounding ~1.0
+  (`features/CAT-DOCEX-KNOWLEDGE-PLATFORM-20260707-001/02_CANONICAL_DISCOVERY.md:134-138`).
+
+---
+
+## SLICE 2 — MarkItDown ingestion-fidelity spike (RUN 2026-07-09) ✅ COMPLETE
+
+**Setup:** Microsoft `markitdown` v0.1.6 (+ pdf/docx/xlsx/pptx extras) in an isolated Python 3.14
+venv in scratchpad. No repo dependency added. No Supabase write. Pure local measurement.
+
+**Fixtures:** 2 real repo files (`IR-Platform-Milestones.pptx`, `STRATA_implementation_audit.pdf`)
++ 2 generated structured files (multi-heading .docx with a table, multi-sheet .xlsx). Scanned-Arabic
+PDF not tested locally (fixture lives only in Supabase storage) — reasoned separately below.
+
+### Results — structure/citation-anchor fidelity per media type
+
+| Type | Chars | Headings kept | Tables → MD | Page/slide anchor | Verdict |
+|---|---|---|---|---|---|
+| **.docx** | 294 | ✅ 3 (`#`/`##` nesting exact) | ✅ markdown table | n/a (flow doc) | **ADOPT — strictly better** |
+| **.xlsx** | 181 | ✅ each sheet → `## Sheet` | ✅ per-sheet MD tables | ✅ sheet name = anchor | **ADOPT — strictly better** |
+| **.pptx** | 928 | ✅ | n/a | ✅ `<!-- Slide number: N -->` per slide | **ADOPT — slide# = citation anchor** |
+| **.pdf** | 27,789 | ❌ 0 (structure flattened) | 🟡 partial (grid→MD but noisy) | ❌ **0 page markers** | **REJECT — keep current path** |
+
+### The decisive finding
+
+- **docx**: MarkItDown preserves heading hierarchy (`# Section 1`, `## Section 2.1 — Security`) and
+  the embedded table as a markdown table. This **directly fixes the current 1-page-collapse bug**
+  (current mammoth path flattens .docx to one logical page). Feeds `heading_section` chunker cleanly.
+- **xlsx**: Every sheet becomes a `## <SheetName>` heading + a proper markdown table. Multi-sheet
+  structure survives (current path unproven). Sheet name is a natural citation anchor.
+- **pptx**: MarkItDown emits `<!-- Slide number: 1 -->` HTML comments per slide — a **real,
+  per-slide citation anchor** the current pipeline doesn't have at all. New media type, for free,
+  WITH grounding.
+- **pdf**: MarkItDown uses `pdfminer.six` — it dumps a **flat text stream with zero page boundaries
+  and zero heading structure** (headings=0, pagemarkers=0 on a 27k-char audit PDF that visually has
+  clear sections and pages). This would **destroy Catalyst's per-claim page/block citation model**
+  — the crown-jewel differentiator. Catalyst's existing PDF path (native extract + Gemini vision,
+  page-aware, block-hashed) is materially superior for citations.
+- **scanned-Arabic (reasoned, not run)**: `pdfminer.six` cannot OCR image-only PDFs at all — it
+  would return empty/garbage. MarkItDown's `ImageConverter` needs an LLM client configured to OCR.
+  Catalyst's Gemini-vision path already does Arabic OCR well. **Gemini stays for scanned-Arabic.**
+
+### Verdict (gates Slice 3) — PARTIAL adoption
+
+MarkItDown is adopted as the ingestion front-door for **.docx / .xlsx / .pptx (+ future audio,
+html, csv, epub, msg)** — where it is strictly better than today AND preserves a citation anchor
+(heading / sheet / slide). It is **rejected for PDF** (loses pages) and **not used for
+scanned-Arabic** (no OCR). PDF and scanned-Arabic keep the current native+Gemini-vision path.
+
+This is the "adopt for the media types where fidelity survives, keep current path where it doesn't"
+outcome — not blind adoption, not rejection. Recorded as Decision 10 in `09_DECISIONS.md`.
+
+**Raw outputs:** scratchpad `markitdown-spike/out/{docx,xlsx,pptx,pdf}.md` (session-local, not
+committed).
+
+---
+
+## SLICE 1 — live verification (2026-07-09, staging `cyij`, read-only)
+
+Outcome: all three bugs already fixed in source (2026-07-07) AND deployed (generate v7, analyze v7,
+sync v6). Slice 1 became verify-only (see `08_DRIFT_LOG.md` Drift Event 1). Live query results:
+
+| Bug | Metric | Result | Verdict |
+|---|---|---|---|
+| #3 match_facts dead | requirement_facts / fact chunks / fact embeddings | 5 / 5 / 5 (1:1:1) | ✅ FIXED + LIVE |
+| #2 section_path NULL | heading chunks total / NULL | 350 / 2 (0.6%) | ✅ FIXED + LIVE (2 title-line edges) |
+| #1 confidence mis-scale | citations pre-fix (2026-07-06) | 78 rows @0.0088–0.0098 | ❌ stale rows (write-once) |
+| #1 confidence mis-scale | citations post-fix (2026-07-09) | 46 rows @0.73–1.0 | ✅ FIXED + LIVE |
+
+Per-artifact proof (confirms date split): BRD (07-06) 54 cites max 0.0098 · Epic (07-06) 24 cites
+max 0.0098 · Document Summary (07-09) 25 cites 0.73–1.0 · Epic (07-09) 21 cites 0.80–0.90.
+
+**Residual (decision pending Vikram):** 78 stale citation rows on 2 historical pre-fix demo
+artifacts. Recommended: leave as historical (Option 1, `08_DRIFT_LOG.md`). Not silently deleted.
