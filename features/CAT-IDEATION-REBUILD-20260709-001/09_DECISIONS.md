@@ -18,6 +18,11 @@
 | D11 | 2026-07-09 | DRIFT-001 fix (b): admin_role_module_permissions for 'ideation' uses real product_roles codes — full: super_admin, product_owner, technical_po, pmo, delivery_manager, project_manager, business_analyst; view: all other roles (INSERT…SELECT from product_roles) | Vikram | ✅ Decided |
 | D12 | 2026-07-09 | DRIFT-001 fix (c): admin_nav_modules row = group 'core', nav_type 'main', sort_order 8 (mirrors workhub); ph_workflow_templates.work_item_type = 'Idea' | Vikram | ✅ Decided |
 
+| D13 | 2026-07-11 | Production is explicitly out of scope for this feature's acceptance. All work targets staging (`cyijbdeuehohvhnsywig`) only; staging = the accepted environment, not a precursor to a prod rollout within this session's scope | Vikram | ✅ Decided |
+| D14 | 2026-07-11 | Phase 4 (AI Copilot) is out of scope for "whole module built." Module acceptance = Phases 0–3, 5, 6 complete and live-verified on staging. Phase 4 becomes its own future feature with its own timeline, tracked via `03_PLAN_LOCK_PHASE4_S1_CLASSIFICATION_DRAFT.md` as a standing scoping artifact, not a blocker | Vikram | ✅ Decided |
+
 Documented design departures (from Mobbin evidence, 05 K-delta): 2-pane Inbox (not Intercom 4-pane); suggestion-ledger-first Copilot (not chat-first); labeled quadrants (not free field); one-modal merge (not Salesforce 2-step); winner-takes merge V1 (per-field = P2).
 
 **Phase 0 status: ✅ EXITED 2026-07-09.** Next gate: Phase 1 Plan Lock approval (03_PLAN_LOCK_PHASE1.md).
+
+**Module status: ✅ ACCEPTED on staging 2026-07-11** (per D13, D14) — Phases 0–3, 5, 6 complete and live-verified. Phase 4 explicitly out of scope, tracked separately.
