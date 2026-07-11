@@ -192,6 +192,15 @@ export function ProjectCardDetailView({ card, theme }: {
   const submitAndRefresh = (fn: (v: StrataFormValues) => Promise<unknown>) =>
     async (v: StrataFormValues) => { await fn(v); invalidate(); };
 
+  // Milestone names are unique within a card, trim- and case-insensitive
+  // (V3-OPEN-017). This is the instant in-modal guard; a DB unique index is the
+  // concurrency-safe backstop. `excludeId` lets an edit keep its own name.
+  const assertUniqueMilestoneName = (rawName: string, excludeId?: string) => {
+    const norm = rawName.trim().toLowerCase();
+    const clash = milestones.some((m) => m.id !== excludeId && m.name.trim().toLowerCase() === norm);
+    if (clash) throw new Error(`A milestone named "${rawName.trim()}" already exists in this project card.`);
+  };
+
   const derivedProgress = asFraction(card.actual_progress);
 
   const milestoneColumns = useMemo<Column<StrataMilestone>[]>(() => [
@@ -581,12 +590,15 @@ export function ProjectCardDetailView({ card, theme }: {
           { key: 'weight', label: 'Weight', kind: 'number', min: 0, helper: 'Relative weight for progress roll-up (default 1).' },
         ]}
         initial={{ status: 'planned' }}
-        onSubmit={submitAndRefresh((v) => executionApi.createMilestone({
-          projectId: card.id, name: String(v.name ?? '').trim(), ownerId: fvStr(v.ownerId),
-          baselineStart: fvStr(v.baselineStart), baselineEnd: fvStr(v.baselineEnd),
-          forecastDate: fvStr(v.forecastDate), actualDate: fvStr(v.actualDate),
-          status: fvStr(v.status), progress: fvNum(v.progress), weight: fvNum(v.weight),
-        }))}
+        onSubmit={submitAndRefresh((v) => {
+          assertUniqueMilestoneName(String(v.name ?? ''));
+          return executionApi.createMilestone({
+            projectId: card.id, name: String(v.name ?? '').trim(), ownerId: fvStr(v.ownerId),
+            baselineStart: fvStr(v.baselineStart), baselineEnd: fvStr(v.baselineEnd),
+            forecastDate: fvStr(v.forecastDate), actualDate: fvStr(v.actualDate),
+            status: fvStr(v.status), progress: fvNum(v.progress), weight: fvNum(v.weight),
+          });
+        })}
         testId="strata-milestone-create-modal"
       />
 
@@ -612,12 +624,15 @@ export function ProjectCardDetailView({ card, theme }: {
           forecastDate: editMilestone.forecast_date, actualDate: editMilestone.actual_date,
           status: editMilestone.status, progress: editMilestone.progress, weight: editMilestone.weight,
         } : undefined}
-        onSubmit={submitAndRefresh((v) => executionApi.updateMilestone(editMilestone!.id, {
-          name: fvStr(v.name), ownerId: fvStr(v.ownerId),
-          baselineStart: fvStr(v.baselineStart), baselineEnd: fvStr(v.baselineEnd),
-          forecastDate: fvStr(v.forecastDate), actualDate: fvStr(v.actualDate),
-          status: fvStr(v.status), progress: fvNum(v.progress), weight: fvNum(v.weight),
-        }))}
+        onSubmit={submitAndRefresh((v) => {
+          assertUniqueMilestoneName(String(v.name ?? ''), editMilestone!.id);
+          return executionApi.updateMilestone(editMilestone!.id, {
+            name: fvStr(v.name), ownerId: fvStr(v.ownerId),
+            baselineStart: fvStr(v.baselineStart), baselineEnd: fvStr(v.baselineEnd),
+            forecastDate: fvStr(v.forecastDate), actualDate: fvStr(v.actualDate),
+            status: fvStr(v.status), progress: fvNum(v.progress), weight: fvNum(v.weight),
+          });
+        })}
         testId="strata-milestone-edit-modal"
       />
 
