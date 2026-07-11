@@ -71,6 +71,12 @@ const EXECUTION_HEALTH_APPEARANCE: Record<ExecutionHealthKey, React.ComponentPro
   on_track: 'success', minor_delay: 'moved', major_delay: 'removed',
   not_started: 'default', not_available: 'default', on_hold: 'default',
 };
+/** Same data-viz tone StrataExecutionHealthLozenge renders with, for dense
+ * table cells (e.g. an already-labeled column header) where a full Lozenge
+ * pill would be redundant — one canonical source instead of a duplicated map. */
+export function executionHealthTone(key: ExecutionHealthKey): string {
+  return appearanceTone(EXECUTION_HEALTH_APPEARANCE[key]);
+}
 // Meanings mirror the server rules in strata_calc_execution_progress
 // (20260706231000) verbatim — if the RPC thresholds change, change these too.
 const EXECUTION_HEALTH_MEANING: Record<ExecutionHealthKey, string> = {

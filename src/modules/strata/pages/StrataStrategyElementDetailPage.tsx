@@ -62,10 +62,6 @@ import { fmtDate, fmtDateTime, formatAuditAction, labelize } from '@/modules/str
 import { isThemeElement } from '@/modules/strata/types';
 import type { StrataDecision, StrataStrategyElement } from '@/modules/strata/types';
 
-const HEALTH_TONE: Record<string, string> = {
-  on_track: 'var(--ds-text-success)', minor_delay: 'var(--ds-text-warning)', major_delay: 'var(--ds-text-danger)',
-};
-
 /** Roles allowed to author strategy structure — UI gate only; DB RPCs enforce (mirrors Strategy Room). */
 const AUTHOR_ROLES = ['strategy_office', 'strata_admin'] as const;
 /** Mirrors strata_create_decision/strata_create_action's actual role check exactly (admin bypass is internal to strata_has_role). */
@@ -436,12 +432,12 @@ export default function StrataStrategyElementDetailPage() {
             ) : (
               <div style={{ display: 'grid', gap: 8, fontSize: 'var(--ds-font-size-100)' }}>
                 <div><span style={{ fontWeight: 600 }}>Total linked</span> {cardRollup.total}</div>
-                <div><span style={{ fontWeight: 600, color: HEALTH_TONE.on_track }}>On track</span> {cardRollup.onTrack}</div>
-                <div><span style={{ fontWeight: 600, color: HEALTH_TONE.minor_delay }}>Minor delay</span> {cardRollup.minorDelay}</div>
-                <div><span style={{ fontWeight: 600, color: HEALTH_TONE.major_delay }}>Major delay</span> {cardRollup.majorDelay}</div>
-                <div><span style={{ fontWeight: 600 }}>On hold</span> {cardRollup.onHold}</div>
-                <div><span style={{ fontWeight: 600 }}>Not started</span> {cardRollup.notStarted}</div>
-                <div><span style={{ fontWeight: 600 }}>Not available</span> {cardRollup.notAvailable}</div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}><StrataExecutionHealthLozenge health="on_track" /> {cardRollup.onTrack}</div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}><StrataExecutionHealthLozenge health="minor_delay" /> {cardRollup.minorDelay}</div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}><StrataExecutionHealthLozenge health="major_delay" /> {cardRollup.majorDelay}</div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}><StrataExecutionHealthLozenge health="on_hold" /> {cardRollup.onHold}</div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}><StrataExecutionHealthLozenge health="not_started" /> {cardRollup.notStarted}</div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}><StrataExecutionHealthLozenge health="not_available" /> {cardRollup.notAvailable}</div>
                 <div>
                   <span style={{ fontWeight: 600 }}>Average progress</span>{' '}
                   {cardRollup.avgProgress != null ? `${Math.round(cardRollup.avgProgress * 100)}%` : '—'}

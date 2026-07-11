@@ -23,7 +23,7 @@ import {
   useProfileNames, useScorecardInstanceBySlug, useSnapshots, useStrataContext, useUploadRuns,
 } from '@/modules/strata/hooks/useStrata';
 import {
-  StrataBandLozenge, StrataPageShell, StrataPanel, StrataScoreRing, T,
+  StrataBandLozenge, StrataExecutionHealthLozenge, StrataPageShell, StrataPanel, StrataScoreRing, T,
 } from '@/modules/strata/components/shared';
 import {
   EvidenceConfigContext, EvidenceInputs, EvidenceRow, shortId,
@@ -344,7 +344,7 @@ export default function StrataEvidencePage() {
                           <ChainItem key={p.id}>
                             <strong style={{ color: T.text, fontWeight: 600 }}>{p.name}</strong>
                             {p.source_system ? <Lozenge appearance="default">{labelize(p.source_system)}</Lozenge> : null}
-                            <StrataBandLozenge bandKey={p.execution_health} />
+                            <StrataExecutionHealthLozenge health={p.execution_health} />
                             <span style={chainMetaStyle}>
                               {[
                                 p.actual_progress != null ? `Progress ${fmtConfidence(p.actual_progress)}` : null,

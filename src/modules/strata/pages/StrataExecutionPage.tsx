@@ -25,8 +25,8 @@ import { JiraTable } from '@/components/shared/JiraTable';
 import type { Column } from '@/components/shared/JiraTable';
 import { Routes } from '@/lib/routes';
 import {
-  computeCardRollup, EXECUTION_HEALTH_LABEL, StrataChipMenu, StrataExecutionHealthLozenge, StrataPageShell,
-  StrataPanel, StrataStatStrip, T,
+  computeCardRollup, executionHealthTone, EXECUTION_HEALTH_LABEL, StrataChipMenu, StrataExecutionHealthLozenge,
+  StrataPageShell, StrataPanel, StrataStatStrip, T,
 } from '@/modules/strata/components/shared';
 import type { CardRollup } from '@/modules/strata/components/shared';
 import { StrataFormModal } from '@/modules/strata/components/authoring';
@@ -117,12 +117,6 @@ const isExecutionView = (v: string | null): v is ExecutionView =>
 // longer applies to this one).
 type HealthBucket = NonNullable<StrataProjectCard['calculated_health']>;
 const HEALTH_BUCKET_LABEL = EXECUTION_HEALTH_LABEL;
-const HEALTH_BUCKET_TONE: Record<HealthBucket, string> = {
-  on_track: 'var(--ds-text-success)', minor_delay: 'var(--ds-text-warning)',
-  major_delay: 'var(--ds-text-danger)', not_started: T.subtle,
-  not_available: T.subtlest, on_hold: T.subtlest,
-};
-
 function healthBucketOf(card: StrataProjectCard): HealthBucket {
   return card.calculated_health ?? 'not_available';
 }
@@ -168,14 +162,14 @@ function GroupStatRow({ rollup, testId }: { rollup: CardRollup; testId?: string 
   return (
     <div data-testid={testId} style={{ display: 'flex', flexWrap: 'wrap', gap: 16, marginBottom: 12 }}>
       <span style={captionStyle}><strong style={{ color: T.text }}>{rollup.total}</strong> project{rollup.total === 1 ? '' : 's'}</span>
-      <span style={{ ...captionStyle, color: HEALTH_BUCKET_TONE.on_track }}><strong>{rollup.onTrack}</strong> on track</span>
-      <span style={{ ...captionStyle, color: HEALTH_BUCKET_TONE.minor_delay }}><strong>{rollup.minorDelay}</strong> minor delay</span>
-      <span style={{ ...captionStyle, color: HEALTH_BUCKET_TONE.major_delay }}><strong>{rollup.majorDelay}</strong> major delay</span>
-      <span style={captionStyle}><strong>{rollup.notStarted}</strong> not started</span>
-      <span style={captionStyle}><strong>{rollup.notAvailable}</strong> not available</span>
-      {rollup.onHold > 0 ? <span style={captionStyle}><strong>{rollup.onHold}</strong> on hold (excluded above)</span> : null}
+      <span style={captionStyle}><StrataExecutionHealthLozenge health="on_track" /> <strong>{rollup.onTrack}</strong></span>
+      <span style={captionStyle}><StrataExecutionHealthLozenge health="minor_delay" /> <strong>{rollup.minorDelay}</strong></span>
+      <span style={captionStyle}><StrataExecutionHealthLozenge health="major_delay" /> <strong>{rollup.majorDelay}</strong></span>
+      <span style={captionStyle}><StrataExecutionHealthLozenge health="not_started" /> <strong>{rollup.notStarted}</strong></span>
+      <span style={captionStyle}><StrataExecutionHealthLozenge health="not_available" /> <strong>{rollup.notAvailable}</strong></span>
+      {rollup.onHold > 0 ? <span style={captionStyle}><StrataExecutionHealthLozenge health="on_hold" /> <strong>{rollup.onHold}</strong> (excluded above)</span> : null}
       <span style={captionStyle}>Avg progress <strong style={{ color: T.text }}>{rollup.avgProgress == null ? '—' : `${Math.round(rollup.avgProgress * 100)}%`}</strong></span>
-      <span style={captionStyle}>Blocked deps <strong style={{ color: rollup.blockedDependencies > 0 ? HEALTH_BUCKET_TONE.major_delay : T.text }}>{rollup.blockedDependencies}</strong></span>
+      <span style={captionStyle}>Blocked deps <strong style={{ color: rollup.blockedDependencies > 0 ? executionHealthTone('major_delay') : T.text }}>{rollup.blockedDependencies}</strong></span>
     </div>
   );
 }
@@ -303,15 +297,15 @@ function BREAKDOWN_COLUMNS(dependencies: StrataDependency[]): Column<CardGroup>[
     { id: 'total', label: 'Total', width: 10, align: 'end', cell: ({ row }) => <span style={{ fontVariantNumeric: 'tabular-nums' }}>{row.cards.length}</span> },
     {
       id: 'on_track', label: 'On Track', width: 12, align: 'end',
-      cell: ({ row }) => <span style={{ color: HEALTH_BUCKET_TONE.on_track, fontVariantNumeric: 'tabular-nums' }}>{computeCardRollup(row.cards, dependencies).onTrack}</span>,
+      cell: ({ row }) => <span style={{ color: executionHealthTone('on_track'), fontVariantNumeric: 'tabular-nums' }}>{computeCardRollup(row.cards, dependencies).onTrack}</span>,
     },
     {
       id: 'minor_delay', label: 'Minor Delay', width: 12, align: 'end',
-      cell: ({ row }) => <span style={{ color: HEALTH_BUCKET_TONE.minor_delay, fontVariantNumeric: 'tabular-nums' }}>{computeCardRollup(row.cards, dependencies).minorDelay}</span>,
+      cell: ({ row }) => <span style={{ color: executionHealthTone('minor_delay'), fontVariantNumeric: 'tabular-nums' }}>{computeCardRollup(row.cards, dependencies).minorDelay}</span>,
     },
     {
       id: 'major_delay', label: 'Major Delay', width: 12, align: 'end',
-      cell: ({ row }) => <span style={{ color: HEALTH_BUCKET_TONE.major_delay, fontVariantNumeric: 'tabular-nums' }}>{computeCardRollup(row.cards, dependencies).majorDelay}</span>,
+      cell: ({ row }) => <span style={{ color: executionHealthTone('major_delay'), fontVariantNumeric: 'tabular-nums' }}>{computeCardRollup(row.cards, dependencies).majorDelay}</span>,
     },
     {
       id: 'not_started', label: 'Not Started', width: 12, align: 'end',
