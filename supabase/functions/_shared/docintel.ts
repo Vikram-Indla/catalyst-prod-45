@@ -98,6 +98,24 @@ export async function requireMember(
 }
 
 /**
+ * Return the caller's user id if their JWT is a valid authenticated user, else null.
+ * Lighter than requireMember (no project scope) — used to gate member-triggered actions
+ * like a manual re-sync on a function that is otherwise cron/service-role only.
+ */
+export async function getAuthedUserId(req: Request): Promise<string | null> {
+  const authHeader = req.headers.get("authorization");
+  if (!authHeader) return null;
+  const anon = createClient(
+    Deno.env.get("SUPABASE_URL")!,
+    Deno.env.get("SUPABASE_ANON_KEY")!,
+  );
+  const token = authHeader.replace("Bearer ", "");
+  const { data: { user }, error } = await anon.auth.getUser(token);
+  if (error || !user) return null;
+  return user.id;
+}
+
+/**
  * Merge `{ [key]: ms }` into ai_documents.latency_ms (jsonb) atomically via the
  * docintel_stamp_latency RPC. A DB-side `latency_ms || jsonb` merge is used
  * (not JS read-modify-write) so concurrent page workers can't lose each other's

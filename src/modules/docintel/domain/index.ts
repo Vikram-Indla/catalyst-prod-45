@@ -1023,4 +1023,13 @@ export const docintelApi = {
       .eq("theme_id", themeId);
     if (error) throw new Error(error.message);
   },
+
+  /**
+   * Manually trigger the background sync/re-index sweep (docintel-sync) — the
+   * on-demand equivalent of the 15-min cron. Budget-bounded server-side.
+   */
+  triggerReindex: async (): Promise<void> => {
+    const { error } = await supabase.functions.invoke("docintel-sync", { body: {} });
+    if (error) throw new Error(error.message);
+  },
 };

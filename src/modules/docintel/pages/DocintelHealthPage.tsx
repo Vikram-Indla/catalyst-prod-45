@@ -28,7 +28,7 @@ import { JiraTable } from "@/components/shared/JiraTable";
 import type { Column } from "@/components/shared/JiraTable/types";
 import { useAuth } from "@/hooks/useAuth";
 import { docintelRoutes } from "@/lib/routes";
-import { useDocintelProjects } from "../hooks/useDocintel";
+import { useDocintelProjects, useTriggerReindex } from "../hooks/useDocintel";
 import { useActiveDocintelProject } from "../hooks/useActiveDocintelProject";
 import { useDocintelHealth } from "../hooks/useDocintelHealth";
 import type { DocintelDocument, DocintelStatus } from "../types";
@@ -150,6 +150,7 @@ export default function DocintelHealthPage() {
 
   const healthQuery = useDocintelHealth(activeProject?.id);
   const health = healthQuery.data ?? null;
+  const reindex = useTriggerReindex();
 
   const attentionColumns = useMemo<Column<DocintelDocument>[]>(
     () => [
@@ -232,18 +233,27 @@ export default function DocintelHealthPage() {
           />
         }
         actions={
-          <Button
-            appearance="default"
-            onClick={() =>
-              navigate(
-                activeProject
-                  ? `${docintelRoutes.list()}?project=${activeProject.key}`
-                  : docintelRoutes.list(),
-              )
-            }
-          >
-            View documents
-          </Button>
+          <span style={{ display: "flex", gap: 8 }}>
+            <Button
+              appearance="default"
+              isDisabled={reindex.isPending || !activeProject}
+              onClick={() => reindex.mutate()}
+            >
+              {reindex.isPending ? "Re-syncing…" : "Re-sync now"}
+            </Button>
+            <Button
+              appearance="default"
+              onClick={() =>
+                navigate(
+                  activeProject
+                    ? `${docintelRoutes.list()}?project=${activeProject.key}`
+                    : docintelRoutes.list(),
+                )
+              }
+            >
+              View documents
+            </Button>
+          </span>
         }
       />
 

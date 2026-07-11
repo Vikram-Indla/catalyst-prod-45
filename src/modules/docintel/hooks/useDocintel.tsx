@@ -596,3 +596,21 @@ export function useUntagDocumentTheme(projectId: string | undefined) {
     },
   });
 }
+
+/** Manually trigger the docintel-sync re-index sweep (on-demand refresh). */
+export function useTriggerReindex() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: () => docintelApi.triggerReindex(),
+    onSuccess: () => {
+      catalystToast.success("Re-sync started", "Background re-index is running.");
+      qc.invalidateQueries({ queryKey: ["docintel", "health"] });
+    },
+    onError: (err: unknown) => {
+      catalystToast.error(
+        "Re-sync failed",
+        err instanceof Error ? err.message : "Could not start re-index",
+      );
+    },
+  });
+}

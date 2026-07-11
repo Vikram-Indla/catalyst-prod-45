@@ -47,6 +47,7 @@
 import {
   advanceStatus,
   corsHeaders,
+  getAuthedUserId,
   getServiceClient,
   json,
   markDocumentFailed,
@@ -142,12 +143,19 @@ Deno.serve(async (req) => {
     return new Response("ok", { headers: corsHeaders });
   }
 
-  // Auth: service-role bearer OR the cron shared secret (kb-ingest pattern).
+  // Auth: service-role bearer OR the cron shared secret (kb-ingest pattern) OR an
+  // authenticated user (manual "Re-sync now" trigger from Knowledge Health). The sweep is
+  // internally budget-bounded (MAX_STUCK_DOCS / MAX_RETRY_DOCS / FACT_BACKFILL_CAP), so a
+  // member-triggered run cannot run away.
   const syncSecret = Deno.env.get("DOCINTEL_SYNC_SECRET");
   const authHeader = req.headers.get("authorization") ?? "";
   const isCron = !!syncSecret && authHeader === `Bearer ${syncSecret}`;
-  if (!isCron && !requireServiceRole(req)) {
-    return json({ error: "UNAUTHORIZED" }, 401);
+  const isPrivileged = isCron || requireServiceRole(req);
+  if (!isPrivileged) {
+    const userId = await getAuthedUserId(req);
+    if (!userId) {
+      return json({ error: "UNAUTHORIZED" }, 401);
+    }
   }
 
   const admin = getServiceClient();
