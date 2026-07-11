@@ -288,12 +288,18 @@ export const strataRoutes = {
 // ---------------------------------------------------------------------------
 
 export const docintelRoutes = {
+  home: () => '/doc-intelligence',
+  /** @deprecated compatibility alias for the Doc Intelligence home route. */
   list: () => '/doc-intelligence',
+  library: () => '/doc-intelligence/views/library',
+  themes: () => '/doc-intelligence/views/themes',
+  deliverables: () => '/doc-intelligence/views/deliverables',
+  review: () => '/doc-intelligence/actions/review',
   upload: () => '/doc-intelligence/upload',
   // project-level Knowledge Health rollup (read-only)
   health: () => '/doc-intelligence/health',
   // slug is the frozen ai_documents.slug — no UUID in the URL
-  workspace: (slug: string) => `/doc-intelligence/${slug}`,
+  workspace: (slug: string) => `/doc-intelligence/source/${slug}`,
 };
 
 // ---------------------------------------------------------------------------

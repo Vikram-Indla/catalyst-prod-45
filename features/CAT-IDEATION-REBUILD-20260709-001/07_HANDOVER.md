@@ -2,6 +2,13 @@
 
 **Updated**: 2026-07-11 · **Resume with**: `continue feature CAT-IDEATION-REBUILD-20260709-001`
 
+## ADS gate repair — 2026-07-11
+
+`StartEvaluationArea` introduced one hardcoded-spacing and one uppercase-label violation after the
+repository baseline was captured. The corrective slice is locked in
+`03_PLAN_LOCK_ADS_GATE_REPAIR.md`; it uses ADS spacing tokens and sentence case without changing
+workflow behavior or raising the baseline. Verification is recorded in session 009.
+
 ## ✅ MODULE ACCEPTED on staging — 2026-07-11 (D13, D14)
 
 Per Vikram's explicit decision: **production is out of scope for this feature** — staging (`cyijbdeuehohvhnsywig`) is the accepted environment, not a precursor to a prod rollout within this session. **Phase 4 (AI Copilot) is out of scope for "whole module built"** — it's tracked as its own future feature via `03_PLAN_LOCK_PHASE4_S1_CLASSIFICATION_DRAFT.md`, not a blocker. Module acceptance = Phases 0–3, 5, 6 complete and live-verified on staging, which is the state below.

@@ -1,5 +1,113 @@
 # Drift Log — CAT-DOCINTEL-V2-20260709-001
 
+## 2026-07-11 Drift Event 6 — User requires knowledge-first visual baseline before route execution
+
+### What drifted
+The user explicitly stopped route-first implementation and required visual agreement on the whole
+Doc Intel mental model: knowledge base, themes, persona Ask, BRD qualification, project-context
+outputs, ingestion coverage/freshness, and a real Git repository connector boundary.
+
+### Evidence
+- Supplied current Evidence/Document screenshots show processing internals and sparse content with no
+  product mental model.
+- Supplied 29-page Arabic BRD contains real scope, stakeholders, nine scenarios, permissions and five
+  NFRs, plus incomplete review/approval information.
+- User states citations/evidence must be on demand, not continuously foregrounded.
+
+### Decision impact
+The knowledge-first visual baseline and buyer-facing staging mockup were approved. This dependency
+is resolved and no longer blocks Slice 1.
+
+## 2026-07-11 Drift Event 5 — Slice 1 static routes can shadow frozen source slugs
+
+### What drifted
+The approved Slice 1 registers `/library`, `/review`, `/themes` and `/deliverables` before the
+existing `:slug` workspace route. The document slug trigger has no reserved-word contract. A source
+whose frozen slug equals any new static segment would become unreachable, violating the Plan Lock's
+binary requirement that every existing source slug continue to resolve.
+
+The same slice also registers Review, Themes and Deliverables before their page files are authorized
+in Slices 3, 8C and 6B respectively. Placeholder behavior is not Plan-Locked.
+
+### Evidence
+- `supabase/migrations/20260707030000_docintel_schema.sql` derives unrestricted slugs from titles.
+- `src/modules/docintel/DocintelRoutes.tsx` currently resolves `upload` and `health` before `:slug`.
+- The active Slice 1 file list contains Home and Library only; it contains no Review, Themes or
+  Deliverables page implementation.
+- Canonical/integration/data preflight returned `STOP BEFORE IMPLEMENTATION`; no source edit occurred.
+
+### Options
+1. **Recommended:** keep frozen one-segment source URLs unchanged and use exact two-segment user
+   destinations: `/views/library`, later `/views/themes`, `/views/deliverables`, and
+   `/actions/review`. Do not register a `views/*` wildcard. Slice 1 mounts only For you and Library;
+   later navigation items appear only with their real page slices. No schema/RLS change and no dead
+   placeholder.
+2. Use root query-state destinations (`?view=library|themes|deliverables`, `?task=review`). This also
+   avoids collision but makes destination semantics and route testing less explicit.
+3. Accept static collisions/placeholders. Rejected because it violates frozen-slug reachability and
+   truthful UI requirements.
+
+### Resolution
+User explicitly resumed the goal. The collision-safe namespace is approved with one strengthening:
+canonical source links move to `/source/:slug`, while the old `/:slug` route remains compatible.
+Review, Themes and Deliverables receive truthful route-specific pending states until their dedicated
+slices. No schema/RLS change is required.
+
+### Plan Lock impact
+Slice 1 is resumed. Route builders, route tests and screenshot URLs follow
+`19_ROUTE_REBASELINE_AND_GOAL_RESUME.md`; the target IA and every backend contract are preserved.
+
+
+## 2026-07-11 Drift Event 4 — Design-intelligence arrow gate blocked by browser policy
+
+### What drifted
+After Plan v2.1 approval, the mandatory UI preflight activated design-intelligence v3. Its discovery
+contract requires SVG red arrows injected into the live `localhost:8080/doc-intelligence` page.
+The selected browser exposes read-only Playwright evaluation and rejects `javascript:` navigation,
+so the temporary overlay cannot be injected through the permitted browser API.
+
+### Evidence
+- Live route and signed-in DOM loaded successfully; a raw baseline screenshot was captured.
+- `playwright.evaluate` rejected both `document.createElementNS` and `document.createElement` because
+  the page scope is read-only.
+- The materially different `javascript:` navigation approach was rejected by browser security
+  policy with an explicit instruction not to use workarounds, raw CDP or alternate browser surfaces.
+
+### Impact
+No source file has been edited. The approved Slice 1 route/navigation implementation is otherwise
+ready, but the design-intelligence skill states that a brief without injected-arrow evidence is not
+delivered and implementation must halt below its threshold.
+
+### Safe next state
+Keep Plan v2.1 APPROVED and retain the raw baseline. Do not bypass browser security. Resume source
+implementation only when the mandatory annotated-evidence requirement can be satisfied through an
+allowed tool path or is superseded by higher-priority instructions.
+
+## 2026-07-11 Drift Event 3 — Backend roadmap completed; active goal is the user journey
+
+### What drifted
+The existing Plan Lock and objective described backend completeness. The new goal is a full UI
+journey revamp based on the capability actually delivered, Mobbin benchmarks and live Rovo/Jira
+evidence. The old plan therefore cannot authorize UI implementation.
+
+### Evidence
+Live `/doc-intelligence` inspection showed a 31-item mixed-source library and a seven-tab workspace
+defaulting to Evidence. Code/database tracing proved grounded Ask, extraction/translation, facts,
+12 cited artifact types, review/approval, promotion, links and traceability already exist. It also
+found non-cosmetic gaps in source identity, persisted analysis, promotion provenance and Admin
+authorization. Full evidence is in `13_DOCINTEL_UI_REVAMP_STUDY.md`.
+
+### Decision
+Rebaseline the active top of `03_PLAN_LOCK.md` to v2.1 “Complete BRD Review Workbench journey”;
+retain the old backend roadmap and first UI draft below it as history. No source or schema
+implementation occurred. Plan approval remains pending, including an explicit Admin authority
+decision. The completion audit corrected the initial UI draft because it buried Findings under
+Analysis and omitted dedicated review start, Library, Themes and project Deliverables screens.
+
+### Plan Lock impact
+All new work must use the v2 slices and file allowlists. Historical backend slices grant no current
+implementation authority.
+
 ## 2026-07-09 Drift Event 1 — Slice 1 bugs were already fixed AND deployed
 
 ### What drifted

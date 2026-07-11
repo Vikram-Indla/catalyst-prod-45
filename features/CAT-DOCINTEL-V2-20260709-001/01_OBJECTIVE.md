@@ -1,5 +1,26 @@
 # Objective — CAT-DOCINTEL-V2-20260709-001
 
+## Active UI journey rebaseline — 2026-07-11
+
+Reframe the delivered Doc Intel substrate as a BRD Review Workbench: users understand a source,
+ask grounded questions, review findings, create cited deliverables, approve them and convert only
+approved outputs into traceable work. Extraction mechanics and operational diagnostics move to a
+backend-authorized Admin experience; exact citations remain part of the user trust contract.
+
+Active UI acceptance criteria:
+
+- [ ] Home communicates the job and offers scoped Ask/upload/task starters before the library.
+- [ ] A source opens on Overview, not raw page extraction.
+- [ ] Findings remains a primary destination; readable source/exact evidence stay contextual; Links
+      and Traceability remain reachable under Work items.
+- [ ] All 12 existing deliverable types remain available, grouped by user outcome.
+- [ ] Only approved artifacts can be promoted; provenance-link failure is reported honestly.
+- [ ] Document, Jira and git sources are visibly distinct without invented metadata.
+- [ ] Operational re-sync and diagnostics require proven backend Admin authority.
+- [ ] English/Arabic, dark mode, keyboard access, citations and existing backend payloads survive.
+
+The original backend objective below is retained as completed historical scope.
+
 ## What we're building
 
 Close every gap identified in the 2026-07-09 discovery audit

@@ -1,5 +1,18 @@
 # Validation Evidence — CAT-DOCINTEL-V2-20260709-001
 
+## UI revamp Slice 1 — navigation and collision-safe routes (2026-07-11) ✅ COMPLETE
+
+- 12/12 route tests passed; TypeScript passed; color and ADS ratchet gates passed.
+- Home `/doc-intelligence` and Library `/doc-intelligence/views/library` loaded in the logged-in
+  staging session with URL-derived selected tabs and exactly one H1.
+- Library preserved the real staging-backed dataset: 31 items were visible, including the existing
+  Audio Test and README sources.
+- Canonical `/doc-intelligence/source/audio-test-revenue-target` and legacy
+  `/doc-intelligence/audio-test-revenue-target` both resolve the same source workspace.
+- Light, dark and 1280×720 Home states plus Library and legacy-source evidence are stored under
+  `evidence/slice1-*.png`.
+- No backend, schema, RLS or staging-data mutation was made by this UI slice.
+
 ## Baseline (pre-fix), carried from discovery audit
 
 - `ai_document_embeddings`: 378 rows, all `vector(1536)`, spot-checked non-null (staging `cyij`).
