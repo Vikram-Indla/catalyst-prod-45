@@ -1,55 +1,43 @@
 # HANDOVER — CAT-IDEATION-REBUILD-20260709-001
 
-**Updated**: 2026-07-09 · **Resume with**: `continue feature CAT-IDEATION-REBUILD-20260709-001`
+**Updated**: 2026-07-11 · **Resume with**: `continue feature CAT-IDEATION-REBUILD-20260709-001`
 
-## State
-- Phase 0 (design lock): ✅ EXITED. D1–D9 decided (09_DECISIONS.md). Design of record ratified = discovery folder 03 (architecture) + 04 (design pack) + 05 v2.1 (Mobbin MCP evidence).
-- Phase 1 (foundations, 5 slices): **S1 ✅ · S2 ✅ · S3 ✅ (staging, post DRIFT-001 repair) · S4 ✅ · S5 ✅ (validated, commit pending)**.
-- Active Plan Lock: `03_PLAN_LOCK_PHASE1.md` (APPROVED — code authorized through S5).
+## State (accurate as of this update — the pre-2026-07-11 content below is historical)
 
-## Commits (main)
-- `0bf86b336` S1 core schema (idn_ideas + 5 satellites, race-safe IDEA-N, terminal-lock RLS)
-- `e22adcf8f` S1 validation evidence (8/8 staging RLS probes)
-- `5ff3856fd` S2 governance schema (scoring framework + recompute trigger, AI ledger, embeddings, conversions, br.source_idea_id) + 7/7 probes
+- **Phase 0** (design lock): ✅ EXITED.
+- **Phase 1** (foundations, S1–S5): ✅ all committed, all staging-validated.
+- **Phase 2** (CRUD, S1–S5: Inbox, Create/Submit, Detail, Explore, Portfolio): ✅ all committed. Explore had a real cross-session collision (see below) — resolved, current.
+- **Phase 3** (workflow/permissions):
+  - S1 (real guard evidence + Decision UI Approve/Decline/Park): ✅ committed `76a36591d`'s parent chain, **screenshot-verified with real staging data** (see `06_VALIDATION_EVIDENCE.md`).
+  - S2 Votes, S3 Admin, S4 Watchers, S5 Merge: ✅ code committed (`76a36591d`), tsc/lint-clean, the two write mutations (Merge) SQL-dry-run-validated in `BEGIN...ROLLBACK` transactions against real staging Postgres. **NOT YET browser/screenshot-verified** — see "Blocker" below. This is a deliberate, logged deviation from the screenshot-before-commit discipline every other slice followed; do not treat these 4 slices as done until a live pass happens.
+- **Phase 5** (conversion): S1 (Approved → business_requests, direct single-step) — same status as above: code committed, SQL-validated, not browser-verified.
+- **Phase 4** (AI Copilot): **not started.** Needs LLM gateway wiring, prompt versioning, suggestion ledger UI — genuinely a multi-slice undertaking, correctly deferred in every Plan Lock so far, not attempted under time pressure.
+- **Remaining known gaps** (see `04_ELITE_DESIGN_BLUEPRINT.md`'s P0/P1 table for the full list): Evidence panel (idn_evidence has no UI at all), notification dispatch (trigger *config* is seeded but nothing actually fires a notification row on `idea_submitted`/`idea_decision`/etc. — needs wiring into the mutations, no migration required, tractable next slice), scoring-model editing/publish flow (Admin page is read-only), role-gating the workflow action buttons (pre-existing gap across the *whole* canonical workflow system, not ideation-specific — `ph_wf_transition_roles` role groups aren't mapped to `product_roles.code` anywhere), Homepage widgets/ForYou section, AR/RTL pass.
 
-## Staging (catalyst-staging · cyijbdeuehohvhnsywig)
-- Both migrations APPLIED; ledger versions aligned 1:1 with committed files (20260709130000, 20260709150000).
-- Apply path: **Supabase MCP connector** (token is staging-scoped; prod invisible). Repo checkout is NOT linked — keep it that way; do not `supabase link` the shared checkout.
-- pgvector 0.8.0 enabled. All probe rows cleaned up. Key sequence currently at IDEA-2 (gap-tolerant; probes consumed 1–2).
+## ⚠️ Live blocker as of this update
 
-## Commits (this session)
-- **S3** `b8b865fea` — Scoring models, workflow, guards, notifications, admin roles (migration + guards registry)
-- **S4** `55725710f` — Feature flag (VITE_ENABLE_IDEATION), HubSwitcher update, admin nav/roles in S3 migration
+Phase 3 S2–S5 + Phase 5 S1 need a live browser pass to actually be considered done. The isolated dev instance (`VITE_ENABLE_IDEATION=true npm run dev -- --port 8084 --strictPort`) requires a fresh sign-in every time (new port = new origin = no carried-over session), and the assistant does not enter credentials on the user's behalf — this is a standing safety rule, not a one-off caution. The user was asked to sign in on `localhost:8084` and had not done so after ~30 minutes and 8+ checks across two `/goal`-loop wakeups when this doc was last updated.
 
-## Status (updated session 004, 2026-07-09)
-- **S3**: ✅ APPLIED to staging + validated (12/12 probes, 06_VALIDATION_EVIDENCE.md) — after DRIFT-001 fix. The committed migration had 4 schema mismatches (wrong table `ph_wf_templates`, missing `notification_trigger_config`, wrong `admin_nav_modules` columns, non-existent role codes). Amended per D10–D12 (09_DECISIONS.md). **Amended migration file + feature docs not yet committed — commit approval pending.**
-- **S4**: Code complete (committed `55725710f`); DB side now live via S3.
-- **S3 amendment**: ✅ committed `41a6bf47c` (session 004).
-- **S5**: ✅ Code complete + validated live both flag states, both themes (session 005). Routes/scaffold/sidebar/shell done; legacy /ideation/* + /product/ideas/* mounts removed (D1); flag-off nav-leak fixed (CatalystShell/HubSwitcher/HomeSidebar). Commit pending gate approval.
+**Next session/resume**: check if `localhost:8084` (or a fresh instance) has an active signed-in tab. If yes — do the screenshot pass immediately, it's the single highest-value next action: navigate each new surface (Vote/Watch on a Detail page, `/admin/ideation`, Merge on a `screening`-status idea, Convert on an `approved`-status idea), screenshot light+dark, verify the DB write actually happened via Supabase MCP `execute_sql`, then update `06_VALIDATION_EVIDENCE.md`'s "Phase 3 Slices S2–S5 + Phase 5 S1" section in place with real `ss_*` references (don't leave the "NOT yet verified" language stale once it's actually verified).
 
-## Handoff to Next Session
+## Commits (main, chronological, Phase 2 onward)
 
-**Immediate next steps**:
-1. Land the S5 commit (if not landed this session)
-2. Phase 1 exit review → Phase 2 Plan Lock (Inbox 2-pane triage, Explore list via JiraTable proof, submit form — CRUD over idn_*)
-3. Env note: vitest cannot start locally (rolldown styleText vs Node 20.12) — consider Node bump; suites run in CI
+- `9982a52d3` Phase 2 S1 — Inbox 2-pane triage
+- `5c08c939d` Phase 2 S2 — Create/Submit idea form
+- `a93b2655f` Phase 2 S3 — Idea Detail, real ADF + comments
+- `f49cfe20e` → **superseded same-day by** `588e825c7` — Phase 2 S4 Explore. Real cross-session collision: another concurrent session independently built the same slice, caught a real RLS gap (`idn_ideas` SELECT policy has no draft/ownership clause — any approved user could read other users' private drafts org-wide), fixed it as D16, and their version replaced this one on `main`. Verified independently before trusting the report; no data lost, confirmed via `git merge-base --is-ancestor`.
+- `23a1e7172` Phase 2 S5 — Portfolio, real Value×Effort chart (recharts `shape` prop fix for invisible scatter points — see `11_KARPATHY_LOOP_LOG.md`)
+- `d3a20cfcd` (rebased from a locally-unpushed `493013d30`) Phase 3 S1 — workflow guards real evidence + Decision UI. **Screenshot-verified.**
+- `76a36591d` Phase 3 S2–S5 + Phase 5 S1 — Votes/Watchers/Admin/Merge/Conversion. **SQL-validated only, not screenshot-verified — see blocker above.**
 
-**Known blockers**: None. D10 note: staging exit-criterion "notification triggers present" is waived (table absent on staging; conditional seed applies where it exists). Session-ops: GitHub Desktop switched the shared checkout mid-session — see session 005 incident note; user's strata DECISIONS.md edit is preserved in named stash@{0}.
+## Cautions carried forward
 
-## Next: S5 — Shell + Routes
-1. Ideation workflow in `ph_wf_*` (states per discovery-03 §4: draft→submitted→screening→evaluation→decided(+approved/declined/parked/merged)→converted→delivered) — **discover ph_wf_* table shapes first** (src/lib/workflow/canonical/runtime.ts + ph_wf migrations).
-2. Register 3 guards in GUARD_EVIDENCE_REGISTRY (runtime.ts:19-47): `strategy_link_present`, `scores_complete`, `duplicate_review_complete` — registry is TS code, check whether guards also need DB rows.
-3. IdeationHub notification triggers (10 events, discovery-03 §8) — discover notification_trigger_config seed format (notificationTriggerService.ts + 20260704* migrations); quiet defaults: P3/P4 in-app only (04 §I.8).
-4. Scoring model v1 seed: name "Default", slug default-v1, weighted_sum, drivers value(0.6,higher)/effort(0.4,lower), status approved (seed may set approved directly with change_reason 'initial seed') + INACTIVE RICE/WSJF preset models (status draft).
-5. `ideation` module-role defaults in `admin_role_module_permissions` — discover row format (AdminAccessPage/useModuleAccess).
-Then S4 (flag + ModuleGuard) and S5 (shell seats + legacy route-mount removal per D1 + scaffold src/modules/ideation/).
-
-## Cautions
-- Two unrelated dirty files in the checkout belong to the TestHub session (features/CAT-TESTHUB-CERT-20260708-001/DEFECT_REGISTER.md, src/pages/testhub/cycles/ExecutionPage.tsx) — never stage them.
-- Discovery folder `features/CAT-IDEATION-DISCOVERY-20260709-001/` is intentionally uncommitted (not yet approved for commit).
-- Zero legacy carryover rule: no reads/imports of ph_ideas, modules-dormant/ideation, useIdeation/useIdeasHub, ideationService, CatalystViewIdea. Legacy route-mount removal happens in S5 only (FullAppRoutes.tsx:133-139, 571-593).
-- Ledger discipline: apply via MCP `apply_migration`, then align `supabase_migrations.schema_migrations.version` to the committed filename timestamp (done for S1/S2 — repeat for every slice).
-- Model routing: schema/wiring slices OK on Sonnet; UI slices (Phase 2+) and all reviews stay Fable/Opus (delegation-guard hook enforces explicit choice).
+- Zero legacy carryover: no reads/imports of `ph_ideas`/`ph_idea_*`/`modules-dormant/ideation`/`ideationService.ts` anywhere in new code. Still true — checked every slice.
+- Concurrent sessions: this repo has had at least 3 other concurrent sessions active during Phase 2–5 (Strata consolidation, docintel, another Ideation session on Explore). Always `git fetch origin main` + check for file overlap before pulling/rebasing; use `git rebase` (never force-push) to reconcile an unpushed local commit against a moved origin.
+- `.codebase-memory/*` and `src/components/ads/DropdownMenu.tsx` are pre-existing dirty files in the shared checkout, not owned by this feature — never stage them; restore `.codebase-memory` to clean before any rebase (it blocks rebase otherwise) and leave `DropdownMenu.tsx` untouched.
+- vitest still cannot start locally (rolldown `styleText` vs Node 20.12.2) — re-checked 2026-07-11, still broken. Not this feature's to fix (global tooling/Node version).
+- Merge (Phase 3 S5) intentionally does NOT transfer votes/evidence/watchers — `idn_votes_update`/`idn_watchers_write` RLS both require `user_id = auth.uid()`, so a client session structurally cannot move another user's rows. Real transfer needs a `SECURITY DEFINER` RPC — a migration, deliberately not added mid-autonomous-loop without Vikram reviewing it. Flag this to Vikram before anyone builds it.
 
 ## Drift
-None. 08_DRIFT_LOG.md empty.
+
+None new. `08_DRIFT_LOG.md` still reflects only the pre-Phase-2 DRIFT-001 (S3 seed schema mismatches, resolved).
