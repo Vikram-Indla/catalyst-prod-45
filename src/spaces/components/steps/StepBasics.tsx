@@ -180,7 +180,7 @@ export function StepBasics({
       <Stack space="space.100">
         <span
           style={{
-            fontSize: token('font.size.075', '12px'),
+            fontSize: 'var(--ds-font-size-075)',
             fontWeight: 600,
             color: token('color.text'),
           }}

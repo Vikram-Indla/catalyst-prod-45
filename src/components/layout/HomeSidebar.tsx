@@ -291,7 +291,7 @@ function SpaceGroupHeader({
           style={{
             color: token('color.text', 'var(--ds-text)'),
             fontWeight: 500,
-            fontSize: token('font.size.100', '14px'),
+            fontSize: 'var(--ds-font-size-100)',
             lineHeight: '20px',
             overflow: 'hidden',
             textOverflow: 'ellipsis',
@@ -305,7 +305,7 @@ function SpaceGroupHeader({
               flexShrink: 0,
               color: token('color.text.subtlest', 'var(--ds-icon-subtle)'),
               fontWeight: 400,
-              fontSize: token('font.size.075', '12px'),
+              fontSize: 'var(--ds-font-size-075)',
               lineHeight: '20px',
             }}
           >

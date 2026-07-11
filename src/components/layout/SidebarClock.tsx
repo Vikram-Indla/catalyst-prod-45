@@ -70,7 +70,7 @@ export default function SidebarClock({ expanded }: SidebarClockProps) {
           style={{
             color: muted,
             fontFamily: 'var(--cp-font-body)',
-            fontSize: token('font.size.050', '11px'),
+            fontSize: 'var(--ds-font-size-050)',
             lineHeight: '16px',
             overflow: 'hidden',
             textOverflow: 'ellipsis',
@@ -100,7 +100,7 @@ export default function SidebarClock({ expanded }: SidebarClockProps) {
               style={{
                 color: primary,
                 fontFamily: 'var(--cp-font-body)',
-                fontSize: token('font.size.075', '12px'),
+                fontSize: 'var(--ds-font-size-075)',
                 fontWeight: 500,
                 lineHeight: '18px',
                 minWidth: 0,
@@ -116,7 +116,7 @@ export default function SidebarClock({ expanded }: SidebarClockProps) {
               style={{
                 justifySelf: 'end',
                 color: primary,
-                fontSize: token('font.size.075', '12px'),
+                fontSize: 'var(--ds-font-size-075)',
                 fontWeight: 500,
                 lineHeight: '18px',
                 fontVariantNumeric: 'tabular-nums',

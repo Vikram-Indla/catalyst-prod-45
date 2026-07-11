@@ -26,7 +26,6 @@ import CheckCircleIcon from '@atlaskit/icon/glyph/check-circle';
 import AddIcon from '@atlaskit/icon/glyph/add';
 import { supabase } from '@/integrations/supabase/client';
 import { useProjectFavorites } from '@/hooks/useProjectHub';
-import { token } from '@atlaskit/tokens';
 import { ProjectIcon } from '@/components/shared/ProjectIcon';
 import { getProductAvatarUrl, HUB_ICON_REGISTRY } from '@/components/icons';
 
@@ -679,7 +678,7 @@ export function ContextSwitcher({ variant = 'topnav', expanded = true }: Context
             style={{
               flex: 1, minWidth: 0, textAlign: 'left',
               fontFamily: 'var(--cp-font-heading)',
-              fontSize: token('font.size.100', '14px'),
+              fontSize: 'var(--ds-font-size-100)',
               fontWeight: 500,
               letterSpacing: '-0.3px',
               color: 'var(--ds-text)',

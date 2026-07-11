@@ -11,7 +11,6 @@
  */
 
 import React from 'react';
-import { token } from '@atlaskit/tokens';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { hubAccentToken } from '@/lib/hub-tone';
 import { PanelLeftClose, PanelLeftOpen, Star, LucideIcon } from '@/lib/atlaskit-icons';
@@ -398,7 +397,7 @@ export function SidebarBase({
                   className="truncate"
                   style={{
                     fontFamily: 'var(--cp-font-heading)',
-                    fontSize: token('font.size.100', '14px'),
+                    fontSize: 'var(--ds-font-size-100)',
                     fontWeight: 600,
                     color: 'var(--ds-text)',
                     letterSpacing: '-0.3px',
@@ -426,7 +425,7 @@ export function SidebarBase({
                   className="truncate"
                   style={{
                     fontFamily: 'var(--cp-font-heading)',
-                    fontSize: token('font.size.100', '14px'),
+                    fontSize: 'var(--ds-font-size-100)',
                     fontWeight: 600,
                     color: 'var(--ds-text)',
                     letterSpacing: '-0.3px',
@@ -491,7 +490,7 @@ export function SidebarBase({
                   style={{
                     fontFamily: 'var(--cp-font-body)',
                     color: 'var(--ds-text-subtlest)',
-                    fontSize: token('font.size.050', '11px'),
+                    fontSize: 'var(--ds-font-size-050)',
                     fontWeight: 600,
                     letterSpacing: '0',
                     textTransform: 'none' as const,
@@ -518,7 +517,7 @@ export function SidebarBase({
                 style={{
                   fontFamily: 'var(--cp-font-body)',
                   color: 'var(--ds-text-subtlest)',
-                  fontSize: token('font.size.050', '11px'),
+                  fontSize: 'var(--ds-font-size-050)',
                   fontWeight: 600,
                   letterSpacing: '0',
                   textTransform: 'none' as const,
@@ -561,7 +560,7 @@ export function SidebarBase({
                         style={{
                           fontFamily: 'var(--cp-font-body)',
                           color: 'var(--ds-text-subtlest)',
-                          fontSize: token('font.size.050', '11px'),
+                          fontSize: 'var(--ds-font-size-050)',
                           fontWeight: 600,
                           letterSpacing: '0',
                           textTransform: 'none' as const,
@@ -664,7 +663,7 @@ function renderMenuItem(
         padding: expanded ? '4px 12px 4px 12px' : '4px 0',
         gap: '8px',
         marginBottom: '0',
-        fontSize: token('font.size.100', '14px'),
+        fontSize: 'var(--ds-font-size-100)',
         fontWeight: active ? 600 : 500,
         color: active ? tk.activeText : tk.itemText,
         fontFamily: 'var(--cp-font-body)',
@@ -868,7 +867,7 @@ function renderMenuItem(
           style={{
             // ADS font.size.050 = 11px — smallest rail label token
             // Source: https://atlassian.design/foundations/typography
-            fontSize: token('font.size.050', '11px'),
+            fontSize: 'var(--ds-font-size-050)',
             fontWeight: 600,
             // ADS 4/8dp spacing grid — 0 vertical, 4px horizontal
             padding: '0 4px',

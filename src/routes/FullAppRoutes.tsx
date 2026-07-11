@@ -824,7 +824,7 @@ export default function FullAppRoutes() {
         <Route path="/planner/*" element={<Navigate to="/tasks/overview" replace />} />
 
         {/* Plan Hub deprecated 2026-06-25 — all routes removed */}
-        <Route path="/planhub*" element={<Navigate to="/tasks/overview" replace />} />
+        <Route path="/planhub/*" element={<Navigate to="/tasks/overview" replace />} />
 
         {/* Folio — Catalyst Pages (CAT-DOCS-NOTION-20260704-001).
             Renamed from /wiki 2026-07-05 (/wiki belongs to the restored
