@@ -124,24 +124,6 @@ Notes: G1 first attempt failed on `created_by NOT NULL` (definer context has nul
 
 **Not yet built this slice**: AI Copilot rail tab, vote/importance control, evidence panel, scoring display, watchers, linked-BR block, owner/sponsor editing, comment mentions — all explicitly deferred in the Plan Lock's non-scope.
 
-## Phase 2 Slice S4 — Explore (full list + filter chips + search) · localhost:8082 (isolated instance) · 2026-07-11
-
-**Plan Lock**: `03_PLAN_LOCK_PHASE2_S4_EXPLORE.md`. Scope: real browse/search surface — every `idn_ideas` row (not just Inbox's triage subset), a filter-chip row (Status + Class, Deel evidence 05 §C row 2), and a search box, in `JiraTable`. Built on top of the other session's S2 (`5c08c939d`, Create form) without touching any of its files — `ExplorePage.tsx`'s existing `CreateIdeaModal`/`useCreateIdeaParam` wiring from S2 was kept intact, not reverted.
-
-**Gates**: `npx tsc --noEmit` ✅ 0 errors · `node scripts/no-hardcoded-colors.cjs` ✅ 0 hits on touched files.
-
-**Data**: read live — by this slice `idn_ideas` had grown to 8 rows (IDEA-6..11 from S1's seed, plus IDEA-12/13 created for real through the other session's Create form) — confirms Explore reads genuinely live data, not just my own seeds.
-
-**Screenshots + interaction proof** (Chrome MCP, signed-in session):
-| Surface | Outcome |
-|---|---|
-| `/ideation/explore`, light, unfiltered | PASS — all 8 ideas, filter chips derived only from statuses/classes actually present (Draft/Submitted/Screening/Evaluation + Problem/Opportunity/Improvement — no fabricated "Approved" etc.) (ss_3306jpt33) |
-| Status filter chip ("Evaluation") | PASS — clicked, list narrowed live to 2 matching rows, footer correctly reads "2 of 8 items" via `totalRowCount` (ss_37030elg5) |
-| Search ("voice") | PASS — narrowed live to the 2 title-matching rows, chip filter independently clearable (ss_57679d1q6) |
-| Dark mode, filters cleared | PASS — back to all 8 items, chips/table hold contrast via ADS tokens (ss_43459krax) |
-
-**Not yet built this slice**: column customizer (already provided by `JiraTable` itself, no new work needed), votes/score columns, saved views — all deferred per the Plan Lock's non-scope.
-
 ## Phase 2 Slice S2 — Create/Submit Idea form · localhost:8082 (isolated instance, worktree ideation-s2-create) · 2026-07-10
 
 **Plan Lock**: `03_PLAN_LOCK_PHASE2_S2_CREATE.md` (APPROVED — D13/D14/D15 as recommended). First WRITE path over `idn_ideas`: CreateIdeaModal (PortalFix chrome + shared CreateIdeaForm), `?create=idea` deep link on Inbox/Explore/Portfolio, SubmitPage full-page host, "New idea" sidebar nav item.
@@ -174,6 +156,30 @@ Notes: G1 first attempt failed on `created_by NOT NULL` (definer context has nul
 **Demo rows**: IDEA-12 (submitted) + IDEA-13 (draft) left on staging as realistic content for later slices (draft handling, Explore).
 
 **Not built this slice** (non-scope): voice capture, attachments/evidence, AI enrichment (static note only), ContextSwitcher entry, strategy/language pickers.
+
+## Phase 2 Slice S4 — Explore (browse/search/filter + CSV export) · localhost:8082 (isolated instance, worktree ideation-s2-create) · 2026-07-11
+
+**Plan Lock**: `03_PLAN_LOCK_PHASE2_S4_EXPLORE.md` (APPROVED — D16 explicit sign-off: drafts excluded from Explore at the query layer for every user, not just the owner; D17/D18 recommendations followed). Sibling of S1/S2/S3 — files forbidden list respected, zero overlap.
+
+**Gates**: `npx tsc --noEmit` ✅ 0 errors · `npm run lint:colors:gate` ✅ 0 = baseline 0 · `npm run audit:ads:gate` ✅ all categories at/below baseline (tokens dropped 21187→19953 from an unrelated upstream refactor, not ratcheted by this slice — out of scope).
+
+**Fix during build**: initial `ClassBadge` was copied verbatim from InboxPage.tsx (`textTransform: 'uppercase'`), which the audit gate's typography category flagged as a new instance (+1). Removed the uppercase transform in Explore's copy (sentence-case labels, matching the audit's own suggested fix) rather than touching the forbidden `InboxPage.tsx` or suppressing with an escape-hatch comment — a real fix, not noise.
+
+**DB baseline (staging cyijbdeuehohvhnsywig)**: 8 total `idn_ideas` rows — 7 non-draft (IDEA-6/7/12 submitted, IDEA-8/9 screening, IDEA-10/11 evaluation) + IDEA-13 (draft, from the S2 slice).
+
+**Screenshots + interaction proof (Chrome MCP)**:
+| Check | Outcome |
+|---|---|
+| Unfiltered load | PASS — exactly 7 rows rendered, IDEA-13 (draft) absent — **D16 enforced** (ss_5932wy1f4 dark) |
+| Search ("duplicate") | PASS — narrows to 1 matching row (IDEA-7) (ss_0876sx1oi) |
+| Stage filter (Screening) | PASS — narrows to 2 rows (IDEA-8, IDEA-9) (ss_43719t7s8) |
+| Combined Stage+Class (Screening + Improvement) | PASS — 0 rows, "No ideas match" empty state, CSV button correctly disabled, "Clear filters" restores full list (ss_27079xg6s) |
+| Row click → Detail | PASS — navigates to `/ideation/ideas/:slug`, IDEA-12 Detail page renders (S3, untouched) (ss_43130uohd) |
+| CSV export | PASS — button click fires with zero console errors; only console message is a pre-existing `@atlaskit/select` legacy-context warning shared with every other Select filter in the codebase (AllProjectsToolbar etc.), not introduced by this slice |
+| Light mode | PASS — table, lozenges, sentence-case class labels all hold contrast via ADS tokens (ss_78018kafv) |
+| Dark mode | PASS — ss_5932wy1f4 |
+
+**Not built this slice** (non-scope, per Plan Lock): Score/Votes/Owner columns, Strategy filter, bulk actions, server-side pagination, saved-filter chips, converted-row `MIM-n` links — all deferred pending unbuilt joins (`idn_votes`, `idn_scoring_*`) or permissions wiring.
 
 ## Phase 2 Slice S5 — Portfolio (Value × Effort field chart) · localhost:8082 (isolated instance) · 2026-07-11
 
