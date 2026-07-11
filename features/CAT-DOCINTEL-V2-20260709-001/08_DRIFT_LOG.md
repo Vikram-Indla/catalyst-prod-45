@@ -230,3 +230,45 @@ token until Vikram rotates the GitHub secret. analyze/generate deploy the same w
 ### Plan Lock impact
 Slice 4a COMPLETE. Slice 4b (analyze) + 4c (generate) remain — same registry pattern + same
 CLI-token deploy path.
+## 2026-07-12 Drift Event 7 — Slice 6B omitted the route mount
+
+### What drifted
+The approved Slice 6B file list created `DocintelDeliverablesPage.tsx`, its project query and tests,
+but omitted `DocintelRoutes.tsx`. The live `/views/deliverables` route therefore continued to mount
+`DocintelDeliverablesPendingPage`, making the completed hub unreachable.
+
+### Evidence
+`DocintelRoutes.tsx` lazy-loaded the pending export from `DocintelHomePage.tsx`; its route test also
+mocked and expected that placeholder. The new page passed isolated tests but could not satisfy the
+Slice 6B binary acceptance on the live URL.
+
+### Decision
+Rebaseline Slice 6B with the two mechanically required integration files: `DocintelRoutes.tsx` and
+`DocintelRoutes.test.tsx`. This is the narrowest correction, adds no route, schema or feature, and
+implements the user's standing direction to remove delivery blockers rather than leave dead code.
+
+### Plan Lock impact
+Slice 6B file allowlist gains exactly the route mount and its route regression test. All other scope
+and acceptance criteria remain unchanged.
+## 2026-07-12 Drift Event 8 — Promotion recovery had no durable persistence
+
+### What drifted
+Slice 7 required a “persisted visible partial result and retry/recovery” but authorized only UI and
+tests. The database stores one `promoted_work_item_id` and successful document links; it does not
+store all created work ids, failed link pairs or pending artifact-status writes.
+
+### Evidence
+The modal can safely retain created keys and retry failed mark/link calls while it remains mounted.
+After reload, that state is gone and multi-item failures cannot be reconstructed. Any claim that a
+user could close and recover later would be false.
+
+### Decision
+Rebaseline Slice 7 with the smallest additive persistence boundary: a project-scoped promotion
+recovery ledger storing created work results, create failures, pending provenance pairs,
+artifact-status pending and completion status. Use existing project membership RLS. Retry reads the
+ledger and performs only the pending mark/link operations; it never recreates or deletes work.
+
+### Plan Lock impact
+Slice 7 gains one CLI-generated migration plus typed domain read/upsert/complete support. No existing
+table or promotion payload is removed. The modal-only state machine remains the immediate feedback
+path but cannot close Slice 7 until reload recovery is proven.

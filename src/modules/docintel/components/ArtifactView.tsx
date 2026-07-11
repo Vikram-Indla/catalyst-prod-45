@@ -193,6 +193,7 @@ export function ArtifactView({ artifactId }: ArtifactViewProps) {
 
   const status = String(artifact.status);
   const isPromotable = PROMOTABLE_TYPES.has(String(artifact.artifact_type));
+  const canPromote = isPromotable && status === "approved";
   const isPromoted = status === "promoted";
   const isRejected = status === "rejected";
   /** Approval workflow (S8): only draft/verified can be approved or rejected. */
@@ -263,9 +264,9 @@ export function ArtifactView({ artifactId }: ArtifactViewProps) {
           {status.replace(/_/g, " ")}
         </Lozenge>
 
-        {/* Actions: approve/reject while reviewable (draft/verified); promote
-            for epic/story (verified/approved/draft — not rejected). Promoted →
-            success lozenge. */}
+        {/* Actions: approve/reject while reviewable (draft/verified); promotion
+            is a separate human-governance boundary and appears only after the
+            artifact reaches approved. Promoted remains a terminal label. */}
         <span
           style={{
             marginInlineStart: "auto",
@@ -292,20 +293,17 @@ export function ArtifactView({ artifactId }: ArtifactViewProps) {
               </Button>
             </>
           )}
-          {isPromotable &&
-            (isPromoted ? (
-              <Lozenge appearance="success">Promoted</Lozenge>
-            ) : (
-              !isRejected && (
-                <Button appearance="primary" onClick={() => setPromoteOpen(true)}>
-                  Promote to work items
-                </Button>
-              )
-            ))}
+          {isPromotable && isPromoted ? (
+            <Lozenge appearance="success">Promoted</Lozenge>
+          ) : canPromote ? (
+            <Button appearance="primary" onClick={() => setPromoteOpen(true)}>
+              Promote to work items
+            </Button>
+          ) : null}
         </span>
       </div>
 
-      {isPromotable && !isPromoted && !isRejected && (
+      {canPromote && (
         <PromoteArtifactModal
           artifact={artifact}
           projectId={artifact.project_id}

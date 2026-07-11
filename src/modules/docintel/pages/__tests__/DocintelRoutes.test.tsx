@@ -8,9 +8,11 @@ vi.mock("../DocintelHomePage", () => ({
   __esModule: true,
   default: () => <div data-testid="docintel-home">For you</div>,
   DocintelThemesPendingPage: () => <div data-testid="docintel-themes">Themes</div>,
-  DocintelDeliverablesPendingPage: () => (
-    <div data-testid="docintel-deliverables">Deliverables</div>
-  ),
+}));
+
+vi.mock("../DocintelDeliverablesPage", () => ({
+  __esModule: true,
+  default: () => <div data-testid="docintel-deliverables">Deliverables</div>,
 }));
 
 vi.mock("../DocintelReviewStartPage", () => ({

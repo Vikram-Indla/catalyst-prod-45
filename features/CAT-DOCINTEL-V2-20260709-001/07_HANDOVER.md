@@ -1,5 +1,50 @@
 # Handover — CAT-DOCINTEL-V2-20260709-001
 
+## Active handover — Session 014, Slice 7 persistence gate (2026-07-12)
+
+Approved-only promotion and honest in-dialog retry are implemented and green. They are not enough
+for the Plan Lock's durable recovery acceptance: after reload, the database cannot reconstruct all
+created work ids or failed document/work link pairs. Drift Event 8 expands Slice 7 with an additive
+project-scoped recovery ledger and typed domain support. Next exact action, after the Codex tool
+limit clears at 02:43: verify `supabase/.temp/project-ref` is `cyijbdeuehohvhnsywig`, run
+`supabase migration new docintel_promotion_recovery`, then implement the ledger/RLS and retry path.
+Do not mark Slice 7 complete from the current modal-only tests.
+
+## Active handover — Session 013, UI through Slice 6B complete (2026-07-12)
+
+The project Deliverables destination is live and staging-backed. It lists persisted source, title,
+type, review, grounding and updated truth; row detail opens in a drawer and preserves the project
+URL. Drift Event 7 records the route-mount correction omitted by the original Slice 6B allowlist.
+Next exact action: Slice 7 gates promotion to approved and makes provenance-link failure visible.
+
+## Active handover — Session 012, UI through Slice 6A complete (2026-07-12)
+
+The source Deliverables destination now presents all 12 exact generation types as three customer
+outcomes and uses canonical JiraTable history. Payloads and artifact detail remain unchanged. Live
+staging proves the new selection model and truthful empty state. Next exact action: Slice 6B adds a
+project-level Deliverables hub with drawer detail and no UUID route.
+
+## Active handover — Session 011, UI through Slice 5B complete (2026-07-11)
+
+The five-destination source workbench is now complete. Work items owns exactly two peer views:
+Linked work and Traceability. The existing link/origin and matrix contracts are preserved; live
+staging proves a truthful empty link state and the real requirement-to-Page-1 trace. Next exact
+action: Slice 6A groups all 12 exact artifact values by customer outcome without changing payloads.
+
+## Active handover — Session 010, UI through Slice 5A complete (2026-07-11)
+
+The source workspace now has exactly five user-job destinations. Findings is a canonical JiraTable
+over real staging facts; Page evidence opens the contextual exact-evidence drawer, and focus returns
+to the trigger after Escape. No extraction or processing controls leak into the user surface. Next
+exact action: Slice 5B extracts the current Linked work/Traceability composition into the locked
+`DocintelWorkItemsPanel` and proves both legacy destinations map exactly once.
+
+## Active handover — Session 009, UI through Slice 4B complete (2026-07-11)
+
+The source workspace now opens on Overview and exposes readable source/evidence context through a
+canonical drawer. Raw extraction is not mounted in the drawer; technical fields are hidden; Escape
+and focus return pass. Next exact action: Slice 5A final five destinations plus JiraTable Findings.
+
 ## Active handover — Session 008, UI through Slice 4A complete (2026-07-11)
 
 The source workspace now opens on a truthful Overview instead of raw extraction. Real counts and

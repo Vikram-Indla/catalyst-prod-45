@@ -15,11 +15,7 @@ const ThemesPendingPage = lazy(() =>
     default: module.DocintelThemesPendingPage,
   })),
 );
-const DeliverablesPendingPage = lazy(() =>
-  import("./pages/DocintelHomePage").then((module) => ({
-    default: module.DocintelDeliverablesPendingPage,
-  })),
-);
+const DeliverablesPage = lazy(() => import("./pages/DocintelDeliverablesPage"));
 const LibraryPage = lazy(() => import("./pages/DocintelLibraryPage"));
 const UploadPage = lazy(() => import("./pages/DocintelUploadPage"));
 const HealthPage = lazy(() => import("./pages/DocintelHealthPage"));
@@ -62,7 +58,7 @@ export function DocintelRoutes() {
       <Route path="" element={<S><HomePage /></S>} />
       <Route path="views/library" element={<S><LibraryPage /></S>} />
       <Route path="views/themes" element={<S><ThemesPendingPage /></S>} />
-      <Route path="views/deliverables" element={<S><DeliverablesPendingPage /></S>} />
+      <Route path="views/deliverables" element={<S><DeliverablesPage /></S>} />
       <Route path="actions/review" element={<S><ReviewStartPage /></S>} />
       <Route path="upload" element={<S><UploadPage /></S>} />
       <Route path="health" element={<S><HealthPage /></S>} />

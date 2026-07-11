@@ -1,0 +1,9 @@
+# Obsidian personal workspace state
+docs/product/.obsidian/workspace.json
+docs/product/.obsidian/workspaces.json
+docs/product/.obsidian/cache
+docs/product/.trash/
+
+# Product-spine generated runtime files
+.product-spine/runtime/
+.product-spine/backups/

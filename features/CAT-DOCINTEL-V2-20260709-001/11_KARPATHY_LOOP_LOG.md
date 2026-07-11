@@ -1,5 +1,20 @@
 # Karpathy Loop Log — CAT-DOCINTEL-V2-20260709-001
 
+## Loop 13 — 2026-07-11 — “Can source trust remain accessible without raw extraction navigation?”
+
+**Hypothesis:** A contextual drawer can preserve document reading and exact claim evidence while
+keeping extraction machinery out of the customer mental model.
+
+**Experiment:** Mounted TranslatedDocumentView plus a safe exact-evidence contract in CatalystDrawer,
+then tested the real Audio Test source, no-selection evidence, prohibited fields and keyboard close.
+
+**Measure:** The real translated sentence remained available; no technical retrieval fields leaked;
+Escape closed and returned focus. The full raw Evidence tab remains only as a temporary migration
+bridge until Slice 10.
+
+**Keep/Discard:** **Keep.** Contextual source/evidence becomes the trust pattern; raw extraction is
+not part of the drawer and will move to authorized Admin later.
+
 ## Loop 12 — 2026-07-11 — “Does emitting `view=findings` deliver Findings?”
 
 **Hypothesis:** The Review Start URL is sufficient for the existing workspace to open the review
@@ -91,6 +106,57 @@ door feeding a source-bounded review workbench.
 one click away, while relocating the full extraction inspector to authorized Admin.
 
 ---
+
+## Loop 12 — 2026-07-12 — “Should project deliverables use artifact detail routes?”
+
+**Hypothesis:** A detail URL containing the artifact UUID is required to resume generated work.
+
+**Experiment:** Listed real project artifacts in JiraTable and opened `ArtifactView` in a drawer
+from local row state.
+
+**Measure:** Five real deliverables became resumable; cited detail opened; the URL stayed at the
+project Deliverables hub with only the display project key; no slug or schema change was needed.
+
+**Keep/Discard:** **Discard.** Project list plus drawer detail is sufficient and obeys the slug
+contract without implying a new persistence model.
+
+## Loop 11 — 2026-07-12 — “Should 12 artifact types appear as one flat chooser?”
+
+**Hypothesis:** A flat list is the most direct way to expose every capability.
+
+**Experiment:** Preserved all exact backend values while grouping them into three customer
+outcomes and naming the Generate action after the selection.
+
+**Measure:** No payload changed; every value remained visible; the user now chooses an outcome
+before a format; existing history became a canonical table without losing row-open behavior.
+
+**Keep/Discard:** **Discard.** Keep all 12 capabilities, but present them through the customer job.
+
+## Loop 10 — 2026-07-11 — “Should Links and Traceability remain top-level destinations?”
+
+**Hypothesis:** Links and Traceability are independent enough to remain primary source tabs.
+
+**Experiment:** Mounted both unchanged components as peers beneath one Work items destination and
+tested legacy query mappings plus live staging reachability.
+
+**Measure:** Link actions and the matrix remained reachable exactly once; the source lost another
+implementation-shaped choice; no data or mutation contract changed.
+
+**Keep/Discard:** **Discard.** Work items is the user job; Linked work and Traceability are its
+keyboard-reachable peers.
+
+## Loop 9 — 2026-07-11 — “Do source pages belong as a primary destination?”
+
+**Hypothesis:** A user needs Document/Evidence as persistent top-level tabs to trust Findings.
+
+**Experiment:** Reframed the source around five jobs and opened readable source or the selected
+claim evidence contextually from View source and Page 1.
+
+**Measure:** The real staging finding remained verifiable; Page 1 restored focus after Escape; no
+quotation or processing detail was invented; the source workspace lost two implementation-shaped
+destinations without losing reachability.
+
+**Keep/Discard:** **Discard.** Keep source/evidence contextual and preserve the five customer jobs.
 
 ## Loop 6 — 2026-07-11 — “Should citations move to Admin with extraction?”
 

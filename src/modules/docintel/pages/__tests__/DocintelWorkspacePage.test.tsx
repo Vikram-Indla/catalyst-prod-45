@@ -1,7 +1,7 @@
 import React from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { fireEvent, render, screen } from "@testing-library/react";
-import { MemoryRouter, Route, Routes, useLocation } from "react-router-dom";
+import { MemoryRouter, Route, Routes, useLocation, useNavigate } from "react-router-dom";
 
 const mutate = vi.fn();
 let factsData: Array<{ review_status: string }> | undefined = [];
@@ -26,23 +26,50 @@ vi.mock("../../hooks/useDocintel", () => ({
 }));
 
 vi.mock("@/components/ads", () => ({
-  PageHeader: ({ title }: { title: React.ReactNode }) => <header>{title}</header>,
+  PageHeader: ({
+    title,
+    actions,
+  }: {
+    title: React.ReactNode;
+    actions?: React.ReactNode;
+  }) => (
+    <header>
+      {title}
+      {actions}
+    </header>
+  ),
   Breadcrumbs: () => null,
-  Button: ({ children }: { children: React.ReactNode }) => <button>{children}</button>,
+  Button: React.forwardRef<
+    HTMLButtonElement,
+    React.ButtonHTMLAttributes<HTMLButtonElement>
+  >(function MockButton({ children, ...props }, ref) {
+    return <button ref={ref} {...props}>{children}</button>;
+  }),
   DropdownMenu: () => null,
   Lozenge: ({ children }: { children: React.ReactNode }) => <span>{children}</span>,
   Spinner: () => <span>Loading</span>,
   EmptyState: ({ header }: { header: React.ReactNode }) => <div>{header}</div>,
 }));
 
-vi.mock("../../components/EvidenceViewer", () => ({
-  EvidenceViewer: () => <div data-testid="evidence-panel">Evidence panel</div>,
-}));
-vi.mock("../../components/TranslatedDocumentView", () => ({
-  TranslatedDocumentView: () => <div data-testid="document-panel">Document panel</div>,
-}));
-vi.mock("../../components/FactsReviewPanel", () => ({
-  FactsReviewPanel: () => <div data-testid="findings-panel">Findings panel</div>,
+vi.mock("../../components/DocintelFindingsPanel", () => ({
+  DocintelFindingsPanel: ({
+    onOpenEvidence,
+  }: {
+    onOpenEvidence?: (evidence: { claimText: string; quotedText: string; pageNumber: number }) => void;
+  }) => (
+    <div data-testid="findings-panel">
+      Findings panel
+      <button
+        onClick={() => onOpenEvidence?.({
+          claimText: "Revenue target",
+          quotedText: "The quarterly target is $4 million.",
+          pageNumber: 1,
+        })}
+      >
+        Open finding evidence
+      </button>
+    </div>
+  ),
 }));
 vi.mock("../../components/GenerationPanel", () => ({
   GenerationPanel: () => <div data-testid="artifacts-panel">Artifacts panel</div>,
@@ -88,12 +115,39 @@ vi.mock("../../components/DocintelWorkspaceOverview", () => ({
     </div>
   ),
 }));
+vi.mock("../../components/DocintelSourceDrawer", () => ({
+  DocintelSourceDrawer: ({
+    isOpen,
+    onClose,
+    documentId,
+    initialView,
+    exactEvidence,
+  }: {
+    isOpen: boolean;
+    onClose: () => void;
+    documentId: string;
+    initialView?: string;
+    exactEvidence?: { claimText?: string } | null;
+  }) => isOpen ? (
+    <aside aria-label="Source and evidence">
+      <span>{`source ${documentId} ${initialView} ${exactEvidence?.claimText ?? ""}`}</span>
+      <button onClick={onClose}>Close source</button>
+    </aside>
+  ) : null,
+}));
 
 import DocintelWorkspacePage from "../DocintelWorkspacePage";
 
 function LocationProbe() {
   const location = useLocation();
-  return <output data-testid="location-search">{location.search}</output>;
+  const navigate = useNavigate();
+  return (
+    <div>
+      <output data-testid="location-search">{location.search}</output>
+      <button onClick={() => navigate(-1)}>History back</button>
+      <button onClick={() => navigate(1)}>History forward</button>
+    </div>
+  );
 }
 
 function renderWorkspace(search = "") {
@@ -154,20 +208,50 @@ describe("DocintelWorkspacePage query-addressable views", () => {
     );
   });
 
-  it("keeps every existing workspace destination reachable", () => {
+  it("exposes only the five customer-facing workspace destinations", () => {
     renderWorkspace();
     for (const label of [
       "Overview",
-      "Evidence",
-      "Document",
-      "Findings",
-      "Artifacts",
-      "Traceability",
       "Ask",
-      "Links",
+      "Findings",
+      "Deliverables",
+      "Work items",
     ]) {
       expect(screen.getByRole("tab", { name: label })).toBeInTheDocument();
     }
+    for (const implementationLabel of ["Evidence", "Document", "Artifacts", "Links"]) {
+      expect(screen.queryByRole("tab", { name: implementationLabel })).not.toBeInTheDocument();
+    }
+  });
+
+  it("keeps the ADS tab list keyboard reachable", () => {
+    renderWorkspace();
+    const overview = screen.getByRole("tab", { name: "Overview" });
+    const ask = screen.getByRole("tab", { name: "Ask" });
+
+    overview.focus();
+    fireEvent.keyDown(overview, { key: "ArrowRight", code: "ArrowRight" });
+
+    expect(ask).toHaveFocus();
+    expect(ask).toHaveAttribute("aria-selected", "true");
+    expect(screen.getByTestId("location-search")).toHaveTextContent("?view=ask");
+  });
+
+  it("follows browser history when workspace views change", () => {
+    renderWorkspace("?view=overview");
+    fireEvent.click(screen.getByRole("tab", { name: "Ask" }));
+    fireEvent.click(screen.getByRole("tab", { name: "Deliverables" }));
+
+    fireEvent.click(screen.getByRole("button", { name: "History back" }));
+    expect(screen.getByRole("tab", { name: "Ask" })).toHaveAttribute("aria-selected", "true");
+    expect(screen.getByTestId("location-search")).toHaveTextContent("?view=ask");
+
+    fireEvent.click(screen.getByRole("button", { name: "History forward" }));
+    expect(screen.getByRole("tab", { name: "Deliverables" })).toHaveAttribute(
+      "aria-selected",
+      "true",
+    );
+    expect(screen.getByTestId("location-search")).toHaveTextContent("?view=deliverables");
   });
 
   it("maps Overview actions through the same stable view keys", () => {
@@ -187,7 +271,7 @@ describe("DocintelWorkspacePage query-addressable views", () => {
     fireEvent.click(screen.getByRole("tab", { name: "Overview" }));
     fireEvent.click(screen.getByRole("button", { name: "Overview Create" }));
     expect(screen.getByTestId("location-search")).toHaveTextContent(
-      "?project=BAU&view=artifacts",
+      "?project=BAU&view=deliverables",
     );
   });
 
@@ -217,4 +301,54 @@ describe("DocintelWorkspacePage query-addressable views", () => {
     expect(screen.getByText("findings 4/1/1/1")).toBeInTheDocument();
     expect(screen.getByText("deliverables 3/2")).toBeInTheDocument();
   });
+
+  it("opens the readable source drawer and returns focus when it closes", () => {
+    renderWorkspace();
+    const trigger = screen.getByRole("button", { name: "View source" });
+
+    fireEvent.click(trigger);
+    expect(screen.getByRole("complementary", { name: "Source and evidence" }))
+      .toHaveTextContent("source document-1 source");
+
+    fireEvent.click(screen.getByRole("button", { name: "Close source" }));
+    expect(screen.queryByRole("complementary", { name: "Source and evidence" }))
+      .not.toBeInTheDocument();
+    expect(trigger).toHaveFocus();
+  });
+
+  it("opens exact evidence emitted by Findings without inventing workspace evidence", () => {
+    renderWorkspace("?view=findings");
+
+    fireEvent.click(screen.getByRole("button", { name: "Open finding evidence" }));
+    expect(screen.getByRole("complementary", { name: "Source and evidence" }))
+      .toHaveTextContent("source document-1 evidence Revenue target");
+  });
+
+  it("preserves the legacy artifact destination through Deliverables", () => {
+    const legacyArtifacts = renderWorkspace("?view=artifacts");
+    expect(screen.getByRole("tab", { name: "Deliverables" })).toHaveAttribute(
+      "aria-selected",
+      "true",
+    );
+    expect(screen.getByTestId("artifacts-panel")).toBeVisible();
+    legacyArtifacts.unmount();
+  });
+
+  it.each(["links", "traceability"])(
+    "maps legacy view=%s once into Work items with both peer views reachable",
+    (legacyView) => {
+      renderWorkspace(`?view=${legacyView}`);
+
+      expect(screen.getByRole("tab", { name: "Work items" })).toHaveAttribute(
+        "aria-selected",
+        "true",
+      );
+      expect(screen.getAllByRole("tab", { name: "Linked work" })).toHaveLength(1);
+      expect(screen.getAllByRole("tab", { name: "Traceability" })).toHaveLength(1);
+      expect(screen.getAllByTestId("links-panel")).toHaveLength(1);
+
+      fireEvent.click(screen.getByRole("tab", { name: "Traceability" }));
+      expect(screen.getAllByTestId("traceability-panel")).toHaveLength(1);
+    },
+  );
 });

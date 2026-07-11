@@ -1,5 +1,62 @@
 # Execution Log — CAT-DOCINTEL-V2-20260709-001
 
+## 2026-07-12 — Session 014 — UI Slice 7 ACTIVE, durable recovery gate
+
+- Gated promotion to approved Epic/User Stories only.
+- Added honest modal-lifetime partial result and provenance retry that never recreates/deletes work.
+- 19 promotion/edge tests and 83 full DocIntel tests passed.
+- Rebaselined a durable project-scoped recovery ledger because current schema cannot recover failed
+  link pairs after reload.
+- Supabase CLI migration generation could not start: sandbox cache write required escalation, and
+  the escalation was rejected by the Codex tool-usage limit until 02:43. No workaround or invented
+  migration filename was used.
+
+## 2026-07-12 — Session 013 — UI Slice 6B COMPLETE
+
+- Added the project Deliverables hub with canonical JiraTable and drawer detail.
+- Added project-scoped artifact/source reads with persisted identity and updated time only.
+- Rebaselined the omitted route mount and its regression test; the live URL no longer shows the
+  placeholder.
+- Authenticated staging proved five real Senaei BAU deliverables and cited Epic detail without an
+  artifact UUID route.
+- 39 combined tests, TypeScript, ADS/color gates and full pre-commit passed.
+
+## 2026-07-12 — Session 012 — UI Slice 6A COMPLETE
+
+- Organized all 12 exact artifact values into Understand, Plan delivery and Validate and ship.
+- Preserved the generation mutation payload for every value.
+- Replaced the hand-rolled history list with canonical JiraTable and kept row-open ArtifactView.
+- Added empty, loading, generating, error, history, review, open/close and success coverage.
+- Authenticated staging proved the three groups, all 12 controls and truthful empty history.
+- 24 combined tests, TypeScript, scoped ESLint, ADS/color gates and full pre-commit passed.
+
+## 2026-07-11 — Session 011 — UI Slice 5B COMPLETE
+
+- Extracted the final Work items composition into `DocintelWorkItemsPanel`.
+- Preserved existing Linked work link/unlink/origin and Traceability contracts without copying
+  data or mutation logic.
+- Legacy `view=links` and `view=traceability` map exactly once to Work items.
+- Authenticated staging proved truthful empty Linked work plus the real $4 million requirement in
+  Traceability.
+- 18 combined tests, TypeScript, scoped ESLint, ADS/color gates and full pre-commit passed.
+
+## 2026-07-11 — Session 010 — UI Slice 5A COMPLETE
+
+- Replaced the seven implementation-shaped source tabs with exactly five customer jobs: Overview,
+  Ask, Findings, Deliverables and Work items.
+- Added a canonical JiraTable Findings surface over the unchanged fact-review hooks and payloads.
+- Wired Page evidence into the exact-evidence drawer without inventing quotation or confidence.
+- Authenticated staging proved the real $4 million finding, exact evidence, no processing/admin
+  leakage, Escape close and focus return to Page 1.
+- 16 tests, TypeScript, ADS/color gates and full pre-commit passed.
+
+## 2026-07-11 — Session 009 — UI Slice 4B COMPLETE
+
+- Added the canonical contextual source/evidence drawer and View source action.
+- Reused the real translated document; never mounted raw extraction in the drawer.
+- Proved honest no-evidence state, prohibited-field absence, Escape close and focus return.
+- 8 tests, TypeScript, ADS/color gates and full pre-commit passed.
+
 ## 2026-07-11 — Session 008 — UI Slice 4A COMPLETE
 
 - Made Overview the default source view while preserving all source controls and legacy panels.

@@ -1,0 +1,22 @@
+schema_version: 1
+default_project_id: catalyst
+
+projects:
+  catalyst:
+    display_name: Catalyst
+    root: docs/product/catalyst
+    allowed_terms:
+      - Catalyst
+      - Folio
+      - Doc Intel
+    prohibited_implicit_sources:
+      - TurnQy
+      - MIM
+      - Inspection
+    require_explicit_cross_project_link: true
+
+scope_policy:
+  require_project_id: true
+  require_feature_id: true
+  reject_ambiguous_scope: true
+  never_search_other_projects_implicitly: true

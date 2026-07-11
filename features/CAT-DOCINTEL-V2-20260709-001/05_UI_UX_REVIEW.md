@@ -1,3 +1,12 @@
+# UI Slice 4B critique — Source and evidence drawer (2026-07-11)
+
+- Understanding: contextual readable source and exact selected evidence without processing detail.
+- Violations: 0 P0, 0 P1, 1 P2 — selected-evidence handoff is completed by later Findings/citation
+  composition; the drawer already supports the truthful contract.
+- Score: 29/30 · SHIP for Slice 4B.
+- Closure: real translated source, honest no-selection state, no technical fields, Escape and focus
+  return all passed in the staging-backed workspace.
+
 # UI Slice 3 critique — Review Start (2026-07-11)
 
 - Understanding: three-decision BRD review launcher and its handoff into the current source
@@ -18,6 +27,46 @@
   input; both were corrected, then re-proven in light, dark and 1280×720 screenshots.
 
 # UI/UX Review — CAT-DOCINTEL-V2-20260709-001
+
+## UI Slice 6B critique — Project Deliverables hub (2026-07-12)
+
+- Understanding: resumable project deliverables and cited drawer detail, judged against canonical
+  JiraTable, CatalystDrawer, truthful project/source identity and the no-UUID route contract.
+- Violations: 0 P0, 0 P1, 1 P2 — the canonical table requires internal horizontal scrolling at
+  the compact acceptance viewport, but every column remains keyboard/scroll reachable.
+- Score: 29/30 · SHIP for Slice 6B.
+- Closure: live project switch, five real rows, six truthful columns, cited detail drawer, stable
+  project URL and no edit affordance all passed.
+
+## UI Slice 6A critique — Source Deliverable Studio (2026-07-12)
+
+- Understanding: source-scoped outcome creation and resumable deliverable history, judged against
+  the approved customer jobs, ADS controls and canonical JiraTable history.
+- Violations: 0 P0, 0 P1, 1 P2 — the zero-history empty state sits low in a compact viewport but its
+  instruction remains visible and the primary Generate action stays above the fold.
+- Score: 29/30 · SHIP for Slice 6A.
+- Closure: three customer outcomes, all 12 exact values, selected-action naming, canonical history
+  and truthful no-artifact state passed on authenticated staging.
+
+## UI Slice 5B critique — Work items composition (2026-07-11)
+
+- Understanding: one customer job for linked delivery work and page-level traceability, judged
+  against ADS peer tabs and the unchanged canonical link/matrix components.
+- Violations: 0 P0, 0 P1, 1 P2 — the inherited Linked work empty-state action alignment is visually
+  modest but usable and outside this composition-only slice.
+- Score: 29/30 · SHIP for Slice 5B.
+- Closure: one top-level Work items destination, exactly one Linked work and Traceability peer,
+  truthful empty state and real staging traceability all passed.
+
+## UI Slice 5A critique — Five-destination workbench and Findings (2026-07-11)
+
+- Understanding: customer source workbench and grounded finding review, judged against canonical
+  ADS Tabs, Catalyst JiraTable and the approved BRD Review mental model.
+- Violations: 0 P0, 0 P1, 2 P2 — Overview remains intentionally sparse for a one-finding source;
+  full empty/error/dark state closure continues in the dedicated later slices.
+- Score: 28/30 · SHIP for Slice 5A.
+- Closure: exactly five job labels, real staging finding, honest missing-quotation state, no
+  extraction/telemetry leakage, and correct evidence-trigger focus restoration all passed.
 
 Discovery review completed; no UI changes made yet (v2 Plan Lock DRAFT, pre-implementation).
 

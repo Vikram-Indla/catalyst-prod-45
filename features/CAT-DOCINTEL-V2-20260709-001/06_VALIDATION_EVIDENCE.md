@@ -1,5 +1,67 @@
 # Validation Evidence — CAT-DOCINTEL-V2-20260709-001
 
+## UI revamp Slice 6B — Project Deliverables hub (2026-07-12) ✅ COMPLETE
+
+- `/doc-intelligence/views/deliverables` now mounts the real hub, not the pending placeholder.
+- The project query returns persisted `updated_at` plus persisted source `id/title/slug`; missing
+  values render dashes and are never inferred.
+- Live staging switched to Senaei BAU and rendered five rows: promoted Epic, verified Test Cases,
+  Document Summary, Epic and Full BRD across two real sources.
+- Opening the promoted Epic kept the project URL (`?project=BAU`) and rendered its 21 cited claims
+  in `CatalystDrawer`; no artifact UUID route or edit control appeared.
+- Deliverables/route/Generation/Findings/workspace tests 39/39, TypeScript, color/ADS ratchets,
+  full pre-commit and diff check passed.
+- Screenshots: `evidence/slice6b-project-deliverables-light.png` and
+  `evidence/slice6b-project-deliverable-drawer-light.png`.
+
+## UI revamp Slice 6A — Source Deliverable Studio (2026-07-12) ✅ COMPLETE
+
+- Exact backend values are unchanged and grouped only for presentation: Understand (4), Plan
+  delivery (4), Validate and ship (4).
+- All 12 values produce the unchanged `{ projectId, documentIds: [documentId], artifactType }`
+  payload; successful generation still opens the returned artifact id.
+- Existing artifacts use canonical JiraTable columns Title, Type, Grounding, Review state and
+  Created; row click still opens `ArtifactView`.
+- Authenticated staging rendered all 12 controls and the truthful no-artifacts state.
+- GenerationPanel/Findings/workspace tests 24/24, TypeScript, scoped ESLint, full pre-commit and
+  diff check passed.
+- ADS token findings fell 19969→19966; `design-governance/audit-baseline.json` was ratcheted down.
+- Screenshot: `evidence/slice6a-deliverable-studio-light.png`.
+
+## UI revamp Slice 5B — Work items and Traceability (2026-07-11) ✅ COMPLETE
+
+- `DocintelWorkItemsPanel` composes the existing `DocumentLinksPanel` and `TraceabilityMatrix`
+  under ADS Tabs; their data and mutation contracts are unchanged.
+- Authenticated staging rendered Work items selected with exactly one Linked work and one
+  Traceability peer.
+- Linked work truthfully rendered no links plus Add link; Traceability rendered Page 1 and the real
+  $4 million requirement.
+- Legacy `view=links` and `view=traceability` exact-once mapping is covered by tests.
+- Combined Findings/workspace tests 18/18, TypeScript, scoped ESLint, color/ADS ratchets, full
+  pre-commit and diff check passed.
+- Screenshots: `evidence/slice5b-work-items-linked-work-light.png` and
+  `evidence/slice5b-work-items-traceability-light.png`.
+
+## UI revamp Slice 5A — Five destinations and Findings (2026-07-11) ✅ COMPLETE
+
+- The source workbench exposes exactly Overview, Ask, Findings, Deliverables and Work items.
+- Live staging rendered the real requirement: “The industrial scanning division has a quarterly
+  revenue target of $4 million.” in the canonical Document findings table.
+- Page 1 opened exact evidence with the claim and truthful “Exact quotation unavailable” state;
+  no quote, confidence, block id, embedding, provider, prompt or queue value was fabricated.
+- Escape closed the drawer and returned focus to the Page 1 evidence trigger.
+- Findings + workspace tests 16/16, TypeScript, color/ADS ratchets and full pre-commit passed.
+- Screenshots: `evidence/slice5a-five-destination-workbench-light.png` and
+  `evidence/slice5a-findings-evidence-drawer-light.png`.
+
+## UI revamp Slice 4B — Contextual source and evidence (2026-07-11) ✅ COMPLETE
+
+- View source opened the real translated Audio Test content in CatalystDrawer.
+- Exact evidence rendered an honest no-selection state without raw EvidenceViewer.
+- Drawer DOM contained no block id, embedding, confidence, provider, prompt or queue text.
+- Escape closed the drawer and restored focus to View source.
+- Workspace tests 8/8, TypeScript, scoped ESLint, ADS/color gates and full pre-commit passed.
+
 ## UI revamp Slice 4A — Source Overview (2026-07-11) ✅ COMPLETE
 
 - Overview is selected for missing/unknown view keys; all existing panels remain reachable.

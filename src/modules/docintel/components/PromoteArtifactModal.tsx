@@ -30,6 +30,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { createWorkItem } from "@/services/workItemService";
 import { useApprovedProfiles } from "@/hooks/useApprovedProfiles";
 import { catalystToast } from "@/lib/catalystToast";
+import { SectionMessage } from "@/components/ads";
 import {
   ProposalTable,
   type ProposalRow,
@@ -50,6 +51,26 @@ interface StatusOption {
   id: string;
   name: string;
   is_default: boolean;
+}
+
+interface CreatedWorkResult {
+  id: string;
+  item_key: string;
+  title: string;
+  kind: "epic" | "story";
+}
+
+interface ProvenanceLinkFailure {
+  documentId: string;
+  work: CreatedWorkResult;
+}
+
+interface PromotionResult {
+  created: CreatedWorkResult[];
+  createFailures: string[];
+  artifactStatusFailed: boolean;
+  linkFailures: ProvenanceLinkFailure[];
+  provenanceRecovered: boolean;
 }
 
 export interface PromoteArtifactModalProps {
@@ -132,6 +153,8 @@ export function PromoteArtifactModal({
   );
   const [assignees, setAssignees] = useState<Record<number, AssigneeChoice | null>>({});
   const [promoting, setPromoting] = useState(false);
+  const [retryingProvenance, setRetryingProvenance] = useState(false);
+  const [promotionResult, setPromotionResult] = useState<PromotionResult | null>(null);
 
   const handleAssigneeChange = useCallback((rowId: string, assignee: AssigneeChoice | null) => {
     setAssignees((prev) => ({ ...prev, [Number(rowId)]: assignee }));
@@ -189,18 +212,14 @@ export function PromoteArtifactModal({
     if (selectedCount === 0 || promoting) return;
 
     setPromoting(true);
+    setPromotionResult(null);
 
     const selectedIdx = [...selection].map(Number).sort((a, b) => a - b);
 
     const { data: userData } = await supabase.auth.getUser();
     const reporterId = userData?.user?.id ?? null;
 
-    const created: Array<{
-      id: string;
-      item_key: string;
-      title: string;
-      kind: "epic" | "story";
-    }> = [];
+    const created: CreatedWorkResult[] = [];
     const failed: string[] = [];
     // Track the first epic created so same-batch stories can be parented to it.
     let epicParentId: string | null = null;
@@ -249,33 +268,45 @@ export function PromoteArtifactModal({
     }
     void reporterId; // reporter is stamped server-side; kept for parity/debug.
 
-    setPromoting(false);
-
     if (created.length > 0) {
+      let artifactStatusFailed = false;
       try {
         await docintelApi.markArtifactPromoted(artifact.id, created[0].id);
       } catch {
-        /* non-fatal — items already created */
+        artifactStatusFailed = true;
       }
-      // S3 Knowledge Integration: record document ↔ work item links so
-      // promotions appear in the workspace Links tab. Best-effort per link —
-      // items are already created; a failed link never fails the promotion.
+
+      const linkFailures: ProvenanceLinkFailure[] = [];
       const sourceDocumentIds = artifact.document_ids ?? [];
       for (const documentId of sourceDocumentIds) {
         for (const c of created) {
           try {
             await docintelApi.linkDocument(documentId, c.kind, c.id, "promotion");
           } catch {
-            /* non-fatal */
+            linkFailures.push({ documentId, work: c });
           }
         }
         qc.invalidateQueries({ queryKey: ["docintel", "links", documentId] });
       }
+
+      setPromoting(false);
       const keys = created.map((c) => c.item_key).filter(Boolean).join(", ");
-      if (failed.length > 0) {
+      const needsFollowUp =
+        failed.length > 0 || artifactStatusFailed || linkFailures.length > 0;
+
+      if (needsFollowUp) {
+        setPromotionResult({
+          created,
+          createFailures: failed,
+          artifactStatusFailed,
+          linkFailures,
+          provenanceRecovered: false,
+        });
         catalystToast.warning(
-          `Promoted ${created.length} of ${selectedCount}`,
-          `Created: ${keys || created.length}. Failed: ${failed.join("; ")}`,
+          "Work created; follow-up required",
+          artifactStatusFailed || linkFailures.length > 0
+            ? "The created work is safe, but its provenance is incomplete. Retry from this dialog."
+            : `Created ${created.length} of ${selectedCount}.`,
         );
       } else {
         catalystToast.success(
@@ -284,8 +315,9 @@ export function PromoteArtifactModal({
         );
       }
       onPromoted();
-      onClose();
+      if (!needsFollowUp) onClose();
     } else {
+      setPromoting(false);
       catalystToast.error(
         "Promotion failed",
         failed.length > 0 ? failed.join("; ") : "No items were created.",
@@ -306,6 +338,64 @@ export function PromoteArtifactModal({
     onPromoted,
     onClose,
   ]);
+
+  const handleRetryProvenance = useCallback(async () => {
+    if (!promotionResult || retryingProvenance) return;
+    if (!promotionResult.artifactStatusFailed && promotionResult.linkFailures.length === 0) return;
+
+    setRetryingProvenance(true);
+    let artifactStatusFailed = promotionResult.artifactStatusFailed;
+    if (artifactStatusFailed && promotionResult.created[0]) {
+      try {
+        await docintelApi.markArtifactPromoted(
+          artifact.id,
+          promotionResult.created[0].id,
+        );
+        artifactStatusFailed = false;
+      } catch {
+        artifactStatusFailed = true;
+      }
+    }
+
+    const linkFailures: ProvenanceLinkFailure[] = [];
+    for (const failedLink of promotionResult.linkFailures) {
+      try {
+        await docintelApi.linkDocument(
+          failedLink.documentId,
+          failedLink.work.kind,
+          failedLink.work.id,
+          "promotion",
+        );
+      } catch {
+        linkFailures.push(failedLink);
+      }
+      qc.invalidateQueries({
+        queryKey: ["docintel", "links", failedLink.documentId],
+      });
+    }
+
+    const provenanceRecovered = !artifactStatusFailed && linkFailures.length === 0;
+    setPromotionResult({
+      ...promotionResult,
+      artifactStatusFailed,
+      linkFailures,
+      provenanceRecovered,
+    });
+    setRetryingProvenance(false);
+    onPromoted();
+
+    if (provenanceRecovered) {
+      catalystToast.success(
+        "Provenance recovered",
+        "The existing work items are now linked to their source evidence.",
+      );
+    } else {
+      catalystToast.warning(
+        "Provenance is still incomplete",
+        "The created work remains safe. Retry again while this dialog remains open.",
+      );
+    }
+  }, [artifact.id, onPromoted, promotionResult, qc, retryingProvenance]);
 
   if (!isOpen) return null;
 
@@ -344,29 +434,89 @@ export function PromoteArtifactModal({
           </span>
         </div>
 
-        <ProposalTable
-          rows={rows}
-          selection={selection}
-          onSelectionChange={setSelection}
-          onAssigneeChange={handleAssigneeChange}
-          onBulkAssign={handleBulkAssign}
-          assigneeOptions={assigneeOptions}
-        />
+        {promotionResult ? (
+          <SectionMessage
+            appearance={
+              promotionResult.provenanceRecovered && promotionResult.createFailures.length === 0
+                ? "success"
+                : "warning"
+            }
+            title={
+              promotionResult.artifactStatusFailed || promotionResult.linkFailures.length > 0
+                ? "Work created; provenance incomplete"
+                : promotionResult.createFailures.length > 0
+                  ? "Some work items were created"
+                  : "Promotion recovered"
+            }
+          >
+            <p>
+              The work items below were created and have not been deleted or recreated.
+            </p>
+            <ul>
+              {promotionResult.created.map((work) => (
+                <li key={work.id}>{work.item_key || work.title}</li>
+              ))}
+            </ul>
+            {promotionResult.artifactStatusFailed || promotionResult.linkFailures.length > 0 ? (
+              <p>
+                The artifact status or {promotionResult.linkFailures.length} source link
+                {promotionResult.linkFailures.length === 1 ? "" : "s"} could not be recorded.
+                Retry provenance while this dialog is open to link the existing work without
+                creating duplicates.
+              </p>
+            ) : null}
+            {promotionResult.createFailures.length > 0 ? (
+              <p>
+                {promotionResult.createFailures.length} selected item
+                {promotionResult.createFailures.length === 1 ? "" : "s"} could not be created.
+              </p>
+            ) : null}
+          </SectionMessage>
+        ) : (
+          <ProposalTable
+            rows={rows}
+            selection={selection}
+            onSelectionChange={setSelection}
+            onAssigneeChange={handleAssigneeChange}
+            onBulkAssign={handleBulkAssign}
+            assigneeOptions={assigneeOptions}
+          />
+        )}
       </ModalBody>
       <ModalFooter>
-        <Button appearance="subtle" onClick={onClose} isDisabled={promoting}>
-          Cancel
-        </Button>
-        <Button
-          appearance="primary"
-          onClick={handlePromote}
-          isDisabled={selectedCount === 0 || promoting}
-          isLoading={promoting}
-        >
-          {promoting
-            ? "Promoting…"
-            : `Promote ${selectedCount} item${selectedCount === 1 ? "" : "s"}`}
-        </Button>
+        {promotionResult ? (
+          <>
+            <Button appearance="subtle" onClick={onClose} isDisabled={retryingProvenance}>
+              Done
+            </Button>
+            {promotionResult.artifactStatusFailed || promotionResult.linkFailures.length > 0 ? (
+              <Button
+                appearance="primary"
+                onClick={handleRetryProvenance}
+                isDisabled={retryingProvenance}
+                isLoading={retryingProvenance}
+              >
+                {retryingProvenance ? "Retrying…" : "Retry provenance"}
+              </Button>
+            ) : null}
+          </>
+        ) : (
+          <>
+            <Button appearance="subtle" onClick={onClose} isDisabled={promoting}>
+              Cancel
+            </Button>
+            <Button
+              appearance="primary"
+              onClick={handlePromote}
+              isDisabled={selectedCount === 0 || promoting}
+              isLoading={promoting}
+            >
+              {promoting
+                ? "Promoting…"
+                : `Promote ${selectedCount} item${selectedCount === 1 ? "" : "s"}`}
+            </Button>
+          </>
+        )}
       </ModalFooter>
     </ModalDialog>
   );

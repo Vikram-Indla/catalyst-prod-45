@@ -1,0 +1,23 @@
+schema_version: 1
+project_id: catalyst
+feature_id: folio
+display_name: Folio
+status: active
+
+intent:
+  summary: >
+    Understand Folio as it currently exists in Catalyst, compare its intended
+    role with Notion-like knowledge/workspace capabilities, identify blind
+    spots, and create evidence-grounded feature packets.
+
+folders:
+  exploration: 10-exploration
+  decisions: 20-decisions
+  requirements: 30-requirements
+  feature_packets: 40-feature-packets
+  implementation: 50-implementation
+
+implementation_policy:
+  current_state_discovery_required: true
+  no_implementation_from_exploration: true
+  require_packet_status: implementation-ready

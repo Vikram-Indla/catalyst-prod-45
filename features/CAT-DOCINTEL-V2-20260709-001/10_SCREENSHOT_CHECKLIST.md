@@ -8,10 +8,14 @@
 - [x] Workspace Overview preserves title, status, version, upload and theme controls.
 - [x] Review Start: exactly three decisions, current version truth, Start visible, and selected
       source opens Findings without a persisted review claim.
-- [ ] Overview/Ask/Findings/Deliverables/Work items plus contextual readable source/exact evidence.
-- [ ] Deliverables: empty, generating, error, history and opened artifact.
+- [x] Overview/Ask/Findings/Deliverables/Work items plus contextual readable source/exact evidence.
+- [x] Contextual readable source drawer, honest exact-evidence no-selection state, Escape close and
+      focus return; populated exact-evidence states covered in Story 23.
+- [x] Deliverables: source empty, all component states, project populated/empty/error/loading and
+      opened cited artifact drawer.
 - [ ] Ask with citation drawer, Escape close/focus return, and Arabic RTL evidence.
-- [ ] Linked work empty/populated and unlink confirmation.
+- [ ] Linked work empty/populated and unlink confirmation. (Empty and Traceability populated are
+      complete in Slice 5B; populated/unlink confirmation remain for the later end-to-end pass.)
 - [ ] Promotion approved, blocked, partial-link-failure and retry.
 - [ ] Admin authorized view and ordinary-member denial.
 - [ ] No new console errors, horizontal page scroll, clipped actions or token violations.

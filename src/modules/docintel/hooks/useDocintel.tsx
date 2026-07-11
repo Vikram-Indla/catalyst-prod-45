@@ -64,6 +64,8 @@ const keys = {
     ["docintel", "formatted", documentId] as const,
   artifacts: (projectId: string, documentId: string) =>
     ["docintel", "artifacts", projectId, documentId] as const,
+  projectArtifacts: (projectId: string) =>
+    ["docintel", "artifacts", "project", projectId] as const,
   recentArtifacts: (projectId: string, limit: number) =>
     ["docintel", "artifacts", "recent", projectId, limit] as const,
   artifact: (artifactId: string) => ["docintel", "artifact", artifactId] as const,
@@ -313,6 +315,16 @@ export function useArtifacts(
     queryKey: keys.artifacts(projectId ?? "", documentId ?? ""),
     queryFn: () => docintelApi.listArtifacts(projectId!, documentId!),
     enabled: !!projectId && !!documentId,
+    staleTime: STALE,
+  });
+}
+
+/** All project artifacts with persisted source document identity, newest update first. */
+export function useProjectArtifacts(projectId: string | undefined) {
+  return useQuery({
+    queryKey: keys.projectArtifacts(projectId ?? ""),
+    queryFn: () => docintelApi.listProjectArtifacts(projectId!),
+    enabled: !!projectId,
     staleTime: STALE,
   });
 }

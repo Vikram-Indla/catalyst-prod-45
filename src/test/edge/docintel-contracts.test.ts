@@ -31,6 +31,14 @@ const FN_DIR = resolve(HERE, "../../../supabase/functions");
 
 const generateSrc = readFileSync(resolve(FN_DIR, "docintel-generate/index.ts"), "utf8");
 const askSrc = readFileSync(resolve(FN_DIR, "docintel-ask/index.ts"), "utf8");
+const artifactViewSrc = readFileSync(
+  resolve(HERE, "../../modules/docintel/components/ArtifactView.tsx"),
+  "utf8",
+);
+const promoteModalSrc = readFileSync(
+  resolve(HERE, "../../modules/docintel/components/PromoteArtifactModal.tsx"),
+  "utf8",
+);
 
 // Frontend marker regex sources — must stay in lockstep with the edge contract.
 import { CITATION_RE as ARTIFACT_RE } from "@/modules/docintel/components/ArtifactView";
@@ -42,6 +50,7 @@ describe("docintel-generate — citation dedupeKey NUL separators", () => {
       .split("\n")
       .find((l) => l.includes("dedupeKey = "));
     expect(line, "dedupeKey construction line must exist").toBeTruthy();
+    // eslint-disable-next-line no-control-regex -- contract intentionally counts literal NUL separators.
     const nulCount = (line!.match(/\u0000/g) ?? []).length;
     expect(nulCount).toBe(3);
     // The key must join claim → document_id → page_number → block_id.
@@ -133,5 +142,54 @@ describe("membership gate before LLM spend (requireMember precedes Gemini calls 
       expect(handler, name).toContain("FORBIDDEN");
       expect(handler, name).toContain("403");
     }
+  });
+});
+
+describe("artifact promotion governance and provenance recovery", () => {
+  it("exposes promotion only for exactly approved epic/story artifacts", () => {
+    expect(artifactViewSrc).toContain(
+      'const canPromote = isPromotable && status === "approved";',
+    );
+    expect(artifactViewSrc).toContain("{canPromote && (");
+    expect(artifactViewSrc).not.toContain(
+      'status === "verified" && isPromotable',
+    );
+  });
+
+  it("records artifact status and every source link before full-success close", () => {
+    const create = promoteModalSrc.indexOf("await createWorkItem(");
+    const mark = promoteModalSrc.indexOf("await docintelApi.markArtifactPromoted(");
+    const link = promoteModalSrc.indexOf("await docintelApi.linkDocument(");
+    const guardedClose = promoteModalSrc.indexOf("if (!needsFollowUp) onClose();");
+
+    expect(create).toBeGreaterThan(-1);
+    expect(mark).toBeGreaterThan(create);
+    expect(link).toBeGreaterThan(mark);
+    expect(guardedClose).toBeGreaterThan(link);
+    expect(promoteModalSrc).toContain('c.id, "promotion"');
+  });
+
+  it("persists created-work partial state and offers provenance retry", () => {
+    expect(promoteModalSrc).toContain("setPromotionResult({");
+    expect(promoteModalSrc).toContain('"Work created; provenance incomplete"');
+    expect(promoteModalSrc).toContain('"Retry provenance"');
+    expect(promoteModalSrc).toContain(
+      "The work items below were created and have not been deleted or recreated.",
+    );
+  });
+
+  it("retry reuses created work and contains no create or delete path", () => {
+    const retryStart = promoteModalSrc.indexOf("const handleRetryProvenance");
+    const retryEnd = promoteModalSrc.indexOf("if (!isOpen) return null", retryStart);
+    expect(retryStart).toBeGreaterThan(-1);
+    expect(retryEnd).toBeGreaterThan(retryStart);
+
+    const retryBody = promoteModalSrc.slice(retryStart, retryEnd);
+    expect(retryBody).toContain("docintelApi.markArtifactPromoted(");
+    expect(retryBody).toContain("docintelApi.linkDocument(");
+    expect(retryBody).not.toContain("createWorkItem(");
+    expect(retryBody).not.toContain("deleteWorkItem");
+    expect(retryBody).not.toContain(".delete(");
+    expect(promoteModalSrc).not.toContain("deleteWorkItem");
   });
 });

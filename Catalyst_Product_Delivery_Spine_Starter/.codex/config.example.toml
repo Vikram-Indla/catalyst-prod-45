@@ -1,0 +1,26 @@
+# Native Codex profile — recommended default
+model = "gpt-5.6-sol"
+model_provider = "openai"
+
+# Keep the native profile as the primary implementation harness.
+# Fable requires an OpenAI-compatible proxy/gateway and is not an MCP.
+#
+# Example only:
+#
+# [profiles.fable-review]
+# model = "claude-fable-5"
+# model_provider = "fable_gateway"
+#
+# [model_providers.fable_gateway]
+# name = "Claude Fable through an OpenAI-compatible gateway"
+# base_url = "http://127.0.0.1:4000/v1"
+# env_key = "FABLE_GATEWAY_API_KEY"
+# wire_api = "responses"
+#
+# Do not enable until the gateway proves:
+# - Responses API compatibility
+# - streaming compatibility
+# - tool-call compatibility
+# - large-context handling
+# - cancellation and retry behavior
+# - no loss of Codex safety/approval semantics

@@ -1,15 +1,11 @@
 /**
- * DocintelWorkspacePage — document workspace shell (placeholder tabs for now).
+ * DocintelWorkspacePage — customer-facing source workbench.
  *
- * Resolves the document by slug, renders header (title + status pill) + breadcrumbs,
- * a placeholder tab bar (Evidence / Facts / Artifacts / Traceability) and the page
- * list with per-page status lozenges. Header actions: Versions dropdown
- * (ai_document_versions history) + "Upload new version" (re-ingest via
- * docintel-ingest documentId flow). Zero-assumption rendering throughout.
- *
- * CAT-DOCINTEL-ARABIC-RAG-20260706-001
+ * The five top-level destinations represent user jobs. Readable source and exact
+ * evidence stay contextual in the source drawer; linked work and traceability
+ * remain peer views within Work items. Zero-assumption rendering throughout.
  */
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 // eslint-disable-next-line no-restricted-imports -- Plan Lock selects ADS Tabs; Catalyst has no Tabs wrapper.
 import Tabs, { Tab, TabList, TabPanel } from "@atlaskit/tabs";
@@ -32,26 +28,38 @@ import {
   useUploadNewVersion,
 } from "../hooks/useDocintel";
 import { DocintelWorkspaceOverview } from "../components/DocintelWorkspaceOverview";
-import { EvidenceViewer } from "../components/EvidenceViewer";
-import { TranslatedDocumentView } from "../components/TranslatedDocumentView";
+import { DocintelSourceDrawer } from "../components/DocintelSourceDrawer";
+import type {
+  DocintelExactEvidence,
+  DocintelSourceDrawerView,
+} from "../components/DocintelSourceDrawer";
+import { DocintelFindingsPanel } from "../components/DocintelFindingsPanel";
+import { DocintelWorkItemsPanel } from "../components/DocintelWorkItemsPanel";
 import { GenerationPanel } from "../components/GenerationPanel";
-import { FactsReviewPanel } from "../components/FactsReviewPanel";
-import { TraceabilityMatrix } from "../components/TraceabilityMatrix";
 import { AskPanel } from "../components/AskPanel";
-import { DocumentLinksPanel } from "../components/DocumentLinksPanel";
 import { ThemeTags } from "../components/ThemeTags";
 import type { DocintelStatus } from "../types";
 
 const WORKSPACE_VIEWS = [
   "overview",
-  "evidence",
-  "document",
-  "findings",
-  "artifacts",
-  "traceability",
   "ask",
-  "links",
+  "findings",
+  "deliverables",
+  "work-items",
 ] as const;
+
+type WorkspaceView = (typeof WORKSPACE_VIEWS)[number];
+
+function resolveWorkspaceView(requestedView: string | null): WorkspaceView {
+  if (WORKSPACE_VIEWS.includes(requestedView as WorkspaceView)) {
+    return requestedView as WorkspaceView;
+  }
+
+  // Preserve incoming links from the implementation-shaped workspace.
+  if (requestedView === "artifacts") return "deliverables";
+  if (requestedView === "links" || requestedView === "traceability") return "work-items";
+  return "overview";
+}
 
 function docStatusAppearance(status: DocintelStatus): LozengeAppearance {
   switch (status) {
@@ -78,9 +86,13 @@ export default function DocintelWorkspacePage() {
   const artifactsQuery = useArtifacts(document?.project_id, document?.id);
   const uploadVersion = useUploadNewVersion();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const viewSourceRef = useRef<HTMLButtonElement>(null);
+  const restoreViewSourceFocusRef = useRef(false);
+  const [isSourceDrawerOpen, setIsSourceDrawerOpen] = useState(false);
+  const [sourceDrawerView, setSourceDrawerView] = useState<DocintelSourceDrawerView>("source");
+  const [exactEvidence, setExactEvidence] = useState<DocintelExactEvidence | null>(null);
   const requestedView = searchParams.get("view");
-  const selectedView = WORKSPACE_VIEWS.findIndex((view) => view === requestedView);
-  const selectedTab = selectedView >= 0 ? selectedView : 0;
+  const selectedTab = WORKSPACE_VIEWS.indexOf(resolveWorkspaceView(requestedView));
 
   const findingCounts = factsQuery.data === undefined
     ? undefined
@@ -108,6 +120,25 @@ export default function DocintelWorkspacePage() {
   const handleTabChange = (index: number) => {
     const view = WORKSPACE_VIEWS[index];
     if (view) selectView(view);
+  };
+
+  const closeSourceDrawer = () => {
+    setIsSourceDrawerOpen(false);
+    if (restoreViewSourceFocusRef.current) viewSourceRef.current?.focus();
+  };
+
+  const openReadableSource = () => {
+    restoreViewSourceFocusRef.current = true;
+    setExactEvidence(null);
+    setSourceDrawerView("source");
+    setIsSourceDrawerOpen(true);
+  };
+
+  const openExactEvidence = (evidence: DocintelExactEvidence) => {
+    restoreViewSourceFocusRef.current = false;
+    setExactEvidence(evidence);
+    setSourceDrawerView("evidence");
+    setIsSourceDrawerOpen(true);
   };
 
   if (isLoading) {
@@ -173,6 +204,13 @@ export default function DocintelWorkspacePage() {
               alignItems: "center",
             }}
           >
+            <Button
+              ref={viewSourceRef}
+              appearance="default"
+              onClick={openReadableSource}
+            >
+              View source
+            </Button>
             {(versionsQuery.data?.length ?? 0) > 0 ? (
               <DropdownMenu
                 trigger={`Versions (${versionsQuery.data!.length})`}
@@ -230,13 +268,10 @@ export default function DocintelWorkspacePage() {
         >
           <TabList>
             <Tab>Overview</Tab>
-            <Tab>Evidence</Tab>
-            <Tab>Document</Tab>
-            <Tab>Findings</Tab>
-            <Tab>Artifacts</Tab>
-            <Tab>Traceability</Tab>
             <Tab>Ask</Tab>
-            <Tab>Links</Tab>
+            <Tab>Findings</Tab>
+            <Tab>Deliverables</Tab>
+            <Tab>Work items</Tab>
           </TabList>
 
           <TabPanel>
@@ -246,7 +281,7 @@ export default function DocintelWorkspacePage() {
                 deliverableCounts={deliverableCounts}
                 onAsk={() => selectView("ask")}
                 onReviewFindings={() => selectView("findings")}
-                onCreateDeliverable={() => selectView("artifacts")}
+                onCreateDeliverable={() => selectView("deliverables")}
                 isDisabled={document.status !== "ready" && document.status !== "needs_review"}
               />
             </div>
@@ -254,21 +289,19 @@ export default function DocintelWorkspacePage() {
 
           <TabPanel>
             <div style={{ padding: "0 0 var(--ds-space-200)", width: "100%" }}>
-              <EvidenceViewer documentId={document.id} />
+              <AskPanel projectId={document.project_id} documentId={document.id} />
             </div>
           </TabPanel>
 
           <TabPanel>
             <div style={{ padding: "0 0 var(--ds-space-200)", width: "100%" }}>
-              <TranslatedDocumentView documentId={document.id} />
+              <DocintelFindingsPanel
+                documentId={document.id}
+                onOpenEvidence={openExactEvidence}
+              />
             </div>
           </TabPanel>
 
-          <TabPanel>
-            <div style={{ padding: "0 0 var(--ds-space-200)", width: "100%" }}>
-              <FactsReviewPanel projectId={document.project_id} documentId={document.id} />
-            </div>
-          </TabPanel>
           <TabPanel>
             <div style={{ padding: "0 0 var(--ds-space-200)", width: "100%" }}>
               <GenerationPanel projectId={document.project_id} documentId={document.id} />
@@ -276,21 +309,22 @@ export default function DocintelWorkspacePage() {
           </TabPanel>
           <TabPanel>
             <div style={{ padding: "0 0 var(--ds-space-200)", width: "100%" }}>
-              <TraceabilityMatrix projectId={document.project_id} documentId={document.id} />
-            </div>
-          </TabPanel>
-          <TabPanel>
-            <div style={{ padding: "0 0 var(--ds-space-200)", width: "100%" }}>
-              <AskPanel projectId={document.project_id} documentId={document.id} />
-            </div>
-          </TabPanel>
-          <TabPanel>
-            <div style={{ padding: "0 0 var(--ds-space-200)", width: "100%" }}>
-              <DocumentLinksPanel documentId={document.id} />
+              <DocintelWorkItemsPanel
+                documentId={document.id}
+                projectId={document.project_id}
+              />
             </div>
           </TabPanel>
         </Tabs>
       </div>
+
+      <DocintelSourceDrawer
+        isOpen={isSourceDrawerOpen}
+        onClose={closeSourceDrawer}
+        documentId={document.id}
+        exactEvidence={exactEvidence}
+        initialView={sourceDrawerView}
+      />
     </div>
   );
 }

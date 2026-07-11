@@ -1,0 +1,24 @@
+schema_version: 1
+project_id: catalyst
+display_name: Catalyst
+status: active
+
+context_boundary:
+  isolated: true
+  external_context_default: deny
+
+required_before_any_feature:
+  - AGENTS.md
+  - docs/product/_system/project-registry.yaml
+  - docs/product/_system/lifecycle.md
+  - docs/product/catalyst/00-context/project-charter.md
+
+feature_roots:
+  folio: docs/product/catalyst/features/folio
+  doc-intel: docs/product/catalyst/features/doc-intel
+
+quality:
+  require_blind_spot_review: true
+  require_headless_e2e: true
+  require_visual_evidence_for_ui: true
+  require_independent_certification: true

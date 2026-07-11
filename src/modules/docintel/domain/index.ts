@@ -76,6 +76,18 @@ function normaliseKind(raw: string | null | undefined): {
 
 const BUCKET = "docintel-documents";
 
+export interface DocintelArtifactSource {
+  id: string;
+  title: string;
+  slug: string | null;
+}
+
+/** Project-level artifact row with only persisted source identity attached. */
+export interface DocintelProjectArtifact extends DocintelArtifact {
+  updated_at: string | null;
+  source_documents: DocintelArtifactSource[];
+}
+
 // ai_document_links postdates the generated Supabase types in this repo; the
 // link surfaces use the same untyped escape hatch as src/hooks/useWiki.ts.
 const db = supabase as unknown as {
@@ -507,6 +519,51 @@ export const docintelApi = {
       .order("created_at", { ascending: false });
     if (error) throw new Error(error.message);
     return (data ?? []) as DocintelArtifact[];
+  },
+
+  /**
+   * All artifacts for a project, newest update first, with their persisted
+   * source document identities. RLS remains authoritative for both reads.
+   */
+  listProjectArtifacts: async (
+    projectId: string,
+  ): Promise<DocintelProjectArtifact[]> => {
+    const { data, error } = await supabase
+      .from("ai_generated_artifacts")
+      .select("*")
+      .eq("project_id", projectId)
+      .order("updated_at", { ascending: false });
+    if (error) throw new Error(error.message);
+
+    const artifacts = (data ?? []) as Array<
+      DocintelArtifact & { updated_at?: string | null }
+    >;
+    const documentIds = Array.from(new Set(
+      artifacts.flatMap((artifact) => artifact.document_ids ?? []),
+    ));
+
+    const sourcesById = new Map<string, DocintelArtifactSource>();
+    if (documentIds.length > 0) {
+      const { data: documents, error: documentsError } = await supabase
+        .from("ai_documents")
+        .select("id, title, slug")
+        .eq("project_id", projectId)
+        .in("id", documentIds);
+      if (documentsError) throw new Error(documentsError.message);
+
+      for (const source of (documents ?? []) as DocintelArtifactSource[]) {
+        sourcesById.set(source.id, source);
+      }
+    }
+
+    return artifacts.map((artifact) => ({
+      ...artifact,
+      updated_at: artifact.updated_at ?? null,
+      source_documents: (artifact.document_ids ?? []).flatMap((documentId) => {
+        const source = sourcesById.get(documentId);
+        return source ? [source] : [];
+      }),
+    }));
   },
 
   /**
