@@ -29,7 +29,7 @@ export function useMergeIdea(idea: IdeaDetailRow | null | undefined) {
         .select('id, idea_key')
         .eq('idea_key', key)
         .maybeSingle();
-      if (targetError) throw targetError;
+      if (targetError) throw new Error(targetError.message ?? 'Could not look up the target idea.');
       if (!target) throw new Error(`No idea found with key ${key}.`);
       if ((target as { id: string }).id === idea.id) {
         throw new Error("Can't merge an idea into itself.");
@@ -55,7 +55,7 @@ export function useMergeIdea(idea: IdeaDetailRow | null | undefined) {
           decided_at: new Date().toISOString(),
         })
         .eq('id', idea.id);
-      if (error) throw error;
+      if (error) throw new Error(error.message ?? 'Could not merge this idea.');
 
       return { targetIdeaKey: (target as { idea_key: string }).idea_key };
     },

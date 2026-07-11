@@ -37,7 +37,7 @@ export function useConvertIdeaToBusinessRequest(idea: IdeaDetailRow | null | und
         } as never)
         .select('id, request_key')
         .single();
-      if (brError) throw brError;
+      if (brError) throw new Error(brError.message ?? 'Could not create the Business Request.');
       const businessRequestId = (br as { id: string }).id;
       const requestKey = (br as { request_key: string }).request_key;
 
@@ -51,7 +51,7 @@ export function useConvertIdeaToBusinessRequest(idea: IdeaDetailRow | null | und
         // Compensate: don't leave an orphaned BR with no audit trail or idea
         // link (best-effort — no cross-table transaction available client-side).
         await supabase.from('business_requests').delete().eq('id', businessRequestId);
-        throw convError;
+        throw new Error(convError.message ?? 'Could not record the conversion audit.');
       }
 
       const { error: ideaError } = await typedQuery('idn_ideas')
@@ -62,7 +62,29 @@ export function useConvertIdeaToBusinessRequest(idea: IdeaDetailRow | null | und
           converted_by: user.id,
         })
         .eq('id', idea.id);
-      if (ideaError) throw ideaError;
+      if (ideaError) {
+        // CONFIRMED pre-existing RLS bug (reproduced live, not theoretical):
+        // idn_ideas_update has no explicit WITH CHECK, so Postgres reuses
+        // USING evaluated against the NEW row — "converted_business_request_id
+        // IS NULL" then fails against the very value this update sets. Every
+        // conversion attempt hits this; needs a migration to fix (split the
+        // policy into a real USING on the OLD row + a permissive role-based
+        // WITH CHECK), out of scope for this slice to apply unilaterally.
+        //
+        // Best-effort compensation attempted below, but ALSO confirmed
+        // non-functional: idn_conversions has no DELETE RLS policy at all
+        // (only SELECT + INSERT exist), so this delete silently affects 0
+        // rows, which then blocks the business_requests delete via its
+        // ON DELETE RESTRICT FK. Net effect: a failed conversion currently
+        // leaves an orphaned business_requests + idn_conversions row that
+        // needs manual cleanup until both RLS gaps are fixed in one
+        // migration. Left the attempt in (harmless, forward-compatible if
+        // a DELETE policy is added later) rather than deleting dead code
+        // that documents the real gap.
+        await typedQuery('idn_conversions').delete().eq('business_request_id', businessRequestId);
+        await supabase.from('business_requests').delete().eq('id', businessRequestId);
+        throw new Error(ideaError.message ?? 'Could not mark the idea as converted.');
+      }
 
       return { businessRequestId, requestKey };
     },
