@@ -18,6 +18,7 @@ import type { SelectOption } from '@/components/ads';
 import { DatePicker } from '@atlaskit/datetime-picker';
 import { Layers } from '@/lib/atlaskit-icons';
 import { valueApi } from '../domain';
+import type { StrataProjectCard } from '../types';
 import { useGateModels, useInitiatives, useInvalidateStrata, useProjectCards } from '../hooks/useStrata';
 import { fmtPct, labelize } from './format';
 import { StrataPanel, T } from './shared';
@@ -192,13 +193,36 @@ const MEMBER_TYPE_OPTIONS: SelectOption<'initiative' | 'project_card'>[] = [
   { value: 'initiative', label: 'Initiative (legacy)' },
 ];
 
+// Project Card selector options (STRATA-E2E-013). Cards carry no cycle/tenant
+// scoping column (organization_id is unset), so eligibility here means: not
+// already a member of this portfolio. Same-named cards (e.g. a manual card and
+// its Jira-synced twin) are disambiguated by their source so the picker never
+// shows two indistinguishable rows — we never de-dupe by name, which would drop
+// a genuinely distinct card and bind membership to the wrong one.
+function buildProjectCardOptions(
+  cards: StrataProjectCard[],
+  excludeIds: Set<string>,
+): SelectOption<string>[] {
+  const eligible = cards.filter((c) => !excludeIds.has(c.id));
+  const nameCounts = new Map<string, number>();
+  for (const c of eligible) nameCounts.set(c.name, (nameCounts.get(c.name) ?? 0) + 1);
+  return eligible.map((c) => {
+    const ambiguous = (nameCounts.get(c.name) ?? 0) > 1;
+    const hint = c.source_key
+      ? `${labelize(c.source_system)}: ${c.source_key}`
+      : labelize(c.source_system);
+    return { value: c.id, label: ambiguous ? `${c.name} · ${hint}` : c.name };
+  });
+}
+
 function AddMemberModal({
-  portfolioId, open, onClose, onAdded,
+  portfolioId, open, onClose, onAdded, members,
 }: {
   portfolioId: string;
   open: boolean;
   onClose: () => void;
   onAdded: () => void;
+  members: PortfolioMemberRow[];
 }) {
   const initiativesQ = useInitiatives();
   const projectCardsQ = useProjectCards();
@@ -218,9 +242,14 @@ function AddMemberModal({
 
   if (!open) return null;
 
+  const existingMemberIds = new Set(
+    members.filter((m) => m.member_type === memberType).map((m) => m.member_id),
+  );
   const entityOptions: SelectOption<string>[] = memberType === 'initiative'
-    ? (initiativesQ.data ?? []).map((i) => ({ value: i.id, label: i.name }))
-    : (projectCardsQ.data ?? []).map((p) => ({ value: p.id, label: p.name }));
+    ? (initiativesQ.data ?? [])
+        .filter((i) => !existingMemberIds.has(i.id))
+        .map((i) => ({ value: i.id, label: i.name }))
+    : buildProjectCardOptions(projectCardsQ.data ?? [], existingMemberIds);
 
   const submit = async () => {
     if (!memberId) {
@@ -427,6 +456,7 @@ export function StrataPortfolioMembersPanel({
         open={addOpen}
         onClose={() => setAddOpen(false)}
         onAdded={invalidate}
+        members={members}
       />
     </StrataPanel>
   );
