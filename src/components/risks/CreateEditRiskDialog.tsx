@@ -148,7 +148,7 @@ export function CreateEditRiskDialog({
   const isValid = formData.title && formData.description;
   const isEditing = !!risk;
 
-  const inputClasses = "w-full px-3 py-2.5 rounded-lg text-sm bg-white dark:bg-[var(--ds-surface-sunken)] border border-[var(--ds-border)] dark:border-[var(--ds-background-neutral)] text-[var(--ds-surface)] dark:text-[var(--ds-border)] placeholder:text-[var(--ds-text-disabled)] dark:placeholder:text-[var(--ds-text-subtlest)] focus:border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))] focus:ring-1 focus:ring-[var(--ds-background-information, rgba(37,99,235,0.3))] outline-none";
+  const inputClasses = "w-full px-3 py-2.5 rounded-lg text-sm bg-white dark:bg-[var(--ds-surface-sunken)] border border-[var(--ds-border)] dark:border-[var(--ds-background-neutral)] text-[var(--ds-surface)] dark:text-[var(--ds-border)] placeholder:text-[var(--ds-text-disabled)] dark:placeholder:text-[var(--ds-text-subtlest)] focus:border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))] focus:ring-1 focus:ring-[var(--ds-background-information)] outline-none";
   const labelClasses = "text-sm font-medium text-[var(--ds-surface)] dark:text-[var(--ds-border)]";
 
   return (

@@ -55,7 +55,7 @@ const RAIL_BORDER_CSS = `
   .cv-rail-value:hover:not(:focus-within) {
     /* 2026-06-17: border (inset box-shadow) removed — Vikram directive.
        Hover bg alone is the affordance; the gray ring was extra chrome. */
-    background: var(--ds-background-neutral-subtle-hovered, rgba(5,21,36,0.06));
+    background: var(--ds-background-neutral-subtle-hovered);
   }
   .cv-rail-value:focus-within {
     box-shadow: inset 0 0 0 1px var(--ds-border-focused);

@@ -110,7 +110,7 @@ export function T10CheckoutModalNew({
         style={{
           position: 'fixed',
           inset: 0,
-          backgroundColor: 'var(--ds-shadow-raised, rgba(0, 0, 0, 0.4))',
+          backgroundColor: 'var(--ds-shadow-raised)',
           zIndex: 600,
           animation: isClosing ? undefined : 't10-fadeIn 200ms ease',
         }}
@@ -128,7 +128,7 @@ export function T10CheckoutModalNew({
           maxWidth: '520px',
           backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
           borderRadius: '12px',
-          boxShadow: '0 25px 50px -12px var(--ds-shadow-raised, rgba(0, 0, 0, 0.25))',
+          boxShadow: '0 25px 50px -12px var(--ds-shadow-raised)',
           zIndex: 601,
           overflow: 'hidden',
           animation: isClosing
@@ -191,7 +191,7 @@ export function T10CheckoutModalNew({
                   justifyContent: 'center',
                   width: '40px',
                   height: '40px',
-                  backgroundColor: 'var(--ds-surface, rgba(255, 255, 255, 0.2))',
+                  backgroundColor: 'var(--ds-surface)',
                   borderRadius: '8px',
                 }}
               >
@@ -217,7 +217,7 @@ export function T10CheckoutModalNew({
                   backgroundColor: 'transparent',
                   border: 'none',
                   borderRadius: '6px',
-                  color: 'var(--ds-surface, rgba(255, 255, 255, 0.8))',
+                  color: 'var(--ds-surface)',
                   cursor: 'pointer',
                 }}
               >

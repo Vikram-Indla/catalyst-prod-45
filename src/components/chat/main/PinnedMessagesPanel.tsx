@@ -196,7 +196,7 @@ export function PinnedMessagesPanel({ conversationId, onJump }: PinnedMessagesPa
                 }}
                 onMouseEnter={(e) => {
                   (e.currentTarget as HTMLButtonElement).style.background =
-                    'var(--c-chat-hover-bg, var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06)))';
+                    'var(--c-chat-hover-bg, var(--ds-background-neutral-subtle-hovered))';
                 }}
                 onMouseLeave={(e) => {
                   (e.currentTarget as HTMLButtonElement).style.background = 'transparent';

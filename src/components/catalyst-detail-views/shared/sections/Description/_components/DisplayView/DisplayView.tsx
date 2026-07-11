@@ -115,7 +115,7 @@ function injectDirectionStyles() {
     /* Blockquote border always on the inline-start side. */
     .atlaskit-renderer-wrapper blockquote[dir="rtl"],
     .atlaskit-renderer-wrapper blockquote[dir="ltr"] {
-      border-inline-start: 2px solid var(--ds-border, rgba(11,18,14,0.14)) !important;
+      border-inline-start: 2px solid var(--ds-border) !important;
       border-left: none !important;
       border-right: none !important;
     }

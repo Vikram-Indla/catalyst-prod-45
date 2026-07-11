@@ -191,7 +191,7 @@
 .planner-task-list-content .tl-search-input:focus {
   outline: 1px solid var(--ds-border-focused);
   border-color: var(--tl-border-focus);
-  box-shadow: 0 0 0 3px var(--ds-background-information, rgba(37, 99, 235, 0.1));
+  box-shadow: 0 0 0 3px var(--ds-background-information);
 }
 
 .planner-task-list-content .tl-search-input::placeholder {
@@ -319,7 +319,7 @@
 }
 
 .planner-task-list-content .tl-row.blocked {
-  background: var(--ds-background-danger-bold, rgba(220, 38, 38, 0.05));
+  background: var(--ds-background-danger-bold);
 }
 
 .planner-task-list-content .tl-row td {
@@ -368,7 +368,7 @@
 }
 
 .dark .planner-task-list-content .tl-title-cell:hover {
-  background: var(--ds-background-information-bold, rgba(59, 130, 246, 0.1));
+  background: var(--ds-background-information-bold);
   outline: 1px dashed var(--ds-text-subtle);
 }
 

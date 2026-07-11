@@ -243,7 +243,7 @@ function HealthCell({ row }: { row: BacklogItem }) {
             background: 'var(--ds-surface-overlay)',
             border: '1px solid var(--ds-border)',
             borderRadius: 6,
-            boxShadow: '0 8px 28px var(--ds-shadow-raised, rgba(9,30,66,0.25))',
+            boxShadow: '0 8px 28px var(--ds-shadow-raised)',
             padding: 16,
             minWidth: 320,
           }}
@@ -4277,7 +4277,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
                     justifyContent: 'center',
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9, 30, 66, 0.06))';
+                    e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered)';
                   }}
                   onMouseLeave={(e) => {
                     e.currentTarget.style.background = 'transparent';
@@ -4320,7 +4320,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
                     justifyContent: 'center',
                   }}
                   onMouseEnter={(e) => {
-                    if (!projectMenuAnchor) e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9, 30, 66, 0.06))';
+                    if (!projectMenuAnchor) e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered)';
                   }}
                   onMouseLeave={(e) => {
                     if (!projectMenuAnchor) e.currentTarget.style.background = 'transparent';
@@ -5629,7 +5629,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
                   cursor: 'pointer',
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9, 30, 66, 0.06))';
+                  e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered)';
                 }}
                 onMouseLeave={(e) => {
                   e.currentTarget.style.background = 'transparent';
@@ -5660,7 +5660,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
         style={{
           position: 'fixed',
           inset: 0,
-          background: 'var(--ds-blanket, rgba(9, 30, 66, 0.54))',
+          background: 'var(--ds-blanket)',
           zIndex: 9999,
           display: 'flex',
           alignItems: 'flex-start',
@@ -5907,7 +5907,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
         style={{
           position: 'fixed',
           inset: 0,
-          background: 'var(--ds-blanket, rgba(9, 30, 66, 0.54))',
+          background: 'var(--ds-blanket)',
           zIndex: 9999,
           display: 'flex',
           alignItems: 'flex-start',
@@ -6041,7 +6041,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
         data-testid="archive-project-modal"
         style={{
           position: 'fixed', inset: 0,
-          background: 'var(--ds-blanket, rgba(9, 30, 66, 0.54))',
+          background: 'var(--ds-blanket)',
           zIndex: 9999,
           display: 'flex', alignItems: 'flex-start', justifyContent: 'center',
           paddingTop: 48,
@@ -6127,7 +6127,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
         data-testid="delete-project-modal"
         style={{
           position: 'fixed', inset: 0,
-          background: 'var(--ds-blanket, rgba(9, 30, 66, 0.54))',
+          background: 'var(--ds-blanket)',
           zIndex: 9999,
           display: 'flex', alignItems: 'flex-start', justifyContent: 'center',
           paddingTop: 48,
@@ -6578,7 +6578,7 @@ function MemberFilterAvatars({ assignees, selected, onToggle }: MemberFilterAvat
                 background: token('elevation.surface.overlay', 'var(--ds-surface)'),
                 border: `1px solid ${token('color.border', 'var(--ds-border)')}`,
                 borderRadius: 4,
-                boxShadow: token('elevation.shadow.overlay', '0 8px 16px var(--ds-shadow-raised, rgba(9,30,66,0.15))'),
+                boxShadow: token('elevation.shadow.overlay', '0 8px 16px var(--ds-shadow-raised)'),
                 padding: '4px 0',
                 zIndex: 9999,
                 fontFamily: 'var(--cp-font-body)',
@@ -6781,7 +6781,7 @@ function GroupByControl({
             background: token('elevation.surface.overlay', 'var(--ds-surface)'),
             border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border)))')}`,
             borderRadius: 4,
-            boxShadow: token('elevation.shadow.overlay', '0 8px 16px var(--ds-shadow-raised, rgba(9,30,66,0.15))'),
+            boxShadow: token('elevation.shadow.overlay', '0 8px 16px var(--ds-shadow-raised)'),
             padding: 0,
             zIndex: 9999,
             fontFamily: 'var(--cp-font-body)',
@@ -7433,7 +7433,7 @@ function InlineGroupCreateRow({
             cursor: 'pointer',
             flexShrink: 0,
           }}
-          onMouseEnter={(e) => { if (!typeMenuOpen) e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))'); }}
+          onMouseEnter={(e) => { if (!typeMenuOpen) e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle-hovered)'); }}
           onMouseLeave={(e) => { if (!typeMenuOpen) e.currentTarget.style.background = 'transparent'; }}
         >
           <JiraIssueTypeIcon type={issueType} size={20} />
@@ -7455,7 +7455,7 @@ function InlineGroupCreateRow({
               background: token('elevation.surface.overlay', 'var(--ds-surface)'),
               border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border)))')}`,
               borderRadius: 4,
-              boxShadow: token('elevation.shadow.overlay', '0 8px 16px var(--ds-shadow-raised, rgba(9,30,66,0.15))'),
+              boxShadow: token('elevation.shadow.overlay', '0 8px 16px var(--ds-shadow-raised)'),
               padding: '8px 0',
               zIndex: 9999,
               fontFamily: 'var(--cp-font-body)',
@@ -7586,7 +7586,7 @@ function InlineGroupCreateRow({
               background: token('elevation.surface.overlay', 'var(--ds-surface)'),
               border: `1px solid ${token('color.border', 'var(--ds-border)')}`,
               borderRadius: 4,
-              boxShadow: token('elevation.shadow.overlay', '0 8px 16px var(--ds-shadow-raised, rgba(9,30,66,0.15))'),
+              boxShadow: token('elevation.shadow.overlay', '0 8px 16px var(--ds-shadow-raised)'),
               zIndex: 9999,
               fontFamily: 'var(--cp-font-body)',
             }}
@@ -7771,7 +7771,7 @@ function InlineGroupCreateRow({
                   background: token('elevation.surface.overlay', 'var(--ds-surface)'),
                   border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border)))')}`,
                   borderRadius: 4,
-                  boxShadow: token('elevation.shadow.overlay', '0 8px 16px var(--ds-shadow-raised, rgba(9,30,66,0.15))'),
+                  boxShadow: token('elevation.shadow.overlay', '0 8px 16px var(--ds-shadow-raised)'),
                   padding: 8,
                   zIndex: 9999,
                   fontFamily: 'var(--cp-font-body)',
@@ -8370,12 +8370,12 @@ function BulkActionsBar({
             cursor: 'pointer',
             transition: 'background 100ms',
           }}
-          onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--ds-background-inverse-subtle-hovered, rgba(255,255,255,0.10))')}
+          onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--ds-background-inverse-subtle-hovered)')}
           onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
         >
           <AkCloseIcon label="" size="small" />
         </button>
-        <div style={{ width: 1, height: 20, background: 'var(--ds-border-inverse, rgba(255,255,255,0.20))' }} />
+        <div style={{ width: 1, height: 20, background: 'var(--ds-border-inverse)' }} />
 
         {/* Selected count */}
         <span
@@ -8391,7 +8391,7 @@ function BulkActionsBar({
         >
           {count} {itemLabel} selected
         </span>
-        <div style={{ width: 1, height: 20, background: 'var(--ds-border-inverse, rgba(255,255,255,0.20))' }} />
+        <div style={{ width: 1, height: 20, background: 'var(--ds-border-inverse)' }} />
 
         {/* 2026-05-12 Jira parity: Select all (in scope) — only when not yet all selected */}
         {onSelectAll && typeof totalAvailable === 'number' && count < totalAvailable && (
@@ -8412,12 +8412,12 @@ function BulkActionsBar({
                 cursor: 'pointer',
                 borderRadius: 4,
               }}
-              onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--ds-background-inverse-subtle-hovered, rgba(255,255,255,0.10))')}
+              onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--ds-background-inverse-subtle-hovered)')}
               onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
             >
               Select all ({totalAvailable} in scope)
             </button>
-            <div style={{ width: 1, height: 20, background: 'var(--ds-border-inverse, rgba(255,255,255,0.20))' }} />
+            <div style={{ width: 1, height: 20, background: 'var(--ds-border-inverse)' }} />
           </>
         )}
 
@@ -8440,12 +8440,12 @@ function BulkActionsBar({
                 cursor: 'pointer',
                 borderRadius: 4,
               }}
-              onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--ds-background-inverse-subtle-hovered, rgba(255,255,255,0.10))')}
+              onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--ds-background-inverse-subtle-hovered)')}
               onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
             >
               Edit fields
             </button>
-            <div style={{ width: 1, height: 20, background: 'var(--ds-border-inverse, rgba(255,255,255,0.20))' }} />
+            <div style={{ width: 1, height: 20, background: 'var(--ds-border-inverse)' }} />
           </>
         )}
 
@@ -8502,7 +8502,7 @@ function BulkActionsBar({
             fontFamily: 'inherit',
             transition: 'background 100ms',
           }}
-          onMouseEnter={(e) => { if (!isBusy) (e.currentTarget.style.background = 'var(--ds-background-danger-hovered, rgba(220,38,38,0.20))'); }}
+          onMouseEnter={(e) => { if (!isBusy) (e.currentTarget.style.background = 'var(--ds-background-danger-hovered)'); }}
           onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
         >
           <AkTrashIcon label="" size="small" />
@@ -8600,7 +8600,7 @@ function BulkPopover({
           transition: 'background 100ms',
           whiteSpace: 'nowrap',
         }}
-        onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--ds-background-inverse-subtle-hovered, rgba(255,255,255,0.10))')}
+        onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--ds-background-inverse-subtle-hovered)')}
         onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
       >
         {label} ▾
@@ -8901,7 +8901,7 @@ function BacklogSavedFiltersDropdown({ projectKey, onApply }: BacklogSavedFilter
                   font: 'inherit',
                   color: token('color.text', 'var(--ds-text)'),
                 }}
-                onMouseEnter={e => { e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))'); }}
+                onMouseEnter={e => { e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle-hovered)'); }}
                 onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
               >
                 <span style={{ display: 'block', fontSize: 'var(--ds-font-size-400)' }}>{f.name}</span>

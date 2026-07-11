@@ -8,7 +8,6 @@ import { ErrorBoundary } from '../components/ErrorBoundary';
 
 const EnterpriseEpics = lazy(() => import("../pages/enterprise/EnterpriseEpics"));
 const EnterpriseTasks = lazy(() => import("../pages/enterprise/EnterpriseTasks"));
-const EnterpriseObjectives = lazy(() => import("../pages/enterprise/EnterpriseObjectives"));
 const EnterpriseDependencies = lazy(() => import("../pages/enterprise/EnterpriseDependencies"));
 const EnterpriseReleaseVehicles = lazy(() => import("../pages/enterprise/EnterpriseReleaseVehicles"));
 const EnterpriseSuccessCriteria = lazy(() => import("../pages/enterprise/EnterpriseSuccessCriteria"));
@@ -36,7 +35,8 @@ export function EnterpriseRoutes() {
       <Route path="stories" element={<S><EnterpriseComingSoon /></S>} />
       <Route path="defects" element={<S><EnterpriseComingSoon /></S>} />
       <Route path="tasks" element={<S><EnterpriseTasks /></S>} />
-      <Route path="objectives" element={<S><EnterpriseObjectives /></S>} />
+      {/* Legacy OKR stack retired (CON-002 / REQ-023) — strategy objectives live in STRATA */}
+      <Route path="objectives" element={<Navigate to="/strata/strategy" replace />} />
       <Route path="dependencies" element={<S><EnterpriseDependencies /></S>} />
       <Route path="sprints" element={<S><EnterpriseComingSoon /></S>} />
       <Route path="program-increments" element={<S><EnterpriseComingSoon /></S>} />

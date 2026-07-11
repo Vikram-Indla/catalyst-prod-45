@@ -57,7 +57,7 @@ export function T10SearchBarNew({ onSearch }: T10SearchBarNewProps) {
           backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
           border: isFocused ? '2px solid var(--ds-link)' : '1px solid var(--ds-border)',
           borderRadius: '12px',
-          boxShadow: isFocused ? '0 4px 12px var(--ds-background-information, rgba(37, 99, 235, 0.1))' : 'none',
+          boxShadow: isFocused ? '0 4px 12px var(--ds-background-information)' : 'none',
           transition: 'all 0.15s ease',
         }}
       >

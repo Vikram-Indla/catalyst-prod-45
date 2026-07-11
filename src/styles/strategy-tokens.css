@@ -10,8 +10,8 @@
   --catalyst-bg-surface-1: var(--ds-surface-sunken);
   --catalyst-bg-surface-2: var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)));
   --catalyst-bg-surface-3: var(--ds-border, var(--cp-border, var(--cp-bg-sunken)));
-  --catalyst-bg-hover: var(--ds-shadow-raised, rgba(0,0,0,0.04));
-  --catalyst-bg-active: var(--ds-shadow-raised, rgba(0,0,0,0.06));
+  --catalyst-bg-hover: var(--ds-shadow-raised);
+  --catalyst-bg-active: var(--ds-shadow-raised);
   --catalyst-bg-selected: var(--ds-background-selected);
 
   /* ── Text ── */
@@ -66,9 +66,9 @@
   --catalyst-radius-full: 9999px;
 
   /* ── Shadows ── */
-  --catalyst-shadow-card: 0 1px 3px var(--ds-shadow-raised, rgba(0,0,0,0.08)), 0 1px 2px var(--ds-shadow-raised, rgba(0,0,0,0.04));
-  --catalyst-shadow-dropdown: 0 4px 12px var(--ds-shadow-raised, rgba(0,0,0,0.08)), 0 2px 4px var(--ds-shadow-raised, rgba(0,0,0,0.04));
-  --catalyst-shadow-modal: 0 12px 40px var(--ds-shadow-raised, rgba(0,0,0,0.12)), 0 4px 12px var(--ds-shadow-raised, rgba(0,0,0,0.06));
+  --catalyst-shadow-card: 0 1px 3px var(--ds-shadow-raised), 0 1px 2px var(--ds-shadow-raised);
+  --catalyst-shadow-dropdown: 0 4px 12px var(--ds-shadow-raised), 0 2px 4px var(--ds-shadow-raised);
+  --catalyst-shadow-modal: 0 12px 40px var(--ds-shadow-raised), 0 4px 12px var(--ds-shadow-raised);
 
   /* ── Typography ── */
   --catalyst-font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -104,7 +104,7 @@
   --catalyst-bg-surface-3: var(--ds-border, var(--cp-ink-1));
   --catalyst-bg-hover: var(--ds-surface-overlay);
   --catalyst-bg-active: var(--ds-border, var(--cp-ink-1));
-  --catalyst-bg-selected: var(--ds-background-information-bold, rgba(59,130,246,0.08));
+  --catalyst-bg-selected: var(--ds-background-information-bold);
 
   --catalyst-text-primary: var(--ds-text, var(--cp-bg-neutral));
   --catalyst-text-secondary: var(--ds-text-subtlest);
@@ -120,15 +120,15 @@
 
   --catalyst-primary: var(--ds-text-brand);
   --catalyst-primary-hover: var(--ds-text-brand);
-  --catalyst-primary-bg: var(--ds-background-information-bold, rgba(59,130,246,0.08));
+  --catalyst-primary-bg: var(--ds-background-information-bold);
   --catalyst-success: var(--ds-background-success);
-  --catalyst-success-bg: var(--ds-background-success-bold, rgba(74,222,128,0.08));
+  --catalyst-success-bg: var(--ds-background-success-bold);
   --catalyst-warning: var(--ds-background-warning-bold);
-  --catalyst-warning-bg: var(--ds-background-warning-bold, rgba(251,191,36,0.08));
+  --catalyst-warning-bg: var(--ds-background-warning-bold);
   --catalyst-danger: var(--ds-border-danger);
-  --catalyst-danger-bg: var(--ds-background-danger, rgba(239,68,68,0.10));
+  --catalyst-danger-bg: var(--ds-background-danger);
   --catalyst-ai-purple: var(--ds-background-discovery);
-  --catalyst-ai-purple-bg: var(--ds-background-discovery-bold, rgba(167,139,250,0.08));
+  --catalyst-ai-purple-bg: var(--ds-background-discovery-bold);
 
   --theme-digital: var(--ds-text-brand);
   --theme-workforce: var(--ds-background-success);
@@ -136,8 +136,8 @@
   --theme-esg: var(--ds-background-success);
 
   --catalyst-shadow-card: none;
-  --catalyst-shadow-dropdown: 0 4px 12px var(--ds-shadow-raised, rgba(0,0,0,0.3));
-  --catalyst-shadow-modal: 0 12px 40px var(--ds-shadow-raised, rgba(0,0,0,0.4));
+  --catalyst-shadow-dropdown: 0 4px 12px var(--ds-shadow-raised);
+  --catalyst-shadow-modal: 0 12px 40px var(--ds-shadow-raised);
 
   /* Workstream colors — lightened for dark bg contrast */
   --catalyst-ws-senaie: var(--ds-icon-information);

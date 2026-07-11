@@ -1006,7 +1006,7 @@ export function PlannerTimeline({ onTaskClick }: PlannerTimelineProps) {
                                           borderLeft: task.is_overdue ? '3px solid var(--ds-background-danger-bold)' : `1px solid ${wsColors.border}`,
                                           // H8: Bar border radius 6px
                                           borderRadius: '6px',
-                                          boxShadow: '0 1px 2px var(--ds-shadow-raised, rgba(0, 0, 0, 0.05))',
+                                          boxShadow: '0 1px 2px var(--ds-shadow-raised)',
                                         }}
                                         onClick={() => onTaskClick?.(task)}
                                         onMouseEnter={() => setHoveredTaskId(task.id)}

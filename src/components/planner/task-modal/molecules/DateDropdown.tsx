@@ -166,7 +166,7 @@ export const DateDropdown: React.FC<DateDropdownProps> = ({
           borderRadius: '12px',
           cursor: 'pointer',
           transition: 'all 0.15s ease',
-          boxShadow: isOpen ? '0 0 0 3px var(--ds-background-information-bold, rgba(59, 130, 246, 0.15))' : 'none'
+          boxShadow: isOpen ? '0 0 0 3px var(--ds-background-information-bold)' : 'none'
         }}
       >
         <Calendar size={18} style={{ color: COLORS.textLight, flexShrink: 0 }} />
@@ -206,7 +206,7 @@ export const DateDropdown: React.FC<DateDropdownProps> = ({
             backgroundColor: COLORS.surfaceCard,
             border: `1px solid ${COLORS.borderDefault}`,
             borderRadius: '12px',
-            boxShadow: '0 10px 40px var(--ds-shadow-raised, rgba(0, 0, 0, 0.15))',
+            boxShadow: '0 10px 40px var(--ds-shadow-raised)',
             zIndex: 99999,
             padding: '16px',
             width: '300px'

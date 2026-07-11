@@ -167,8 +167,8 @@ export function ConvertToSubtaskWizard({ issueId, issueKey, issueType, currentSt
   };
 
   return (
-    <div style={{ position: 'fixed', inset: 0, zIndex: 10000, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--ds-shadow-raised, rgba(9,30,66,0.54))' }} onClick={onClose}>
-      <div onClick={e => e.stopPropagation()} style={{ background: 'var(--ds-surface)', borderRadius: 8, width: 720, maxWidth: '95vw', maxHeight: '85vh', overflow: 'hidden', display: 'flex', boxShadow: '0 12px 40px var(--ds-shadow-raised, rgba(9,30,66,.35))' }}>
+    <div style={{ position: 'fixed', inset: 0, zIndex: 10000, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--ds-shadow-raised)' }} onClick={onClose}>
+      <div onClick={e => e.stopPropagation()} style={{ background: 'var(--ds-surface)', borderRadius: 8, width: 720, maxWidth: '95vw', maxHeight: '85vh', overflow: 'hidden', display: 'flex', boxShadow: '0 12px 40px var(--ds-shadow-raised)' }}>
         {/* Left stepper rail */}
         <div style={{ width: 220, background: 'var(--ds-surface-sunken)', borderRight: `1px solid var(--ds-border)`, padding: '24px 16px', flexShrink: 0 }}>
           {STEPS.map((label, i) => (
@@ -252,7 +252,7 @@ export function ConvertToSubtaskWizard({ issueId, issueKey, issueType, currentSt
                       {searchingParents && <Loader2 size={14} className="animate-spin" style={{ color: 'var(--ds-text-subtlest, var(--cp-text-secondary))' }} />}
                     </div>
                     {showDropdown && (
-                      <div style={{ position: 'absolute', top: '48%', left: 0, right: 0, marginTop: 0, background: 'var(--ds-surface)', border: '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border)))', borderRadius: 4, boxShadow: '0 8px 16px var(--ds-shadow-raised, rgba(9,30,66,.15)), 0 0 1px var(--ds-shadow-raised, rgba(9,30,66,.31))', zIndex: 10, maxHeight: 280, overflowY: 'auto' }}>
+                      <div style={{ position: 'absolute', top: '48%', left: 0, right: 0, marginTop: 0, background: 'var(--ds-surface)', border: '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border)))', borderRadius: 4, boxShadow: '0 8px 16px var(--ds-shadow-raised), 0 0 1px var(--ds-shadow-raised)', zIndex: 10, maxHeight: 280, overflowY: 'auto' }}>
                         {/* Section label */}
                         {parentSearch.trim().length === 0 && parentCandidates.length > 0 && (
                           <div style={{ padding: '8px 12px 4px', fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: 'var(--ds-text-subtlest, var(--cp-text-secondary))', textTransform: 'uppercase', letterSpacing: '0.03em' }}>Recent issues</div>

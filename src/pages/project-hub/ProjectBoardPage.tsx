@@ -175,7 +175,7 @@ export default function ProjectBoardPage() {
                   borderRadius: 6, cursor: 'pointer', border: 'none',
                   background: isActive ? ('var(--cp-bg-elevated)') : 'transparent',
                   color: isActive ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' : ('var(--cp-text-secondary)'),
-                  boxShadow: isActive ? '0 1px 3px var(--ds-shadow-raised, rgba(0,0,0,.08))' : 'none',
+                  boxShadow: isActive ? '0 1px 3px var(--ds-shadow-raised)' : 'none',
                   transition: 'all 150ms ease',
                 }}
               >

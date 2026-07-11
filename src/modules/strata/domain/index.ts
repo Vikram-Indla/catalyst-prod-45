@@ -12,8 +12,8 @@ import type {
   StrataCycle, StrataDataSource, StrataDecision, StrataDependency, StrataGateInstance,
   StrataGateModel, StrataGateModelStage, StrataInitiative, StrataInitiativeProject,
   StrataKeyResult, StrataKpi, StrataKpiActual, StrataKpiFormulaVersion, StrataKpiTarget,
-  StrataKpiTypeConfig, StrataMapEdge, StrataMilestone, StrataModelPerspective, StrataOkr,
-  StrataPeriod, StrataPerspective, StrataPlayCharter, StrataPortfolio, StrataProjectCard,
+  StrataKpiTypeConfig, StrataMapEdge, StrataMilestone, StrataModelPerspective, StrataNotification, StrataNotificationRule, StrataOkr,
+  StrataPeriod, StrataPerspective, StrataThemeCharter, StrataPortfolio, StrataProjectCard,
   StrataProjectCardFieldConfig, StrataProjectCardPicklist, StrataProjectCardSectionConfig,
   StrataProjectCardTabConfig, StrataRole, StrataScorecardInstance, StrataScorecardLine,
   StrataScorecardModel, StrataSnapshot, StrataStagingRow, StrataStrategyElement, StrataThresholdScheme,
@@ -117,8 +117,8 @@ export const strategyApi = {
     run(typedQuery('strata_strategy_elements').select('*').eq('slug', slug).maybeSingle()),
   edges: (cycleId: string): Promise<StrataMapEdge[]> =>
     run(typedQuery('strata_map_edges').select('*').eq('cycle_id', cycleId)),
-  charters: (): Promise<StrataPlayCharter[]> =>
-    run(typedQuery('strata_play_charters').select('*')),
+  charters: (): Promise<StrataThemeCharter[]> =>
+    run(typedQuery('strata_theme_charters').select('*')),
   elementKpis: (): Promise<Array<{ element_id: string; kpi_id: string; weight: number | null }>> =>
     run(typedQuery('strata_element_kpis').select('element_id, kpi_id, weight')),
   updateMapPosition: (elementId: string, pos: { x: number; y: number }) =>
@@ -180,7 +180,7 @@ export const strategyApi = {
     elementId: string; hypothesis?: string; scope?: string; valueThesis?: string;
     gateModelId?: string; ownerId?: string;
   }): Promise<string> =>
-    run(typedRpc('strata_upsert_play_charter', {
+    run(typedRpc('strata_upsert_theme_charter', {
       p_element: input.elementId, p_hypothesis: input.hypothesis ?? null,
       p_scope: input.scope ?? null, p_value_thesis: input.valueThesis ?? null,
       p_gate_model: input.gateModelId ?? null, p_owner: input.ownerId ?? null,
@@ -928,19 +928,73 @@ export const governanceApi = {
         .select('*')
         .single(),
     ),
+  // ── Board-pack persistence (CAT-STRATA-CLOSEOUT-20260710-001 W1) ──────────
+  /**
+   * Persist a generated pack binary to the private strata-board-packs bucket.
+   * Storage RLS (20260710130000) permits writes only for strategy_office
+   * (strata_is_admin bypass included) — callers surface failures verbatim.
+   * Upsert: regenerating a snapshot's pack overwrites the same object path.
+   */
+  uploadBoardPackBinary: async (path: string, blob: Blob, contentType: string): Promise<string> => {
+    const { error } = await supabase.storage
+      .from('strata-board-packs')
+      .upload(path, blob, { contentType, upsert: true });
+    if (error) throw new Error(`Pack storage upload failed: ${error.message}`);
+    return path;
+  },
+  /** Point an existing (pending) pack row at its stored binary and mark it ready. */
+  markBoardPackStored: (packId: string, storagePath: string): Promise<StrataBoardPack> =>
+    run(
+      typedQuery('strata_board_packs')
+        .update({ storage_path: storagePath, status: 'ready', generated_at: new Date().toISOString() })
+        .eq('id', packId)
+        .select('*')
+        .single(),
+    ),
+  /** Create a ready pack row for a freshly stored binary (no pending row existed). */
+  createBoardPackRecord: (snapshotId: string, format: 'pdf' | 'pptx', storagePath: string): Promise<StrataBoardPack> =>
+    run(
+      typedQuery('strata_board_packs')
+        .insert({ snapshot_id: snapshotId, format, storage_path: storagePath, status: 'ready', generated_at: new Date().toISOString() })
+        .select('*')
+        .single(),
+    ),
+  /**
+   * Short-lived signed URL for a stored pack (bucket is private — packs are
+   * governance artifacts and must never be publicly addressable).
+   */
+  boardPackSignedUrl: async (storagePath: string): Promise<string> => {
+    const { data, error } = await supabase.storage
+      .from('strata-board-packs')
+      .createSignedUrl(storagePath, 3600);
+    if (error || !data?.signedUrl) throw new Error(`Could not sign pack download: ${error?.message ?? 'no URL returned'}`);
+    return data.signedUrl;
+  },
+  // ── Notifications (CAT-STRATA-CLOSEOUT-20260710-001 W3) ────────────────────
+  notifications: (): Promise<StrataNotification[]> =>
+    run(typedQuery('strata_notifications').select('*').order('created_at', { ascending: false }).limit(50)),
+  markNotificationRead: (id: string): Promise<void> =>
+    run(typedRpc('strata_mark_notification_read', { p_id: id })),
+  markAllNotificationsRead: (): Promise<void> =>
+    run(typedRpc('strata_mark_all_notifications_read', {})),
+  notificationRules: (): Promise<StrataNotificationRule[]> =>
+    run(typedQuery('strata_notification_rules').select('*').order('label')),
+  setNotificationRule: (eventType: string, enabled: boolean, reason?: string): Promise<void> =>
+    run(typedRpc('strata_set_notification_rule', { p_event_type: eventType, p_enabled: enabled, p_reason: reason ?? null })),
   aiOutputs: (): Promise<StrataAiOutput[]> =>
     run(typedQuery('strata_ai_outputs').select('*').order('generated_at', { ascending: false })),
   // ── Authoring write paths (Recovery: Lane G) ──────────────────────────────
   createDecision: (input: {
     title: string; decisionType?: 'governance' | 'gate' | 'escalation' | 'action_only';
     forum?: string; description?: string; ownerId?: string; dueDate?: string;
-    snapshotId?: string; evidenceRefs?: Record<string, unknown>;
+    snapshotId?: string; evidenceRefs?: Record<string, unknown>; elementId?: string;
   }): Promise<string> =>
     run(typedRpc('strata_create_decision', {
       p_title: input.title, p_decision_type: input.decisionType ?? 'governance',
       p_forum: input.forum ?? null, p_description: input.description ?? null,
       p_owner: input.ownerId ?? null, p_due_date: input.dueDate ?? null,
       p_snapshot: input.snapshotId ?? null, p_evidence_refs: input.evidenceRefs ?? null,
+      p_element: input.elementId ?? null,
     })),
   updateDecision: (decisionId: string, patch: {
     status?: 'open' | 'decided' | 'closed'; description?: string; ownerId?: string; dueDate?: string;
@@ -998,6 +1052,8 @@ export const governanceApi = {
   needsAttention: (periodId?: string): Promise<Array<{
     item_type: string; severity: string; entity_type: string; entity_id: string;
     entity_name: string | null; detail: string; due_date: string | null;
+    // CLOSEOUT W4: owner of the item (null where no single personal owner) — drives the "Mine" filter.
+    owner_id: string | null;
   }>> =>
     run(typedRpc('strata_needs_attention', { p_period: periodId ?? null })),
 };

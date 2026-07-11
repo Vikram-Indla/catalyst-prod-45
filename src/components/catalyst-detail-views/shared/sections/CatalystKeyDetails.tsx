@@ -83,7 +83,7 @@ export function KeyDetailsFieldRow({
             margin: '-4px -6px',
             borderRadius: 3,
             background: hovered
-              ? 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))'
+              ? 'var(--ds-background-neutral-subtle-hovered)'
               : 'transparent',
             transition: 'background 80ms ease',
           }}
@@ -210,7 +210,7 @@ export function CatalystKeyDetails({
               color: 'var(--ds-text-subtle)', borderRadius: 3,
               transition: 'background-color 150ms ease',
             }}
-            onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9, 30, 66, 0.06))'; }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered)'; }}
             onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
           >
             {collapsed

@@ -57,7 +57,7 @@ export function ConflictResolutionDrawer({ open, onClose, itemKey, conflicts, on
         onClick={onClose}
         style={{
           position: 'fixed', inset: 0, zIndex: 50,
-          background: 'var(--ds-shadow-overlay, rgba(15,23,42,0.30))',
+          background: 'var(--ds-shadow-overlay)',
           opacity: animating ? 1 : 0,
           transition: 'opacity 200ms ease',
         }}
@@ -68,7 +68,7 @@ export function ConflictResolutionDrawer({ open, onClose, itemKey, conflicts, on
         style={{
           position: 'fixed', top: 0, right: 0, bottom: 0, zIndex: 51,
           width: 720,
-          boxShadow: '-8px 0 24px var(--ds-shadow-raised, rgba(0,0,0,0.12))',
+          boxShadow: '-8px 0 24px var(--ds-shadow-raised)',
           display: 'flex', flexDirection: 'column',
           fontFamily: 'var(--cp-font-body)',
           transform: animating ? 'translateX(0)' : 'translateX(100%)',
@@ -132,7 +132,7 @@ export function ConflictResolutionDrawer({ open, onClose, itemKey, conflicts, on
                         <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: 'var(--cp-blue)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Catalyst Version</span>
                         <span style={{ fontSize: 'var(--ds-font-size-50)', color: 'var(--fg-3)', marginLeft: 4 }}>Your edit</span>
                       </div>
-                      <div className="bg-[var(--ds-background-information, rgba(37,99,235,0.06))]" style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--fg-1)', fontWeight: 500, padding: '8px 12px', borderRadius: 4 }}>
+                      <div className="bg-[var(--ds-background-information)]" style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--fg-1)', fontWeight: 500, padding: '8px 12px', borderRadius: 4 }}>
                         {conflict.catalystValue}
                       </div>
                     </div>

@@ -175,7 +175,7 @@ function SourceBadge({ source }: { source?: 'jira' | 'catalyst' }) {
       <span style={{
         fontSize: 9, fontWeight: 700, letterSpacing: '0.06em',
         padding: '0px 4px', borderRadius: 4,
-        background: 'var(--ds-background-success, #DCFFF1)', color: 'var(--ds-chart-teal-bolder, #0f766e)',
+        background: 'var(--ds-background-success)', color: 'var(--ds-chart-teal-bolder)',
         textTransform: 'uppercase', flexShrink: 0,
       }}>CATALYST</span>
     );
@@ -184,7 +184,7 @@ function SourceBadge({ source }: { source?: 'jira' | 'catalyst' }) {
     <span style={{
       fontSize: 9, fontWeight: 700, letterSpacing: '0.06em',
       padding: '0px 4px', borderRadius: 4,
-      background: 'var(--ds-link, #0C66E4)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+      background: 'var(--ds-link)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
       textTransform: 'uppercase', flexShrink: 0,
     }}>JIRA</span>
   );
@@ -612,9 +612,9 @@ export const WorkItemTable = memo(function WorkItemTable({ items, search, onSele
                   letterSpacing: '0.06em',
                   padding: '0px 6px',
                   borderRadius: 4,
-                  background: 'var(--ds-background-success, #DFFCF0)',
+                  background: 'var(--ds-background-success)',
                   color: 'var(--quality-high, #059669)',
-                  border: '1px solid var(--ds-background-success, #DFFCF0)',
+                  border: '1px solid var(--ds-background-success)',
                   cursor: 'pointer',
                   whiteSpace: 'nowrap',
                   textTransform: 'uppercase',
@@ -755,7 +755,7 @@ export const WorkItemTable = memo(function WorkItemTable({ items, search, onSele
             height: 36,
             minWidth: 1100,
                 background: 'var(--cp-bg-page, #F8FAFC)',
-                borderBottom: isDark ? '2px solid var(--ds-background-neutral, #F1F2F4)' : '2px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))',
+                borderBottom: isDark ? '2px solid var(--ds-background-neutral)' : '2px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))',
           }}
         >
           <div style={{ width: 44, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -801,9 +801,9 @@ export const WorkItemTable = memo(function WorkItemTable({ items, search, onSele
                 display: 'grid',
                 gridTemplateColumns,
                 alignItems: 'center',
-                borderBottom: isDark ? '1px solid var(--ds-background-neutral, #F1F2F4)' : '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))',
+                borderBottom: isDark ? '1px solid var(--ds-background-neutral)' : '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))',
                 cursor: 'pointer',
-                background: isChecked ? 'var(--cp-primary-5)' : isSelected ? 'var(--ds-background-information, rgba(37, 99, 235, 0.08))' : 'transparent',
+                background: isChecked ? 'var(--cp-primary-5)' : isSelected ? 'var(--ds-background-information)' : 'transparent',
               }}
             >
               <div style={{ width: 44, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -887,7 +887,7 @@ export const WorkItemTable = memo(function WorkItemTable({ items, search, onSele
 
       <style>{`
         .hi-table-row { border-left: 4px solid transparent; transition: all 80ms ease; }
-        .hi-table-row:hover { background: var(--ds-background-neutral-hovered) !important; border-left-color: var(--ds-border-focused); box-shadow: ${isDark ? 'none' : '0 1px 3px var(--ds-shadow-raised, rgba(0,0,0,0.06))'}; }
+        .hi-table-row:hover { background: var(--ds-background-neutral-hovered) !important; border-left-color: var(--ds-border-focused); box-shadow: ${isDark ? 'none' : '0 1px 3px var(--ds-shadow-raised)'}; }
         .hi-table-row.checked { background: var(--ds-background-selected) !important; border-left-color: var(--ds-border-focused); }
         .hi-table-row .hi-row-action { opacity: 0; transition: opacity 100ms ease; }
         .hi-table-row:hover .hi-row-action { opacity: 1; }
@@ -897,7 +897,7 @@ export const WorkItemTable = memo(function WorkItemTable({ items, search, onSele
         .hi-work-column { overflow: hidden; min-width: 0; }
         /* Rule 3 paired .dark — surfaces already branched via isDark above;
            this selector adds ADS-token border-left for left-bar visibility on dark. */
-        .dark .hi-table-row:hover { border-left-color: var(--ds-background-information-bold, #0C66E4); }
+        .dark .hi-table-row:hover { border-left-color: var(--ds-background-information-bold); }
       `}</style>
     </div>
   );

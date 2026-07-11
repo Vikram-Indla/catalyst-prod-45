@@ -213,13 +213,13 @@
   border-radius: 8px;
   flex-shrink: 0;
   cursor: pointer;
-  box-shadow: 0 2px 12px var(--ds-background-information, rgba(37, 99, 235, 0.4));
+  box-shadow: 0 2px 12px var(--ds-background-information);
   transition: all 0.2s ease;
 }
 
 .t10-detail-btn-checkout:hover:not(:disabled) {
   transform: translateY(-1px);
-  box-shadow: 0 4px 20px var(--ds-background-information, rgba(37, 99, 235, 0.5));
+  box-shadow: 0 4px 20px var(--ds-background-information);
 }
 
 .t10-detail-btn-checkout:disabled {
@@ -546,7 +546,7 @@
 }
 
 .t10-zone-highlight {
-  background: var(--ds-background-information, rgba(37, 99, 235, 0.03));
+  background: var(--ds-background-information);
   border-radius: 12px;
 }
 
@@ -595,7 +595,7 @@
 
 .t10-detail-priority-item:hover {
   border-color: var(--ds-text-disabled);
-  box-shadow: 0 2px 8px var(--ds-shadow-raised, rgba(0, 0, 0, 0.06));
+  box-shadow: 0 2px 8px var(--ds-shadow-raised);
 }
 
 .t10-detail-priority-item-completed {
@@ -609,7 +609,7 @@
 
 /* Dragging State — Enhanced styling */
 .t10-detail-priority-item-dragging {
-  box-shadow: 0 8px 24px var(--ds-background-information, rgba(37, 99, 235, 0.2));
+  box-shadow: 0 8px 24px var(--ds-background-information);
   border-color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary)) !important;
   border-width: 2px !important;
   background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface)))) !important;
@@ -796,7 +796,7 @@
 .t10-detail-checkbox-input:checked + .t10-detail-checkbox-visual {
   background: var(--ds-text-brand, var(--cp-workstream-catalyst-primary)) !important;
   border-color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary)) !important;
-  box-shadow: 0 1px 4px var(--ds-background-information, rgba(37, 99, 235, 0.3));
+  box-shadow: 0 1px 4px var(--ds-background-information);
 }
 
 .t10-detail-checkbox-visual svg {
@@ -1152,7 +1152,7 @@
   color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-text-inverse))));
   background: var(--ds-text);
   border-radius: 12px;
-  box-shadow: 0 10px 40px var(--ds-shadow-raised, rgba(0, 0, 0, 0.3));
+  box-shadow: 0 10px 40px var(--ds-shadow-raised);
   z-index: 10000;
   animation: t10-toast-slide-up 0.3s ease-out;
 }
@@ -1172,7 +1172,7 @@
 .t10-detail-card-overlay {
   opacity: 0.95;
   transform: rotate(2deg);
-  box-shadow: 0 20px 50px var(--ds-shadow-raised, rgba(0, 0, 0, 0.2));
+  box-shadow: 0 20px 50px var(--ds-shadow-raised);
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════════
@@ -1329,7 +1329,7 @@
   background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))));
   border: 1px solid var(--ds-border, var(--cp-bg-sunken));
   border-radius: 12px;
-  box-shadow: 0 10px 40px var(--ds-shadow-raised, rgba(0, 0, 0, 0.12));
+  box-shadow: 0 10px 40px var(--ds-shadow-raised);
   overflow: hidden;
 }
 
@@ -1353,7 +1353,7 @@
 .t10-label-dropdown-search input:focus {
   background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))));
   border-color: var(--ds-text-brand);
-  box-shadow: 0 0 0 3px var(--ds-background-information-bold, rgba(59, 130, 246, 0.1));
+  box-shadow: 0 0 0 3px var(--ds-background-information-bold);
 }
 
 .t10-label-dropdown-search input::placeholder {
@@ -1632,7 +1632,7 @@
   background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))));
   border: 1px solid var(--ds-border, var(--cp-bg-sunken));
   border-radius: 12px;
-  box-shadow: 0 10px 40px var(--ds-shadow-raised, rgba(0, 0, 0, 0.12));
+  box-shadow: 0 10px 40px var(--ds-shadow-raised);
   overflow: hidden;
 }
 
@@ -1656,7 +1656,7 @@
 .t10-assignee-dropdown-search input:focus {
   background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))));
   border-color: var(--ds-text-brand);
-  box-shadow: 0 0 0 3px var(--ds-background-information-bold, rgba(59, 130, 246, 0.1));
+  box-shadow: 0 0 0 3px var(--ds-background-information-bold);
 }
 
 .t10-assignee-dropdown-search input::placeholder {
@@ -1832,7 +1832,7 @@
   background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))));
   border: 1px solid var(--ds-border, var(--cp-bg-sunken));
   border-radius: 12px;
-  box-shadow: 0 10px 40px var(--ds-shadow-raised, rgba(0, 0, 0, 0.12));
+  box-shadow: 0 10px 40px var(--ds-shadow-raised);
   overflow: hidden;
 }
 

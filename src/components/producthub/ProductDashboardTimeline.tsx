@@ -230,7 +230,7 @@ export function ProductDashboardTimeline({ productId }: { productId: string }) {
               <div style={{
                 position: 'absolute', left: 0, height: '100%',
                 width: `${progressPct}%`,
-                background: 'var(--ds-text-inverse, rgba(255,255,255,0.22))',
+                background: 'var(--ds-text-inverse)',
                 opacity: 0.22,
                 borderRadius: '3px 0 0 3px',
               }} />

@@ -42,7 +42,7 @@ export function CriticalAlert({ criticalCount, criticalResources, onViewAll }: C
           className="w-10 h-10 rounded-[10px] flex items-center justify-center flex-shrink-0"
           style={{
             background: 'linear-gradient(145deg, var(--ds-text-danger) 0%, var(--ds-text-danger) 100%)',
-            boxShadow: '0 4px 12px var(--ds-background-danger-bold, rgba(220, 38, 38, 0.3))'
+            boxShadow: '0 4px 12px var(--ds-background-danger-bold)'
           }}
         >
           <AlertCircle className="w-5 h-5 text-white" />
@@ -64,7 +64,7 @@ export function CriticalAlert({ criticalCount, criticalResources, onViewAll }: C
           className="flex items-center gap-1.5 px-5 py-2.5 rounded-lg text-white text-[12px] font-semibold transition-all hover:-translate-y-0.5"
           style={{
             background: 'linear-gradient(145deg, var(--ds-text-danger) 0%, var(--ds-text-danger) 100%)',
-            boxShadow: '0 4px 12px var(--ds-background-danger-bold, rgba(220, 38, 38, 0.3))'
+            boxShadow: '0 4px 12px var(--ds-background-danger-bold)'
           }}
         >
           View All

@@ -45,15 +45,15 @@ export function RoadmapCard({ idea, onSelectIdea, onToggleCommitted, onMoveToQua
         border: `1px solid ${dk.border}`,
         borderRadius: 8,
         padding: 12, cursor: 'grab', position: 'relative',
-        boxShadow: isDark ? 'none' : '0 1px 3px var(--ds-shadow-raised, rgba(0,0,0,.04))',
+        boxShadow: isDark ? 'none' : '0 1px 3px var(--ds-shadow-raised)',
         transition: 'box-shadow 150ms, border-color 150ms',
       }}
       onMouseEnter={e => {
-        if (!isDark) e.currentTarget.style.boxShadow = '0 4px 12px var(--ds-shadow-raised, rgba(0,0,0,.08))';
+        if (!isDark) e.currentTarget.style.boxShadow = '0 4px 12px var(--ds-shadow-raised)';
         e.currentTarget.style.borderColor = 'var(--cp-border-strong)';
       }}
       onMouseLeave={e => {
-        if (!isDark) e.currentTarget.style.boxShadow = '0 1px 3px var(--ds-shadow-raised, rgba(0,0,0,.04))';
+        if (!isDark) e.currentTarget.style.boxShadow = '0 1px 3px var(--ds-shadow-raised)';
         e.currentTarget.style.borderColor = 'var(--cp-border, var(--cp-border, var(--cp-bg-sunken)))';
         setMoveOpen(false);
       }}
@@ -86,7 +86,7 @@ export function RoadmapCard({ idea, onSelectIdea, onToggleCommitted, onMoveToQua
                 position: 'absolute', top: 24, right: 0, zIndex: 20,
                 background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1))' : 'var(--bg-app)',
                 border: `1px solid ${dk.border}`, borderRadius: 6,
-                boxShadow: isDark ? 'none' : '0 4px 12px var(--ds-shadow-raised, rgba(0,0,0,.12))',
+                boxShadow: isDark ? 'none' : '0 4px 12px var(--ds-shadow-raised)',
                 minWidth: 140, padding: 4,
               }}>
                 {MOVE_OPTIONS.map(opt => (
@@ -165,12 +165,12 @@ export function RoadmapCard({ idea, onSelectIdea, onToggleCommitted, onMoveToQua
         {MILESTONE_CONFIGS.map(m => {
           const isSet = !!idea.milestones[m.key];
           const CHIP_STYLES: Record<string, { bg: string; text: string; border: string }> = {
-            req:  { bg: 'var(--cp-primary-light)', text: 'var(--cp-primary-hover)', border: isDark ? 'var(--ds-background-information-bold, rgba(59,130,246,0.25))' : 'var(--ds-background-information, var(--ds-background-information))' },
-            des:  { bg: 'var(--cp-purple-5)', text: 'var(--cp-purple-60)', border: isDark ? 'var(--ds-background-discovery-bold, rgba(139,92,246,0.25))' : 'var(--ds-background-discovery)' },
+            req:  { bg: 'var(--cp-primary-light)', text: 'var(--cp-primary-hover)', border: isDark ? 'var(--ds-background-information-bold)' : 'var(--ds-background-information, var(--ds-background-information))' },
+            des:  { bg: 'var(--cp-purple-5)', text: 'var(--cp-purple-60)', border: isDark ? 'var(--ds-background-discovery-bold)' : 'var(--ds-background-discovery)' },
             dev:  { bg: 'var(--cp-success-light)', text: 'var(--cp-success)', border: 'var(--cp-success)' },
-            uat:  { bg: 'var(--cp-warning-light)', text: 'var(--cp-warning-text)', border: isDark ? 'var(--ds-background-warning, rgba(217,119,6,0.25))' : 'var(--ds-background-warning, var(--ds-background-warning))' },
-            beta: { bg: isDark ? 'var(--ds-background-success, rgba(13,148,136,0.15))' : 'var(--ds-background-success)', text: 'var(--cp-teal-60, var(--ds-chart-teal-bolder))', border: isDark ? 'var(--ds-background-success, rgba(13,148,136,0.25))' : 'var(--ds-background-success)' },
-            prod: { bg: isDark ? 'var(--ds-background-success-bold, rgba(22,163,74,0.15))' : 'var(--ds-background-success)', text: 'var(--cp-success-text)', border: isDark ? 'var(--ds-background-success-bold, rgba(22,163,74,0.25))' : 'var(--ds-background-success)' },
+            uat:  { bg: 'var(--cp-warning-light)', text: 'var(--cp-warning-text)', border: isDark ? 'var(--ds-background-warning)' : 'var(--ds-background-warning, var(--ds-background-warning))' },
+            beta: { bg: isDark ? 'var(--ds-background-success)' : 'var(--ds-background-success)', text: 'var(--cp-teal-60, var(--ds-chart-teal-bolder))', border: isDark ? 'var(--ds-background-success)' : 'var(--ds-background-success)' },
+            prod: { bg: isDark ? 'var(--ds-background-success-bold)' : 'var(--ds-background-success)', text: 'var(--cp-success-text)', border: isDark ? 'var(--ds-background-success-bold)' : 'var(--ds-background-success)' },
           };
           const unsetStyle = { bg: 'var(--cp-bg-page, var(--cp-bg-sunken, var(--cp-bg-sunken)))', text: 'var(--cp-border-strong)', border: 'var(--cp-border, var(--cp-border, var(--cp-bg-sunken)))' };
           const style = isSet ? CHIP_STYLES[m.key] : unsetStyle;
@@ -195,7 +195,7 @@ export function RoadmapCard({ idea, onSelectIdea, onToggleCommitted, onMoveToQua
           borderRadius: 4,
           background: 'var(--cp-success, var(--cp-lozenge-green-bg))',
           color: isDark ? 'var(--ds-background-success)' : 'var(--bg-app)',
-          border: `1px solid ${isDark ? 'var(--ds-background-success-bold, rgba(22,163,74,0.25))' : '#B7EBD1'}`,
+          border: `1px solid ${isDark ? 'var(--ds-background-success-bold)' : '#B7EBD1'}`,
           fontSize: 'var(--ds-font-size-50)', fontWeight: 700,
           fontFamily: 'var(--cp-font-body)',
         }}>

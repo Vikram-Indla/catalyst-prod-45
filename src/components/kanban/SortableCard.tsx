@@ -189,7 +189,7 @@ export const SortableCard = memo(function SortableCard({ issue, avatarUrl, onCli
           minWidth: 180,
           background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
           borderRadius: 4,
-          boxShadow: 'var(--ds-shadow-raised, rgba(9,30,66,0.31)) 0 0 1px, var(--ds-shadow-raised, rgba(9,30,66,0.25)) 0 4px 8px -2px',
+          boxShadow: 'var(--ds-shadow-raised) 0 0 1px, var(--ds-shadow-raised) 0 4px 8px -2px',
           padding: '4px 0',
           fontFamily: 'var(--cp-font-body)',
         }}

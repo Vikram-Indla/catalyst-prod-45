@@ -83,7 +83,7 @@ function ConversationMenuItem({
       }}
       onMouseEnter={(e) => {
         (e.currentTarget as HTMLButtonElement).style.background =
-          'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))';
+          'var(--ds-background-neutral-subtle-hovered)';
       }}
       onMouseLeave={(e) => {
         (e.currentTarget as HTMLButtonElement).style.background = 'transparent';
@@ -376,7 +376,7 @@ export function ConversationHeader({ conversation, members = [], onAskCaty, onOp
               background: 'var(--ds-surface-overlay)',
               border: '1px solid var(--ds-border)',
               borderRadius: 6,
-              boxShadow: '0 4px 12px var(--ds-shadow-raised, rgba(9,30,66,0.15))',
+              boxShadow: '0 4px 12px var(--ds-shadow-raised)',
               padding: 4,
               zIndex: 10000,
             }}

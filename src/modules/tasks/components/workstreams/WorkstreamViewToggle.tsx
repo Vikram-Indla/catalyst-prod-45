@@ -27,7 +27,7 @@ export const ViewToggleButton: React.FC<{
       color: isActive ? COLORS.textPrimary : COLORS.textMuted,
       cursor: 'pointer',
       fontFamily: 'inherit',
-      boxShadow: isActive ? '0 1px 3px var(--ds-shadow-raised, rgba(0, 0, 0, 0.08))' : 'none',
+      boxShadow: isActive ? '0 1px 3px var(--ds-shadow-raised)' : 'none',
     }}
   >
     {icon}

@@ -71,7 +71,7 @@ export const FieldDropdown: React.FC<FieldDropdownProps> = ({
           borderRadius: '12px',
           cursor: 'pointer',
           transition: 'all 0.15s ease',
-          boxShadow: isOpen ? '0 0 0 3px var(--ds-background-information-bold, rgba(59, 130, 246, 0.15))' : 'none'
+          boxShadow: isOpen ? '0 0 0 3px var(--ds-background-information-bold)' : 'none'
         }}
       >
         <ColorDot color={currentColor} size={10} />
@@ -99,7 +99,7 @@ export const FieldDropdown: React.FC<FieldDropdownProps> = ({
             backgroundColor: COLORS.surfaceCard,
             border: `1px solid ${COLORS.borderDefault}`,
             borderRadius: '12px',
-            boxShadow: '0 10px 40px var(--ds-shadow-raised, rgba(0, 0, 0, 0.15))',
+            boxShadow: '0 10px 40px var(--ds-shadow-raised)',
             zIndex: 1000,
             padding: '4px'
           }}

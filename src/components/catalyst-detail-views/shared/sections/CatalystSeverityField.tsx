@@ -23,7 +23,7 @@ function injectCSS() {
     .cv-severity-select__control--is-focused .cv-severity-select__dropdown-indicator,
     .cv-severity-select__control--menu-is-open .cv-severity-select__dropdown-indicator { display: flex !important; }
     .cv-severity-select__control { border-color: transparent !important; background: transparent !important; box-shadow: none !important; }
-    .cv-severity-select__control:hover { background: var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06)) !important; }
+    .cv-severity-select__control:hover { background: var(--ds-background-neutral-subtle-hovered) !important; }
   `;
   document.head.appendChild(s);
 }

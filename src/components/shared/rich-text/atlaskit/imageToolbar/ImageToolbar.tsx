@@ -82,7 +82,7 @@ const T = {
   activeText: 'var(--ds-text-selected)',
   dangerText: 'var(--ds-text-danger)',
   dangerBg: 'var(--ds-background-danger)',
-  shadow: '0 4px 8px -2px var(--ds-shadow-raised, rgba(9,30,66,0.25)), 0 0 1px var(--ds-shadow-raised, rgba(9,30,66,0.31))',
+  shadow: '0 4px 8px -2px var(--ds-shadow-raised), 0 0 1px var(--ds-shadow-raised)',
 };
 
 export function ImageToolbar({ selection, getEditorView, onDismiss }: ImageToolbarProps) {
@@ -612,7 +612,7 @@ function ColorSwatches({
             height: 24,
             borderRadius: 3,
             background: BORDER_COLOR_HEX[c],
-            border: current === c ? `2px solid ${T.activeText}` : '1px solid var(--ds-shadow-raised, rgba(0,0,0,0.1))',
+            border: current === c ? `2px solid ${T.activeText}` : '1px solid var(--ds-shadow-raised)',
             boxSizing: 'border-box',
           }}
         />

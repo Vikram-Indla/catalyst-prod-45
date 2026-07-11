@@ -63,7 +63,7 @@ export default function IncidentAnalyticsPage() {
             { label: 'Total Incidents', value: stats.total, accent: 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1)))' },
             { label: 'MTTR', value: '\u2014', accent: 'var(--ds-text-success, var(--cp-success))' },
           ].map(s => (
-            <div key={s.label} className="p-3" style={{ backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', border: isDark ? '1px solid var(--ds-text)' : '1px solid var(--ds-shadow-overlay, rgba(15,23,42,0.12))', borderRadius: 6 }}>
+            <div key={s.label} className="p-3" style={{ backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', border: isDark ? '1px solid var(--ds-text)' : '1px solid var(--ds-shadow-overlay)', borderRadius: 6 }}>
               <div style={{ fontFamily: 'var(--cp-font-body)', fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))', marginBottom: 4 }}>{s.label}</div>
               <div style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 'var(--ds-font-size-700)', fontWeight: 700, color: s.accent }}>{s.value}</div>
             </div>
@@ -73,7 +73,7 @@ export default function IncidentAnalyticsPage() {
         {/* 2x2 Chart Grid */}
         <div className="grid grid-cols-2 gap-4">
           {/* By Severity */}
-          <div className="p-4" style={{ border: '1px solid var(--ds-shadow-overlay, rgba(15,23,42,0.12))', borderRadius: 6 }}>
+          <div className="p-4" style={{ border: '1px solid var(--ds-shadow-overlay)', borderRadius: 6 }}>
             <h3 style={{ fontFamily: 'var(--cp-font-body)', fontSize: 'var(--ds-font-size-300)', fontWeight: 700, color: 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1)))', marginBottom: 12 }}>Incidents by Severity</h3>
             <div className="space-y-2">
               {analytics.bySeverity.map(([sev, count]) => (
@@ -89,7 +89,7 @@ export default function IncidentAnalyticsPage() {
           </div>
 
           {/* By Status */}
-          <div className="p-4" style={{ border: '1px solid var(--ds-shadow-overlay, rgba(15,23,42,0.12))', borderRadius: 6 }}>
+          <div className="p-4" style={{ border: '1px solid var(--ds-shadow-overlay)', borderRadius: 6 }}>
             <h3 style={{ fontFamily: 'var(--cp-font-body)', fontSize: 'var(--ds-font-size-300)', fontWeight: 700, color: 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1)))', marginBottom: 12 }}>Status Distribution</h3>
             <div className="space-y-2">
               {analytics.byStatus.map(([status, count]) => (
@@ -105,7 +105,7 @@ export default function IncidentAnalyticsPage() {
           </div>
 
           {/* By Assignee */}
-          <div className="p-4" style={{ border: '1px solid var(--ds-shadow-overlay, rgba(15,23,42,0.12))', borderRadius: 6 }}>
+          <div className="p-4" style={{ border: '1px solid var(--ds-shadow-overlay)', borderRadius: 6 }}>
             <h3 style={{ fontFamily: 'var(--cp-font-body)', fontSize: 'var(--ds-font-size-300)', fontWeight: 700, color: 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1)))', marginBottom: 12 }}>Assignee Workload</h3>
             <div className="space-y-2">
               {analytics.byAssignee.slice(0, 8).map(([name, count]) => (

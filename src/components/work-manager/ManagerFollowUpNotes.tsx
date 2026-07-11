@@ -349,7 +349,7 @@ export function ManagerFollowUpNotes({
                 'flex items-start gap-3 p-3 rounded-md border transition-colors',
                 // TEAL for completed per design spec v2
                 followUp.is_completed
-                  ? 'bg-[var(--ds-background-success, rgba(13,148,136,0.05))] border-[var(--ds-icon-information)]/20 dark:bg-[rgba(20,184,166,0.05)] dark:border-[var(--ds-background-accent-teal-bolder, var(--ds-background-accent-teal-bolder))]/20'
+                  ? 'bg-[var(--ds-background-success)] border-[var(--ds-icon-information)]/20 dark:bg-[rgba(20,184,166,0.05)] dark:border-[var(--ds-background-accent-teal-bolder, var(--ds-background-accent-teal-bolder))]/20'
                   : 'bg-surface-muted border-border-subtle'
               )}
             >

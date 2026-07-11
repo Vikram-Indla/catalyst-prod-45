@@ -487,7 +487,7 @@ export function WorkstreamDrawer({ workstream, isOpen, onClose }: WorkstreamDraw
           left: 0,
           right: 0,
           bottom: 0,
-          backgroundColor: 'var(--ds-shadow-overlay, rgba(15, 23, 42, 0.4))',
+          backgroundColor: 'var(--ds-shadow-overlay)',
           backdropFilter: 'blur(2px)',
           zIndex: 998,
           opacity: isOpen ? 1 : 0,
@@ -506,7 +506,7 @@ export function WorkstreamDrawer({ workstream, isOpen, onClose }: WorkstreamDraw
           maxWidth: '100vw',
           height: '100vh',
           backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))',
-          boxShadow: '-8px 0 30px var(--ds-shadow-raised, rgba(0, 0, 0, 0.12))',
+          boxShadow: '-8px 0 30px var(--ds-shadow-raised)',
           zIndex: 999,
           display: 'flex',
           flexDirection: 'column',
@@ -1035,7 +1035,7 @@ const dropdownStyle: React.CSSProperties = {
   backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))',
   border: '1px solid var(--ds-border)',
   borderRadius: '12px',
-  boxShadow: '0 10px 40px var(--ds-shadow-raised, rgba(0,0,0,0.12))',
+  boxShadow: '0 10px 40px var(--ds-shadow-raised)',
   zIndex: 9999,
   overflow: 'hidden'
 };

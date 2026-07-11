@@ -55,7 +55,7 @@ export function ThemeToggle({ testId }: ThemeToggleProps = {}) {
         }}
         onMouseEnter={(e) => {
           e.currentTarget.style.color = token('color.text', 'var(--cp-ink-1, var(--cp-ink-1))');
-          e.currentTarget.style.background = token('color.background.neutral.hovered', 'var(--ds-shadow-raised, rgba(0,0,0,0.04))');
+          e.currentTarget.style.background = token('color.background.neutral.hovered', 'var(--ds-shadow-raised)');
         }}
         onMouseLeave={(e) => {
           e.currentTarget.style.color = token('color.text.subtle', 'var(--ds-icon-subtle)');

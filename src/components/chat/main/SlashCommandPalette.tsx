@@ -246,7 +246,7 @@ export function SlashCommandPalette({
         background: 'var(--ds-surface-overlay)',
         border: '1px solid var(--ds-border)',
         borderRadius: 4,
-        boxShadow: '0 4px 8px var(--ds-shadow-raised, rgba(9,30,66,0.15))',
+        boxShadow: '0 4px 8px var(--ds-shadow-raised)',
         width: 280,
         maxHeight: 320,
         overflowY: 'auto',
@@ -268,7 +268,7 @@ export function SlashCommandPalette({
             width: '100%',
             padding: '8px 12px',
             background: idx === state.selectedIndex
-              ? 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))'
+              ? 'var(--ds-background-neutral-subtle-hovered)'
               : 'transparent',
             border: 'none',
             cursor: 'pointer',

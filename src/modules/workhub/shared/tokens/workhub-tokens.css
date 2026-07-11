@@ -42,8 +42,8 @@
   --wh-rad2: 8px;
 
   /* Shadows */
-  --wh-sh: 0 1px 2px var(--ds-shadow-raised, rgba(0,0,0,0.06));
-  --wh-shm: 0 4px 12px var(--ds-shadow-raised, rgba(0,0,0,0.08));
+  --wh-sh: 0 1px 2px var(--ds-shadow-raised);
+  --wh-shm: 0 4px 12px var(--ds-shadow-raised);
 }
 
 /* ═══ ECLIPSE DARK MODE — WORKHUB DARK MODE ═══ */
@@ -64,22 +64,22 @@
   /* Primary */
   --wh-pri: var(--ds-text-brand);
   --wh-pri2: var(--ds-text-brand, var(--cp-workstream-catalyst-primary));
-  --wh-pri-bg: var(--ds-background-information-bold, rgba(59,130,246,0.10));
-  --wh-pri-bdr: var(--ds-background-information-bold, rgba(59,130,246,0.20));
+  --wh-pri-bg: var(--ds-background-information-bold);
+  --wh-pri-bdr: var(--ds-background-information-bold);
 
   /* Semantic */
   --wh-suc: var(--ds-background-success);
-  --wh-suc-bg: var(--ds-background-success-bold, rgba(74,222,128,0.10));
+  --wh-suc-bg: var(--ds-background-success-bold);
   --wh-warn: var(--ds-background-warning);
-  --wh-warn-bg: var(--ds-background-warning, rgba(253,230,138,0.10));
+  --wh-warn-bg: var(--ds-background-warning);
   --wh-dng: var(--ds-border-danger);
   --wh-dng-bg: rgba(252,165,165,0.10);
   --wh-pur: var(--ds-text-brand);
-  --wh-pur-bg: var(--ds-background-information-bold, rgba(59,130,246,0.10));
+  --wh-pur-bg: var(--ds-background-information-bold);
 
   /* Shadows — subtle in dark mode */
   --wh-sh: none;
-  --wh-shm: 0 8px 24px var(--ds-shadow-raised, rgba(0,0,0,0.50));
+  --wh-shm: 0 8px 24px var(--ds-shadow-raised);
 }
 
 /* ═══ STATUS BADGES ═══ */

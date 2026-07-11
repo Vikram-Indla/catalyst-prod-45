@@ -276,7 +276,7 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem, sortFie
                 className="px-3 py-2.5 cursor-pointer transition-colors duration-80"
                 style={{
                   borderBottom: isDark ? '1px solid var(--ds-text)' : '1px solid var(--bd-subtle, var(--cp-ink-1, var(--ds-text)))',
-                  backgroundColor: isActive ? 'var(--ds-background-information, rgba(37,99,235,0.08))' : isDark ? 'var(--cp-bg-page, var(--ds-surface))' : 'var(--bg-app)',
+                  backgroundColor: isActive ? 'var(--ds-background-information)' : isDark ? 'var(--cp-bg-page, var(--ds-surface))' : 'var(--bg-app)',
                   borderLeft: isActive ? '3px solid var(--ds-link)' : '3px solid transparent',
                 }}
               >
@@ -459,7 +459,7 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem, sortFie
                       style={{
                         fontSize: 'var(--ds-font-size-50)', fontWeight: 700, minWidth: 18, textAlign: 'center',
                         padding: '0px 5px', borderRadius: 12,
-                        backgroundColor: isActive ? 'var(--ds-background-information, rgba(37,99,235,0.10))' : isDark ? 'var(--ds-border, var(--cp-ink-1))' : 'var(--bd-subtle, var(--cp-ink-1))',
+                        backgroundColor: isActive ? 'var(--ds-background-information)' : isDark ? 'var(--ds-border, var(--cp-ink-1))' : 'var(--bd-subtle, var(--cp-ink-1))',
                         color: isActive ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' : 'var(--fg-3)',
                         fontFamily: 'var(--cp-font-mono)',
                       }}

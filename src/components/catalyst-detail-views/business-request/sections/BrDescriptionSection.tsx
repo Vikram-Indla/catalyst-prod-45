@@ -124,7 +124,7 @@ export function BrDescriptionSection({ request, onUpdate, health }: Props) {
           onMouseEnter={(e) => {
             e.currentTarget.style.background = token(
               'color.background.neutral.hovered',
-              'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.04))',
+              'var(--ds-background-neutral-subtle-hovered)',
             );
           }}
           onMouseLeave={(e) => {

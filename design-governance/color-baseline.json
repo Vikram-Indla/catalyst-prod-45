@@ -1,6 +1,6 @@
 {
   "hardcodedColors": 0,
-  "fallbackHexColors": 4379,
+  "fallbackHexColors": 843,
   "fallbackHexColors_description": "CAT-AUDIT-0100 (2026-07-03): var(--ds-*, #hex) / token('x','#hex') fallback occurrences — the pattern lint:colors deliberately whitelists (banned by CLAUDE.md with 'no exceptions'). Separately ratcheted via scripts/no-fallback-hex.cjs + scripts/ads-fallback-hex-gate.cjs so the debt doesn't block existing work but can never grow. See features/CAT-AUDIT-FULLSWEEP-20260703-001/lanes/LANE-02_light-mode-tokens.md.",
   "description": "Hard-coded hex color violations (Phase 5: 673 → 77 after scanner refinement for pragmatic fallback support)",
   "updated": "2026-06-28",

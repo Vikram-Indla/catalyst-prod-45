@@ -36,5 +36,5 @@ export const CHART_TOOLTIP_STYLE: React.CSSProperties = {
   padding: '8px 14px',
   fontSize: '12px',
   border: 'none',
-  boxShadow: '0 4px 12px var(--ds-shadow-raised, rgba(0,0,0,0.15))',
+  boxShadow: '0 4px 12px var(--ds-shadow-raised)',
 };

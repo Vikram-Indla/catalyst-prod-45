@@ -12,7 +12,7 @@ function DocexToFolioRedirect() {
   return <Navigate to={pathname.replace(/^\/docex/, '/folio') + search + hash} replace />;
 }
 
-import { ENABLE_AI, ENABLE_HEAVY_EXPORTS } from '../lib/featureFlags';
+import { ENABLE_AI, ENABLE_HEAVY_EXPORTS, ENABLE_IDEATION } from '../lib/featureFlags';
 import { FeatureComingSoon } from '../components/common/FeatureComingSoon';
 import { ModuleGate } from '../components/common/ModuleGate';
 import { ModuleGuard } from '../components/guards/ModuleGuard';
@@ -131,13 +131,16 @@ const ProductBacklogDetailPage = lazy(() => import("../pages/product-hub/Investo
 const ProductNativeBoardPage = lazy(() => import("../pages/product-hub/ProductNativeBoardPage"));
 const ProductBoardManagerPage = lazy(() => import("../pages/product-hub/ProductBoardManagerPage"));
 const ProductNativeAllWorkPage = lazy(() => import("../pages/product-hub/ProductNativeAllWorkPage"));
-const IdeationPage = ENABLE_AI ? lazy(() => import("../pages/producthub/IdeationPage")) : () => <FeatureComingSoon title="Ideation" />;
-const IdeasRoadmapPage = ENABLE_AI ? lazy(() => import("../pages/product/ideas/IdeasRoadmapPage")) : () => <FeatureComingSoon title="Ideas Roadmap" />;
-const IdeasBacklogPage = ENABLE_AI ? lazy(() => import("../pages/producthub/IdeasBacklogPage")) : () => <FeatureComingSoon title="Ideas Backlog" />;
-const IdeasBoardPage = ENABLE_AI ? lazy(() => import("../pages/producthub/IdeasBoardPage")) : () => <FeatureComingSoon title="Ideas Board" />;
-const IdeasRoadmapPageNew = ENABLE_AI ? lazy(() => import("../pages/producthub/IdeasRoadmapPage")) : () => <FeatureComingSoon title="Ideas Roadmap" />;
-const IdeasThemePage = ENABLE_AI ? lazy(() => import("../pages/producthub/IdeasThemePage")) : () => <FeatureComingSoon title="Ideas Theme" />;
-const IdeasAnalyticsPage = ENABLE_AI ? lazy(() => import("../pages/producthub/IdeasAnalyticsPage")) : () => <FeatureComingSoon title="Ideas Analytics" />;
+// Ideation Hub — greenfield rebuild (CAT-IDEATION-REBUILD-20260709-001).
+// Legacy Ideas* / IdeationPage lazy imports removed with their /ideation/*
+// mounts per D1 (routes-only early decommission); legacy pages stay on disk
+// untouched until the Phase 8 decommission.
+const IdeationInboxPage = lazy(() => import("../modules/ideation/pages/InboxPage"));
+const IdeationExplorePage = lazy(() => import("../modules/ideation/pages/ExplorePage"));
+const IdeationPortfolioPage = lazy(() => import("../modules/ideation/pages/PortfolioPage"));
+const IdeationDetailPage = lazy(() => import("../modules/ideation/pages/DetailPage"));
+const IdeationSubmitPage = lazy(() => import("../modules/ideation/pages/SubmitPage"));
+const IdeationAdminPage = lazy(() => import("../modules/ideation/admin/AdminPage"));
 const ReqAssistLibrary = ENABLE_AI ? lazy(() => import("../pages/ReqAssistLibrary")) : () => <FeatureComingSoon title="Requirement Assist" />;
 const ReqAssistGenerate = ENABLE_AI ? lazy(() => import("../pages/ReqAssistGenerate")) : () => <FeatureComingSoon title="Requirement Assist" />;
 
@@ -569,11 +572,9 @@ export default function FullAppRoutes() {
         <Route path="/product-hub/reports" element={<MG k="producthub" t="ProductHub"><S><IndustryComingSoon /></S></MG>} />
         <Route path="/product-hub/roadmap" element={<MG k="producthub" t="ProductHub"><S><RoadmapPage /></S></MG>} />
         <Route path="/product-hub/cards" element={<Navigate to="/product-hub/products" replace />} />
-        {/* Phase 6 (2026-05-02) — Ideation lifted out of Product Hub.
-            /product-hub/ideation now redirects to the canonical peer hub
-            at /ideation/intelligence. Submitters and reviewers no longer
-            land "inside" Product Hub for ideation work. */}
-        <Route path="/product-hub/ideation" element={<Navigate to="/ideation/intelligence" replace />} />
+        {/* /product-hub/ideation → new Ideation hub root (legacy target
+            /ideation/intelligence removed per D1). */}
+        <Route path="/product-hub/ideation" element={<Navigate to="/ideation" replace />} />
         <Route path="/product-hub/requirement-assist" element={<MG k="ai_features" t="Requirement Assist"><S><RequirementAssistWorkspace /></S></MG>} />
         <Route path="/product-hub/requirement-assist/compose" element={<MG k="ai_features" t="Requirement Assist"><S><RequirementAssistCompose /></S></MG>} />
         <Route path="/product-hub/requirement-assist/categories" element={<MG k="ai_features" t="Requirement Assist"><S><RequirementAssistCategories /></S></MG>} />
@@ -583,29 +584,20 @@ export default function FullAppRoutes() {
             in App.tsx at /producthub + /producthub/*. The block previously
             here was dead code (App.tsx wildcard catches first). */}
 
-        {/* Phase 6 (2026-05-02) — Ideation peer hub at /ideation/*.
-            Pages stay where they are (pages/producthub/Ideas*.tsx); only
-            the canonical URL prefix moves. /product/ideas/* legacy paths
-            redirect below so existing bookmarks survive. */}
-        <Route path="/ideation" element={<Navigate to="/ideation/backlog" replace />} />
-        <Route path="/ideation/backlog" element={<MG k="ai_features" t="Ideas Backlog"><S><IdeasBacklogPage /></S></MG>} />
-        <Route path="/ideation/board" element={<MG k="ai_features" t="Ideas Board"><S><IdeasBoardPage /></S></MG>} />
-        <Route path="/ideation/roadmap" element={<MG k="ai_features" t="Ideas Roadmap"><S><IdeasRoadmapPageNew /></S></MG>} />
-        <Route path="/ideation/themes" element={<MG k="ai_features" t="Ideas Themes"><S><IdeasThemePage /></S></MG>} />
-        <Route path="/ideation/analytics" element={<MG k="ai_features" t="Ideas Analytics"><S><IdeasAnalyticsPage /></S></MG>} />
-        <Route path="/ideation/matrix" element={<MG k="ai_features" t="Impact Matrix"><S><IdeationPage /></S></MG>} />
-        <Route path="/ideation/triage" element={<MG k="ai_features" t="Triage"><S><IdeationPage /></S></MG>} />
-        <Route path="/ideation/intelligence" element={<MG k="ai_features" t="Intelligence"><S><IdeationPage /></S></MG>} />
-
-        {/* Legacy /product/ideas/* — redirect to canonical /ideation/*.
-            /product/ideas/roadmap-new collapses with /product/ideas/roadmap
-            since /ideation/roadmap is now the single roadmap surface. */}
-        <Route path="/product/ideas/roadmap" element={<Navigate to="/ideation/roadmap" replace />} />
-        <Route path="/product/ideas/roadmap-new" element={<Navigate to="/ideation/roadmap" replace />} />
-        <Route path="/product/ideas/backlog" element={<Navigate to="/ideation/backlog" replace />} />
-        <Route path="/product/ideas/board" element={<Navigate to="/ideation/board" replace />} />
-        <Route path="/product/ideas/themes" element={<Navigate to="/ideation/themes" replace />} />
-        <Route path="/product/ideas/analytics" element={<Navigate to="/ideation/analytics" replace />} />
+        {/* ═══ Ideation Hub (CAT-IDEATION-REBUILD-20260709-001) ═══
+            Greenfield module over idn_*; claims /ideation per D1. Legacy
+            /ideation/* surfaces (Backlog/Board/Matrix/…) and /product/ideas/*
+            redirects removed — legacy pages remain on disk, unreachable,
+            until Phase 8 decommission. Flag off ⇒ no mounts ⇒ catch-all. */}
+        {ENABLE_IDEATION && (
+          <>
+            <Route path="/ideation" element={<ModuleGuard moduleCode="ideation"><S><IdeationInboxPage /></S></ModuleGuard>} />
+            <Route path="/ideation/explore" element={<ModuleGuard moduleCode="ideation"><S><IdeationExplorePage /></S></ModuleGuard>} />
+            <Route path="/ideation/portfolio" element={<ModuleGuard moduleCode="ideation"><S><IdeationPortfolioPage /></S></ModuleGuard>} />
+            <Route path="/ideation/ideas/:slug" element={<ModuleGuard moduleCode="ideation"><S><IdeationDetailPage /></S></ModuleGuard>} />
+            <Route path="/ideation/submit" element={<ModuleGuard moduleCode="ideation"><S><IdeationSubmitPage /></S></ModuleGuard>} />
+          </>
+        )}
         <Route path="/product/req-assist" element={<MG k="ai_features" t="Requirement Assist"><S><ReqAssistLibrary /></S></MG>} />
         <Route path="/product/req-assist/generate" element={<MG k="ai_features" t="Requirement Assist"><S><ReqAssistGenerate /></S></MG>} />
         <Route path="/req-assist/rag-audit" element={<MG k="ai_features" t="RAG Audit"><S><RAGAuditPage /></S></MG>} />
@@ -970,6 +962,11 @@ export default function FullAppRoutes() {
           <Route path="components" element={<Navigate to="/admin/access" replace />} />
           <Route path="departments" element={<Navigate to="/admin/access" replace />} />
           <Route path="access" element={<S><AdminAccessPage /></S>} />
+          {/* Ideation admin skeleton (CAT-IDEATION-REBUILD-20260709-001) —
+              inside AdminLayout like every admin surface; flag-gated. */}
+          {ENABLE_IDEATION && (
+            <Route path="ideation/*" element={<S><IdeationAdminPage /></S>} />
+          )}
           <Route path="capacity-departments" element={<S><CapacityDepartmentsPage /></S>} />
           <Route path="workflows" element={<S><WorkflowStudioPage /></S>} />
           <Route path="workflows/classic" element={<S><WorkflowAdminPage /></S>} />

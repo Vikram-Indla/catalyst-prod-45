@@ -286,7 +286,7 @@ export function RichTextCommentEditor({
           <div style={{
             position: 'absolute', top: mentionPos.top + 48, left: mentionPos.left + 8,
             background: 'var(--ds-surface)', border: '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral))', borderRadius: 6,
-            boxShadow: '0 4px 16px var(--ds-shadow-raised, rgba(9,30,66,0.18))', zIndex: 100, minWidth: 240,
+            boxShadow: '0 4px 16px var(--ds-shadow-raised)', zIndex: 100, minWidth: 240,
             maxHeight: 200, overflowY: 'auto',
           }}>
             {filteredMembers.slice(0, 8).map((m, idx) => (

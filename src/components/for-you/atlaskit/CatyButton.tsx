@@ -75,7 +75,7 @@ export function CatyButton({
           transition: 'background-color 150ms, border-color 150ms',
         }}
         onMouseEnter={(e) => {
-          e.currentTarget.style.backgroundColor = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))';
+          e.currentTarget.style.backgroundColor = 'var(--ds-background-neutral-subtle-hovered)';
         }}
         onMouseLeave={(e) => {
           e.currentTarget.style.backgroundColor = 'var(--ds-surface-overlay)';

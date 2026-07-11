@@ -153,7 +153,7 @@ export function T10LabelPicker({ currentLabel, onSelect, isReadOnly = false }: T
         zIndex: 100001,
         background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
         borderRadius: '8px',
-        boxShadow: '0 10px 25px -5px var(--ds-shadow-raised, rgba(0,0,0,0.15)), 0 4px 6px -2px var(--ds-shadow-raised, rgba(0,0,0,0.08))',
+        boxShadow: '0 10px 25px -5px var(--ds-shadow-raised), 0 4px 6px -2px var(--ds-shadow-raised)',
         border: '1px solid var(--ds-border)',
         overflow: 'hidden',
       }}

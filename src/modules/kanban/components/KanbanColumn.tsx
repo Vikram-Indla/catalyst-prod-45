@@ -134,7 +134,7 @@ export function KanbanColumn({
         flex flex-col flex-shrink-0 transition-all duration-150 
         rounded-xl border shadow-sm
         ${isDragOver 
-          ? 'border-2 border-dashed border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))] dark:border-[var(--ds-text-brand)] bg-[var(--ds-background-information, rgba(37,99,235,0.1))] dark:bg-[var(--ds-background-information, rgba(37,99,235,0.1))]' 
+          ? 'border-2 border-dashed border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))] dark:border-[var(--ds-text-brand)] bg-[var(--ds-background-information)] dark:bg-[var(--ds-background-information)]' 
           : 'border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50'
         }
       `}

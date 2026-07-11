@@ -72,7 +72,7 @@ export function AllocationDrawer({ resource, onClose }: AllocationDrawerProps) {
       {/* Drawer */}
       <div 
         className="fixed top-0 right-0 bottom-0 w-[480px] max-w-[100vw] bg-card z-[1001] flex flex-col animate-in slide-in-from-right duration-300"
-        style={{ boxShadow: '-8px 0 32px var(--ds-shadow-raised, rgba(0,0,0,0.15))' }}
+        style={{ boxShadow: '-8px 0 32px var(--ds-shadow-raised)' }}
         role="dialog"
         aria-modal="true"
         aria-labelledby="drawer-title"
@@ -84,7 +84,7 @@ export function AllocationDrawer({ resource, onClose }: AllocationDrawerProps) {
             className="w-11 h-11 rounded-[12px] flex items-center justify-center text-[14px] font-extrabold text-white flex-shrink-0"
             style={{ 
               background: departmentGradient,
-              boxShadow: '0 2px 8px var(--ds-background-information, rgba(37, 99, 235, 0.3))'
+              boxShadow: '0 2px 8px var(--ds-background-information)'
             }}
           >
             {initials}
@@ -306,8 +306,8 @@ export function AllocationDrawer({ resource, onClose }: AllocationDrawerProps) {
 function LegendItem({ label, type }: { label: string; type: 'actual' | 'committed' | 'forecast' | 'available' }) {
   const styles: Record<string, string> = {
     actual: 'bg-primary/50',
-    committed: 'bg-primary shadow-[inset_0_0_0_2px_var(--ds-surface, rgba(255,255,255,0.25))]',
-    forecast: 'bg-[repeating-linear-gradient(-45deg,var(--ds-background-information, rgba(37,99,235,0.2)),var(--ds-background-information, rgba(37,99,235,0.2))_2px,var(--ds-background-information, rgba(37,99,235,0.35))_2px,var(--ds-background-information, rgba(37,99,235,0.35))_4px)] border-2 border-dashed border-primary',
+    committed: 'bg-primary shadow-[inset_0_0_0_2px_var(--ds-surface)]',
+    forecast: 'bg-[repeating-linear-gradient(-45deg,var(--ds-background-information),var(--ds-background-information)_2px,var(--ds-background-information)_2px,var(--ds-background-information)_4px)] border-2 border-dashed border-primary',
     available: 'bg-[repeating-linear-gradient(45deg,var(--ds-background-success),var(--ds-background-success)_2px,var(--ds-background-success)_2px,var(--ds-background-success)_4px)] border border-[var(--ds-background-success)]',
   };
 
@@ -402,7 +402,7 @@ function AllocationBlock({
     },
     committed: {
       backgroundColor: color,
-      boxShadow: 'inset 0 0 0 2px var(--ds-surface, rgba(255,255,255,0.25))',
+      boxShadow: 'inset 0 0 0 2px var(--ds-surface)',
     },
     forecast: {
       background: `repeating-linear-gradient(-45deg, color-mix(in srgb, ${color} 20%, transparent), color-mix(in srgb, ${color} 20%, transparent) 3px, color-mix(in srgb, ${color} 35%, transparent) 3px, color-mix(in srgb, ${color} 35%, transparent) 6px)`,

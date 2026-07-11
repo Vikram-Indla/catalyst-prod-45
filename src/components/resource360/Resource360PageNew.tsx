@@ -145,7 +145,7 @@ export default function Resource360PageNew() {
             transition: 'all 200ms ease',
             fontFamily: 'var(--cp-font-body)',
           }}
-          onMouseEnter={e => { e.currentTarget.style.transform = 'scale(1.03)'; e.currentTarget.style.boxShadow = '0 0 0 6px var(--ds-background-information, rgba(37,99,235,0.15))'; }}
+          onMouseEnter={e => { e.currentTarget.style.transform = 'scale(1.03)'; e.currentTarget.style.boxShadow = '0 0 0 6px var(--ds-background-information)'; }}
           onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.boxShadow = ''; }}
         >
           <Zap size={13} strokeWidth={2.2} />

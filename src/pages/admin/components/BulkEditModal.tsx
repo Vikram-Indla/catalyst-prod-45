@@ -180,7 +180,7 @@ const bulkModalCSS = `
 .ct-modal-overlay {
   position: fixed;
   inset: 0;
-  background: var(--ds-shadow-raised, rgba(0, 0, 0, 0.5));
+  background: var(--ds-shadow-raised);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -197,7 +197,7 @@ const bulkModalCSS = `
 .ct-modal {
   background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)));
   border-radius: 12px;
-  box-shadow: 0 25px 50px -12px var(--ds-shadow-raised, rgba(0, 0, 0, 0.25));
+  box-shadow: 0 25px 50px -12px var(--ds-shadow-raised);
   width: 480px;
   max-width: 90vw;
   max-height: 90vh;
@@ -283,7 +283,7 @@ const bulkModalCSS = `
 /* Active state: Blue border + subtle blue bg */
 .ct-field-card.active {
   border-color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary));
-  background: var(--ds-background-information, rgba(37, 99, 235, 0.04));
+  background: var(--ds-background-information);
 }
 
 .ct-field-card-header {
@@ -339,7 +339,7 @@ const bulkModalCSS = `
 .ct-field-select-trigger:focus {
   outline: 1px solid var(--ds-border-focused);
   border-color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary));
-  box-shadow: 0 0 0 3px var(--ds-background-information, rgba(37, 99, 235, 0.08));
+  box-shadow: 0 0 0 3px var(--ds-background-information);
 }
 
 .ct-field-select-trigger:disabled {
@@ -372,7 +372,7 @@ const bulkModalCSS = `
   background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)));
   border: 1px solid var(--ds-border, var(--cp-bg-sunken));
   border-radius: 12px;
-  box-shadow: 0 8px 24px var(--ds-shadow-raised, rgba(0, 0, 0, 0.12));
+  box-shadow: 0 8px 24px var(--ds-shadow-raised);
   padding: 8px;
   z-index: 50;
   max-height: 280px;
@@ -405,7 +405,7 @@ const bulkModalCSS = `
 
 /* Selected item: Blue tint background */
 .ct-field-select-item.selected {
-  background: var(--ds-background-information, rgba(37, 99, 235, 0.08));
+  background: var(--ds-background-information);
   color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary));
   font-weight: 600;
 }

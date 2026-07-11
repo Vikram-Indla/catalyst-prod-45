@@ -211,7 +211,7 @@ export const ModalHeader: React.FC<ModalHeaderProps> = ({
                 outline: 'none',
                 fontFamily: 'inherit',
                 backgroundColor: COLORS.surfaceCard,
-                boxShadow: '0 0 0 3px var(--ds-background-information-bold, rgba(59, 130, 246, 0.15))'
+                boxShadow: '0 0 0 3px var(--ds-background-information-bold)'
               }}
             />
             <button
@@ -296,7 +296,7 @@ export const ModalHeader: React.FC<ModalHeaderProps> = ({
               left: 0,
               right: 0,
               bottom: 0,
-              backgroundColor: 'var(--ds-shadow-overlay, rgba(15, 23, 42, 0.6))',
+              backgroundColor: 'var(--ds-shadow-overlay)',
               zIndex: 100000
             }}
           />
@@ -310,7 +310,7 @@ export const ModalHeader: React.FC<ModalHeaderProps> = ({
               borderRadius: '16px',
               padding: '24px',
               width: '400px',
-              boxShadow: '0 25px 50px var(--ds-shadow-raised, rgba(0, 0, 0, 0.3))',
+              boxShadow: '0 25px 50px var(--ds-shadow-raised)',
               zIndex: 100001
             }}
           >
@@ -429,7 +429,7 @@ const KebabMenu: React.FC<{
           backgroundColor: COLORS.surfaceCard,
           border: `1px solid ${COLORS.borderDefault}`,
           borderRadius: '12px',
-          boxShadow: '0 10px 40px var(--ds-shadow-raised, rgba(0, 0, 0, 0.15))',
+          boxShadow: '0 10px 40px var(--ds-shadow-raised)',
           zIndex: 99999,
           padding: '4px'
         }}

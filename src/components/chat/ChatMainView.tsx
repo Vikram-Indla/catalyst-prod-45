@@ -622,7 +622,7 @@ export function ChatMainView({ activeConversationId, onSelectConversation }: Cha
             gap: 4,
             fontSize: 'var(--ds-font-size-100)',
             color: 'var(--ds-text-subtle)',
-            boxShadow: '0 1px 4px var(--ds-background-neutral-subtle-pressed, rgba(9,30,66,0.1))',
+            boxShadow: '0 1px 4px var(--ds-background-neutral-subtle-pressed)',
           }}
           title={railHidden ? 'Show sidebar' : 'Expand to full width'}
           aria-label={railHidden ? 'Show sidebar' : 'Expand to full width'}
@@ -641,7 +641,7 @@ export function ChatMainView({ activeConversationId, onSelectConversation }: Cha
       {catySummary.open && (
         <div
           style={{
-            position: 'fixed', inset: 0, background: 'var(--ds-shadow-raised, rgba(9,30,66,0.5))',
+            position: 'fixed', inset: 0, background: 'var(--ds-shadow-raised)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             zIndex: 2000,
           }}
@@ -651,7 +651,7 @@ export function ChatMainView({ activeConversationId, onSelectConversation }: Cha
             style={{
               background: 'var(--ds-surface-overlay)',
               borderRadius: 8,
-              boxShadow: '0 8px 32px var(--ds-shadow-raised, rgba(9,30,66,0.24))',
+              boxShadow: '0 8px 32px var(--ds-shadow-raised)',
               width: 520,
               maxWidth: '90vw',
               maxHeight: '70vh',

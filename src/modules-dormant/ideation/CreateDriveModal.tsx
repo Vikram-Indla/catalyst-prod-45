@@ -130,14 +130,14 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
       style={{
         position: 'fixed', inset: 0, zIndex: 300,
         display: 'flex', alignItems: 'center', justifyContent: 'center',
-        background: 'var(--ds-shadow-raised, rgba(0,0,0,0.5))',
+        background: 'var(--ds-shadow-raised)',
       }}
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
     >
       <div style={{
         width: '640px', maxHeight: '90vh', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
         borderRadius: '16px', display: 'flex', flexDirection: 'column',
-        boxShadow: isDark ? 'none' : '0 25px 50px -12px var(--ds-shadow-raised, rgba(0,0,0,0.25))',
+        boxShadow: isDark ? 'none' : '0 25px 50px -12px var(--ds-shadow-raised)',
         padding: '24px',
       }}>
         {/* Header */}
@@ -167,7 +167,7 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               onBlur={() => handleBlur('title')}
-              onFocus={(e) => { e.target.style.borderColor = 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))'; e.target.style.boxShadow = '0 0 0 3px var(--ds-background-information, rgba(37,99,235,0.1))'; }}
+              onFocus={(e) => { e.target.style.borderColor = 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))'; e.target.style.boxShadow = '0 0 0 3px var(--ds-background-information)'; }}
               maxLength={100}
             />
             {touched.title && errors.title && <div style={errorStyle}>{errors.title}</div>}
@@ -186,7 +186,7 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               onBlur={() => handleBlur('description')}
-              onFocus={(e) => { e.target.style.borderColor = 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))'; e.target.style.boxShadow = '0 0 0 3px var(--ds-background-information, rgba(37,99,235,0.1))'; }}
+              onFocus={(e) => { e.target.style.borderColor = 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))'; e.target.style.boxShadow = '0 0 0 3px var(--ds-background-information)'; }}
               maxLength={500}
             />
             {touched.description && errors.description && <div style={errorStyle}>{errors.description}</div>}
@@ -381,7 +381,7 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
               border: 'none', borderRadius: '8px',
               cursor: (!isValid || createMutation.isPending) ? 'not-allowed' : 'pointer',
               display: 'inline-flex', alignItems: 'center', gap: '4px',
-              boxShadow: '0 1px 2px var(--ds-shadow-raised, rgba(0,0,0,0.05))',
+              boxShadow: '0 1px 2px var(--ds-shadow-raised)',
               transition: 'background 150ms ease', fontFamily: 'var(--cp-font-body)',
             }}
             onMouseEnter={(e) => { if (isValid && !createMutation.isPending) e.currentTarget.style.background = 'var(--ds-background-brand-bold-hovered)'; }}

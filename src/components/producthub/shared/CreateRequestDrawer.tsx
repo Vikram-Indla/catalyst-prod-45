@@ -273,7 +273,7 @@ export function CreateRequestDrawer({ open, onClose, conversionSource, onCreated
         onClick={doClose}
         style={{
           position: 'fixed', inset: 0, zIndex: 600,
-          background: 'var(--ds-shadow-raised, rgba(0,0,0,.5))',
+          background: 'var(--ds-shadow-raised)',
           animation: `${closing ? 'niFadeOut 200ms' : 'niFadeIn 150ms'} ease-out forwards`,
         }}
       />
@@ -283,7 +283,7 @@ export function CreateRequestDrawer({ open, onClose, conversionSource, onCreated
         position: 'fixed', top: '48%', left: '48%', transform: 'translate(-50%,-50%)',
         zIndex: 610, width: 580, maxHeight: '90vh', display: 'flex', flexDirection: 'column',
         background: T.surface, borderRadius: 16,
-        boxShadow: '0 24px 80px var(--ds-shadow-raised, rgba(0,0,0,.18))',
+        boxShadow: '0 24px 80px var(--ds-shadow-raised)',
         fontFamily: 'var(--cp-font-body)',
         animation: `${closing ? 'niSlideOut 200ms' : 'niSlideIn 250ms'} cubic-bezier(.4,0,.2,1) forwards`,
       }}>
@@ -455,7 +455,7 @@ export function CreateRequestDrawer({ open, onClose, conversionSource, onCreated
               style={{
                 padding: '8px 24px', border: 'none', borderRadius: 8,
                 background: T.primary, color: 'var(--ds-surface)', fontSize: 'var(--ds-font-size-300)', fontWeight: 600,
-                cursor: 'pointer', boxShadow: '0 2px 8px var(--ds-background-information, rgba(37,99,235,.25))',
+                cursor: 'pointer', boxShadow: '0 2px 8px var(--ds-background-information)',
                 opacity: (createMutation.isPending || !form.title.trim()) ? 0.5 : 1,
               }}
             >

@@ -63,9 +63,9 @@
   --rh-radius-full: 9999px;
 
   /* Shadows */
-  --rh-shadow-xs: 0 1px 2px var(--ds-shadow-raised, rgba(0,0,0,0.05));
-  --rh-shadow-sm: 0 1px 3px var(--ds-shadow-raised, rgba(0,0,0,0.1)), 0 1px 2px var(--ds-shadow-raised, rgba(0,0,0,0.06));
-  --rh-shadow-md: 0 4px 6px -1px var(--ds-shadow-raised, rgba(0,0,0,0.1)), 0 2px 4px -1px var(--ds-shadow-raised, rgba(0,0,0,0.06));
+  --rh-shadow-xs: 0 1px 2px var(--ds-shadow-raised);
+  --rh-shadow-sm: 0 1px 3px var(--ds-shadow-raised), 0 1px 2px var(--ds-shadow-raised);
+  --rh-shadow-md: 0 4px 6px -1px var(--ds-shadow-raised), 0 2px 4px -1px var(--ds-shadow-raised);
 
   /* Transitions */
   --rh-duration: 150ms;
@@ -197,7 +197,7 @@
 }
 .searchInput:focus {
   border-color: var(--rh-primary);
-  box-shadow: 0 0 0 3px var(--ds-background-information, rgba(37,99,235,0.1));
+  box-shadow: 0 0 0 3px var(--ds-background-information);
 }
 .searchClear {
   position: absolute;
@@ -260,11 +260,11 @@
   border-radius: var(--rh-radius-md);
   cursor: pointer;
   transition: all var(--rh-duration) var(--rh-ease);
-  box-shadow: 0 2px 8px var(--ds-background-information, rgba(37,99,235,0.18));
+  box-shadow: 0 2px 8px var(--ds-background-information);
 }
 .btnPrimary:hover {
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px var(--ds-background-information, rgba(37,99,235,0.25));
+  box-shadow: 0 4px 12px var(--ds-background-information);
 }
 .btnOutline {
   display: inline-flex;
@@ -299,11 +299,11 @@
   border-radius: var(--rh-radius-md);
   cursor: pointer;
   transition: all var(--rh-duration) var(--rh-ease);
-  box-shadow: 0 2px 8px var(--ds-background-success-bold, rgba(34,197,94,0.18));
+  box-shadow: 0 2px 8px var(--ds-background-success-bold);
 }
 .btnAI:hover {
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px var(--ds-background-success-bold, rgba(34,197,94,0.3));
+  box-shadow: 0 4px 12px var(--ds-background-success-bold);
 }
 .btnOutlineSm {
   composes: btnOutline;
@@ -708,7 +708,7 @@
   height: 100vh;
   background: var(--rh-bg-card);
   border-left: 0px solid var(--rh-border-default);
-  box-shadow: -4px 0 20px var(--ds-shadow-raised, rgba(0,0,0,0.08));
+  box-shadow: -4px 0 20px var(--ds-shadow-raised);
   z-index: 50;
   display: flex;
   flex-direction: column;
@@ -768,7 +768,7 @@
 .modalOverlay {
   position: fixed;
   inset: 0;
-  background: var(--ds-shadow-raised, rgba(0,0,0,0.4));
+  background: var(--ds-shadow-raised);
   z-index: 100;
   display: flex;
   align-items: center;
@@ -813,7 +813,7 @@
 }
 .formInput:focus {
   border-color: var(--rh-primary);
-  box-shadow: 0 0 0 3px var(--ds-background-information, rgba(37,99,235,0.1));
+  box-shadow: 0 0 0 3px var(--ds-background-information);
 }
 .formSelect {
   composes: formInput;
@@ -903,26 +903,26 @@
   --rh-border-subtle: var(--ds-border, var(--cp-ink-1));
   --rh-border-default: var(--ds-border, var(--cp-ink-1));
   --rh-border-strong: var(--ds-border-bold);
-  --rh-success-bg: var(--ds-background-success-bold, rgba(74,222,128,0.12));
-  --rh-warning-bg: var(--ds-background-warning, rgba(253,230,138,0.10));
-  --rh-danger-bg: var(--ds-background-danger, rgba(239,68,68,0.10));
+  --rh-success-bg: var(--ds-background-success-bold);
+  --rh-warning-bg: var(--ds-background-warning);
+  --rh-danger-bg: var(--ds-background-danger);
   --rh-teal-bg: rgba(20,184,166,0.12);
   --rh-shadow-xs: none;
   --rh-shadow-sm: none;
-  --rh-shadow-md: 0 4px 6px -1px var(--ds-shadow-raised, rgba(0,0,0,0.3));
+  --rh-shadow-md: 0 4px 6px -1px var(--ds-shadow-raised);
 }
 /* Dark health chips */
 .dark .healthChipHealthy , [data-theme="dark"] .healthChipHealthy { color: var(--ds-background-success); }
 .dark .healthChipAtRisk , [data-theme="dark"] .healthChipAtRisk { color: var(--ds-background-warning); }
 /* Dark status badges */
-.dark .statusDevelopment , [data-theme="dark"] .statusDevelopment { background: var(--ds-background-information-bold, rgba(59,130,246,0.12)); color: var(--ds-text-brand); }
+.dark .statusDevelopment , [data-theme="dark"] .statusDevelopment { background: var(--ds-background-information-bold); color: var(--ds-text-brand); }
 .dark .statusStaging , [data-theme="dark"] .statusStaging { background: rgba(20,184,166,0.12); color: var(--ds-background-success); }
-.dark .statusTesting , [data-theme="dark"] .statusTesting { background: var(--ds-background-warning, rgba(253,230,138,0.10)); color: var(--ds-background-warning, var(--ds-background-warning)); }
-.dark .statusUat , [data-theme="dark"] .statusUat { background: var(--ds-background-warning-bold, rgba(234,88,12,0.12)); color: var(--ds-background-warning-bold, var(--ds-background-warning-bold)); }
-.dark .statusReleased , [data-theme="dark"] .statusReleased { background: var(--ds-background-success-bold, rgba(74,222,128,0.12)); color: var(--ds-background-success); }
+.dark .statusTesting , [data-theme="dark"] .statusTesting { background: var(--ds-background-warning); color: var(--ds-background-warning, var(--ds-background-warning)); }
+.dark .statusUat , [data-theme="dark"] .statusUat { background: var(--ds-background-warning-bold); color: var(--ds-background-warning-bold, var(--ds-background-warning-bold)); }
+.dark .statusReleased , [data-theme="dark"] .statusReleased { background: var(--ds-background-success-bold); color: var(--ds-background-success); }
 .dark .statusPlanned .statusDot , [data-theme="dark"] .statusPlanned .statusDot { background: var(--fg-4, rgba(237,237,237,0.30)); }
 /* Dark filter chip active */
-.dark .filterChipActive , [data-theme="dark"] .filterChipActive { background: var(--ds-background-information-bold, rgba(59,130,246,0.10)); }
+.dark .filterChipActive , [data-theme="dark"] .filterChipActive { background: var(--ds-background-information-bold); }
 
 @media (max-width: 768px) {
   .releaseHub { padding: 0; }

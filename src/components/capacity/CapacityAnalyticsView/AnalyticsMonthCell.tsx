@@ -69,7 +69,7 @@ export function AnalyticsMonthCell({ cell, contractEndDate }: AnalyticsMonthCell
             backgroundImage: 'repeating-linear-gradient(-45deg, var(--bg-1), var(--bg-1) 4px, var(--ds-surface-sunken) 4px, var(--ds-surface-sunken) 8px)',
           }}
         >
-          <span style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 600, color: 'var(--fg-4)', background: 'var(--ds-surface, rgba(255,255,255,0.9))', padding: '4px 12px', borderRadius: '4px', letterSpacing: '0.5px' }}>END</span>
+          <span style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 600, color: 'var(--fg-4)', background: 'var(--ds-surface)', padding: '4px 12px', borderRadius: '4px', letterSpacing: '0.5px' }}>END</span>
         </div>
       </td>
     );
@@ -90,7 +90,7 @@ export function AnalyticsMonthCell({ cell, contractEndDate }: AnalyticsMonthCell
             backgroundImage: 'repeating-linear-gradient(-45deg, var(--bg-1), var(--bg-1) 4px, var(--ds-surface-sunken) 4px, var(--ds-surface-sunken) 8px)',
           }}
         >
-          <span style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 600, color: 'var(--fg-4)', background: 'var(--ds-surface, rgba(255,255,255,0.9))', padding: '4px 12px', borderRadius: '4px', letterSpacing: '0.5px' }}>END</span>
+          <span style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 600, color: 'var(--fg-4)', background: 'var(--ds-surface)', padding: '4px 12px', borderRadius: '4px', letterSpacing: '0.5px' }}>END</span>
         </div>
       </td>
     );
@@ -157,7 +157,7 @@ export function AnalyticsMonthCell({ cell, contractEndDate }: AnalyticsMonthCell
               borderRadius: '8px',
               background: 'var(--bg-app)',
               border: isOverAllocated ? '1px solid var(--ds-background-danger)' : '1px solid var(--divider)',
-              boxShadow: isOverAllocated ? '0 0 0 1px var(--ds-background-danger)' : '0 1px 3px var(--ds-shadow-raised, rgba(0,0,0,0.04))',
+              boxShadow: isOverAllocated ? '0 0 0 1px var(--ds-background-danger)' : '0 1px 3px var(--ds-shadow-raised)',
               cursor: 'default',
               transition: 'all 150ms ease, box-shadow 250ms cubic-bezier(0.4, 0, 0.2, 1)',
             }}

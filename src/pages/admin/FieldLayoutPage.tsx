@@ -117,7 +117,7 @@ function FieldMenu({ field, sectionFields, onMoveUp, onMoveDown, onMoveToSection
             background: T.surfaceOverlay,
             border: `1px solid ${T.border}`,
             borderRadius: 4,
-            boxShadow: '0 8px 24px var(--ds-shadow-raised, rgba(9,30,66,0.2))',
+            boxShadow: '0 8px 24px var(--ds-shadow-raised)',
             padding: '4px 0',
             minWidth: 220,
             zIndex: 9999,

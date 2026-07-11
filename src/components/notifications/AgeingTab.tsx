@@ -240,7 +240,7 @@ function FilterPill({ label, isActive, count, onClick }: {
       {label}
       <span style={{
         fontSize: 'var(--ds-font-size-100)', fontWeight: 700,
-        background: isActive ? 'var(--ds-link, rgba(12,102,228,0.14))' : ADS.neutralSubtle,
+        background: isActive ? 'var(--ds-link)' : ADS.neutralSubtle,
         color: isActive ? ADS.textSelected : ADS.textSubtle,
         borderRadius: 8, padding: '0px 6px',
         minWidth: 18, textAlign: 'center',

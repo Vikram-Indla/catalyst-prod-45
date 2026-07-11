@@ -187,7 +187,7 @@ export default function ResetPassword() {
         </span>
       </div>
 
-      <Card className="w-full max-w-md" style={{ boxShadow: '0 1px 3px 0 var(--ds-shadow-raised, rgba(0,0,0,0.08)), 0 4px 16px 0 var(--ds-shadow-raised, rgba(0,0,0,0.06))' }}>
+      <Card className="w-full max-w-md" style={{ boxShadow: '0 1px 3px 0 var(--ds-shadow-raised), 0 4px 16px 0 var(--ds-shadow-raised)' }}>
           {pageState === 'loading' && (
             <>
               <CardHeader className="text-center">

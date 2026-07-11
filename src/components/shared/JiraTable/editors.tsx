@@ -157,7 +157,7 @@ function EditorPopover({ trigger, children, width = 240, align = 'start' }: Edit
             background: 'var(--ds-surface-overlay, var(--ds-surface))',
             border: '1px solid var(--ds-border-bold)',
             borderRadius: 'var(--ds-border-radius, 4px)',
-            boxShadow: '0 8px 16px -4px var(--ds-shadow-overlay-perimeter, rgba(9,30,66,0.15)), 0 0 1px var(--ds-shadow-overlay, rgba(9,30,66,0.31))',
+            boxShadow: '0 8px 16px -4px var(--ds-shadow-overlay-perimeter), 0 0 1px var(--ds-shadow-overlay)',
             padding: 'var(--ds-space-050, 4px)',
             maxHeight: 360,
             overflowY: 'auto',

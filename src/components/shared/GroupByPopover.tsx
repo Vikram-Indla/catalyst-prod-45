@@ -112,7 +112,7 @@ const T = {
   border:       'var(--ds-border)',
   borderFocus:  'var(--ds-border-focused)',
   surface:      'var(--ds-surface)',
-  hover:        'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))',
+  hover:        'var(--ds-background-neutral-subtle-hovered)',
   selected:     'var(--ds-background-selected)',
   selectedText: 'var(--ds-link)',
   shadow:       'var(--ds-shadow-overlay)',

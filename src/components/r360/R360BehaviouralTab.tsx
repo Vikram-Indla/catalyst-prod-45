@@ -154,7 +154,7 @@ export function BehaviouralTab({ workItems, showFilteredList, weekStart, weekEnd
                 border: '1px solid var(--divider)', borderRadius: 8, padding: '12px 14px', background: 'var(--bg-app)',
                 cursor: tile.onClick ? 'pointer' : 'default', transition: 'background 150ms',
               }}
-              onMouseEnter={e => { if (tile.onClick) e.currentTarget.style.background = 'var(--ds-shadow-raised, rgba(0,0,0,0.03))'; }}
+              onMouseEnter={e => { if (tile.onClick) e.currentTarget.style.background = 'var(--ds-shadow-raised)'; }}
               onMouseLeave={e => { if (tile.onClick) e.currentTarget.style.background = 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))'; }}
             >
               <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em', color: MUTED, marginBottom: 4 }}>{tile.label}</div>
@@ -183,7 +183,7 @@ export function BehaviouralTab({ workItems, showFilteredList, weekStart, weekEnd
                 borderBottom: i < arr.length - 1 ? '0.75px solid var(--divider)' : 'none',
                 cursor: row.onClick ? 'pointer' : 'default', transition: 'background 150ms',
               }}
-              onMouseEnter={e => { if (row.onClick) e.currentTarget.style.background = 'var(--ds-shadow-raised, rgba(0,0,0,0.03))'; }}
+              onMouseEnter={e => { if (row.onClick) e.currentTarget.style.background = 'var(--ds-shadow-raised)'; }}
               onMouseLeave={e => { if (row.onClick) e.currentTarget.style.background = 'transparent'; }}
             >
               <span style={{ fontSize: 'var(--ds-font-size-200)', color: INK2 }}>{row.label}</span>

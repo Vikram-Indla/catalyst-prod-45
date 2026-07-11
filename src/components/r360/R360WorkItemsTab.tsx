@@ -90,7 +90,7 @@ export function WorkItemsTab({ workItems, weekStart, weekEnd, weekLabel, weekOff
             onClick={() => setWeekOffset(o => Math.max(o - 1, -52))}
             disabled={weekOffset <= -52}
             style={{ width: 26, height: 26, border: 'none', background: 'transparent', cursor: weekOffset <= -52 ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 4, opacity: weekOffset <= -52 ? 0.3 : 1 }}
-            onMouseEnter={e => { if (weekOffset > -52) e.currentTarget.style.background = 'var(--ds-shadow-raised, rgba(0,0,0,0.04))'; }}
+            onMouseEnter={e => { if (weekOffset > -52) e.currentTarget.style.background = 'var(--ds-shadow-raised)'; }}
             onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
           >
             <ChevronLeft size={16} color={INK4} />
@@ -100,7 +100,7 @@ export function WorkItemsTab({ workItems, weekStart, weekEnd, weekLabel, weekOff
             onClick={() => setWeekOffset(o => Math.min(o + 1, 0))}
             disabled={weekOffset >= 0}
             style={{ width: 26, height: 26, border: 'none', background: 'transparent', cursor: weekOffset >= 0 ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 4, opacity: weekOffset >= 0 ? 0.3 : 1 }}
-            onMouseEnter={e => { if (weekOffset < 0) e.currentTarget.style.background = 'var(--ds-shadow-raised, rgba(0,0,0,0.04))'; }}
+            onMouseEnter={e => { if (weekOffset < 0) e.currentTarget.style.background = 'var(--ds-shadow-raised)'; }}
             onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
           >
             <ChevronRight size={16} color={INK4} />
@@ -140,7 +140,7 @@ export function WorkItemsTab({ workItems, weekStart, weekEnd, weekLabel, weekOff
                 borderBottom: idx < display.length - 1 ? '0.75px solid var(--divider)' : 'none',
                 background: 'var(--bg-app)', transition: 'background 80ms',
               }}
-              onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-shadow-raised, rgba(0,0,0,0.03))'; }}
+              onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-shadow-raised)'; }}
               onMouseLeave={e => { e.currentTarget.style.background = 'var(--bg-app)'; }}
             >
               <span style={{ width: 40, display: 'flex', justifyContent: 'center' }}>

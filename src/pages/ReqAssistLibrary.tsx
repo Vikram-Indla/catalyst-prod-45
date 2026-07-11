@@ -250,7 +250,7 @@ export default function ReqAssistLibrary() {
             style={{
               display: 'inline-flex', alignItems: 'center', gap: 4,
               padding: '0 14px', height: 50, fontSize: 'var(--ds-font-size-300)', fontWeight: 500,
-              border: `1px solid ${isDark ? 'var(--ds-border, var(--cp-ink-1))' : 'var(--ds-shadow-overlay, rgba(15,23,42,0.18))'}`, borderRadius: 6,
+              border: `1px solid ${isDark ? 'var(--ds-border, var(--cp-ink-1))' : 'var(--ds-shadow-overlay)'}`, borderRadius: 6,
               background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))', color: 'var(--cp-text-secondary, var(--ds-text-subtle))', cursor: 'pointer',
               fontFamily: 'var(--cp-font-body)',
               transition: 'background 80ms ease',
@@ -267,13 +267,13 @@ export default function ReqAssistLibrary() {
               padding: '0 14px', height: 50, fontSize: 'var(--ds-font-size-300)', fontWeight: 600,
               border: 'none', borderRadius: 6,
               background: 'linear-gradient(135deg, var(--ds-text-brand, var(--cp-workstream-catalyst-primary)) 0%, var(--ds-background-brand-bold-hovered) 100%)',
-              boxShadow: '0 1px 3px var(--ds-background-information, rgba(37,99,235,0.35))',
+              boxShadow: '0 1px 3px var(--ds-background-information)',
               color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-text-inverse))))', cursor: 'pointer',
               fontFamily: 'var(--cp-font-body)',
               transition: 'box-shadow 150ms ease',
             }}
-            onMouseEnter={e => { e.currentTarget.style.background = 'linear-gradient(135deg, var(--ds-background-brand-bold-hovered) 0%, var(--ds-link-pressed) 100%)'; e.currentTarget.style.boxShadow = '0 2px 6px var(--ds-background-information, rgba(37,99,235,0.45))'; }}
-            onMouseLeave={e => { e.currentTarget.style.background = 'linear-gradient(135deg, var(--ds-text-brand, var(--cp-workstream-catalyst-primary)) 0%, var(--ds-background-brand-bold-hovered) 100%)'; e.currentTarget.style.boxShadow = '0 1px 3px var(--ds-background-information, rgba(37,99,235,0.35))'; }}
+            onMouseEnter={e => { e.currentTarget.style.background = 'linear-gradient(135deg, var(--ds-background-brand-bold-hovered) 0%, var(--ds-link-pressed) 100%)'; e.currentTarget.style.boxShadow = '0 2px 6px var(--ds-background-information)'; }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'linear-gradient(135deg, var(--ds-text-brand, var(--cp-workstream-catalyst-primary)) 0%, var(--ds-background-brand-bold-hovered) 100%)'; e.currentTarget.style.boxShadow = '0 1px 3px var(--ds-background-information)'; }}
           >
             <Sparkles size={14} /> Generate BRD from Text
           </button>
@@ -407,12 +407,12 @@ export default function ReqAssistLibrary() {
                         onClick={(e) => handleRowClick(doc, e)}
                         style={{
                           height: parentKeys[doc.id] ? 48 : 36, cursor: 'pointer',
-                          borderBottom: isLast ? 'none' : '0.75px solid var(--ds-shadow-overlay, rgba(15,23,42,0.06))',
-                          background: isProcessingRow ? 'var(--ds-background-information, rgba(37,99,235,0.04))' : isDark ? 'var(--cp-bg-page, var(--ds-surface))' : 'transparent',
+                          borderBottom: isLast ? 'none' : '0.75px solid var(--ds-shadow-overlay)',
+                          background: isProcessingRow ? 'var(--ds-background-information)' : isDark ? 'var(--cp-bg-page, var(--ds-surface))' : 'transparent',
                           transition: 'background 120ms ease',
                         }}
-                        onMouseEnter={e => { if (!isProcessingRow) (e.currentTarget as HTMLElement).style.background = isDark ? 'var(--ds-surface-overlay)' : 'var(--ds-shadow-overlay, rgba(15,23,42,0.02))'; }}
-                        onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = isProcessingRow ? 'var(--ds-background-information, rgba(37,99,235,0.04))' : 'transparent'; }}
+                        onMouseEnter={e => { if (!isProcessingRow) (e.currentTarget as HTMLElement).style.background = isDark ? 'var(--ds-surface-overlay)' : 'var(--ds-shadow-overlay)'; }}
+                        onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = isProcessingRow ? 'var(--ds-background-information)' : 'transparent'; }}
                       >
                         {/* Jira Ticket — with parent hierarchy */}
                         <td style={{ padding: '8px 12px', overflow: 'hidden' }}>
@@ -630,7 +630,7 @@ export default function ReqAssistLibrary() {
       {/* Regen confirmation */}
       {regenConfirm && (
         <>
-          <div style={{ position: 'fixed', inset: 0, background: 'var(--ds-shadow-overlay, rgba(15,23,42,0.30))', zIndex: 80 }} onClick={() => setRegenConfirm(null)} />
+          <div style={{ position: 'fixed', inset: 0, background: 'var(--ds-shadow-overlay)', zIndex: 80 }} onClick={() => setRegenConfirm(null)} />
           <div style={{
             position: 'fixed', top: '48%', left: '48%', transform: 'translate(-50%, -50%)',
             width: 420, background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))', borderRadius: 8, zIndex: 90,
@@ -956,13 +956,13 @@ function ActionsCell({ doc, epicCount, onSyncKb, onSelect, onViewDrafts }: {
         transition: 'all 80ms ease',
       }}
       onMouseEnter={e => {
-        e.currentTarget.style.background = 'var(--ds-background-information, rgba(37,99,235,0.04))';
+        e.currentTarget.style.background = 'var(--ds-background-information)';
         e.currentTarget.style.borderColor = 'var(--ds-background-information)';
         e.currentTarget.style.color = 'var(--ds-background-brand-bold-hovered)';
       }}
       onMouseLeave={e => {
         e.currentTarget.style.background = 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))';
-        e.currentTarget.style.borderColor = 'var(--ds-shadow-overlay, rgba(15,23,42,0.15))';
+        e.currentTarget.style.borderColor = 'var(--ds-shadow-overlay)';
         e.currentTarget.style.color = 'var(--ds-text-subtle)';
       }}
     >

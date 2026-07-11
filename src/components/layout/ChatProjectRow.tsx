@@ -68,7 +68,7 @@ export function ChatProjectRow({ projectKey, fallbackTitle }: ChatProjectRowProp
                 padding: 12,
                 borderRadius: 6,
                 background: token('elevation.surface.overlay', 'var(--ds-surface)'),
-                boxShadow: token('elevation.shadow.overlay', '0 8px 24px var(--ds-shadow-raised, rgba(9,30,66,0.18))'),
+                boxShadow: token('elevation.shadow.overlay', '0 8px 24px var(--ds-shadow-raised)'),
                 border: `1px solid ${token('color.border', 'var(--ds-border)')}`,
                 fontFamily: 'var(--ds-font-family-body)',
                 color: token('color.text', 'var(--ds-text)'),

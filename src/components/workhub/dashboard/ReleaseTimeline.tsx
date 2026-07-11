@@ -242,7 +242,7 @@ export function ReleaseTimeline({ releases }: ReleaseTimelineProps) {
                         top: 0,
                         height: '100%',
                         width: `${release.completion_percent}%`,
-                        background: 'var(--ds-shadow-raised, rgba(0,0,0,0.15))',
+                        background: 'var(--ds-shadow-raised)',
                         borderRadius: '4px 0 0 4px',
                       }} />
                     )}

@@ -1,0 +1,35 @@
+# HANDOVER — CAT-STRATA-FOUNDATION-20260709-001 (updated 2026-07-09, build session)
+
+## Where everything lives
+- **Branch**: `strata-standalone`. **Worktree**: `~/Documents/GitHub/catalyst-prod-45/strata-foundation-wt` (ALL STRATA work happens here — the origin checkout `catalyst-prod-46` belongs to the concurrent ideation session; see sessions/003 collision record).
+- **node_modules** in worktree is a symlink to `../catalyst-prod-46/node_modules`. Vitest needs `NODE_OPTIONS="--require <scratchpad>/styletext-shim.cjs"` on this machine (Node 20.12 vs .nvmrc 22).
+- Research pack + Plan Lock + design direction: this feature folder (committed on the branch). Read 03_PLAN_LOCK.md first — micro-interaction ACs §list apply to every UI slice.
+
+## Delivered (all pushed to origin/strata-standalone)
+| Commit | Wave | Content |
+|---|---|---|
+| d0d5ba2 | — | Research pack v1.1 + Command Room design direction |
+| 3fd850c | W1 | Play→Theme rename (REQ-001/003), DB rename migration `20260709170000` (REQ-002, **file only — NOT applied to any live DB**), sidebar 4 canonical areas + routeRegistry (REQ-004/005). Repaired 2 latent dead 'play' filters (needs_attention branch 9, map charter inspector). |
+| 4ab52c4 | — | Plan Lock + build authorization + session 003 |
+| ed69742 | W2 | `20260709171000` card→objective edge + theme-consistency trigger (REQ-007), portfolio member referential guard (REQ-010), Blockers first-class on card detail (REQ-011), linkage guard tests (REQ-008/009 pinned). |
+| 69c40b2 | — | ADS audit baseline ratchet down (tokens 23574→23571) |
+| a28bb0f | W3 | CEO / Sector-CXO scorecard grouping (REQ-012), VMO value-kind + Project Card labels (REQ-014), Review Cadence on Reviews (REQ-015). |
+
+Tests (16 green as of session 004): terminology.guard (2) + linkage.guard (5) + cyclecontext.guard (6) + EnterpriseSidebar.areas (3). tsc rc=0. Color gate 0=0. ads-audit-gate at (ratcheted) baseline. NOTE: local Node 20.12 needs the styleText shim to OVERRIDE unconditionally (util.styleText exists but rejects array formats).
+
+## Remaining (frozen register, TRACE.csv)
+- ~~REQ-006~~ **DONE session 004**: all 4 landings + Command Center render StrataPageShell → cycle+period toolbar; pinned by `cyclecontext.guard.test.ts` (DOM confirmation folded into the acceptance slice).
+- **REQ-013**: drilldown clickthrough verification on seed data (CEO → Sector/CXO → measure → cards) — needs running app.
+- **REQ-016/017/018**: delete dead `StrategyCockpit` (zero importers), delete `src/modules/strategy/astryx/` + correct CLAUDE.md Astryx section, drop dead `public.scorecards` (migration).
+- **REQ-019**: initiative→project-card seams out of Execution UI.
+- **REQ-020**: seed slice for full canonical chain (follow `20260705100600` conventions, idempotent).
+- **REQ-021**: remaining smoke tests (nav 4-areas render test; hierarchy trigger; ban negative test needs staging DB).
+- **REQ-022/023 (BIGGEST, own slice)**: decommission+migrate `/enterprise/objectives` stacks per CON-002 — inventory legacy tables + live row counts FIRST (never probed), reversible migration, redirects. NOTE: these legacy stacks live on `main`, not `strata-standalone` — check whether they even exist on this branch before scoping (likely absent → REQ-022/023 may be main-branch work or moot here; log to 08_DRIFT_LOG).
+- ~~Migration apply~~ **DONE session 005**: all 4 strata migrations (incl. new 20260709180000 chain repair, D-BUILD-002) applied to STAGING via Supabase MCP with exact-version ledger rows. NOT applied to prod. Rules 5–15 SQL-verified incl. negative tests.
+- ~~DOM acceptance~~ **DONE session 005** on :8081 (worktree app + staging): see 06_VALIDATION_EVIDENCE.md. Beware `catalyst-rq-cache`: clear it after DB changes or the UI shows stale pre-migration data with zero refetches.
+- ~~Sector/CXO seed gap~~ **DONE session 006** (20260709190000): Sector / CXO group renders, sector instance scores 100 via calc engine (model perspective weights were the missing piece), charter owner backfill done — only Digital Market Leadership truthfully lacks a charter.
+- ~~AC8 tooltips~~ **DONE session 007**: band + execution-health lozenges tooltip from governed config / server-rule wording. ~~AC6~~ **RESOLVED session 007**: success flags are suppressed platform-wide by doctrine (use-toast shim, Vikram 2026-06-16) — feedback = invalidate() refresh + error paths; see DECISIONS.md. Open: Vikram screenshot signoff (005–007); AC5 transitions only.
+- W3 Command Room depth (KPI band flavor on remaining landings, segmented value bar, board-pack editorial layout) per 50_design/DESIGN-DIRECTION.md.
+
+## Resume command
+`continue feature CAT-STRATA-FOUNDATION-20260709-001` in a session whose cwd is the worktree. Re-read 03_PLAN_LOCK.md + this file + 00_admin/STATE.json.

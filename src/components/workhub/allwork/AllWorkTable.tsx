@@ -305,7 +305,7 @@ const TableRow = memo(function TableRow({
         height: 44,
         maxHeight: 44,
         borderBottom: '0.75px solid var(--bd-subtle, var(--cp-ink-1))',
-        backgroundColor: isSelected ? 'var(--ds-background-information, rgba(37,99,235,0.08))' : node.depth > 0 ? 'var(--bg-1)' : 'var(--bg-app)',
+        backgroundColor: isSelected ? 'var(--ds-background-information)' : node.depth > 0 ? 'var(--bg-1)' : 'var(--bg-app)',
         transition: 'background-color 80ms ease',
       }}
       onMouseEnter={e => { if (!isSelected) (e.currentTarget.style.backgroundColor = 'var(--hover)'); }}

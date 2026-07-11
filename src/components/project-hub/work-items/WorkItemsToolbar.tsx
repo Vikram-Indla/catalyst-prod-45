@@ -112,7 +112,7 @@ export function WorkItemsToolbar(props: WorkItemsToolbarProps) {
                     backgroundColor: a.color,
                     zIndex: 3 - i,
                     border: isActive ? '2px solid var(--cp-blue)' : '2px solid white',
-                    boxShadow: isActive ? '0 0 0 2px var(--ds-background-information, rgba(37,99,235,0.3))' : undefined,
+                    boxShadow: isActive ? '0 0 0 2px var(--ds-background-information)' : undefined,
                   }}
                   title={a.name}
                 >
@@ -177,7 +177,7 @@ export function WorkItemsToolbar(props: WorkItemsToolbarProps) {
             {groupOpen && (
               <div
                 className="absolute right-0 top-full mt-1 rounded-md py-1 bg-[var(--cp-float)]"
-                style={{ width: 160, border: '1px solid var(--divider)', boxShadow: '0 8px 20px var(--ds-shadow-raised, rgba(0,0,0,0.12))', zIndex: 9999 }}
+                style={{ width: 160, border: '1px solid var(--divider)', boxShadow: '0 8px 20px var(--ds-shadow-raised)', zIndex: 9999 }}
               >
                 {GROUP_OPTIONS.map(o => (
                   <button
@@ -252,7 +252,7 @@ function FilterDropdown({ filters, onChange, statuses, priorities, types, assign
   return (
     <div
       className="absolute left-0 top-full mt-1 rounded-lg overflow-y-auto bg-[var(--cp-float)]"
-      style={{ width: 240, maxHeight: 420, border: '1px solid var(--divider)', boxShadow: '0 12px 32px var(--ds-shadow-raised, rgba(0,0,0,0.15))', zIndex: 9999 }}
+      style={{ width: 240, maxHeight: 420, border: '1px solid var(--divider)', boxShadow: '0 12px 32px var(--ds-shadow-raised)', zIndex: 9999 }}
     >
       {/* Status */}
       <FilterSection title="Status">
@@ -373,7 +373,7 @@ function ColumnSettingsDropdown({ columns, onChange }: { columns: ColumnDef[]; o
   return (
     <div
       className="absolute right-0 top-full mt-1 rounded-lg py-2 bg-[var(--cp-float)]"
-      style={{ width: 200, border: '1px solid var(--divider)', boxShadow: '0 8px 20px var(--ds-shadow-raised, rgba(0,0,0,0.12))', zIndex: 9999 }}
+      style={{ width: 200, border: '1px solid var(--divider)', boxShadow: '0 8px 20px var(--ds-shadow-raised)', zIndex: 9999 }}
     >
       <div className="px-3 pb-1.5 text-[10px] font-semibold uppercase" style={{ color: 'var(--fg-4)', letterSpacing: '0.06em' }}>
         Columns

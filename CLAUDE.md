@@ -305,37 +305,14 @@ or `/* ads-scanner:ignore-line */` on the same line. Do not use to hide real vio
 
 ---
 
-## ASTRYX INTEGRATION — RING-FENCED ZONE ONLY ⛔
+## ASTRYX — REMOVED (was: ring-fenced zone) ⛔
 
-> **Decision**: 2026-07-04. Astryx design system is scoped ONLY to StrategyHub + Ideation.
-> NO global npm install. NO :root CSS pollution. Ring-fenced adapter at `src/modules/strategy/astryx/`.
-
-**Astryx Status**: Light-mode-first. Dark mode deferred. Phase 0–1 complete (readiness audit done).
-
-**Usage**: Mount `<AstryxZone>` ONLY around StrategyHub and Ideation routes.
-
-```tsx
-// src/routes/FullAppRoutes.tsx
-<Route path="/strategy/*" element={
-  <AstryxZone>
-    <StrategyHubPages />
-  </AstryxZone>
-} />
-```
-
-**NOT mounted**: CatalystShell, AdminLayout, admin routes, global navigation.
-
-**Why ring-fenced**: Astryx package uses `:root` CSS variables globally → collision with Catalyst ADS tokens (`--ds-*`). Scoped adapter prevents this.
-
-**Token bridging**: Astryx vars map to Catalyst ADS tokens via `AstryCSSScope.module.css`.
-
-**Implementation**: See [`docs/ways-of-working/ASTRYX_INTEGRATION_SPEC.md`](docs/ways-of-working/ASTRYX_INTEGRATION_SPEC.md).
-
-**Violations blocked**:
-- DO NOT `npm install @astryxdesign/* && npx astryx init` globally.
-- DO NOT import Astryx CSS outside `src/modules/strategy/astryx/`.
-- DO NOT mount `<AstryxZone>` in CatalystShell, AdminLayout, or global routes.
-- DO NOT use Astryx components outside `/strategy/*` and `/ideas/*` routes.
+> **Decision**: 2026-07-09 (CAT-STRATA-FOUNDATION-20260709-001, CON-006, Vikram-approved).
+> The orphaned `src/modules/strategy/astryx/` adapter was deleted — nothing mounted it and it
+> referenced dead routes (StrategyHub was decommissioned by CAT-STRATA-20260705-001).
+> Astryx is NOT part of Catalyst or STRATA. Do not reintroduce `@astryxdesign/*`, `<AstryxZone>`,
+> or any non-ADS design system without a new explicit decision. ADS tokens remain the only
+> styling system (see ADS TOKENS ONLY above). Historical spec: `docs/ways-of-working/ASTRYX_INTEGRATION_SPEC.md`.
 
 ---
 

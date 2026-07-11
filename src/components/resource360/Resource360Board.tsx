@@ -7,7 +7,7 @@ const T = {
   bg: 'var(--ds-surface-sunken)', surface: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', text1: 'var(--ds-surface)', text2: 'var(--ds-text)',
   text3: 'var(--ds-text-subtle)', text4: 'var(--ds-text-subtlest)', border: 'var(--ds-border)',
   todo: 'var(--ds-background-danger-bold)', progress: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', done: 'var(--ds-background-success-bold)',
-  shadow: '0 2px 8px var(--ds-shadow-raised, rgba(0,0,0,.12))',
+  shadow: '0 2px 8px var(--ds-shadow-raised)',
   mono: "'JetBrains Mono', 'SF Mono', monospace",
 };
 
@@ -82,7 +82,7 @@ export function Resource360Board({ items, onItemClick }: Props) {
                       borderLeft: `4px solid ${col.color}`,
                       boxShadow: T.shadow, transition: 'all .12s',
                     }}
-                    onMouseEnter={e => { e.currentTarget.style.boxShadow = '0 6px 20px var(--ds-shadow-raised, rgba(0,0,0,.15))'; e.currentTarget.style.transform = 'translateY(-1px)'; }}
+                    onMouseEnter={e => { e.currentTarget.style.boxShadow = '0 6px 20px var(--ds-shadow-raised)'; e.currentTarget.style.transform = 'translateY(-1px)'; }}
                     onMouseLeave={e => { e.currentTarget.style.boxShadow = T.shadow; e.currentTarget.style.transform = 'none'; }}
                   >
                     {/* Row 1: Key + Hub + Stale + Age */}

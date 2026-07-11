@@ -146,6 +146,9 @@ export default function StrataScorecardDetailPage() {
     try {
       await scorecardApi.calcResult(instance);
       invalidate();
+      // No success flag: non-destructive confirmations are suppressed
+      // platform-wide (use-toast shim, Vikram 2026-06-16). Feedback is the
+      // refreshed "Calculated <time>" line + scores via invalidate().
     } catch (e) {
       setRecalcError((e as Error).message);
     } finally {

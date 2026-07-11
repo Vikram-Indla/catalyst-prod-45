@@ -330,7 +330,7 @@ export function BudgetSummaryTab({ data, period, onPeriodChange, onTabChange }: 
                     ) : (
                       /* Empty/incomplete state with dashed pattern */
                       <div className="relative h-6 rounded-full overflow-hidden border border-dashed border-border" style={{ backgroundColor: 'var(--ds-surface-sunken)' }}>
-                        <div className="absolute inset-0 bg-[repeating-linear-gradient(45deg,transparent,transparent_4px,var(--ds-shadow-raised, rgba(0,0,0,0.03))_4px,var(--ds-shadow-raised, rgba(0,0,0,0.03))_8px)]" />
+                        <div className="absolute inset-0 bg-[repeating-linear-gradient(45deg,transparent,transparent_4px,var(--ds-shadow-raised)_4px,var(--ds-shadow-raised)_8px)]" />
                         {/* Quarter dividers */}
                         <div className="absolute inset-0 flex pointer-events-none">
                           <div className="w-1/4 border-r-2 border-dashed border-border" />

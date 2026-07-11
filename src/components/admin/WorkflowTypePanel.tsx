@@ -860,7 +860,7 @@ function CopyWorkflowMenu({
         background: 'var(--ds-surface-overlay)',
         border: '1px solid var(--ds-border)',
         borderRadius: 6,
-        boxShadow: '0 8px 28px var(--ds-shadow-raised, rgba(9,30,66,0.25))',
+        boxShadow: '0 8px 28px var(--ds-shadow-raised)',
         padding: '4px 0',
         minWidth: 180,
         zIndex: 9999,

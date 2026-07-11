@@ -18,11 +18,11 @@ const STATUS_TEXT_COLORS: Record<string, string> = {
   'Draft': 'var(--ds-text-subtle)', 'Submitted': 'var(--ds-text-subtle)', 'Under Review': 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', 'Approved': 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', 'Converted to Request': 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
 };
 const STATUS_BAR_COLORS_DARK: Record<string, string> = {
-  'Draft': 'var(--ds-border, var(--cp-ink-1))', 'Submitted': 'var(--ds-border, var(--cp-ink-1))', 'Under Review': 'var(--ds-background-information-bold, rgba(59,130,246,0.15))',
-  'Approved': 'var(--ds-background-information-bold, rgba(59,130,246,0.15))', 'Converted to Request': 'var(--ds-background-success-bold, rgba(22,163,74,0.15))',
+  'Draft': 'var(--ds-border, var(--cp-ink-1))', 'Submitted': 'var(--ds-border, var(--cp-ink-1))', 'Under Review': 'var(--ds-background-information-bold)',
+  'Approved': 'var(--ds-background-information-bold)', 'Converted to Request': 'var(--ds-background-success-bold)',
 };
 const STATUS_TEXT_COLORS_DARK: Record<string, string> = {
-  'Draft': 'var(--ds-surface, rgba(255,255,255,0.72))', 'Submitted': 'var(--ds-surface, rgba(255,255,255,0.72))', 'Under Review': 'var(--ds-background-information-bold, var(--ds-link))',
+  'Draft': 'var(--ds-surface)', 'Submitted': 'var(--ds-surface)', 'Under Review': 'var(--ds-background-information-bold, var(--ds-link))',
   'Approved': 'var(--ds-background-information-bold)', 'Converted to Request': 'var(--ds-background-success)',
 };
 
@@ -159,7 +159,7 @@ export default function IdeasAnalyticsPage() {
               <div key={t.theme} style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
                 <span style={{ width: '140px', fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: dk.t2, flexShrink: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{t.theme}</span>
                 <div style={{ flex: 1, height: '20px', background: barTrack, borderRadius: '4px', overflow: 'hidden', position: 'relative' }}>
-                  <div style={{ width: `${(t.total / maxConvTheme) * 100}%`, height: '100%', background: isDark ? 'var(--ds-background-information-bold, rgba(59,130,246,0.15))' : 'var(--ds-link, var(--ds-link))', borderRadius: '4px' }} />
+                  <div style={{ width: `${(t.total / maxConvTheme) * 100}%`, height: '100%', background: isDark ? 'var(--ds-background-information-bold)' : 'var(--ds-link, var(--ds-link))', borderRadius: '4px' }} />
                   <div style={{ position: 'absolute', top: 0, left: 0, width: `${(t.converted / maxConvTheme) * 100}%`, height: '100%', background: 'var(--cp-success, var(--cp-lozenge-green-bg))', borderRadius: '4px' }} />
                 </div>
                 <span style={{ fontFamily: MONO, fontSize: 'var(--ds-font-size-200)', fontWeight: 700, color: dk.greenText, minWidth: '40px', textAlign: 'right' }}>{t.converted}/{t.total}</span>

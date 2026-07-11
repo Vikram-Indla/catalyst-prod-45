@@ -108,7 +108,7 @@ function ReactionChip({
           const el = e.currentTarget;
           el.style.background = reactedByMe
             ? 'var(--ds-background-information)'
-            : 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))';
+            : 'var(--ds-background-neutral-subtle-hovered)';
         }}
         onMouseLeave={(e) => {
           setShowTooltip(false);
@@ -161,7 +161,7 @@ function ReactionChip({
             fontSize: 'var(--ds-font-size-200)',
             color: 'var(--ds-text)',
             whiteSpace: 'nowrap',
-            boxShadow: '0 2px 8px var(--ds-background-neutral-subtle-pressed, rgba(9,30,66,0.13))',
+            boxShadow: '0 2px 8px var(--ds-background-neutral-subtle-pressed)',
           }}
         >
           {tooltipText}

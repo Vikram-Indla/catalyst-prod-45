@@ -71,7 +71,7 @@ function MultiSelectFilter({ label, icon, options, selected, onChange }: {
         <div style={{
           position: 'absolute', top: '48%', left: 0, marginTop: 4,
           background: 'var(--cp-float)', border: '1px solid var(--divider)', borderRadius: 12,
-          boxShadow: '0 8px 24px var(--ds-shadow-raised, rgba(0,0,0,.12))', zIndex: 9999,
+          boxShadow: '0 8px 24px var(--ds-shadow-raised)', zIndex: 9999,
           minWidth: 240, maxHeight: 320, overflow: 'hidden',
           display: 'flex', flexDirection: 'column',
         }}>

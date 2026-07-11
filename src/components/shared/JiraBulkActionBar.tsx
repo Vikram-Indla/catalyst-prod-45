@@ -118,7 +118,7 @@ export function JiraBulkActionBar({
         className="flex items-center gap-0 rounded-lg overflow-hidden"
         style={{
           backgroundColor: 'var(--cp-text-secondary, var(--cp-text-secondary))',
-          boxShadow: '0 8px 32px var(--ds-shadow-raised, rgba(0,0,0,0.28)), 0 2px 8px var(--ds-shadow-raised, rgba(0,0,0,0.12))',
+          boxShadow: '0 8px 32px var(--ds-shadow-raised), 0 2px 8px var(--ds-shadow-raised)',
           fontFamily: 'var(--cp-font-body)',
           height: 44,
         }}
@@ -136,7 +136,7 @@ export function JiraBulkActionBar({
         </button>
 
         {/* Divider */}
-        <div style={{ width: 1, height: 20, backgroundColor: 'var(--ds-surface, rgba(255,255,255,0.2))' }} />
+        <div style={{ width: 1, height: 20, backgroundColor: 'var(--ds-surface)' }} />
 
         {/* Selected count */}
         <span
@@ -153,7 +153,7 @@ export function JiraBulkActionBar({
         </span>
 
         {/* Divider */}
-        <div style={{ width: 1, height: 20, backgroundColor: 'var(--ds-surface, rgba(255,255,255,0.2))' }} />
+        <div style={{ width: 1, height: 20, backgroundColor: 'var(--ds-surface)' }} />
 
         {/* Edit */}
         <button
@@ -200,7 +200,7 @@ export function JiraBulkActionBar({
             <button
               onClick={handleCancelDelete}
               className="rounded hover:bg-white/10 transition-colors duration-100"
-              style={{ height: 32, padding: '0 10px', color: 'var(--ds-surface, rgba(255,255,255,0.7))', fontSize: 'var(--ds-font-size-300)' }}
+              style={{ height: 32, padding: '0 10px', color: 'var(--ds-surface)', fontSize: 'var(--ds-font-size-300)' }}
             >
               Cancel
             </button>

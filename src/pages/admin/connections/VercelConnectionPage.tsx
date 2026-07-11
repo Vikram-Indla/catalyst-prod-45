@@ -368,7 +368,7 @@ function StageCard({
         style={{
           padding: '8px 16px',
           background: ST_BG[status],
-          borderBottom: '1px solid var(--ds-border-subtle, rgba(11,18,14,0.08))',
+          borderBottom: '1px solid var(--ds-border-subtle)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
@@ -460,7 +460,7 @@ function StageCard({
         <div
           style={{
             padding: '8px 16px',
-            borderTop: '1px solid var(--ds-border-subtle, rgba(11,18,14,0.08))',
+            borderTop: '1px solid var(--ds-border-subtle)',
           }}
         >
           {footer}
@@ -1038,7 +1038,7 @@ function SmartPromotePanel({
                         padding: '4px 0',
                         borderBottom:
                           i < Math.min(summary.commits.length, 25) - 1
-                            ? '1px solid var(--ds-border-subtle, rgba(11,18,14,0.06))'
+                            ? '1px solid var(--ds-border-subtle)'
                             : 'none',
                       }}
                     >
@@ -1391,7 +1391,7 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
         fontWeight: 653,
         color: 'var(--ds-text-subtle)',
         padding: '16px 0 8px',
-        borderBottom: '1.67px solid var(--ds-border, rgba(11,18,14,0.14))',
+        borderBottom: '1.67px solid var(--ds-border)',
         marginBottom: 12,
       }}
     >
@@ -1408,14 +1408,14 @@ const TH: React.CSSProperties = {
   fontWeight: 653,
   color: 'var(--ds-text-subtle)',
   padding: '8px 12px 8px 0',
-  borderBottom: '1.67px solid var(--ds-border, rgba(11,18,14,0.14))',
+  borderBottom: '1.67px solid var(--ds-border)',
   whiteSpace: 'nowrap',
 };
 const TD: React.CSSProperties = {
   fontSize: 'var(--ds-font-size-400)',
   color: 'var(--ds-text)',
   padding: '8px 12px 10px 0',
-  borderBottom: '1px solid var(--ds-border-subtle, rgba(11,18,14,0.08))',
+  borderBottom: '1px solid var(--ds-border-subtle)',
   verticalAlign: 'middle',
 };
 const TD_MUTED: React.CSSProperties = {

@@ -116,9 +116,9 @@ function RankBadge({ rank }: { rank: number | null }) {
         px-2 py-0.5 
         rounded 
         text-[10px] font-semibold 
-        bg-[var(--ds-background-information, rgba(37,99,235,0.1))] dark:bg-[var(--ds-background-information, rgba(37,99,235,0.15))]
+        bg-[var(--ds-background-information)] dark:bg-[var(--ds-background-information)]
         text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))] dark:text-[var(--ds-text-brand)]
-        border border-[var(--ds-background-information, rgba(37,99,235,0.2))] dark:border-[var(--ds-background-information-bold, rgba(96,165,250,0.3))]
+        border border-[var(--ds-background-information)] dark:border-[var(--ds-background-information-bold)]
       "
     >
       #{rank}

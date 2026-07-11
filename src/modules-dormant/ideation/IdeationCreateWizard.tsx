@@ -57,7 +57,7 @@ const SOURCES = [
 const focusHandlersLight = {
   onFocus: (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     e.currentTarget.style.borderColor = 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))';
-    e.currentTarget.style.boxShadow = '0 0 0 3px var(--ds-background-information, rgba(37,99,235,0.08))';
+    e.currentTarget.style.boxShadow = '0 0 0 3px var(--ds-background-information)';
   },
   onBlur: (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     e.currentTarget.style.borderColor = 'var(--ds-border, var(--cp-border, var(--cp-bg-sunken)))';
@@ -67,7 +67,7 @@ const focusHandlersLight = {
 const focusHandlersDark = {
   onFocus: (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     e.currentTarget.style.borderColor = 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))';
-    e.currentTarget.style.boxShadow = '0 0 0 3px var(--ds-background-information, rgba(37,99,235,0.08))';
+    e.currentTarget.style.boxShadow = '0 0 0 3px var(--ds-background-information)';
   },
   onBlur: (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     e.currentTarget.style.borderColor = 'var(--ds-border-bold)';
@@ -226,7 +226,7 @@ export default function IdeationCreateWizard({ open, onClose }: Props) {
         onClick={onClose}
         style={{
           position: 'fixed', inset: 0,
-          background: 'var(--ds-shadow-raised, rgba(0,0,0,0.4))',
+          background: 'var(--ds-shadow-raised)',
           zIndex: 300,
           display: 'flex', alignItems: 'center', justifyContent: 'center',
         }}
@@ -242,7 +242,7 @@ export default function IdeationCreateWizard({ open, onClose }: Props) {
             overflow: 'hidden',
             display: 'flex',
             flexDirection: 'column',
-            boxShadow: isDark ? 'none' : '0 24px 64px var(--ds-shadow-raised, rgba(0,0,0,0.18)), 0 0 0 1px var(--ds-shadow-raised, rgba(0,0,0,0.05))',
+            boxShadow: isDark ? 'none' : '0 24px 64px var(--ds-shadow-raised), 0 0 0 1px var(--ds-shadow-raised)',
           }}
         >
           {/* Header */}

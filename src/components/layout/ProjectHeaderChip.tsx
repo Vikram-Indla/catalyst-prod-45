@@ -256,7 +256,7 @@ export function ProjectHeaderChip({ projectKey, adapter }: Props) {
   const overlayStyle: React.CSSProperties = {
     position: 'fixed',
     inset: 0,
-    background: 'var(--ds-shadow-raised, rgba(9, 30, 66, 0.54))',
+    background: 'var(--ds-shadow-raised)',
     zIndex: 9999,
     display: 'flex',
     alignItems: 'flex-start',
@@ -268,7 +268,7 @@ export function ProjectHeaderChip({ projectKey, adapter }: Props) {
     maxWidth: 'calc(100vw - 48px)',
     background: token('elevation.surface', 'var(--ds-surface)'),
     borderRadius: 8,
-    boxShadow: '0 8px 32px var(--ds-shadow-raised, rgba(9, 30, 66, 0.25))',
+    boxShadow: '0 8px 32px var(--ds-shadow-raised)',
     display: 'flex',
     flexDirection: 'column',
     maxHeight: 'calc(100vh - 120px)',
@@ -378,7 +378,7 @@ export function ProjectHeaderChip({ projectKey, adapter }: Props) {
               background: token('elevation.surface.overlay', 'var(--ds-surface)'),
               border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral))')}`,
               borderRadius: 4,
-              boxShadow: '0 4px 16px var(--ds-shadow-raised, rgba(9, 30, 66, 0.16))',
+              boxShadow: '0 4px 16px var(--ds-shadow-raised)',
               minWidth: 220,
               padding: '4px 0',
             }}
@@ -417,7 +417,7 @@ export function ProjectHeaderChip({ projectKey, adapter }: Props) {
                     color: token('color.text', 'var(--ds-text)'),
                     cursor: 'pointer',
                   }}
-                  onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9, 30, 66, 0.06))'; }}
+                  onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered)'; }}
                   onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
                 >
                   {(item as any).label}

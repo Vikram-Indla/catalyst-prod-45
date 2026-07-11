@@ -254,7 +254,7 @@ export function CatalystTable({
                       padding: '12px',
                       borderBottom: '0.75px solid var(--cp-border, var(--ds-surface-sunken))',
                       cursor: 'pointer',
-                      background: isSelected ? 'var(--ds-background-selected, rgba(37,99,235,0.08))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface-raised)))',
+                      background: isSelected ? 'var(--ds-background-selected)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface-raised)))',
                       display: 'flex', flexDirection: 'column', gap: 8,
                     }}
                   >
@@ -458,7 +458,7 @@ export function CatalystTable({
             background: var(--ds-surface-sunken);
           }
           .fy-table .pb-table tbody tr { background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface-raised))); }
-          .fy-table .pb-table tbody tr.pb-row-selected { background: var(--ds-background-selected, rgba(37,99,235,0.08)); }
+          .fy-table .pb-table tbody tr.pb-row-selected { background: var(--ds-background-selected); }
         }
       `}</style>
       <div style={{ overflowX: 'auto' }}>
@@ -571,7 +571,7 @@ export function CatalystTable({
                       onClick={() => { setFocusedIndex(currentRowIndex); onRowClick(item.id); }}
                       style={{
                         cursor: 'pointer',
-                        background: isSelected ? 'var(--ds-background-selected, rgba(37,99,235,0.08))' : isFocused ? 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))' : undefined,
+                        background: isSelected ? 'var(--ds-background-selected)' : isFocused ? 'var(--ds-background-neutral-subtle-hovered)' : undefined,
                       }}
                     >
                       {orderedColumns.map(c => renderCell(c.key, item, isSelected, isFocused))}

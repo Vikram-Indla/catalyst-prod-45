@@ -57,7 +57,7 @@ function ToggleGroup({
             color: o.value === active ? token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse))') : token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary))'),
             cursor: 'pointer',
             borderRadius: 3,
-            boxShadow: o.value === active && !isDark ? '0 1px 1px var(--ds-shadow-raised, rgba(9,30,66,0.15))' : 'none',
+            boxShadow: o.value === active && !isDark ? '0 1px 1px var(--ds-shadow-raised)' : 'none',
             fontFamily: 'inherit',
           }}
         >
@@ -226,7 +226,7 @@ export function NeedsAttentionWidget() {
           height: 180,
           borderRadius: 8,
           background: token('color.background.neutral', 'var(--ds-background-neutral-subtle)'),
-          boxShadow: '0 1px 1px var(--ds-shadow-raised, rgba(9,30,66,0.25)), 0 0 1px var(--ds-shadow-raised, rgba(9,30,66,0.31))',
+          boxShadow: '0 1px 1px var(--ds-shadow-raised), 0 0 1px var(--ds-shadow-raised)',
         }}
       />
     );

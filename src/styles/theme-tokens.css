@@ -59,8 +59,8 @@
   --cp-bd-table:        var(--ds-border);
 
   /* Interactive */
-  --cp-hover:           var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06));
-  --cp-press:           var(--ds-background-neutral-subtle-pressed, rgba(9,30,66,0.14));
+  --cp-hover:           var(--ds-background-neutral-subtle-hovered);
+  --cp-press:           var(--ds-background-neutral-subtle-pressed);
   --cp-focus-ring:      var(--ds-border-focused);
 
   /* Brand */
@@ -79,8 +79,8 @@
   --cp-err-text:        var(--ds-text-danger);
 
   /* AI */
-  --cp-ai-bg:           var(--ds-background-information-bold, rgba(59,130,246,0.06));
-  --cp-ai-bd:           var(--ds-background-information-bold, rgba(59,130,246,0.12));
+  --cp-ai-bg:           var(--ds-background-information-bold);
+  --cp-ai-bd:           var(--ds-background-information-bold);
   --cp-ai-t:            var(--ds-text-brand, var(--cp-workstream-catalyst-primary));
 
   /* StatusLozenge */
@@ -102,10 +102,10 @@
   --status-done-text:       var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))));
 
   /* Progress */
-  --cp-prg-bg:          var(--ds-shadow-raised, rgba(0,0,0,0.06));
+  --cp-prg-bg:          var(--ds-shadow-raised);
 
   /* Scrollbar */
-  --cp-scroll:          var(--ds-shadow-raised, rgba(0,0,0,0.12));
+  --cp-scroll:          var(--ds-shadow-raised);
 
   /* Chart Palette */
   --cp-chart-1: var(--ds-text-brand, var(--cp-workstream-catalyst-primary));
@@ -162,26 +162,26 @@
   /* Interactive — ADS solid hex */
   --cp-hover:           var(--ds-surface-overlay);
   --cp-press:           var(--ds-border, var(--cp-ink-1));
-  --cp-focus-ring:      var(--ds-background-information-bold, rgba(59,130,246, 0.45));
+  --cp-focus-ring:      var(--ds-background-information-bold);
 
   /* Brand */
   --cp-blue:            var(--ds-text-brand);
   --cp-blue-text:       var(--ds-text-brand);
   --cp-blue-link:       var(--ds-background-information-bold);
-  --cp-blue-wash:       var(--ds-background-information-bold, rgba(59,130,246, 0.10));
+  --cp-blue-wash:       var(--ds-background-information-bold);
 
   /* Status — bright on dark for readability */
   --cp-ok:              var(--ds-background-success);
-  --cp-ok-bg:           var(--ds-background-success-bold, rgba(74,222,128, 0.12));
+  --cp-ok-bg:           var(--ds-background-success-bold);
   --cp-warn:            var(--ds-background-warning);
-  --cp-warn-bg:         var(--ds-background-warning, rgba(253,230,138, 0.10));
+  --cp-warn-bg:         var(--ds-background-warning);
   --cp-err:             var(--ds-border-danger);
-  --cp-err-bg:          var(--ds-background-danger, rgba(239,68,68, 0.10));
+  --cp-err-bg:          var(--ds-background-danger);
   --cp-err-text:        var(--ds-border-danger);
 
   /* AI — Catalyst Blue, NEVER purple */
-  --cp-ai-bg:           var(--ds-background-information-bold, rgba(59,130,246, 0.08));
-  --cp-ai-bd:           var(--ds-background-information-bold, rgba(59,130,246, 0.16));
+  --cp-ai-bg:           var(--ds-background-information-bold);
+  --cp-ai-bd:           var(--ds-background-information-bold);
   --cp-ai-t:            var(--ds-text-brand);
 
   /* StatusLozenge — Bold pill (matches StatusBadge canonical) */

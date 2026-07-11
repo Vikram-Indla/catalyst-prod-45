@@ -60,7 +60,7 @@ export const ActivityTab: React.FC<ActivityTabProps> = ({
               color: activeFilter === id ? COLORS.textPrimary : COLORS.textMuted,
               cursor: 'pointer',
               fontFamily: 'inherit',
-              boxShadow: activeFilter === id ? '0 1px 3px var(--ds-shadow-raised, rgba(0, 0, 0, 0.1))' : 'none',
+              boxShadow: activeFilter === id ? '0 1px 3px var(--ds-shadow-raised)' : 'none',
               transition: 'all 0.15s ease'
             }}
           >

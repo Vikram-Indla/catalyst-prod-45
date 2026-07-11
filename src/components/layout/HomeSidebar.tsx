@@ -66,6 +66,7 @@ import { HUB_ICON_OUTLINE_REGISTRY } from '@/components/icons';
 import { sliceVisible } from '@/lib/home-recents';
 import { ProjectIcon } from '@/components/shared/ProjectIcon';
 import { ProductAvatar } from '@/components/icons/ProductAvatar';
+import { ENABLE_IDEATION } from '@/lib/featureFlags';
 
 const RECENT_LIMIT = 16;
 
@@ -106,7 +107,7 @@ interface HomeSidebarProps {
 const HUB_NAV_ITEMS = [
   { key: 'home', label: 'Home', href: '/for-you' },
   { key: 'strategy', label: 'STRATA', href: '/strata' },
-  { key: 'ideation', label: 'Ideation', href: '/ideation/backlog' },
+  { key: 'ideation', label: 'Ideation', href: '/ideation' },
   { key: 'product', label: 'Product Hub', href: '/product-hub' },
   { key: 'project', label: 'Project Hub', href: '/project-hub' },
   { key: 'release', label: 'Release Hub', href: '/release-hub/overview' },
@@ -153,7 +154,7 @@ function LocationRowTitle({ location }: { location: RecentLocation }) {
         width: '100%',
         // Rail indent: left border signals hierarchy under the group header
         paddingLeft: token('space.150', '12px'),
-        borderLeft: '1.5px solid var(--ds-border, rgba(9,30,66,0.14))',
+        borderLeft: '1.5px solid var(--ds-border)',
       }}
     >
       <span
@@ -463,7 +464,11 @@ export default function HomeSidebar({
       // from the same signal SidebarBase already uses to tint the glyph
       // itself (style.color flips to --ds-icon-brand on the active route,
       // SidebarBase.tsx:786) — one active-state source of truth, not two.
-      const hubItems: SidebarMenuItem[] = HUB_NAV_ITEMS.map((hub) => ({
+      // Ideation ships behind VITE_ENABLE_IDEATION — flag off ⇒ no rail entry
+      // (CAT-IDEATION-REBUILD-20260709-001 "no nav trace").
+      const hubItems: SidebarMenuItem[] = HUB_NAV_ITEMS.filter(
+        (hub) => hub.key !== 'ideation' || ENABLE_IDEATION,
+      ).map((hub) => ({
         id: `hub-${hub.key}`,
         title: hub.label,
         tooltip: hub.label,

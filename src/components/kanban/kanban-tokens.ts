@@ -42,7 +42,7 @@ export const KANBAN_TOKENS: { light: KanbanThemeTokens; dark: KanbanThemeTokens 
     surfaceBg: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
     surfaceHover: 'var(--ds-background-neutral)',
     surfaceAlt: 'var(--ds-surface-sunken)',     /* column surface — Jira parity */
-    headerBg: 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))',  /* column header — Jira tint */
+    headerBg: 'var(--ds-background-neutral-subtle-hovered)',  /* column header — Jira tint */
     border: 'var(--ds-border)',
     borderSubtle: 'var(--ds-border-subtle)',
     textPrimary: 'var(--ds-text)',    /* Jira primary text */
@@ -55,9 +55,9 @@ export const KANBAN_TOKENS: { light: KanbanThemeTokens; dark: KanbanThemeTokens 
        Border-bottom drawn inline by the card components. */
     cardBg: 'var(--ds-surface-raised)',
     cardBorder: 'transparent',
-    cardHoverBg: 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))',
+    cardHoverBg: 'var(--ds-background-neutral-subtle-hovered)',
     /* jira-compare 2026-05-08 — Jira card shadow: very subtle elevation 1
-       (0 1px 2px var(--ds-shadow-raised, rgba(9,30,66,0.25)) rest, 0 2px 4px on hover). The prior
+       (0 1px 2px var(--ds-shadow-raised) rest, 0 2px 4px on hover). The prior
        8px/12px value was 4× too heavy and made cards look like floating modals.
        F2: wrapped in ADS shadow tokens as canonical fallback. */
     cardShadowRest: 'var(--ds-shadow-raised, rgba(9,30,66,0.25) 0 1px 2px 0, rgba(9,30,66,0.31) 0 0 1px 0)',
@@ -70,7 +70,7 @@ export const KANBAN_TOKENS: { light: KanbanThemeTokens; dark: KanbanThemeTokens 
     chipText: 'var(--ds-text-subtle)',
     inputBg: 'var(--ds-surface-sunken)',
     inputBorder: 'var(--ds-border)',
-    overlay: 'var(--ds-overlay, rgba(9,30,66,.08))',
+    overlay: 'var(--ds-overlay)',
     epicLozengeBg: 'var(--ds-border)',  /* Jira epic lozenge surface */
     epicLozengeText: 'var(--ds-text)',
   },
@@ -100,7 +100,7 @@ export const KANBAN_TOKENS: { light: KanbanThemeTokens; dark: KanbanThemeTokens 
     chipText: 'var(--ds-text-subtlest)',
     inputBg: 'var(--ds-surface-sunken)',
     inputBorder: 'var(--ds-border, var(--cp-ink-1))',
-    overlay: 'var(--ds-overlay, rgba(255,255,255,.04))',
+    overlay: 'var(--ds-overlay)',
     epicLozengeBg: 'var(--ds-border, var(--cp-ink-1))',
     epicLozengeText: 'var(--ds-text, var(--cp-bg-neutral))',
   },

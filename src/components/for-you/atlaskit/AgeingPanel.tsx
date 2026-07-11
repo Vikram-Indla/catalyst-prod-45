@@ -250,7 +250,7 @@ function ArchivedRow({ item }: {
           onClick={() => setShowMessage(false)}
           style={{
             position: 'fixed', inset: 0,
-            background: 'var(--ds-shadow-raised, rgba(9,30,66,0.54))', zIndex: 99999,
+            background: 'var(--ds-shadow-raised)', zIndex: 99999,
             display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}
         >
@@ -260,7 +260,7 @@ function ArchivedRow({ item }: {
               background: token('elevation.surface.overlay', 'var(--ds-surface)'),
               borderRadius: 8, padding: token('space.300', '24px'),
               maxWidth: 480, width: '90%',
-              boxShadow: token('elevation.shadow.overlay', '0 8px 16px var(--ds-shadow-raised, rgba(9,30,66,0.25))'),
+              boxShadow: token('elevation.shadow.overlay', '0 8px 16px var(--ds-shadow-raised)'),
             }}
           >
             <h2 style={{
@@ -582,7 +582,7 @@ export function AgeingPanelView({
               background: token('color.background.neutral.bold', 'var(--ds-icon)'),
               color: token('color.text.inverse', 'var(--ds-text-inverse)'),
               borderRadius: 8,
-              boxShadow: token('elevation.shadow.overlay', '0 8px 32px var(--ds-shadow-raised, rgba(0,0,0,0.28)), 0 2px 8px var(--ds-shadow-raised, rgba(0,0,0,0.12))'),
+              boxShadow: token('elevation.shadow.overlay', '0 8px 32px var(--ds-shadow-raised), 0 2px 8px var(--ds-shadow-raised)'),
               overflow: 'hidden',
               font: 'var(--ds-font-body)',
             }}
@@ -596,16 +596,16 @@ export function AgeingPanelView({
                 width: 44, height: 44, background: 'transparent', border: 'none',
                 color: token('color.text.inverse', 'var(--ds-text-inverse)'), cursor: 'pointer',
               }}
-              onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-surface, rgba(255,255,255,0.10))')}
+              onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-surface)')}
               onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
             >
               <AkCloseIcon label="" size="small" />
             </button>
-            <div style={{ width: 1, height: 20, background: 'var(--ds-surface, rgba(255,255,255,0.20))' }} />
+            <div style={{ width: 1, height: 20, background: 'var(--ds-surface)' }} />
             <span style={{ padding: '0 16px', font: 'var(--ds-font-body)', fontWeight: 500, whiteSpace: 'nowrap', userSelect: 'none' }}>
               {selectedIds.size} {selectedIds.size === 1 ? 'item' : 'items'} selected
             </span>
-            <div style={{ width: 1, height: 20, background: 'var(--ds-surface, rgba(255,255,255,0.20))' }} />
+            <div style={{ width: 1, height: 20, background: 'var(--ds-surface)' }} />
             <button
               type="button"
               disabled={archiving}
@@ -624,7 +624,7 @@ export function AgeingPanelView({
                 color: token('color.text.inverse', 'var(--ds-text-inverse)'), cursor: archiving ? 'wait' : 'pointer',
                 font: 'var(--ds-font-body)', fontWeight: 500, fontFamily: 'inherit',
               }}
-              onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-surface, rgba(255,255,255,0.10))')}
+              onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-surface)')}
               onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
             >
               <AkArchiveBoxIcon label="" size="small" />

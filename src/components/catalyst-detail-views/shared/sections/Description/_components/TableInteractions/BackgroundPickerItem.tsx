@@ -90,7 +90,7 @@ export function BackgroundPickerItem({
           border: 'none',
           borderRadius: 4,
           background: open
-            ? 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))'
+            ? 'var(--ds-background-neutral-subtle-hovered)'
             : 'transparent',
           color: disabled
             ? 'var(--ds-text-disabled)'
@@ -103,7 +103,7 @@ export function BackgroundPickerItem({
         onMouseEnter={(e) => {
           if (disabled || open) return;
           e.currentTarget.style.background =
-            'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))';
+            'var(--ds-background-neutral-subtle-hovered)';
         }}
         onMouseLeave={(e) => {
           if (open) return;
@@ -215,7 +215,7 @@ function PalettePopover({
         background: 'var(--ds-surface-overlay)',
         border: '1px solid var(--ds-border)',
         borderRadius: 6,
-        boxShadow: '0 6px 20px var(--ds-shadow-raised, rgba(9,30,66,0.18))',
+        boxShadow: '0 6px 20px var(--ds-shadow-raised)',
         padding: 8,
         zIndex: 2147483647,
       }}

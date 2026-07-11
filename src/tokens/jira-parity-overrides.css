@@ -23,13 +23,13 @@
    * ─────────────────────────────────────────────────────────────────────── */
 
   /* JIRA-PARITY: probed 2026-05-07 BAU list — ADS success.bold=var(--ds-background-success-bold), actual=rgb(179,223,114) */
-  --cp-jira-status-success-bg: var(--ds-background-success-bold, rgb(179, 223, 114));
+  --cp-jira-status-success-bg: var(--ds-background-success-bold);
 
   /* JIRA-PARITY: probed 2026-05-07 BAU list — ADS inprogress.bold=#0055CC, actual=rgb(143,184,246) */
-  --cp-jira-status-inprogress-bg: var(--ds-background-information, rgb(143, 184, 246));
+  --cp-jira-status-inprogress-bg: var(--ds-background-information);
 
   /* JIRA-PARITY: probed 2026-05-07 BAU list — ADS default/neutral, actual=rgb(221,222,225) */
-  --cp-jira-status-default-bg: var(--ds-background-neutral, rgb(221, 222, 225));
+  --cp-jira-status-default-bg: var(--ds-background-neutral);
 
   /* JIRA-PARITY: probed 2026-05-07 BAU list — moved/on-hold category, actual=rgb(243,214,100) */
   --cp-jira-status-moved-bg: rgb(243, 214, 100);
@@ -42,7 +42,7 @@
 
   /* StatusPill foreground — same for all appearances */
   /* JIRA-PARITY: probed 2026-05-07 BAU list — ADS text.subtle=var(--cp-text-secondary, var(--cp-text-secondary)), actual=rgb(41,42,46) */
-  --cp-jira-status-fg: var(--ds-text, rgb(41, 42, 46));
+  --cp-jira-status-fg: var(--ds-text);
 
   /* ─── Kanban / Backlog column category dots ───────────────────────────────
    * Measured 2026-05-07 from BAU Kanban column headers.
@@ -71,7 +71,7 @@
   --cp-jira-header-status-inprogress-bg: var(--ds-background-information);
 
   /* JIRA-PARITY: probed 2026-05-07 BAU issue header — to-do category, actual=rgba(5,21,36,0.06) */
-  --cp-jira-header-status-todo-bg: var(--ds-shadow-overlay, rgba(5, 21, 36, 0.06));
+  --cp-jira-header-status-todo-bg: var(--ds-shadow-overlay);
 
   /* Foreground for header status pill */
   /* JIRA-PARITY: probed 2026-05-07 BAU issue header — text color, actual=#292A2E / fontWeight 500 */

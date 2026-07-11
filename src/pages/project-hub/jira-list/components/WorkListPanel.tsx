@@ -473,7 +473,7 @@ export function WorkListPanel({
             alignItems: 'center',
             gap: 8,
             padding: '8px 12px',
-            borderBottom: '1px solid var(--ds-border, rgba(9,30,66,0.14))',
+            borderBottom: '1px solid var(--ds-border)',
             flexWrap: 'nowrap',
             background: 'var(--ds-surface)',
           }}
@@ -485,7 +485,7 @@ export function WorkListPanel({
               gap: 4,
               flex: 1,
               minWidth: 0,
-              border: '1px solid var(--ds-border, rgba(9,30,66,0.14))',
+              border: '1px solid var(--ds-border)',
               borderRadius: 6,
               padding: '0 8px',
               height: 32,
@@ -520,7 +520,7 @@ export function WorkListPanel({
           alignItems: 'center',
           justifyContent: 'space-between',
           padding: '0 4px 0 12px',
-          borderBottom: '1px solid var(--ds-border, rgba(9,30,66,0.14))',
+          borderBottom: '1px solid var(--ds-border)',
           background: 'var(--ds-surface)',
         }}
       >
@@ -586,7 +586,7 @@ export function WorkListPanel({
                     color: 'var(--ds-text-subtle)',
                     background: 'var(--ds-background-neutral)',
                     border: 'none',
-                    borderBottom: '1px solid var(--ds-border, rgba(9,30,66,0.08))',
+                    borderBottom: '1px solid var(--ds-border)',
                     borderRadius: 0,
                     cursor: 'pointer',
                     textAlign: 'left',
@@ -594,7 +594,7 @@ export function WorkListPanel({
                     marginTop: 4,
                     flexShrink: 0,
                   }}
-                  onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))'; }}
+                  onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered)'; }}
                   onMouseLeave={e => { e.currentTarget.style.background = 'var(--ds-background-neutral)'; }}
                 >
                   {/* Chevron — rotates 90° when collapsed */}
@@ -671,7 +671,7 @@ export function WorkListPanel({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            borderTop: '1px solid var(--ds-border, rgba(9,30,66,0.14))',
+            borderTop: '1px solid var(--ds-border)',
             background: 'var(--ds-surface)',
             fontSize: 'var(--ds-font-size-300)',
             gap: 4,

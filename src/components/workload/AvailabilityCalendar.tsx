@@ -98,7 +98,7 @@ export function AvailabilityCalendar({ teamId }: AvailabilityCalendarProps) {
                     className="flex-1 h-8 mx-0.5 rounded flex items-center justify-center text-xs cursor-pointer"
                     style={{
                       backgroundColor: cell.isAvailable ? workloadColors[cell.workloadLevel] : CATALYST_V5.slate[200],
-                      backgroundImage: !cell.isAvailable ? 'repeating-linear-gradient(45deg, transparent, transparent 3px, var(--ds-shadow-raised, rgba(0,0,0,0.05)) 3px, var(--ds-shadow-raised, rgba(0,0,0,0.05)) 6px)' : undefined,
+                      backgroundImage: !cell.isAvailable ? 'repeating-linear-gradient(45deg, transparent, transparent 3px, var(--ds-shadow-raised) 3px, var(--ds-shadow-raised) 6px)' : undefined,
                     }}
                   >
                     {cell.isAvailable && cell.testsDue > 0 && (

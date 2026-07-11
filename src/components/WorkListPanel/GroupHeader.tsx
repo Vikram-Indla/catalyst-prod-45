@@ -35,7 +35,7 @@ export const GroupHeader = memo(function GroupHeader({
         transition: 'background-color 150ms',
       }}
       onMouseEnter={(e) => {
-        e.currentTarget.style.backgroundColor = 'var(--ds-shadow-raised, rgba(0, 0, 0, 0.05))';
+        e.currentTarget.style.backgroundColor = 'var(--ds-shadow-raised)';
       }}
       onMouseLeave={(e) => {
         e.currentTarget.style.backgroundColor = 'transparent';

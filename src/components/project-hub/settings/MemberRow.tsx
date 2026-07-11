@@ -85,7 +85,7 @@ export function MemberRow({ id, name, email, role, isCurrentUser, onRoleChange, 
             className="absolute right-0 top-full mt-1 z-10 bg-[var(--cp-float)] dark:bg-[var(--ds-surface-raised,var(--cp-ink-1))]"
             style={{
               width: 120, border: '1px solid var(--divider)',
-              borderRadius: 8, boxShadow: '0 4px 6px -1px var(--ds-shadow-raised, rgba(0,0,0,.07))',
+              borderRadius: 8, boxShadow: '0 4px 6px -1px var(--ds-shadow-raised)',
               overflow: 'hidden',
             }}
           >

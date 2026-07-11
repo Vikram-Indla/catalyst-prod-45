@@ -39,6 +39,14 @@ function GovernedStatusLozenge({ status }: { status: GovernedStatus | string | n
   return <Lozenge appearance={appearance}>{labelize(String(status))}</Lozenge>;
 }
 
+// Locked STRATA terminology (goal rule 6, REQ-012): enterprise scope = the
+// CEO Scorecard; sector and function scopes are ONE combined concept.
+const SCOPE_LABEL: Record<string, string> = {
+  enterprise: 'CEO Scorecard',
+  sector: 'Sector / CXO Scorecard',
+  function: 'Sector / CXO Scorecard',
+};
+
 // ── Model card ───────────────────────────────────────────────────────────────
 function ModelCard({ model }: { model: StrataScorecardModel }) {
   return (
@@ -70,7 +78,7 @@ function ModelCard({ model }: { model: StrataScorecardModel }) {
         <GovernedStatusLozenge status={model.status} />
         {model.owner_scope_type ? (
           <span style={{ fontSize: 'var(--ds-font-size-100)', color: T.subtle }}>
-            {labelize(model.owner_scope_type)}
+            {SCOPE_LABEL[model.owner_scope_type] ?? labelize(model.owner_scope_type)}
           </span>
         ) : null}
       </div>
@@ -243,8 +251,25 @@ export default function StrataScorecardsPage() {
               testId="strata-models-empty"
             />
           ) : (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 12 }}>
-              {models.map((m) => <ModelCard key={m.id} model={m} />)}
+            // Grouped by the locked BSC hierarchy (REQ-012): the CEO
+            // Scorecard rolls up Sector / CXO Scorecards.
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+              {([
+                ['CEO Scorecard', models.filter((m) => m.owner_scope_type === 'enterprise')],
+                ['Sector / CXO Scorecards', models.filter((m) => m.owner_scope_type === 'sector' || m.owner_scope_type === 'function')],
+                ['Other models', models.filter((m) => !['enterprise', 'sector', 'function'].includes(m.owner_scope_type ?? ''))],
+              ] as Array<[string, StrataScorecardModel[]]>).map(([group, groupModels]) => (
+                groupModels.length === 0 ? null : (
+                  <div key={group} style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                    <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: T.subtlest, letterSpacing: '0.04em' }}>
+                      {group}
+                    </span>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 12 }}>
+                      {groupModels.map((m) => <ModelCard key={m.id} model={m} />)}
+                    </div>
+                  </div>
+                )
+              ))}
             </div>
           )}
         </StrataPanel>

@@ -38,7 +38,7 @@ export function ConvertDialog({ open, onClose, incidentId }: ConvertDialogProps)
   return (
     <Dialog open={open} onOpenChange={v => { if (!v) onClose(); }}>
       <DialogContent className="sm:max-w-[640px]" style={{ borderRadius: 8, padding: 0 }}>
-        <DialogHeader className="px-6 pt-5 pb-3" style={{ borderBottom: '0.75px solid var(--ds-shadow-overlay, rgba(15,23,42,0.06))' }}>
+        <DialogHeader className="px-6 pt-5 pb-3" style={{ borderBottom: '0.75px solid var(--ds-shadow-overlay)' }}>
           <DialogTitle style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 'var(--ds-font-size-500)', fontWeight: 700 }}>Convert Incident</DialogTitle>
         </DialogHeader>
 
@@ -68,7 +68,7 @@ export function ConvertDialog({ open, onClose, incidentId }: ConvertDialogProps)
           </div>
         </div>
 
-        <DialogFooter className="px-6 py-3" style={{ borderTop: '0.75px solid var(--ds-shadow-overlay, rgba(15,23,42,0.06))' }}>
+        <DialogFooter className="px-6 py-3" style={{ borderTop: '0.75px solid var(--ds-shadow-overlay)' }}>
           <Button variant="ghost" onClick={onClose} style={{ borderRadius: 6 }}>Cancel</Button>
           <Button disabled={!selected} onClick={handleConvert} style={{ backgroundColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', borderRadius: 6, opacity: selected ? 1 : 0.5 }}>
             Convert

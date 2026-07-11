@@ -143,7 +143,7 @@ const AIIntelligencePanel: React.FC<Props> = ({ resourceId, onClose }) => {
               margin: '0 0 16px 0',
               padding: '16px 20px',
               background: 'var(--rai-primary-bg, var(--cp-blue-wash))',
-              border: '1px solid var(--ds-background-information, rgba(37, 99, 235, 0.15))',
+              border: '1px solid var(--ds-background-information)',
               borderRadius: 8,
               display: 'flex',
               alignItems: 'center',

@@ -47,12 +47,12 @@ const T = {
   th: {
     fontSize: 'var(--ds-font-size-200)', fontWeight: 653, color: 'var(--ds-text-subtlest)',
     padding: '8px 12px', textAlign: 'left' as const,
-    borderBottom: '1.67px solid var(--ds-border, rgba(11,18,14,0.14))',
+    borderBottom: '1.67px solid var(--ds-border)',
     whiteSpace: 'nowrap' as const,
   } as React.CSSProperties,
   td: {
     fontSize: 'var(--ds-font-size-400)', fontWeight: 400, color: 'var(--ds-text)',
-    padding: '8px 12px', borderBottom: '1px solid var(--ds-border-subtle, rgba(11,18,14,0.09))',
+    padding: '8px 12px', borderBottom: '1px solid var(--ds-border-subtle)',
     verticalAlign: 'top' as const,
   } as React.CSSProperties,
   tagBase: {

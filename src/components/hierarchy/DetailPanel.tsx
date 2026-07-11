@@ -334,7 +334,7 @@ export function DetailPanel({ item, allItems = [], onClose, onSelectItem, onAddC
             <FieldRow label="Fix Versions">
               <span style={{
                 height: 20, padding: '0 8px', fontSize: 'var(--ds-font-size-50)', fontWeight: 600, color: 'var(--ds-chart-teal-bolder)',
-                background: 'var(--ds-background-success)', border: '1px solid var(--ds-background-success, rgba(13,148,136,0.2))', borderRadius: 9999,
+                background: 'var(--ds-background-success)', border: '1px solid var(--ds-background-success)', borderRadius: 9999,
                 display: 'inline-flex', alignItems: 'center',
               }}>
                 {item.fixVersion.name}

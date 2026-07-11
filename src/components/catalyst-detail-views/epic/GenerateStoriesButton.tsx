@@ -46,7 +46,7 @@ function GeneratingOverlay() {
         left: 0,
         right: 0,
         bottom: 0,
-        background: 'var(--ds-surface, rgba(255, 255, 255, 0.75))',
+        background: 'var(--ds-surface)',
         zIndex: 99990,
         display: 'flex',
         flexDirection: 'column',
@@ -151,7 +151,7 @@ export function GenerateStoriesButton({ issue }: GenerateStoriesButtonProps) {
           style={{
             position: 'fixed',
             top: 0, left: 0, right: 0, bottom: 0,
-            background: 'var(--ds-surface, rgba(255, 255, 255, 0.75))',
+            background: 'var(--ds-surface)',
             zIndex: 99990,
             display: 'flex',
             flexDirection: 'column',

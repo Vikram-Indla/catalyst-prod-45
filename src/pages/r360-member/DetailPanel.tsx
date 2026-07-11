@@ -39,7 +39,7 @@ export function DetailPanel({ item, onClose, onSelectItem }: {
             <span className="r3-type-badge">{getJiraIcon(item.item_type)} {item.item_type}</span>
             <ProjTag projectKey={item.project_key} />
             {item.role_on_item === 'Contributor' && (
-              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: 'var(--ds-font-size-50)', fontWeight: 600, padding: '0px 8px', borderRadius: 4, background: 'var(--cp-purple-5)', color: 'var(--cp-purple-60)', border: `1px solid ${isDark ? 'var(--ds-background-discovery-bold, rgba(124,58,237,0.25))' : 'var(--ds-background-discovery)'}` }}>
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: 'var(--ds-font-size-50)', fontWeight: 600, padding: '0px 8px', borderRadius: 4, background: 'var(--cp-purple-5)', color: 'var(--cp-purple-60)', border: `1px solid ${isDark ? 'var(--ds-background-discovery-bold)' : 'var(--ds-background-discovery)'}` }}>
                 CONTRIBUTED TO <MiniAvatar name={item.assignee_name} size={16} />
               </span>
             )}

@@ -91,14 +91,14 @@ export const adsTokens = {
     surface:  { cp: '--cp-bg-surface',  light: 'var(--ds-surface)', dark: 'var(--ds-surface)', atlaskit: 'elevation.surface' } satisfies AdsToken,
     overlay:  { cp: '--cp-bg-overlay',  light: 'var(--ds-surface-sunken)', dark: 'var(--ds-surface-overlay)', atlaskit: 'elevation.surface.overlay' } satisfies AdsToken,
     inset:    { cp: '--cp-bg-inset',    light: 'var(--cp-bg-sunken, var(--cp-bg-sunken))', dark: 'var(--ds-surface)', atlaskit: 'color.background.neutral.subtle' } satisfies AdsToken,
-    hover:    { cp: '--cp-interact-hover',    light: 'var(--ds-shadow-raised, rgba(0,0,0,0.04))', dark: 'var(--ds-background-neutral, var(--ds-background-neutral))', atlaskit: 'color.background.neutral.hovered' } satisfies AdsToken,
+    hover:    { cp: '--cp-interact-hover',    light: 'var(--ds-shadow-raised)', dark: 'var(--ds-background-neutral, var(--ds-background-neutral))', atlaskit: 'color.background.neutral.hovered' } satisfies AdsToken,
     // 2026-05-01 — RCA fix for blue tint on Atlaskit Editor canvas in dark mode.
     // Previously dark = rgba(37,99,235,0.14) which painted Editor's "selected"
     // canvas state as a visible blue rectangle. ADS canonical dark value for
     // color.background.selected is #1C2B41 (atlassian.design — Jira parity).
     // Light kept at the original Catalyst tint per existing UI specs.
-    selected: { cp: '--cp-interact-selected', light: 'var(--ds-background-information, rgba(37,99,235,0.08))', dark: 'var(--ds-text, var(--ds-text))', atlaskit: 'color.background.selected' } satisfies AdsToken,
-    pressed:  { cp: '--cp-interact-press',    light: 'var(--ds-shadow-raised, rgba(0,0,0,0.08))', dark: '#38414A', atlaskit: 'color.background.neutral.pressed' } satisfies AdsToken,
+    selected: { cp: '--cp-interact-selected', light: 'var(--ds-background-information)', dark: 'var(--ds-text, var(--ds-text))', atlaskit: 'color.background.selected' } satisfies AdsToken,
+    pressed:  { cp: '--cp-interact-press',    light: 'var(--ds-shadow-raised)', dark: '#38414A', atlaskit: 'color.background.neutral.pressed' } satisfies AdsToken,
     // 2026-07-02 — RCA fix for muddy warning/danger/success card backgrounds
     // in dark mode (flagged BAU-6083 card, board view). These three keys were
     // absent from the bridge, so atlaskitCustomColors('dark') never overrode

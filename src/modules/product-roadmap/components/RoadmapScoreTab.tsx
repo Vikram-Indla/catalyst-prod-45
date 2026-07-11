@@ -124,7 +124,7 @@ export function RoadmapScoreTab({ item }: RoadmapScoreTabProps) {
       else ctx.lineTo(x, y);
     });
     ctx.closePath();
-    ctx.fillStyle = 'var(--ds-background-information, rgba(37, 99, 235, 0.15))';
+    ctx.fillStyle = 'var(--ds-background-information)';
     ctx.fill();
     ctx.strokeStyle = 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))';
     ctx.lineWidth = 2;

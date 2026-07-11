@@ -16,15 +16,15 @@ import { RoadmapScoreTab } from './RoadmapScoreTab';
 
 // Status bar colors matching the timeline bars
 const BAR_STATUS_COLORS: Record<string, { border: string; bg: string }> = {
-  new_request: { border: 'var(--ds-text-brand)', bg: 'var(--ds-background-information-bold, rgba(59,130,246,0.12))' },
+  new_request: { border: 'var(--ds-text-brand)', bg: 'var(--ds-background-information-bold)' },
   draft:       { border: 'var(--ds-text-subtlest)', bg: 'rgba(115,115,115,0.12)' },
-  submitted:   { border: 'var(--ds-text-brand)', bg: 'var(--ds-background-information-bold, rgba(59,130,246,0.12))' },
-  in_review:   { border: 'var(--ds-text-discovery)', bg: 'var(--ds-background-discovery-bold, rgba(139,92,246,0.12))' },
+  submitted:   { border: 'var(--ds-text-brand)', bg: 'var(--ds-background-information-bold)' },
+  in_review:   { border: 'var(--ds-text-discovery)', bg: 'var(--ds-background-discovery-bold)' },
   approved:    { border: 'var(--ds-text-information)', bg: 'rgba(6,182,212,0.12)' },
-  in_progress: { border: 'var(--ds-text-warning, var(--cp-amber))', bg: 'var(--ds-background-warning-bold, rgba(245,158,11,0.12))' },
-  completed:   { border: 'var(--ds-text-success)', bg: 'var(--ds-background-success-bold, rgba(16,185,129,0.12))' },
-  rejected:    { border: 'var(--ds-text-danger)', bg: 'var(--ds-background-danger, rgba(239,68,68,0.12))' },
-  cancelled:   { border: 'var(--ds-text-danger)', bg: 'var(--ds-background-danger, rgba(239,68,68,0.12))' },
+  in_progress: { border: 'var(--ds-text-warning, var(--cp-amber))', bg: 'var(--ds-background-warning-bold)' },
+  completed:   { border: 'var(--ds-text-success)', bg: 'var(--ds-background-success-bold)' },
+  rejected:    { border: 'var(--ds-text-danger)', bg: 'var(--ds-background-danger)' },
+  cancelled:   { border: 'var(--ds-text-danger)', bg: 'var(--ds-background-danger)' },
 };
 
 const TABS = [
@@ -95,7 +95,7 @@ export function RoadmapDetailPanel({ item, isOpen, onClose }: RoadmapDetailPanel
         style={{
           position: 'fixed',
           inset: 0,
-          backgroundColor: 'var(--ds-shadow-raised, rgba(0,0,0,0.15))',
+          backgroundColor: 'var(--ds-shadow-raised)',
           zIndex: 200,
           opacity: isOpen ? 1 : 0,
           pointerEvents: isOpen ? 'auto' : 'none',
@@ -116,7 +116,7 @@ export function RoadmapDetailPanel({ item, isOpen, onClose }: RoadmapDetailPanel
           maxWidth: '90vw',
           backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
           borderLeft: '1px solid var(--ds-border)',
-          boxShadow: '-8px 0 30px var(--ds-shadow-raised, rgba(0,0,0,0.08))',
+          boxShadow: '-8px 0 30px var(--ds-shadow-raised)',
           zIndex: 201,
           transform: isOpen ? 'translateX(0)' : 'translateX(100%)',
           transition: 'transform 250ms cubic-bezier(0.32, 0.72, 0, 1)',
@@ -138,7 +138,7 @@ export function RoadmapDetailPanel({ item, isOpen, onClose }: RoadmapDetailPanel
                       fontSize: 'var(--ds-font-size-200)',
                       fontWeight: 600,
                       fontFamily: 'var(--cp-font-mono)',
-                      backgroundColor: 'var(--ds-background-information-bold, rgba(59,130,246,0.1))',
+                      backgroundColor: 'var(--ds-background-information-bold)',
                       color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))',
                       flexShrink: 0,
                     }}>

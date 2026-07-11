@@ -18,6 +18,12 @@ import TextArea from '@atlaskit/textarea';
 import { DatePicker } from '@atlaskit/datetime-picker';
 import { useProfileNames } from '../hooks/useStrata';
 import { T } from './shared';
+import { strategyApi } from '../domain';
+import { labelize } from './format';
+import type { StrataGateModel, StrataPerspective, StrataStrategyElement, StrataThemeCharter } from '../types';
+
+/** SYSTEM element types (DB CHECK on strata_strategy_elements.element_type). Never includes 'play' — new rows only. */
+const ELEMENT_TYPES = ['theme', 'objective'] as const;
 
 export type StrataFieldKind =
   | 'text' | 'textarea' | 'number' | 'date' | 'select' | 'user' | 'checkbox';
@@ -254,5 +260,279 @@ export function StrataFormModal({
         </Button>
       </ModalFooter>
     </Modal>
+  );
+}
+
+/** Form value → trimmed RPC string arg; empty/non-string → undefined (no-op param). */
+export const str = (v: string | number | boolean | null | undefined): string | undefined => {
+  if (typeof v !== 'string') return undefined;
+  const t = v.trim();
+  return t === '' ? undefined : t;
+};
+
+/** Approved-only perspective options, current value kept selectable even if not approved. */
+export function perspectiveSelectOptions(
+  perspectives: StrataPerspective[],
+  currentId?: string | null,
+): SelectOption[] {
+  const approved = perspectives.filter((p) => p.status === 'approved');
+  const opts = approved.map((p) => ({ value: p.id, label: p.name }));
+  if (currentId && !approved.some((p) => p.id === currentId)) {
+    const current = perspectives.find((p) => p.id === currentId);
+    opts.push({ value: currentId, label: current?.name ?? '—' });
+  }
+  return opts;
+}
+
+/** Approved-only gate model options, current value kept selectable even if not approved. */
+export function gateModelSelectOptions(
+  models: StrataGateModel[],
+  currentId?: string | null,
+): SelectOption[] {
+  const approved = models.filter((m) => m.status === 'approved');
+  const opts = approved.map((m) => ({ value: m.id, label: m.name }));
+  if (currentId && !approved.some((m) => m.id === currentId)) {
+    opts.push({ value: currentId, label: models.find((m) => m.id === currentId)?.name ?? '—' });
+  }
+  return opts;
+}
+
+/** Objective's only valid parent is a Theme (2-tier hierarchy, enforced server-side too). */
+export function themeParentOptions(elements: StrataStrategyElement[], excludeId?: string): SelectOption[] {
+  return elements
+    .filter((e) => e.id !== excludeId && e.element_type === 'theme')
+    .map((e) => ({ value: e.id, label: e.name }));
+}
+
+/**
+ * Edit a Theme or Objective — the single canonical edit surface, shared by the
+ * Strategy Room row menu and the Theme/Objective detail pages. One definition,
+ * two call sites, same `strategyApi.updateElement` mutation.
+ */
+export function EditElementModal({
+  element, perspectiveOptions, parentOptions, onClose, onSaved,
+}: {
+  element: StrataStrategyElement;
+  perspectiveOptions: SelectOption[];
+  /** Only consulted when element.element_type === 'objective'. */
+  parentOptions: SelectOption[];
+  onClose: () => void;
+  onSaved: () => void;
+}) {
+  return (
+    <StrataFormModal
+      open
+      onClose={onClose}
+      title={`Edit ${labelize(element.element_type)}`}
+      description={element.element_type === 'theme' ? 'Themes are root-level — no parent to edit.' : undefined}
+      fields={[
+        { key: 'name', label: 'Name', kind: 'text', required: true },
+        { key: 'description', label: 'Description', kind: 'textarea' },
+        { key: 'ownerId', label: 'Owner', kind: 'user' },
+        { key: 'perspectiveId', label: 'Perspective', kind: 'select', options: perspectiveOptions },
+        ...(element.element_type === 'objective'
+          ? [{ key: 'parentId', label: 'Parent (Theme)', kind: 'select' as const, required: true, options: parentOptions }]
+          : []),
+        { key: 'stage', label: 'Stage', kind: 'text' },
+      ]}
+      initial={{
+        name: element.name, description: element.description, ownerId: element.owner_id,
+        perspectiveId: element.perspective_id, parentId: element.parent_id, stage: element.stage,
+      }}
+      submitLabel="Save"
+      testId="strata-edit-element-modal"
+      onSubmit={async (v) => {
+        await strategyApi.updateElement(element.id, {
+          name: str(v.name), description: str(v.description),
+          ownerId: str(v.ownerId), perspectiveId: str(v.perspectiveId),
+          parentId: str(v.parentId), stage: str(v.stage),
+          clearOwner: !str(v.ownerId) && !!element.owner_id,
+          clearParent: !str(v.parentId) && !!element.parent_id,
+        });
+        onSaved();
+      }}
+    />
+  );
+}
+
+/**
+ * New element — Type-reactive (Theme has no parent field at all; Objective's
+ * parent is required and restricted to Themes). StrataFormModal's field spec
+ * is static per render and can't react to a value chosen inside the same
+ * modal session, so this composes ads primitives directly with local state
+ * instead (CAT-STRATA-HIERARCHY-20260706-001, approved 2-tier hierarchy).
+ *
+ * `lockElementType`/`lockParentId` (CAT-STRATA-THEME-DETAIL-20260710-001
+ * Slice 2) let a caller open this pre-scoped to "Objective, parented to this
+ * Theme" — hides the Type/Parent selectors and shows static text instead.
+ * Strategy Room's own "New element" call site passes neither prop.
+ */
+export function NewElementModal({
+  cycleId, cycleName, themeOptions, perspectiveOptions, onClose, onCreated,
+  lockElementType, lockParentId,
+}: {
+  cycleId: string;
+  cycleName: string;
+  themeOptions: SelectOption<string>[];
+  perspectiveOptions: SelectOption<string>[];
+  onClose: () => void;
+  onCreated: () => void;
+  lockElementType?: 'theme' | 'objective';
+  lockParentId?: string;
+}) {
+  const [elementType, setElementType] = useState<'theme' | 'objective' | null>(lockElementType ?? null);
+  const [name, setName] = useState('');
+  const [parentId, setParentId] = useState<string | null>(lockParentId ?? null);
+  const [perspectiveId, setPerspectiveId] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const typeOptions: SelectOption<string>[] = ELEMENT_TYPES.map((t) => ({ value: t, label: labelize(t) }));
+  const lockParentName = lockParentId ? (themeOptions.find((o) => o.value === lockParentId)?.label ?? null) : null;
+
+  const submit = async () => {
+    if (!elementType) { setError('Required: Type'); return; }
+    if (!name.trim()) { setError('Required: Name'); return; }
+    if (elementType === 'objective' && !parentId) {
+      setError('Required: Parent — an Objective must be parented to a Theme');
+      return;
+    }
+    setBusy(true);
+    setError(null);
+    try {
+      await strategyApi.createElement({
+        cycleId, elementType, name: name.trim(),
+        parentId: elementType === 'objective' ? (parentId ?? undefined) : undefined,
+        perspectiveId: perspectiveId ?? undefined,
+      });
+      onCreated();
+      onClose();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : String(e));
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <Modal isOpen onClose={busy ? () => {} : onClose} width="medium" testId="strata-create-element-modal">
+      <ModalHeader><ModalTitle>{lockElementType ? `New ${labelize(lockElementType)}` : 'New element'}</ModalTitle></ModalHeader>
+      <ModalBody>
+        <p style={{ margin: '0 0 12px', fontSize: 'var(--ds-font-size-100)', color: T.subtle }}>
+          Created as a draft in <strong>{cycleName}</strong>.
+        </p>
+        <div style={{ display: 'grid', gap: 12 }}>
+          {!lockElementType ? (
+            <div>
+              <FieldLabel label="Type" />
+              <Select
+                options={typeOptions}
+                value={typeOptions.find((o) => o.value === elementType) ?? null}
+                onChange={(next) => { setElementType((next?.value as 'theme' | 'objective') ?? null); setParentId(null); }}
+                placeholder="Select type…"
+                usePortal
+                aria-label="Type"
+              />
+            </div>
+          ) : null}
+          <div>
+            <FieldLabel label="Name" />
+            <Textfield value={name} onChange={(e) => setName(e.currentTarget.value)} aria-label="Name" />
+          </div>
+          {lockParentId ? (
+            <p style={{ margin: 0, fontSize: 'var(--ds-font-size-100)', color: T.subtlest }}>
+              Parent: <strong>{lockParentName ?? '—'}</strong>
+            </p>
+          ) : elementType === 'objective' ? (
+            <div>
+              <FieldLabel label="Parent (Theme)" />
+              <Select
+                options={themeOptions}
+                value={themeOptions.find((o) => o.value === parentId) ?? null}
+                onChange={(next) => setParentId(next?.value ?? null)}
+                placeholder="Select the Theme this Objective belongs to…"
+                isSearchable
+                usePortal
+                aria-label="Parent"
+              />
+            </div>
+          ) : elementType === 'theme' ? (
+            <p style={{ margin: 0, fontSize: 'var(--ds-font-size-100)', color: T.subtlest }}>
+              Themes are root-level — no parent to select.
+            </p>
+          ) : null}
+          <div>
+            <FieldLabel label="Perspective" />
+            <Select
+              options={perspectiveOptions}
+              value={perspectiveOptions.find((o) => o.value === perspectiveId) ?? null}
+              onChange={(next) => setPerspectiveId(next?.value ?? null)}
+              placeholder="Select perspective…"
+              isClearable
+              usePortal
+              aria-label="Perspective"
+            />
+          </div>
+        </div>
+        {error ? (
+          <div style={{ marginTop: 12 }}>
+            <SectionMessage appearance="error" title="Action rejected">
+              <p style={{ whiteSpace: 'pre-wrap' }}>{error}</p>
+            </SectionMessage>
+          </div>
+        ) : null}
+      </ModalBody>
+      <ModalFooter>
+        <Button appearance="subtle" onClick={onClose} isDisabled={busy}>Cancel</Button>
+        <Button appearance="primary" onClick={submit} isDisabled={busy}>
+          {busy ? 'Working…' : 'Create element'}
+        </Button>
+      </ModalFooter>
+    </Modal>
+  );
+}
+
+/**
+ * Author/edit a Theme's charter — the single canonical charter surface,
+ * shared by the Strategy Room row menu and the Theme detail page. One
+ * definition, two call sites, same `strategyApi.upsertCharter` mutation.
+ */
+export function ThemeCharterModal({
+  element, charter, gateModelOptions, onClose, onSaved,
+}: {
+  element: StrataStrategyElement;
+  charter?: StrataThemeCharter;
+  gateModelOptions: SelectOption[];
+  onClose: () => void;
+  onSaved: () => void;
+}) {
+  return (
+    <StrataFormModal
+      open
+      onClose={onClose}
+      title="Theme charter"
+      description={<>Charter for <strong>{element.name}</strong> — completeness is derived server-side.</>}
+      fields={[
+        { key: 'hypothesis', label: 'Hypothesis', kind: 'textarea' },
+        { key: 'scope', label: 'Scope', kind: 'textarea' },
+        { key: 'valueThesis', label: 'Value thesis', kind: 'textarea' },
+        { key: 'gateModelId', label: 'Gate model', kind: 'select', options: gateModelOptions },
+        { key: 'ownerId', label: 'Owner', kind: 'user' },
+      ]}
+      initial={{
+        hypothesis: charter?.hypothesis ?? null, scope: charter?.scope ?? null,
+        valueThesis: charter?.value_thesis ?? null,
+        gateModelId: charter?.gate_model_id ?? null, ownerId: charter?.owner_id ?? null,
+      }}
+      submitLabel="Save charter"
+      testId="strata-charter-modal"
+      onSubmit={async (v) => {
+        await strategyApi.upsertCharter({
+          elementId: element.id, hypothesis: str(v.hypothesis), scope: str(v.scope),
+          valueThesis: str(v.valueThesis), gateModelId: str(v.gateModelId), ownerId: str(v.ownerId),
+        });
+        onSaved();
+      }}
+    />
   );
 }

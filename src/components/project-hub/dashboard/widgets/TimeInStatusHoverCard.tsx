@@ -76,9 +76,9 @@ const CATEGORY_BG: Record<string, string> = {
   done: 'var(--ds-background-success-bold)',         // lime
 };
 const CATEGORY_FG: Record<string, string> = {
-  todo: 'var(--ds-text, rgb(41, 42, 46))',
-  in_progress: 'var(--ds-text, rgb(41, 42, 46))',
-  done: 'var(--ds-text, rgb(41, 42, 46))',
+  todo: 'var(--ds-text)',
+  in_progress: 'var(--ds-text)',
+  done: 'var(--ds-text)',
 };
 
 export function TimeInStatusHoverCard({

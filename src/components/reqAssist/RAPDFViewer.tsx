@@ -18,10 +18,10 @@ export default function RAPDFViewer({ doc, onClose, onGenerateEpics }: Props) {
 
   return (
     <>
-      <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'var(--ds-shadow-raised, rgba(0,0,0,0.7))', zIndex: 60 }} />
+      <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'var(--ds-shadow-raised)', zIndex: 60 }} />
       <div style={{ position: 'fixed', top: '48%', left: '48%', transform: 'translate(-50%, -50%)', width: 860, maxWidth: '95vw', height: '90vh', background: 'var(--cp-float)', borderRadius: 8, zIndex: 70, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
         {/* Header */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 20px', borderBottom: '1px solid var(--ds-shadow-overlay, rgba(15,23,42,0.08))', flexShrink: 0 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 20px', borderBottom: '1px solid var(--ds-shadow-overlay)', flexShrink: 0 }}>
           <div>
             <h3 style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: 'var(--fg-1)', margin: 0, fontFamily: 'var(--cp-font-body)' }}>
               {doc.title} — {doc.jira_ticket_key}
@@ -42,7 +42,7 @@ export default function RAPDFViewer({ doc, onClose, onGenerateEpics }: Props) {
             {doc.pdf_url && (
               <button
                 onClick={() => window.open(doc.pdf_url!, '_blank')}
-                style={{ border: '1px solid var(--ds-shadow-overlay, rgba(15,23,42,0.12))', background: 'var(--bg-app)', borderRadius: 'var(--ra-radius-btn)', padding: '4px 10px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4, fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-2)' }}
+                style={{ border: '1px solid var(--ds-shadow-overlay)', background: 'var(--bg-app)', borderRadius: 'var(--ra-radius-btn)', padding: '4px 10px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4, fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-2)' }}
               >
                 <Download size={13} /> Download
               </button>
@@ -51,15 +51,15 @@ export default function RAPDFViewer({ doc, onClose, onGenerateEpics }: Props) {
           </div>
         </div>
         {/* Toolbar */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 20px', borderBottom: '1px solid var(--ds-shadow-overlay, rgba(15,23,42,0.06))', flexShrink: 0, background: 'var(--bg-app)' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 20px', borderBottom: '1px solid var(--ds-shadow-overlay)', flexShrink: 0, background: 'var(--bg-app)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page <= 1} style={{ border: '1px solid var(--ds-shadow-overlay, rgba(15,23,42,0.12))', background: 'var(--bg-app)', borderRadius: 4, padding: '4px 6px', cursor: page <= 1 ? 'not-allowed' : 'pointer' }}><ChevronLeft size={14} color={page <= 1 ? 'var(--ds-text-disabled)' : 'var(--fg-2)'} /></button>
+            <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page <= 1} style={{ border: '1px solid var(--ds-shadow-overlay)', background: 'var(--bg-app)', borderRadius: 4, padding: '4px 6px', cursor: page <= 1 ? 'not-allowed' : 'pointer' }}><ChevronLeft size={14} color={page <= 1 ? 'var(--ds-text-disabled)' : 'var(--fg-2)'} /></button>
             <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-2)', fontFamily: 'var(--cp-font-mono)' }}>Page {page} of {totalPages}</span>
-            <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page >= totalPages} style={{ border: '1px solid var(--ds-shadow-overlay, rgba(15,23,42,0.12))', background: 'var(--bg-app)', borderRadius: 4, padding: '4px 6px', cursor: page >= totalPages ? 'not-allowed' : 'pointer' }}><ChevronRight size={14} color={page >= totalPages ? 'var(--ds-text-disabled)' : 'var(--fg-2)'} /></button>
-            <div style={{ width: 1, height: 20, background: 'var(--ds-shadow-overlay, rgba(15,23,42,0.12))', margin: '0 4px' }} />
-            <button onClick={() => setZoom(z => Math.max(50, z - 25))} style={{ border: '1px solid var(--ds-shadow-overlay, rgba(15,23,42,0.12))', background: 'var(--bg-app)', borderRadius: 4, padding: '4px 6px', cursor: 'pointer' }}><ZoomOut size={14} color="var(--fg-2)" /></button>
+            <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page >= totalPages} style={{ border: '1px solid var(--ds-shadow-overlay)', background: 'var(--bg-app)', borderRadius: 4, padding: '4px 6px', cursor: page >= totalPages ? 'not-allowed' : 'pointer' }}><ChevronRight size={14} color={page >= totalPages ? 'var(--ds-text-disabled)' : 'var(--fg-2)'} /></button>
+            <div style={{ width: 1, height: 20, background: 'var(--ds-shadow-overlay)', margin: '0 4px' }} />
+            <button onClick={() => setZoom(z => Math.max(50, z - 25))} style={{ border: '1px solid var(--ds-shadow-overlay)', background: 'var(--bg-app)', borderRadius: 4, padding: '4px 6px', cursor: 'pointer' }}><ZoomOut size={14} color="var(--fg-2)" /></button>
             <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--fg-3)', fontFamily: 'var(--cp-font-mono)', minWidth: 36, textAlign: 'center' }}>{zoom}%</span>
-            <button onClick={() => setZoom(z => Math.min(200, z + 25))} style={{ border: '1px solid var(--ds-shadow-overlay, rgba(15,23,42,0.12))', background: 'var(--bg-app)', borderRadius: 4, padding: '4px 6px', cursor: 'pointer' }}><ZoomIn size={14} color="var(--fg-2)" /></button>
+            <button onClick={() => setZoom(z => Math.min(200, z + 25))} style={{ border: '1px solid var(--ds-shadow-overlay)', background: 'var(--bg-app)', borderRadius: 4, padding: '4px 6px', cursor: 'pointer' }}><ZoomIn size={14} color="var(--fg-2)" /></button>
           </div>
           <button onClick={onGenerateEpics} style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '4px 12px', fontSize: 'var(--ds-font-size-200)', fontWeight: 500, border: 'none', borderRadius: 'var(--ra-radius-btn)', background: 'var(--cp-blue)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', cursor: 'pointer', fontFamily: 'var(--cp-font-body)' }}>
             <Zap size={13} /> Generate Epics from this PDF

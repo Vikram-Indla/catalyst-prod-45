@@ -115,7 +115,7 @@ export const IssueTypeSelector = memo(function IssueTypeSelector({
               backgroundColor: 'var(--ds-surface)',
               border: '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral))',
               borderRadius: '3px',
-              boxShadow: '0 4px 12px var(--ds-shadow-raised, rgba(0,0,0,0.15))',
+              boxShadow: '0 4px 12px var(--ds-shadow-raised)',
               zIndex: 10000,
               maxHeight: '300px',
               overflow: 'auto',

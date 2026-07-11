@@ -100,7 +100,7 @@ function SmartFilterDropdown({ label, icon, options, selected, onSelectionChange
           className="absolute top-full left-0 mt-1 w-[300px] rounded-lg border bg-white flex flex-col"
           style={{
             zIndex: 9999,
-            boxShadow: '0 10px 40px var(--ds-shadow-raised, rgba(0,0,0,0.15)), 0 2px 8px var(--ds-shadow-raised, rgba(0,0,0,0.08))',
+            boxShadow: '0 10px 40px var(--ds-shadow-raised), 0 2px 8px var(--ds-shadow-raised)',
             borderColor: 'var(--wh-border, var(--cp-bg-sunken))',
             maxHeight: '380px',
           }}

@@ -78,7 +78,7 @@ export function ThemeModal({ isOpen, onClose, theme }: ThemeModalProps) {
       <div
         onClick={onClose}
         style={{
-          position: 'fixed', inset: 0, background: 'var(--ds-shadow-raised, rgba(0,0,0,0.4))',
+          position: 'fixed', inset: 0, background: 'var(--ds-shadow-raised)',
           zIndex: 9998, backdropFilter: 'blur(2px)',
         }}
       />
@@ -86,7 +86,7 @@ export function ThemeModal({ isOpen, onClose, theme }: ThemeModalProps) {
       <div style={{
         position: 'fixed', top: '48%', left: '48%', transform: 'translate(-50%, -50%)',
         background: 'var(--cp-float)', borderRadius: 12, width: 480, maxWidth: '95vw',
-        boxShadow: '0 20px 60px var(--ds-shadow-raised, rgba(0,0,0,.2))', zIndex: 9999,
+        boxShadow: '0 20px 60px var(--ds-shadow-raised)', zIndex: 9999,
         fontFamily: 'var(--cp-font-body)',
       }}>
         {/* Header */}

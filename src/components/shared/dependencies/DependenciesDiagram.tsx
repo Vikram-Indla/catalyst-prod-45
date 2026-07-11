@@ -128,7 +128,7 @@ function FrameNode({ data }: { data: any }) {
         width: '100%',
         height: '100%',
         borderRadius: 8,
-        background: 'var(--ds-background-neutral, rgba(5,21,36,0.06))',
+        background: 'var(--ds-background-neutral)',
         border: '1px solid var(--ds-border)',
       }}
     >

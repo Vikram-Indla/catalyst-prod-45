@@ -118,7 +118,7 @@ export function ThemeItemLinker({ themeId, themeName, isOpen, onClose, anchorRef
         position: 'absolute', top: '48%', right: 0, marginTop: 4,
         width: 400, maxHeight: 400, background: 'var(--bg-app)',
         border: '1px solid var(--ds-border)', borderRadius: 12,
-        boxShadow: '0 12px 40px var(--ds-shadow-raised, rgba(0,0,0,.15))', zIndex: 9999,
+        boxShadow: '0 12px 40px var(--ds-shadow-raised)', zIndex: 9999,
         display: 'flex', flexDirection: 'column',
         fontFamily: 'var(--cp-font-body)',
       }}

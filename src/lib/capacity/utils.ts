@@ -48,7 +48,7 @@ export const AVATAR_COLOR = BRAND_COLORS.teal;
  * Department badge styling
  */
 export const DEPARTMENT_BADGE = {
-  bg: 'var(--ds-background-information, rgba(37, 99, 235, 0.1))',
+  bg: 'var(--ds-background-information)',
   text: 'var(--ds-link)',
 };
 
@@ -71,13 +71,13 @@ export function getTimelineCellColors(percentage: number): { bg: string; text: s
     return { bg: BRAND_COLORS.grey[100], text: BRAND_COLORS.grey[500] };
   }
   if (percentage < 100) {
-    return { bg: 'var(--ds-background-success, rgba(13, 148, 136, 0.15))', text: BRAND_COLORS.teal };
+    return { bg: 'var(--ds-background-success)', text: BRAND_COLORS.teal };
   }
   if (percentage === 100) {
     return { bg: 'rgba(249, 115, 22, 0.15)', text: BRAND_COLORS.orangeDark }; // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
   }
   // Over 100%
-  return { bg: 'var(--ds-background-danger, rgba(239, 68, 68, 0.15))', text: BRAND_COLORS.red };
+  return { bg: 'var(--ds-background-danger)', text: BRAND_COLORS.red };
 }
 
 /**

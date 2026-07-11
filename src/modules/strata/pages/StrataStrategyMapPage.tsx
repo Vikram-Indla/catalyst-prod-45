@@ -19,10 +19,10 @@ import {
 } from '@/components/ads';
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable';
 import { Routes } from '@/lib/routes';
-import { Flag, Gem, Target, X } from '@/lib/atlaskit-icons';
+import { Gem, Target, X } from '@/lib/atlaskit-icons';
 import {
   useElementKpis, useInvalidateStrata, useKpis, useMapEdges, usePerspectives,
-  usePlayCharters, useProfileNames, useStrataContext, useStrategyElements,
+  useThemeCharters, useProfileNames, useStrataContext, useStrategyElements,
 } from '@/modules/strata/hooks/useStrata';
 import { strategyApi } from '@/modules/strata/domain';
 import { StrataPageShell, T } from '@/modules/strata/components/shared';
@@ -43,12 +43,11 @@ const STATUS_APPEARANCE: Record<StrataStrategyElement['status'], LozengeAppearan
 const ANIMATED_CONFIDENCE = 0.85;
 
 /** Fallback grid tiers when an element has no persisted map_position. */
-const TIER_Y: Record<string, number> = { theme: 0, play: 200, objective: 400 };
+const TIER_Y: Record<string, number> = { theme: 0, objective: 400 };
 
 /** Per-type visual identity — element types are SYSTEM values (DB CHECK). */
 const TYPE_META: Record<string, { icon: React.ComponentType<{ size?: number }>; fg: string }> = {
   theme: { icon: Gem, fg: 'var(--ds-text-brand)' },
-  play: { icon: Flag, fg: 'var(--ds-text-warning)' },
   objective: { icon: Target, fg: 'var(--ds-text-success)' },
 };
 
@@ -159,7 +158,7 @@ export default function StrataStrategyMapPage() {
   const { activeCycle, isLoading: contextLoading } = useStrataContext();
   const elementsQ = useStrategyElements(activeCycle?.id);
   const edgesQ = useMapEdges(activeCycle?.id);
-  const chartersQ = usePlayCharters();
+  const chartersQ = useThemeCharters();
   const elementKpisQ = useElementKpis();
   const kpisQ = useKpis();
   const perspectivesQ = usePerspectives();
@@ -325,7 +324,7 @@ export default function StrataStrategyMapPage() {
   };
 
   const selected = selectedId ? elementById.get(selectedId) ?? null : null;
-  const selectedCharter = selected && selected.element_type === 'play'
+  const selectedCharter = selected && selected.element_type === 'theme'
     ? charters.find((c) => c.element_id === selected.id) ?? null
     : null;
   const selectedKpiIds = selected
@@ -362,7 +361,7 @@ export default function StrataStrategyMapPage() {
       ) : !activeCycle || elements.length === 0 ? (
         <EmptyState
           header="Nothing to map yet"
-          description="This cycle has no strategy elements. Draft themes, plays and objectives in the Strategy Room first."
+          description="This cycle has no strategy elements. Draft themes and objectives in the Strategy Room first."
           primaryAction={<Button appearance="primary" onClick={() => navigate(Routes.strata.strategy())}>Open Strategy Room</Button>}
         />
       ) : (
@@ -542,13 +541,13 @@ export default function StrataStrategyMapPage() {
                 <InspectorRow k="Perspective">{perspectiveName(selected.perspective_id)}</InspectorRow>
                 <InspectorRow k="Description">{selected.description ?? '—'}</InspectorRow>
 
-                {selectedCharter !== null || selected.element_type === 'play' ? (
+                {selectedCharter !== null || selected.element_type === 'theme' ? (
                   <>
                     <h3 style={{
                       fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: T.subtlest,
                       letterSpacing: '0.04em', margin: '16px 0 4px',
                     }}>
-                      Play charter
+                      Theme charter
                     </h3>
                     <InspectorRow k="Hypothesis">{selectedCharter?.hypothesis ?? '—'}</InspectorRow>
                     <InspectorRow k="Value thesis">{selectedCharter?.value_thesis ?? '—'}</InspectorRow>

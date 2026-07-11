@@ -167,7 +167,7 @@ export function EpicView({ document }: EpicViewProps) {
                   'w-full text-left border rounded-[10px] p-4 mb-3 transition-all',
                   selectedEpicIdx === i
                     ? 'border-blue-500 bg-blue-50/50'
-                    : 'border-[hsl(var(--border))] hover:border-zinc-300 hover:shadow-[0_2px_8px_var(--ds-shadow-raised, rgba(0,0,0,0.04))]'
+                    : 'border-[hsl(var(--border))] hover:border-zinc-300 hover:shadow-[0_2px_8px_var(--ds-shadow-raised)]'
                 )}
               >
                 <div className="text-sm font-bold text-foreground">{epic.title}</div>

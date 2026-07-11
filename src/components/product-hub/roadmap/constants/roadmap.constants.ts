@@ -52,10 +52,10 @@ export const SURFACE = {
 
 // ── Dark Mode Variants (Dark mode One Surface Model) ──
 export const INK_DARK = {
-  1: 'var(--ds-surface, rgba(255,255,255,0.92))',
-  2: 'var(--ds-surface, rgba(255,255,255,0.72))',
-  3: 'var(--ds-surface, rgba(255,255,255,0.60))',
-  4: 'var(--ds-surface, rgba(255,255,255,0.50))',
+  1: 'var(--ds-surface)',
+  2: 'var(--ds-surface)',
+  3: 'var(--ds-surface)',
+  4: 'var(--ds-surface)',
 };
 
 export const SURFACE_DARK = {

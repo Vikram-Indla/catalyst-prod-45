@@ -907,7 +907,7 @@
 
 .dark .mobile-bottom-nav-item.active , [data-theme="dark"] .mobile-bottom-nav-item.active {
   color: var(--ds-text-brand);
-  background: var(--ds-background-information-bold, rgba(59,130,246,0.10));
+  background: var(--ds-background-information-bold);
 }
 
 .dark .mobile-menu-toggle , [data-theme="dark"] .mobile-menu-toggle {

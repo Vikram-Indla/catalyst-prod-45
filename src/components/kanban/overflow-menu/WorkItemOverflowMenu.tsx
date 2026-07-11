@@ -96,7 +96,7 @@ export function WorkItemOverflowMenu({
     background: tk.surfaceBg,
     border: `1px solid ${tk.border}`,
     borderRadius: 8,
-    boxShadow: '0 4px 16px var(--ds-shadow-raised, rgba(0,0,0,0.24))',
+    boxShadow: '0 4px 16px var(--ds-shadow-raised)',
     padding: '4px 0',
     fontFamily: 'var(--cp-font-body)',
   };

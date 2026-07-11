@@ -4,8 +4,8 @@
  * Do NOT edit by hand. Run `npx tsx scripts/scan-components.ts` to regenerate
  * after changing any import in src/.
  *
- * Captured: 2026-07-09T12:38:14.111Z
- * Stats: 4071 components observed (662 atlaskit, 3409 internal).
+ * Captured: 2026-07-09T12:41:36.446Z
+ * Stats: 4039 components observed (670 atlaskit, 3369 internal).
  */
 
 export interface UsageMapEntry {
@@ -48,6 +48,14 @@ export const usageMap: UsageMap = {
       "src/components/shared/rich-text/atlaskit/catalystMentionProvider.ts"
     ],
     "package": "@atlaskit/mention"
+  },
+  "AcceptanceCriteriaEditor::./AcceptanceCriteriaEditor": {
+    "name": "AcceptanceCriteriaEditor",
+    "source": "./AcceptanceCriteriaEditor",
+    "origin": "internal",
+    "consumers": [
+      "src/components/stories/CreateStoryModal.tsx"
+    ]
   },
   "AcceptedStory::@/types/backlog.types": {
     "name": "AcceptedStory",
@@ -155,12 +163,12 @@ export const usageMap: UsageMap = {
     "consumers": [
       "src/components/backlog/DetailPanel/QuickActions.tsx",
       "src/components/workhub/workitems/WorkItemFilters.tsx",
-      "src/modules/okr-v2/components/KeyResultAnalyticsDrawer/KeyResultAnalyticsDrawer.tsx",
       "src/modules/project-work-hub/components/FilterDrawer.tsx",
       "src/modules/strata/pages/StrataEvidencePage.tsx",
       "src/modules/strata/pages/StrataKpiDetailPage.tsx",
       "src/modules/strata/pages/StrataKpiLibraryPage.tsx",
-      "src/modules/tasks/components/kanban/TaskDetailDrawer.tsx"
+      "src/modules/tasks/components/kanban/TaskDetailDrawer.tsx",
+      "src/pages/TeamRoom.tsx"
     ]
   },
   "ActivityFeed::./ActivityFeed": {
@@ -177,9 +185,24 @@ export const usageMap: UsageMap = {
     "origin": "internal",
     "consumers": [
       "src/components/items/features/tabs/FeatureAuditTab.tsx",
-      "src/components/okr/AuditLogTab.tsx",
       "src/components/shared/UnifiedAuditHistoryTab.tsx",
       "src/components/stories/StoryActivityLog.tsx"
+    ]
+  },
+  "ActivityFeed::@/components/dashboard": {
+    "name": "ActivityFeed",
+    "source": "@/components/dashboard",
+    "origin": "internal",
+    "consumers": [
+      "src/pages/releases/CommandCenter.tsx"
+    ]
+  },
+  "ActivityFeedWidget::@/components/releases/dashboard/ActivityFeedWidget": {
+    "name": "ActivityFeedWidget",
+    "source": "@/components/releases/dashboard/ActivityFeedWidget",
+    "origin": "internal",
+    "consumers": [
+      "src/pages/releases/ReleaseDashboardPage.tsx"
     ]
   },
   "ActivityHeader::./ActivityHeader": {
@@ -323,14 +346,6 @@ export const usageMap: UsageMap = {
       "src/modules/command-center/hooks/useActivities.ts"
     ]
   },
-  "AddAlignedWorkDialog::./AddAlignedWorkDialog": {
-    "name": "AddAlignedWorkDialog",
-    "source": "./AddAlignedWorkDialog",
-    "origin": "internal",
-    "consumers": [
-      "src/components/okr/AlignedWorkTab.tsx"
-    ]
-  },
   "AddApproverDialog::../AddApproverDialog": {
     "name": "AddApproverDialog",
     "source": "../AddApproverDialog",
@@ -345,14 +360,6 @@ export const usageMap: UsageMap = {
     "origin": "internal",
     "consumers": [
       "src/components/resource-allocation/ResourceAllocationModal.tsx"
-    ]
-  },
-  "AddChildObjectiveDialog::./AddChildObjectiveDialog": {
-    "name": "AddChildObjectiveDialog",
-    "source": "./AddChildObjectiveDialog",
-    "origin": "internal",
-    "consumers": [
-      "src/components/okr/ChildObjectivesTab.tsx"
     ]
   },
   "AddCircleIcon::@atlaskit/icon/glyph/add-circle": {
@@ -468,12 +475,14 @@ export const usageMap: UsageMap = {
       "src/components/kanban/PragmaticBoard.tsx",
       "src/components/shared/CanonicalDescriptionField/DescriptionViewMode.tsx",
       "src/features/chat/components/sidebar/ConversationSidebar.tsx",
+      "src/features/release-calendar/components/CalendarHeader.tsx",
       "src/features/release-compare/components/ReleaseSelector.tsx",
       "src/modules/project-work-hub/components/dialogs/story-detail-modules/ChildIssuesSection.tsx",
       "src/modules/project-work-hub/components/dialogs/story-detail-modules/LinkedIssuesSection.tsx",
       "src/modules/project-work-hub/components/dialogs/story-detail-modules/TestHubSection.tsx",
       "src/modules/project-work-hub/components/linked-work-items/LinkedWorkItemsHeader.tsx",
       "src/modules/project-work-hub/components/story-test-cases/TestCasesSection.tsx",
+      "src/pages/admin/BusinessOwners.tsx",
       "src/pages/admin/CapacityDepartments.tsx",
       "src/pages/admin/Departments.tsx",
       "src/pages/admin/ResourceAssignments.tsx",
@@ -640,6 +649,14 @@ export const usageMap: UsageMap = {
       "src/pages/SkillsInventory.tsx"
     ]
   },
+  "AddTestsToCoverageDialog::@/components/releases/coverage": {
+    "name": "AddTestsToCoverageDialog",
+    "source": "@/components/releases/coverage",
+    "origin": "internal",
+    "consumers": [
+      "src/pages/releases/CoverageReportsPage.tsx"
+    ]
+  },
   "AddToCycleSetSheet::./AddToCycleSetSheet": {
     "name": "AddToCycleSetSheet",
     "source": "./AddToCycleSetSheet",
@@ -680,18 +697,25 @@ export const usageMap: UsageMap = {
     "origin": "internal",
     "consumers": [
       "src/pages/admin/AdminAccessPage.tsx",
+      "src/pages/admin/AdminOverview.tsx",
+      "src/pages/admin/AdminStorybookPage.tsx",
       "src/pages/admin/AiAccessPage.tsx",
       "src/pages/admin/AiTranslationsAuditPage.tsx",
+      "src/pages/admin/BusinessOwners.tsx",
       "src/pages/admin/CapacityDepartments.tsx",
       "src/pages/admin/Departments.tsx",
+      "src/pages/admin/FeatureFlagsPage.tsx",
       "src/pages/admin/FieldLayoutPage.tsx",
       "src/pages/admin/FieldRegistryPage.tsx",
       "src/pages/admin/GovernanceSettings.tsx",
+      "src/pages/admin/NotificationTriggers.tsx",
       "src/pages/admin/PermissionsAdminPage.tsx",
+      "src/pages/admin/QuartersAdminPage.tsx",
       "src/pages/admin/ReleaseOpsAdminPage.tsx",
       "src/pages/admin/ResourceAssignments.tsx",
       "src/pages/admin/RolesAdminPage.tsx",
       "src/pages/admin/RoutingTaxonomyPage.tsx",
+      "src/pages/admin/UserAccessPage.tsx",
       "src/pages/admin/avatars/AdminAvatarsPage.tsx",
       "src/pages/admin/components/ComponentsAdminPage.tsx",
       "src/pages/admin/connections/JiraSyncPage.tsx",
@@ -723,7 +747,9 @@ export const usageMap: UsageMap = {
       "src/components/admin/notifications/SchemeSelector.tsx",
       "src/components/admin/notifications/TriggerSearch.tsx",
       "src/pages/admin/AiTranslationsAuditPage.tsx",
-      "src/pages/admin/ResourceAssignments.tsx"
+      "src/pages/admin/BusinessOwners.tsx",
+      "src/pages/admin/ResourceAssignments.tsx",
+      "src/pages/admin/UserAccessPage.tsx"
     ],
     "package": "@atlaskit/select"
   },
@@ -946,6 +972,15 @@ export const usageMap: UsageMap = {
     "origin": "internal",
     "consumers": [
       "src/pages/admin/AiAccessPage.tsx"
+    ]
+  },
+  "AIReleaseInsight::../types": {
+    "name": "AIReleaseInsight",
+    "source": "../types",
+    "origin": "internal",
+    "consumers": [
+      "src/features/all-releases/components/AIInsightsBar.tsx",
+      "src/features/all-releases/components/AIInsightsDrawer.tsx"
     ]
   },
   "AIStartMyDay::./AIStartMyDay": {
@@ -3429,9 +3464,6 @@ export const usageMap: UsageMap = {
       "src/modules/epic-balancing/components/EpicBalancingPage.tsx",
       "src/modules/in-jira/components/import/AISuggestionBanner.tsx",
       "src/modules/in-jira/components/import/ImportWizard.tsx",
-      "src/modules/okr-v2/components/KRWorkAlignmentDrawer.tsx",
-      "src/modules/okr-v2/components/KRWorkContributionsV2.tsx",
-      "src/modules/okr-v2/components/LinkedWorkTabV2.tsx",
       "src/pages/InviteAcceptPage.tsx",
       "src/pages/ProjectSettingsPage.tsx",
       "src/pages/ResetPassword.tsx",
@@ -3499,10 +3531,6 @@ export const usageMap: UsageMap = {
       "src/modules/incidents/kanban/components/ManageColumnsDialog.tsx",
       "src/modules/incidents/kanban/components/SetCommitteeApproversModal.tsx",
       "src/modules/incidents/kanban/pages/IncidentKanbanPage.tsx",
-      "src/modules/okr-v2/components/CreateObjectiveDialogV2.tsx",
-      "src/modules/okr-v2/components/KRWorkAlignmentDrawer.tsx",
-      "src/modules/okr-v2/components/KRWorkContributionsV2.tsx",
-      "src/modules/okr-v2/components/LinkedWorkTabV2.tsx",
       "src/modules/priorities/components/PriToastContainer.tsx",
       "src/modules/task10/components/panel/T10ActivityTimeline.tsx",
       "src/modules/task10/components/week/T10WeekView.tsx",
@@ -3516,6 +3544,7 @@ export const usageMap: UsageMap = {
       "src/modules/tasks/components/workstreams/WorkstreamsPage.tsx",
       "src/modules/work-hub/views/AllWorkView.tsx",
       "src/pages/CleanupPage.tsx",
+      "src/pages/ForYouPage.tsx",
       "src/pages/InviteAcceptPage.tsx",
       "src/pages/PIObjectives.tsx",
       "src/pages/PortfolioRoadmap.tsx",
@@ -3523,6 +3552,7 @@ export const usageMap: UsageMap = {
       "src/pages/ShortLinkResolverPage.tsx",
       "src/pages/SprintBoard.tsx",
       "src/pages/enterprise/CapacityPlannerPage.tsx",
+      "src/pages/releases/QualityGatesPage.tsx",
       "src/pages/work-tree/WorkTreePage.tsx",
       "src/pages/work-tree/components/WorkTreeLegend.tsx"
     ]
@@ -3547,9 +3577,6 @@ export const usageMap: UsageMap = {
       "src/modules/epic-balancing/components/EpicBalancingPage.tsx",
       "src/modules/in-jira/components/import/AISuggestionBanner.tsx",
       "src/modules/in-jira/components/import/ImportWizard.tsx",
-      "src/modules/okr-v2/components/KRWorkAlignmentDrawer.tsx",
-      "src/modules/okr-v2/components/KRWorkContributionsV2.tsx",
-      "src/modules/okr-v2/components/LinkedWorkTabV2.tsx",
       "src/pages/InviteAcceptPage.tsx",
       "src/pages/ProjectSettingsPage.tsx",
       "src/pages/ResetPassword.tsx",
@@ -3561,7 +3588,8 @@ export const usageMap: UsageMap = {
     "source": "@/components/admin/admin-alert-dialog",
     "origin": "internal",
     "consumers": [
-      "src/pages/admin/CapacityDepartments.tsx"
+      "src/pages/admin/CapacityDepartments.tsx",
+      "src/pages/admin/FeatureFlagsPage.tsx"
     ]
   },
   "AlertDialog::@/components/ui/alert-dialog": {
@@ -3580,7 +3608,6 @@ export const usageMap: UsageMap = {
       "src/components/incidents/DeleteIncidentDialog.tsx",
       "src/components/items/epics/EpicDetailsPanel.tsx",
       "src/components/modals/LinkWorkItemModal.tsx",
-      "src/components/okr/ObjectiveDetailsPanelNew.tsx",
       "src/components/releases/quality-gates/DeleteGateConfirmationDialog.tsx",
       "src/components/resource-allocation/TimelineGrid.tsx",
       "src/components/risks/CreateEditRiskDialog.tsx",
@@ -3597,8 +3624,6 @@ export const usageMap: UsageMap = {
       "src/modules/feature-backlog/components/FeatureBacklogWorkspace.tsx",
       "src/modules/in-jira/components/drawer/IssueActionsMenu.tsx",
       "src/modules/in-jira/pages/ReleasesPage.tsx",
-      "src/modules/okr-v2/components/LinkedWorkTabV2.tsx",
-      "src/modules/okr-v2/components/ObjectiveDrawerV2.tsx",
       "src/modules/project-work-hub/components/SubtasksPanel/SubtasksPanelV2.tsx",
       "src/modules/project-work-hub/components/dialogs/DeleteConfirmDialog.tsx",
       "src/modules/project-work-hub/components/dialogs/story-detail-modules/AttachmentsSection.tsx",
@@ -3638,7 +3663,6 @@ export const usageMap: UsageMap = {
       "src/components/incidents/DeleteIncidentDialog.tsx",
       "src/components/items/epics/EpicDetailsPanel.tsx",
       "src/components/modals/LinkWorkItemModal.tsx",
-      "src/components/okr/ObjectiveDetailsPanelNew.tsx",
       "src/components/releases/quality-gates/DeleteGateConfirmationDialog.tsx",
       "src/components/resource-allocation/TimelineGrid.tsx",
       "src/components/risks/CreateEditRiskDialog.tsx",
@@ -3655,8 +3679,6 @@ export const usageMap: UsageMap = {
       "src/modules/feature-backlog/components/FeatureBacklogWorkspace.tsx",
       "src/modules/in-jira/components/drawer/IssueActionsMenu.tsx",
       "src/modules/in-jira/pages/ReleasesPage.tsx",
-      "src/modules/okr-v2/components/LinkedWorkTabV2.tsx",
-      "src/modules/okr-v2/components/ObjectiveDrawerV2.tsx",
       "src/modules/project-work-hub/components/SubtasksPanel/SubtasksPanelV2.tsx",
       "src/modules/project-work-hub/components/dialogs/DeleteConfirmDialog.tsx",
       "src/modules/project-work-hub/components/dialogs/story-detail-modules/AttachmentsSection.tsx",
@@ -3696,7 +3718,6 @@ export const usageMap: UsageMap = {
       "src/components/incidents/DeleteIncidentDialog.tsx",
       "src/components/items/epics/EpicDetailsPanel.tsx",
       "src/components/modals/LinkWorkItemModal.tsx",
-      "src/components/okr/ObjectiveDetailsPanelNew.tsx",
       "src/components/releases/quality-gates/DeleteGateConfirmationDialog.tsx",
       "src/components/resource-allocation/TimelineGrid.tsx",
       "src/components/risks/CreateEditRiskDialog.tsx",
@@ -3713,8 +3734,6 @@ export const usageMap: UsageMap = {
       "src/modules/feature-backlog/components/FeatureBacklogWorkspace.tsx",
       "src/modules/in-jira/components/drawer/IssueActionsMenu.tsx",
       "src/modules/in-jira/pages/ReleasesPage.tsx",
-      "src/modules/okr-v2/components/LinkedWorkTabV2.tsx",
-      "src/modules/okr-v2/components/ObjectiveDrawerV2.tsx",
       "src/modules/project-work-hub/components/SubtasksPanel/SubtasksPanelV2.tsx",
       "src/modules/project-work-hub/components/dialogs/DeleteConfirmDialog.tsx",
       "src/modules/project-work-hub/components/dialogs/story-detail-modules/AttachmentsSection.tsx",
@@ -3736,7 +3755,8 @@ export const usageMap: UsageMap = {
     "source": "@/components/admin/admin-alert-dialog",
     "origin": "internal",
     "consumers": [
-      "src/pages/admin/CapacityDepartments.tsx"
+      "src/pages/admin/CapacityDepartments.tsx",
+      "src/pages/admin/FeatureFlagsPage.tsx"
     ]
   },
   "AlertDialogContent::@/components/ui/alert-dialog": {
@@ -3755,7 +3775,6 @@ export const usageMap: UsageMap = {
       "src/components/incidents/DeleteIncidentDialog.tsx",
       "src/components/items/epics/EpicDetailsPanel.tsx",
       "src/components/modals/LinkWorkItemModal.tsx",
-      "src/components/okr/ObjectiveDetailsPanelNew.tsx",
       "src/components/releases/quality-gates/DeleteGateConfirmationDialog.tsx",
       "src/components/resource-allocation/TimelineGrid.tsx",
       "src/components/risks/CreateEditRiskDialog.tsx",
@@ -3772,8 +3791,6 @@ export const usageMap: UsageMap = {
       "src/modules/feature-backlog/components/FeatureBacklogWorkspace.tsx",
       "src/modules/in-jira/components/drawer/IssueActionsMenu.tsx",
       "src/modules/in-jira/pages/ReleasesPage.tsx",
-      "src/modules/okr-v2/components/LinkedWorkTabV2.tsx",
-      "src/modules/okr-v2/components/ObjectiveDrawerV2.tsx",
       "src/modules/project-work-hub/components/SubtasksPanel/SubtasksPanelV2.tsx",
       "src/modules/project-work-hub/components/dialogs/DeleteConfirmDialog.tsx",
       "src/modules/project-work-hub/components/dialogs/story-detail-modules/AttachmentsSection.tsx",
@@ -3795,7 +3812,8 @@ export const usageMap: UsageMap = {
     "source": "@/components/admin/admin-alert-dialog",
     "origin": "internal",
     "consumers": [
-      "src/pages/admin/CapacityDepartments.tsx"
+      "src/pages/admin/CapacityDepartments.tsx",
+      "src/pages/admin/FeatureFlagsPage.tsx"
     ]
   },
   "AlertDialogDescription::@/components/ui/alert-dialog": {
@@ -3814,7 +3832,6 @@ export const usageMap: UsageMap = {
       "src/components/incidents/DeleteIncidentDialog.tsx",
       "src/components/items/epics/EpicDetailsPanel.tsx",
       "src/components/modals/LinkWorkItemModal.tsx",
-      "src/components/okr/ObjectiveDetailsPanelNew.tsx",
       "src/components/releases/quality-gates/DeleteGateConfirmationDialog.tsx",
       "src/components/resource-allocation/TimelineGrid.tsx",
       "src/components/risks/CreateEditRiskDialog.tsx",
@@ -3831,8 +3848,6 @@ export const usageMap: UsageMap = {
       "src/modules/feature-backlog/components/FeatureBacklogWorkspace.tsx",
       "src/modules/in-jira/components/drawer/IssueActionsMenu.tsx",
       "src/modules/in-jira/pages/ReleasesPage.tsx",
-      "src/modules/okr-v2/components/LinkedWorkTabV2.tsx",
-      "src/modules/okr-v2/components/ObjectiveDrawerV2.tsx",
       "src/modules/project-work-hub/components/SubtasksPanel/SubtasksPanelV2.tsx",
       "src/modules/project-work-hub/components/dialogs/DeleteConfirmDialog.tsx",
       "src/modules/project-work-hub/components/dialogs/story-detail-modules/AttachmentsSection.tsx",
@@ -3854,7 +3869,8 @@ export const usageMap: UsageMap = {
     "source": "@/components/admin/admin-alert-dialog",
     "origin": "internal",
     "consumers": [
-      "src/pages/admin/CapacityDepartments.tsx"
+      "src/pages/admin/CapacityDepartments.tsx",
+      "src/pages/admin/FeatureFlagsPage.tsx"
     ]
   },
   "AlertDialogFooter::@/components/ui/alert-dialog": {
@@ -3873,7 +3889,6 @@ export const usageMap: UsageMap = {
       "src/components/incidents/DeleteIncidentDialog.tsx",
       "src/components/items/epics/EpicDetailsPanel.tsx",
       "src/components/modals/LinkWorkItemModal.tsx",
-      "src/components/okr/ObjectiveDetailsPanelNew.tsx",
       "src/components/releases/quality-gates/DeleteGateConfirmationDialog.tsx",
       "src/components/resource-allocation/TimelineGrid.tsx",
       "src/components/risks/CreateEditRiskDialog.tsx",
@@ -3890,8 +3905,6 @@ export const usageMap: UsageMap = {
       "src/modules/feature-backlog/components/FeatureBacklogWorkspace.tsx",
       "src/modules/in-jira/components/drawer/IssueActionsMenu.tsx",
       "src/modules/in-jira/pages/ReleasesPage.tsx",
-      "src/modules/okr-v2/components/LinkedWorkTabV2.tsx",
-      "src/modules/okr-v2/components/ObjectiveDrawerV2.tsx",
       "src/modules/project-work-hub/components/SubtasksPanel/SubtasksPanelV2.tsx",
       "src/modules/project-work-hub/components/dialogs/DeleteConfirmDialog.tsx",
       "src/modules/project-work-hub/components/dialogs/story-detail-modules/AttachmentsSection.tsx",
@@ -3913,7 +3926,8 @@ export const usageMap: UsageMap = {
     "source": "@/components/admin/admin-alert-dialog",
     "origin": "internal",
     "consumers": [
-      "src/pages/admin/CapacityDepartments.tsx"
+      "src/pages/admin/CapacityDepartments.tsx",
+      "src/pages/admin/FeatureFlagsPage.tsx"
     ]
   },
   "AlertDialogHeader::@/components/ui/alert-dialog": {
@@ -3932,7 +3946,6 @@ export const usageMap: UsageMap = {
       "src/components/incidents/DeleteIncidentDialog.tsx",
       "src/components/items/epics/EpicDetailsPanel.tsx",
       "src/components/modals/LinkWorkItemModal.tsx",
-      "src/components/okr/ObjectiveDetailsPanelNew.tsx",
       "src/components/releases/quality-gates/DeleteGateConfirmationDialog.tsx",
       "src/components/resource-allocation/TimelineGrid.tsx",
       "src/components/risks/CreateEditRiskDialog.tsx",
@@ -3949,8 +3962,6 @@ export const usageMap: UsageMap = {
       "src/modules/feature-backlog/components/FeatureBacklogWorkspace.tsx",
       "src/modules/in-jira/components/drawer/IssueActionsMenu.tsx",
       "src/modules/in-jira/pages/ReleasesPage.tsx",
-      "src/modules/okr-v2/components/LinkedWorkTabV2.tsx",
-      "src/modules/okr-v2/components/ObjectiveDrawerV2.tsx",
       "src/modules/project-work-hub/components/SubtasksPanel/SubtasksPanelV2.tsx",
       "src/modules/project-work-hub/components/dialogs/DeleteConfirmDialog.tsx",
       "src/modules/project-work-hub/components/dialogs/story-detail-modules/AttachmentsSection.tsx",
@@ -3972,7 +3983,8 @@ export const usageMap: UsageMap = {
     "source": "@/components/admin/admin-alert-dialog",
     "origin": "internal",
     "consumers": [
-      "src/pages/admin/CapacityDepartments.tsx"
+      "src/pages/admin/CapacityDepartments.tsx",
+      "src/pages/admin/FeatureFlagsPage.tsx"
     ]
   },
   "AlertDialogTitle::@/components/ui/alert-dialog": {
@@ -3991,7 +4003,6 @@ export const usageMap: UsageMap = {
       "src/components/incidents/DeleteIncidentDialog.tsx",
       "src/components/items/epics/EpicDetailsPanel.tsx",
       "src/components/modals/LinkWorkItemModal.tsx",
-      "src/components/okr/ObjectiveDetailsPanelNew.tsx",
       "src/components/releases/quality-gates/DeleteGateConfirmationDialog.tsx",
       "src/components/resource-allocation/TimelineGrid.tsx",
       "src/components/risks/CreateEditRiskDialog.tsx",
@@ -4008,8 +4019,6 @@ export const usageMap: UsageMap = {
       "src/modules/feature-backlog/components/FeatureBacklogWorkspace.tsx",
       "src/modules/in-jira/components/drawer/IssueActionsMenu.tsx",
       "src/modules/in-jira/pages/ReleasesPage.tsx",
-      "src/modules/okr-v2/components/LinkedWorkTabV2.tsx",
-      "src/modules/okr-v2/components/ObjectiveDrawerV2.tsx",
       "src/modules/project-work-hub/components/SubtasksPanel/SubtasksPanelV2.tsx",
       "src/modules/project-work-hub/components/dialogs/DeleteConfirmDialog.tsx",
       "src/modules/project-work-hub/components/dialogs/story-detail-modules/AttachmentsSection.tsx",
@@ -4109,6 +4118,7 @@ export const usageMap: UsageMap = {
       "src/components/kanban/adapters/incidentHubBoardAdapter.tsx",
       "src/components/kanban/overflow-menu/MoveWorkItemModal.tsx",
       "src/components/layout/ItemsDropdown.tsx",
+      "src/components/layout/TeamRoomSidebar.tsx",
       "src/components/layout/TestHubSidebar.tsx",
       "src/components/layout/dropdowns/ItemsDropdown.tsx",
       "src/components/modals/LinkWorkItemModal/LinkTypeSelector.tsx",
@@ -4175,11 +4185,6 @@ export const usageMap: UsageMap = {
       "src/modules/incidents/analytics/pages/IncidentInsightsPage.tsx",
       "src/modules/incidents/kanban/components/BreachedAlertBanner.tsx",
       "src/modules/incidents/kanban/components/KanbanCard.tsx",
-      "src/modules/objectives/components/Widgets/ObjectiveSummaryCard.tsx",
-      "src/modules/okr-v2/components/KeyResultAnalyticsDrawer/KeyResultAnalyticsDrawer.tsx",
-      "src/modules/okr-v2/components/ObjectiveAnalyticsDrawer/ObjectiveAnalyticsDrawer.tsx",
-      "src/modules/okr-v2/components/StrategyAnalyticsModal.tsx",
-      "src/modules/okr-v2/components/StrategyCockpit/AnalyticsDrawerContent.tsx",
       "src/modules/priorities/components/PriCarryoverBanner.tsx",
       "src/modules/priorities/components/PriToastContainer.tsx",
       "src/modules/project-work-hub/components/CreateWorkItemDropdown.tsx",
@@ -4211,6 +4216,7 @@ export const usageMap: UsageMap = {
       "src/pages/ReqAssistGenerate.tsx",
       "src/pages/Roadmaps.tsx",
       "src/pages/SkillsInventory.tsx",
+      "src/pages/TeamRoom.tsx",
       "src/pages/enterprise/BudgetGovernancePage.tsx",
       "src/pages/enterprise/BudgetPlannerPage.tsx",
       "src/pages/enterprise/DemandSummaryPage.tsx",
@@ -4229,15 +4235,20 @@ export const usageMap: UsageMap = {
       "src/pages/project/components/RiskLinkDialog.tsx",
       "src/pages/project/feature-detail/FeatureAuditTab.tsx",
       "src/pages/project/feature-detail/FeatureOverviewTab.tsx",
+      "src/pages/releases/AllReleasesPage.tsx",
+      "src/pages/releases/CommandCenterPage.tsx",
+      "src/pages/releases/CoverageReportsPage.tsx",
+      "src/pages/releases/DefectDetailPage.tsx",
+      "src/pages/releases/QualityGatesPage.tsx",
       "src/pages/work/Dependencies.tsx"
     ]
   },
-  "AlignedWorkTab::./AlignedWorkTab": {
-    "name": "AlignedWorkTab",
-    "source": "./AlignedWorkTab",
+  "AlertTriangleIcon::@/lib/atlaskit-icons": {
+    "name": "AlertTriangleIcon",
+    "source": "@/lib/atlaskit-icons",
     "origin": "internal",
     "consumers": [
-      "src/components/okr/ObjectiveDetailsPanelNew.tsx"
+      "src/pages/ForYouPage.tsx"
     ]
   },
   "AlignImageCenterIcon::@atlaskit/icon/core/align-image-center": {
@@ -4272,15 +4283,6 @@ export const usageMap: UsageMap = {
       "src/components/shared/rich-text/atlaskit/imageToolbar/ImageToolbar.tsx"
     ],
     "package": "@atlaskit/icon"
-  },
-  "AlignmentPath::./sharedAnalyticsTypes": {
-    "name": "AlignmentPath",
-    "source": "./sharedAnalyticsTypes",
-    "origin": "internal",
-    "consumers": [
-      "src/modules/okr-v2/lib/keyResultAnalytics.ts",
-      "src/modules/okr-v2/lib/workItemAnalytics.ts"
-    ]
   },
   "Allocation::@/types/capacity": {
     "name": "Allocation",
@@ -4452,14 +4454,6 @@ export const usageMap: UsageMap = {
       "src/components/capacity-planner/CapacityPlannerGantt.tsx"
     ]
   },
-  "AnalyticsDrawerContent::./AnalyticsDrawerContent": {
-    "name": "AnalyticsDrawerContent",
-    "source": "./AnalyticsDrawerContent",
-    "origin": "internal",
-    "consumers": [
-      "src/modules/okr-v2/components/StrategyCockpit/StrategyCockpit.tsx"
-    ]
-  },
   "AnalyticsMonthCell::./AnalyticsMonthCell": {
     "name": "AnalyticsMonthCell",
     "source": "./AnalyticsMonthCell",
@@ -4474,24 +4468,6 @@ export const usageMap: UsageMap = {
     "origin": "internal",
     "consumers": [
       "src/components/capacity/CapacityAnalyticsView/CapacityAnalyticsView.tsx"
-    ]
-  },
-  "AnalyticsRiskSummary::./okrRiskTypes": {
-    "name": "AnalyticsRiskSummary",
-    "source": "./okrRiskTypes",
-    "origin": "internal",
-    "consumers": [
-      "src/modules/okr-v2/lib/objectiveAnalytics.ts",
-      "src/modules/okr-v2/lib/sharedAnalyticsTypes.ts"
-    ]
-  },
-  "AnalyticsRiskSummary::./sharedAnalyticsTypes": {
-    "name": "AnalyticsRiskSummary",
-    "source": "./sharedAnalyticsTypes",
-    "origin": "internal",
-    "consumers": [
-      "src/modules/okr-v2/lib/keyResultAnalytics.ts",
-      "src/modules/okr-v2/lib/workItemAnalytics.ts"
     ]
   },
   "AngleBracketsIcon::@atlaskit/icon/core/angle-brackets": {
@@ -4589,7 +4565,8 @@ export const usageMap: UsageMap = {
     "origin": "atlaskit",
     "consumers": [
       "src/components/kanban/toolbar/KanbanToolbar.tsx",
-      "src/modules/project-work-hub/components/drawers/StoryActionMenu.tsx"
+      "src/modules/project-work-hub/components/drawers/StoryActionMenu.tsx",
+      "src/pages/admin/FeatureFlagsPage.tsx"
     ],
     "package": "@atlaskit/icon"
   },
@@ -4690,6 +4667,7 @@ export const usageMap: UsageMap = {
       "src/modules/task10/components/week/T10PriorityCard.tsx",
       "src/modules/tasks/components/TaskCard.tsx",
       "src/modules/work-hub/components/ColumnHeaderMenu.tsx",
+      "src/pages/admin/test/TestCaseWorkflowPage.tsx",
       "src/pages/project/feature-detail/FeatureLinksTab.tsx",
       "src/pages/testhub/repository/StepEditor.tsx"
     ]
@@ -4708,7 +4686,9 @@ export const usageMap: UsageMap = {
     "source": "@atlaskit/icon/core/arrow-down",
     "origin": "atlaskit",
     "consumers": [
-      "src/features/chat/components/feed/MessageFeed.tsx"
+      "src/features/all-releases/components/EnterpriseTableView.tsx",
+      "src/features/chat/components/feed/MessageFeed.tsx",
+      "src/pages/admin/FeatureFlagsPage.tsx"
     ],
     "package": "@atlaskit/icon"
   },
@@ -4785,6 +4765,7 @@ export const usageMap: UsageMap = {
       "src/pages/items/reports/EpicResponsibilityMatrix.tsx",
       "src/pages/project-hub/MapStatusesPage.tsx",
       "src/pages/project/components/FeatureLinkedItems.tsx",
+      "src/pages/releases/DefectDetailPage.tsx",
       "src/pages/testhub/cycles/CycleRunDetailPage.tsx",
       "src/pages/testhub/cycles/ExecutionPage.tsx"
     ]
@@ -4843,10 +4824,6 @@ export const usageMap: UsageMap = {
       "src/components/workhub/releases/ReleaseCard.tsx",
       "src/modules/capacity-planner/components/import/CapacityImportWizard.tsx",
       "src/modules/incidents/analytics/pages/IncidentInsightsPage.tsx",
-      "src/modules/objectives/components/Widgets/ObjectivesWidget.tsx",
-      "src/modules/okr-v2/components/KeyResultAnalyticsDrawer/KeyResultAnalyticsDrawer.tsx",
-      "src/modules/okr-v2/components/ObjectiveAnalyticsDrawer/ObjectiveAnalyticsDrawer.tsx",
-      "src/modules/okr-v2/components/WorkItemAnalyticsDrawer/WorkItemAnalyticsDrawer.tsx",
       "src/modules/task10/components/completed/T10CompletedItemsList.tsx",
       "src/modules/task10/components/completed/T10CompletedSummaryCards.tsx",
       "src/modules/task10/components/landing/T10CompletedDetailModal.tsx",
@@ -4857,6 +4834,7 @@ export const usageMap: UsageMap = {
       "src/modules/tasks/components/insights/MonthlyChronicleView.tsx",
       "src/pages/ReqAssistLibrary.tsx",
       "src/pages/project/components/FeatureLinkedItems.tsx",
+      "src/pages/releases/CommandCenter.tsx",
       "src/pages/reports/DependencyMapsPage.tsx"
     ]
   },
@@ -4866,7 +4844,11 @@ export const usageMap: UsageMap = {
     "origin": "atlaskit",
     "consumers": [
       "src/components/boards/BoardCard.tsx",
-      "src/modules/project-work-hub/components/drawers/StoryActionMenu.tsx"
+      "src/features/all-releases/components/AIInsightsBar.tsx",
+      "src/features/all-releases/components/AIInsightsDrawer.tsx",
+      "src/features/release-calendar/components/CalendarAIInsights.tsx",
+      "src/modules/project-work-hub/components/drawers/StoryActionMenu.tsx",
+      "src/pages/admin/AdminOverview.tsx"
     ],
     "package": "@atlaskit/icon"
   },
@@ -4935,6 +4917,7 @@ export const usageMap: UsageMap = {
       "src/modules/task10/components/week/T10PriorityCard.tsx",
       "src/modules/tasks/components/TaskCard.tsx",
       "src/modules/work-hub/components/ColumnHeaderMenu.tsx",
+      "src/pages/admin/test/TestCaseWorkflowPage.tsx",
       "src/pages/project/feature-detail/FeatureLinksTab.tsx",
       "src/pages/testhub/repository/StepEditor.tsx"
     ]
@@ -4968,8 +4951,19 @@ export const usageMap: UsageMap = {
       "src/modules/task10/components/week/T10SortableList.tsx",
       "src/modules/task10/components/week/T10UnifiedSortableList.tsx",
       "src/pages/Forecast.tsx",
-      "src/pages/project/feature-detail/FeatureDeliveryTab.tsx"
+      "src/pages/project/feature-detail/FeatureDeliveryTab.tsx",
+      "src/pages/releases/AllReleasesPage.tsx"
     ]
+  },
+  "ArrowUpIcon::@atlaskit/icon/core/arrow-up": {
+    "name": "ArrowUpIcon",
+    "source": "@atlaskit/icon/core/arrow-up",
+    "origin": "atlaskit",
+    "consumers": [
+      "src/features/all-releases/components/EnterpriseTableView.tsx",
+      "src/pages/admin/FeatureFlagsPage.tsx"
+    ],
+    "package": "@atlaskit/icon"
   },
   "ArrowUpIcon::@atlaskit/icon/glyph/arrow-up": {
     "name": "ArrowUpIcon",
@@ -4996,7 +4990,8 @@ export const usageMap: UsageMap = {
     "source": "@/lib/atlaskit-icons",
     "origin": "internal",
     "consumers": [
-      "src/components/evidence/annotation/AnnotationToolbar.tsx"
+      "src/components/evidence/annotation/AnnotationToolbar.tsx",
+      "src/pages/releases/CoverageReportsPage.tsx"
     ]
   },
   "ArrowUpToLine::@/lib/atlaskit-icons": {
@@ -5218,6 +5213,7 @@ export const usageMap: UsageMap = {
     "source": "@atlaskit/button/new",
     "origin": "atlaskit",
     "consumers": [
+      "src/pages/admin/FeatureFlagsPage.tsx",
       "src/pages/admin/GovernanceSettings.tsx"
     ],
     "package": "@atlaskit/button"
@@ -5484,14 +5480,6 @@ export const usageMap: UsageMap = {
       "src/features/voice-flow/VoiceFlowProvider.tsx"
     ]
   },
-  "AuditLogTab::./AuditLogTab": {
-    "name": "AuditLogTab",
-    "source": "./AuditLogTab",
-    "origin": "internal",
-    "consumers": [
-      "src/components/okr/ObjectiveDetailsPanelNew.tsx"
-    ]
-  },
   "AuditTab::./StudioTabs": {
     "name": "AuditTab",
     "source": "./StudioTabs",
@@ -5506,14 +5494,6 @@ export const usageMap: UsageMap = {
     "origin": "internal",
     "consumers": [
       "src/pages/releasehub/ReleaseDetailPage.tsx"
-    ]
-  },
-  "AuthContext::@/lib/auth-context": {
-    "name": "AuthContext",
-    "source": "@/lib/auth-context",
-    "origin": "internal",
-    "consumers": [
-      "src/lib/auth.tsx"
     ]
   },
   "AuthProvider::./lib/auth": {
@@ -6116,8 +6096,6 @@ export const usageMap: UsageMap = {
       "src/modules/in-jira/pages/ReleaseManagementPage.tsx",
       "src/modules/in-jira/pages/ScrumBoardPage.tsx",
       "src/modules/in-jira/pages/SummaryPage.tsx",
-      "src/modules/okr-v2/components/StrategyAnalyticsModal.tsx",
-      "src/modules/okr-v2/components/StrategyCockpit/StrategyCockpit.tsx",
       "src/modules/project-work-hub/components/tabs/KanbanBoardTab.tsx",
       "src/modules/strata/pages/StrataAdminConfigPage.tsx",
       "src/modules/tasks/components/TaskDetailDrawer/ProgressSection.tsx",
@@ -6131,16 +6109,17 @@ export const usageMap: UsageMap = {
       "src/pages/enterprise/BudgetPlannerPage.tsx",
       "src/pages/enterprise/DemandSummaryPage.tsx",
       "src/pages/producthub/IdeasThemePage.tsx",
-      "src/pages/project-hub/ProjectBoardPage.tsx"
+      "src/pages/project-hub/ProjectBoardPage.tsx",
+      "src/pages/releasehub/ReleaseComparePage.tsx",
+      "src/pages/releases/CoverageReportsPage.tsx"
     ]
   },
-  "BaselineInfo::./sharedAnalyticsTypes": {
-    "name": "BaselineInfo",
-    "source": "./sharedAnalyticsTypes",
+  "BarPosition::../utils/calendarUtils": {
+    "name": "BarPosition",
+    "source": "../utils/calendarUtils",
     "origin": "internal",
     "consumers": [
-      "src/modules/okr-v2/lib/keyResultAnalytics.ts",
-      "src/modules/okr-v2/lib/workItemAnalytics.ts"
+      "src/features/release-calendar/components/ReleaseBar.tsx"
     ]
   },
   "BasicFilterBar::@/components/filters/BasicFilterBar": {
@@ -6357,7 +6336,8 @@ export const usageMap: UsageMap = {
     "source": "@atlaskit/icon/core/board",
     "origin": "atlaskit",
     "consumers": [
-      "src/components/for-you/atlaskit/StarredHubList.tsx"
+      "src/components/for-you/atlaskit/StarredHubList.tsx",
+      "src/pages/admin/FeatureFlagsPage.tsx"
     ],
     "package": "@atlaskit/icon"
   },
@@ -6434,6 +6414,15 @@ export const usageMap: UsageMap = {
     "consumers": [
       "src/pages/project-hub/ProjectBoardSettingsPage.tsx"
     ]
+  },
+  "BoardsIcon::@atlaskit/icon/core/boards": {
+    "name": "BoardsIcon",
+    "source": "@atlaskit/icon/core/boards",
+    "origin": "atlaskit",
+    "consumers": [
+      "src/pages/admin/FeatureFlagsPage.tsx"
+    ],
+    "package": "@atlaskit/icon"
   },
   "BoardTaskCard::./BoardTaskCard": {
     "name": "BoardTaskCard",
@@ -6599,6 +6588,7 @@ export const usageMap: UsageMap = {
       "src/components/shared/UnifiedLinksTab.tsx",
       "src/components/stories/StoriesSidebar.tsx",
       "src/modules/project-work-hub/pages/StoryBacklogPage.tsx",
+      "src/pages/ForYouPage.tsx",
       "src/pages/ReqAssistGenerate.tsx"
     ]
   },
@@ -6609,6 +6599,15 @@ export const usageMap: UsageMap = {
     "consumers": [
       "src/pages/enterprise/CapacityPlannerPage.tsx"
     ]
+  },
+  "BookWithBookmarkIcon::@atlaskit/icon/core/book-with-bookmark": {
+    "name": "BookWithBookmarkIcon",
+    "source": "@atlaskit/icon/core/book-with-bookmark",
+    "origin": "atlaskit",
+    "consumers": [
+      "src/pages/admin/FeatureFlagsPage.tsx"
+    ],
+    "package": "@atlaskit/icon"
   },
   "BorderIcon::@atlaskit/icon/core/border": {
     "name": "BorderIcon",
@@ -6804,6 +6803,7 @@ export const usageMap: UsageMap = {
       "src/modules/docintel/pages/DocintelWorkspacePage.tsx",
       "src/pages/admin/test/TestCaseStatusesPage.tsx",
       "src/pages/admin/test/TestCaseTypesPage.tsx",
+      "src/pages/admin/test/TestCaseWorkflowPage.tsx",
       "src/pages/admin/test/TestPermissionsPage.tsx",
       "src/pages/admin/test/TestPrioritiesPage.tsx"
     ]
@@ -6859,8 +6859,7 @@ export const usageMap: UsageMap = {
       "src/components/ja/HomeContent.tsx",
       "src/components/ja/home/EmptyStates.tsx",
       "src/components/ja/home/HomeContentV2.tsx",
-      "src/components/layout/dropdowns/StarredDropdown.tsx",
-      "src/modules/objectives/components/shared/ObjectiveTierBadge.tsx"
+      "src/components/layout/dropdowns/StarredDropdown.tsx"
     ]
   },
   "BriefcaseIcon::@atlaskit/icon/core/briefcase": {
@@ -7017,6 +7016,7 @@ export const usageMap: UsageMap = {
       "src/components/kanban/adapters/ideasBoardAdapter.tsx",
       "src/components/kanban/adapters/teamProgramBoardAdapter.tsx",
       "src/components/layout/ReleasesManagementSidebar.tsx",
+      "src/components/layout/TeamRoomSidebar.tsx",
       "src/components/project-hub/settings/types/TypeHierarchy.tsx",
       "src/components/releases/quality-gates/ReleaseTestSummaryPanel.tsx",
       "src/components/settings/EmailNotificationsPanel.tsx",
@@ -7024,7 +7024,16 @@ export const usageMap: UsageMap = {
       "src/features/my-test-scope/components/ScopeTabs.tsx",
       "src/modules/project-work-hub/components/CreateWorkItemDropdown.tsx",
       "src/modules/project-work-hub/components/WorkTypeIcon.tsx",
-      "src/modules/tasks/components/insights/WeeklySummaryView.tsx"
+      "src/modules/tasks/components/insights/WeeklySummaryView.tsx",
+      "src/pages/releases/CommandCenterPage.tsx"
+    ]
+  },
+  "BugIcon::@/lib/atlaskit-icons": {
+    "name": "BugIcon",
+    "source": "@/lib/atlaskit-icons",
+    "origin": "internal",
+    "consumers": [
+      "src/pages/ForYouPage.tsx"
     ]
   },
   "BugIcon::@atlaskit/icon-object/glyph/bug/16": {
@@ -7043,6 +7052,7 @@ export const usageMap: UsageMap = {
     "consumers": [
       "src/components/filters/FilterTemplateGallery.tsx",
       "src/config/workItemConfig.ts",
+      "src/features/all-releases/components/ReleaseCard.tsx",
       "src/features/my-test-scope/components/AttentionCards.tsx",
       "src/features/my-test-scope/components/DefectsPanel.tsx",
       "src/pages/testhub/cycles/CycleDetailPage.tsx"
@@ -7306,7 +7316,6 @@ export const usageMap: UsageMap = {
       "src/modules/docintel/pages/DocintelHealthPage.tsx",
       "src/modules/docintel/pages/DocintelUploadPage.tsx",
       "src/modules/docintel/pages/DocintelWorkspacePage.tsx",
-      "src/modules/strata/components/InitiativeDetailModal.tsx",
       "src/modules/strata/components/ProjectCardDetailView.tsx",
       "src/modules/strata/components/authoring.tsx",
       "src/modules/strata/components/shared.tsx",
@@ -7398,6 +7407,9 @@ export const usageMap: UsageMap = {
       "src/components/enterprise/EnterpriseGrid.tsx",
       "src/components/epic-backlog/EpicFiltersDialog.tsx",
       "src/components/epic-backlog/EpicForecastTab.tsx",
+      "src/components/epic-backlog/modals/FeatureStatusModal.tsx",
+      "src/components/epic-backlog/modals/MilestoneModal.tsx",
+      "src/components/epic-backlog/modals/WSJFModal.tsx",
       "src/components/epic-backlog/tabs/BenefitsTab.tsx",
       "src/components/epic-backlog/tabs/DesignTab.tsx",
       "src/components/epic-backlog/tabs/LinksTab.tsx",
@@ -7496,18 +7508,6 @@ export const usageMap: UsageMap = {
       "src/components/modals/LinkWorkItemModal.tsx",
       "src/components/notifications/AnnouncementBanner.tsx",
       "src/components/objective-roadmap/EnterpriseRoadmapFiltersDialog.tsx",
-      "src/components/okr/AddAlignedWorkDialog.tsx",
-      "src/components/okr/AddChildObjectiveDialog.tsx",
-      "src/components/okr/AlignedWorkTab.tsx",
-      "src/components/okr/CheckInModal.tsx",
-      "src/components/okr/ChildObjectivesTab.tsx",
-      "src/components/okr/ConfidenceScoreModal.tsx",
-      "src/components/okr/KeyResultDialog.tsx",
-      "src/components/okr/KeyResultsList.tsx",
-      "src/components/okr/LinkedItemsTab.tsx",
-      "src/components/okr/ObjectiveDetailsPanelNew.tsx",
-      "src/components/okr/ObjectiveDetailsTab.tsx",
-      "src/components/okr/ObjectiveProgressSection.tsx",
       "src/components/prioritization/ApplyWSJFToRankDialog.tsx",
       "src/components/program/ProgramRoadmapFiltersDialog.tsx",
       "src/components/programs/CreateProgramDialog.tsx",
@@ -7573,6 +7573,7 @@ export const usageMap: UsageMap = {
       "src/components/skills-inventory/SkillsFiltersDialog.tsx",
       "src/components/stories/AcceptanceCriteriaEditor.tsx",
       "src/components/stories/CreateEditStoryPanel.tsx",
+      "src/components/stories/CreateStoryModal.tsx",
       "src/components/stories/PullRankDialog.tsx",
       "src/components/stories/StoriesColumnConfig.tsx",
       "src/components/stories/StoriesFiltersDialog.tsx",
@@ -7611,10 +7612,16 @@ export const usageMap: UsageMap = {
       "src/components/workload/WorkloadAlerts.tsx",
       "src/components/workload/WorkloadHeader.tsx",
       "src/components/workload/WorkloadHealthIndicator.tsx",
+      "src/features/all-releases/components/AIInsightsBar.tsx",
+      "src/features/all-releases/components/AIInsightsDrawer.tsx",
+      "src/features/all-releases/components/FilterBar.tsx",
+      "src/features/all-releases/components/Toolbar.tsx",
       "src/features/my-test-scope/components/IncidentsPanel.tsx",
       "src/features/my-test-scope/components/ScopeFilterBar.tsx",
       "src/features/my-test-scope/components/TestsTable.tsx",
       "src/features/my-test-scope/components/TraceabilityPanel.tsx",
+      "src/features/release-calendar/components/CalendarAIInsights.tsx",
+      "src/features/release-calendar/components/CalendarHeader.tsx",
       "src/features/release-compare/components/CompareHeader.tsx",
       "src/features/release-compare/components/ReleaseSelector.tsx",
       "src/features/release-compare/components/SaveComparisonViewDialog.tsx",
@@ -7678,26 +7685,6 @@ export const usageMap: UsageMap = {
       "src/modules/incidents/kanban/components/ManageColumnsDialog.tsx",
       "src/modules/incidents/kanban/components/SetCommitteeApproversModal.tsx",
       "src/modules/incidents/kanban/pages/IncidentKanbanPage.tsx",
-      "src/modules/objectives/components/AlignedItems/LinkObjectiveDialog.tsx",
-      "src/modules/objectives/components/AlignedItems/ObjectivesSection.tsx",
-      "src/modules/objectives/components/KeyResults/KeyResultCard.tsx",
-      "src/modules/objectives/components/KeyResults/KeyResultCheckIn.tsx",
-      "src/modules/objectives/components/KeyResults/KeyResultForm.tsx",
-      "src/modules/objectives/components/KeyResults/KeyResultReportsModal.tsx",
-      "src/modules/objectives/components/KeyResults/KeyResultsList.tsx",
-      "src/modules/objectives/components/ObjectivePanel/ObjectiveForm.tsx",
-      "src/modules/objectives/components/ProgramBoard/ObjectivesRow.tsx",
-      "src/modules/objectives/components/Widgets/ObjectivesWidget.tsx",
-      "src/modules/okr-v2/components/CreateObjectiveDialogV2.tsx",
-      "src/modules/okr-v2/components/KRWorkAlignmentDrawer.tsx",
-      "src/modules/okr-v2/components/KRWorkContributionsV2.tsx",
-      "src/modules/okr-v2/components/KeyResultDialogV2.tsx",
-      "src/modules/okr-v2/components/KeyResultsTabV2.tsx",
-      "src/modules/okr-v2/components/LinkedWorkTabV2.tsx",
-      "src/modules/okr-v2/components/OKRColumnChooser.tsx",
-      "src/modules/okr-v2/components/OKRSmartFiltersDialog.tsx",
-      "src/modules/okr-v2/components/ObjectiveDrawerV2.tsx",
-      "src/modules/okr-v2/components/StrategyCockpit/StrategyCockpit.tsx",
       "src/modules/product-backlog/components/FilterDrawer.tsx",
       "src/modules/product-backlog/components/split-panel/AttachmentUploadModal.tsx",
       "src/modules/product-backlog/components/split-panel/RequestDetailPanel.tsx",
@@ -7748,6 +7735,7 @@ export const usageMap: UsageMap = {
       "src/modules/tasks/components/shared/PlannerViewHeader.tsx",
       "src/modules/tasks/components/task-list/InlineDatePicker.tsx",
       "src/modules/tasks/components/workstreams/WorkstreamQuickEditDialog.tsx",
+      "src/modules/work-hub/WorkHubLayout.tsx",
       "src/modules/work-hub/components/CreateVersionDialog.tsx",
       "src/modules/work-hub/components/GroupByMenu.tsx",
       "src/modules/work-hub/views/AllWorkView.tsx",
@@ -7778,6 +7766,7 @@ export const usageMap: UsageMap = {
       "src/pages/Sprints.tsx",
       "src/pages/Stories.tsx",
       "src/pages/Subtasks.tsx",
+      "src/pages/TeamRoom.tsx",
       "src/pages/Themes.tsx",
       "src/pages/UnauthorizedPage.tsx",
       "src/pages/WorkManager.tsx",
@@ -7786,7 +7775,6 @@ export const usageMap: UsageMap = {
       "src/pages/enterprise/BudgetPlannerPage.tsx",
       "src/pages/enterprise/CapacityPlannerPage.tsx",
       "src/pages/enterprise/EnterpriseEpics.tsx",
-      "src/pages/enterprise/EnterpriseObjectives.tsx",
       "src/pages/enterprise/capacity-planner/AssignmentsView.tsx",
       "src/pages/enterprise/capacity-planner/BookResourceModal.tsx",
       "src/pages/enterprise/capacity-planner/EditResourceForm.tsx",
@@ -7828,6 +7816,13 @@ export const usageMap: UsageMap = {
       "src/pages/projects/ProjectComingSoonPage.tsx",
       "src/pages/projects/ProjectSummaryPage.tsx",
       "src/pages/projects/views/ListView.tsx",
+      "src/pages/releases/CommandCenter.tsx",
+      "src/pages/releases/CommandCenterPage.tsx",
+      "src/pages/releases/CoverageReportsPage.tsx",
+      "src/pages/releases/DefectDetailPage.tsx",
+      "src/pages/releases/DefectsPage.tsx",
+      "src/pages/releases/QualityGatesPage.tsx",
+      "src/pages/releases/ReleaseDashboardPage.tsx",
       "src/pages/risks/RiskRoamReportPage.tsx",
       "src/pages/work-tree/WorkTreePage.tsx",
       "src/pages/work/Dependencies.tsx",
@@ -7860,6 +7855,7 @@ export const usageMap: UsageMap = {
       "src/modules/project-work-hub/components/dialogs/LogDefectDialog.tsx",
       "src/modules/project-work-hub/components/dialogs/LogIncidentDialog.tsx",
       "src/modules/project-work-hub/pages/BacklogPage.atlaskit.tsx",
+      "src/pages/admin/AdminStorybookPage.tsx",
       "src/pages/releasehub/ChangeExecutionBoard.tsx",
       "src/pages/releasehub/ReleaseCalendarPage.tsx"
     ],
@@ -7923,13 +7919,10 @@ export const usageMap: UsageMap = {
       "src/components/chat/dock/NewChannelModal.tsx",
       "src/components/chat/dock/NewGroupDmModal.tsx",
       "src/components/chat/main/AddPeopleModal.tsx",
-      "src/components/chat/main/ComposerTranslateBanner.tsx",
       "src/components/chat/main/ConversationEmptyState.tsx",
       "src/components/chat/main/MessageStream.tsx",
-      "src/components/chat/main/MessageTranslation.tsx",
       "src/components/chat/main/RosterPanel.tsx",
       "src/components/chat/main/ScheduleSendDropdown.tsx",
-      "src/components/chat/main/TranslatePreviewDialog.tsx",
       "src/components/epic-backlog/EpicContextMenu.tsx",
       "src/components/features/FeatureContextMenu.tsx",
       "src/components/filters/BasicFilterBar.tsx",
@@ -7957,7 +7950,6 @@ export const usageMap: UsageMap = {
       "src/components/releasehub/CreateFreezeWindowModal.tsx",
       "src/components/releasehub/CreateReleaseModal.tsx",
       "src/components/releasehub/CreateSopTemplateModal.tsx",
-      "src/components/releasehub/foryou/ReleaseChangeAnnouncementBanner.tsx",
       "src/components/releases/ActionsMenu.tsx",
       "src/components/releases/ReleaseArchiveDialog.tsx",
       "src/components/releases/ReleaseConfirmationModal.tsx",
@@ -7998,8 +7990,6 @@ export const usageMap: UsageMap = {
       "src/features/kanban-board/KanbanPage.tsx",
       "src/features/kanban-board/components/AddLabelsModal.tsx",
       "src/features/kanban-board/components/LinkWorkItemModal.tsx",
-      "src/features/voice-flow/VoiceMicButton.tsx",
-      "src/features/voice-flow/VoiceSettingsTab.tsx",
       "src/features/whatsapp-summary/WhatsAppSummaryModal.tsx",
       "src/modules/docintel/components/PromoteArtifactModal.tsx",
       "src/modules/project-work-hub/components/SubtasksPanel/index.tsx",
@@ -8019,13 +8009,17 @@ export const usageMap: UsageMap = {
       "src/pages/UserNotificationSettingsPage.tsx",
       "src/pages/UserProfile.tsx",
       "src/pages/admin/AdminAccessPage.tsx",
+      "src/pages/admin/BusinessOwners.tsx",
       "src/pages/admin/CapacityDepartments.tsx",
       "src/pages/admin/Departments.tsx",
       "src/pages/admin/FieldRegistryPage.tsx",
+      "src/pages/admin/NotificationTriggers.tsx",
+      "src/pages/admin/QuartersAdminPage.tsx",
       "src/pages/admin/ReleaseOpsAdminPage.tsx",
       "src/pages/admin/ResourceAssignments.tsx",
       "src/pages/admin/RolesAdminPage.tsx",
       "src/pages/admin/RoutingTaxonomyPage.tsx",
+      "src/pages/admin/UserAccessPage.tsx",
       "src/pages/admin/avatars/AdminAvatarsPage.tsx",
       "src/pages/admin/components/CascadeImpactPanel.tsx",
       "src/pages/admin/components/ComponentLivePreview.tsx",
@@ -8126,16 +8120,14 @@ export const usageMap: UsageMap = {
     "origin": "internal",
     "consumers": [
       "src/components/dependencies/CreateDependencyDialog.tsx",
+      "src/components/epic-backlog/modals/MilestoneModal.tsx",
       "src/components/items/features/FeatureRightRail.tsx",
       "src/components/kanban/AdvancedFilterPanel.tsx",
-      "src/components/okr/CheckInModal.tsx",
       "src/components/project-hub/work-items/inline/InlineEditors.tsx",
       "src/components/templates/ApplyTemplateModal.tsx",
       "src/modules-dormant/ideation/CreateDriveModal.tsx",
       "src/modules/budget/components/LicenseDialog.tsx",
       "src/modules/budget/components/ResourceCostSection.tsx",
-      "src/modules/objectives/components/ObjectivePanel/ObjectiveForm.tsx",
-      "src/modules/okr-v2/components/OKRSmartFiltersDialog.tsx",
       "src/modules/tasks/components/TaskList/TaskListRowV3.tsx",
       "src/modules/tasks/components/task-list/InlineDatePicker.tsx",
       "src/modules/work-hub/components/CreateVersionDialog.tsx",
@@ -8178,6 +8170,7 @@ export const usageMap: UsageMap = {
       "src/components/layout/ItemsDropdown.tsx",
       "src/components/layout/ReleaseHubSidebar.tsx",
       "src/components/layout/ReleasesManagementSidebar.tsx",
+      "src/components/layout/TeamRoomSidebar.tsx",
       "src/components/layout/UnifiedSidebar.tsx",
       "src/components/layout/dropdowns/ItemsDropdown.tsx",
       "src/components/objective-roadmap/EnterpriseRoadmapFiltersDialog.tsx",
@@ -8193,7 +8186,6 @@ export const usageMap: UsageMap = {
       "src/components/project-hub/work-items/WorkItemTableRow.tsx",
       "src/components/project-hub/work-items/WorkItemsTable.tsx",
       "src/components/project/ViewSelector.tsx",
-      "src/components/releasehub/foryou/ReleaseChangeAnnouncementBanner.tsx",
       "src/components/releases/quality-gates/GateHistoryPanel.tsx",
       "src/components/reports/ReportFilters.tsx",
       "src/components/reports/SavedReportsList.tsx",
@@ -8226,11 +8218,6 @@ export const usageMap: UsageMap = {
       "src/modules/in-jira/pages/ScrumBoardPage.tsx",
       "src/modules/incidents/analytics/components/TimeRangeSelector.tsx",
       "src/modules/incidents/kanban/components/SetCommitteeApproversModal.tsx",
-      "src/modules/objectives/components/KeyResults/KeyResultCard.tsx",
-      "src/modules/objectives/components/KeyResults/KeyResultReportsModal.tsx",
-      "src/modules/okr-v2/components/KeyResultAnalyticsDrawer/KeyResultAnalyticsDrawer.tsx",
-      "src/modules/okr-v2/components/KeyResultsTabV2.tsx",
-      "src/modules/okr-v2/components/ObjectiveDrawerV2.tsx",
       "src/modules/priorities/pages/PriListsPage.tsx",
       "src/modules/product-backlog/components/split-panel/RequestDetailPanel.tsx",
       "src/modules/product-roadmap/components/RoadmapTimelineBar.tsx",
@@ -8282,7 +8269,11 @@ export const usageMap: UsageMap = {
       "src/pages/project/TimelineView.tsx",
       "src/pages/project/feature-detail/FeatureRightRail.tsx",
       "src/pages/projects/ProjectSummaryPage.tsx",
-      "src/pages/r360-member/WeekStripCollapsible.tsx"
+      "src/pages/r360-member/WeekStripCollapsible.tsx",
+      "src/pages/releases/AllReleasesPage.tsx",
+      "src/pages/releases/CommandCenterPage.tsx",
+      "src/pages/releases/CoverageReportsPage.tsx",
+      "src/pages/releases/QualityGatesPage.tsx"
     ]
   },
   "Calendar::@atlaskit/calendar": {
@@ -8293,6 +8284,14 @@ export const usageMap: UsageMap = {
       "src/components/kanban/InlineCreateCard.tsx"
     ],
     "package": "@atlaskit/calendar"
+  },
+  "CalendarAIInsights::./CalendarAIInsights": {
+    "name": "CalendarAIInsights",
+    "source": "./CalendarAIInsights",
+    "origin": "internal",
+    "consumers": [
+      "src/features/release-calendar/components/ReleaseCalendar.tsx"
+    ]
   },
   "CalendarCell::./calendar": {
     "name": "CalendarCell",
@@ -8362,7 +8361,8 @@ export const usageMap: UsageMap = {
     "origin": "internal",
     "consumers": [
       "src/components/workhub/calendar/CalendarReleaseView.tsx",
-      "src/components/workhub/calendar/CalendarResourceView.tsx"
+      "src/components/workhub/calendar/CalendarResourceView.tsx",
+      "src/features/release-calendar/components/ReleaseCalendar.tsx"
     ]
   },
   "CalendarGrid::@/components/workhub/calendar/CalendarGrid": {
@@ -8380,6 +8380,14 @@ export const usageMap: UsageMap = {
     "consumers": [
       "src/components/workhub/calendar/CalendarReleaseView.tsx",
       "src/components/workhub/calendar/CalendarResourceView.tsx"
+    ]
+  },
+  "CalendarHeader::./CalendarHeader": {
+    "name": "CalendarHeader",
+    "source": "./CalendarHeader",
+    "origin": "internal",
+    "consumers": [
+      "src/features/release-calendar/components/ReleaseCalendar.tsx"
     ]
   },
   "CalendarHeader::@/modules/tasks/components/calendar/CalendarHeader": {
@@ -8417,7 +8425,6 @@ export const usageMap: UsageMap = {
       "src/modules-dormant/ideation/CreateDriveModal.tsx",
       "src/modules/budget/components/LicenseDialog.tsx",
       "src/modules/budget/components/ResourceCostSection.tsx",
-      "src/modules/okr-v2/components/OKRSmartFiltersDialog.tsx",
       "src/modules/tasks/components/PlannerCalendar.tsx",
       "src/modules/tasks/components/task-list/InlineDatePicker.tsx",
       "src/modules/work-hub/components/CreateVersionDialog.tsx"
@@ -8432,7 +8439,10 @@ export const usageMap: UsageMap = {
       "src/components/project-hub/dashboard/widgets/DemandFulfilmentGadget.tsx",
       "src/components/shared/JiraFilterAtlaskit.tsx",
       "src/config/workItemConfig.ts",
+      "src/features/all-releases/components/ReleaseCard.tsx",
       "src/features/my-test-scope/components/WorkloadPanel.tsx",
+      "src/features/release-calendar/components/CalendarHeader.tsx",
+      "src/pages/admin/FeatureFlagsPage.tsx",
       "src/pages/admin/ResourceAssignments.tsx"
     ],
     "package": "@atlaskit/icon"
@@ -8453,6 +8463,16 @@ export const usageMap: UsageMap = {
     "origin": "internal",
     "consumers": [
       "src/components/dependencies/CreateDependencyDialog.tsx"
+    ]
+  },
+  "CalendarInsight::../types": {
+    "name": "CalendarInsight",
+    "source": "../types",
+    "origin": "internal",
+    "consumers": [
+      "src/features/release-calendar/components/CalendarAIInsights.tsx",
+      "src/features/release-calendar/components/ReleaseCalendar.tsx",
+      "src/features/release-calendar/utils/calendarUtils.ts"
     ]
   },
   "CalendarLegend::./calendar": {
@@ -8486,6 +8506,25 @@ export const usageMap: UsageMap = {
     "origin": "internal",
     "consumers": [
       "src/components/product-hub/roadmap/RoadmapDetailPanel.tsx"
+    ]
+  },
+  "CalendarRelease::../types": {
+    "name": "CalendarRelease",
+    "source": "../types",
+    "origin": "internal",
+    "consumers": [
+      "src/features/release-calendar/components/CalendarGrid.tsx",
+      "src/features/release-calendar/components/ReleaseBar.tsx",
+      "src/features/release-calendar/components/ReleaseCalendar.tsx",
+      "src/features/release-calendar/utils/calendarUtils.ts"
+    ]
+  },
+  "CalendarRelease::@/features/release-calendar": {
+    "name": "CalendarRelease",
+    "source": "@/features/release-calendar",
+    "origin": "internal",
+    "consumers": [
+      "src/pages/releases/CalendarPage.tsx"
     ]
   },
   "CalendarReleaseView::./CalendarReleaseView": {
@@ -8767,6 +8806,7 @@ export const usageMap: UsageMap = {
       "src/components/dependencies/DependencyMatrix.tsx",
       "src/components/dependencies/DependencyWheelDetailsPanel.tsx",
       "src/components/dependencies/DependencyWheelMap.tsx",
+      "src/components/epic-backlog/modals/WSJFModal.tsx",
       "src/components/evidence/reports/EvidenceStats.tsx",
       "src/components/evidence/reports/ExecutionSummary.tsx",
       "src/components/features/FeaturesKanbanView.tsx",
@@ -8783,11 +8823,6 @@ export const usageMap: UsageMap = {
       "src/components/kanban/setup/SwimLanesSetupTab.tsx",
       "src/components/knowledge-hub/DocumentComments.tsx",
       "src/components/knowledge-hub/KnowledgeBaseCard.tsx",
-      "src/components/okr/AlignedWorkTab.tsx",
-      "src/components/okr/ChildObjectivesTab.tsx",
-      "src/components/okr/LinkedItemsTab.tsx",
-      "src/components/okr/ObjectiveDetailsTab.tsx",
-      "src/components/okr/ObjectiveProgressSection.tsx",
       "src/components/releases/quality-gates/QualityGateEditor.tsx",
       "src/components/releases/quality-gates/ReadinessHistoryTable.tsx",
       "src/components/releases/quality-gates/ReadinessStatusCard.tsx",
@@ -8837,12 +8872,6 @@ export const usageMap: UsageMap = {
       "src/modules/in-jira/pages/ScrumBoardPage.tsx",
       "src/modules/in-jira/pages/SettingsPage.tsx",
       "src/modules/in-jira/pages/SummaryPage.tsx",
-      "src/modules/objectives/components/AlignedItems/ObjectivesSection.tsx",
-      "src/modules/objectives/components/KeyResults/KeyResultCard.tsx",
-      "src/modules/objectives/components/KeyResults/KeyResultForm.tsx",
-      "src/modules/objectives/components/KeyResults/KeyResultReportsModal.tsx",
-      "src/modules/objectives/components/Widgets/ObjectiveSummaryCard.tsx",
-      "src/modules/objectives/components/Widgets/ObjectivesWidget.tsx",
       "src/modules/project-work-hub/components/tabs/SummaryTab.tsx",
       "src/modules/work-hub/views/ReleaseDetailsView.tsx",
       "src/modules/work-hub/views/SummaryView.tsx",
@@ -8862,12 +8891,12 @@ export const usageMap: UsageMap = {
       "src/pages/SlackOAuthCallback.tsx",
       "src/pages/SprintBoard.tsx",
       "src/pages/SuccessCriteria.tsx",
+      "src/pages/TeamRoom.tsx",
       "src/pages/Themes.tsx",
       "src/pages/UnauthorizedPage.tsx",
       "src/pages/ValueStreamView.tsx",
       "src/pages/WorkSpendGrid.tsx",
       "src/pages/enterprise/EnterpriseEpics.tsx",
-      "src/pages/enterprise/EnterpriseObjectives.tsx",
       "src/pages/items/EpicEstimationPage.tsx",
       "src/pages/items/EpicsPage.tsx",
       "src/pages/items/reports/EpicPlanningPage.tsx",
@@ -8880,6 +8909,11 @@ export const usageMap: UsageMap = {
       "src/pages/projects/ProjectSummaryPage.tsx",
       "src/pages/projects/views/KanbanView.tsx",
       "src/pages/projects/views/SummaryView.tsx",
+      "src/pages/releases/CommandCenter.tsx",
+      "src/pages/releases/CommandCenterPage.tsx",
+      "src/pages/releases/CoverageReportsPage.tsx",
+      "src/pages/releases/DefectsPage.tsx",
+      "src/pages/releases/QualityGatesPage.tsx",
       "src/pages/reports/DependencyMapsPage.tsx",
       "src/pages/work-tree/WorkTreePage.tsx",
       "src/pages/work-tree/components/WorkTreeDashboard.tsx",
@@ -8892,6 +8926,7 @@ export const usageMap: UsageMap = {
     "origin": "internal",
     "consumers": [
       "src/components/dependencies/DependencyWheelDetailsPanel.tsx",
+      "src/components/epic-backlog/modals/WSJFModal.tsx",
       "src/components/evidence/reports/EvidenceStats.tsx",
       "src/components/evidence/reports/ExecutionSummary.tsx",
       "src/components/features/FeaturesKanbanView.tsx",
@@ -8943,7 +8978,6 @@ export const usageMap: UsageMap = {
       "src/modules/in-jira/pages/ScrumBoardPage.tsx",
       "src/modules/in-jira/pages/SettingsPage.tsx",
       "src/modules/in-jira/pages/SummaryPage.tsx",
-      "src/modules/objectives/components/KeyResults/KeyResultForm.tsx",
       "src/modules/work-hub/views/ReleaseDetailsView.tsx",
       "src/modules/work-hub/views/SummaryView.tsx",
       "src/pages/InviteAcceptPage.tsx",
@@ -8955,6 +8989,7 @@ export const usageMap: UsageMap = {
       "src/pages/ResetPassword.tsx",
       "src/pages/ShortLinkResolverPage.tsx",
       "src/pages/SlackOAuthCallback.tsx",
+      "src/pages/TeamRoom.tsx",
       "src/pages/Themes.tsx",
       "src/pages/UnauthorizedPage.tsx",
       "src/pages/ValueStreamView.tsx",
@@ -8966,6 +9001,10 @@ export const usageMap: UsageMap = {
       "src/pages/projects/ProjectSummaryPage.tsx",
       "src/pages/projects/views/KanbanView.tsx",
       "src/pages/projects/views/SummaryView.tsx",
+      "src/pages/releases/CommandCenter.tsx",
+      "src/pages/releases/CommandCenterPage.tsx",
+      "src/pages/releases/CoverageReportsPage.tsx",
+      "src/pages/releases/QualityGatesPage.tsx",
       "src/pages/work-tree/WorkTreePage.tsx",
       "src/pages/work-tree/components/WorkTreeDashboard.tsx"
     ]
@@ -9046,6 +9085,7 @@ export const usageMap: UsageMap = {
       "src/pages/ProjectSettingsPage.tsx",
       "src/pages/ResetPassword.tsx",
       "src/pages/ShortLinkResolverPage.tsx",
+      "src/pages/TeamRoom.tsx",
       "src/pages/Themes.tsx",
       "src/pages/UnauthorizedPage.tsx",
       "src/pages/ValueStreamView.tsx",
@@ -9055,6 +9095,9 @@ export const usageMap: UsageMap = {
       "src/pages/program/QuartersPage.tsx",
       "src/pages/projects/ProjectSummaryPage.tsx",
       "src/pages/projects/views/SummaryView.tsx",
+      "src/pages/releases/CommandCenterPage.tsx",
+      "src/pages/releases/CoverageReportsPage.tsx",
+      "src/pages/releases/QualityGatesPage.tsx",
       "src/pages/work-tree/WorkTreePage.tsx"
     ]
   },
@@ -9114,6 +9157,7 @@ export const usageMap: UsageMap = {
       "src/pages/ProjectSettingsPage.tsx",
       "src/pages/ResetPassword.tsx",
       "src/pages/ShortLinkResolverPage.tsx",
+      "src/pages/TeamRoom.tsx",
       "src/pages/Themes.tsx",
       "src/pages/UnauthorizedPage.tsx",
       "src/pages/ValueStreamView.tsx",
@@ -9123,6 +9167,9 @@ export const usageMap: UsageMap = {
       "src/pages/program/QuartersPage.tsx",
       "src/pages/projects/ProjectSummaryPage.tsx",
       "src/pages/projects/views/SummaryView.tsx",
+      "src/pages/releases/CommandCenterPage.tsx",
+      "src/pages/releases/CoverageReportsPage.tsx",
+      "src/pages/releases/QualityGatesPage.tsx",
       "src/pages/work-tree/WorkTreePage.tsx"
     ]
   },
@@ -9406,7 +9453,6 @@ export const usageMap: UsageMap = {
       "src/components/forms/ThemeDialog.tsx",
       "src/components/items/epics/drawer-tabs/EpicDetailsViewTab.tsx",
       "src/components/objective-roadmap/EnterpriseRoadmapFiltersDialog.tsx",
-      "src/components/okr/ObjectiveDetailsTab.tsx",
       "src/components/product-hub/MilestoneCreateModal.tsx",
       "src/components/product/CreateReleaseModal.tsx",
       "src/components/program/ProgramRoadmapFiltersDialog.tsx",
@@ -9417,10 +9463,8 @@ export const usageMap: UsageMap = {
       "src/components/risks/drawer-tabs/RiskDetailsTab.tsx",
       "src/components/risks/shared/RiskFormV2.tsx",
       "src/components/sprints/SprintCreateModal.tsx",
-      "src/modules/okr-v2/components/CreateObjectiveDialogV2.tsx",
-      "src/modules/okr-v2/components/KeyResultDialogV2.tsx",
-      "src/modules/okr-v2/components/ObjectiveOverviewTabV2.tsx",
       "src/modules/work-hub/components/InlineDatePicker.tsx",
+      "src/pages/admin/QuartersAdminPage.tsx",
       "src/pages/program/ExecutionWorkbench/WorkbenchFiltersDialog.tsx",
       "src/pages/project-hub/ConvertToSubtaskPage.tsx",
       "src/pages/project-hub/MovePage.tsx"
@@ -9690,7 +9734,6 @@ export const usageMap: UsageMap = {
       "src/components/incidents/IncidentTimeline.tsx",
       "src/components/incidents/MajorIncidentPanel.tsx",
       "src/components/incidents/WatchersPanel.tsx",
-      "src/components/releasehub/foryou/ReleaseChangeAnnouncementBanner.tsx",
       "src/components/workhub/issue-view/IssueListPanel.tsx",
       "src/modules/product-backlog/components/split-panel/RequestDetailPanel.tsx",
       "src/modules/work-hub/components/AllWorkTicketList.tsx",
@@ -9735,6 +9778,10 @@ export const usageMap: UsageMap = {
       "src/pages/project-hub/ProjectSettingsPage.tsx",
       "src/pages/project-hub/StoryDetailPage.tsx",
       "src/pages/project-hub/WorkItemsListPage.tsx",
+      "src/pages/releases/AllReleasesPage.tsx",
+      "src/pages/releases/CommandCenterPage.tsx",
+      "src/pages/releases/CoverageReportsPage.tsx",
+      "src/pages/releases/QualityGatesPage.tsx",
       "src/stories/components/SharedMolecules.stories.tsx"
     ]
   },
@@ -9938,7 +9985,6 @@ export const usageMap: UsageMap = {
     "source": "@/components/ads",
     "origin": "internal",
     "consumers": [
-      "src/modules/strata/components/InitiativeDetailModal.tsx",
       "src/modules/strata/components/ProjectCardDetailView.tsx",
       "src/modules/strata/components/vmoAuthoring.tsx",
       "src/modules/strata/pages/StrataAdminConfigPage.tsx",
@@ -10408,7 +10454,6 @@ export const usageMap: UsageMap = {
       "src/components/chat/IncomingHuddleFab.tsx",
       "src/components/chat/caty-mood/CatyMoodFace.tsx",
       "src/components/chat/dock/ChatDock.tsx",
-      "src/components/chat/main/ComposerTranslateBanner.tsx",
       "src/components/for-you/atlaskit/CatyButton.tsx",
       "src/components/releasehub/CatyRiskPanel.tsx",
       "src/components/releasehub/ReleasePredictorCard.tsx",
@@ -10419,6 +10464,7 @@ export const usageMap: UsageMap = {
       "src/components/wiki-hub/GenerateStoriesFromPage.tsx",
       "src/components/wiki-hub/WikiTranslateBar.tsx",
       "src/features/health/components/HealthPanel.tsx",
+      "src/features/voice-flow/DictationCTA.tsx",
       "src/modules/project-work-hub/pages/BacklogPage.atlaskit.tsx",
       "src/pages/project-hub/filters/FilterPreviewPage.tsx",
       "src/pages/release-hub/ReleaseDetailPage.tsx",
@@ -10538,6 +10584,7 @@ export const usageMap: UsageMap = {
     "source": "@/components/common/ChangeNumberSelect",
     "origin": "internal",
     "consumers": [
+      "src/components/stories/CreateStoryModal.tsx",
       "src/stories/components/LayoutAtoms.stories.tsx"
     ]
   },
@@ -10591,7 +10638,8 @@ export const usageMap: UsageMap = {
     "source": "@atlaskit/icon/core/chart-bar",
     "origin": "atlaskit",
     "consumers": [
-      "src/modules/workhub/admin/components/SyncConfigPanel.tsx"
+      "src/modules/workhub/admin/components/SyncConfigPanel.tsx",
+      "src/pages/admin/FeatureFlagsPage.tsx"
     ],
     "package": "@atlaskit/icon"
   },
@@ -10605,6 +10653,15 @@ export const usageMap: UsageMap = {
       "src/components/workhub/analytics/StatusDistributionChart.tsx",
       "src/components/workhub/analytics/TypeDistributionChart.tsx"
     ]
+  },
+  "ChartTrendIcon::@atlaskit/icon/core/chart-trend": {
+    "name": "ChartTrendIcon",
+    "source": "@atlaskit/icon/core/chart-trend",
+    "origin": "atlaskit",
+    "consumers": [
+      "src/pages/admin/AdminOverview.tsx"
+    ],
+    "package": "@atlaskit/icon"
   },
   "ChartVisibility::@/types/risks": {
     "name": "ChartVisibility",
@@ -10807,8 +10864,6 @@ export const usageMap: UsageMap = {
       "src/modules/in-jira/components/releases/SprintReleasePicker.tsx",
       "src/modules/in-jira/pages/ListPage.tsx",
       "src/modules/incidents/kanban/components/SetCommitteeApproversModal.tsx",
-      "src/modules/okr-v2/components/OKRColumnChooser.tsx",
-      "src/modules/okr-v2/components/StrategyAnalyticsModal.tsx",
       "src/modules/priorities/components/PriCarryoverBanner.tsx",
       "src/modules/priorities/components/PriStatusToggle.tsx",
       "src/modules/product-backlog/components/split-panel/RequestDetailPanel.tsx",
@@ -10882,7 +10937,8 @@ export const usageMap: UsageMap = {
       "src/pages/program/ProgramRoadmapPage.tsx",
       "src/pages/project-hub/MapStatusesPage.tsx",
       "src/pages/releasehub/ChangeDetailPage.tsx",
-      "src/pages/releasehub/ReleaseDetailPage.tsx"
+      "src/pages/releasehub/ReleaseDetailPage.tsx",
+      "src/pages/releases/AllReleasesPage.tsx"
     ]
   },
   "Checkbox::../atoms": {
@@ -10917,6 +10973,7 @@ export const usageMap: UsageMap = {
       "src/components/demand/DemandColumnsConfigModal.tsx",
       "src/components/dependencies/DependencyDetailsDrawer.tsx",
       "src/components/enterprise/EnterpriseGrid.tsx",
+      "src/components/epic-backlog/modals/WSJFModal.tsx",
       "src/components/features/FeaturesColumnsDialog.tsx",
       "src/components/features/FeaturesListView.tsx",
       "src/components/for-you/ForYouTable.tsx",
@@ -10937,7 +10994,6 @@ export const usageMap: UsageMap = {
       "src/components/items/features/FeatureTable.tsx",
       "src/components/items/features/tabs/FeatureOverviewTab.tsx",
       "src/components/ja/home/HomeUnifiedFilterDrawer.tsx",
-      "src/components/okr/ObjectiveDetailsTab.tsx",
       "src/components/program/ProgramRoadmapFiltersDialog.tsx",
       "src/components/releases/all-releases/ReleasesTable.tsx",
       "src/components/releases/all-releases/ReleasesTableRow.tsx",
@@ -10952,6 +11008,7 @@ export const usageMap: UsageMap = {
       "src/components/shared/ResourceModal.tsx",
       "src/components/shared/dynamic-table/DynamicTable.tsx",
       "src/components/skills-inventory/SkillsFiltersDialog.tsx",
+      "src/components/stories/CreateStoryModal.tsx",
       "src/components/stories/StoriesColumnConfig.tsx",
       "src/components/stories/StoriesListView.tsx",
       "src/components/stories/SubtasksList.tsx",
@@ -10961,6 +11018,7 @@ export const usageMap: UsageMap = {
       "src/components/work-items/WorkItemsList.tsx",
       "src/components/work-manager/ManagerFollowUpNotes.tsx",
       "src/components/work-manager/TaskDrawer.tsx",
+      "src/features/all-releases/components/EnterpriseTableView.tsx",
       "src/features/release-compare/components/SaveComparisonViewDialog.tsx",
       "src/modules/backlog/components/BacklogColumnsDialog.tsx",
       "src/modules/backlog/components/BacklogKanbanView.tsx",
@@ -11035,6 +11093,15 @@ export const usageMap: UsageMap = {
       "src/stories/patterns/BulkEditPattern.stories.tsx"
     ],
     "package": "@atlaskit/checkbox"
+  },
+  "CheckboxCheckedIcon::@atlaskit/icon/core/checkbox-checked": {
+    "name": "CheckboxCheckedIcon",
+    "source": "@atlaskit/icon/core/checkbox-checked",
+    "origin": "atlaskit",
+    "consumers": [
+      "src/pages/admin/FeatureFlagsPage.tsx"
+    ],
+    "package": "@atlaskit/icon"
   },
   "CheckBoxCheckIcon::../shared/Icon": {
     "name": "CheckBoxCheckIcon",
@@ -11119,6 +11186,9 @@ export const usageMap: UsageMap = {
       "src/pages/admin/test/TestCaseTypesPage.tsx",
       "src/pages/enterprise/DemandSummaryPage.tsx",
       "src/pages/projects/ProjectSummaryPage.tsx",
+      "src/pages/releasehub/TriageQueuePage.tsx",
+      "src/pages/releases/DefectDetailPage.tsx",
+      "src/pages/releases/QualityGatesPage.tsx",
       "src/pages/testhub/cycles/CycleDetailPage.tsx"
     ]
   },
@@ -11159,7 +11229,6 @@ export const usageMap: UsageMap = {
       "src/modules/in-jira/components/import/ImportWizard.tsx",
       "src/modules/in-jira/components/releases/VersionCard.tsx",
       "src/modules/in-jira/pages/SummaryPage.tsx",
-      "src/modules/objectives/components/Widgets/ObjectiveSummaryCard.tsx",
       "src/modules/strata/pages/StrataAdminConfigPage.tsx",
       "src/modules/strata/pages/StrataDataPipelinePage.tsx",
       "src/modules/strata/pages/StrataExecutionImportPage.tsx",
@@ -11179,6 +11248,8 @@ export const usageMap: UsageMap = {
       "src/pages/project/FeatureDetailPage.tsx",
       "src/pages/project/feature-detail/FeatureAuditTab.tsx",
       "src/pages/project/feature-detail/FeatureOverviewTab.tsx",
+      "src/pages/releases/CommandCenterPage.tsx",
+      "src/pages/releases/CoverageReportsPage.tsx",
       "src/pages/work/Dependencies.tsx"
     ]
   },
@@ -11190,11 +11261,15 @@ export const usageMap: UsageMap = {
       "src/components/admin/notifications/BulkActionsBar.tsx",
       "src/components/admin/notifications/TriggerTable.tsx",
       "src/components/project-hub/dashboard/widgets/DemandFulfilmentGadget.tsx",
+      "src/features/all-releases/components/AIInsightsBar.tsx",
+      "src/features/all-releases/components/AIInsightsDrawer.tsx",
+      "src/features/all-releases/components/SummaryCards.tsx",
       "src/features/my-test-scope/components/IncidentsPanel.tsx",
       "src/features/my-test-scope/components/TraceabilityPanel.tsx",
       "src/features/release-compare/components/CompareInsightsBar.tsx",
       "src/modules/workhub/admin/components/SyncConfigPanel.tsx",
-      "src/modules/workhub/admin/components/SyncLogs.tsx"
+      "src/modules/workhub/admin/components/SyncLogs.tsx",
+      "src/pages/admin/NotificationTriggers.tsx"
     ],
     "package": "@atlaskit/icon"
   },
@@ -11246,14 +11321,6 @@ export const usageMap: UsageMap = {
       "src/pages/release-hub/ReleaseDetailPage.tsx"
     ],
     "package": "@atlaskit/icon"
-  },
-  "CheckInModal::./CheckInModal": {
-    "name": "CheckInModal",
-    "source": "./CheckInModal",
-    "origin": "internal",
-    "consumers": [
-      "src/components/okr/KeyResultsList.tsx"
-    ]
   },
   "ChecklistIndicator::./ChecklistIndicator": {
     "name": "ChecklistIndicator",
@@ -11346,7 +11413,9 @@ export const usageMap: UsageMap = {
       "src/modules/project-work-hub/components/dialogs/story-detail-modules/ChildIssuesSection.tsx",
       "src/modules/project-work-hub/components/dialogs/story-detail-modules/shared-components.tsx",
       "src/modules/workhub/admin/components/TestConnectionModal.tsx",
+      "src/pages/admin/FeatureFlagsPage.tsx",
       "src/pages/admin/GovernanceSettings.tsx",
+      "src/pages/admin/UserAccessPage.tsx",
       "src/pages/admin/components/BulkEditModal.tsx",
       "src/pages/admin/components/UserDrawer.tsx"
     ],
@@ -11395,6 +11464,7 @@ export const usageMap: UsageMap = {
       "src/modules/tasks/components/dashboard/DashboardMetricCards.tsx",
       "src/modules/work-hub/views/AllWorkView.tsx",
       "src/modules/work-hub/views/SummaryView.tsx",
+      "src/pages/ForYouPage.tsx",
       "src/pages/releasehub/CommandCenterPage.tsx",
       "src/pages/work-tree/components/WorkTreeLegend.tsx"
     ]
@@ -11463,7 +11533,6 @@ export const usageMap: UsageMap = {
       "src/components/objective-roadmap/EnterpriseRoadmapFiltersDialog.tsx",
       "src/components/objective-roadmap/LoadMoreStrip.tsx",
       "src/components/objective-roadmap/RoadmapToolbar.tsx",
-      "src/components/okr/KeyResultsList.tsx",
       "src/components/planner/shared/LabelsFilter.tsx",
       "src/components/planner/task-modal/molecules/AssigneeDropdown.tsx",
       "src/components/planner/task-modal/molecules/DateDropdown.tsx",
@@ -11491,7 +11560,6 @@ export const usageMap: UsageMap = {
       "src/components/releasehub/CatyRiskPanel.tsx",
       "src/components/releasehub/FacetFilterBar.tsx",
       "src/components/releasehub/detail/SopRunbook.tsx",
-      "src/components/releasehub/foryou/ReleaseChangeAnnouncementBanner.tsx",
       "src/components/releasehub/signoff/SignoffDependencyGraph.tsx",
       "src/components/releases/dashboard/TestExecutionTable.tsx",
       "src/components/requirement-assist/CategoryTree.tsx",
@@ -11544,15 +11612,6 @@ export const usageMap: UsageMap = {
       "src/modules/incidents/kanban/components/KanbanColumn.tsx",
       "src/modules/incidents/kanban/components/KanbanFiltersBar.tsx",
       "src/modules/incidents/kanban/components/KanbanSwimlane.tsx",
-      "src/modules/objectives/components/KeyResults/KeyResultCard.tsx",
-      "src/modules/okr-v2/components/KeyResultAnalyticsDrawer/KeyResultAnalyticsDrawer.tsx",
-      "src/modules/okr-v2/components/KeyResultsTabV2.tsx",
-      "src/modules/okr-v2/components/LinkedWorkTabV2.tsx",
-      "src/modules/okr-v2/components/ObjectiveAnalyticsDrawer/ObjectiveAnalyticsDrawer.tsx",
-      "src/modules/okr-v2/components/StrategyAnalyticsModal.tsx",
-      "src/modules/okr-v2/components/StrategyCockpit/AnalyticsDrawerContent.tsx",
-      "src/modules/okr-v2/components/StrategyCockpit/StrategyTree.tsx",
-      "src/modules/okr-v2/components/WorkItemAnalyticsDrawer/WorkItemAnalyticsDrawer.tsx",
       "src/modules/product-roadmap/components/RoadmapListPanel.tsx",
       "src/modules/project-work-hub/components/AddPeopleModal.tsx",
       "src/modules/project-work-hub/components/CreateWorkItemDropdown.tsx",
@@ -11634,6 +11693,10 @@ export const usageMap: UsageMap = {
       "src/pages/r360-member/ChronologyView.tsx",
       "src/pages/r360-member/WeekStripCollapsible.tsx",
       "src/pages/releasehub/ProductionEventReplayPage.tsx",
+      "src/pages/releasehub/TriageQueuePage.tsx",
+      "src/pages/releases/AllReleasesPage.tsx",
+      "src/pages/releases/CommandCenterPage.tsx",
+      "src/pages/releases/QualityGatesPage.tsx",
       "src/pages/testhub/repository/RepositoryPage.tsx",
       "src/pages/work-tree/components/WorkTreeHierarchy.tsx"
     ]
@@ -11712,7 +11775,6 @@ export const usageMap: UsageMap = {
       "src/components/kanban/InlineCreateCard.tsx",
       "src/components/layout/ContextSwitcher.tsx",
       "src/components/layout/HomeSidebar.tsx",
-      "src/components/layout/StrataSwitcher.tsx",
       "src/components/project-hub/work-items/WorkItemsToolbar.tsx",
       "src/components/releases/ReleasesTable.tsx",
       "src/components/releases/ShareFeedbackModal.tsx",
@@ -11730,10 +11792,12 @@ export const usageMap: UsageMap = {
       "src/components/shared/Timeline/TimelineView.tsx",
       "src/components/shared/WorkItemsProgressBar.tsx",
       "src/components/shared/rich-text/atlaskit/EpicDescriptionEditor.tsx",
+      "src/features/all-releases/components/AIInsightsBar.tsx",
       "src/features/kanban-board/components/PortalMenu.tsx",
       "src/features/kanban-board/components/StandupHistoryPanel.tsx",
       "src/features/kanban-board/components/SwimlaneHeader.tsx",
       "src/features/my-test-scope/components/TraceabilityPanel.tsx",
+      "src/features/release-calendar/components/CalendarAIInsights.tsx",
       "src/modules/project-work-hub/components/dialogs/story-detail-modules/ChildIssuesSection.tsx",
       "src/modules/project-work-hub/components/dialogs/story-detail-modules/DefectsSection.tsx",
       "src/modules/project-work-hub/components/dialogs/story-detail-modules/EditableFields.tsx",
@@ -11744,6 +11808,8 @@ export const usageMap: UsageMap = {
       "src/modules/workhub/admin/components/MultiSelectDropdown.tsx",
       "src/modules/workhub/admin/components/SyncConfigPanel.tsx",
       "src/modules/workhub/admin/components/SyncLogs.tsx",
+      "src/pages/admin/FeatureFlagsPage.tsx",
+      "src/pages/admin/NotificationTriggers.tsx",
       "src/pages/admin/ResourceAssignments.tsx",
       "src/pages/admin/components/BulkEditModal.tsx",
       "src/pages/admin/components/previews/EpicDescriptionEditorPreview.tsx",
@@ -11792,6 +11858,7 @@ export const usageMap: UsageMap = {
       "src/components/incidents/IncidentListTable.tsx",
       "src/components/industry/enterprise-table/components/TablePagination.tsx",
       "src/components/ja/home/HomeContentV2.tsx",
+      "src/components/layout/TeamRoomSidebar.tsx",
       "src/components/planner/task-modal/molecules/DateDropdown.tsx",
       "src/components/project-hub/dashboard/PaginationFooter.tsx",
       "src/components/project/ProjectHeader.tsx",
@@ -11884,6 +11951,7 @@ export const usageMap: UsageMap = {
     "consumers": [
       "src/components/catalyst-detail-views/shared/sections/Description/_components/MentionSuggestionPill/MentionSuggestionPill.tsx",
       "src/features/my-test-scope/components/TestsTable.tsx",
+      "src/features/release-calendar/components/CalendarHeader.tsx",
       "src/modules/project-work-hub/components/dialogs/story-detail-modules/AttachmentPreviewModal.tsx",
       "src/pages/release-hub/ReleaseDetailPage.tsx"
     ],
@@ -11926,13 +11994,14 @@ export const usageMap: UsageMap = {
       "src/components/incidents/IncidentListTable.tsx",
       "src/components/industry/enterprise-table/components/GroupHeader.tsx",
       "src/components/industry/enterprise-table/components/TablePagination.tsx",
+      "src/components/items/epics/modals/FeatureStatusModal.tsx",
       "src/components/items/features/FeatureDetailsPanel.tsx",
       "src/components/ja/home/HomeContentV2.tsx",
       "src/components/kanban/overflow-menu/WorkItemOverflowMenu.tsx",
       "src/components/kanban/setup/SwimLanesSetupTab.tsx",
       "src/components/layout/ProductRoomSidebar.tsx",
+      "src/components/layout/TeamRoomSidebar.tsx",
       "src/components/notifications/AgeingTab.tsx",
-      "src/components/okr/KeyResultsList.tsx",
       "src/components/planner/task-modal/molecules/DateDropdown.tsx",
       "src/components/product-hub/roadmap/RoadmapRequestList.tsx",
       "src/components/project-hub/dashboard/PaginationFooter.tsx",
@@ -11986,12 +12055,6 @@ export const usageMap: UsageMap = {
       "src/modules/incidents/kanban/components/KanbanBreadcrumb.tsx",
       "src/modules/incidents/kanban/components/KanbanColumn.tsx",
       "src/modules/incidents/kanban/components/KanbanSwimlane.tsx",
-      "src/modules/objectives/components/ObjectiveHierarchyDialog.tsx",
-      "src/modules/okr-v2/components/KeyResultsTabV2.tsx",
-      "src/modules/okr-v2/components/LinkedWorkTabV2.tsx",
-      "src/modules/okr-v2/components/StrategyAnalyticsModal.tsx",
-      "src/modules/okr-v2/components/StrategyCockpit/AnalyticsDrawerContent.tsx",
-      "src/modules/okr-v2/components/StrategyCockpit/StrategyTree.tsx",
       "src/modules/priorities/components/PriWeekHeader.tsx",
       "src/modules/product-roadmap/components/RoadmapListPanel.tsx",
       "src/modules/product-roadmap/components/RoadmapToolbar.tsx",
@@ -12040,6 +12103,9 @@ export const usageMap: UsageMap = {
       "src/pages/releasehub/ExecutionCalendarPage.tsx",
       "src/pages/releasehub/ProductionEventReplayPage.tsx",
       "src/pages/releasehub/ReleaseCalendarPage.tsx",
+      "src/pages/releases/CoverageReportsPage.tsx",
+      "src/pages/releases/QualityGatesPage.tsx",
+      "src/pages/releases/ReleaseDashboardPage.tsx",
       "src/pages/testhub/cycles/ExecutionPage.tsx",
       "src/pages/testhub/repository/RepositoryPage.tsx",
       "src/pages/work-tree/components/WorkTreeHierarchy.tsx"
@@ -12116,12 +12182,15 @@ export const usageMap: UsageMap = {
       "src/features/kanban-board/components/SwimlaneHeader.tsx",
       "src/features/my-test-scope/components/TestsTable.tsx",
       "src/features/my-test-scope/components/TraceabilityPanel.tsx",
+      "src/features/release-calendar/components/CalendarHeader.tsx",
       "src/modules/project-work-hub/components/dialogs/story-detail-modules/AttachmentPreviewModal.tsx",
       "src/modules/project-work-hub/components/dialogs/story-detail-modules/DefectsSection.tsx",
       "src/modules/project-work-hub/components/dialogs/story-detail-modules/IncidentsSection.tsx",
       "src/modules/project-work-hub/components/dialogs/story-detail-modules/shared-components.tsx",
       "src/modules/workhub/admin/components/SyncConfigPanel.tsx",
       "src/modules/workhub/admin/components/SyncLogs.tsx",
+      "src/pages/admin/FeatureFlagsPage.tsx",
+      "src/pages/admin/NotificationTriggers.tsx",
       "src/pages/admin/ResourceAssignments.tsx",
       "src/pages/admin/components/previews/EpicDescriptionEditorPreview.tsx",
       "src/pages/r360-member/BoardView.tsx",
@@ -12247,7 +12316,6 @@ export const usageMap: UsageMap = {
       "src/components/projecthub/AllProjectsTable.tsx",
       "src/components/release/IncidentsFiltersDialog.tsx",
       "src/components/releasehub/CatyRiskPanel.tsx",
-      "src/components/releasehub/foryou/ReleaseChangeAnnouncementBanner.tsx",
       "src/components/releases/dashboard/TestExecutionTable.tsx",
       "src/components/roadmap/RoadmapEngine.tsx",
       "src/components/roadmap/TimelineFilterPopover.tsx",
@@ -12263,16 +12331,12 @@ export const usageMap: UsageMap = {
       "src/components/workload/WorkloadHealthIndicator.tsx",
       "src/modules/in-jira/components/import/AISuggestionBanner.tsx",
       "src/modules/incidents/analytics/pages/IncidentInsightsPage.tsx",
-      "src/modules/objectives/components/KeyResults/KeyResultCard.tsx",
-      "src/modules/okr-v2/components/KeyResultAnalyticsDrawer/KeyResultAnalyticsDrawer.tsx",
-      "src/modules/okr-v2/components/OKRSmartFiltersDialog.tsx",
-      "src/modules/okr-v2/components/ObjectiveAnalyticsDrawer/ObjectiveAnalyticsDrawer.tsx",
-      "src/modules/okr-v2/components/WorkItemAnalyticsDrawer/WorkItemAnalyticsDrawer.tsx",
       "src/modules/task10/components/landing/T10ListCardMinimal.tsx",
       "src/pages/CleanupPage.tsx",
       "src/pages/ResourceListingPage.tsx",
       "src/pages/enterprise/capacity-planner/CardsView.tsx",
-      "src/pages/project/feature-detail/FeatureRightRail.tsx"
+      "src/pages/project/feature-detail/FeatureRightRail.tsx",
+      "src/pages/releases/AllReleasesPage.tsx"
     ]
   },
   "ChevronUpIcon::@atlaskit/icon/glyph/chevron-up": {
@@ -12281,6 +12345,8 @@ export const usageMap: UsageMap = {
     "origin": "atlaskit",
     "consumers": [
       "src/components/shared/Timeline/TimelineView.tsx",
+      "src/features/all-releases/components/AIInsightsBar.tsx",
+      "src/features/release-calendar/components/CalendarAIInsights.tsx",
       "src/modules/project-work-hub/components/dialogs/story-detail-modules/ChildIssuesSection.tsx"
     ],
     "package": "@atlaskit/icon"
@@ -12294,14 +12360,6 @@ export const usageMap: UsageMap = {
       "src/components/catalyst-detail-views/shared/sections/CatalystQuickActions.tsx"
     ],
     "package": "@atlaskit/icon"
-  },
-  "ChildObjectivesTab::./ChildObjectivesTab": {
-    "name": "ChildObjectivesTab",
-    "source": "./ChildObjectivesTab",
-    "origin": "internal",
-    "consumers": [
-      "src/components/okr/ObjectiveDetailsPanelNew.tsx"
-    ]
   },
   "ChronologyView::./r360-member": {
     "name": "ChronologyView",
@@ -12329,7 +12387,8 @@ export const usageMap: UsageMap = {
       "src/modules/product-backlog/components/split-panel/RequestListPanel.tsx",
       "src/modules/task10/components/completed/T10CompletedItemsList.tsx",
       "src/modules/task10/components/landing/T10CompletedDetailModal.tsx",
-      "src/pages/project/FeatureDetailPage.tsx"
+      "src/pages/project/FeatureDetailPage.tsx",
+      "src/pages/releases/CoverageReportsPage.tsx"
     ]
   },
   "CircleDashed::@/lib/atlaskit-icons": {
@@ -12394,7 +12453,8 @@ export const usageMap: UsageMap = {
     "origin": "internal",
     "consumers": [
       "src/components/evidence/components/ClipboardPasteButton.tsx",
-      "src/components/shared/JiraBulkActionBar.tsx"
+      "src/components/shared/JiraBulkActionBar.tsx",
+      "src/pages/releases/AllReleasesPage.tsx"
     ]
   },
   "ClipboardCopy::@/lib/atlaskit-icons": {
@@ -12502,12 +12562,6 @@ export const usageMap: UsageMap = {
       "src/modules/incidents/kanban/components/KanbanCard.tsx",
       "src/modules/incidents/kanban/components/KanbanColumn.tsx",
       "src/modules/kanban/components/KanbanCard.tsx",
-      "src/modules/okr-v2/components/KeyResultAnalyticsDrawer/KeyResultAnalyticsDrawer.tsx",
-      "src/modules/okr-v2/components/ObjectiveAnalyticsDrawer/ObjectiveAnalyticsDrawer.tsx",
-      "src/modules/okr-v2/components/ObjectiveDrawerV2.tsx",
-      "src/modules/okr-v2/components/StrategyAnalyticsModal.tsx",
-      "src/modules/okr-v2/components/StrategyCockpit/AnalyticsDrawerContent.tsx",
-      "src/modules/okr-v2/components/WorkItemAnalyticsDrawer/WorkItemAnalyticsDrawer.tsx",
       "src/modules/priorities/pages/PriListsPage.tsx",
       "src/modules/project-work-hub/components/tabs/ReleasesTab.tsx",
       "src/modules/strata/pages/StrataAdminConfigPage.tsx",
@@ -12539,6 +12593,11 @@ export const usageMap: UsageMap = {
       "src/pages/project/feature-detail/FeatureOverviewTab.tsx",
       "src/pages/releasehub/CommandCenterPage.tsx",
       "src/pages/releasehub/ProductionEventsPage.tsx",
+      "src/pages/releases/AllReleasesPage.tsx",
+      "src/pages/releases/CommandCenterPage.tsx",
+      "src/pages/releases/CoverageReportsPage.tsx",
+      "src/pages/releases/DefectDetailPage.tsx",
+      "src/pages/releases/QualityGatesPage.tsx",
       "src/pages/work/Dependencies.tsx"
     ]
   },
@@ -12566,8 +12625,10 @@ export const usageMap: UsageMap = {
       "src/features/my-test-scope/components/AttentionCards.tsx",
       "src/features/my-test-scope/components/TestsTable.tsx",
       "src/features/my-test-scope/components/WorkloadPanel.tsx",
+      "src/features/release-calendar/components/CalendarAIInsights.tsx",
       "src/modules/workhub/admin/components/SyncConfigPanel.tsx",
-      "src/modules/workhub/admin/components/SyncLogs.tsx"
+      "src/modules/workhub/admin/components/SyncLogs.tsx",
+      "src/pages/admin/AdminOverview.tsx"
     ],
     "package": "@atlaskit/icon"
   },
@@ -12601,6 +12662,10 @@ export const usageMap: UsageMap = {
       "src/components/kanban/WorkItemCard.tsx",
       "src/components/releases/detail/summarize/ReleaseSummaryCard.tsx",
       "src/components/shared/CatalystDetailPanel.tsx",
+      "src/features/all-releases/components/AIInsightsDrawer.tsx",
+      "src/features/all-releases/components/BulkActionBar.tsx",
+      "src/features/all-releases/components/FilterBar.tsx",
+      "src/features/all-releases/components/Toolbar.tsx",
       "src/features/my-test-scope/components/TestsTable.tsx",
       "src/features/release-compare/components/QualityGateBar.tsx",
       "src/features/release-compare/components/ReleaseSelector.tsx",
@@ -12640,6 +12705,15 @@ export const usageMap: UsageMap = {
     "consumers": [
       "src/pages/enterprise/capacity-planner/LevelingView.tsx"
     ]
+  },
+  "CloudArrowUpIcon::@atlaskit/icon/core/cloud-arrow-up": {
+    "name": "CloudArrowUpIcon",
+    "source": "@atlaskit/icon/core/cloud-arrow-up",
+    "origin": "atlaskit",
+    "consumers": [
+      "src/pages/admin/FeatureFlagsPage.tsx"
+    ],
+    "package": "@atlaskit/icon"
   },
   "Code::@/lib/atlaskit-icons": {
     "name": "Code",
@@ -12737,10 +12811,10 @@ export const usageMap: UsageMap = {
       "src/components/executive-roadmap/RoadmapFiltersDialog.tsx",
       "src/components/forecast/ForecastTab.tsx",
       "src/components/items/epics/drawer-tabs/TechnicalScoreViewTab.tsx",
+      "src/components/items/epics/modals/FeatureStatusModal.tsx",
       "src/components/releases/defects/ReportDefectModal.tsx",
       "src/components/workload/WorkloadHealthIndicator.tsx",
       "src/modules/budget/components/ResourceCostSection.tsx",
-      "src/modules/okr-v2/components/StrategyCockpit/AnalyticsDrawerContent.tsx",
       "src/pages/Forecast.tsx",
       "src/pages/items/reports/EpicRequirementHierarchy.tsx"
     ]
@@ -12753,10 +12827,10 @@ export const usageMap: UsageMap = {
       "src/components/executive-roadmap/RoadmapFiltersDialog.tsx",
       "src/components/forecast/ForecastTab.tsx",
       "src/components/items/epics/drawer-tabs/TechnicalScoreViewTab.tsx",
+      "src/components/items/epics/modals/FeatureStatusModal.tsx",
       "src/components/releases/defects/ReportDefectModal.tsx",
       "src/components/workload/WorkloadHealthIndicator.tsx",
       "src/modules/budget/components/ResourceCostSection.tsx",
-      "src/modules/okr-v2/components/StrategyCockpit/AnalyticsDrawerContent.tsx",
       "src/pages/Forecast.tsx",
       "src/pages/items/reports/EpicRequirementHierarchy.tsx"
     ]
@@ -12786,10 +12860,10 @@ export const usageMap: UsageMap = {
       "src/components/executive-roadmap/RoadmapFiltersDialog.tsx",
       "src/components/forecast/ForecastTab.tsx",
       "src/components/items/epics/drawer-tabs/TechnicalScoreViewTab.tsx",
+      "src/components/items/epics/modals/FeatureStatusModal.tsx",
       "src/components/releases/defects/ReportDefectModal.tsx",
       "src/components/workload/WorkloadHealthIndicator.tsx",
       "src/modules/budget/components/ResourceCostSection.tsx",
-      "src/modules/okr-v2/components/StrategyCockpit/AnalyticsDrawerContent.tsx",
       "src/pages/Forecast.tsx",
       "src/pages/items/reports/EpicRequirementHierarchy.tsx"
     ]
@@ -13033,6 +13107,14 @@ export const usageMap: UsageMap = {
       "src/modules/incidents/kanban/components/SetCommitteeApproversModal.tsx",
       "src/modules/program-epics/components/CreateEpicDialog.tsx",
       "src/modules/program-epics/components/EditEpicDialog.tsx"
+    ]
+  },
+  "Command::@/lib/atlaskit-icons": {
+    "name": "Command",
+    "source": "@/lib/atlaskit-icons",
+    "origin": "internal",
+    "consumers": [
+      "src/pages/releases/ReleaseDashboardPage.tsx"
     ]
   },
   "CommandCenterHeader::@/components/shared/CommandCenterHeader": {
@@ -13421,6 +13503,7 @@ export const usageMap: UsageMap = {
     "source": "@/features/release-compare",
     "origin": "internal",
     "consumers": [
+      "src/pages/releases/ComparePage.tsx",
       "src/utils/exportComparison.ts"
     ]
   },
@@ -13474,6 +13557,15 @@ export const usageMap: UsageMap = {
     "consumers": [
       "src/features/release-compare/components/ReleaseCompare.tsx"
     ]
+  },
+  "CompassIcon::@atlaskit/icon/core/compass": {
+    "name": "CompassIcon",
+    "source": "@atlaskit/icon/core/compass",
+    "origin": "atlaskit",
+    "consumers": [
+      "src/pages/admin/FeatureFlagsPage.tsx"
+    ],
+    "package": "@atlaskit/icon"
   },
   "CompletedSummaryBar::./SmallComponents": {
     "name": "CompletedSummaryBar",
@@ -13599,14 +13691,6 @@ export const usageMap: UsageMap = {
       "src/features/chat-v2/components/Composer/Composer.tsx"
     ]
   },
-  "ComposerGhostText::./ComposerGhostText": {
-    "name": "ComposerGhostText",
-    "source": "./ComposerGhostText",
-    "origin": "internal",
-    "consumers": [
-      "src/features/voice-flow/VoiceFlowProvider.tsx"
-    ]
-  },
   "ComposerScheduledBanner::../DraftsAndSent/ComposerScheduledBanner": {
     "name": "ComposerScheduledBanner",
     "source": "../DraftsAndSent/ComposerScheduledBanner",
@@ -13637,30 +13721,6 @@ export const usageMap: UsageMap = {
     "origin": "internal",
     "consumers": [
       "src/features/chat-v2/components/Composer/Composer.tsx"
-    ]
-  },
-  "ComposerTranslateBanner::./ComposerTranslateBanner": {
-    "name": "ComposerTranslateBanner",
-    "source": "./ComposerTranslateBanner",
-    "origin": "internal",
-    "consumers": [
-      "src/components/chat/main/MessageComposer.tsx"
-    ]
-  },
-  "ComposerTranslateBanner::@/components/chat/main/ComposerTranslateBanner": {
-    "name": "ComposerTranslateBanner",
-    "source": "@/components/chat/main/ComposerTranslateBanner",
-    "origin": "internal",
-    "consumers": [
-      "src/features/chat-v2/components/Composer/Composer.tsx"
-    ]
-  },
-  "ConfidenceScoreModal::./ConfidenceScoreModal": {
-    "name": "ConfidenceScoreModal",
-    "source": "./ConfidenceScoreModal",
-    "origin": "internal",
-    "consumers": [
-      "src/components/okr/ObjectiveProgressSection.tsx"
     ]
   },
   "ConfirmArchiveDialog::../shared/ConfirmArchiveDialog": {
@@ -13748,13 +13808,10 @@ export const usageMap: UsageMap = {
       "src/components/dependencies/DependencyDrawer.tsx",
       "src/components/features/FeatureContextMenu.tsx",
       "src/components/kanban/setup/ColumnsSetupTab.tsx",
-      "src/components/okr/KeyResultsList.tsx",
       "src/components/reports/SavedReportsList.tsx",
       "src/components/shared/CatalystDetailPanel.tsx",
       "src/components/workhub/workitems/SavedFilterBar.tsx",
       "src/features/kanban-board/KanbanPage.tsx",
-      "src/modules/objectives/components/KeyResults/KeyResultCard.tsx",
-      "src/modules/okr-v2/components/KeyResultsTabV2.tsx",
       "src/modules/tasks/components/boards/ColumnActions.tsx",
       "src/modules/tasks/components/boards/ColumnHeader.tsx",
       "src/modules/tasks/components/boards/SortableColumn.tsx",
@@ -13764,6 +13821,7 @@ export const usageMap: UsageMap = {
       "src/pages/admin/test/TestPrioritiesPage.tsx",
       "src/pages/project-hub/jira-list/components/AllWorkToolbar.tsx",
       "src/pages/releasehub/FreezeWindowsPage.tsx",
+      "src/pages/releases/DefectDetailPage.tsx",
       "src/pages/work/Dependencies.tsx",
       "src/stories/audit-grade/18-ConfirmDialogs.stories.tsx",
       "src/stories/enterprise/DetailDialogs.stories.tsx"
@@ -13785,6 +13843,16 @@ export const usageMap: UsageMap = {
     "origin": "internal",
     "consumers": [
       "src/pages/project-hub/WorkItemsListPage.tsx"
+    ]
+  },
+  "ConflictWarning::../types": {
+    "name": "ConflictWarning",
+    "source": "../types",
+    "origin": "internal",
+    "consumers": [
+      "src/features/release-calendar/components/CalendarAIInsights.tsx",
+      "src/features/release-calendar/components/ReleaseCalendar.tsx",
+      "src/features/release-calendar/utils/calendarUtils.ts"
     ]
   },
   "ConnectionComingSoon::./ConnectionComingSoon": {
@@ -14106,7 +14174,6 @@ export const usageMap: UsageMap = {
       "src/modules/backlog/components/split-panel/EpicDetailPanel.tsx",
       "src/modules/feature-backlog/components/split-panel/FeatureDetailPanel.tsx",
       "src/modules/in-jira/components/drawer/IssueActionsMenu.tsx",
-      "src/modules/okr-v2/components/ObjectiveDrawerV2.tsx",
       "src/modules/product-backlog/components/split-panel/RequestDetailPanel.tsx",
       "src/modules/product-roadmap/components/RoadmapDetailPanel.tsx",
       "src/modules/strata/pages/StrataDataPipelinePage.tsx",
@@ -14124,7 +14191,8 @@ export const usageMap: UsageMap = {
       "src/pages/enterprise/capacity-planner/AssignmentsView.tsx",
       "src/pages/program/ExecutionWorkbench/views/TableView.tsx",
       "src/pages/project-hub/ProjectListPage.tsx",
-      "src/pages/releasehub/ProductionEventReplayPage.tsx"
+      "src/pages/releasehub/ProductionEventReplayPage.tsx",
+      "src/pages/releases/DefectDetailPage.tsx"
     ]
   },
   "CopyIcon::@/lib/atlaskit-icons": {
@@ -14253,6 +14321,14 @@ export const usageMap: UsageMap = {
     "origin": "internal",
     "consumers": [
       "src/components/requirement-assist/UatView.tsx"
+    ]
+  },
+  "CoverageMatrixWidget::@/components/releases/dashboard/CoverageMatrixWidget": {
+    "name": "CoverageMatrixWidget",
+    "source": "@/components/releases/dashboard/CoverageMatrixWidget",
+    "origin": "internal",
+    "consumers": [
+      "src/pages/releases/ReleaseDashboardPage.tsx"
     ]
   },
   "CoverageMetrics::@/types/reports": {
@@ -14514,24 +14590,6 @@ export const usageMap: UsageMap = {
       "src/hooks/useWorkItemLinks.ts"
     ]
   },
-  "CreateObjectiveDialogV2::../CreateObjectiveDialogV2": {
-    "name": "CreateObjectiveDialogV2",
-    "source": "../CreateObjectiveDialogV2",
-    "origin": "internal",
-    "consumers": [
-      "src/modules/okr-v2/components/StrategyCockpit/StrategyCockpit.tsx"
-    ]
-  },
-  "CreateObjectiveDialogV2::@/modules/okr-v2/components/CreateObjectiveDialogV2": {
-    "name": "CreateObjectiveDialogV2",
-    "source": "@/modules/okr-v2/components/CreateObjectiveDialogV2",
-    "origin": "internal",
-    "consumers": [
-      "src/modules/objectives/components/ProgramBoard/ObjectivesRow.tsx",
-      "src/modules/objectives/components/Widgets/ObjectivesWidget.tsx",
-      "src/pages/enterprise/EnterpriseObjectives.tsx"
-    ]
-  },
   "CreateProgramDialog::@/components/programs/CreateProgramDialog": {
     "name": "CreateProgramDialog",
     "source": "@/components/programs/CreateProgramDialog",
@@ -14745,6 +14803,15 @@ export const usageMap: UsageMap = {
       "src/components/users/LicensesRunRateWidget.tsx"
     ]
   },
+  "CreditCardIcon::@atlaskit/icon/core/credit-card": {
+    "name": "CreditCardIcon",
+    "source": "@atlaskit/icon/core/credit-card",
+    "origin": "atlaskit",
+    "consumers": [
+      "src/pages/admin/FeatureFlagsPage.tsx"
+    ],
+    "package": "@atlaskit/icon"
+  },
   "CriticalStrip::./CriticalStrip": {
     "name": "CriticalStrip",
     "source": "./CriticalStrip",
@@ -14768,7 +14835,9 @@ export const usageMap: UsageMap = {
     "consumers": [
       "src/components/admin/notifications/BulkActionsBar.tsx",
       "src/components/filters/BasicFilterBar.tsx",
-      "src/modules/workhub/admin/components/SyncLogs.tsx"
+      "src/modules/workhub/admin/components/SyncLogs.tsx",
+      "src/pages/admin/FeatureFlagsPage.tsx",
+      "src/pages/admin/NotificationTriggers.tsx"
     ],
     "package": "@atlaskit/icon"
   },
@@ -14854,6 +14923,8 @@ export const usageMap: UsageMap = {
       "src/modules/project-work-hub/components/dialogs/story-detail-modules/shared-components.tsx",
       "src/modules/tasks/components/TaskLinkedItemsSection.tsx",
       "src/modules/workhub/admin/components/MultiSelectDropdown.tsx",
+      "src/pages/admin/FeatureFlagsPage.tsx",
+      "src/pages/admin/UserAccessPage.tsx",
       "src/pages/admin/components/BulkEditModal.tsx",
       "src/pages/admin/components/UserDrawer.tsx",
       "src/pages/release-hub/ReleaseDetailPage.tsx",
@@ -14937,6 +15008,14 @@ export const usageMap: UsageMap = {
       "src/components/admin/notifications/TriggerSearch.tsx"
     ],
     "package": "@atlaskit/icon"
+  },
+  "CycleCard::@/components/dashboard": {
+    "name": "CycleCard",
+    "source": "@/components/dashboard",
+    "origin": "internal",
+    "consumers": [
+      "src/pages/releases/CommandCenter.tsx"
+    ]
   },
   "CycleDistributionChart::@/components/workload": {
     "name": "CycleDistributionChart",
@@ -15240,7 +15319,8 @@ export const usageMap: UsageMap = {
     "source": "@atlaskit/icon/core/database",
     "origin": "atlaskit",
     "consumers": [
-      "src/components/admin/lookup-management/LookupManagementPanel.tsx"
+      "src/components/admin/lookup-management/LookupManagementPanel.tsx",
+      "src/pages/admin/AdminOverview.tsx"
     ],
     "package": "@atlaskit/icon"
   },
@@ -15353,14 +15433,13 @@ export const usageMap: UsageMap = {
       "src/features/chat-v2/components/MessagePanel/MessageList.tsx"
     ]
   },
-  "DateTimePicker::@atlaskit/datetime-picker": {
-    "name": "DateTimePicker",
-    "source": "@atlaskit/datetime-picker",
-    "origin": "atlaskit",
+  "DBRelease::@/types/releases": {
+    "name": "DBRelease",
+    "source": "@/types/releases",
+    "origin": "internal",
     "consumers": [
-      "src/components/releasehub/foryou/ReleaseChangeAnnouncementBanner.tsx"
-    ],
-    "package": "@atlaskit/datetime-picker"
+      "src/pages/releases/AllReleasesPage.tsx"
+    ]
   },
   "DecisionIcon::@atlaskit/icon/glyph/editor/decision": {
     "name": "DecisionIcon",
@@ -15379,7 +15458,9 @@ export const usageMap: UsageMap = {
     "consumers": [
       "src/components/releases/defects/DefectKanbanView.tsx",
       "src/components/releases/defects/DefectTableView.tsx",
-      "src/components/releases/defects/EditDefectModal.tsx"
+      "src/components/releases/defects/EditDefectModal.tsx",
+      "src/pages/releases/DefectDetailPage.tsx",
+      "src/pages/releases/DefectsPage.tsx"
     ]
   },
   "DefectBreakdown::./DefectBreakdown": {
@@ -15396,6 +15477,22 @@ export const usageMap: UsageMap = {
     "origin": "internal",
     "consumers": [
       "src/hooks/test-management/useDefects.ts"
+    ]
+  },
+  "DefectFormData::@/components/releases/defects/ReportDefectModal": {
+    "name": "DefectFormData",
+    "source": "@/components/releases/defects/ReportDefectModal",
+    "origin": "internal",
+    "consumers": [
+      "src/pages/releases/DefectsPage.tsx"
+    ]
+  },
+  "DefectKanbanView::@/components/releases/defects/DefectKanbanView": {
+    "name": "DefectKanbanView",
+    "source": "@/components/releases/defects/DefectKanbanView",
+    "origin": "internal",
+    "consumers": [
+      "src/pages/releases/DefectsPage.tsx"
     ]
   },
   "DefectSeverity::@/types/test-management": {
@@ -15436,7 +15533,16 @@ export const usageMap: UsageMap = {
     "origin": "internal",
     "consumers": [
       "src/components/releases/defects/DefectKanbanView.tsx",
-      "src/components/releases/defects/DefectTableView.tsx"
+      "src/components/releases/defects/DefectTableView.tsx",
+      "src/pages/releases/DefectDetailPage.tsx"
+    ]
+  },
+  "DefectTableView::@/components/releases/defects/DefectTableView": {
+    "name": "DefectTableView",
+    "source": "@/components/releases/defects/DefectTableView",
+    "origin": "internal",
+    "consumers": [
+      "src/pages/releases/DefectsPage.tsx"
     ]
   },
   "DefectTrendPoint::../types": {
@@ -15511,7 +15617,6 @@ export const usageMap: UsageMap = {
       "src/components/catalyst-detail-views/test-case/TestCaseAttachments.tsx",
       "src/components/shared/rich-text/atlaskit/imageToolbar/ImageToolbar.tsx",
       "src/features/kanban-board/components/SelectCoverPanel.tsx",
-      "src/features/voice-flow/VoiceSettingsTab.tsx",
       "src/modules/project-work-hub/components/dialogs/story-detail-modules/AttachmentsSection.tsx",
       "src/modules/project-work-hub/components/dialogs/story-detail-modules/shared-components.tsx",
       "src/modules/project-work-hub/components/drawers/StoryActionMenu.tsx",
@@ -16169,9 +16274,11 @@ export const usageMap: UsageMap = {
       "src/components/admin/notifications/RecipientPicker.tsx",
       "src/components/admin/rbac/AssignUsersModal.tsx",
       "src/components/admin/rbac/CreateEditRoleModal.tsx",
+      "src/pages/admin/BusinessOwners.tsx",
       "src/pages/admin/CapacityDepartments.tsx",
       "src/pages/admin/Departments.tsx",
-      "src/pages/admin/ResourceAssignments.tsx"
+      "src/pages/admin/ResourceAssignments.tsx",
+      "src/pages/admin/UserAccessPage.tsx"
     ]
   },
   "Dialog::@/components/ui/dialog": {
@@ -16200,6 +16307,9 @@ export const usageMap: UsageMap = {
       "src/components/dependencies/DependencyMatrix.tsx",
       "src/components/enterprise/EnterpriseGrid.tsx",
       "src/components/epic-backlog/EpicFiltersDialog.tsx",
+      "src/components/epic-backlog/modals/FeatureStatusModal.tsx",
+      "src/components/epic-backlog/modals/MilestoneModal.tsx",
+      "src/components/epic-backlog/modals/WSJFModal.tsx",
       "src/components/evidence/defect/CreateDefectModal.tsx",
       "src/components/executive-roadmap/RoadmapFiltersDialog.tsx",
       "src/components/features/AssignModal.tsx",
@@ -16237,16 +16347,12 @@ export const usageMap: UsageMap = {
       "src/components/items/epics/dialogs/PullRankDialog.tsx",
       "src/components/items/epics/dialogs/ReportTemplatesDialog.tsx",
       "src/components/items/epics/dialogs/WSJFPrioritizationDialog.tsx",
+      "src/components/items/epics/modals/FeatureStatusModal.tsx",
       "src/components/items/features/FeatureMassMoveDialog.tsx",
       "src/components/items/features/FeatureWSJFDialog.tsx",
       "src/components/kanban/setup/ColumnsSetupTab.tsx",
       "src/components/modals/LinkWorkItemModal.tsx",
       "src/components/objective-roadmap/EnterpriseRoadmapFiltersDialog.tsx",
-      "src/components/okr/AddAlignedWorkDialog.tsx",
-      "src/components/okr/AddChildObjectiveDialog.tsx",
-      "src/components/okr/CheckInModal.tsx",
-      "src/components/okr/ConfidenceScoreModal.tsx",
-      "src/components/okr/KeyResultDialog.tsx",
       "src/components/prioritization/ApplyWSJFToRankDialog.tsx",
       "src/components/program/ProgramRoadmapFiltersDialog.tsx",
       "src/components/programs/CreateProgramDialog.tsx",
@@ -16274,6 +16380,7 @@ export const usageMap: UsageMap = {
       "src/components/skills-inventory/AddTeamMemberModal.tsx",
       "src/components/skills-inventory/EditSkillModal.tsx",
       "src/components/skills-inventory/SkillsFiltersDialog.tsx",
+      "src/components/stories/CreateStoryModal.tsx",
       "src/components/stories/PullRankDialog.tsx",
       "src/components/stories/StoriesColumnConfig.tsx",
       "src/components/stories/StoriesFiltersDialog.tsx",
@@ -16308,15 +16415,6 @@ export const usageMap: UsageMap = {
       "src/modules/in-jira/pages/ScrumBoardPage.tsx",
       "src/modules/incidents/kanban/components/ManageColumnsDialog.tsx",
       "src/modules/incidents/kanban/components/SetCommitteeApproversModal.tsx",
-      "src/modules/objectives/components/AlignedItems/LinkObjectiveDialog.tsx",
-      "src/modules/objectives/components/KeyResults/KeyResultCheckIn.tsx",
-      "src/modules/objectives/components/KeyResults/KeyResultReportsModal.tsx",
-      "src/modules/objectives/components/ObjectiveHierarchyDialog.tsx",
-      "src/modules/objectives/components/ObjectivePanel/CreateObjectiveDialog.tsx",
-      "src/modules/okr-v2/components/CreateObjectiveDialogV2.tsx",
-      "src/modules/okr-v2/components/KRWorkContributionsV2.tsx",
-      "src/modules/okr-v2/components/KeyResultDialogV2.tsx",
-      "src/modules/okr-v2/components/OKRSmartFiltersDialog.tsx",
       "src/modules/product-backlog/components/split-panel/AttachmentUploadModal.tsx",
       "src/modules/product-roadmap/components/RoadmapExportDialog.tsx",
       "src/modules/product-roadmap/components/RoadmapFilterDialog.tsx",
@@ -16343,6 +16441,7 @@ export const usageMap: UsageMap = {
       "src/pages/project/components/FeatureChildStories.tsx",
       "src/pages/project/components/LinkTypeSelectorDialog.tsx",
       "src/pages/project/components/RiskLinkDialog.tsx",
+      "src/pages/releases/QualityGatesPage.tsx",
       "src/pages/work-tree/components/WorkTreeLegend.tsx"
     ]
   },
@@ -16355,9 +16454,11 @@ export const usageMap: UsageMap = {
       "src/components/admin/notifications/RecipientPicker.tsx",
       "src/components/admin/rbac/AssignUsersModal.tsx",
       "src/components/admin/rbac/CreateEditRoleModal.tsx",
+      "src/pages/admin/BusinessOwners.tsx",
       "src/pages/admin/CapacityDepartments.tsx",
       "src/pages/admin/Departments.tsx",
-      "src/pages/admin/ResourceAssignments.tsx"
+      "src/pages/admin/ResourceAssignments.tsx",
+      "src/pages/admin/UserAccessPage.tsx"
     ]
   },
   "DialogContent::@/components/ui/dialog": {
@@ -16386,6 +16487,9 @@ export const usageMap: UsageMap = {
       "src/components/dependencies/DependencyMatrix.tsx",
       "src/components/enterprise/EnterpriseGrid.tsx",
       "src/components/epic-backlog/EpicFiltersDialog.tsx",
+      "src/components/epic-backlog/modals/FeatureStatusModal.tsx",
+      "src/components/epic-backlog/modals/MilestoneModal.tsx",
+      "src/components/epic-backlog/modals/WSJFModal.tsx",
       "src/components/evidence/defect/CreateDefectModal.tsx",
       "src/components/executive-roadmap/RoadmapFiltersDialog.tsx",
       "src/components/features/AssignModal.tsx",
@@ -16423,16 +16527,12 @@ export const usageMap: UsageMap = {
       "src/components/items/epics/dialogs/PullRankDialog.tsx",
       "src/components/items/epics/dialogs/ReportTemplatesDialog.tsx",
       "src/components/items/epics/dialogs/WSJFPrioritizationDialog.tsx",
+      "src/components/items/epics/modals/FeatureStatusModal.tsx",
       "src/components/items/features/FeatureMassMoveDialog.tsx",
       "src/components/items/features/FeatureWSJFDialog.tsx",
       "src/components/kanban/setup/ColumnsSetupTab.tsx",
       "src/components/modals/LinkWorkItemModal.tsx",
       "src/components/objective-roadmap/EnterpriseRoadmapFiltersDialog.tsx",
-      "src/components/okr/AddAlignedWorkDialog.tsx",
-      "src/components/okr/AddChildObjectiveDialog.tsx",
-      "src/components/okr/CheckInModal.tsx",
-      "src/components/okr/ConfidenceScoreModal.tsx",
-      "src/components/okr/KeyResultDialog.tsx",
       "src/components/prioritization/ApplyWSJFToRankDialog.tsx",
       "src/components/program/ProgramRoadmapFiltersDialog.tsx",
       "src/components/programs/CreateProgramDialog.tsx",
@@ -16460,6 +16560,7 @@ export const usageMap: UsageMap = {
       "src/components/skills-inventory/AddTeamMemberModal.tsx",
       "src/components/skills-inventory/EditSkillModal.tsx",
       "src/components/skills-inventory/SkillsFiltersDialog.tsx",
+      "src/components/stories/CreateStoryModal.tsx",
       "src/components/stories/PullRankDialog.tsx",
       "src/components/stories/StoriesColumnConfig.tsx",
       "src/components/stories/StoriesFiltersDialog.tsx",
@@ -16494,15 +16595,6 @@ export const usageMap: UsageMap = {
       "src/modules/in-jira/pages/ScrumBoardPage.tsx",
       "src/modules/incidents/kanban/components/ManageColumnsDialog.tsx",
       "src/modules/incidents/kanban/components/SetCommitteeApproversModal.tsx",
-      "src/modules/objectives/components/AlignedItems/LinkObjectiveDialog.tsx",
-      "src/modules/objectives/components/KeyResults/KeyResultCheckIn.tsx",
-      "src/modules/objectives/components/KeyResults/KeyResultReportsModal.tsx",
-      "src/modules/objectives/components/ObjectiveHierarchyDialog.tsx",
-      "src/modules/objectives/components/ObjectivePanel/CreateObjectiveDialog.tsx",
-      "src/modules/okr-v2/components/CreateObjectiveDialogV2.tsx",
-      "src/modules/okr-v2/components/KRWorkContributionsV2.tsx",
-      "src/modules/okr-v2/components/KeyResultDialogV2.tsx",
-      "src/modules/okr-v2/components/OKRSmartFiltersDialog.tsx",
       "src/modules/product-backlog/components/split-panel/AttachmentUploadModal.tsx",
       "src/modules/product-roadmap/components/RoadmapExportDialog.tsx",
       "src/modules/product-roadmap/components/RoadmapFilterDialog.tsx",
@@ -16529,6 +16621,7 @@ export const usageMap: UsageMap = {
       "src/pages/project/components/FeatureChildStories.tsx",
       "src/pages/project/components/LinkTypeSelectorDialog.tsx",
       "src/pages/project/components/RiskLinkDialog.tsx",
+      "src/pages/releases/QualityGatesPage.tsx",
       "src/pages/work-tree/components/WorkTreeLegend.tsx"
     ]
   },
@@ -16540,7 +16633,8 @@ export const usageMap: UsageMap = {
       "src/components/admin/notifications/CreateSchemeModal.tsx",
       "src/components/admin/notifications/RecipientPicker.tsx",
       "src/components/admin/rbac/AssignUsersModal.tsx",
-      "src/components/admin/rbac/CreateEditRoleModal.tsx"
+      "src/components/admin/rbac/CreateEditRoleModal.tsx",
+      "src/pages/admin/UserAccessPage.tsx"
     ]
   },
   "DialogDescription::@/components/ui/dialog": {
@@ -16573,6 +16667,7 @@ export const usageMap: UsageMap = {
       "src/components/items/epics/dialogs/PullRankDialog.tsx",
       "src/components/items/epics/dialogs/ReportTemplatesDialog.tsx",
       "src/components/items/epics/dialogs/WSJFPrioritizationDialog.tsx",
+      "src/components/items/epics/modals/FeatureStatusModal.tsx",
       "src/components/prioritization/ApplyWSJFToRankDialog.tsx",
       "src/components/projects/CreateProjectDialog.tsx",
       "src/components/releases/all-releases/ArchiveConfirmationDialog.tsx",
@@ -16597,11 +16692,11 @@ export const usageMap: UsageMap = {
       "src/modules/backlog/components/PrioritizationDialog.tsx",
       "src/modules/in-jira/components/releases/VersionDialog.tsx",
       "src/modules/incidents/kanban/components/ManageColumnsDialog.tsx",
-      "src/modules/okr-v2/components/KeyResultDialogV2.tsx",
       "src/modules/product-roadmap/components/RoadmapExportDialog.tsx",
       "src/modules/tasks/components/boards/AddColumnModal.tsx",
       "src/pages/project/components/LinkTypeSelectorDialog.tsx",
-      "src/pages/project/components/RiskLinkDialog.tsx"
+      "src/pages/project/components/RiskLinkDialog.tsx",
+      "src/pages/releases/QualityGatesPage.tsx"
     ]
   },
   "DialogFooter::@/components/admin/admin-dialog": {
@@ -16613,9 +16708,11 @@ export const usageMap: UsageMap = {
       "src/components/admin/notifications/RecipientPicker.tsx",
       "src/components/admin/rbac/AssignUsersModal.tsx",
       "src/components/admin/rbac/CreateEditRoleModal.tsx",
+      "src/pages/admin/BusinessOwners.tsx",
       "src/pages/admin/CapacityDepartments.tsx",
       "src/pages/admin/Departments.tsx",
-      "src/pages/admin/ResourceAssignments.tsx"
+      "src/pages/admin/ResourceAssignments.tsx",
+      "src/pages/admin/UserAccessPage.tsx"
     ]
   },
   "DialogFooter::@/components/ui/dialog": {
@@ -16636,6 +16733,7 @@ export const usageMap: UsageMap = {
       "src/components/demand/DemandExportModal.tsx",
       "src/components/dependencies/CreateDependencyDialog.tsx",
       "src/components/enterprise/EnterpriseGrid.tsx",
+      "src/components/epic-backlog/modals/MilestoneModal.tsx",
       "src/components/evidence/defect/CreateDefectModal.tsx",
       "src/components/forecast/ForecastColumnsDialog.tsx",
       "src/components/forecast/ForecastFiltersDialog.tsx",
@@ -16660,9 +16758,6 @@ export const usageMap: UsageMap = {
       "src/components/items/features/FeatureMassMoveDialog.tsx",
       "src/components/kanban/setup/ColumnsSetupTab.tsx",
       "src/components/objective-roadmap/EnterpriseRoadmapFiltersDialog.tsx",
-      "src/components/okr/CheckInModal.tsx",
-      "src/components/okr/ConfidenceScoreModal.tsx",
-      "src/components/okr/KeyResultDialog.tsx",
       "src/components/prioritization/ApplyWSJFToRankDialog.tsx",
       "src/components/program/ProgramRoadmapFiltersDialog.tsx",
       "src/components/programs/CreateProgramDialog.tsx",
@@ -16702,10 +16797,6 @@ export const usageMap: UsageMap = {
       "src/modules/in-jira/pages/ScrumBoardPage.tsx",
       "src/modules/incidents/kanban/components/ManageColumnsDialog.tsx",
       "src/modules/incidents/kanban/components/SetCommitteeApproversModal.tsx",
-      "src/modules/objectives/components/KeyResults/KeyResultCheckIn.tsx",
-      "src/modules/okr-v2/components/KRWorkContributionsV2.tsx",
-      "src/modules/okr-v2/components/KeyResultDialogV2.tsx",
-      "src/modules/okr-v2/components/OKRSmartFiltersDialog.tsx",
       "src/modules/product-roadmap/components/RoadmapExportDialog.tsx",
       "src/modules/product-roadmap/components/RoadmapFilterDialog.tsx",
       "src/modules/program-epics/components/CreateEpicDialog.tsx",
@@ -16722,7 +16813,8 @@ export const usageMap: UsageMap = {
       "src/pages/incidenthub/components/NewIncidentModal.tsx",
       "src/pages/items/reports/EpicPlanningPage.tsx",
       "src/pages/program/ExecutionWorkbench/WorkbenchFiltersDialog.tsx",
-      "src/pages/project/components/FeatureChildStories.tsx"
+      "src/pages/project/components/FeatureChildStories.tsx",
+      "src/pages/releases/QualityGatesPage.tsx"
     ]
   },
   "DialogHeader::@/components/admin/admin-dialog": {
@@ -16734,9 +16826,11 @@ export const usageMap: UsageMap = {
       "src/components/admin/notifications/RecipientPicker.tsx",
       "src/components/admin/rbac/AssignUsersModal.tsx",
       "src/components/admin/rbac/CreateEditRoleModal.tsx",
+      "src/pages/admin/BusinessOwners.tsx",
       "src/pages/admin/CapacityDepartments.tsx",
       "src/pages/admin/Departments.tsx",
-      "src/pages/admin/ResourceAssignments.tsx"
+      "src/pages/admin/ResourceAssignments.tsx",
+      "src/pages/admin/UserAccessPage.tsx"
     ]
   },
   "DialogHeader::@/components/ui/dialog": {
@@ -16762,6 +16856,9 @@ export const usageMap: UsageMap = {
       "src/components/dependencies/DependencyMatrix.tsx",
       "src/components/enterprise/EnterpriseGrid.tsx",
       "src/components/epic-backlog/EpicFiltersDialog.tsx",
+      "src/components/epic-backlog/modals/FeatureStatusModal.tsx",
+      "src/components/epic-backlog/modals/MilestoneModal.tsx",
+      "src/components/epic-backlog/modals/WSJFModal.tsx",
       "src/components/evidence/defect/CreateDefectModal.tsx",
       "src/components/executive-roadmap/RoadmapFiltersDialog.tsx",
       "src/components/features/AssignModal.tsx",
@@ -16798,16 +16895,12 @@ export const usageMap: UsageMap = {
       "src/components/items/epics/dialogs/PullRankDialog.tsx",
       "src/components/items/epics/dialogs/ReportTemplatesDialog.tsx",
       "src/components/items/epics/dialogs/WSJFPrioritizationDialog.tsx",
+      "src/components/items/epics/modals/FeatureStatusModal.tsx",
       "src/components/items/features/FeatureMassMoveDialog.tsx",
       "src/components/items/features/FeatureWSJFDialog.tsx",
       "src/components/kanban/setup/ColumnsSetupTab.tsx",
       "src/components/modals/LinkWorkItemModal.tsx",
       "src/components/objective-roadmap/EnterpriseRoadmapFiltersDialog.tsx",
-      "src/components/okr/AddAlignedWorkDialog.tsx",
-      "src/components/okr/AddChildObjectiveDialog.tsx",
-      "src/components/okr/CheckInModal.tsx",
-      "src/components/okr/ConfidenceScoreModal.tsx",
-      "src/components/okr/KeyResultDialog.tsx",
       "src/components/prioritization/ApplyWSJFToRankDialog.tsx",
       "src/components/program/ProgramRoadmapFiltersDialog.tsx",
       "src/components/programs/CreateProgramDialog.tsx",
@@ -16833,6 +16926,7 @@ export const usageMap: UsageMap = {
       "src/components/shared/ResourceModal.tsx",
       "src/components/skills-inventory/AddTeamMemberModal.tsx",
       "src/components/skills-inventory/EditSkillModal.tsx",
+      "src/components/stories/CreateStoryModal.tsx",
       "src/components/stories/PullRankDialog.tsx",
       "src/components/stories/StoriesColumnConfig.tsx",
       "src/components/stories/StoriesFiltersDialog.tsx",
@@ -16865,14 +16959,6 @@ export const usageMap: UsageMap = {
       "src/modules/in-jira/pages/ScrumBoardPage.tsx",
       "src/modules/incidents/kanban/components/ManageColumnsDialog.tsx",
       "src/modules/incidents/kanban/components/SetCommitteeApproversModal.tsx",
-      "src/modules/objectives/components/AlignedItems/LinkObjectiveDialog.tsx",
-      "src/modules/objectives/components/KeyResults/KeyResultCheckIn.tsx",
-      "src/modules/objectives/components/KeyResults/KeyResultReportsModal.tsx",
-      "src/modules/objectives/components/ObjectiveHierarchyDialog.tsx",
-      "src/modules/objectives/components/ObjectivePanel/CreateObjectiveDialog.tsx",
-      "src/modules/okr-v2/components/KRWorkContributionsV2.tsx",
-      "src/modules/okr-v2/components/KeyResultDialogV2.tsx",
-      "src/modules/okr-v2/components/OKRSmartFiltersDialog.tsx",
       "src/modules/product-backlog/components/split-panel/AttachmentUploadModal.tsx",
       "src/modules/product-roadmap/components/RoadmapExportDialog.tsx",
       "src/modules/product-roadmap/components/RoadmapFilterDialog.tsx",
@@ -16898,6 +16984,7 @@ export const usageMap: UsageMap = {
       "src/pages/project/components/FeatureChildStories.tsx",
       "src/pages/project/components/LinkTypeSelectorDialog.tsx",
       "src/pages/project/components/RiskLinkDialog.tsx",
+      "src/pages/releases/QualityGatesPage.tsx",
       "src/pages/work-tree/components/WorkTreeLegend.tsx"
     ]
   },
@@ -16910,9 +16997,11 @@ export const usageMap: UsageMap = {
       "src/components/admin/notifications/RecipientPicker.tsx",
       "src/components/admin/rbac/AssignUsersModal.tsx",
       "src/components/admin/rbac/CreateEditRoleModal.tsx",
+      "src/pages/admin/BusinessOwners.tsx",
       "src/pages/admin/CapacityDepartments.tsx",
       "src/pages/admin/Departments.tsx",
-      "src/pages/admin/ResourceAssignments.tsx"
+      "src/pages/admin/ResourceAssignments.tsx",
+      "src/pages/admin/UserAccessPage.tsx"
     ]
   },
   "DialogTitle::@/components/ui/dialog": {
@@ -16938,6 +17027,9 @@ export const usageMap: UsageMap = {
       "src/components/dependencies/DependencyMatrix.tsx",
       "src/components/enterprise/EnterpriseGrid.tsx",
       "src/components/epic-backlog/EpicFiltersDialog.tsx",
+      "src/components/epic-backlog/modals/FeatureStatusModal.tsx",
+      "src/components/epic-backlog/modals/MilestoneModal.tsx",
+      "src/components/epic-backlog/modals/WSJFModal.tsx",
       "src/components/evidence/defect/CreateDefectModal.tsx",
       "src/components/executive-roadmap/RoadmapFiltersDialog.tsx",
       "src/components/features/AssignModal.tsx",
@@ -16974,16 +17066,12 @@ export const usageMap: UsageMap = {
       "src/components/items/epics/dialogs/PullRankDialog.tsx",
       "src/components/items/epics/dialogs/ReportTemplatesDialog.tsx",
       "src/components/items/epics/dialogs/WSJFPrioritizationDialog.tsx",
+      "src/components/items/epics/modals/FeatureStatusModal.tsx",
       "src/components/items/features/FeatureMassMoveDialog.tsx",
       "src/components/items/features/FeatureWSJFDialog.tsx",
       "src/components/kanban/setup/ColumnsSetupTab.tsx",
       "src/components/modals/LinkWorkItemModal.tsx",
       "src/components/objective-roadmap/EnterpriseRoadmapFiltersDialog.tsx",
-      "src/components/okr/AddAlignedWorkDialog.tsx",
-      "src/components/okr/AddChildObjectiveDialog.tsx",
-      "src/components/okr/CheckInModal.tsx",
-      "src/components/okr/ConfidenceScoreModal.tsx",
-      "src/components/okr/KeyResultDialog.tsx",
       "src/components/prioritization/ApplyWSJFToRankDialog.tsx",
       "src/components/program/ProgramRoadmapFiltersDialog.tsx",
       "src/components/programs/CreateProgramDialog.tsx",
@@ -17009,6 +17097,7 @@ export const usageMap: UsageMap = {
       "src/components/shared/ResourceModal.tsx",
       "src/components/skills-inventory/AddTeamMemberModal.tsx",
       "src/components/skills-inventory/EditSkillModal.tsx",
+      "src/components/stories/CreateStoryModal.tsx",
       "src/components/stories/PullRankDialog.tsx",
       "src/components/stories/StoriesColumnConfig.tsx",
       "src/components/stories/StoriesFiltersDialog.tsx",
@@ -17041,14 +17130,6 @@ export const usageMap: UsageMap = {
       "src/modules/in-jira/pages/ScrumBoardPage.tsx",
       "src/modules/incidents/kanban/components/ManageColumnsDialog.tsx",
       "src/modules/incidents/kanban/components/SetCommitteeApproversModal.tsx",
-      "src/modules/objectives/components/AlignedItems/LinkObjectiveDialog.tsx",
-      "src/modules/objectives/components/KeyResults/KeyResultCheckIn.tsx",
-      "src/modules/objectives/components/KeyResults/KeyResultReportsModal.tsx",
-      "src/modules/objectives/components/ObjectiveHierarchyDialog.tsx",
-      "src/modules/objectives/components/ObjectivePanel/CreateObjectiveDialog.tsx",
-      "src/modules/okr-v2/components/KRWorkContributionsV2.tsx",
-      "src/modules/okr-v2/components/KeyResultDialogV2.tsx",
-      "src/modules/okr-v2/components/OKRSmartFiltersDialog.tsx",
       "src/modules/product-backlog/components/split-panel/AttachmentUploadModal.tsx",
       "src/modules/product-roadmap/components/RoadmapExportDialog.tsx",
       "src/modules/product-roadmap/components/RoadmapFilterDialog.tsx",
@@ -17074,6 +17155,7 @@ export const usageMap: UsageMap = {
       "src/pages/project/components/FeatureChildStories.tsx",
       "src/pages/project/components/LinkTypeSelectorDialog.tsx",
       "src/pages/project/components/RiskLinkDialog.tsx",
+      "src/pages/releases/QualityGatesPage.tsx",
       "src/pages/work-tree/components/WorkTreeLegend.tsx"
     ]
   },
@@ -17087,12 +17169,12 @@ export const usageMap: UsageMap = {
       "src/components/work-items/WorkItemLinksSection.tsx"
     ]
   },
-  "Diamond::@/lib/atlaskit-icons": {
-    "name": "Diamond",
-    "source": "@/lib/atlaskit-icons",
+  "DictationCTA::./DictationCTA": {
+    "name": "DictationCTA",
+    "source": "./DictationCTA",
     "origin": "internal",
     "consumers": [
-      "src/modules/okr-v2/components/StrategyCockpit/StrategyTree.tsx"
+      "src/features/voice-flow/VoiceFlowProvider.tsx"
     ]
   },
   "Direction::../extensions/Direction": {
@@ -17101,14 +17183,6 @@ export const usageMap: UsageMap = {
     "origin": "internal",
     "consumers": [
       "src/components/catalyst-detail-views/shared/sections/Description/hooks/useTiptapEditor.ts"
-    ]
-  },
-  "Direction::@/hooks/useKeyResultsV2": {
-    "name": "Direction",
-    "source": "@/hooks/useKeyResultsV2",
-    "origin": "internal",
-    "consumers": [
-      "src/modules/okr-v2/components/KeyResultDialogV2.tsx"
     ]
   },
   "DirectNotificationRow::./components/DirectNotificationRow": {
@@ -17377,10 +17451,6 @@ export const usageMap: UsageMap = {
       "src/modules/backlog/components/BacklogToolbar.tsx",
       "src/modules/feature-backlog/components/FeatureBacklogHeader.tsx",
       "src/modules/in-jira/pages/ListPage.tsx",
-      "src/modules/objectives/components/KeyResults/KeyResultReportsModal.tsx",
-      "src/modules/okr-v2/components/ObjectiveDrawerV2.tsx",
-      "src/modules/okr-v2/components/StrategyAnalyticsModal.tsx",
-      "src/modules/okr-v2/components/StrategyCockpit/StrategyCockpit.tsx",
       "src/modules/product-backlog/components/split-panel/AttachmentUploadModal.tsx",
       "src/modules/product-roadmap/components/RoadmapExportDialog.tsx",
       "src/modules/product-roadmap/components/RoadmapToolbar.tsx",
@@ -17402,11 +17472,15 @@ export const usageMap: UsageMap = {
       "src/pages/WorkSpendGrid.tsx",
       "src/pages/enterprise/BudgetGovernancePage.tsx",
       "src/pages/enterprise/EnterpriseEpics.tsx",
-      "src/pages/enterprise/EnterpriseObjectives.tsx",
       "src/pages/items/EpicsPage.tsx",
       "src/pages/items/reports/EpicStatusReport.tsx",
       "src/pages/producthub/IdeationPage.tsx",
       "src/pages/project/feature-detail/FeatureOverviewTab.tsx",
+      "src/pages/releases/AllReleasesPage.tsx",
+      "src/pages/releases/CommandCenter.tsx",
+      "src/pages/releases/CommandCenterPage.tsx",
+      "src/pages/releases/CoverageReportsPage.tsx",
+      "src/pages/releases/ReleaseDashboardPage.tsx",
       "src/pages/work/Dependencies.tsx",
       "src/shared/backlog/BacklogTemplate.tsx"
     ]
@@ -17418,11 +17492,13 @@ export const usageMap: UsageMap = {
     "consumers": [
       "src/components/catalyst-detail-views/test-case/TestCaseAttachments.tsx",
       "src/features/my-test-scope/components/ScopeHeader.tsx",
+      "src/features/release-calendar/components/CalendarHeader.tsx",
       "src/features/release-compare/components/CompareHeader.tsx",
       "src/modules/project-work-hub/components/dialogs/story-detail-modules/AttachmentPreviewModal.tsx",
       "src/modules/project-work-hub/components/dialogs/story-detail-modules/AttachmentsSection.tsx",
       "src/modules/workhub/admin/components/SyncConfigPanel.tsx",
       "src/modules/workhub/admin/components/SyncLogs.tsx",
+      "src/pages/admin/NotificationTriggers.tsx",
       "src/pages/admin/ResourceAssignments.tsx"
     ],
     "package": "@atlaskit/icon"
@@ -17583,6 +17659,7 @@ export const usageMap: UsageMap = {
     "origin": "atlaskit",
     "consumers": [
       "src/components/admin/lookup-management/OptionValuesDrawer.tsx",
+      "src/pages/admin/BusinessOwners.tsx",
       "src/pages/admin/CapacityDepartments.tsx",
       "src/pages/admin/Departments.tsx",
       "src/pages/admin/ResourceAssignments.tsx"
@@ -17774,7 +17851,6 @@ export const usageMap: UsageMap = {
       "src/components/layout/HubSwitcher.tsx",
       "src/components/layout/ItemsDropdown.tsx",
       "src/components/layout/ProfileMenu.tsx",
-      "src/components/okr/ObjectiveDetailsPanelNew.tsx",
       "src/components/product-roadmap/ProductRoadmapToolbar.tsx",
       "src/components/project/ProjectHeader.tsx",
       "src/components/projecthub/AllProjectsTable.tsx",
@@ -17791,6 +17867,8 @@ export const usageMap: UsageMap = {
       "src/components/work-items/WorkItemCommentsSection.tsx",
       "src/components/work-manager/WorkManagerBoards.tsx",
       "src/components/work-manager/WorkManagerTeams.tsx",
+      "src/features/all-releases/components/FilterBar.tsx",
+      "src/features/all-releases/components/Toolbar.tsx",
       "src/features/release-compare/components/CompareHeader.tsx",
       "src/modules/backlog/components/BacklogToolbar.tsx",
       "src/modules/backlog/components/EpicTableView.tsx",
@@ -17803,9 +17881,6 @@ export const usageMap: UsageMap = {
       "src/modules/in-jira/pages/ListPage.tsx",
       "src/modules/incidents/kanban/components/KanbanFiltersBar.tsx",
       "src/modules/incidents/kanban/pages/IncidentKanbanPage.tsx",
-      "src/modules/objectives/components/KeyResults/KeyResultCard.tsx",
-      "src/modules/okr-v2/components/ObjectiveDrawerV2.tsx",
-      "src/modules/okr-v2/components/StrategyAnalyticsModal.tsx",
       "src/modules/product-roadmap/components/RoadmapToolbar.tsx",
       "src/modules/project-work-hub/components/CreateWorkItemDropdown.tsx",
       "src/modules/project-work-hub/components/tabs/KanbanBoardTab.tsx",
@@ -17841,6 +17916,12 @@ export const usageMap: UsageMap = {
       "src/pages/project/FeatureViewPage.tsx",
       "src/pages/projects/ProjectSummaryPage.tsx",
       "src/pages/projects/views/ListView.tsx",
+      "src/pages/releases/CommandCenter.tsx",
+      "src/pages/releases/CommandCenterPage.tsx",
+      "src/pages/releases/CoverageReportsPage.tsx",
+      "src/pages/releases/DefectDetailPage.tsx",
+      "src/pages/releases/DefectsPage.tsx",
+      "src/pages/releases/QualityGatesPage.tsx",
       "src/pages/risks/RisksGridPage.tsx",
       "src/pages/work/Dependencies.tsx",
       "src/shared/components/IndustryHeaderToolbarV2.tsx"
@@ -17882,6 +17963,8 @@ export const usageMap: UsageMap = {
       "src/components/product-roadmap/ProductRoadmapToolbar.tsx",
       "src/components/shared/UnifiedLinksTab.tsx",
       "src/components/shared/dynamic-table/ColumnVisibilityMenu.tsx",
+      "src/features/all-releases/components/FilterBar.tsx",
+      "src/features/all-releases/components/Toolbar.tsx",
       "src/modules/in-jira/pages/ListPage.tsx",
       "src/modules/tasks/components/PlannerSearchBar.tsx",
       "src/modules/tasks/components/TaskList/TaskListPageV3.tsx",
@@ -17922,7 +18005,6 @@ export const usageMap: UsageMap = {
       "src/components/layout/HubSwitcher.tsx",
       "src/components/layout/ItemsDropdown.tsx",
       "src/components/layout/ProfileMenu.tsx",
-      "src/components/okr/ObjectiveDetailsPanelNew.tsx",
       "src/components/product-roadmap/ProductRoadmapToolbar.tsx",
       "src/components/project/ProjectHeader.tsx",
       "src/components/projecthub/AllProjectsTable.tsx",
@@ -17939,6 +18021,8 @@ export const usageMap: UsageMap = {
       "src/components/work-items/WorkItemCommentsSection.tsx",
       "src/components/work-manager/WorkManagerBoards.tsx",
       "src/components/work-manager/WorkManagerTeams.tsx",
+      "src/features/all-releases/components/FilterBar.tsx",
+      "src/features/all-releases/components/Toolbar.tsx",
       "src/features/release-compare/components/CompareHeader.tsx",
       "src/modules/backlog/components/BacklogToolbar.tsx",
       "src/modules/backlog/components/EpicTableView.tsx",
@@ -17951,9 +18035,6 @@ export const usageMap: UsageMap = {
       "src/modules/in-jira/pages/ListPage.tsx",
       "src/modules/incidents/kanban/components/KanbanFiltersBar.tsx",
       "src/modules/incidents/kanban/pages/IncidentKanbanPage.tsx",
-      "src/modules/objectives/components/KeyResults/KeyResultCard.tsx",
-      "src/modules/okr-v2/components/ObjectiveDrawerV2.tsx",
-      "src/modules/okr-v2/components/StrategyAnalyticsModal.tsx",
       "src/modules/product-roadmap/components/RoadmapToolbar.tsx",
       "src/modules/project-work-hub/components/CreateWorkItemDropdown.tsx",
       "src/modules/project-work-hub/components/tabs/KanbanBoardTab.tsx",
@@ -17989,6 +18070,12 @@ export const usageMap: UsageMap = {
       "src/pages/project/FeatureViewPage.tsx",
       "src/pages/projects/ProjectSummaryPage.tsx",
       "src/pages/projects/views/ListView.tsx",
+      "src/pages/releases/CommandCenter.tsx",
+      "src/pages/releases/CommandCenterPage.tsx",
+      "src/pages/releases/CoverageReportsPage.tsx",
+      "src/pages/releases/DefectDetailPage.tsx",
+      "src/pages/releases/DefectsPage.tsx",
+      "src/pages/releases/QualityGatesPage.tsx",
       "src/pages/risks/RisksGridPage.tsx",
       "src/pages/work/Dependencies.tsx",
       "src/shared/components/IndustryHeaderToolbarV2.tsx"
@@ -18033,7 +18120,6 @@ export const usageMap: UsageMap = {
       "src/components/knowledge-hub/DocumentComments.tsx",
       "src/components/layout/ItemsDropdown.tsx",
       "src/components/layout/ProfileMenu.tsx",
-      "src/components/okr/ObjectiveDetailsPanelNew.tsx",
       "src/components/product-roadmap/ProductRoadmapToolbar.tsx",
       "src/components/project/ProjectHeader.tsx",
       "src/components/projecthub/AllProjectsTable.tsx",
@@ -18060,9 +18146,6 @@ export const usageMap: UsageMap = {
       "src/modules/in-jira/pages/ListPage.tsx",
       "src/modules/incidents/kanban/components/KanbanFiltersBar.tsx",
       "src/modules/incidents/kanban/pages/IncidentKanbanPage.tsx",
-      "src/modules/objectives/components/KeyResults/KeyResultCard.tsx",
-      "src/modules/okr-v2/components/ObjectiveDrawerV2.tsx",
-      "src/modules/okr-v2/components/StrategyAnalyticsModal.tsx",
       "src/modules/product-roadmap/components/RoadmapToolbar.tsx",
       "src/modules/project-work-hub/components/CreateWorkItemDropdown.tsx",
       "src/modules/project-work-hub/components/tabs/KanbanBoardTab.tsx",
@@ -18098,6 +18181,12 @@ export const usageMap: UsageMap = {
       "src/pages/project/FeatureViewPage.tsx",
       "src/pages/projects/ProjectSummaryPage.tsx",
       "src/pages/projects/views/ListView.tsx",
+      "src/pages/releases/CommandCenter.tsx",
+      "src/pages/releases/CommandCenterPage.tsx",
+      "src/pages/releases/CoverageReportsPage.tsx",
+      "src/pages/releases/DefectDetailPage.tsx",
+      "src/pages/releases/DefectsPage.tsx",
+      "src/pages/releases/QualityGatesPage.tsx",
       "src/pages/risks/RisksGridPage.tsx",
       "src/pages/work/Dependencies.tsx",
       "src/shared/components/IndustryHeaderToolbarV2.tsx"
@@ -18116,9 +18205,12 @@ export const usageMap: UsageMap = {
       "src/components/projecthub/AllProjectsTable.tsx",
       "src/components/shared/UnifiedLinksTab.tsx",
       "src/components/shared/dynamic-table/ColumnVisibilityMenu.tsx",
+      "src/features/all-releases/components/FilterBar.tsx",
+      "src/features/all-releases/components/Toolbar.tsx",
       "src/modules/backlog/components/EpicTableView.tsx",
       "src/modules/product-roadmap/components/RoadmapToolbar.tsx",
-      "src/modules/project-work-hub/components/CreateWorkItemDropdown.tsx"
+      "src/modules/project-work-hub/components/CreateWorkItemDropdown.tsx",
+      "src/pages/releases/DefectsPage.tsx"
     ]
   },
   "DropdownMenuRadioGroup::@/components/ui/dropdown-menu": {
@@ -18126,7 +18218,8 @@ export const usageMap: UsageMap = {
     "source": "@/components/ui/dropdown-menu",
     "origin": "internal",
     "consumers": [
-      "src/components/enterprise/EnterpriseGrid.tsx"
+      "src/components/enterprise/EnterpriseGrid.tsx",
+      "src/features/all-releases/components/Toolbar.tsx"
     ]
   },
   "DropdownMenuRadioItem::@/components/ui/dropdown-menu": {
@@ -18134,7 +18227,8 @@ export const usageMap: UsageMap = {
     "source": "@/components/ui/dropdown-menu",
     "origin": "internal",
     "consumers": [
-      "src/components/enterprise/EnterpriseGrid.tsx"
+      "src/components/enterprise/EnterpriseGrid.tsx",
+      "src/features/all-releases/components/Toolbar.tsx"
     ]
   },
   "DropdownMenuSeparator::@/components/ui/dropdown-menu": {
@@ -18168,6 +18262,8 @@ export const usageMap: UsageMap = {
       "src/components/templates/TemplateCard.tsx",
       "src/components/work-manager/WorkManagerBoards.tsx",
       "src/components/work-manager/WorkManagerTeams.tsx",
+      "src/features/all-releases/components/FilterBar.tsx",
+      "src/features/all-releases/components/Toolbar.tsx",
       "src/modules/backlog/components/EpicTableView.tsx",
       "src/modules/in-jira/components/TransitionControls.tsx",
       "src/modules/in-jira/components/drawer/IssueActionsMenu.tsx",
@@ -18175,8 +18271,6 @@ export const usageMap: UsageMap = {
       "src/modules/in-jira/pages/ListPage.tsx",
       "src/modules/incidents/kanban/components/KanbanFiltersBar.tsx",
       "src/modules/incidents/kanban/pages/IncidentKanbanPage.tsx",
-      "src/modules/okr-v2/components/ObjectiveDrawerV2.tsx",
-      "src/modules/okr-v2/components/StrategyAnalyticsModal.tsx",
       "src/modules/product-roadmap/components/RoadmapToolbar.tsx",
       "src/modules/project-work-hub/components/CreateWorkItemDropdown.tsx",
       "src/modules/tasks/components/PlannerSearchBar.tsx",
@@ -18200,6 +18294,10 @@ export const usageMap: UsageMap = {
       "src/pages/enterprise/EnterpriseEpics.tsx",
       "src/pages/items/EpicsPage.tsx",
       "src/pages/project/FeatureDetailPage.tsx",
+      "src/pages/releases/CommandCenterPage.tsx",
+      "src/pages/releases/DefectDetailPage.tsx",
+      "src/pages/releases/DefectsPage.tsx",
+      "src/pages/releases/QualityGatesPage.tsx",
       "src/shared/components/IndustryHeaderToolbarV2.tsx"
     ]
   },
@@ -18268,7 +18366,6 @@ export const usageMap: UsageMap = {
       "src/components/layout/HubSwitcher.tsx",
       "src/components/layout/ItemsDropdown.tsx",
       "src/components/layout/ProfileMenu.tsx",
-      "src/components/okr/ObjectiveDetailsPanelNew.tsx",
       "src/components/product-roadmap/ProductRoadmapToolbar.tsx",
       "src/components/project/ProjectHeader.tsx",
       "src/components/projecthub/AllProjectsTable.tsx",
@@ -18285,6 +18382,8 @@ export const usageMap: UsageMap = {
       "src/components/work-items/WorkItemCommentsSection.tsx",
       "src/components/work-manager/WorkManagerBoards.tsx",
       "src/components/work-manager/WorkManagerTeams.tsx",
+      "src/features/all-releases/components/FilterBar.tsx",
+      "src/features/all-releases/components/Toolbar.tsx",
       "src/features/release-compare/components/CompareHeader.tsx",
       "src/modules/backlog/components/BacklogToolbar.tsx",
       "src/modules/backlog/components/EpicTableView.tsx",
@@ -18297,9 +18396,6 @@ export const usageMap: UsageMap = {
       "src/modules/in-jira/pages/ListPage.tsx",
       "src/modules/incidents/kanban/components/KanbanFiltersBar.tsx",
       "src/modules/incidents/kanban/pages/IncidentKanbanPage.tsx",
-      "src/modules/objectives/components/KeyResults/KeyResultCard.tsx",
-      "src/modules/okr-v2/components/ObjectiveDrawerV2.tsx",
-      "src/modules/okr-v2/components/StrategyAnalyticsModal.tsx",
       "src/modules/product-roadmap/components/RoadmapToolbar.tsx",
       "src/modules/project-work-hub/components/CreateWorkItemDropdown.tsx",
       "src/modules/project-work-hub/components/tabs/KanbanBoardTab.tsx",
@@ -18335,6 +18431,12 @@ export const usageMap: UsageMap = {
       "src/pages/project/FeatureViewPage.tsx",
       "src/pages/projects/ProjectSummaryPage.tsx",
       "src/pages/projects/views/ListView.tsx",
+      "src/pages/releases/CommandCenter.tsx",
+      "src/pages/releases/CommandCenterPage.tsx",
+      "src/pages/releases/CoverageReportsPage.tsx",
+      "src/pages/releases/DefectDetailPage.tsx",
+      "src/pages/releases/DefectsPage.tsx",
+      "src/pages/releases/QualityGatesPage.tsx",
       "src/pages/risks/RisksGridPage.tsx",
       "src/pages/work/Dependencies.tsx",
       "src/shared/components/IndustryHeaderToolbarV2.tsx"
@@ -18464,13 +18566,11 @@ export const usageMap: UsageMap = {
       "src/components/dependencies/DependencyContextMenu.tsx",
       "src/components/hierarchy/HierarchyContextMenu.tsx",
       "src/components/incidents/IncidentHeader.tsx",
-      "src/components/okr/KeyResultsList.tsx",
       "src/components/releases/defects/EditDefectModal.tsx",
       "src/components/reports/SavedReportsList.tsx",
       "src/modules/backlog/components/split-panel/EpicDetailPanel.tsx",
       "src/modules/budget/components/SoftwareLicensesPage.tsx",
       "src/modules/feature-backlog/components/split-panel/FeatureDetailPanel.tsx",
-      "src/modules/okr-v2/components/KeyResultsTabV2.tsx",
       "src/modules/product-backlog/components/split-panel/RequestDetailPanel.tsx",
       "src/modules/task10/components/landing/T10ListCard.tsx",
       "src/modules/task10/components/panel/T10ActivityTimeline.tsx",
@@ -18481,7 +18581,9 @@ export const usageMap: UsageMap = {
       "src/pages/Initiatives.tsx",
       "src/pages/Themes.tsx",
       "src/pages/project-hub/filters/FilterDetailPage.tsx",
-      "src/pages/projects/ProjectSummaryPage.tsx"
+      "src/pages/projects/ProjectSummaryPage.tsx",
+      "src/pages/releases/DefectDetailPage.tsx",
+      "src/pages/releases/QualityGatesPage.tsx"
     ]
   },
   "Edit2::@/lib/atlaskit-icons": {
@@ -18636,6 +18738,15 @@ export const usageMap: UsageMap = {
       "src/components/shared/Timeline/TimelineView.tsx"
     ]
   },
+  "EditDefectModal::@/components/releases/defects/EditDefectModal": {
+    "name": "EditDefectModal",
+    "source": "@/components/releases/defects/EditDefectModal",
+    "origin": "internal",
+    "consumers": [
+      "src/pages/releases/DefectDetailPage.tsx",
+      "src/pages/releases/DefectsPage.tsx"
+    ]
+  },
   "EditDescriptionModal::../CreateChannel/EditDescriptionModal": {
     "name": "EditDescriptionModal",
     "source": "../CreateChannel/EditDescriptionModal",
@@ -18683,9 +18794,11 @@ export const usageMap: UsageMap = {
       "src/modules/project-work-hub/components/dialogs/story-detail-modules/shared-components.tsx",
       "src/modules/workhub/admin/components/JiraConnection.tsx",
       "src/pages/admin/AdminAccessPage.tsx",
+      "src/pages/admin/BusinessOwners.tsx",
       "src/pages/admin/CapacityDepartments.tsx",
       "src/pages/admin/Departments.tsx",
       "src/pages/admin/ResourceAssignments.tsx",
+      "src/pages/admin/UserAccessPage.tsx",
       "src/pages/admin/test/TestPrioritiesPage.tsx"
     ],
     "package": "@atlaskit/icon"
@@ -18836,7 +18949,8 @@ export const usageMap: UsageMap = {
     "consumers": [
       "src/components/admin/notifications/BulkActionsBar.tsx",
       "src/components/admin/notifications/ChannelToggles.tsx",
-      "src/modules/workhub/admin/components/JiraConnection.tsx"
+      "src/modules/workhub/admin/components/JiraConnection.tsx",
+      "src/pages/admin/UserAccessPage.tsx"
     ],
     "package": "@atlaskit/icon"
   },
@@ -18999,7 +19113,6 @@ export const usageMap: UsageMap = {
       "src/modules/docintel/pages/DocintelHealthPage.tsx",
       "src/modules/docintel/pages/DocintelWorkspacePage.tsx",
       "src/modules/product-roadmap/components/ProductRoadmap.tsx",
-      "src/modules/strata/components/InitiativeDetailModal.tsx",
       "src/modules/strata/components/ProjectCardDetailView.tsx",
       "src/modules/strata/components/vmoAuthoring.tsx",
       "src/modules/strata/pages/StrataAdminConfigPage.tsx",
@@ -19039,7 +19152,6 @@ export const usageMap: UsageMap = {
       "src/pages/MyResource360Page.tsx",
       "src/pages/MyTeamPage.tsx",
       "src/pages/TeamResourceList.tsx",
-      "src/pages/project-hub/ReleasesPage.tsx",
       "src/stories/components/EmptyState.stories.tsx"
     ]
   },
@@ -19053,6 +19165,7 @@ export const usageMap: UsageMap = {
       "src/pages/releasehub/ChangeExecutionBoard.tsx",
       "src/pages/releasehub/FreezeWindowsPage.tsx",
       "src/pages/releasehub/ProductionEventsPage.tsx",
+      "src/pages/releasehub/ReleaseComparePage.tsx",
       "src/pages/releasehub/SopTemplatesPage.tsx"
     ]
   },
@@ -19165,6 +19278,14 @@ export const usageMap: UsageMap = {
     "origin": "internal",
     "consumers": [
       "src/components/items/epics/drawer-tabs/EpicRisksViewTab.tsx"
+    ]
+  },
+  "EnvironmentComparisonWidget::@/components/releases/dashboard/EnvironmentComparisonWidget": {
+    "name": "EnvironmentComparisonWidget",
+    "source": "@/components/releases/dashboard/EnvironmentComparisonWidget",
+    "origin": "internal",
+    "consumers": [
+      "src/pages/releases/ReleaseDashboardPage.tsx"
     ]
   },
   "EnvironmentStats::@/types/release-dashboard": {
@@ -19321,7 +19442,6 @@ export const usageMap: UsageMap = {
     "origin": "internal",
     "consumers": [
       "src/components/backlog/CatalystThemeDrawer.tsx",
-      "src/modules/okr-v2/components/LinkedWorkTabV2.tsx",
       "src/pages/enterprise/EnterpriseEpics.tsx",
       "src/pages/items/EpicsPage.tsx",
       "src/pages/program/RoadmapsTestPage.tsx"
@@ -19582,6 +19702,10 @@ export const usageMap: UsageMap = {
     "consumers": [
       "src/components/layout/CatalystShell.tsx",
       "src/components/shared/JiraTable/flags.tsx",
+      "src/features/all-releases/components/AIInsightsBar.tsx",
+      "src/features/all-releases/components/AIInsightsDrawer.tsx",
+      "src/features/all-releases/components/StatStrip.tsx",
+      "src/features/release-calendar/components/CalendarAIInsights.tsx",
       "src/features/release-compare/components/CompareInsightsBar.tsx",
       "src/features/release-compare/components/ComparisonTable.tsx",
       "src/modules/project-work-hub/components/dialogs/cloneIncludeMatrix.tsx",
@@ -19718,15 +19842,6 @@ export const usageMap: UsageMap = {
     "origin": "internal",
     "consumers": [
       "src/pages/releasehub/ChangeDetailPage.tsx"
-    ]
-  },
-  "ExecutiveInsight::./sharedAnalyticsTypes": {
-    "name": "ExecutiveInsight",
-    "source": "./sharedAnalyticsTypes",
-    "origin": "internal",
-    "consumers": [
-      "src/modules/okr-v2/lib/keyResultAnalytics.ts",
-      "src/modules/okr-v2/lib/workItemAnalytics.ts"
     ]
   },
   "ExecutiveReportsTab::./ExecutiveReportsTab": {
@@ -19873,7 +19988,6 @@ export const usageMap: UsageMap = {
       "src/modules/in-jira/components/releases/VersionCard.tsx",
       "src/modules/incidents/analytics/components/DrilldownDrawer.tsx",
       "src/modules/incidents/analytics/pages/IncidentInsightsPage.tsx",
-      "src/modules/objectives/components/AlignedItems/ObjectivesSection.tsx",
       "src/modules/project-work-hub/components/SubtasksPanel/RowActionsMenu.tsx",
       "src/modules/task10/components/panel/T10SidePanelNew.tsx",
       "src/modules/tasks/components/TaskList/TaskListRowV3.tsx",
@@ -19887,7 +20001,9 @@ export const usageMap: UsageMap = {
       "src/pages/project-hub/ProjectListPage.tsx",
       "src/pages/project/components/FeatureLinkedItems.tsx",
       "src/pages/project/feature-detail/FeatureLinksTab.tsx",
-      "src/pages/releasehub/ProductionEventReplayPage.tsx"
+      "src/pages/releasehub/ProductionEventReplayPage.tsx",
+      "src/pages/releases/CoverageReportsPage.tsx",
+      "src/pages/releases/DefectDetailPage.tsx"
     ]
   },
   "Eye::@/lib/atlaskit-icons": {
@@ -19928,6 +20044,7 @@ export const usageMap: UsageMap = {
       "src/pages/items/EpicEstimationPage.tsx",
       "src/pages/program/ExecutionWorkbench/views/TableView.tsx",
       "src/pages/project/FeatureDetailPage.tsx",
+      "src/pages/releases/DefectDetailPage.tsx",
       "src/pages/work-tree/WorkTreePage.tsx"
     ]
   },
@@ -20147,8 +20264,8 @@ export const usageMap: UsageMap = {
     "source": "@/components/items/features/FeatureDetailsPanel",
     "origin": "internal",
     "consumers": [
+      "src/components/items/epics/modals/FeatureStatusModal.tsx",
       "src/modules/feature-backlog/components/FeatureBacklogWorkspace.tsx",
-      "src/modules/okr-v2/components/LinkedWorkTabV2.tsx",
       "src/pages/FeaturesBacklog.tsx",
       "src/pages/items/FeaturesPage.tsx",
       "src/pages/program/ExecutionWorkbench/index.tsx",
@@ -20170,6 +20287,14 @@ export const usageMap: UsageMap = {
     "origin": "internal",
     "consumers": [
       "src/App.tsx"
+    ]
+  },
+  "FeatureFlagsContent::@/components/admin/FeatureFlagsContent": {
+    "name": "FeatureFlagsContent",
+    "source": "@/components/admin/FeatureFlagsContent",
+    "origin": "internal",
+    "consumers": [
+      "src/pages/admin/ModuleAccessAdminPage.tsx"
     ]
   },
   "FeatureKanbanBoard::./FeatureKanbanBoard": {
@@ -20469,7 +20594,9 @@ export const usageMap: UsageMap = {
     "source": "@/lib/atlaskit-icons",
     "origin": "internal",
     "consumers": [
-      "src/modules/in-jira/components/drawer/IssueActionsMenu.tsx"
+      "src/modules/in-jira/components/drawer/IssueActionsMenu.tsx",
+      "src/pages/releases/AllReleasesPage.tsx",
+      "src/pages/releases/CoverageReportsPage.tsx"
     ]
   },
   "FileGenericIcon::../shared/Icon": {
@@ -20495,6 +20622,7 @@ export const usageMap: UsageMap = {
     "origin": "atlaskit",
     "consumers": [
       "src/config/workItemConfig.ts",
+      "src/features/all-releases/components/SummaryCards.tsx",
       "src/features/my-test-scope/components/TraceabilityPanel.tsx",
       "src/features/release-compare/components/CompareHeader.tsx",
       "src/modules/project-work-hub/components/dialogs/story-detail-modules/AttachmentPreviewModal.tsx"
@@ -20561,7 +20689,11 @@ export const usageMap: UsageMap = {
       "src/modules/product-roadmap/components/RoadmapExportDialog.tsx",
       "src/modules/strata/pages/StrataUploadWizardPage.tsx",
       "src/pages/SkillsInventory.tsx",
-      "src/pages/project/feature-detail/FeatureOverviewTab.tsx"
+      "src/pages/project/feature-detail/FeatureOverviewTab.tsx",
+      "src/pages/releases/AllReleasesPage.tsx",
+      "src/pages/releases/CommandCenter.tsx",
+      "src/pages/releases/CommandCenterPage.tsx",
+      "src/pages/releases/CoverageReportsPage.tsx"
     ]
   },
   "FilesTab::./organisms": {
@@ -20630,6 +20762,7 @@ export const usageMap: UsageMap = {
       "src/components/layout/OperationsSidebar.tsx",
       "src/components/layout/ProductRoomSidebar.tsx",
       "src/components/layout/ProjectSidebar.tsx",
+      "src/components/layout/TeamRoomSidebar.tsx",
       "src/components/layout/TestHubSidebar.tsx",
       "src/components/layout/UnifiedSidebar.tsx",
       "src/components/layout/dropdowns/ItemsDropdown.tsx",
@@ -20689,6 +20822,7 @@ export const usageMap: UsageMap = {
       "src/modules/work-hub/views/AllWorkView.tsx",
       "src/modules/work-hub/views/ReleaseDetailsView.tsx",
       "src/modules/work-hub/views/SummaryView.tsx",
+      "src/pages/ForYouPage.tsx",
       "src/pages/ReqAssistGenerate.tsx",
       "src/pages/ReqAssistLibrary.tsx",
       "src/pages/SkillsInventory.tsx",
@@ -20699,6 +20833,10 @@ export const usageMap: UsageMap = {
       "src/pages/project/feature-detail/FeatureLinksTab.tsx",
       "src/pages/project/feature-detail/FeatureOverviewTab.tsx",
       "src/pages/projects/ProjectSummaryPage.tsx",
+      "src/pages/releases/AllReleasesPage.tsx",
+      "src/pages/releases/CommandCenter.tsx",
+      "src/pages/releases/CommandCenterPage.tsx",
+      "src/pages/releases/CoverageReportsPage.tsx",
       "src/pages/work-tree/components/WorkTreeLegend.tsx"
     ]
   },
@@ -20762,7 +20900,6 @@ export const usageMap: UsageMap = {
       "src/modules/in-jira/pages/AllWorkPage.tsx",
       "src/modules/in-jira/pages/KanbanBoardPage.tsx",
       "src/modules/in-jira/pages/ListPage.tsx",
-      "src/modules/okr-v2/components/StrategyCockpit/StrategyCockpit.tsx",
       "src/modules/product-roadmap/components/RoadmapToolbar.tsx",
       "src/modules/project-work-hub/components/tabs/ListTab.tsx",
       "src/modules/task10/components/completed/T10CompletedFilters.tsx",
@@ -20777,7 +20914,6 @@ export const usageMap: UsageMap = {
       "src/pages/Stories.tsx",
       "src/pages/WorkManager.tsx",
       "src/pages/enterprise/EnterpriseEpics.tsx",
-      "src/pages/enterprise/EnterpriseObjectives.tsx",
       "src/pages/items/EpicEstimationPage.tsx",
       "src/pages/program/ProgramRoadmapPage.tsx",
       "src/pages/project-hub/HierarchyPage.tsx",
@@ -20785,6 +20921,7 @@ export const usageMap: UsageMap = {
       "src/pages/project/feature-detail/FeatureActivityTab.tsx",
       "src/pages/projects/ProjectSummaryPage.tsx",
       "src/pages/projects/views/ListView.tsx",
+      "src/pages/releases/CoverageReportsPage.tsx",
       "src/pages/reports/DependencyMapsPage.tsx",
       "src/pages/work/Dependencies.tsx",
       "src/shared/backlog/BacklogTemplate.tsx"
@@ -20796,6 +20933,14 @@ export const usageMap: UsageMap = {
     "origin": "internal",
     "consumers": [
       "src/components/contract-horizon/ContractHorizonView.tsx"
+    ]
+  },
+  "FilterBar::@/components/releases/dashboard/FilterBar": {
+    "name": "FilterBar",
+    "source": "@/components/releases/dashboard/FilterBar",
+    "origin": "internal",
+    "consumers": [
+      "src/pages/releases/ReleaseDashboardPage.tsx"
     ]
   },
   "FilterChips::./FilterDropdown": {
@@ -20885,6 +21030,7 @@ export const usageMap: UsageMap = {
       "src/components/kanban/toolbar/KanbanToolbar.tsx",
       "src/components/shared/JiraFilterAtlaskit.tsx",
       "src/modules/workhub/admin/components/SyncLogs.tsx",
+      "src/pages/admin/NotificationTriggers.tsx",
       "src/pages/risks/RisksGridPage.tsx"
     ],
     "package": "@atlaskit/icon"
@@ -21080,7 +21226,8 @@ export const usageMap: UsageMap = {
     "consumers": [
       "src/components/kanban/toolbar/KanbanToolbar.tsx",
       "src/components/workhub/issue-view/IssueViewShell.tsx",
-      "src/modules/project-work-hub/pages/StoryBacklogPage.tsx"
+      "src/modules/project-work-hub/pages/StoryBacklogPage.tsx",
+      "src/pages/ForYouPage.tsx"
     ]
   },
   "FilterUsageSparkline::@/components/filters/FilterUsageSparkline": {
@@ -21148,7 +21295,6 @@ export const usageMap: UsageMap = {
       "src/modules/in-jira/pages/ListPage.tsx",
       "src/modules/in-jira/pages/ScrumBoardPage.tsx",
       "src/modules/project-work-hub/pages/StoryBacklogPage.atlaskit.tsx",
-      "src/modules/strata/pages/StrataStrategyMapPage.tsx",
       "src/modules/tasks/components/calendar/TaskContextMenu.tsx",
       "src/modules/tasks/components/calendar/TaskHoverCard.tsx",
       "src/modules/tasks/components/kanban/KanbanBoard.tsx",
@@ -21157,7 +21303,8 @@ export const usageMap: UsageMap = {
       "src/modules/tasks/components/task-list/BulkActionBar.tsx",
       "src/modules/work-hub/components/GroupByMenu.tsx",
       "src/pages/ReqAssistGenerate.tsx",
-      "src/pages/Roadmaps.tsx"
+      "src/pages/Roadmaps.tsx",
+      "src/pages/releases/CommandCenterPage.tsx"
     ]
   },
   "Flag::@atlaskit/flag": {
@@ -21215,7 +21362,8 @@ export const usageMap: UsageMap = {
     "source": "@atlaskit/icon/core/flag",
     "origin": "atlaskit",
     "consumers": [
-      "src/modules/project-work-hub/components/drawers/StoryActionMenu.tsx"
+      "src/modules/project-work-hub/components/drawers/StoryActionMenu.tsx",
+      "src/pages/admin/FeatureFlagsPage.tsx"
     ],
     "package": "@atlaskit/icon"
   },
@@ -21300,6 +21448,7 @@ export const usageMap: UsageMap = {
       "src/components/work-manager/TaskCard.tsx",
       "src/components/work-manager/TaskDrawer.tsx",
       "src/modules/in-jira/components/drawer/DetailsPanel.tsx",
+      "src/pages/ForYouPage.tsx",
       "src/pages/testhub/repository/RepositoryPage.tsx"
     ]
   },
@@ -21347,7 +21496,6 @@ export const usageMap: UsageMap = {
       "src/components/layout/ReleasesManagementSidebar.tsx",
       "src/components/layout/dropdowns/ItemsDropdown.tsx",
       "src/components/project-hub/shell/SidebarModuleNav.tsx",
-      "src/modules/objectives/components/shared/ObjectiveTierBadge.tsx",
       "src/modules/tasks/components/workstreams/WorkstreamsManagerPage.tsx",
       "src/pages/project-hub/AllProjectsPage.tsx",
       "src/pages/project-hub/ProjectListPage.tsx"
@@ -21390,7 +21538,8 @@ export const usageMap: UsageMap = {
     "origin": "internal",
     "consumers": [
       "src/components/features/CreateFeatureModal.tsx",
-      "src/modules/in-jira/pages/AllWorkPage.tsx"
+      "src/modules/in-jira/pages/AllWorkPage.tsx",
+      "src/pages/releases/CoverageReportsPage.tsx"
     ]
   },
   "ForcePasswordReset::@/components/auth/ForcePasswordReset": {
@@ -21450,8 +21599,7 @@ export const usageMap: UsageMap = {
       "src/components/forms/KeyResultDialog.tsx",
       "src/components/forms/ReleaseDialog.tsx",
       "src/features/release-compare/components/SaveComparisonViewDialog.tsx",
-      "src/modules/budget/components/LicenseDialog.tsx",
-      "src/modules/objectives/components/ObjectivePanel/ObjectiveForm.tsx"
+      "src/modules/budget/components/LicenseDialog.tsx"
     ]
   },
   "Form::@atlaskit/form": {
@@ -21473,8 +21621,7 @@ export const usageMap: UsageMap = {
       "src/components/forms/KeyResultDialog.tsx",
       "src/components/forms/ReleaseDialog.tsx",
       "src/features/release-compare/components/SaveComparisonViewDialog.tsx",
-      "src/modules/budget/components/LicenseDialog.tsx",
-      "src/modules/objectives/components/ObjectivePanel/ObjectiveForm.tsx"
+      "src/modules/budget/components/LicenseDialog.tsx"
     ]
   },
   "FormDescription::@/components/ui/form": {
@@ -21503,8 +21650,7 @@ export const usageMap: UsageMap = {
       "src/components/forms/KeyResultDialog.tsx",
       "src/components/forms/ReleaseDialog.tsx",
       "src/features/release-compare/components/SaveComparisonViewDialog.tsx",
-      "src/modules/budget/components/LicenseDialog.tsx",
-      "src/modules/objectives/components/ObjectivePanel/ObjectiveForm.tsx"
+      "src/modules/budget/components/LicenseDialog.tsx"
     ]
   },
   "FormFooter::@atlaskit/form": {
@@ -21525,8 +21671,7 @@ export const usageMap: UsageMap = {
       "src/components/forms/KeyResultDialog.tsx",
       "src/components/forms/ReleaseDialog.tsx",
       "src/features/release-compare/components/SaveComparisonViewDialog.tsx",
-      "src/modules/budget/components/LicenseDialog.tsx",
-      "src/modules/objectives/components/ObjectivePanel/ObjectiveForm.tsx"
+      "src/modules/budget/components/LicenseDialog.tsx"
     ]
   },
   "FormLabel::@/components/ui/form": {
@@ -21538,8 +21683,7 @@ export const usageMap: UsageMap = {
       "src/components/forms/KeyResultDialog.tsx",
       "src/components/forms/ReleaseDialog.tsx",
       "src/features/release-compare/components/SaveComparisonViewDialog.tsx",
-      "src/modules/budget/components/LicenseDialog.tsx",
-      "src/modules/objectives/components/ObjectivePanel/ObjectiveForm.tsx"
+      "src/modules/budget/components/LicenseDialog.tsx"
     ]
   },
   "FormMessage::@/components/ui/form": {
@@ -21551,8 +21695,7 @@ export const usageMap: UsageMap = {
       "src/components/forms/KeyResultDialog.tsx",
       "src/components/forms/ReleaseDialog.tsx",
       "src/features/release-compare/components/SaveComparisonViewDialog.tsx",
-      "src/modules/budget/components/LicenseDialog.tsx",
-      "src/modules/objectives/components/ObjectivePanel/ObjectiveForm.tsx"
+      "src/modules/budget/components/LicenseDialog.tsx"
     ]
   },
   "FormSelect::./FormSelect": {
@@ -21592,6 +21735,14 @@ export const usageMap: UsageMap = {
       "src/components/for-you/atlaskit/RecommendedPanel.tsx"
     ]
   },
+  "ForYouHeader::@/components/for-you": {
+    "name": "ForYouHeader",
+    "source": "@/components/for-you",
+    "origin": "internal",
+    "consumers": [
+      "src/pages/ForYouPage.tsx"
+    ]
+  },
   "ForYouHeader::@/components/for-you/ForYouHeader": {
     "name": "ForYouHeader",
     "source": "@/components/for-you/ForYouHeader",
@@ -21605,6 +21756,7 @@ export const usageMap: UsageMap = {
     "source": "@/components/for-you/ForYouInlineFilters",
     "origin": "internal",
     "consumers": [
+      "src/pages/ForYouPage.tsx",
       "src/stories/pages/ForYouSubComponents.stories.tsx"
     ]
   },
@@ -21613,7 +21765,16 @@ export const usageMap: UsageMap = {
     "source": "@/components/for-you/ForYouLightBulkBar",
     "origin": "internal",
     "consumers": [
+      "src/pages/ForYouPage.tsx",
       "src/stories/pages/ForYouMissing.stories.tsx"
+    ]
+  },
+  "ForYouPagination::@/components/for-you": {
+    "name": "ForYouPagination",
+    "source": "@/components/for-you",
+    "origin": "internal",
+    "consumers": [
+      "src/pages/ForYouPage.tsx"
     ]
   },
   "ForYouPagination::@/components/for-you/ForYouPagination": {
@@ -21651,6 +21812,14 @@ export const usageMap: UsageMap = {
       "src/stories/pages/ForYouDataPanels.stories.tsx"
     ]
   },
+  "ForYouSubTabs::@/components/for-you": {
+    "name": "ForYouSubTabs",
+    "source": "@/components/for-you",
+    "origin": "internal",
+    "consumers": [
+      "src/pages/ForYouPage.tsx"
+    ]
+  },
   "ForYouSubTabs::@/components/for-you/ForYouSubTabs": {
     "name": "ForYouSubTabs",
     "source": "@/components/for-you/ForYouSubTabs",
@@ -21659,12 +21828,28 @@ export const usageMap: UsageMap = {
       "src/stories/pages/ForYouSubComponents.stories.tsx"
     ]
   },
+  "ForYouTable::@/components/for-you": {
+    "name": "ForYouTable",
+    "source": "@/components/for-you",
+    "origin": "internal",
+    "consumers": [
+      "src/pages/ForYouPage.tsx"
+    ]
+  },
   "ForYouTable::@/components/for-you/ForYouTable": {
     "name": "ForYouTable",
     "source": "@/components/for-you/ForYouTable",
     "origin": "internal",
     "consumers": [
       "src/stories/pages/ForYouDataPanels.stories.tsx"
+    ]
+  },
+  "ForYouTableSkeleton::@/components/for-you": {
+    "name": "ForYouTableSkeleton",
+    "source": "@/components/for-you",
+    "origin": "internal",
+    "consumers": [
+      "src/pages/ForYouPage.tsx"
     ]
   },
   "ForYouTableSkeleton::@/components/for-you/ForYouTableSkeleton": {
@@ -21682,6 +21867,14 @@ export const usageMap: UsageMap = {
     "consumers": [
       "src/pages/ForYouPage.atlaskit.tsx",
       "src/stories/pages/ForYouMissing.stories.tsx"
+    ]
+  },
+  "ForYouToolbar::@/components/for-you": {
+    "name": "ForYouToolbar",
+    "source": "@/components/for-you",
+    "origin": "internal",
+    "consumers": [
+      "src/pages/ForYouPage.tsx"
     ]
   },
   "ForYouToolbar::@/components/for-you/ForYouToolbar": {
@@ -21845,7 +22038,6 @@ export const usageMap: UsageMap = {
       "src/modules/in-jira/components/InJiraLayout.tsx",
       "src/modules/in-jira/components/drawer/DetailsPanel.tsx",
       "src/modules/in-jira/pages/ReleaseManagementPage.tsx",
-      "src/modules/objectives/components/ObjectiveHierarchyDialog.tsx",
       "src/modules/strata/pages/StrataAdminConfigPage.tsx",
       "src/modules/strata/pages/StrataExecutionPage.tsx",
       "src/modules/strata/pages/StrataKpiDetailPage.tsx",
@@ -21855,7 +22047,6 @@ export const usageMap: UsageMap = {
       "src/modules/tasks/components/insights/WeeklySummaryView.tsx",
       "src/pages/CleanupPage.tsx",
       "src/pages/enterprise/BudgetPlannerPage.tsx",
-      "src/pages/enterprise/EnterpriseObjectives.tsx",
       "src/pages/project-hub/HierarchyPage.tsx",
       "src/pages/work/Dependencies.tsx"
     ]
@@ -21942,6 +22133,7 @@ export const usageMap: UsageMap = {
       "src/components/workhub/issue-view/IssueContentView.tsx",
       "src/modules-dormant/ideation/IdeationDrivesView.tsx",
       "src/modules/project-work-hub/ProjectWorkHubPage.tsx",
+      "src/modules/work-hub/WorkHubLayout.tsx",
       "src/pages/admin/test/TestCaseTypesPage.tsx",
       "src/pages/enterprise/DemandSummaryPage.tsx",
       "src/pages/producthub/IdeasThemePage.tsx"
@@ -21998,6 +22190,7 @@ export const usageMap: UsageMap = {
     "consumers": [
       "src/components/dependencies/DependenciesSidebar.tsx",
       "src/components/features/FeaturesBacklogHeader.tsx",
+      "src/components/layout/TeamRoomSidebar.tsx",
       "src/components/layout/UnifiedSidebar.tsx",
       "src/components/risks/RisksSidebar.tsx",
       "src/components/stories/StoriesSidebar.tsx",
@@ -22029,7 +22222,9 @@ export const usageMap: UsageMap = {
     "source": "@atlaskit/icon/core/grid",
     "origin": "atlaskit",
     "consumers": [
-      "src/components/boards/BoardCard.tsx"
+      "src/components/boards/BoardCard.tsx",
+      "src/features/all-releases/components/Toolbar.tsx",
+      "src/features/all-releases/components/ViewToggle.tsx"
     ],
     "package": "@atlaskit/icon"
   },
@@ -22079,7 +22274,6 @@ export const usageMap: UsageMap = {
       "src/modules/feature-backlog/components/FeatureKanbanColumn.tsx",
       "src/modules/incidents/kanban/components/ManageColumnsDialog.tsx",
       "src/modules/kanban/components/KanbanCard.tsx",
-      "src/modules/okr-v2/components/OKRColumnChooser.tsx",
       "src/modules/priorities/components/PriPriorityCard.tsx",
       "src/modules/product-roadmap/components/RoadmapListRow.tsx",
       "src/modules/task10/components/week/T10WeekViewV3.tsx",
@@ -22138,6 +22332,7 @@ export const usageMap: UsageMap = {
     "origin": "internal",
     "consumers": [
       "src/components/kanban/toolbar/KanbanToolbar.tsx",
+      "src/pages/ForYouPage.tsx",
       "src/pages/project-hub/jira-list/components/WorkListPanel.tsx"
     ]
   },
@@ -22173,7 +22368,8 @@ export const usageMap: UsageMap = {
     "source": "@/lib/atlaskit-icons",
     "origin": "internal",
     "consumers": [
-      "src/components/templates/TemplateAssignmentRules.tsx"
+      "src/components/templates/TemplateAssignmentRules.tsx",
+      "src/pages/releases/DefectDetailPage.tsx"
     ]
   },
   "Hash::@/lib/atlaskit-icons": {
@@ -22334,6 +22530,23 @@ export const usageMap: UsageMap = {
       "src/features/release-compare/components/ComparisonTable.tsx"
     ]
   },
+  "HealthLevel::../utils/healthScore": {
+    "name": "HealthLevel",
+    "source": "../utils/healthScore",
+    "origin": "internal",
+    "consumers": [
+      "src/features/all-releases/components/FilterBar.tsx",
+      "src/features/all-releases/components/Toolbar.tsx"
+    ]
+  },
+  "HealthLevel::./utils/healthScore": {
+    "name": "HealthLevel",
+    "source": "./utils/healthScore",
+    "origin": "internal",
+    "consumers": [
+      "src/features/all-releases/types.ts"
+    ]
+  },
   "HealthPanel::@/features/health/components/HealthPanel": {
     "name": "HealthPanel",
     "source": "@/features/health/components/HealthPanel",
@@ -22445,8 +22658,7 @@ export const usageMap: UsageMap = {
       "src/components/backlog/CatalystThemeDrawer.tsx",
       "src/components/backlog/DetailPanel/PanelHeader.tsx",
       "src/components/catalyst-roadmap/RoadmapHeader.tsx",
-      "src/components/ja/home/WorkGridRow.tsx",
-      "src/modules/okr-v2/components/ObjectiveDrawerV2.tsx"
+      "src/components/ja/home/WorkGridRow.tsx"
     ]
   },
   "HelperMessage::@atlaskit/form": {
@@ -22471,15 +22683,6 @@ export const usageMap: UsageMap = {
       "src/components/catalyst-detail-views/shared/sections/Description/_components/SlashMenu/ViewMoreModal.tsx"
     ],
     "package": "@atlaskit/icon"
-  },
-  "Hexagon::@/lib/atlaskit-icons": {
-    "name": "Hexagon",
-    "source": "@/lib/atlaskit-icons",
-    "origin": "internal",
-    "consumers": [
-      "src/modules/okr-v2/components/StrategyCockpit/StrategyTree.tsx",
-      "src/modules/okr-v2/components/WorkItemAnalyticsDrawer/WorkItemAnalyticsDrawer.tsx"
-    ]
   },
   "HierarchyConfigProvider::./contexts/HierarchyConfigContext": {
     "name": "HierarchyConfigProvider",
@@ -22575,7 +22778,8 @@ export const usageMap: UsageMap = {
       "src/modules/tasks/components/TaskDetailDrawer/ActivitySection.tsx",
       "src/pages/UserProfile.tsx",
       "src/pages/project-hub/WorkItemsListPage.tsx",
-      "src/pages/project/feature-detail/FeatureActivityTab.tsx"
+      "src/pages/project/feature-detail/FeatureActivityTab.tsx",
+      "src/pages/releases/QualityGatesPage.tsx"
     ]
   },
   "HistoryButton::./buttons/HistoryButton": {
@@ -22655,7 +22859,8 @@ export const usageMap: UsageMap = {
       "src/components/layout/UnifiedSidebar.tsx",
       "src/components/layout/WikiSidebar.tsx",
       "src/pages/enterprise/BudgetPlannerPage.tsx",
-      "src/pages/program/ProgramRoadmapPage.tsx"
+      "src/pages/program/ProgramRoadmapPage.tsx",
+      "src/pages/releases/ReleaseDashboardPage.tsx"
     ]
   },
   "HomeDomain::./useHomeFilters": {
@@ -23046,7 +23251,6 @@ export const usageMap: UsageMap = {
       "src/components/layout/SettingsMenu.tsx",
       "src/components/project-hub/dashboard/widgets/DemandFulfilmentGadget.tsx",
       "src/components/project-hub/dashboard/widgets/TimeInStatusFullscreenModal.tsx",
-      "src/components/releasehub/foryou/ReleaseChangeAnnouncementBanner.tsx",
       "src/components/universal-work-view/UWVColumnPicker.tsx",
       "src/components/universal-work-view/UWVToolbar.tsx",
       "src/components/workhub/create-story/CreateStoryModal.tsx",
@@ -23054,8 +23258,6 @@ export const usageMap: UsageMap = {
       "src/features/chat/components/sidebar/ConversationSidebar.tsx",
       "src/features/chat/components/thread/ThreadPane.tsx",
       "src/features/kanban-board/components/Toolbar.tsx",
-      "src/features/voice-flow/VoiceMicButton.tsx",
-      "src/features/voice-flow/VoiceSettingsTab.tsx",
       "src/modules/in-jira/components/IssueDrawer.tsx",
       "src/modules/project-work-hub/components/WorkItemDetailsDrawer.tsx",
       "src/modules/project-work-hub/pages/StoryBacklogPage.atlaskit.tsx",
@@ -23239,7 +23441,8 @@ export const usageMap: UsageMap = {
       "src/components/incidents/IncidentAttachments.tsx",
       "src/components/industry/RichTextEditor.tsx",
       "src/components/shared/jira-description-editor/Toolbar.tsx",
-      "src/modules/product-backlog/components/split-panel/AttachmentUploadModal.tsx"
+      "src/modules/product-backlog/components/split-panel/AttachmentUploadModal.tsx",
+      "src/pages/releases/DefectDetailPage.tsx"
     ]
   },
   "ImageFullscreenIcon::@atlaskit/icon/core/image-fullscreen": {
@@ -23826,6 +24029,14 @@ export const usageMap: UsageMap = {
       "src/components/project-hub/work-items/WorkItemsTable.tsx"
     ]
   },
+  "InlineTextEdit::@/components/releases/defects/InlineTextEdit": {
+    "name": "InlineTextEdit",
+    "source": "@/components/releases/defects/InlineTextEdit",
+    "origin": "internal",
+    "consumers": [
+      "src/pages/releases/DefectDetailPage.tsx"
+    ]
+  },
   "InlineUserPicker::./InlineUserPicker": {
     "name": "InlineUserPicker",
     "source": "./InlineUserPicker",
@@ -23857,6 +24068,8 @@ export const usageMap: UsageMap = {
       "src/components/enterprise/EnterpriseGrid.tsx",
       "src/components/epic-backlog/EpicFiltersDialog.tsx",
       "src/components/epic-backlog/EpicForecastTab.tsx",
+      "src/components/epic-backlog/modals/FeatureStatusModal.tsx",
+      "src/components/epic-backlog/modals/MilestoneModal.tsx",
       "src/components/epic-backlog/tabs/DesignTab.tsx",
       "src/components/epic-backlog/tabs/ForecastTab.tsx",
       "src/components/evidence/annotation/TextInputDialog.tsx",
@@ -23894,6 +24107,7 @@ export const usageMap: UsageMap = {
       "src/components/items/epics/dialogs/ReportTemplatesDialog.tsx",
       "src/components/items/epics/drawer-tabs/EpicDetailsViewTab.tsx",
       "src/components/items/epics/drawer-tabs/EpicFeaturesViewTab.tsx",
+      "src/components/items/epics/modals/FeatureStatusModal.tsx",
       "src/components/items/features/FeatureWSJFDialog.tsx",
       "src/components/items/features/tabs/FeatureLinksTab.tsx",
       "src/components/items/features/tabs/FeatureOverviewTab.tsx",
@@ -23904,13 +24118,6 @@ export const usageMap: UsageMap = {
       "src/components/kanban/setup/SwimLanesSetupTab.tsx",
       "src/components/layout/dropdowns/StarredDropdown.tsx",
       "src/components/modals/LinkWorkItemModal.tsx",
-      "src/components/okr/AddAlignedWorkDialog.tsx",
-      "src/components/okr/AddChildObjectiveDialog.tsx",
-      "src/components/okr/CheckInModal.tsx",
-      "src/components/okr/KeyResultDialog.tsx",
-      "src/components/okr/KeyResultsList.tsx",
-      "src/components/okr/LinkedItemsTab.tsx",
-      "src/components/okr/ObjectiveDetailsPanelNew.tsx",
       "src/components/programs/CreateProgramDialog.tsx",
       "src/components/projects/CreateProjectDialog.tsx",
       "src/components/releases/all-releases/ReleasesToolbar.tsx",
@@ -23937,6 +24144,7 @@ export const usageMap: UsageMap = {
       "src/components/skills-inventory/AddTeamMemberModal.tsx",
       "src/components/skills-inventory/EditSkillModal.tsx",
       "src/components/stories/CreateEditStoryPanel.tsx",
+      "src/components/stories/CreateStoryModal.tsx",
       "src/components/stories/StoriesFiltersDialog.tsx",
       "src/components/stories/StoryAttachments.tsx",
       "src/components/stories/StoryDetailPanel.tsx",
@@ -23960,6 +24168,8 @@ export const usageMap: UsageMap = {
       "src/components/work-manager/NewTeamDialog.tsx",
       "src/components/work-manager/TaskDrawer.tsx",
       "src/components/work-manager/WorkManagerSettings.tsx",
+      "src/features/all-releases/components/FilterBar.tsx",
+      "src/features/all-releases/components/Toolbar.tsx",
       "src/features/my-test-scope/components/ScopeFilterBar.tsx",
       "src/features/my-test-scope/components/TraceabilityPanel.tsx",
       "src/features/release-compare/components/SaveComparisonViewDialog.tsx",
@@ -23986,18 +24196,6 @@ export const usageMap: UsageMap = {
       "src/modules/in-jira/pages/ListPage.tsx",
       "src/modules/in-jira/pages/ReleasesPage.tsx",
       "src/modules/in-jira/pages/ScrumBoardPage.tsx",
-      "src/modules/objectives/components/AlignedItems/LinkObjectiveDialog.tsx",
-      "src/modules/objectives/components/KeyResults/KeyResultCheckIn.tsx",
-      "src/modules/objectives/components/KeyResults/KeyResultForm.tsx",
-      "src/modules/objectives/components/ObjectivePanel/ObjectiveForm.tsx",
-      "src/modules/okr-v2/components/CreateObjectiveDialogV2.tsx",
-      "src/modules/okr-v2/components/KRWorkAlignmentDrawer.tsx",
-      "src/modules/okr-v2/components/KRWorkContributionsV2.tsx",
-      "src/modules/okr-v2/components/KeyResultDialogV2.tsx",
-      "src/modules/okr-v2/components/LinkedWorkTabV2.tsx",
-      "src/modules/okr-v2/components/ObjectiveDrawerV2.tsx",
-      "src/modules/okr-v2/components/ObjectiveOverviewTabV2.tsx",
-      "src/modules/okr-v2/components/StrategyCockpit/StrategyCockpit.tsx",
       "src/modules/product-roadmap/components/RoadmapToolbar.tsx",
       "src/modules/program-epics/components/EpicListView.tsx",
       "src/modules/program-epics/components/EpicRoadmap.tsx",
@@ -24047,7 +24245,6 @@ export const usageMap: UsageMap = {
       "src/pages/WorkSpendGrid.tsx",
       "src/pages/enterprise/BudgetPlannerPage.tsx",
       "src/pages/enterprise/EnterpriseEpics.tsx",
-      "src/pages/enterprise/EnterpriseObjectives.tsx",
       "src/pages/enterprise/capacity-planner/AssignmentsView.tsx",
       "src/pages/enterprise/capacity-planner/BookResourceModal.tsx",
       "src/pages/enterprise/capacity-planner/EditResourceForm.tsx",
@@ -24066,6 +24263,10 @@ export const usageMap: UsageMap = {
       "src/pages/project/feature-detail/FeatureDeliveryTab.tsx",
       "src/pages/projects/ProjectSummaryPage.tsx",
       "src/pages/projects/views/ListView.tsx",
+      "src/pages/releases/CoverageReportsPage.tsx",
+      "src/pages/releases/DefectsPage.tsx",
+      "src/pages/releases/QualityGatesPage.tsx",
+      "src/pages/releases/ReleaseDashboardPage.tsx",
       "src/pages/wiki/DocexSearchPage.tsx",
       "src/pages/work/Dependencies.tsx",
       "src/shared/backlog/BacklogTemplate.tsx"
@@ -24077,15 +24278,6 @@ export const usageMap: UsageMap = {
     "origin": "internal",
     "consumers": [
       "src/components/catalyst-detail-views/shared/sections/Description/_components/Toolbar/Toolbar.tsx"
-    ]
-  },
-  "InsightSeverity::./sharedAnalyticsTypes": {
-    "name": "InsightSeverity",
-    "source": "./sharedAnalyticsTypes",
-    "origin": "internal",
-    "consumers": [
-      "src/modules/okr-v2/lib/keyResultAnalytics.ts",
-      "src/modules/okr-v2/lib/workItemAnalytics.ts"
     ]
   },
   "IntakeField::@/types/backlog.types": {
@@ -24409,6 +24601,7 @@ export const usageMap: UsageMap = {
       "src/components/kanban/toolbar/KanbanToolbar.tsx",
       "src/components/workhub/issue-view/IssueViewShell.tsx",
       "src/modules/project-work-hub/pages/StoryBacklogPage.tsx",
+      "src/pages/ForYouPage.tsx",
       "src/pages/project-hub/jira-list/components/AllWorkToolbar.tsx",
       "src/stories/components/SharedOrganisms.stories.tsx"
     ]
@@ -24458,6 +24651,7 @@ export const usageMap: UsageMap = {
       "src/components/workhub/issue-view/IssueViewShell.tsx",
       "src/modules/docintel/components/DocumentLinksPanel.tsx",
       "src/pages/CleanupPage.tsx",
+      "src/pages/ForYouPage.tsx",
       "src/pages/project-hub/filters/FiltersListPage.tsx",
       "src/pages/testhub/cycles/CycleRunDetailPage.tsx"
     ]
@@ -24511,6 +24705,7 @@ export const usageMap: UsageMap = {
       "src/components/project-hub/dashboard/widgets/OverdueWidget.tsx",
       "src/components/project-hub/dashboard/widgets/ProductionIncidentsWidget.tsx",
       "src/components/project-hub/dashboard/widgets/QADefectsWidget.tsx",
+      "src/components/project-hub/dashboard/widgets/TeamMemberHoverCard 2.tsx",
       "src/components/project-hub/dashboard/widgets/TeamMemberHoverCard.tsx",
       "src/components/project-hub/dashboard/widgets/TimeInStatusFullscreenModal.tsx",
       "src/components/project-hub/dashboard/widgets/TimeInStatusHoverCard.tsx",
@@ -25077,106 +25272,6 @@ export const usageMap: UsageMap = {
       "src/components/stories/StoryDetailPanel.tsx"
     ]
   },
-  "KeyResult::../lib/okrTypes": {
-    "name": "KeyResult",
-    "source": "../lib/okrTypes",
-    "origin": "internal",
-    "consumers": [
-      "src/modules/okr-v2/hooks/useOKRStrategicData.ts"
-    ]
-  },
-  "KeyResult::./okrTypes": {
-    "name": "KeyResult",
-    "source": "./okrTypes",
-    "origin": "internal",
-    "consumers": [
-      "src/modules/okr-v2/lib/objectiveAnalytics.ts",
-      "src/modules/okr-v2/lib/okrAnalytics.ts",
-      "src/modules/okr-v2/lib/okrMetrics.ts"
-    ]
-  },
-  "KeyResultAnalyticsData::../lib/keyResultAnalytics": {
-    "name": "KeyResultAnalyticsData",
-    "source": "../lib/keyResultAnalytics",
-    "origin": "internal",
-    "consumers": [
-      "src/modules/okr-v2/hooks/useKeyResultAnalytics.ts"
-    ]
-  },
-  "KeyResultAnalyticsDrawer::../KeyResultAnalyticsDrawer": {
-    "name": "KeyResultAnalyticsDrawer",
-    "source": "../KeyResultAnalyticsDrawer",
-    "origin": "internal",
-    "consumers": [
-      "src/modules/okr-v2/components/StrategyCockpit/StrategyCockpit.tsx"
-    ]
-  },
-  "KeyResultCard::./KeyResultCard": {
-    "name": "KeyResultCard",
-    "source": "./KeyResultCard",
-    "origin": "internal",
-    "consumers": [
-      "src/modules/objectives/components/KeyResults/KeyResultsList.tsx"
-    ]
-  },
-  "KeyResultCheckIn::./KeyResultCheckIn": {
-    "name": "KeyResultCheckIn",
-    "source": "./KeyResultCheckIn",
-    "origin": "internal",
-    "consumers": [
-      "src/modules/objectives/components/KeyResults/KeyResultCard.tsx"
-    ]
-  },
-  "KeyResultDialog::./KeyResultDialog": {
-    "name": "KeyResultDialog",
-    "source": "./KeyResultDialog",
-    "origin": "internal",
-    "consumers": [
-      "src/components/okr/KeyResultsList.tsx"
-    ]
-  },
-  "KeyResultDialogV2::./KeyResultDialogV2": {
-    "name": "KeyResultDialogV2",
-    "source": "./KeyResultDialogV2",
-    "origin": "internal",
-    "consumers": [
-      "src/modules/okr-v2/components/KeyResultsTabV2.tsx"
-    ]
-  },
-  "KeyResultForm::./KeyResultForm": {
-    "name": "KeyResultForm",
-    "source": "./KeyResultForm",
-    "origin": "internal",
-    "consumers": [
-      "src/modules/objectives/components/KeyResults/KeyResultsList.tsx"
-    ]
-  },
-  "KeyResultsList::./KeyResultsList": {
-    "name": "KeyResultsList",
-    "source": "./KeyResultsList",
-    "origin": "internal",
-    "consumers": [
-      "src/components/okr/ObjectiveDetailsPanelNew.tsx"
-    ]
-  },
-  "KeyResultsTabV2::./KeyResultsTabV2": {
-    "name": "KeyResultsTabV2",
-    "source": "./KeyResultsTabV2",
-    "origin": "internal",
-    "consumers": [
-      "src/modules/okr-v2/components/ObjectiveDrawerV2.tsx"
-    ]
-  },
-  "KeyResultV2::@/hooks/useKeyResultsV2": {
-    "name": "KeyResultV2",
-    "source": "@/hooks/useKeyResultsV2",
-    "origin": "internal",
-    "consumers": [
-      "src/modules/okr-v2/components/KRWorkAlignmentDrawer.tsx",
-      "src/modules/okr-v2/components/KeyResultsTabV2.tsx",
-      "src/modules/okr-v2/components/LinkedWorkTabV2.tsx"
-    ]
-  },
   "KeyRound::@/lib/atlaskit-icons": {
     "name": "KeyRound",
     "source": "@/lib/atlaskit-icons",
@@ -25216,6 +25311,7 @@ export const usageMap: UsageMap = {
     "source": "@/components/shared/KPIWidgetCard",
     "origin": "internal",
     "consumers": [
+      "src/pages/TeamRoom.tsx",
       "src/stories/components/SharedAtoms.stories.tsx"
     ]
   },
@@ -25225,23 +25321,6 @@ export const usageMap: UsageMap = {
     "origin": "internal",
     "consumers": [
       "src/components/objective-roadmap/RoadmapToolbar.tsx"
-    ]
-  },
-  "KRWorkAlignmentDrawer::./KRWorkAlignmentDrawer": {
-    "name": "KRWorkAlignmentDrawer",
-    "source": "./KRWorkAlignmentDrawer",
-    "origin": "internal",
-    "consumers": [
-      "src/modules/okr-v2/components/KeyResultsTabV2.tsx",
-      "src/modules/okr-v2/components/LinkedWorkTabV2.tsx"
-    ]
-  },
-  "KRWorkContribution::@/hooks/useKRWorkContributions": {
-    "name": "KRWorkContribution",
-    "source": "@/hooks/useKRWorkContributions",
-    "origin": "internal",
-    "consumers": [
-      "src/modules/okr-v2/components/KRWorkAlignmentDrawer.tsx"
     ]
   },
   "Label::../../types/labels": {
@@ -25303,6 +25382,7 @@ export const usageMap: UsageMap = {
       "src/components/dependencies/DependencyWheelMap.tsx",
       "src/components/epic-backlog/EpicFiltersDialog.tsx",
       "src/components/epic-backlog/EpicForecastTab.tsx",
+      "src/components/epic-backlog/modals/MilestoneModal.tsx",
       "src/components/epic-backlog/tabs/BenefitsTab.tsx",
       "src/components/epic-backlog/tabs/DesignTab.tsx",
       "src/components/evidence/defect/CreateDefectModal.tsx",
@@ -25345,11 +25425,6 @@ export const usageMap: UsageMap = {
       "src/components/kanban/setup/ManageCardsTab.tsx",
       "src/components/kanban/setup/SwimLanesSetupTab.tsx",
       "src/components/objective-roadmap/EnterpriseRoadmapFiltersDialog.tsx",
-      "src/components/okr/CheckInModal.tsx",
-      "src/components/okr/ConfidenceScoreModal.tsx",
-      "src/components/okr/KeyResultDialog.tsx",
-      "src/components/okr/LinkedItemsTab.tsx",
-      "src/components/okr/ObjectiveDetailsTab.tsx",
       "src/components/program/ProgramRoadmapFiltersDialog.tsx",
       "src/components/programs/CreateProgramDialog.tsx",
       "src/components/projects/CreateProjectDialog.tsx",
@@ -25381,6 +25456,7 @@ export const usageMap: UsageMap = {
       "src/components/skills-inventory/AddTeamMemberModal.tsx",
       "src/components/skills-inventory/EditSkillModal.tsx",
       "src/components/stories/CreateEditStoryPanel.tsx",
+      "src/components/stories/CreateStoryModal.tsx",
       "src/components/stories/StoriesColumnConfig.tsx",
       "src/components/stories/StoriesFiltersDialog.tsx",
       "src/components/templates/ApplyTemplateModal.tsx",
@@ -25416,12 +25492,6 @@ export const usageMap: UsageMap = {
       "src/modules/in-jira/pages/ScrumBoardPage.tsx",
       "src/modules/incidents/kanban/components/KanbanFiltersBar.tsx",
       "src/modules/incidents/kanban/components/SetCommitteeApproversModal.tsx",
-      "src/modules/objectives/components/KeyResults/KeyResultCheckIn.tsx",
-      "src/modules/objectives/components/KeyResults/KeyResultForm.tsx",
-      "src/modules/okr-v2/components/CreateObjectiveDialogV2.tsx",
-      "src/modules/okr-v2/components/KeyResultDialogV2.tsx",
-      "src/modules/okr-v2/components/OKRSmartFiltersDialog.tsx",
-      "src/modules/okr-v2/components/ObjectiveOverviewTabV2.tsx",
       "src/modules/product-roadmap/components/RoadmapExportDialog.tsx",
       "src/modules/product-roadmap/components/RoadmapFilterDialog.tsx",
       "src/modules/tasks/components/AddColumnModal.tsx",
@@ -25445,6 +25515,7 @@ export const usageMap: UsageMap = {
       "src/pages/items/reports/EpicResponsibilityMatrix.tsx",
       "src/pages/program/ExecutionWorkbench/WorkbenchFiltersDialog.tsx",
       "src/pages/project/components/FeatureChildStories.tsx",
+      "src/pages/releases/QualityGatesPage.tsx",
       "src/pages/reports/DependencyMapsPage.tsx",
       "src/pages/risks/RiskRoamReportPage.tsx",
       "src/pages/work-tree/components/WorkTreeExtraConfigs.tsx"
@@ -25634,7 +25705,6 @@ export const usageMap: UsageMap = {
       "src/modules/in-jira/pages/ListPage.tsx",
       "src/modules/in-jira/pages/ScrumBoardPage.tsx",
       "src/modules/in-jira/pages/SummaryPage.tsx",
-      "src/modules/okr-v2/components/KRWorkAlignmentDrawer.tsx",
       "src/modules/program-epics/components/EpicRoadmap.tsx",
       "src/modules/project-work-hub/pages/FeatureBacklogPage.tsx",
       "src/modules/strata/components/vmoAuthoring.tsx",
@@ -25652,13 +25722,23 @@ export const usageMap: UsageMap = {
       "src/modules/tasks/components/kanban/SwimlaneRow.tsx",
       "src/modules/tasks/components/my-tasks/MyTasksContent.tsx",
       "src/modules/tasks/components/my-tasks/MyTasksHeader.tsx",
+      "src/modules/work-hub/WorkHubLayout.tsx",
       "src/pages/PortfolioRoadmap.tsx",
       "src/pages/WorkManager.tsx",
       "src/pages/program/ProgramRoadmapPage.tsx",
       "src/pages/project/FeatureDetailPage.tsx",
       "src/pages/project/FeatureViewPage.tsx",
       "src/pages/projects/ProjectBacklogPage.tsx",
+      "src/pages/releases/CoverageReportsPage.tsx",
       "src/pages/work/Dependencies.tsx"
+    ]
+  },
+  "Layers3::@/lib/atlaskit-icons": {
+    "name": "Layers3",
+    "source": "@/lib/atlaskit-icons",
+    "origin": "internal",
+    "consumers": [
+      "src/components/layout/TeamRoomSidebar.tsx"
     ]
   },
   "Layout::@/lib/atlaskit-icons": {
@@ -25680,6 +25760,7 @@ export const usageMap: UsageMap = {
       "src/components/layout/MobileMenuDrawer.tsx",
       "src/components/layout/ProductRoomSidebar.tsx",
       "src/components/layout/ReleasesManagementSidebar.tsx",
+      "src/components/layout/TeamRoomSidebar.tsx",
       "src/components/layout/UnifiedSidebar.tsx",
       "src/components/project-hub/shell/SidebarProjectNav.tsx",
       "src/modules/in-jira/components/InJiraLayout.tsx",
@@ -25714,14 +25795,18 @@ export const usageMap: UsageMap = {
       "src/modules/tasks/components/workstreams/WorkstreamsPage.tsx",
       "src/modules/work-hub/views/AllWorkView.tsx",
       "src/pages/CleanupPage.tsx",
+      "src/pages/ForYouPage.tsx",
       "src/pages/ProductRoomPage.tsx",
       "src/pages/ProgramDirectory.tsx",
       "src/pages/ResourceListingPage.tsx",
       "src/pages/Stories.tsx",
+      "src/pages/TeamRoom.tsx",
       "src/pages/WorkManager.tsx",
       "src/pages/enterprise/EnterpriseEpics.tsx",
       "src/pages/items/EpicEstimationPage.tsx",
       "src/pages/items/EpicsPage.tsx",
+      "src/pages/releases/AllReleasesPage.tsx",
+      "src/pages/releases/CoverageReportsPage.tsx",
       "src/shared/backlog/BacklogTemplate.tsx"
     ]
   },
@@ -25858,10 +25943,6 @@ export const usageMap: UsageMap = {
       "src/components/shared/jira-description-editor/Toolbar.tsx",
       "src/modules-dormant/ideation/CreateDriveModal.tsx",
       "src/modules-dormant/ideation/IdeationDrivesView.tsx",
-      "src/modules/okr-v2/components/KeyResultAnalyticsDrawer/KeyResultAnalyticsDrawer.tsx",
-      "src/modules/okr-v2/components/ObjectiveAnalyticsDrawer/ObjectiveAnalyticsDrawer.tsx",
-      "src/modules/okr-v2/components/StrategyCockpit/AnalyticsDrawerContent.tsx",
-      "src/modules/okr-v2/components/WorkItemAnalyticsDrawer/WorkItemAnalyticsDrawer.tsx",
       "src/pages/producthub/IdeasThemePage.tsx"
     ]
   },
@@ -25878,8 +25959,7 @@ export const usageMap: UsageMap = {
       "src/components/industry/RichTextEditor.tsx",
       "src/components/shared/dependencies/DependenciesDiagram.tsx",
       "src/components/shared/jira-description-editor/Toolbar.tsx",
-      "src/modules/in-jira/components/drawer/IssueActionsMenu.tsx",
-      "src/modules/okr-v2/components/StrategyAnalyticsModal.tsx"
+      "src/modules/in-jira/components/drawer/IssueActionsMenu.tsx"
     ]
   },
   "Link::@atlaskit/link": {
@@ -25916,6 +25996,7 @@ export const usageMap: UsageMap = {
       "src/components/project-hub/work-items/WorkItemsTable.tsx",
       "src/components/releasehub/EmptyState.tsx",
       "src/components/shared/dependencies/DependenciesEmptyState.tsx",
+      "src/components/stories/CreateStoryModal.tsx",
       "src/components/timeline/TimelineBar.tsx",
       "src/components/work-items/WorkItemLinksSection.tsx",
       "src/components/work-manager/TaskCard.tsx",
@@ -25929,11 +26010,6 @@ export const usageMap: UsageMap = {
       "src/modules/backlog/components/split-panel/EpicDetailPanel.tsx",
       "src/modules/epic-balancing/components/EpicDetailsDrawer.tsx",
       "src/modules/in-jira/components/drawer/DetailsPanel.tsx",
-      "src/modules/okr-v2/components/KRWorkAlignmentDrawer.tsx",
-      "src/modules/okr-v2/components/KeyResultAnalyticsDrawer/KeyResultAnalyticsDrawer.tsx",
-      "src/modules/okr-v2/components/KeyResultsTabV2.tsx",
-      "src/modules/okr-v2/components/ObjectiveAnalyticsDrawer/ObjectiveAnalyticsDrawer.tsx",
-      "src/modules/okr-v2/components/StrategyCockpit/AnalyticsDrawerContent.tsx",
       "src/modules/product-backlog/components/split-panel/RequestDetailPanel.tsx",
       "src/modules/product-roadmap/components/RoadmapDetailPanel.tsx",
       "src/modules/tasks/components/TaskCard.tsx",
@@ -25948,7 +26024,8 @@ export const usageMap: UsageMap = {
       "src/pages/project/TimelineView.tsx",
       "src/pages/project/components/FeatureChildStories.tsx",
       "src/pages/project/components/LinkTypeSelectorDialog.tsx",
-      "src/pages/project/feature-detail/FeatureLinksTab.tsx"
+      "src/pages/project/feature-detail/FeatureLinksTab.tsx",
+      "src/pages/releases/DefectDetailPage.tsx"
     ]
   },
   "LinkButton::./buttons/LinkButton": {
@@ -25965,14 +26042,6 @@ export const usageMap: UsageMap = {
     "origin": "internal",
     "consumers": [
       "src/modules/project-work-hub/components/linked-work-items/LinkedWorkItemsSection.tsx"
-    ]
-  },
-  "LinkedItemsTab::./LinkedItemsTab": {
-    "name": "LinkedItemsTab",
-    "source": "./LinkedItemsTab",
-    "origin": "internal",
-    "consumers": [
-      "src/components/okr/ObjectiveDetailsPanelNew.tsx"
     ]
   },
   "LinkedWorkItemRow::@/modules/project-work-hub/components/linked-work-items/LinkedWorkItemRow": {
@@ -26050,22 +26119,6 @@ export const usageMap: UsageMap = {
       "src/modules/project-work-hub/components/WorkItemDetailsDrawer.tsx"
     ]
   },
-  "LinkedWorkSummary::./sharedAnalyticsTypes": {
-    "name": "LinkedWorkSummary",
-    "source": "./sharedAnalyticsTypes",
-    "origin": "internal",
-    "consumers": [
-      "src/modules/okr-v2/lib/keyResultAnalytics.ts"
-    ]
-  },
-  "LinkedWorkTabV2::./LinkedWorkTabV2": {
-    "name": "LinkedWorkTabV2",
-    "source": "./LinkedWorkTabV2",
-    "origin": "internal",
-    "consumers": [
-      "src/modules/okr-v2/components/ObjectiveDrawerV2.tsx"
-    ]
-  },
   "LinkEpicPicker::./pickers/LinkEpicPicker": {
     "name": "LinkEpicPicker",
     "source": "./pickers/LinkEpicPicker",
@@ -26121,7 +26174,6 @@ export const usageMap: UsageMap = {
       "src/components/stories/StoryDetailPanel.tsx",
       "src/components/stories/StoryLinks.tsx",
       "src/components/workhub/issue-view/IssueContentView.tsx",
-      "src/modules/okr-v2/components/ObjectiveDrawerV2.tsx",
       "src/pages/admin/test/TestCaseTypesPage.tsx"
     ]
   },
@@ -26138,7 +26190,8 @@ export const usageMap: UsageMap = {
       "src/components/shared/CatalystDetailPanel.tsx",
       "src/components/shared/rich-text/atlaskit/imageToolbar/ImageToolbar.tsx",
       "src/modules/project-work-hub/components/dialogs/story-detail-modules/RichTextCommentEditor.tsx",
-      "src/modules/project-work-hub/components/dialogs/story-detail-modules/shared-components.tsx"
+      "src/modules/project-work-hub/components/dialogs/story-detail-modules/shared-components.tsx",
+      "src/pages/admin/AdminOverview.tsx"
     ],
     "package": "@atlaskit/icon"
   },
@@ -26200,14 +26253,6 @@ export const usageMap: UsageMap = {
       "src/components/layout/NotificationItem.tsx"
     ],
     "package": "@atlaskit/menu"
-  },
-  "LinkObjectiveDialog::./LinkObjectiveDialog": {
-    "name": "LinkObjectiveDialog",
-    "source": "./LinkObjectiveDialog",
-    "origin": "internal",
-    "consumers": [
-      "src/modules/objectives/components/AlignedItems/ObjectivesSection.tsx"
-    ]
   },
   "LinkObjectivePicker::./pickers/LinkObjectivePicker": {
     "name": "LinkObjectivePicker",
@@ -26366,6 +26411,7 @@ export const usageMap: UsageMap = {
       "src/modules/tasks/components/TaskList/TaskListPageV3.tsx",
       "src/modules/tasks/components/workstreams/WorkstreamDrawer.tsx",
       "src/modules/tasks/components/workstreams/WorkstreamsPage.tsx",
+      "src/modules/work-hub/WorkHubLayout.tsx",
       "src/modules/work-hub/components/FieldPicker.tsx",
       "src/modules/work-hub/views/AllWorkView.tsx",
       "src/pages/ProgramDirectory.tsx",
@@ -26494,6 +26540,7 @@ export const usageMap: UsageMap = {
       "src/components/for-you/atlaskit/StarredEmptyState.tsx",
       "src/components/shared/jira-description-editor/Toolbar.tsx",
       "src/components/work-manager/WorkManagerTasks.tsx",
+      "src/pages/TeamRoom.tsx",
       "src/pages/work-tree/components/WorkTreeLegend.tsx"
     ]
   },
@@ -26522,14 +26569,6 @@ export const usageMap: UsageMap = {
     "origin": "internal",
     "consumers": [
       "src/modules/project-work-hub/components/tabs/ListTab.tsx"
-    ]
-  },
-  "LivePartialsController::./livePartials": {
-    "name": "LivePartialsController",
-    "source": "./livePartials",
-    "origin": "internal",
-    "consumers": [
-      "src/features/voice-flow/VoiceFlowProvider.tsx"
     ]
   },
   "Loader2::@/lib/atlaskit-icons": {
@@ -26639,7 +26678,6 @@ export const usageMap: UsageMap = {
       "src/modules/incidents/analytics/pages/IncidentAnalyticsPage.tsx",
       "src/modules/incidents/analytics/pages/IncidentInsightsPage.tsx",
       "src/modules/incidents/kanban/pages/IncidentKanbanPage.tsx",
-      "src/modules/objectives/components/ObjectiveHierarchyDialog.tsx",
       "src/modules/product-backlog/components/split-panel/AttachmentUploadModal.tsx",
       "src/modules/product-roadmap/components/RoadmapExportDialog.tsx",
       "src/modules/program-epics/components/EditEpicDialog.tsx",
@@ -26684,6 +26722,11 @@ export const usageMap: UsageMap = {
       "src/pages/project/components/RiskLinkDialog.tsx",
       "src/pages/project/feature-detail/FeatureOverviewTab.tsx",
       "src/pages/projects/ProjectBacklogPage.tsx",
+      "src/pages/releases/AllReleasesPage.tsx",
+      "src/pages/releases/CalendarPage.tsx",
+      "src/pages/releases/CommandCenter.tsx",
+      "src/pages/releases/ComparePage.tsx",
+      "src/pages/releases/ExecutionPage.tsx",
       "src/pages/reports/DependencyMapsPage.tsx",
       "src/pages/work-tree/components/WorkTreeDashboard.tsx"
     ]
@@ -26868,6 +26911,7 @@ export const usageMap: UsageMap = {
       "src/components/dependencies/DependencyMatrix.tsx",
       "src/components/dependencies/DependencyWheelDetailsPanel.tsx",
       "src/components/enterprise/EnterpriseGrid.tsx",
+      "src/components/epic-backlog/modals/FeatureStatusModal.tsx",
       "src/components/evidence/reports/ExecutionSummary.tsx",
       "src/components/features/AssignModal.tsx",
       "src/components/features/FeaturesKanbanView.tsx",
@@ -26893,6 +26937,7 @@ export const usageMap: UsageMap = {
       "src/components/items/epics/dialogs/WSJFPrioritizationDialog.tsx",
       "src/components/items/epics/drawer-tabs/EpicDetailsViewTab.tsx",
       "src/components/items/epics/drawer-tabs/EpicFeaturesViewTab.tsx",
+      "src/components/items/epics/modals/FeatureStatusModal.tsx",
       "src/components/items/features/FeatureTable.tsx",
       "src/components/items/stories/StoryDetailsPanel.tsx",
       "src/components/kanban/setup/ColumnsSetupTab.tsx",
@@ -26900,13 +26945,6 @@ export const usageMap: UsageMap = {
       "src/components/kanban/setup/ManageUsersTab.tsx",
       "src/components/kanban/setup/SwimLanesSetupTab.tsx",
       "src/components/knowledge-hub/DocumentComments.tsx",
-      "src/components/okr/AddChildObjectiveDialog.tsx",
-      "src/components/okr/AlignedWorkTab.tsx",
-      "src/components/okr/ChildObjectivesTab.tsx",
-      "src/components/okr/KeyResultsList.tsx",
-      "src/components/okr/ObjectiveDetailsPanelNew.tsx",
-      "src/components/okr/ObjectiveDetailsTab.tsx",
-      "src/components/okr/ObjectiveProgressSection.tsx",
       "src/components/project-hub/dashboard/GadgetSettingsPanel.tsx",
       "src/components/project-hub/dashboard/widgets/DemandFulfilmentGadget.tsx",
       "src/components/project-hub/dashboard/widgets/ItemsByStatusWidget.tsx",
@@ -26915,6 +26953,7 @@ export const usageMap: UsageMap = {
       "src/components/project-hub/dashboard/widgets/ProductionIncidentsWidget.tsx",
       "src/components/project-hub/dashboard/widgets/QADefectsWidget.tsx",
       "src/components/project-hub/dashboard/widgets/ScopeChangeWidget.tsx",
+      "src/components/project-hub/dashboard/widgets/TeamMemberHoverCard 2.tsx",
       "src/components/project-hub/dashboard/widgets/TeamMemberHoverCard.tsx",
       "src/components/project-hub/dashboard/widgets/TestCasesOverviewWidget.tsx",
       "src/components/project-hub/dashboard/widgets/TestCyclesProgressWidget.tsx",
@@ -27014,22 +27053,11 @@ export const usageMap: UsageMap = {
       "src/modules/incidents/kanban/components/KanbanCard.tsx",
       "src/modules/incidents/kanban/components/KanbanFiltersBar.tsx",
       "src/modules/incidents/kanban/components/SetCommitteeApproversModal.tsx",
-      "src/modules/objectives/components/AlignedItems/LinkObjectiveDialog.tsx",
-      "src/modules/objectives/components/AlignedItems/ObjectivesSection.tsx",
-      "src/modules/objectives/components/KeyResults/KeyResultCard.tsx",
-      "src/modules/objectives/components/shared/ObjectiveStatusBadge.tsx",
-      "src/modules/objectives/components/shared/ObjectiveTierBadge.tsx",
-      "src/modules/okr-v2/components/KRWorkAlignmentDrawer.tsx",
-      "src/modules/okr-v2/components/KRWorkContributionsV2.tsx",
-      "src/modules/okr-v2/components/OKRSmartFiltersDialog.tsx",
-      "src/modules/okr-v2/components/StrategyCockpit/AnalyticsDrawerContent.tsx",
-      "src/modules/okr-v2/components/StrategyCockpit/StrategyCockpit.tsx",
       "src/modules/product-backlog/components/split-panel/RequestDetailPanel.tsx",
       "src/modules/product-roadmap/components/RoadmapFilterDialog.tsx",
       "src/modules/product-roadmap/components/RoadmapToolbar.tsx",
       "src/modules/program-epics/components/CreateEpicDialog.tsx",
       "src/modules/project-work-hub/components/tabs/ArchivedTab.tsx",
-      "src/modules/strata/components/InitiativeDetailModal.tsx",
       "src/modules/strata/components/ProjectCardDetailView.tsx",
       "src/modules/strata/components/shared.tsx",
       "src/modules/strata/pages/StrataCommandCenterPage.tsx",
@@ -27064,9 +27092,11 @@ export const usageMap: UsageMap = {
       "src/pages/SprintBoard.tsx",
       "src/pages/Sprints.tsx",
       "src/pages/Subtasks.tsx",
+      "src/pages/TeamRoom.tsx",
       "src/pages/Themes.tsx",
       "src/pages/UserProfile.tsx",
       "src/pages/ValueStreamView.tsx",
+      "src/pages/admin/NotificationTriggers.tsx",
       "src/pages/admin/ResourceAssignments.tsx",
       "src/pages/admin/workflows/studio/EditorPanels.tsx",
       "src/pages/admin/workflows/studio/GenerateWorkflowModal.tsx",
@@ -27094,6 +27124,8 @@ export const usageMap: UsageMap = {
       "src/pages/projects/ProjectSummaryPage.tsx",
       "src/pages/projects/views/ListView.tsx",
       "src/pages/releasehub/ProductionEventsPage.tsx",
+      "src/pages/releases/CommandCenterPage.tsx",
+      "src/pages/releases/QualityGatesPage.tsx",
       "src/pages/reports/DependencyMapsPage.tsx",
       "src/pages/wiki/FolioSiteMapPage.tsx",
       "src/pages/wiki/WikiHomePage.tsx",
@@ -27179,8 +27211,6 @@ export const usageMap: UsageMap = {
       "src/features/chat-v2/components/MessagePanel/HuddleEventRow.tsx",
       "src/features/kanban-board/components/Board.tsx",
       "src/features/kanban-board/components/Card.tsx",
-      "src/features/voice-flow/VoiceFloatingCapsule.tsx",
-      "src/features/voice-flow/VoiceSettingsTab.tsx",
       "src/features/whatsapp-summary/WhatsAppSummaryModal.tsx",
       "src/modules/incidents/analytics/pages/IncidentReportPage.tsx",
       "src/modules/project-work-hub/components/SubtasksPanel/popovers/StatusPopover.tsx",
@@ -27194,6 +27224,7 @@ export const usageMap: UsageMap = {
       "src/pages/admin/AdminAccessPage.tsx",
       "src/pages/admin/PermissionsAdminPage.tsx",
       "src/pages/admin/RoutingTaxonomyPage.tsx",
+      "src/pages/admin/UserAccessPage.tsx",
       "src/pages/admin/avatars/AdminAvatarsPage.tsx",
       "src/pages/admin/components/ADSViolationsPanel.tsx",
       "src/pages/admin/components/CascadeImpactPanel.tsx",
@@ -27211,6 +27242,7 @@ export const usageMap: UsageMap = {
       "src/pages/admin/icons/AdminIconsPage.tsx",
       "src/pages/admin/test-ops/TestOpsPage.tsx",
       "src/pages/admin/test/TestCaseStatusesPage.tsx",
+      "src/pages/admin/test/TestCaseWorkflowPage.tsx",
       "src/pages/admin/workflows/WorkflowVersioningPage.tsx",
       "src/pages/product-hub/AllProductsPage.tsx",
       "src/pages/project-hub/jira-list/components/AllWorkToolbar.tsx",
@@ -27318,6 +27350,7 @@ export const usageMap: UsageMap = {
     "consumers": [
       "src/components/dependencies/DependenciesSidebar.tsx",
       "src/components/layout/ProjectSidebar.tsx",
+      "src/components/layout/TeamRoomSidebar.tsx",
       "src/components/layout/UnifiedSidebar.tsx",
       "src/components/layout/dropdowns/StarredDropdown.tsx",
       "src/components/product-hub/roadmap/RoadmapDetailPanel.tsx",
@@ -27562,7 +27595,8 @@ export const usageMap: UsageMap = {
     "consumers": [
       "src/components/catalyst-roadmap/RoadmapHeader.tsx",
       "src/components/layout/CatalystShell.tsx",
-      "src/components/layout/MobileBottomNav.tsx"
+      "src/components/layout/MobileBottomNav.tsx",
+      "src/components/layout/TeamRoomSidebar.tsx"
     ]
   },
   "MenuDivider::./MenuShared": {
@@ -27860,14 +27894,15 @@ export const usageMap: UsageMap = {
       "src/components/workhub/issue-view/sections/ActivitySection.tsx",
       "src/components/workhub/workitems/WorkItemDrawer.tsx",
       "src/modules/in-jira/components/drawer/ActivityTabs.tsx",
-      "src/modules/objectives/components/KeyResults/KeyResultCard.tsx",
       "src/modules/priorities/components/PriPriorityCard.tsx",
       "src/modules/project-work-hub/components/tabs/ListTab.tsx",
       "src/modules/project-work-hub/components/tabs/ReleasesTab.tsx",
       "src/modules/tasks/components/TaskCard.tsx",
       "src/modules/tasks/components/TaskDetailDrawer/ActivitySection.tsx",
       "src/pages/CleanupPage.tsx",
-      "src/pages/project/feature-detail/FeatureActivityTab.tsx"
+      "src/pages/ForYouPage.tsx",
+      "src/pages/project/feature-detail/FeatureActivityTab.tsx",
+      "src/pages/releases/CommandCenterPage.tsx"
     ]
   },
   "MessageStream::./main/MessageStream": {
@@ -27894,22 +27929,6 @@ export const usageMap: UsageMap = {
       "src/features/chat/components/feed/MessageFeed.tsx"
     ]
   },
-  "MessageTranslation::./MessageTranslation": {
-    "name": "MessageTranslation",
-    "source": "./MessageTranslation",
-    "origin": "internal",
-    "consumers": [
-      "src/components/chat/main/MessageStream.tsx"
-    ]
-  },
-  "MessageTranslation::@/components/chat/main/MessageTranslation": {
-    "name": "MessageTranslation",
-    "source": "@/components/chat/main/MessageTranslation",
-    "origin": "internal",
-    "consumers": [
-      "src/features/chat-v2/components/MessagePanel/MessageBubble.tsx"
-    ]
-  },
   "MetadataBar::./organisms": {
     "name": "MetadataBar",
     "source": "./organisms",
@@ -27926,6 +27945,14 @@ export const usageMap: UsageMap = {
       "src/components/planner/task-modal/organisms/MetadataBar.tsx"
     ]
   },
+  "MetricCard::@/components/dashboard": {
+    "name": "MetricCard",
+    "source": "@/components/dashboard",
+    "origin": "internal",
+    "consumers": [
+      "src/pages/releases/CommandCenter.tsx"
+    ]
+  },
   "MetricId::./components/WorkTreeDashboard": {
     "name": "MetricId",
     "source": "./components/WorkTreeDashboard",
@@ -27940,14 +27967,6 @@ export const usageMap: UsageMap = {
     "origin": "internal",
     "consumers": [
       "src/components/capacity/resource360/Resource360Drawer.tsx"
-    ]
-  },
-  "MetricType::@/hooks/useKeyResultsV2": {
-    "name": "MetricType",
-    "source": "@/hooks/useKeyResultsV2",
-    "origin": "internal",
-    "consumers": [
-      "src/modules/okr-v2/components/KeyResultDialogV2.tsx"
     ]
   },
   "Mic::@/lib/atlaskit-icons": {
@@ -27988,7 +28007,7 @@ export const usageMap: UsageMap = {
     "origin": "atlaskit",
     "consumers": [
       "src/components/catalyst-detail-views/shared/sections/Description/_components/Toolbar/buttons/MicButton.tsx",
-      "src/features/voice-flow/VoiceMicButton.tsx"
+      "src/components/chat/main/MessageComposer.tsx"
     ],
     "package": "@atlaskit/icon"
   },
@@ -28099,7 +28118,6 @@ export const usageMap: UsageMap = {
       "src/components/incidents/modal/IncidentDetailModal.tsx",
       "src/components/items/epics/EpicDetailsPanel.tsx",
       "src/components/product-hub/roadmap/ProductRoadmapPage.tsx",
-      "src/components/releasehub/foryou/ReleaseChangeAnnouncementBanner.tsx",
       "src/components/roadmap/RoadmapEngine.tsx",
       "src/modules/in-jira/components/IssueDrawer.tsx",
       "src/modules/product-roadmap/components/RoadmapToolbar.tsx",
@@ -28131,9 +28149,8 @@ export const usageMap: UsageMap = {
       "src/components/workload/WorkloadTrendChart.tsx",
       "src/modules-dormant/ideation/CreateDriveModal.tsx",
       "src/modules/incidents/analytics/pages/IncidentInsightsPage.tsx",
-      "src/modules/okr-v2/components/KeyResultsTabV2.tsx",
-      "src/modules/okr-v2/components/StrategyAnalyticsModal.tsx",
-      "src/modules/okr-v2/components/TrendIcon.tsx"
+      "src/pages/releases/CommandCenterPage.tsx",
+      "src/pages/releases/QualityGatesPage.tsx"
     ]
   },
   "MinusCircle::@/lib/atlaskit-icons": {
@@ -28209,7 +28226,6 @@ export const usageMap: UsageMap = {
       "src/components/wiki-hub/database/DatabaseSurface.tsx",
       "src/modules/docintel/components/ArtifactView.tsx",
       "src/modules/docintel/components/DocumentLinksPanel.tsx",
-      "src/modules/strata/components/InitiativeDetailModal.tsx",
       "src/modules/strata/components/authoring.tsx",
       "src/modules/strata/components/shared.tsx",
       "src/modules/strata/components/vmoAuthoring.tsx",
@@ -28321,7 +28337,6 @@ export const usageMap: UsageMap = {
       "src/components/wiki-hub/database/DatabaseSurface.tsx",
       "src/modules/docintel/components/ArtifactView.tsx",
       "src/modules/docintel/components/DocumentLinksPanel.tsx",
-      "src/modules/strata/components/InitiativeDetailModal.tsx",
       "src/modules/strata/components/authoring.tsx",
       "src/modules/strata/components/shared.tsx",
       "src/modules/strata/components/vmoAuthoring.tsx",
@@ -28387,7 +28402,6 @@ export const usageMap: UsageMap = {
       "src/components/chat/main/MessageStream.tsx",
       "src/components/chat/main/RosterPanel.tsx",
       "src/components/chat/main/ScheduleSendDropdown.tsx",
-      "src/components/chat/main/TranslatePreviewDialog.tsx",
       "src/components/epic-backlog/EpicContextMenu.tsx",
       "src/components/features/FeatureContextMenu.tsx",
       "src/components/filters/FilterKebabMenu.tsx",
@@ -28527,7 +28541,6 @@ export const usageMap: UsageMap = {
       "src/components/chat/AddPeopleModal.tsx",
       "src/components/chat/main/MessageStream.tsx",
       "src/components/chat/main/ScheduleSendDropdown.tsx",
-      "src/components/chat/main/TranslatePreviewDialog.tsx",
       "src/components/epic-backlog/EpicContextMenu.tsx",
       "src/components/features/FeatureContextMenu.tsx",
       "src/components/filters/FilterKebabMenu.tsx",
@@ -28592,7 +28605,6 @@ export const usageMap: UsageMap = {
       "src/components/wiki-hub/database/DatabaseSurface.tsx",
       "src/modules/docintel/components/ArtifactView.tsx",
       "src/modules/docintel/components/DocumentLinksPanel.tsx",
-      "src/modules/strata/components/InitiativeDetailModal.tsx",
       "src/modules/strata/components/authoring.tsx",
       "src/modules/strata/components/shared.tsx",
       "src/modules/strata/components/vmoAuthoring.tsx",
@@ -28657,7 +28669,6 @@ export const usageMap: UsageMap = {
       "src/components/chat/main/MessageStream.tsx",
       "src/components/chat/main/RosterPanel.tsx",
       "src/components/chat/main/ScheduleSendDropdown.tsx",
-      "src/components/chat/main/TranslatePreviewDialog.tsx",
       "src/components/epic-backlog/EpicContextMenu.tsx",
       "src/components/features/FeatureContextMenu.tsx",
       "src/components/filters/FilterKebabMenu.tsx",
@@ -28762,7 +28773,6 @@ export const usageMap: UsageMap = {
       "src/components/wiki-hub/database/DatabaseSurface.tsx",
       "src/modules/docintel/components/ArtifactView.tsx",
       "src/modules/docintel/components/DocumentLinksPanel.tsx",
-      "src/modules/strata/components/InitiativeDetailModal.tsx",
       "src/modules/strata/components/authoring.tsx",
       "src/modules/strata/components/shared.tsx",
       "src/modules/strata/components/vmoAuthoring.tsx",
@@ -28828,7 +28838,6 @@ export const usageMap: UsageMap = {
       "src/components/chat/main/MessageStream.tsx",
       "src/components/chat/main/RosterPanel.tsx",
       "src/components/chat/main/ScheduleSendDropdown.tsx",
-      "src/components/chat/main/TranslatePreviewDialog.tsx",
       "src/components/epic-backlog/EpicContextMenu.tsx",
       "src/components/features/FeatureContextMenu.tsx",
       "src/components/filters/FilterKebabMenu.tsx",
@@ -28927,7 +28936,6 @@ export const usageMap: UsageMap = {
       "src/components/wiki-hub/database/DatabaseSurface.tsx",
       "src/modules/docintel/components/ArtifactView.tsx",
       "src/modules/docintel/components/DocumentLinksPanel.tsx",
-      "src/modules/strata/components/InitiativeDetailModal.tsx",
       "src/modules/strata/components/authoring.tsx",
       "src/modules/strata/components/shared.tsx",
       "src/modules/strata/components/vmoAuthoring.tsx",
@@ -28993,7 +29001,6 @@ export const usageMap: UsageMap = {
       "src/components/chat/main/MessageStream.tsx",
       "src/components/chat/main/RosterPanel.tsx",
       "src/components/chat/main/ScheduleSendDropdown.tsx",
-      "src/components/chat/main/TranslatePreviewDialog.tsx",
       "src/components/epic-backlog/EpicContextMenu.tsx",
       "src/components/features/FeatureContextMenu.tsx",
       "src/components/filters/FilterKebabMenu.tsx",
@@ -29106,7 +29113,6 @@ export const usageMap: UsageMap = {
       "src/components/chat/main/AddPeopleModal.tsx",
       "src/components/chat/main/MessageStream.tsx",
       "src/components/chat/main/RosterPanel.tsx",
-      "src/components/chat/main/TranslatePreviewDialog.tsx",
       "src/components/filters/FilterKebabMenu.tsx",
       "src/components/product-hub/MilestoneCreateModal.tsx",
       "src/components/project-hub/dashboard/widgets/TimeInStatusFullscreenModal.tsx",
@@ -29199,6 +29205,14 @@ export const usageMap: UsageMap = {
     "origin": "internal",
     "consumers": [
       "src/components/guards/ModuleGuard.tsx"
+    ]
+  },
+  "ModuleAccessMatrix::@/components/admin/module-access/ModuleAccessMatrix": {
+    "name": "ModuleAccessMatrix",
+    "source": "@/components/admin/module-access/ModuleAccessMatrix",
+    "origin": "internal",
+    "consumers": [
+      "src/pages/admin/ModuleAccessAdminPage.tsx"
     ]
   },
   "ModuleGate::../components/common/ModuleGate": {
@@ -29340,7 +29354,6 @@ export const usageMap: UsageMap = {
       "src/modules/in-jira/pages/ListPage.tsx",
       "src/modules/in-jira/pages/ScrumBoardPage.tsx",
       "src/modules/kanban/components/KanbanCard.tsx",
-      "src/modules/objectives/components/KeyResults/KeyResultCard.tsx",
       "src/modules/program-epics/components/EpicListView.tsx",
       "src/modules/project-work-hub/ProjectWorkHubPage.tsx",
       "src/modules/project-work-hub/components/SubtasksPanel/HeaderOverflowMenu.tsx",
@@ -29360,6 +29373,7 @@ export const usageMap: UsageMap = {
       "src/modules/tasks/components/task-list/RowActions.tsx",
       "src/modules/tasks/components/workstreams/WorkstreamCard.tsx",
       "src/modules/tasks/components/workstreams/WorkstreamsManagerPage.tsx",
+      "src/modules/work-hub/WorkHubLayout.tsx",
       "src/modules/work-hub/views/AllWorkView.tsx",
       "src/modules/work-hub/views/ListView.tsx",
       "src/modules/work-hub/views/ReleaseDetailsView.tsx",
@@ -29374,6 +29388,7 @@ export const usageMap: UsageMap = {
       "src/pages/project/FeatureViewPage.tsx",
       "src/pages/projects/ProjectSummaryPage.tsx",
       "src/pages/projects/views/ListView.tsx",
+      "src/pages/releases/DefectDetailPage.tsx",
       "src/pages/testhub/cycles/CyclesPage.tsx",
       "src/pages/testhub/executions/ExecutionsPage.tsx",
       "src/pages/testhub/plans/TestPlansPage.tsx",
@@ -29436,7 +29451,6 @@ export const usageMap: UsageMap = {
       "src/components/work-items/WorkItemCommentsSection.tsx",
       "src/components/workhub/workitems/SavedFilterBar.tsx",
       "src/modules/incidents/kanban/pages/IncidentKanbanPage.tsx",
-      "src/modules/okr-v2/components/ObjectiveDrawerV2.tsx",
       "src/modules/priorities/pages/PriListsPage.tsx",
       "src/modules/task10/components/landing/T10LandingPageV3.tsx",
       "src/modules/task10/components/landing/T10ListCard.tsx",
@@ -29444,7 +29458,8 @@ export const usageMap: UsageMap = {
       "src/modules/task10/components/landing/T10ListCardV3.tsx",
       "src/modules/tasks/components/TaskCard.tsx",
       "src/pages/enterprise/EnterpriseEpics.tsx",
-      "src/pages/items/EpicsPage.tsx"
+      "src/pages/items/EpicsPage.tsx",
+      "src/pages/releases/QualityGatesPage.tsx"
     ]
   },
   "MousePointer::@/lib/atlaskit-icons": {
@@ -29638,6 +29653,14 @@ export const usageMap: UsageMap = {
       "src/stories/pages/TaskOther.stories.tsx"
     ]
   },
+  "MyTestScopeDashboard::@/features/my-test-scope": {
+    "name": "MyTestScopeDashboard",
+    "source": "@/features/my-test-scope",
+    "origin": "internal",
+    "consumers": [
+      "src/pages/releases/MyTestScopePage.tsx"
+    ]
+  },
   "NavBacklogIcon::@/lib/nav-icons": {
     "name": "NavBacklogIcon",
     "source": "@/lib/nav-icons",
@@ -29672,7 +29695,6 @@ export const usageMap: UsageMap = {
       "src/components/layout/IncidentHubSidebar.tsx",
       "src/components/layout/ProductHubSidebar.tsx",
       "src/components/layout/ProjectHubSidebar.tsx",
-      "src/components/layout/ReleaseHubSidebar.tsx",
       "src/components/layout/TasksSidebar.tsx",
       "src/components/layout/TestHubSidebar.tsx"
     ]
@@ -29758,6 +29780,7 @@ export const usageMap: UsageMap = {
     "consumers": [
       "src/components/layout/ProductRoomSidebar.tsx",
       "src/components/layout/ReleasesManagementSidebar.tsx",
+      "src/components/layout/TeamRoomSidebar.tsx",
       "src/components/layout/UnifiedSidebar.tsx",
       "src/components/layout/WikiSidebar.tsx",
       "src/components/project-hub/shell/SidebarProjectNav.tsx",
@@ -29897,7 +29920,8 @@ export const usageMap: UsageMap = {
     "consumers": [
       "src/components/admin/notifications/BulkActionsBar.tsx",
       "src/components/admin/notifications/ChannelToggles.tsx",
-      "src/components/chat/main/MessageActionsToolbar.tsx"
+      "src/components/chat/main/MessageActionsToolbar.tsx",
+      "src/pages/admin/NotificationTriggers.tsx"
     ],
     "package": "@atlaskit/icon"
   },
@@ -29971,14 +29995,6 @@ export const usageMap: UsageMap = {
     ],
     "package": "@atlaskit/icon"
   },
-  "Objective::../lib/okrTypes": {
-    "name": "Objective",
-    "source": "../lib/okrTypes",
-    "origin": "internal",
-    "consumers": [
-      "src/modules/okr-v2/hooks/useOKRStrategicData.ts"
-    ]
-  },
   "Objective::../types/objective-roadmap": {
     "name": "Objective",
     "source": "../types/objective-roadmap",
@@ -29987,228 +30003,12 @@ export const usageMap: UsageMap = {
       "src/utils/objective-roadmap-utils.ts"
     ]
   },
-  "Objective::./okrTypes": {
-    "name": "Objective",
-    "source": "./okrTypes",
-    "origin": "internal",
-    "consumers": [
-      "src/modules/okr-v2/lib/objectiveAnalytics.ts",
-      "src/modules/okr-v2/lib/okrAnalytics.ts",
-      "src/modules/okr-v2/lib/okrMetrics.ts"
-    ]
-  },
-  "ObjectiveAnalyticsData::../lib/objectiveAnalytics": {
-    "name": "ObjectiveAnalyticsData",
-    "source": "../lib/objectiveAnalytics",
-    "origin": "internal",
-    "consumers": [
-      "src/modules/okr-v2/hooks/useObjectiveAnalytics.ts"
-    ]
-  },
-  "ObjectiveAnalyticsDrawer::../ObjectiveAnalyticsDrawer": {
-    "name": "ObjectiveAnalyticsDrawer",
-    "source": "../ObjectiveAnalyticsDrawer",
-    "origin": "internal",
-    "consumers": [
-      "src/modules/okr-v2/components/StrategyCockpit/StrategyCockpit.tsx"
-    ]
-  },
-  "ObjectiveCategory::../types/objective.types": {
-    "name": "ObjectiveCategory",
-    "source": "../types/objective.types",
-    "origin": "internal",
-    "consumers": [
-      "src/modules/objectives/constants/objectiveConstants.ts"
-    ]
-  },
-  "ObjectiveDetailsPanelNew::@/components/okr/ObjectiveDetailsPanelNew": {
-    "name": "ObjectiveDetailsPanelNew",
-    "source": "@/components/okr/ObjectiveDetailsPanelNew",
-    "origin": "internal",
-    "consumers": [
-      "src/modules/objectives/components/ProgramBoard/ObjectivesRow.tsx",
-      "src/modules/objectives/components/Widgets/ObjectivesWidget.tsx",
-      "src/pages/enterprise/EnterpriseObjectives.tsx"
-    ]
-  },
-  "ObjectiveDetailsTab::./ObjectiveDetailsTab": {
-    "name": "ObjectiveDetailsTab",
-    "source": "./ObjectiveDetailsTab",
-    "origin": "internal",
-    "consumers": [
-      "src/components/okr/ObjectiveDetailsPanelNew.tsx"
-    ]
-  },
-  "ObjectiveDrawerV2::../ObjectiveDrawerV2": {
-    "name": "ObjectiveDrawerV2",
-    "source": "../ObjectiveDrawerV2",
-    "origin": "internal",
-    "consumers": [
-      "src/modules/okr-v2/components/ObjectiveAnalyticsDrawer/ObjectiveAnalyticsDrawer.tsx"
-    ]
-  },
-  "ObjectiveForm::./ObjectiveForm": {
-    "name": "ObjectiveForm",
-    "source": "./ObjectiveForm",
-    "origin": "internal",
-    "consumers": [
-      "src/modules/objectives/components/ObjectivePanel/CreateObjectiveDialog.tsx"
-    ]
-  },
-  "ObjectiveFormData::./ObjectiveOverviewTabV2": {
-    "name": "ObjectiveFormData",
-    "source": "./ObjectiveOverviewTabV2",
-    "origin": "internal",
-    "consumers": [
-      "src/modules/okr-v2/components/ObjectiveDrawerV2.tsx"
-    ]
-  },
   "ObjectiveGroup::../types/objective-roadmap": {
     "name": "ObjectiveGroup",
     "source": "../types/objective-roadmap",
     "origin": "internal",
     "consumers": [
       "src/utils/objective-roadmap-utils.ts"
-    ]
-  },
-  "ObjectiveHealth::../types/objective.types": {
-    "name": "ObjectiveHealth",
-    "source": "../types/objective.types",
-    "origin": "internal",
-    "consumers": [
-      "src/modules/objectives/constants/objectiveConstants.ts"
-    ]
-  },
-  "ObjectiveHealthV2::@/hooks/useObjectivesV2": {
-    "name": "ObjectiveHealthV2",
-    "source": "@/hooks/useObjectivesV2",
-    "origin": "internal",
-    "consumers": [
-      "src/modules/okr-v2/components/CreateObjectiveDialogV2.tsx",
-      "src/modules/okr-v2/components/OKRSmartFiltersDialog.tsx"
-    ]
-  },
-  "ObjectiveHierarchyDialog::@/modules/objectives/components/ObjectiveHierarchyDialog": {
-    "name": "ObjectiveHierarchyDialog",
-    "source": "@/modules/objectives/components/ObjectiveHierarchyDialog",
-    "origin": "internal",
-    "consumers": [
-      "src/pages/enterprise/EnterpriseObjectives.tsx"
-    ]
-  },
-  "ObjectiveOverviewTabV2::./ObjectiveOverviewTabV2": {
-    "name": "ObjectiveOverviewTabV2",
-    "source": "./ObjectiveOverviewTabV2",
-    "origin": "internal",
-    "consumers": [
-      "src/modules/okr-v2/components/ObjectiveDrawerV2.tsx"
-    ]
-  },
-  "ObjectiveProgressSection::./ObjectiveProgressSection": {
-    "name": "ObjectiveProgressSection",
-    "source": "./ObjectiveProgressSection",
-    "origin": "internal",
-    "consumers": [
-      "src/components/okr/ObjectiveDetailsPanelNew.tsx"
-    ]
-  },
-  "ObjectiveScoreBadge::../shared/ObjectiveScoreBadge": {
-    "name": "ObjectiveScoreBadge",
-    "source": "../shared/ObjectiveScoreBadge",
-    "origin": "internal",
-    "consumers": [
-      "src/modules/objectives/components/AlignedItems/ObjectivesSection.tsx",
-      "src/modules/objectives/components/ProgramBoard/ObjectivesRow.tsx",
-      "src/modules/objectives/components/Widgets/ObjectivesWidget.tsx"
-    ]
-  },
-  "ObjectiveScoreBadge::@/modules/objectives/components/shared/ObjectiveScoreBadge": {
-    "name": "ObjectiveScoreBadge",
-    "source": "@/modules/objectives/components/shared/ObjectiveScoreBadge",
-    "origin": "internal",
-    "consumers": [
-      "src/pages/enterprise/EnterpriseObjectives.tsx"
-    ]
-  },
-  "ObjectiveStatus::../types/objective.types": {
-    "name": "ObjectiveStatus",
-    "source": "../types/objective.types",
-    "origin": "internal",
-    "consumers": [
-      "src/modules/objectives/constants/objectiveConstants.ts"
-    ]
-  },
-  "ObjectiveStatusBadge::../shared/ObjectiveStatusBadge": {
-    "name": "ObjectiveStatusBadge",
-    "source": "../shared/ObjectiveStatusBadge",
-    "origin": "internal",
-    "consumers": [
-      "src/modules/objectives/components/Widgets/ObjectivesWidget.tsx"
-    ]
-  },
-  "ObjectiveStatusBadge::./shared/ObjectiveStatusBadge": {
-    "name": "ObjectiveStatusBadge",
-    "source": "./shared/ObjectiveStatusBadge",
-    "origin": "internal",
-    "consumers": [
-      "src/modules/objectives/components/ObjectiveHierarchyDialog.tsx"
-    ]
-  },
-  "ObjectiveStatusBadge::@/modules/objectives/components/shared/ObjectiveStatusBadge": {
-    "name": "ObjectiveStatusBadge",
-    "source": "@/modules/objectives/components/shared/ObjectiveStatusBadge",
-    "origin": "internal",
-    "consumers": [
-      "src/pages/enterprise/EnterpriseObjectives.tsx"
-    ]
-  },
-  "ObjectiveStatusV2::@/hooks/useObjectivesV2": {
-    "name": "ObjectiveStatusV2",
-    "source": "@/hooks/useObjectivesV2",
-    "origin": "internal",
-    "consumers": [
-      "src/modules/okr-v2/components/CreateObjectiveDialogV2.tsx",
-      "src/modules/okr-v2/components/OKRSmartFiltersDialog.tsx"
-    ]
-  },
-  "ObjectiveTier::../types/objective.types": {
-    "name": "ObjectiveTier",
-    "source": "../types/objective.types",
-    "origin": "internal",
-    "consumers": [
-      "src/modules/objectives/constants/objectiveConstants.ts"
-    ]
-  },
-  "ObjectiveTierBadge::./shared/ObjectiveTierBadge": {
-    "name": "ObjectiveTierBadge",
-    "source": "./shared/ObjectiveTierBadge",
-    "origin": "internal",
-    "consumers": [
-      "src/modules/objectives/components/ObjectiveHierarchyDialog.tsx"
-    ]
-  },
-  "ObjectiveTierBadge::@/modules/objectives/components/shared/ObjectiveTierBadge": {
-    "name": "ObjectiveTierBadge",
-    "source": "@/modules/objectives/components/shared/ObjectiveTierBadge",
-    "origin": "internal",
-    "consumers": [
-      "src/pages/enterprise/EnterpriseObjectives.tsx"
-    ]
-  },
-  "ObjectiveType::../types/objective.types": {
-    "name": "ObjectiveType",
-    "source": "../types/objective.types",
-    "origin": "internal",
-    "consumers": [
-      "src/modules/objectives/constants/objectiveConstants.ts"
-    ]
-  },
-  "ObjectiveV2::@/hooks/useObjectivesV2": {
-    "name": "ObjectiveV2",
-    "source": "@/hooks/useObjectivesV2",
-    "origin": "internal",
-    "consumers": [
-      "src/modules/okr-v2/components/ObjectiveOverviewTabV2.tsx"
     ]
   },
   "OfficeBuildingIcon::@atlaskit/icon/core/office-building": {
@@ -30238,141 +30038,28 @@ export const usageMap: UsageMap = {
       "src/components/caty-ai/hooks/useOffshoreTeams.ts"
     ]
   },
-  "OkrAnalyticsResult::../lib/okrAnalytics": {
-    "name": "OkrAnalyticsResult",
-    "source": "../lib/okrAnalytics",
-    "origin": "internal",
-    "consumers": [
-      "src/modules/okr-v2/hooks/useOKRAnalytics.ts"
-    ]
-  },
-  "OKRColumnChooser::../OKRColumnChooser": {
-    "name": "OKRColumnChooser",
-    "source": "../OKRColumnChooser",
-    "origin": "internal",
-    "consumers": [
-      "src/modules/okr-v2/components/StrategyCockpit/StrategyCockpit.tsx"
-    ]
-  },
-  "OkrLinkedCell::../shared/OkrLinkedCell": {
-    "name": "OkrLinkedCell",
-    "source": "../shared/OkrLinkedCell",
-    "origin": "internal",
-    "consumers": [
-      "src/modules/okr-v2/components/StrategyCockpit/StrategyTree.tsx"
-    ]
-  },
-  "OkrProgressCell::../shared/OkrProgressCell": {
+  "OkrProgressCell::@/components/shared/okr-pills/OkrProgressCell": {
     "name": "OkrProgressCell",
-    "source": "../shared/OkrProgressCell",
-    "origin": "internal",
-    "consumers": [
-      "src/modules/okr-v2/components/StrategyCockpit/StrategyTree.tsx"
-    ]
-  },
-  "OkrProgressCell::@/modules/okr-v2/components/shared/OkrProgressCell": {
-    "name": "OkrProgressCell",
-    "source": "@/modules/okr-v2/components/shared/OkrProgressCell",
+    "source": "@/components/shared/okr-pills/OkrProgressCell",
     "origin": "internal",
     "consumers": [
       "src/pages/work-tree/components/WorkTreeHierarchy.tsx"
     ]
   },
-  "OkrRisksCell::../shared/OkrRisksCell": {
-    "name": "OkrRisksCell",
-    "source": "../shared/OkrRisksCell",
-    "origin": "internal",
-    "consumers": [
-      "src/modules/okr-v2/components/StrategyCockpit/StrategyTree.tsx"
-    ]
-  },
-  "OkrRiskSummary::../lib/okrTypes": {
-    "name": "OkrRiskSummary",
-    "source": "../lib/okrTypes",
-    "origin": "internal",
-    "consumers": [
-      "src/modules/okr-v2/hooks/useOKRStrategicData.ts"
-    ]
-  },
-  "OkrRiskSummary::./okrTypes": {
-    "name": "OkrRiskSummary",
-    "source": "./okrTypes",
-    "origin": "internal",
-    "consumers": [
-      "src/modules/okr-v2/lib/okrAnalytics.ts",
-      "src/modules/okr-v2/lib/okrMetrics.ts"
-    ]
-  },
-  "OKRSmartFilters::../OKRSmartFiltersDialog": {
-    "name": "OKRSmartFilters",
-    "source": "../OKRSmartFiltersDialog",
-    "origin": "internal",
-    "consumers": [
-      "src/modules/okr-v2/components/StrategyCockpit/StrategyCockpit.tsx"
-    ]
-  },
-  "OKRSmartFiltersDialog::../OKRSmartFiltersDialog": {
-    "name": "OKRSmartFiltersDialog",
-    "source": "../OKRSmartFiltersDialog",
-    "origin": "internal",
-    "consumers": [
-      "src/modules/okr-v2/components/StrategyCockpit/StrategyCockpit.tsx"
-    ]
-  },
-  "OKRSmartFiltersV2::./okrTypes": {
-    "name": "OKRSmartFiltersV2",
-    "source": "./okrTypes",
-    "origin": "internal",
-    "consumers": [
-      "src/modules/okr-v2/lib/okrMetrics.ts"
-    ]
-  },
-  "OkrStatusPill::../shared/OkrStatusPill": {
+  "OkrStatusPill::@/components/shared/okr-pills/OkrStatusPill": {
     "name": "OkrStatusPill",
-    "source": "../shared/OkrStatusPill",
-    "origin": "internal",
-    "consumers": [
-      "src/modules/okr-v2/components/StrategyCockpit/StrategyTree.tsx"
-    ]
-  },
-  "OkrStatusPill::@/modules/okr-v2/components/shared/OkrStatusPill": {
-    "name": "OkrStatusPill",
-    "source": "@/modules/okr-v2/components/shared/OkrStatusPill",
+    "source": "@/components/shared/okr-pills/OkrStatusPill",
     "origin": "internal",
     "consumers": [
       "src/pages/work-tree/components/WorkTreeHierarchy.tsx"
     ]
   },
-  "OkrSummaryCards::../shared/OkrSummaryCards": {
-    "name": "OkrSummaryCards",
-    "source": "../shared/OkrSummaryCards",
-    "origin": "internal",
-    "consumers": [
-      "src/modules/okr-v2/components/StrategyCockpit/StrategyCockpit.tsx"
-    ]
-  },
-  "OkrThemeDot::../shared/OkrThemeDot": {
+  "OkrThemeDot::@/components/shared/okr-pills/OkrThemeDot": {
     "name": "OkrThemeDot",
-    "source": "../shared/OkrThemeDot",
-    "origin": "internal",
-    "consumers": [
-      "src/modules/okr-v2/components/StrategyCockpit/StrategyTree.tsx"
-    ]
-  },
-  "OkrThemeDot::@/modules/okr-v2/components/shared/OkrThemeDot": {
-    "name": "OkrThemeDot",
-    "source": "@/modules/okr-v2/components/shared/OkrThemeDot",
+    "source": "@/components/shared/okr-pills/OkrThemeDot",
     "origin": "internal",
     "consumers": [
       "src/pages/work-tree/components/WorkTreeHierarchy.tsx"
-    ]
-  },
-  "OkrWorkItemBadge::../shared/OkrWorkItemBadge": {
-    "name": "OkrWorkItemBadge",
-    "source": "../shared/OkrWorkItemBadge",
-    "origin": "internal",
-    "consumers": [
-      "src/modules/okr-v2/components/StrategyCockpit/StrategyTree.tsx"
     ]
   },
   "OnHoldWidget::./widgets/OnHoldWidget": {
@@ -30519,9 +30206,12 @@ export const usageMap: UsageMap = {
       "src/modules/in-jira/pages/ReleaseManagementPage.tsx",
       "src/modules/in-jira/pages/ReleasesPage.tsx",
       "src/modules/project-work-hub/ProjectWorkHubPage.tsx",
+      "src/modules/work-hub/WorkHubLayout.tsx",
       "src/pages/releasehub/AllChangesPage.tsx",
       "src/pages/releasehub/AllReleasesPage.tsx",
-      "src/pages/releasehub/ChangeExecutionBoard.tsx"
+      "src/pages/releasehub/ChangeExecutionBoard.tsx",
+      "src/pages/releases/AllReleasesPage.tsx",
+      "src/pages/releases/CommandCenter.tsx"
     ]
   },
   "PageChrome::@/components/layout/PageChrome": {
@@ -30558,6 +30248,7 @@ export const usageMap: UsageMap = {
       "src/modules/docintel/pages/DocintelWorkspacePage.tsx",
       "src/pages/admin/test/TestCaseStatusesPage.tsx",
       "src/pages/admin/test/TestCaseTypesPage.tsx",
+      "src/pages/admin/test/TestCaseWorkflowPage.tsx",
       "src/pages/admin/test/TestPermissionsPage.tsx",
       "src/pages/admin/test/TestPrioritiesPage.tsx"
     ]
@@ -30774,7 +30465,8 @@ export const usageMap: UsageMap = {
       "src/modules/product-backlog/components/split-panel/RequestDetailPanel.tsx",
       "src/modules/product-backlog/components/split-panel/RequestListPanel.tsx",
       "src/modules/product-roadmap/components/RoadmapDetailPanel.tsx",
-      "src/modules/tasks/components/TaskCard.tsx"
+      "src/modules/tasks/components/TaskCard.tsx",
+      "src/pages/releases/DefectDetailPage.tsx"
     ]
   },
   "ParentEpicChip::../components/shared/ParentEpicChip": {
@@ -30854,8 +30546,6 @@ export const usageMap: UsageMap = {
       "src/modules/in-jira/components/drawer/ActivityTabs.tsx",
       "src/modules/in-jira/components/drawer/InlineEdit.tsx",
       "src/modules/in-jira/components/releases/VersionCard.tsx",
-      "src/modules/okr-v2/components/LinkedWorkTabV2.tsx",
-      "src/modules/okr-v2/components/ObjectiveDrawerV2.tsx",
       "src/modules/priorities/components/PriPriorityCard.tsx",
       "src/modules/product-roadmap/components/RoadmapDetailPanel.tsx",
       "src/modules/project-work-hub/components/SubtasksPanel/RowActionsMenu.tsx",
@@ -30902,8 +30592,11 @@ export const usageMap: UsageMap = {
       "src/components/admin/rbac/RbacRolesTable.tsx",
       "src/components/boards/BoardCard.tsx",
       "src/components/filters/FilterTemplateGallery.tsx",
+      "src/pages/admin/AdminOverview.tsx",
+      "src/pages/admin/FeatureFlagsPage.tsx",
       "src/pages/admin/ResourceAssignments.tsx",
       "src/pages/admin/RolesAdminPage.tsx",
+      "src/pages/admin/UserAccessPage.tsx",
       "src/pages/project-hub/filters/FiltersListPage.tsx"
     ],
     "package": "@atlaskit/icon"
@@ -31029,7 +30722,9 @@ export const usageMap: UsageMap = {
     "origin": "atlaskit",
     "consumers": [
       "src/components/catalyst-detail-views/shared/sections/Description/_components/MentionSuggestionPill/MentionSuggestionPill.tsx",
-      "src/pages/admin/AdminAccessPage.tsx"
+      "src/pages/admin/AdminAccessPage.tsx",
+      "src/pages/admin/AdminOverview.tsx",
+      "src/pages/admin/UserAccessPage.tsx"
     ],
     "package": "@atlaskit/icon"
   },
@@ -31048,7 +30743,8 @@ export const usageMap: UsageMap = {
     "origin": "atlaskit",
     "consumers": [
       "src/components/filters/FilterTemplateGallery.tsx",
-      "src/pages/admin/ResourceAssignments.tsx"
+      "src/pages/admin/ResourceAssignments.tsx",
+      "src/pages/admin/UserAccessPage.tsx"
     ],
     "package": "@atlaskit/icon"
   },
@@ -31059,6 +30755,7 @@ export const usageMap: UsageMap = {
     "consumers": [
       "src/components/chat/main/ChatSearchFilters.tsx",
       "src/components/global-search/GlobalSearchPanel.tsx",
+      "src/features/all-releases/components/ReleaseCard.tsx",
       "src/modules/project-work-hub/components/linked-work-items/LinkTypeGroup.tsx"
     ],
     "package": "@atlaskit/icon"
@@ -31237,6 +30934,22 @@ export const usageMap: UsageMap = {
     "origin": "internal",
     "consumers": [
       "src/components/backlog/BacklogSection.tsx"
+    ]
+  },
+  "PlanApproval::@/types/testPlans": {
+    "name": "PlanApproval",
+    "source": "@/types/testPlans",
+    "origin": "internal",
+    "consumers": [
+      "src/hooks/useTestPlansG26.ts"
+    ]
+  },
+  "PlanFilters::@/types/testPlans": {
+    "name": "PlanFilters",
+    "source": "@/types/testPlans",
+    "origin": "internal",
+    "consumers": [
+      "src/hooks/useTestPlansG26.ts"
     ]
   },
   "PlannedQuarter::@/types/product-roadmap": {
@@ -31456,6 +31169,30 @@ export const usageMap: UsageMap = {
       "src/stories/pages/TaskOther.stories.tsx"
     ]
   },
+  "PlanProgress::@/types/testPlans": {
+    "name": "PlanProgress",
+    "source": "@/types/testPlans",
+    "origin": "internal",
+    "consumers": [
+      "src/hooks/useTestPlansG26.ts"
+    ]
+  },
+  "PlanScope::@/types/testPlans": {
+    "name": "PlanScope",
+    "source": "@/types/testPlans",
+    "origin": "internal",
+    "consumers": [
+      "src/hooks/useTestPlansG26.ts"
+    ]
+  },
+  "PlanTeamMember::@/types/testPlans": {
+    "name": "PlanTeamMember",
+    "source": "@/types/testPlans",
+    "origin": "internal",
+    "consumers": [
+      "src/hooks/useTestPlansG26.ts"
+    ]
+  },
   "PlatformConfig::./types": {
     "name": "PlatformConfig",
     "source": "./types",
@@ -31481,6 +31218,8 @@ export const usageMap: UsageMap = {
       "src/modules/in-jira/pages/ScrumBoardPage.tsx",
       "src/modules/task10/components/landing/T10ListCardMinimal.tsx",
       "src/pages/enterprise/capacity-planner/LevelingView.tsx",
+      "src/pages/releases/DefectDetailPage.tsx",
+      "src/pages/releases/ReleaseDashboardPage.tsx",
       "src/pages/testhub/cycles/CycleDetailPage.tsx"
     ]
   },
@@ -31553,7 +31292,6 @@ export const usageMap: UsageMap = {
       "src/components/kanban/setup/ManageUsersTab.tsx",
       "src/components/kanban/setup/SwimLanesSetupTab.tsx",
       "src/components/knowledge-hub/KnowledgeBaseCard.tsx",
-      "src/components/okr/KeyResultsList.tsx",
       "src/components/planner/task-modal/molecules/AddItemInput.tsx",
       "src/components/planner/task-modal/molecules/LabelsManager.tsx",
       "src/components/product-hub/roadmap/AddRequestModal.tsx",
@@ -31626,15 +31364,6 @@ export const usageMap: UsageMap = {
       "src/modules/in-jira/pages/ScrumBoardPage.tsx",
       "src/modules/incidents/kanban/components/ManageColumnsDialog.tsx",
       "src/modules/kanban/components/KanbanColumn.tsx",
-      "src/modules/objectives/components/AlignedItems/ObjectivesSection.tsx",
-      "src/modules/objectives/components/KeyResults/KeyResultsList.tsx",
-      "src/modules/objectives/components/ProgramBoard/ObjectivesRow.tsx",
-      "src/modules/objectives/components/Widgets/ObjectivesWidget.tsx",
-      "src/modules/okr-v2/components/KRWorkAlignmentDrawer.tsx",
-      "src/modules/okr-v2/components/KRWorkContributionsV2.tsx",
-      "src/modules/okr-v2/components/KeyResultsTabV2.tsx",
-      "src/modules/okr-v2/components/LinkedWorkTabV2.tsx",
-      "src/modules/okr-v2/components/StrategyCockpit/StrategyCockpit.tsx",
       "src/modules/priorities/components/PriEmptyState.tsx",
       "src/modules/priorities/components/PriQuickAdd.tsx",
       "src/modules/priorities/pages/PriListsPage.tsx",
@@ -31691,6 +31420,7 @@ export const usageMap: UsageMap = {
       "src/modules/tasks/components/shared/PlannerViewHeader.tsx",
       "src/modules/tasks/components/workstreams/WorkstreamsManagerPage.tsx",
       "src/modules/tasks/components/workstreams/WorkstreamsPage.tsx",
+      "src/modules/work-hub/WorkHubLayout.tsx",
       "src/modules/work-hub/components/ColumnHeaderMenu.tsx",
       "src/modules/work-hub/components/FieldPicker.tsx",
       "src/modules/work-hub/views/AllWorkView.tsx",
@@ -31711,7 +31441,6 @@ export const usageMap: UsageMap = {
       "src/pages/WorkManager.tsx",
       "src/pages/enterprise/CapacityPlannerPage.tsx",
       "src/pages/enterprise/EnterpriseEpics.tsx",
-      "src/pages/enterprise/EnterpriseObjectives.tsx",
       "src/pages/enterprise/capacity-planner/AssignmentsView.tsx",
       "src/pages/enterprise/capacity-planner/BookResourceModal.tsx",
       "src/pages/items/EpicsPage.tsx",
@@ -31736,6 +31465,10 @@ export const usageMap: UsageMap = {
       "src/pages/releasehub/FreezeWindowsPage.tsx",
       "src/pages/releasehub/SignOffQueuePage.tsx",
       "src/pages/releasehub/SopTemplatesPage.tsx",
+      "src/pages/releases/AllReleasesPage.tsx",
+      "src/pages/releases/CommandCenter.tsx",
+      "src/pages/releases/CoverageReportsPage.tsx",
+      "src/pages/releases/QualityGatesPage.tsx",
       "src/pages/testhub/cycles/CycleDetailPage.tsx",
       "src/pages/testhub/cycles/CyclesPage.tsx",
       "src/pages/testhub/plans/TestPlansPage.tsx",
@@ -31806,6 +31539,7 @@ export const usageMap: UsageMap = {
       "src/components/dependencies/CreateDependencyDialog.tsx",
       "src/components/dependencies/DependencyDetailsDrawer.tsx",
       "src/components/enterprise/EnterpriseGrid.tsx",
+      "src/components/epic-backlog/modals/MilestoneModal.tsx",
       "src/components/incidents/IncidentStatusDropdown.tsx",
       "src/components/industry/RichTextEditor.tsx",
       "src/components/industry/enterprise-table/components/ColumnHeader.tsx",
@@ -31814,8 +31548,6 @@ export const usageMap: UsageMap = {
       "src/components/items/epics/drawer-tabs/EpicDetailsViewTab.tsx",
       "src/components/items/features/FeatureRightRail.tsx",
       "src/components/kanban/AdvancedFilterPanel.tsx",
-      "src/components/okr/CheckInModal.tsx",
-      "src/components/okr/ObjectiveDetailsTab.tsx",
       "src/components/product-hub/roadmap/RoadmapDetailPanel.tsx",
       "src/components/projecthub/AllProjectsTable.tsx",
       "src/components/projecthub/IssueBreakdownPopover.tsx",
@@ -31846,9 +31578,6 @@ export const usageMap: UsageMap = {
       "src/modules/in-jira/components/releases/SprintReleasePicker.tsx",
       "src/modules/incidents/analytics/components/TimeRangeSelector.tsx",
       "src/modules/incidents/kanban/components/SetCommitteeApproversModal.tsx",
-      "src/modules/objectives/components/ObjectivePanel/ObjectiveForm.tsx",
-      "src/modules/okr-v2/components/OKRColumnChooser.tsx",
-      "src/modules/okr-v2/components/OKRSmartFiltersDialog.tsx",
       "src/modules/product-backlog/components/split-panel/RequestDetailPanel.tsx",
       "src/modules/program-epics/components/CreateEpicDialog.tsx",
       "src/modules/program-epics/components/EditEpicDialog.tsx",
@@ -31899,6 +31628,7 @@ export const usageMap: UsageMap = {
       "src/components/dependencies/CreateDependencyDialog.tsx",
       "src/components/dependencies/DependencyDetailsDrawer.tsx",
       "src/components/enterprise/EnterpriseGrid.tsx",
+      "src/components/epic-backlog/modals/MilestoneModal.tsx",
       "src/components/incidents/IncidentStatusDropdown.tsx",
       "src/components/industry/RichTextEditor.tsx",
       "src/components/industry/enterprise-table/components/ColumnHeader.tsx",
@@ -31907,8 +31637,6 @@ export const usageMap: UsageMap = {
       "src/components/items/epics/drawer-tabs/EpicDetailsViewTab.tsx",
       "src/components/items/features/FeatureRightRail.tsx",
       "src/components/kanban/AdvancedFilterPanel.tsx",
-      "src/components/okr/CheckInModal.tsx",
-      "src/components/okr/ObjectiveDetailsTab.tsx",
       "src/components/product-hub/roadmap/RoadmapDetailPanel.tsx",
       "src/components/projecthub/AllProjectsTable.tsx",
       "src/components/projecthub/IssueBreakdownPopover.tsx",
@@ -31939,9 +31667,6 @@ export const usageMap: UsageMap = {
       "src/modules/in-jira/components/releases/SprintReleasePicker.tsx",
       "src/modules/incidents/analytics/components/TimeRangeSelector.tsx",
       "src/modules/incidents/kanban/components/SetCommitteeApproversModal.tsx",
-      "src/modules/objectives/components/ObjectivePanel/ObjectiveForm.tsx",
-      "src/modules/okr-v2/components/OKRColumnChooser.tsx",
-      "src/modules/okr-v2/components/OKRSmartFiltersDialog.tsx",
       "src/modules/product-backlog/components/split-panel/RequestDetailPanel.tsx",
       "src/modules/program-epics/components/CreateEpicDialog.tsx",
       "src/modules/program-epics/components/EditEpicDialog.tsx",
@@ -31984,6 +31709,7 @@ export const usageMap: UsageMap = {
       "src/components/dependencies/CreateDependencyDialog.tsx",
       "src/components/dependencies/DependencyDetailsDrawer.tsx",
       "src/components/enterprise/EnterpriseGrid.tsx",
+      "src/components/epic-backlog/modals/MilestoneModal.tsx",
       "src/components/incidents/IncidentStatusDropdown.tsx",
       "src/components/industry/RichTextEditor.tsx",
       "src/components/industry/enterprise-table/components/ColumnHeader.tsx",
@@ -31992,8 +31718,6 @@ export const usageMap: UsageMap = {
       "src/components/items/epics/drawer-tabs/EpicDetailsViewTab.tsx",
       "src/components/items/features/FeatureRightRail.tsx",
       "src/components/kanban/AdvancedFilterPanel.tsx",
-      "src/components/okr/CheckInModal.tsx",
-      "src/components/okr/ObjectiveDetailsTab.tsx",
       "src/components/product-hub/roadmap/RoadmapDetailPanel.tsx",
       "src/components/projecthub/AllProjectsTable.tsx",
       "src/components/projecthub/IssueBreakdownPopover.tsx",
@@ -32023,9 +31747,6 @@ export const usageMap: UsageMap = {
       "src/modules/in-jira/components/releases/SprintReleasePicker.tsx",
       "src/modules/incidents/analytics/components/TimeRangeSelector.tsx",
       "src/modules/incidents/kanban/components/SetCommitteeApproversModal.tsx",
-      "src/modules/objectives/components/ObjectivePanel/ObjectiveForm.tsx",
-      "src/modules/okr-v2/components/OKRColumnChooser.tsx",
-      "src/modules/okr-v2/components/OKRSmartFiltersDialog.tsx",
       "src/modules/product-backlog/components/split-panel/RequestDetailPanel.tsx",
       "src/modules/program-epics/components/CreateEpicDialog.tsx",
       "src/modules/program-epics/components/EditEpicDialog.tsx",
@@ -32066,8 +31787,7 @@ export const usageMap: UsageMap = {
       "src/components/shared/JiraTable/editors.tsx",
       "src/components/universal-work-view/UWVColumnPicker.tsx",
       "src/components/universal-work-view/UWVExport.tsx",
-      "src/components/universal-work-view/UWVToolbar.tsx",
-      "src/features/voice-flow/VoiceMicButton.tsx"
+      "src/components/universal-work-view/UWVToolbar.tsx"
     ],
     "package": "@atlaskit/popup"
   },
@@ -32357,6 +32077,14 @@ export const usageMap: UsageMap = {
       "src/components/incidents/IncidentDetailsPanel.tsx"
     ]
   },
+  "PriorityBadge::@/components/releases/defects/PriorityBadge": {
+    "name": "PriorityBadge",
+    "source": "@/components/releases/defects/PriorityBadge",
+    "origin": "internal",
+    "consumers": [
+      "src/pages/releases/DefectDetailPage.tsx"
+    ]
+  },
   "PriorityBadge::@/modules/tasks/components/kanban/PriorityBadge": {
     "name": "PriorityBadge",
     "source": "@/modules/tasks/components/kanban/PriorityBadge",
@@ -32382,7 +32110,8 @@ export const usageMap: UsageMap = {
       "src/modules/project-work-hub/components/dialogs/story-detail-modules/DefectsSection.tsx",
       "src/modules/project-work-hub/components/dialogs/story-detail-modules/IncidentsSection.tsx",
       "src/modules/project-work-hub/components/linked-work-items/LinkedWorkItemRow.tsx",
-      "src/modules/project-work-hub/pages/StoryBacklogPage.tsx"
+      "src/modules/project-work-hub/pages/StoryBacklogPage.tsx",
+      "src/pages/ForYouPage.tsx"
     ]
   },
   "PriorityBlockerIcon::@atlaskit/icon/core/priority-blocker": {
@@ -32918,13 +32647,14 @@ export const usageMap: UsageMap = {
       "src/components/capacity-heatmap/CellDetailPanel.tsx",
       "src/components/dashboard/CycleCard.tsx",
       "src/components/dashboard/MetricCard.tsx",
+      "src/components/epic-backlog/modals/FeatureStatusModal.tsx",
       "src/components/epic-backlog/tabs/ValueTab.tsx",
       "src/components/features/FeaturesKanbanView.tsx",
       "src/components/features/FeaturesListView.tsx",
       "src/components/incidents/detail/CommitteeCard.tsx",
+      "src/components/items/epics/modals/FeatureStatusModal.tsx",
       "src/components/items/features/FeatureTable.tsx",
       "src/components/items/features/tabs/FeatureOverviewTab.tsx",
-      "src/components/okr/ObjectiveProgressSection.tsx",
       "src/components/releases/all-releases/ReleasesTableRow.tsx",
       "src/components/releases/dashboard/ReleaseHeader.tsx",
       "src/components/releases/quality-gates/ReleaseTestSummaryPanel.tsx",
@@ -32937,17 +32667,16 @@ export const usageMap: UsageMap = {
       "src/modules/in-jira/components/releases/VersionCard.tsx",
       "src/modules/in-jira/pages/ScrumBoardPage.tsx",
       "src/modules/in-jira/pages/SummaryPage.tsx",
-      "src/modules/objectives/components/KeyResults/KeyResultCard.tsx",
-      "src/modules/okr-v2/components/KRWorkAlignmentDrawer.tsx",
-      "src/modules/okr-v2/components/KRWorkContributionsV2.tsx",
-      "src/modules/okr-v2/components/StrategyCockpit/AnalyticsDrawerContent.tsx",
       "src/modules/work-hub/views/ReleaseDetailsView.tsx",
       "src/modules/work-hub/views/SummaryView.tsx",
       "src/pages/Features.tsx",
       "src/pages/PIObjectives.tsx",
       "src/pages/PortfolioRoadmap.tsx",
+      "src/pages/TeamRoom.tsx",
       "src/pages/ValueStreamView.tsx",
-      "src/pages/items/reports/EpicStatusReport.tsx"
+      "src/pages/items/reports/EpicStatusReport.tsx",
+      "src/pages/releases/CoverageReportsPage.tsx",
+      "src/pages/releases/QualityGatesPage.tsx"
     ]
   },
   "ProgressBar::../../atoms": {
@@ -32956,24 +32685,6 @@ export const usageMap: UsageMap = {
     "origin": "internal",
     "consumers": [
       "src/components/planner/task-modal/organisms/tabs/ChecklistTab.tsx"
-    ]
-  },
-  "ProgressBar::../shared/ProgressBar": {
-    "name": "ProgressBar",
-    "source": "../shared/ProgressBar",
-    "origin": "internal",
-    "consumers": [
-      "src/modules/objectives/components/AlignedItems/ObjectivesSection.tsx",
-      "src/modules/objectives/components/KeyResults/KeyResultReportsModal.tsx",
-      "src/modules/objectives/components/Widgets/ObjectivesWidget.tsx"
-    ]
-  },
-  "ProgressBar::./shared/ProgressBar": {
-    "name": "ProgressBar",
-    "source": "./shared/ProgressBar",
-    "origin": "internal",
-    "consumers": [
-      "src/modules/objectives/components/ObjectiveHierarchyDialog.tsx"
     ]
   },
   "ProgressBar::@/components/ads": {
@@ -32993,14 +32704,6 @@ export const usageMap: UsageMap = {
     "consumers": [
       "src/components/releasehub/ReleasePortfolio.tsx",
       "src/components/sprints/SprintEfficiencyCard.tsx"
-    ]
-  },
-  "ProgressBar::@/modules/objectives/components/shared/ProgressBar": {
-    "name": "ProgressBar",
-    "source": "@/modules/objectives/components/shared/ProgressBar",
-    "origin": "internal",
-    "consumers": [
-      "src/pages/enterprise/EnterpriseObjectives.tsx"
     ]
   },
   "ProgressBar::@atlaskit/progress-bar": {
@@ -33234,6 +32937,14 @@ export const usageMap: UsageMap = {
     "consumers": [
       "src/components/project-hub/shell/Sidebar.tsx",
       "src/components/project-hub/shell/SidebarProjectNav.tsx"
+    ]
+  },
+  "ProjectEntry::./shell/ProjectSwitcher": {
+    "name": "ProjectEntry",
+    "source": "./shell/ProjectSwitcher",
+    "origin": "internal",
+    "consumers": [
+      "src/components/project-hub/ProjectHubShell.tsx"
     ]
   },
   "ProjectGrid::./ProjectGrid": {
@@ -33656,6 +33367,14 @@ export const usageMap: UsageMap = {
     "origin": "internal",
     "consumers": [
       "src/pages/release-hub/ReleaseDetailPage.tsx"
+    ]
+  },
+  "QualityGatesWidget::@/components/releases/dashboard/QualityGatesWidget": {
+    "name": "QualityGatesWidget",
+    "source": "@/components/releases/dashboard/QualityGatesWidget",
+    "origin": "internal",
+    "consumers": [
+      "src/pages/releases/ReleaseDashboardPage.tsx"
     ]
   },
   "QualityGauge::./QualityGauge": {
@@ -34219,6 +33938,15 @@ export const usageMap: UsageMap = {
       "src/pages/product-hub/MilestonesPage.tsx"
     ]
   },
+  "ReassignModal::@/components/releases/defects/ReassignModal": {
+    "name": "ReassignModal",
+    "source": "@/components/releases/defects/ReassignModal",
+    "origin": "internal",
+    "consumers": [
+      "src/pages/releases/DefectDetailPage.tsx",
+      "src/pages/releases/DefectsPage.tsx"
+    ]
+  },
   "RecentIcon::@atlaskit/icon/glyph/recent": {
     "name": "RecentIcon",
     "source": "@atlaskit/icon/glyph/recent",
@@ -34343,7 +34071,12 @@ export const usageMap: UsageMap = {
       "src/pages/admin/test/TestCaseTypesPage.tsx",
       "src/pages/enterprise/BudgetGovernancePage.tsx",
       "src/pages/enterprise/CapacityPlannerPage.tsx",
-      "src/pages/project-hub/HierarchyPage.tsx"
+      "src/pages/project-hub/HierarchyPage.tsx",
+      "src/pages/releases/AllReleasesPage.tsx",
+      "src/pages/releases/CommandCenter.tsx",
+      "src/pages/releases/CommandCenterPage.tsx",
+      "src/pages/releases/QualityGatesPage.tsx",
+      "src/pages/releases/ReleaseDashboardPage.tsx"
     ]
   },
   "RefreshCw::@atlaskit/icon/core/refresh": {
@@ -34364,7 +34097,8 @@ export const usageMap: UsageMap = {
       "src/components/admin/notifications/TriggerSearch.tsx",
       "src/modules/workhub/admin/components/JiraConnection.tsx",
       "src/modules/workhub/admin/components/SyncLogs.tsx",
-      "src/pages/admin/AiTranslationsAuditPage.tsx"
+      "src/pages/admin/AiTranslationsAuditPage.tsx",
+      "src/pages/admin/FeatureFlagsPage.tsx"
     ],
     "package": "@atlaskit/icon"
   },
@@ -34416,6 +34150,8 @@ export const usageMap: UsageMap = {
     "source": "../types",
     "origin": "internal",
     "consumers": [
+      "src/features/all-releases/components/CardGridView.tsx",
+      "src/features/all-releases/components/ReleaseCard.tsx",
       "src/pages/jira-clone/data/mockReleases.ts"
     ]
   },
@@ -34484,20 +34220,53 @@ export const usageMap: UsageMap = {
       "src/pages/project-hub/SprintsPage.tsx"
     ]
   },
+  "ReleaseBar::./ReleaseBar": {
+    "name": "ReleaseBar",
+    "source": "./ReleaseBar",
+    "origin": "internal",
+    "consumers": [
+      "src/features/release-calendar/components/CalendarGrid.tsx"
+    ]
+  },
+  "ReleaseCalendar::@/features/release-calendar": {
+    "name": "ReleaseCalendar",
+    "source": "@/features/release-calendar",
+    "origin": "internal",
+    "consumers": [
+      "src/pages/releases/CalendarPage.tsx"
+    ]
+  },
   "ReleaseCard::./ReleaseCard": {
     "name": "ReleaseCard",
     "source": "./ReleaseCard",
     "origin": "internal",
     "consumers": [
-      "src/components/workhub/releases/ReleasesPage.tsx"
+      "src/components/workhub/releases/ReleasesPage.tsx",
+      "src/features/all-releases/components/CardGridView.tsx"
     ]
   },
-  "ReleaseChangeStack::@/components/releasehub/foryou/ReleaseChangeAnnouncementBanner": {
-    "name": "ReleaseChangeStack",
+  "ReleaseCard::@/components/dashboard": {
+    "name": "ReleaseCard",
+    "source": "@/components/dashboard",
+    "origin": "internal",
+    "consumers": [
+      "src/pages/releases/CommandCenter.tsx"
+    ]
+  },
+  "ReleaseChangeAnnouncementBanner::@/components/releasehub/foryou/ReleaseChangeAnnouncementBanner": {
+    "name": "ReleaseChangeAnnouncementBanner",
     "source": "@/components/releasehub/foryou/ReleaseChangeAnnouncementBanner",
     "origin": "internal",
     "consumers": [
       "src/components/releasehub/foryou/ReleaseOpsForYouSection.tsx"
+    ]
+  },
+  "ReleaseCompare::@/features/release-compare": {
+    "name": "ReleaseCompare",
+    "source": "@/features/release-compare",
+    "origin": "internal",
+    "consumers": [
+      "src/pages/releases/ComparePage.tsx"
     ]
   },
   "ReleaseConfidenceWidget::./widgets/ReleaseConfidenceWidget": {
@@ -34544,6 +34313,14 @@ export const usageMap: UsageMap = {
       "src/pages/project-hub/SprintDetailPage.tsx"
     ]
   },
+  "ReleaseDialog::@/components/forms/ReleaseDialog": {
+    "name": "ReleaseDialog",
+    "source": "@/components/forms/ReleaseDialog",
+    "origin": "internal",
+    "consumers": [
+      "src/pages/releases/CommandCenter.tsx"
+    ]
+  },
   "ReleaseExportData::@/utils/exportReleases": {
     "name": "ReleaseExportData",
     "source": "@/utils/exportReleases",
@@ -34552,13 +34329,22 @@ export const usageMap: UsageMap = {
       "src/components/releases/all-releases/ExportReleasesDropdown.tsx"
     ]
   },
+  "ReleaseHeader::@/components/releases/dashboard/ReleaseHeader": {
+    "name": "ReleaseHeader",
+    "source": "@/components/releases/dashboard/ReleaseHeader",
+    "origin": "internal",
+    "consumers": [
+      "src/pages/releases/ReleaseDashboardPage.tsx"
+    ]
+  },
   "ReleaseHealth::@/types/releases": {
     "name": "ReleaseHealth",
     "source": "@/types/releases",
     "origin": "internal",
     "consumers": [
       "src/components/releases/all-releases/ReleasesToolbar.tsx",
-      "src/hooks/releases/useAllReleases.ts"
+      "src/hooks/releases/useAllReleases.ts",
+      "src/pages/releases/AllReleasesPage.tsx"
     ]
   },
   "ReleaseHealthChip::./ReleaseHealthChip": {
@@ -34636,6 +34422,14 @@ export const usageMap: UsageMap = {
       "src/features/release-compare/hooks/useCompareReleases.ts"
     ]
   },
+  "ReleaseOption::@/features/release-compare": {
+    "name": "ReleaseOption",
+    "source": "@/features/release-compare",
+    "origin": "internal",
+    "consumers": [
+      "src/pages/releases/ComparePage.tsx"
+    ]
+  },
   "ReleasePortfolio::@/components/releasehub/ReleasePortfolio": {
     "name": "ReleasePortfolio",
     "source": "@/components/releasehub/ReleasePortfolio",
@@ -34701,6 +34495,14 @@ export const usageMap: UsageMap = {
     "consumers": [
       "src/stories/enterprise/PortfolioSelector.stories.tsx",
       "src/stories/enterprise/ReleaseSelector.stories.tsx"
+    ]
+  },
+  "ReleasesFilter::../types": {
+    "name": "ReleasesFilter",
+    "source": "../types",
+    "origin": "internal",
+    "consumers": [
+      "src/features/all-releases/components/FilterBar.tsx"
     ]
   },
   "ReleasesFilter::@/types/releases": {
@@ -34770,6 +34572,15 @@ export const usageMap: UsageMap = {
       "src/components/releases/all-releases/ReleasesTable.tsx"
     ]
   },
+  "ReleaseStatus::../types": {
+    "name": "ReleaseStatus",
+    "source": "../types",
+    "origin": "internal",
+    "consumers": [
+      "src/features/all-releases/components/FilterBar.tsx",
+      "src/features/all-releases/components/Toolbar.tsx"
+    ]
+  },
   "ReleaseStatus::./types": {
     "name": "ReleaseStatus",
     "source": "./types",
@@ -34796,7 +34607,8 @@ export const usageMap: UsageMap = {
     "consumers": [
       "src/components/releases/all-releases/ReleasesTableRow.tsx",
       "src/components/releases/all-releases/ReleasesToolbar.tsx",
-      "src/hooks/releases/useAllReleases.ts"
+      "src/hooks/releases/useAllReleases.ts",
+      "src/pages/releases/AllReleasesPage.tsx"
     ]
   },
   "ReleaseStatusBadge::@/components/shared/StatusLozenge": {
@@ -34804,7 +34616,17 @@ export const usageMap: UsageMap = {
     "source": "@/components/shared/StatusLozenge",
     "origin": "internal",
     "consumers": [
-      "src/components/releases/ReleaseCard.tsx"
+      "src/components/releases/ReleaseCard.tsx",
+      "src/pages/releasehub/ReleaseComparePage.tsx"
+    ]
+  },
+  "ReleaseSummary::../types": {
+    "name": "ReleaseSummary",
+    "source": "../types",
+    "origin": "internal",
+    "consumers": [
+      "src/features/all-releases/components/StatStrip.tsx",
+      "src/features/all-releases/components/SummaryCards.tsx"
     ]
   },
   "ReleaseSummaryCard::@/components/releases/detail/summarize/ReleaseSummaryCard": {
@@ -34998,6 +34820,14 @@ export const usageMap: UsageMap = {
     "origin": "internal",
     "consumers": [
       "src/pages/testhub/reports/lab/ReportNavigator.tsx"
+    ]
+  },
+  "ReportDefectModal::@/components/releases/defects/ReportDefectModal": {
+    "name": "ReportDefectModal",
+    "source": "@/components/releases/defects/ReportDefectModal",
+    "origin": "internal",
+    "consumers": [
+      "src/pages/releases/DefectsPage.tsx"
     ]
   },
   "ReportDefinition::@/types/reports": {
@@ -35570,14 +35400,12 @@ export const usageMap: UsageMap = {
       "src/pages/risks/RisksGridPage.tsx"
     ]
   },
-  "RiskBadge::@/components/risks/RiskBadge": {
+  "RiskBadge::@/components/releasehub/RiskBadge": {
     "name": "RiskBadge",
-    "source": "@/components/risks/RiskBadge",
+    "source": "@/components/releasehub/RiskBadge",
     "origin": "internal",
     "consumers": [
-      "src/modules/okr-v2/components/KeyResultAnalyticsDrawer/KeyResultAnalyticsDrawer.tsx",
-      "src/modules/okr-v2/components/ObjectiveAnalyticsDrawer/ObjectiveAnalyticsDrawer.tsx",
-      "src/modules/okr-v2/components/shared/OkrRisksCell.tsx"
+      "src/pages/releasehub/TriageQueuePage.tsx"
     ]
   },
   "RiskCard::./RiskCard": {
@@ -35594,24 +35422,6 @@ export const usageMap: UsageMap = {
     "origin": "internal",
     "consumers": [
       "src/components/risks/shared/EntityRisksTab.tsx"
-    ]
-  },
-  "RiskCounts::./okrRiskTypes": {
-    "name": "RiskCounts",
-    "source": "./okrRiskTypes",
-    "origin": "internal",
-    "consumers": [
-      "src/modules/okr-v2/lib/objectiveAnalytics.ts",
-      "src/modules/okr-v2/lib/sharedAnalyticsTypes.ts"
-    ]
-  },
-  "RiskCounts::./sharedAnalyticsTypes": {
-    "name": "RiskCounts",
-    "source": "./sharedAnalyticsTypes",
-    "origin": "internal",
-    "consumers": [
-      "src/modules/okr-v2/lib/keyResultAnalytics.ts",
-      "src/modules/okr-v2/lib/workItemAnalytics.ts"
     ]
   },
   "RiskCounts::@/config/riskColors": {
@@ -35729,14 +35539,6 @@ export const usageMap: UsageMap = {
       "src/pages/releasehub/ChangeExecutionBoard.tsx",
       "src/pages/releasehub/ProductionEventReplayPage.tsx",
       "src/pages/releasehub/SignOffQueuePage.tsx"
-    ]
-  },
-  "RiskOriginBreakdown::./okrRiskTypes": {
-    "name": "RiskOriginBreakdown",
-    "source": "./okrRiskTypes",
-    "origin": "internal",
-    "consumers": [
-      "src/modules/okr-v2/lib/objectiveAnalytics.ts"
     ]
   },
   "RiskSeverity::@/config/riskColors": {
@@ -36225,7 +36027,8 @@ export const usageMap: UsageMap = {
       "src/modules/in-jira/components/releases/VersionCard.tsx",
       "src/modules/strata/pages/StrataAdminConfigPage.tsx",
       "src/modules/tasks/components/insights/MonthlyChronicleView.tsx",
-      "src/modules/tasks/components/insights/WeeklySummaryView.tsx"
+      "src/modules/tasks/components/insights/WeeklySummaryView.tsx",
+      "src/pages/releases/AllReleasesPage.tsx"
     ]
   },
   "RolePermission::@/hooks/useProductRoles": {
@@ -36235,14 +36038,6 @@ export const usageMap: UsageMap = {
     "consumers": [
       "src/components/admin/rbac/PermissionsMatrix.tsx",
       "src/pages/admin/PermissionsAdminPage.tsx"
-    ]
-  },
-  "RollupMetrics::./okrTypes": {
-    "name": "RollupMetrics",
-    "source": "./okrTypes",
-    "origin": "internal",
-    "consumers": [
-      "src/modules/okr-v2/lib/okrMetrics.ts"
     ]
   },
   "RoomContentShell::@/components/layout/RoomContentShell": {
@@ -36288,6 +36083,7 @@ export const usageMap: UsageMap = {
       "src/pages/ReqAssistLibrary.tsx",
       "src/pages/items/EpicsCanceledPage.tsx",
       "src/pages/items/EpicsRecycleBinPage.tsx",
+      "src/pages/releases/DefectDetailPage.tsx",
       "src/pages/work-tree/WorkTreePage.tsx"
     ]
   },
@@ -36717,6 +36513,14 @@ export const usageMap: UsageMap = {
       "src/features/my-test-scope/components/MyTestScopeDashboard.tsx"
     ]
   },
+  "ScorecardBar::@/components/releases/dashboard/ScorecardBar": {
+    "name": "ScorecardBar",
+    "source": "@/components/releases/dashboard/ScorecardBar",
+    "origin": "internal",
+    "consumers": [
+      "src/pages/releases/ReleaseDashboardPage.tsx"
+    ]
+  },
   "ScorecardMetrics::@/types/release-dashboard": {
     "name": "ScorecardMetrics",
     "source": "@/types/release-dashboard",
@@ -36766,6 +36570,7 @@ export const usageMap: UsageMap = {
       "src/components/dependencies/DependencyAnalyticsPanel.tsx",
       "src/components/dependencies/DependencyWheelDetailsPanel.tsx",
       "src/components/enterprise/EnterpriseGrid.tsx",
+      "src/components/epic-backlog/modals/FeatureStatusModal.tsx",
       "src/components/features/AssignModal.tsx",
       "src/components/incidents/CreateIncidentModal.tsx",
       "src/components/incidents/detail/CommitteeModal.tsx",
@@ -36774,6 +36579,7 @@ export const usageMap: UsageMap = {
       "src/components/industry/enterprise-table/components/ExportModal.tsx",
       "src/components/industry/enterprise-table/components/SavedViewsPanel.tsx",
       "src/components/items/epics/drawer-tabs/EpicFeaturesViewTab.tsx",
+      "src/components/items/epics/modals/FeatureStatusModal.tsx",
       "src/components/ja/StarredDropdown.tsx",
       "src/components/layout/dropdowns/StarredDropdown.tsx",
       "src/components/releases/all-releases/ArchiveConfirmationDialog.tsx",
@@ -36802,7 +36608,6 @@ export const usageMap: UsageMap = {
       "src/modules/in-jira/pages/SummaryPage.tsx",
       "src/modules/incidents/analytics/components/RequiresAttentionTabs.tsx",
       "src/modules/incidents/kanban/components/SetCommitteeApproversModal.tsx",
-      "src/modules/okr-v2/components/StrategyAnalyticsModal.tsx",
       "src/modules/product-backlog/components/split-panel/AttachmentUploadModal.tsx",
       "src/modules/product-roadmap/components/RoadmapFilterDialog.tsx",
       "src/modules/product-roadmap/components/RoadmapListPanel.tsx",
@@ -36821,7 +36626,8 @@ export const usageMap: UsageMap = {
       "src/pages/admin/ResourceAssignments.tsx",
       "src/pages/enterprise/capacity-planner/BookResourceModal.tsx",
       "src/pages/project/FeatureViewPage.tsx",
-      "src/pages/project/components/FeatureChildStories.tsx"
+      "src/pages/project/components/FeatureChildStories.tsx",
+      "src/pages/releases/QualityGatesPage.tsx"
     ]
   },
   "ScrollBar::@/components/ui/scroll-area": {
@@ -36862,6 +36668,7 @@ export const usageMap: UsageMap = {
       "src/components/incidents/detail/CommitteeModal.tsx",
       "src/components/incidents/detail/LinkWorkItemModal.tsx",
       "src/components/items/epics/drawer-tabs/EpicFeaturesViewTab.tsx",
+      "src/components/items/epics/modals/FeatureStatusModal.tsx",
       "src/components/ja/home/EmptyStates.tsx",
       "src/components/kanban/AdvancedFilterPanel.tsx",
       "src/components/kanban/KanbanToolbar.tsx",
@@ -36930,8 +36737,6 @@ export const usageMap: UsageMap = {
       "src/modules/in-jira/pages/ListPage.tsx",
       "src/modules/in-jira/pages/ReleasesPage.tsx",
       "src/modules/in-jira/pages/ScrumBoardPage.tsx",
-      "src/modules/objectives/components/AlignedItems/LinkObjectiveDialog.tsx",
-      "src/modules/okr-v2/components/StrategyCockpit/StrategyCockpit.tsx",
       "src/modules/priorities/pages/PriListsPage.tsx",
       "src/modules/product-backlog/components/split-panel/RequestListPanel.tsx",
       "src/modules/product-roadmap/components/RoadmapToolbar.tsx",
@@ -36985,7 +36790,6 @@ export const usageMap: UsageMap = {
       "src/pages/admin/test/TestCaseTypesPage.tsx",
       "src/pages/enterprise/BudgetPlannerPage.tsx",
       "src/pages/enterprise/EnterpriseEpics.tsx",
-      "src/pages/enterprise/EnterpriseObjectives.tsx",
       "src/pages/enterprise/capacity-planner/BookResourceModal.tsx",
       "src/pages/items/EpicsCanceledPage.tsx",
       "src/pages/items/EpicsPage.tsx",
@@ -37008,6 +36812,10 @@ export const usageMap: UsageMap = {
       "src/pages/releasehub/AllReleasesPage.tsx",
       "src/pages/releasehub/SignOffQueuePage.tsx",
       "src/pages/releasehub/SopTemplatesPage.tsx",
+      "src/pages/releases/AllReleasesPage.tsx",
+      "src/pages/releases/CoverageReportsPage.tsx",
+      "src/pages/releases/QualityGatesPage.tsx",
+      "src/pages/releases/ReleaseDashboardPage.tsx",
       "src/pages/testhub/cycles/CyclesPage.tsx",
       "src/pages/testhub/repository/AddToCycleSetSheet.tsx",
       "src/pages/testhub/repository/RepositoryPage.tsx",
@@ -37055,11 +36863,18 @@ export const usageMap: UsageMap = {
       "src/components/kanban/toolbar/KanbanToolbar.tsx",
       "src/components/shared/BacklogTable/BacklogTable.tsx",
       "src/components/shared/JiraTable/JiraTable.tsx",
+      "src/features/all-releases/components/FilterBar.tsx",
+      "src/features/all-releases/components/Toolbar.tsx",
       "src/features/my-test-scope/components/TraceabilityPanel.tsx",
       "src/modules/workhub/admin/components/MultiSelectDropdown.tsx",
+      "src/pages/admin/AdminOverview.tsx",
       "src/pages/admin/AiTranslationsAuditPage.tsx",
+      "src/pages/admin/BusinessOwners.tsx",
       "src/pages/admin/Departments.tsx",
-      "src/pages/admin/PermissionsAdminPage.tsx"
+      "src/pages/admin/FeatureFlagsPage.tsx",
+      "src/pages/admin/NotificationTriggers.tsx",
+      "src/pages/admin/PermissionsAdminPage.tsx",
+      "src/pages/admin/UserAccessPage.tsx"
     ],
     "package": "@atlaskit/icon"
   },
@@ -37116,6 +36931,15 @@ export const usageMap: UsageMap = {
     ],
     "package": "@atlaskit/menu"
   },
+  "Section::@atlaskit/section-message": {
+    "name": "Section",
+    "source": "@atlaskit/section-message",
+    "origin": "atlaskit",
+    "consumers": [
+      "src/pages/admin/AdminStorybookPage.tsx"
+    ],
+    "package": "@atlaskit/section-message"
+  },
   "Section::@atlaskit/side-navigation": {
     "name": "Section",
     "source": "@atlaskit/side-navigation",
@@ -37169,7 +36993,6 @@ export const usageMap: UsageMap = {
       "src/modules/docintel/components/TranslatedDocumentView.tsx",
       "src/modules/docintel/pages/DocintelUploadPage.tsx",
       "src/modules/project-work-hub/pages/BacklogPage.atlaskit.tsx",
-      "src/modules/strata/components/InitiativeDetailModal.tsx",
       "src/modules/strata/components/ProjectCardDetailView.tsx",
       "src/modules/strata/components/authoring.tsx",
       "src/modules/strata/components/shared.tsx",
@@ -37380,6 +37203,8 @@ export const usageMap: UsageMap = {
       "src/components/enterprise/EnterpriseGrid.tsx",
       "src/components/epic-backlog/EpicFiltersDialog.tsx",
       "src/components/epic-backlog/EpicForecastTab.tsx",
+      "src/components/epic-backlog/modals/MilestoneModal.tsx",
+      "src/components/epic-backlog/modals/WSJFModal.tsx",
       "src/components/evidence/defect/CreateDefectModal.tsx",
       "src/components/executive-roadmap/RoadmapFiltersDialog.tsx",
       "src/components/features/CreateFeatureModal.tsx",
@@ -37419,10 +37244,8 @@ export const usageMap: UsageMap = {
       "src/components/items/features/tabs/FeatureOverviewTab.tsx",
       "src/components/kanban/setup/ColumnsSetupTab.tsx",
       "src/components/kanban/setup/ManageUsersTab.tsx",
+      "src/components/layout/TeamRoomSidebar.tsx",
       "src/components/objective-roadmap/EnterpriseRoadmapFiltersDialog.tsx",
-      "src/components/okr/KeyResultDialog.tsx",
-      "src/components/okr/KeyResultsList.tsx",
-      "src/components/okr/ObjectiveDetailsTab.tsx",
       "src/components/product-hub/roadmap/RoadmapToolbar.tsx",
       "src/components/program/ProgramRoadmapFiltersDialog.tsx",
       "src/components/projects/CreateProjectDialog.tsx",
@@ -37453,6 +37276,7 @@ export const usageMap: UsageMap = {
       "src/components/skills-inventory/AddTeamMemberModal.tsx",
       "src/components/skills-inventory/SkillsFiltersDialog.tsx",
       "src/components/stories/CreateEditStoryPanel.tsx",
+      "src/components/stories/CreateStoryModal.tsx",
       "src/components/stories/StoriesFiltersDialog.tsx",
       "src/components/stories/StoryDetailPanel.tsx",
       "src/components/stories/StoryLinks.tsx",
@@ -37490,14 +37314,6 @@ export const usageMap: UsageMap = {
       "src/modules/in-jira/pages/ScrumBoardPage.tsx",
       "src/modules/incidents/kanban/components/KanbanFiltersBar.tsx",
       "src/modules/incidents/kanban/components/ManageColumnsDialog.tsx",
-      "src/modules/objectives/components/AlignedItems/LinkObjectiveDialog.tsx",
-      "src/modules/objectives/components/KeyResults/KeyResultForm.tsx",
-      "src/modules/objectives/components/ObjectivePanel/ObjectiveForm.tsx",
-      "src/modules/okr-v2/components/CreateObjectiveDialogV2.tsx",
-      "src/modules/okr-v2/components/KRWorkAlignmentDrawer.tsx",
-      "src/modules/okr-v2/components/KRWorkContributionsV2.tsx",
-      "src/modules/okr-v2/components/KeyResultDialogV2.tsx",
-      "src/modules/okr-v2/components/ObjectiveOverviewTabV2.tsx",
       "src/modules/product-backlog/components/split-panel/RequestDetailPanel.tsx",
       "src/modules/program-epics/components/EpicRoadmap.tsx",
       "src/modules/tasks/components/PlannerCreateTeamModal.tsx",
@@ -37524,9 +37340,9 @@ export const usageMap: UsageMap = {
       "src/pages/Sprints.tsx",
       "src/pages/Stories.tsx",
       "src/pages/Subtasks.tsx",
+      "src/pages/TeamRoom.tsx",
       "src/pages/WorkManager.tsx",
       "src/pages/WorkSpendGrid.tsx",
-      "src/pages/enterprise/EnterpriseObjectives.tsx",
       "src/pages/enterprise/capacity-planner/AssignmentsView.tsx",
       "src/pages/enterprise/capacity-planner/BookResourceModal.tsx",
       "src/pages/enterprise/capacity-planner/EditResourceForm.tsx",
@@ -37539,6 +37355,9 @@ export const usageMap: UsageMap = {
       "src/pages/program/QuartersPage.tsx",
       "src/pages/project-hub/AllProjectsPage.tsx",
       "src/pages/project/feature-detail/FeatureRightRail.tsx",
+      "src/pages/releases/CoverageReportsPage.tsx",
+      "src/pages/releases/DefectsPage.tsx",
+      "src/pages/releases/QualityGatesPage.tsx",
       "src/pages/reports/DependencyMapsPage.tsx",
       "src/pages/work-tree/WorkTreePage.tsx",
       "src/pages/work-tree/components/WorkTreeExtraConfigs.tsx",
@@ -37619,6 +37438,7 @@ export const usageMap: UsageMap = {
       "src/modules/project-work-hub/components/linked-work-items/LinkToolbar.tsx",
       "src/modules/project-work-hub/pages/BacklogPage.atlaskit.tsx",
       "src/pages/admin/AdminAccessPage.tsx",
+      "src/pages/admin/NotificationTriggers.tsx",
       "src/pages/admin/ReleaseOpsAdminPage.tsx",
       "src/pages/admin/components/CascadeImpactPanel.tsx",
       "src/pages/admin/components/HistoryTab.tsx",
@@ -37626,6 +37446,7 @@ export const usageMap: UsageMap = {
       "src/pages/admin/connections/JiraSyncPage.tsx",
       "src/pages/admin/connections/NotionConnectionPage.tsx",
       "src/pages/admin/test-ops/TestOpsPage.tsx",
+      "src/pages/admin/test/TestCaseWorkflowPage.tsx",
       "src/pages/project-hub/ConvertToSubtaskPage.tsx",
       "src/pages/project-hub/MovePage.tsx",
       "src/pages/project-hub/filters/FiltersListPage.tsx",
@@ -37684,6 +37505,8 @@ export const usageMap: UsageMap = {
       "src/components/enterprise/EnterpriseGrid.tsx",
       "src/components/epic-backlog/EpicFiltersDialog.tsx",
       "src/components/epic-backlog/EpicForecastTab.tsx",
+      "src/components/epic-backlog/modals/MilestoneModal.tsx",
+      "src/components/epic-backlog/modals/WSJFModal.tsx",
       "src/components/evidence/defect/CreateDefectModal.tsx",
       "src/components/executive-roadmap/RoadmapFiltersDialog.tsx",
       "src/components/features/CreateFeatureModal.tsx",
@@ -37723,10 +37546,8 @@ export const usageMap: UsageMap = {
       "src/components/items/features/tabs/FeatureOverviewTab.tsx",
       "src/components/kanban/setup/ColumnsSetupTab.tsx",
       "src/components/kanban/setup/ManageUsersTab.tsx",
+      "src/components/layout/TeamRoomSidebar.tsx",
       "src/components/objective-roadmap/EnterpriseRoadmapFiltersDialog.tsx",
-      "src/components/okr/KeyResultDialog.tsx",
-      "src/components/okr/KeyResultsList.tsx",
-      "src/components/okr/ObjectiveDetailsTab.tsx",
       "src/components/product-hub/roadmap/RoadmapToolbar.tsx",
       "src/components/program/ProgramRoadmapFiltersDialog.tsx",
       "src/components/projects/CreateProjectDialog.tsx",
@@ -37757,6 +37578,7 @@ export const usageMap: UsageMap = {
       "src/components/skills-inventory/AddTeamMemberModal.tsx",
       "src/components/skills-inventory/SkillsFiltersDialog.tsx",
       "src/components/stories/CreateEditStoryPanel.tsx",
+      "src/components/stories/CreateStoryModal.tsx",
       "src/components/stories/StoriesFiltersDialog.tsx",
       "src/components/stories/StoryDetailPanel.tsx",
       "src/components/stories/StoryLinks.tsx",
@@ -37794,14 +37616,6 @@ export const usageMap: UsageMap = {
       "src/modules/in-jira/pages/ScrumBoardPage.tsx",
       "src/modules/incidents/kanban/components/KanbanFiltersBar.tsx",
       "src/modules/incidents/kanban/components/ManageColumnsDialog.tsx",
-      "src/modules/objectives/components/AlignedItems/LinkObjectiveDialog.tsx",
-      "src/modules/objectives/components/KeyResults/KeyResultForm.tsx",
-      "src/modules/objectives/components/ObjectivePanel/ObjectiveForm.tsx",
-      "src/modules/okr-v2/components/CreateObjectiveDialogV2.tsx",
-      "src/modules/okr-v2/components/KRWorkAlignmentDrawer.tsx",
-      "src/modules/okr-v2/components/KRWorkContributionsV2.tsx",
-      "src/modules/okr-v2/components/KeyResultDialogV2.tsx",
-      "src/modules/okr-v2/components/ObjectiveOverviewTabV2.tsx",
       "src/modules/product-backlog/components/split-panel/RequestDetailPanel.tsx",
       "src/modules/program-epics/components/EpicRoadmap.tsx",
       "src/modules/tasks/components/PlannerCreateTeamModal.tsx",
@@ -37828,9 +37642,9 @@ export const usageMap: UsageMap = {
       "src/pages/Sprints.tsx",
       "src/pages/Stories.tsx",
       "src/pages/Subtasks.tsx",
+      "src/pages/TeamRoom.tsx",
       "src/pages/WorkManager.tsx",
       "src/pages/WorkSpendGrid.tsx",
-      "src/pages/enterprise/EnterpriseObjectives.tsx",
       "src/pages/enterprise/capacity-planner/AssignmentsView.tsx",
       "src/pages/enterprise/capacity-planner/BookResourceModal.tsx",
       "src/pages/enterprise/capacity-planner/EditResourceForm.tsx",
@@ -37843,6 +37657,9 @@ export const usageMap: UsageMap = {
       "src/pages/program/QuartersPage.tsx",
       "src/pages/project-hub/AllProjectsPage.tsx",
       "src/pages/project/feature-detail/FeatureRightRail.tsx",
+      "src/pages/releases/CoverageReportsPage.tsx",
+      "src/pages/releases/DefectsPage.tsx",
+      "src/pages/releases/QualityGatesPage.tsx",
       "src/pages/reports/DependencyMapsPage.tsx",
       "src/pages/work-tree/WorkTreePage.tsx",
       "src/pages/work-tree/components/WorkTreeExtraConfigs.tsx",
@@ -37920,6 +37737,8 @@ export const usageMap: UsageMap = {
       "src/components/enterprise/EnterpriseGrid.tsx",
       "src/components/epic-backlog/EpicFiltersDialog.tsx",
       "src/components/epic-backlog/EpicForecastTab.tsx",
+      "src/components/epic-backlog/modals/MilestoneModal.tsx",
+      "src/components/epic-backlog/modals/WSJFModal.tsx",
       "src/components/evidence/defect/CreateDefectModal.tsx",
       "src/components/executive-roadmap/RoadmapFiltersDialog.tsx",
       "src/components/features/CreateFeatureModal.tsx",
@@ -37959,10 +37778,8 @@ export const usageMap: UsageMap = {
       "src/components/items/features/tabs/FeatureOverviewTab.tsx",
       "src/components/kanban/setup/ColumnsSetupTab.tsx",
       "src/components/kanban/setup/ManageUsersTab.tsx",
+      "src/components/layout/TeamRoomSidebar.tsx",
       "src/components/objective-roadmap/EnterpriseRoadmapFiltersDialog.tsx",
-      "src/components/okr/KeyResultDialog.tsx",
-      "src/components/okr/KeyResultsList.tsx",
-      "src/components/okr/ObjectiveDetailsTab.tsx",
       "src/components/product-hub/roadmap/RoadmapToolbar.tsx",
       "src/components/program/ProgramRoadmapFiltersDialog.tsx",
       "src/components/projects/CreateProjectDialog.tsx",
@@ -37993,6 +37810,7 @@ export const usageMap: UsageMap = {
       "src/components/skills-inventory/AddTeamMemberModal.tsx",
       "src/components/skills-inventory/SkillsFiltersDialog.tsx",
       "src/components/stories/CreateEditStoryPanel.tsx",
+      "src/components/stories/CreateStoryModal.tsx",
       "src/components/stories/StoriesFiltersDialog.tsx",
       "src/components/stories/StoryDetailPanel.tsx",
       "src/components/stories/StoryLinks.tsx",
@@ -38030,14 +37848,6 @@ export const usageMap: UsageMap = {
       "src/modules/in-jira/pages/ScrumBoardPage.tsx",
       "src/modules/incidents/kanban/components/KanbanFiltersBar.tsx",
       "src/modules/incidents/kanban/components/ManageColumnsDialog.tsx",
-      "src/modules/objectives/components/AlignedItems/LinkObjectiveDialog.tsx",
-      "src/modules/objectives/components/KeyResults/KeyResultForm.tsx",
-      "src/modules/objectives/components/ObjectivePanel/ObjectiveForm.tsx",
-      "src/modules/okr-v2/components/CreateObjectiveDialogV2.tsx",
-      "src/modules/okr-v2/components/KRWorkAlignmentDrawer.tsx",
-      "src/modules/okr-v2/components/KRWorkContributionsV2.tsx",
-      "src/modules/okr-v2/components/KeyResultDialogV2.tsx",
-      "src/modules/okr-v2/components/ObjectiveOverviewTabV2.tsx",
       "src/modules/product-backlog/components/split-panel/RequestDetailPanel.tsx",
       "src/modules/program-epics/components/EpicRoadmap.tsx",
       "src/modules/tasks/components/PlannerCreateTeamModal.tsx",
@@ -38064,9 +37874,9 @@ export const usageMap: UsageMap = {
       "src/pages/Sprints.tsx",
       "src/pages/Stories.tsx",
       "src/pages/Subtasks.tsx",
+      "src/pages/TeamRoom.tsx",
       "src/pages/WorkManager.tsx",
       "src/pages/WorkSpendGrid.tsx",
-      "src/pages/enterprise/EnterpriseObjectives.tsx",
       "src/pages/enterprise/capacity-planner/AssignmentsView.tsx",
       "src/pages/enterprise/capacity-planner/BookResourceModal.tsx",
       "src/pages/enterprise/capacity-planner/EditResourceForm.tsx",
@@ -38079,6 +37889,9 @@ export const usageMap: UsageMap = {
       "src/pages/program/QuartersPage.tsx",
       "src/pages/project-hub/AllProjectsPage.tsx",
       "src/pages/project/feature-detail/FeatureRightRail.tsx",
+      "src/pages/releases/CoverageReportsPage.tsx",
+      "src/pages/releases/DefectsPage.tsx",
+      "src/pages/releases/QualityGatesPage.tsx",
       "src/pages/reports/DependencyMapsPage.tsx",
       "src/pages/work-tree/WorkTreePage.tsx",
       "src/pages/work-tree/components/WorkTreeExtraConfigs.tsx",
@@ -38122,6 +37935,8 @@ export const usageMap: UsageMap = {
       "src/components/enterprise/EnterpriseGrid.tsx",
       "src/components/epic-backlog/EpicFiltersDialog.tsx",
       "src/components/epic-backlog/EpicForecastTab.tsx",
+      "src/components/epic-backlog/modals/MilestoneModal.tsx",
+      "src/components/epic-backlog/modals/WSJFModal.tsx",
       "src/components/evidence/defect/CreateDefectModal.tsx",
       "src/components/executive-roadmap/RoadmapFiltersDialog.tsx",
       "src/components/features/CreateFeatureModal.tsx",
@@ -38161,10 +37976,8 @@ export const usageMap: UsageMap = {
       "src/components/items/features/tabs/FeatureOverviewTab.tsx",
       "src/components/kanban/setup/ColumnsSetupTab.tsx",
       "src/components/kanban/setup/ManageUsersTab.tsx",
+      "src/components/layout/TeamRoomSidebar.tsx",
       "src/components/objective-roadmap/EnterpriseRoadmapFiltersDialog.tsx",
-      "src/components/okr/KeyResultDialog.tsx",
-      "src/components/okr/KeyResultsList.tsx",
-      "src/components/okr/ObjectiveDetailsTab.tsx",
       "src/components/product-hub/roadmap/RoadmapToolbar.tsx",
       "src/components/program/ProgramRoadmapFiltersDialog.tsx",
       "src/components/projects/CreateProjectDialog.tsx",
@@ -38195,6 +38008,7 @@ export const usageMap: UsageMap = {
       "src/components/skills-inventory/AddTeamMemberModal.tsx",
       "src/components/skills-inventory/SkillsFiltersDialog.tsx",
       "src/components/stories/CreateEditStoryPanel.tsx",
+      "src/components/stories/CreateStoryModal.tsx",
       "src/components/stories/StoriesFiltersDialog.tsx",
       "src/components/stories/StoryDetailPanel.tsx",
       "src/components/stories/StoryLinks.tsx",
@@ -38232,14 +38046,6 @@ export const usageMap: UsageMap = {
       "src/modules/in-jira/pages/ScrumBoardPage.tsx",
       "src/modules/incidents/kanban/components/KanbanFiltersBar.tsx",
       "src/modules/incidents/kanban/components/ManageColumnsDialog.tsx",
-      "src/modules/objectives/components/AlignedItems/LinkObjectiveDialog.tsx",
-      "src/modules/objectives/components/KeyResults/KeyResultForm.tsx",
-      "src/modules/objectives/components/ObjectivePanel/ObjectiveForm.tsx",
-      "src/modules/okr-v2/components/CreateObjectiveDialogV2.tsx",
-      "src/modules/okr-v2/components/KRWorkAlignmentDrawer.tsx",
-      "src/modules/okr-v2/components/KRWorkContributionsV2.tsx",
-      "src/modules/okr-v2/components/KeyResultDialogV2.tsx",
-      "src/modules/okr-v2/components/ObjectiveOverviewTabV2.tsx",
       "src/modules/product-backlog/components/split-panel/RequestDetailPanel.tsx",
       "src/modules/program-epics/components/EpicRoadmap.tsx",
       "src/modules/tasks/components/PlannerCreateTeamModal.tsx",
@@ -38266,9 +38072,9 @@ export const usageMap: UsageMap = {
       "src/pages/Sprints.tsx",
       "src/pages/Stories.tsx",
       "src/pages/Subtasks.tsx",
+      "src/pages/TeamRoom.tsx",
       "src/pages/WorkManager.tsx",
       "src/pages/WorkSpendGrid.tsx",
-      "src/pages/enterprise/EnterpriseObjectives.tsx",
       "src/pages/enterprise/capacity-planner/AssignmentsView.tsx",
       "src/pages/enterprise/capacity-planner/BookResourceModal.tsx",
       "src/pages/enterprise/capacity-planner/EditResourceForm.tsx",
@@ -38281,6 +38087,9 @@ export const usageMap: UsageMap = {
       "src/pages/program/QuartersPage.tsx",
       "src/pages/project-hub/AllProjectsPage.tsx",
       "src/pages/project/feature-detail/FeatureRightRail.tsx",
+      "src/pages/releases/CoverageReportsPage.tsx",
+      "src/pages/releases/DefectsPage.tsx",
+      "src/pages/releases/QualityGatesPage.tsx",
       "src/pages/reports/DependencyMapsPage.tsx",
       "src/pages/work-tree/WorkTreePage.tsx",
       "src/pages/work-tree/components/WorkTreeExtraConfigs.tsx",
@@ -38316,6 +38125,8 @@ export const usageMap: UsageMap = {
       "src/components/enterprise/EnterpriseGrid.tsx",
       "src/components/epic-backlog/EpicFiltersDialog.tsx",
       "src/components/epic-backlog/EpicForecastTab.tsx",
+      "src/components/epic-backlog/modals/MilestoneModal.tsx",
+      "src/components/epic-backlog/modals/WSJFModal.tsx",
       "src/components/evidence/defect/CreateDefectModal.tsx",
       "src/components/executive-roadmap/RoadmapFiltersDialog.tsx",
       "src/components/features/CreateFeatureModal.tsx",
@@ -38355,10 +38166,8 @@ export const usageMap: UsageMap = {
       "src/components/items/features/tabs/FeatureOverviewTab.tsx",
       "src/components/kanban/setup/ColumnsSetupTab.tsx",
       "src/components/kanban/setup/ManageUsersTab.tsx",
+      "src/components/layout/TeamRoomSidebar.tsx",
       "src/components/objective-roadmap/EnterpriseRoadmapFiltersDialog.tsx",
-      "src/components/okr/KeyResultDialog.tsx",
-      "src/components/okr/KeyResultsList.tsx",
-      "src/components/okr/ObjectiveDetailsTab.tsx",
       "src/components/product-hub/roadmap/RoadmapToolbar.tsx",
       "src/components/program/ProgramRoadmapFiltersDialog.tsx",
       "src/components/projects/CreateProjectDialog.tsx",
@@ -38389,6 +38198,7 @@ export const usageMap: UsageMap = {
       "src/components/skills-inventory/AddTeamMemberModal.tsx",
       "src/components/skills-inventory/SkillsFiltersDialog.tsx",
       "src/components/stories/CreateEditStoryPanel.tsx",
+      "src/components/stories/CreateStoryModal.tsx",
       "src/components/stories/StoriesFiltersDialog.tsx",
       "src/components/stories/StoryDetailPanel.tsx",
       "src/components/stories/StoryLinks.tsx",
@@ -38426,14 +38236,6 @@ export const usageMap: UsageMap = {
       "src/modules/in-jira/pages/ScrumBoardPage.tsx",
       "src/modules/incidents/kanban/components/KanbanFiltersBar.tsx",
       "src/modules/incidents/kanban/components/ManageColumnsDialog.tsx",
-      "src/modules/objectives/components/AlignedItems/LinkObjectiveDialog.tsx",
-      "src/modules/objectives/components/KeyResults/KeyResultForm.tsx",
-      "src/modules/objectives/components/ObjectivePanel/ObjectiveForm.tsx",
-      "src/modules/okr-v2/components/CreateObjectiveDialogV2.tsx",
-      "src/modules/okr-v2/components/KRWorkAlignmentDrawer.tsx",
-      "src/modules/okr-v2/components/KRWorkContributionsV2.tsx",
-      "src/modules/okr-v2/components/KeyResultDialogV2.tsx",
-      "src/modules/okr-v2/components/ObjectiveOverviewTabV2.tsx",
       "src/modules/product-backlog/components/split-panel/RequestDetailPanel.tsx",
       "src/modules/program-epics/components/EpicRoadmap.tsx",
       "src/modules/tasks/components/PlannerCreateTeamModal.tsx",
@@ -38460,9 +38262,9 @@ export const usageMap: UsageMap = {
       "src/pages/Sprints.tsx",
       "src/pages/Stories.tsx",
       "src/pages/Subtasks.tsx",
+      "src/pages/TeamRoom.tsx",
       "src/pages/WorkManager.tsx",
       "src/pages/WorkSpendGrid.tsx",
-      "src/pages/enterprise/EnterpriseObjectives.tsx",
       "src/pages/enterprise/capacity-planner/AssignmentsView.tsx",
       "src/pages/enterprise/capacity-planner/BookResourceModal.tsx",
       "src/pages/enterprise/capacity-planner/EditResourceForm.tsx",
@@ -38475,6 +38277,9 @@ export const usageMap: UsageMap = {
       "src/pages/program/QuartersPage.tsx",
       "src/pages/project-hub/AllProjectsPage.tsx",
       "src/pages/project/feature-detail/FeatureRightRail.tsx",
+      "src/pages/releases/CoverageReportsPage.tsx",
+      "src/pages/releases/DefectsPage.tsx",
+      "src/pages/releases/QualityGatesPage.tsx",
       "src/pages/reports/DependencyMapsPage.tsx",
       "src/pages/work-tree/WorkTreePage.tsx",
       "src/pages/work-tree/components/WorkTreeExtraConfigs.tsx",
@@ -38501,7 +38306,8 @@ export const usageMap: UsageMap = {
       "src/modules/tasks/components/TaskDetailDrawer/LeadNotesTab.tsx",
       "src/pages/enterprise/DemandSummaryPage.tsx",
       "src/pages/project/components/FeatureActivity.tsx",
-      "src/pages/project/feature-detail/FeatureActivityTab.tsx"
+      "src/pages/project/feature-detail/FeatureActivityTab.tsx",
+      "src/pages/releases/DefectDetailPage.tsx"
     ]
   },
   "SendIcon::../shared/Icon": {
@@ -38600,6 +38406,7 @@ export const usageMap: UsageMap = {
       "src/components/layout/ProjectSidebar.tsx",
       "src/components/layout/ReleaseHubSidebar.tsx",
       "src/components/layout/TasksSidebar.tsx",
+      "src/components/layout/TeamRoomSidebar.tsx",
       "src/components/layout/UnifiedSidebar.tsx",
       "src/components/project-hub/shell/SidebarProjectNav.tsx",
       "src/components/project-hub/shell/TopNav.tsx",
@@ -38631,6 +38438,8 @@ export const usageMap: UsageMap = {
       "src/pages/project-hub/ProjectSettingsPage.tsx",
       "src/pages/project/feature-detail/FeatureRightRail.tsx",
       "src/pages/projects/ProjectSummaryPage.tsx",
+      "src/pages/releases/CommandCenterPage.tsx",
+      "src/pages/releases/ReleaseDashboardPage.tsx",
       "src/pages/work-tree/WorkTreePage.tsx"
     ]
   },
@@ -38643,8 +38452,6 @@ export const usageMap: UsageMap = {
       "src/components/shared/ListScreenToolbar.tsx",
       "src/components/work-items/CustomFieldsSection.tsx",
       "src/modules/incidents/kanban/pages/IncidentKanbanPage.tsx",
-      "src/modules/okr-v2/components/OKRColumnChooser.tsx",
-      "src/modules/okr-v2/components/StrategyCockpit/StrategyCockpit.tsx",
       "src/modules/program-epics/components/EpicListView.tsx",
       "src/modules/project-work-hub/components/tabs/KanbanBoardTab.tsx",
       "src/modules/project-work-hub/components/tabs/ListTab.tsx",
@@ -38673,7 +38480,9 @@ export const usageMap: UsageMap = {
       "src/components/layout/SettingsMenu.tsx",
       "src/components/project-hub/dashboard/widgets/DemandFulfilmentGadget.tsx",
       "src/modules/project-work-hub/components/dialogs/story-detail-modules/shared-components.tsx",
-      "src/modules/workhub/admin/components/SyncConfigPanel.tsx"
+      "src/modules/workhub/admin/components/SyncConfigPanel.tsx",
+      "src/pages/admin/AdminOverview.tsx",
+      "src/pages/admin/FeatureFlagsPage.tsx"
     ],
     "package": "@atlaskit/icon"
   },
@@ -38722,6 +38531,14 @@ export const usageMap: UsageMap = {
       "src/components/releases/defects/DefectTableView.tsx"
     ]
   },
+  "SeverityBadge::@/components/releases/defects/SeverityBadge": {
+    "name": "SeverityBadge",
+    "source": "@/components/releases/defects/SeverityBadge",
+    "origin": "internal",
+    "consumers": [
+      "src/pages/releases/DefectDetailPage.tsx"
+    ]
+  },
   "SeverityLevel::@/types/risks": {
     "name": "SeverityLevel",
     "source": "@/types/risks",
@@ -38750,7 +38567,8 @@ export const usageMap: UsageMap = {
       "src/components/workhub/issue-view/IssueContentView.tsx",
       "src/modules/in-jira/components/IssueDrawer.tsx",
       "src/pages/project/FeatureDetailPage.tsx",
-      "src/pages/project/FeatureViewPage.tsx"
+      "src/pages/project/FeatureViewPage.tsx",
+      "src/pages/releases/DefectDetailPage.tsx"
     ]
   },
   "SharedGroupByPopover::@/components/shared/GroupByPopover": {
@@ -38785,7 +38603,6 @@ export const usageMap: UsageMap = {
       "src/components/items/features/FeatureDetailsPanel.tsx",
       "src/components/items/stories/StoryDetailsPanel.tsx",
       "src/components/ja/MobileNavigationMenu.tsx",
-      "src/components/okr/ObjectiveDetailsPanelNew.tsx",
       "src/components/projecthub/ProjectDetailPanel.tsx",
       "src/components/releases/quality-gates/GateHistoryPanel.tsx",
       "src/components/req-assist/ImportJiraDrawer.tsx",
@@ -38795,16 +38612,12 @@ export const usageMap: UsageMap = {
       "src/components/work-manager/TaskDrawer.tsx",
       "src/modules/epic-balancing/components/EpicDetailsDrawer.tsx",
       "src/modules/in-jira/components/IssueDrawer.tsx",
-      "src/modules/okr-v2/components/KRWorkAlignmentDrawer.tsx",
-      "src/modules/okr-v2/components/KeyResultAnalyticsDrawer/KeyResultAnalyticsDrawer.tsx",
-      "src/modules/okr-v2/components/ObjectiveAnalyticsDrawer/ObjectiveAnalyticsDrawer.tsx",
-      "src/modules/okr-v2/components/ObjectiveDrawerV2.tsx",
-      "src/modules/okr-v2/components/StrategyCockpit/StrategyCockpit.tsx",
-      "src/modules/okr-v2/components/WorkItemAnalyticsDrawer/WorkItemAnalyticsDrawer.tsx",
       "src/modules/product-backlog/components/FilterDrawer.tsx",
       "src/modules/tasks/components/kanban/TaskDetailDrawer.tsx",
       "src/pages/enterprise/CapacityPlannerPage.tsx",
       "src/pages/program/ExecutionWorkbench/WorkbenchDetailsDrawer.tsx",
+      "src/pages/releases/QualityGatesPage.tsx",
+      "src/pages/releases/ReleaseDashboardPage.tsx",
       "src/pages/work-tree/components/WorkTreeExtraConfigs.tsx"
     ]
   },
@@ -38831,7 +38644,6 @@ export const usageMap: UsageMap = {
       "src/components/items/features/FeatureDetailsPanel.tsx",
       "src/components/items/stories/StoryDetailsPanel.tsx",
       "src/components/ja/MobileNavigationMenu.tsx",
-      "src/components/okr/ObjectiveDetailsPanelNew.tsx",
       "src/components/projecthub/ProjectDetailPanel.tsx",
       "src/components/releases/quality-gates/GateHistoryPanel.tsx",
       "src/components/shared/RightDetailsPanel.tsx",
@@ -38840,16 +38652,12 @@ export const usageMap: UsageMap = {
       "src/components/work-manager/TaskDrawer.tsx",
       "src/modules/epic-balancing/components/EpicDetailsDrawer.tsx",
       "src/modules/in-jira/components/IssueDrawer.tsx",
-      "src/modules/okr-v2/components/KRWorkAlignmentDrawer.tsx",
-      "src/modules/okr-v2/components/KeyResultAnalyticsDrawer/KeyResultAnalyticsDrawer.tsx",
-      "src/modules/okr-v2/components/ObjectiveAnalyticsDrawer/ObjectiveAnalyticsDrawer.tsx",
-      "src/modules/okr-v2/components/ObjectiveDrawerV2.tsx",
-      "src/modules/okr-v2/components/StrategyCockpit/StrategyCockpit.tsx",
-      "src/modules/okr-v2/components/WorkItemAnalyticsDrawer/WorkItemAnalyticsDrawer.tsx",
       "src/modules/product-backlog/components/FilterDrawer.tsx",
       "src/modules/tasks/components/kanban/TaskDetailDrawer.tsx",
       "src/pages/enterprise/CapacityPlannerPage.tsx",
       "src/pages/program/ExecutionWorkbench/WorkbenchDetailsDrawer.tsx",
+      "src/pages/releases/QualityGatesPage.tsx",
+      "src/pages/releases/ReleaseDashboardPage.tsx",
       "src/pages/work-tree/components/WorkTreeExtraConfigs.tsx"
     ]
   },
@@ -38865,8 +38673,7 @@ export const usageMap: UsageMap = {
       "src/components/items/stories/StoryDetailsPanel.tsx",
       "src/components/releases/quality-gates/GateHistoryPanel.tsx",
       "src/components/req-assist/ImportJiraDrawer.tsx",
-      "src/modules/okr-v2/components/KRWorkAlignmentDrawer.tsx",
-      "src/modules/okr-v2/components/ObjectiveDrawerV2.tsx"
+      "src/pages/releases/QualityGatesPage.tsx"
     ]
   },
   "SheetFooter::@/components/ui/sheet": {
@@ -38875,8 +38682,7 @@ export const usageMap: UsageMap = {
     "origin": "internal",
     "consumers": [
       "src/components/admin/lookup-management/OptionValuesDrawer.tsx",
-      "src/components/work-manager/TaskDrawer.tsx",
-      "src/modules/okr-v2/components/KRWorkAlignmentDrawer.tsx"
+      "src/components/work-manager/TaskDrawer.tsx"
     ]
   },
   "SheetHeader::@/components/ui/sheet": {
@@ -38891,22 +38697,17 @@ export const usageMap: UsageMap = {
       "src/components/dependencies/DependencyDrawer.tsx",
       "src/components/items/epics/EpicDetailsPanel.tsx",
       "src/components/items/stories/StoryDetailsPanel.tsx",
-      "src/components/okr/ObjectiveDetailsPanelNew.tsx",
       "src/components/releases/quality-gates/GateHistoryPanel.tsx",
       "src/components/shared/RightDetailsPanel.tsx",
       "src/components/stories/CreateEditStoryPanel.tsx",
       "src/components/stories/StoryDetailPanel.tsx",
       "src/modules/epic-balancing/components/EpicDetailsDrawer.tsx",
-      "src/modules/okr-v2/components/KRWorkAlignmentDrawer.tsx",
-      "src/modules/okr-v2/components/KeyResultAnalyticsDrawer/KeyResultAnalyticsDrawer.tsx",
-      "src/modules/okr-v2/components/ObjectiveAnalyticsDrawer/ObjectiveAnalyticsDrawer.tsx",
-      "src/modules/okr-v2/components/ObjectiveDrawerV2.tsx",
-      "src/modules/okr-v2/components/StrategyCockpit/StrategyCockpit.tsx",
-      "src/modules/okr-v2/components/WorkItemAnalyticsDrawer/WorkItemAnalyticsDrawer.tsx",
       "src/modules/product-backlog/components/FilterDrawer.tsx",
       "src/modules/tasks/components/kanban/TaskDetailDrawer.tsx",
       "src/pages/enterprise/CapacityPlannerPage.tsx",
       "src/pages/program/ExecutionWorkbench/WorkbenchDetailsDrawer.tsx",
+      "src/pages/releases/QualityGatesPage.tsx",
+      "src/pages/releases/ReleaseDashboardPage.tsx",
       "src/pages/work-tree/components/WorkTreeExtraConfigs.tsx"
     ]
   },
@@ -38930,23 +38731,18 @@ export const usageMap: UsageMap = {
       "src/components/dependencies/DependencyDrawer.tsx",
       "src/components/items/epics/EpicDetailsPanel.tsx",
       "src/components/items/stories/StoryDetailsPanel.tsx",
-      "src/components/okr/ObjectiveDetailsPanelNew.tsx",
       "src/components/releases/quality-gates/GateHistoryPanel.tsx",
       "src/components/req-assist/ImportJiraDrawer.tsx",
       "src/components/shared/RightDetailsPanel.tsx",
       "src/components/stories/CreateEditStoryPanel.tsx",
       "src/components/stories/StoryDetailPanel.tsx",
       "src/modules/epic-balancing/components/EpicDetailsDrawer.tsx",
-      "src/modules/okr-v2/components/KRWorkAlignmentDrawer.tsx",
-      "src/modules/okr-v2/components/KeyResultAnalyticsDrawer/KeyResultAnalyticsDrawer.tsx",
-      "src/modules/okr-v2/components/ObjectiveAnalyticsDrawer/ObjectiveAnalyticsDrawer.tsx",
-      "src/modules/okr-v2/components/ObjectiveDrawerV2.tsx",
-      "src/modules/okr-v2/components/StrategyCockpit/StrategyCockpit.tsx",
-      "src/modules/okr-v2/components/WorkItemAnalyticsDrawer/WorkItemAnalyticsDrawer.tsx",
       "src/modules/product-backlog/components/FilterDrawer.tsx",
       "src/modules/tasks/components/kanban/TaskDetailDrawer.tsx",
       "src/pages/enterprise/CapacityPlannerPage.tsx",
       "src/pages/program/ExecutionWorkbench/WorkbenchDetailsDrawer.tsx",
+      "src/pages/releases/QualityGatesPage.tsx",
+      "src/pages/releases/ReleaseDashboardPage.tsx",
       "src/pages/work-tree/components/WorkTreeExtraConfigs.tsx"
     ]
   },
@@ -38969,12 +38765,10 @@ export const usageMap: UsageMap = {
       "src/components/releases/quality-gates/QualityGateEditor.tsx",
       "src/components/releases/quality-gates/ReadinessStatusCard.tsx",
       "src/modules/in-jira/pages/SettingsPage.tsx",
-      "src/modules/okr-v2/components/KeyResultAnalyticsDrawer/KeyResultAnalyticsDrawer.tsx",
-      "src/modules/okr-v2/components/ObjectiveAnalyticsDrawer/ObjectiveAnalyticsDrawer.tsx",
-      "src/modules/okr-v2/components/StrategyCockpit/AnalyticsDrawerContent.tsx",
-      "src/modules/okr-v2/components/WorkItemAnalyticsDrawer/WorkItemAnalyticsDrawer.tsx",
       "src/pages/UserProfile.tsx",
-      "src/pages/project/feature-detail/FeatureAuditTab.tsx"
+      "src/pages/project/feature-detail/FeatureAuditTab.tsx",
+      "src/pages/releases/CommandCenterPage.tsx",
+      "src/pages/releases/QualityGatesPage.tsx"
     ]
   },
   "ShieldAlert::@/lib/atlaskit-icons": {
@@ -38985,7 +38779,8 @@ export const usageMap: UsageMap = {
       "src/components/guardrails/MockDataWarning.tsx",
       "src/components/kanban/adapters/teamProgramBoardAdapter.tsx",
       "src/components/releases/quality-gates/QualityGateEditor.tsx",
-      "src/modules/tasks/components/task-list/BulkActionBar.tsx"
+      "src/modules/tasks/components/task-list/BulkActionBar.tsx",
+      "src/pages/releases/QualityGatesPage.tsx"
     ]
   },
   "ShieldCheck::@/lib/atlaskit-icons": {
@@ -38997,7 +38792,8 @@ export const usageMap: UsageMap = {
       "src/components/releasehub/EmptyState.tsx",
       "src/components/releases/quality-gates/QualityGateEditor.tsx",
       "src/modules/strata/pages/StrataAdminConfigPage.tsx",
-      "src/modules/strata/pages/StrataPortfolioVmoPage.tsx"
+      "src/modules/strata/pages/StrataPortfolioVmoPage.tsx",
+      "src/pages/releases/QualityGatesPage.tsx"
     ]
   },
   "ShieldIcon::@atlaskit/icon/core/shield": {
@@ -39010,8 +38806,13 @@ export const usageMap: UsageMap = {
       "src/components/admin/notifications/TriggerRow.tsx",
       "src/components/admin/notifications/TriggerSearch.tsx",
       "src/components/admin/notifications/TriggerTable.tsx",
+      "src/features/all-releases/components/ReleaseCard.tsx",
       "src/modules/workhub/admin/components/ReadOnlyBanner.tsx",
-      "src/pages/admin/GovernanceSettings.tsx"
+      "src/pages/admin/AdminOverview.tsx",
+      "src/pages/admin/FeatureFlagsPage.tsx",
+      "src/pages/admin/GovernanceSettings.tsx",
+      "src/pages/admin/NotificationTriggers.tsx",
+      "src/pages/admin/UserAccessPage.tsx"
     ],
     "package": "@atlaskit/icon"
   },
@@ -39029,7 +38830,8 @@ export const usageMap: UsageMap = {
     "source": "@/lib/atlaskit-icons",
     "origin": "internal",
     "consumers": [
-      "src/pages/CleanupPage.tsx"
+      "src/pages/CleanupPage.tsx",
+      "src/pages/releases/QualityGatesPage.tsx"
     ]
   },
   "ShipIcon::@atlaskit/icon/glyph/ship": {
@@ -39071,7 +38873,8 @@ export const usageMap: UsageMap = {
       "src/components/catalyst-detail-views/shared/sections/Description/_components/ImageToolbar/ImageToolbar.tsx",
       "src/components/catalyst-detail-views/shared/sections/Description/_components/TableToolbar/TableToolbar.tsx",
       "src/components/shared/rich-text/atlaskit/imageToolbar/ImageToolbar.tsx",
-      "src/features/chat/components/feed/HoverToolbar.tsx"
+      "src/features/chat/components/feed/HoverToolbar.tsx",
+      "src/pages/admin/FeatureFlagsPage.tsx"
     ],
     "package": "@atlaskit/icon"
   },
@@ -39090,6 +38893,14 @@ export const usageMap: UsageMap = {
     "origin": "internal",
     "consumers": [
       "src/features/chat-v2/ChatV2Shell.tsx"
+    ]
+  },
+  "Sidebar::./shell/Sidebar": {
+    "name": "Sidebar",
+    "source": "./shell/Sidebar",
+    "origin": "internal",
+    "consumers": [
+      "src/components/project-hub/ProjectHubShell.tsx"
     ]
   },
   "SidebarBase::../layout/SidebarBase": {
@@ -39374,17 +39185,6 @@ export const usageMap: UsageMap = {
       "src/components/wiki-hub/WikiTreeNav.tsx",
       "src/components/work-items/WorkItemVersionsSection.tsx",
       "src/modules/epic-balancing/components/EpicBalancingPage.tsx",
-      "src/modules/objectives/components/Widgets/ObjectivesWidget.tsx",
-      "src/modules/okr-v2/components/KRWorkAlignmentDrawer.tsx",
-      "src/modules/okr-v2/components/KRWorkContributionsV2.tsx",
-      "src/modules/okr-v2/components/KeyResultAnalyticsDrawer/KeyResultAnalyticsDrawer.tsx",
-      "src/modules/okr-v2/components/KeyResultsTabV2.tsx",
-      "src/modules/okr-v2/components/LinkedWorkTabV2.tsx",
-      "src/modules/okr-v2/components/ObjectiveAnalyticsDrawer/ObjectiveAnalyticsDrawer.tsx",
-      "src/modules/okr-v2/components/ObjectiveDrawerV2.tsx",
-      "src/modules/okr-v2/components/StrategyAnalyticsModal.tsx",
-      "src/modules/okr-v2/components/StrategyCockpit/StrategyCockpit.tsx",
-      "src/modules/okr-v2/components/WorkItemAnalyticsDrawer/WorkItemAnalyticsDrawer.tsx",
       "src/modules/product-roadmap/components/RoadmapLoadingSkeleton.tsx",
       "src/modules/tasks/components/TaskDetailDrawer/LeadNotesTab.tsx",
       "src/modules/tasks/components/TaskDetailDrawer/TaskDetailDrawer.tsx",
@@ -39395,7 +39195,6 @@ export const usageMap: UsageMap = {
       "src/pages/ProgramRoom.tsx",
       "src/pages/StarredPage.tsx",
       "src/pages/WorkSpendGrid.tsx",
-      "src/pages/enterprise/EnterpriseObjectives.tsx",
       "src/pages/incidenthub/IncidentAnalyticsPage.tsx",
       "src/pages/items/reports/EpicRequirementHierarchy.tsx",
       "src/pages/items/reports/EpicTraceReport.tsx",
@@ -39403,6 +39202,9 @@ export const usageMap: UsageMap = {
       "src/pages/project/FeatureViewPage.tsx",
       "src/pages/project/feature-detail/FeatureActivityTab.tsx",
       "src/pages/project/feature-detail/FeatureDeliveryTab.tsx",
+      "src/pages/releases/CommandCenter.tsx",
+      "src/pages/releases/CommandCenterPage.tsx",
+      "src/pages/releases/CoverageReportsPage.tsx",
       "src/pages/wiki/DocexDatabasePage.tsx",
       "src/pages/wiki/FolioSiteMapPage.tsx",
       "src/pages/wiki/WikiHomePage.tsx",
@@ -39427,6 +39229,15 @@ export const usageMap: UsageMap = {
       "src/modules/project-work-hub/components/dialogs/story-detail-modules/ChildIssuesSection.tsx",
       "src/modules/project-work-hub/components/dialogs/story-detail-modules/LinkedIssuesSection.tsx",
       "src/modules/project-work-hub/components/dialogs/story-detail-modules/TestHubSection.tsx"
+    ]
+  },
+  "SkeletonRows::@/components/releasehub/SkeletonRows": {
+    "name": "SkeletonRows",
+    "source": "@/components/releasehub/SkeletonRows",
+    "origin": "internal",
+    "consumers": [
+      "src/pages/releasehub/ReleaseComparePage.tsx",
+      "src/pages/releasehub/TriageQueuePage.tsx"
     ]
   },
   "SkeletonTable::@/components/project-hub/shared/SkeletonPulse": {
@@ -39524,12 +39335,10 @@ export const usageMap: UsageMap = {
     "source": "@/components/ui/slider",
     "origin": "internal",
     "consumers": [
-      "src/components/okr/ConfidenceScoreModal.tsx",
       "src/components/resource-allocation/EditAllocationModal.tsx",
       "src/components/resource-allocation/EditAllocationRowModal.tsx",
       "src/components/skills-inventory/SkillsFiltersDialog.tsx",
       "src/components/templates/TemplateAssignmentRules.tsx",
-      "src/modules/okr-v2/components/OKRSmartFiltersDialog.tsx",
       "src/modules/tasks/components/TaskDetailDrawer/ProgressSection.tsx",
       "src/modules/tasks/components/TaskList/TaskListRowV3.tsx"
     ]
@@ -39637,7 +39446,8 @@ export const usageMap: UsageMap = {
     "source": "@atlaskit/icon/core/sort-ascending",
     "origin": "atlaskit",
     "consumers": [
-      "src/components/catalyst-detail-views/shared/sections/Description/_components/TableInteractions/ColumnMenu.tsx"
+      "src/components/catalyst-detail-views/shared/sections/Description/_components/TableInteractions/ColumnMenu.tsx",
+      "src/pages/admin/FeatureFlagsPage.tsx"
     ],
     "package": "@atlaskit/icon"
   },
@@ -39709,6 +39519,14 @@ export const usageMap: UsageMap = {
       "src/components/producthub/timeline/TimelineBarTooltip.tsx"
     ]
   },
+  "SourceBadge::@/components/releasehub/SourceBadge": {
+    "name": "SourceBadge",
+    "source": "@/components/releasehub/SourceBadge",
+    "origin": "internal",
+    "consumers": [
+      "src/pages/releasehub/TriageQueuePage.tsx"
+    ]
+  },
   "SourceFilterPills::@/components/project-hub/source-filter/SourceFilterPills": {
     "name": "SourceFilterPills",
     "source": "@/components/project-hub/source-filter/SourceFilterPills",
@@ -39775,7 +39593,10 @@ export const usageMap: UsageMap = {
       "src/pages/incidenthub/IncidentInsightsPage.tsx",
       "src/pages/producthub/IdeasBacklogPage.tsx",
       "src/pages/project-hub/ProjectBoardPage.tsx",
-      "src/pages/releasehub/ReleaseDetailPage.tsx"
+      "src/pages/releasehub/ReleaseDetailPage.tsx",
+      "src/pages/releasehub/TriageQueuePage.tsx",
+      "src/pages/releases/AllReleasesPage.tsx",
+      "src/pages/releases/CoverageReportsPage.tsx"
     ]
   },
   "SparklesIcon::@atlaskit/icon/core/atlassian-intelligence": {
@@ -39785,17 +39606,13 @@ export const usageMap: UsageMap = {
     "consumers": [
       "src/components/catalyst-detail-views/improve/CommentsSummaryCard.tsx",
       "src/components/releases/detail/summarize/ReleaseSummaryCard.tsx",
-      "src/features/my-test-scope/components/AIStartMyDay.tsx"
+      "src/features/all-releases/components/AIInsightsBar.tsx",
+      "src/features/all-releases/components/AIInsightsDrawer.tsx",
+      "src/features/all-releases/components/StatStrip.tsx",
+      "src/features/my-test-scope/components/AIStartMyDay.tsx",
+      "src/features/release-calendar/components/CalendarAIInsights.tsx"
     ],
     "package": "@atlaskit/icon"
-  },
-  "SpeculativeTranslator::./speculativeTranslate": {
-    "name": "SpeculativeTranslator",
-    "source": "./speculativeTranslate",
-    "origin": "internal",
-    "consumers": [
-      "src/features/voice-flow/VoiceFlowProvider.tsx"
-    ]
   },
   "SpendDrilldown::./SpendDrilldown": {
     "name": "SpendDrilldown",
@@ -39896,8 +39713,6 @@ export const usageMap: UsageMap = {
       "src/components/catalyst-detail-views/test-case/TestCaseAiCluster.tsx",
       "src/components/catalyst-detail-views/test-case/TestCaseAttachments.tsx",
       "src/components/chat/dock/CatyPanel.tsx",
-      "src/components/chat/main/MessageTranslation.tsx",
-      "src/components/chat/main/TranslatePreviewDialog.tsx",
       "src/components/filters/CanonicalFilter.tsx",
       "src/components/filters/FilterResultsPanel.tsx",
       "src/components/for-you/atlaskit/AgeingPanel.tsx",
@@ -39958,8 +39773,6 @@ export const usageMap: UsageMap = {
       "src/features/release-compare/components/CompareHeader.tsx",
       "src/features/release-compare/components/ReleaseCompare.tsx",
       "src/features/release-compare/components/SaveComparisonViewDialog.tsx",
-      "src/features/voice-flow/VoiceMicButton.tsx",
-      "src/features/voice-flow/VoiceSettingsTab.tsx",
       "src/features/whatsapp-summary/WhatsAppSummaryModal.tsx",
       "src/modules/incidents/analytics/pages/IncidentReportPage.tsx",
       "src/modules/project-work-hub/components/WorkItemDetailsDrawer.tsx",
@@ -39978,8 +39791,11 @@ export const usageMap: UsageMap = {
       "src/pages/ArchiveManagerPage.tsx",
       "src/pages/UserProfile.tsx",
       "src/pages/admin/AdminAccessPage.tsx",
+      "src/pages/admin/AdminOverview.tsx",
+      "src/pages/admin/FeatureFlagsPage.tsx",
       "src/pages/admin/GovernanceSettings.tsx",
       "src/pages/admin/PermissionsAdminPage.tsx",
+      "src/pages/admin/QuartersAdminPage.tsx",
       "src/pages/admin/ReleaseOpsAdminPage.tsx",
       "src/pages/admin/RolesAdminPage.tsx",
       "src/pages/admin/RoutingTaxonomyPage.tsx",
@@ -39991,6 +39807,7 @@ export const usageMap: UsageMap = {
       "src/pages/admin/icons/AdminIconsPage.tsx",
       "src/pages/admin/test-ops/TestOpsPage.tsx",
       "src/pages/admin/test/TestCaseTypesPage.tsx",
+      "src/pages/admin/test/TestCaseWorkflowPage.tsx",
       "src/pages/admin/test/TestPermissionsPage.tsx",
       "src/pages/admin/test/TestPrioritiesPage.tsx",
       "src/pages/admin/workflows/WorkflowAdminPage.tsx",
@@ -40465,24 +40282,6 @@ export const usageMap: UsageMap = {
       "src/components/kanban/overflow-menu/WorkItemOverflowMenu.tsx"
     ]
   },
-  "StatusCode::../lib/okrTypes": {
-    "name": "StatusCode",
-    "source": "../lib/okrTypes",
-    "origin": "internal",
-    "consumers": [
-      "src/modules/okr-v2/hooks/useOKRStrategicData.ts"
-    ]
-  },
-  "StatusCode::./okrTypes": {
-    "name": "StatusCode",
-    "source": "./okrTypes",
-    "origin": "internal",
-    "consumers": [
-      "src/modules/okr-v2/lib/objectiveAnalytics.ts",
-      "src/modules/okr-v2/lib/okrAnalytics.ts",
-      "src/modules/okr-v2/lib/okrMetrics.ts"
-    ]
-  },
   "StatusConfig::./types": {
     "name": "StatusConfig",
     "source": "./types",
@@ -40656,6 +40455,7 @@ export const usageMap: UsageMap = {
       "src/components/shared/Timeline/TimelineView.tsx",
       "src/components/shared/Timeline/dependencies/DependencyUI.tsx",
       "src/components/shared/Timeline/primitives.tsx",
+      "src/components/shared/okr-pills/OkrStatusPill.tsx",
       "src/components/workflow/WorkflowDiagramModal.tsx",
       "src/components/workhub/allwork/AllWorkSplitView.tsx",
       "src/components/workhub/allwork/AllWorkTable.tsx",
@@ -40666,7 +40466,6 @@ export const usageMap: UsageMap = {
       "src/components/workhub/issue-view/IssueViewShell.tsx",
       "src/components/workhub/workitems/WorkItemRow.tsx",
       "src/modules/in-jira/components/CreateIssueModal.tsx",
-      "src/modules/okr-v2/components/shared/OkrStatusPill.tsx",
       "src/modules/project-work-hub/pages/BacklogPage.atlaskit.tsx",
       "src/modules/project-work-hub/pages/StoryBacklogPage.tsx",
       "src/modules/strata/components/ProjectCardDetailView.tsx",
@@ -40678,6 +40477,7 @@ export const usageMap: UsageMap = {
       "src/modules/strata/pages/StrataReviewsPage.tsx",
       "src/modules/strata/pages/StrataUploadWizardPage.tsx",
       "src/modules/task10/components/landing/T10StatusBadge.tsx",
+      "src/pages/ForYouPage.tsx",
       "src/pages/project-hub/MovePage.tsx",
       "src/pages/project-hub/convert-to-subtask/IssueSelectorModal.tsx",
       "src/pages/project-hub/convert-to-subtask/IssueSelectorPopupPage.tsx",
@@ -40688,6 +40488,7 @@ export const usageMap: UsageMap = {
       "src/pages/releasehub/CommandCenterPage.tsx",
       "src/pages/releasehub/ProductionEventReplayPage.tsx",
       "src/pages/releasehub/ReleaseDetailPage.tsx",
+      "src/pages/releasehub/TriageQueuePage.tsx",
       "src/stories/components/StatusLozenge.stories.tsx"
     ]
   },
@@ -40836,6 +40637,7 @@ export const usageMap: UsageMap = {
     "source": "@/components/for-you/StatusSummaryBar",
     "origin": "internal",
     "consumers": [
+      "src/pages/ForYouPage.tsx",
       "src/stories/pages/ForYouDataPanels.stories.tsx"
     ]
   },
@@ -40946,15 +40748,6 @@ export const usageMap: UsageMap = {
       "src/modules/task10/components/panel/T10SidePanelNew.tsx",
       "src/modules/task10/components/week/T10WeekViewV3.tsx"
     ]
-  },
-  "StopwatchIcon::@atlaskit/icon/core/stopwatch": {
-    "name": "StopwatchIcon",
-    "source": "@atlaskit/icon/core/stopwatch",
-    "origin": "atlaskit",
-    "consumers": [
-      "src/components/releasehub/foryou/ReleaseChangeAnnouncementBanner.tsx"
-    ],
-    "package": "@atlaskit/icon"
   },
   "StoriesColumnConfig::@/components/stories/StoriesColumnConfig": {
     "name": "StoriesColumnConfig",
@@ -41195,7 +40988,6 @@ export const usageMap: UsageMap = {
     "source": "./authoring",
     "origin": "internal",
     "consumers": [
-      "src/modules/strata/components/InitiativeDetailModal.tsx",
       "src/modules/strata/components/ProjectCardDetailView.tsx"
     ]
   },
@@ -41333,39 +41125,17 @@ export const usageMap: UsageMap = {
       "src/modules/strata/pages/StrataExecutionPage.tsx",
       "src/modules/strata/pages/StrataKpiDetailPage.tsx",
       "src/modules/strata/pages/StrataPortfolioVmoPage.tsx",
-      "src/modules/strata/pages/StrataScorecardsPage.tsx"
+      "src/modules/strata/pages/StrataReviewsPage.tsx",
+      "src/modules/strata/pages/StrataScorecardsPage.tsx",
+      "src/modules/strata/pages/StrataStrategyRoomPage.tsx"
     ]
   },
-  "StrategicData::../lib/okrTypes": {
-    "name": "StrategicData",
-    "source": "../lib/okrTypes",
+  "StrataValueBar::@/modules/strata/components/shared": {
+    "name": "StrataValueBar",
+    "source": "@/modules/strata/components/shared",
     "origin": "internal",
     "consumers": [
-      "src/modules/okr-v2/hooks/useOKRStrategicData.ts"
-    ]
-  },
-  "StrategyAnalyticsModal::../StrategyAnalyticsModal": {
-    "name": "StrategyAnalyticsModal",
-    "source": "../StrategyAnalyticsModal",
-    "origin": "internal",
-    "consumers": [
-      "src/modules/okr-v2/components/StrategyCockpit/StrategyCockpit.tsx"
-    ]
-  },
-  "StrategyCockpit::./StrategyCockpit": {
-    "name": "StrategyCockpit",
-    "source": "./StrategyCockpit",
-    "origin": "internal",
-    "consumers": [
-      "src/modules/okr-v2/components/OKRHubV2.tsx"
-    ]
-  },
-  "StrategyTree::./StrategyTree": {
-    "name": "StrategyTree",
-    "source": "./StrategyTree",
-    "origin": "internal",
-    "consumers": [
-      "src/modules/okr-v2/components/StrategyCockpit/StrategyCockpit.tsx"
+      "src/modules/strata/pages/StrataPortfolioVmoPage.tsx"
     ]
   },
   "Strikethrough::@/lib/atlaskit-icons": {
@@ -41427,6 +41197,14 @@ export const usageMap: UsageMap = {
     "origin": "internal",
     "consumers": [
       "src/pages/Subtasks.tsx"
+    ]
+  },
+  "SubtaskInlineEditor::./SubtaskInlineEditor": {
+    "name": "SubtaskInlineEditor",
+    "source": "./SubtaskInlineEditor",
+    "origin": "internal",
+    "consumers": [
+      "src/components/stories/CreateStoryModal.tsx"
     ]
   },
   "SubtaskProposalModal::../story/SubtaskProposalModal": {
@@ -41714,6 +41492,7 @@ export const usageMap: UsageMap = {
       "src/modules/product-backlog/components/split-panel/RequestDetailPanel.tsx",
       "src/pages/ProjectSettingsPage.tsx",
       "src/pages/SprintBoard.tsx",
+      "src/pages/releases/QualityGatesPage.tsx",
       "src/pages/risks/RiskRoamReportPage.tsx",
       "src/pages/work-tree/components/WorkTreeExtraConfigs.tsx"
     ]
@@ -41805,7 +41584,6 @@ export const usageMap: UsageMap = {
     "source": "./shared",
     "origin": "internal",
     "consumers": [
-      "src/modules/strata/components/InitiativeDetailModal.tsx",
       "src/modules/strata/components/ProjectCardDetailView.tsx",
       "src/modules/strata/components/authoring.tsx",
       "src/modules/strata/components/evidence.tsx",
@@ -42228,15 +42006,14 @@ export const usageMap: UsageMap = {
       "src/components/chat/dock/ChatDock.tsx",
       "src/components/project-hub/dashboard/widgets/DemandFulfilmentGadget.tsx",
       "src/components/projecthub/AllProjectsToolbar.tsx",
-      "src/components/wiki-hub/database/DatabaseSurface.tsx",
       "src/features/kanban-board/components/SelectCoverPanel.tsx",
       "src/modules/docintel/pages/DocintelWorkspacePage.tsx",
       "src/modules/project-work-hub/components/WorkItemDetailsDrawer.tsx",
-      "src/modules/strata/components/InitiativeDetailModal.tsx",
       "src/modules/strata/components/ProjectCardDetailView.tsx",
       "src/modules/strata/pages/StrataAdminConfigPage.tsx",
       "src/pages/UserProfile.tsx",
       "src/pages/admin/AdminAccessPage.tsx",
+      "src/pages/admin/ModuleAccessAdminPage.tsx",
       "src/pages/admin/ReleaseOpsAdminPage.tsx",
       "src/pages/admin/RolesAdminPage.tsx",
       "src/pages/admin/components/ComponentsAdminPage.tsx",
@@ -42314,6 +42091,7 @@ export const usageMap: UsageMap = {
       "src/pages/project/feature-detail/FeatureAuditTab.tsx",
       "src/pages/project/feature-detail/FeatureDeliveryTab.tsx",
       "src/pages/projects/ProjectSummaryPage.tsx",
+      "src/pages/releases/CoverageReportsPage.tsx",
       "src/pages/work-tree/components/WorkTreeHierarchy.tsx",
       "src/pages/work/Dependencies.tsx"
     ]
@@ -42338,7 +42116,9 @@ export const usageMap: UsageMap = {
       "src/components/business-requests/ViewToggle.tsx",
       "src/components/capacity/CapacityPresentationShell.tsx",
       "src/components/capacity/SleekCapacityHeader.tsx",
-      "src/pages/program/ExecutionWorkbench/index.tsx"
+      "src/pages/program/ExecutionWorkbench/index.tsx",
+      "src/pages/releases/AllReleasesPage.tsx",
+      "src/pages/releases/CommandCenterPage.tsx"
     ]
   },
   "TableBody::@/components/ui/table": {
@@ -42375,6 +42155,7 @@ export const usageMap: UsageMap = {
       "src/pages/project/feature-detail/FeatureAuditTab.tsx",
       "src/pages/project/feature-detail/FeatureDeliveryTab.tsx",
       "src/pages/projects/ProjectSummaryPage.tsx",
+      "src/pages/releases/CoverageReportsPage.tsx",
       "src/pages/work-tree/components/WorkTreeHierarchy.tsx",
       "src/pages/work/Dependencies.tsx"
     ]
@@ -42415,6 +42196,7 @@ export const usageMap: UsageMap = {
       "src/pages/project/feature-detail/FeatureAuditTab.tsx",
       "src/pages/project/feature-detail/FeatureDeliveryTab.tsx",
       "src/pages/projects/ProjectSummaryPage.tsx",
+      "src/pages/releases/CoverageReportsPage.tsx",
       "src/pages/work-tree/components/WorkTreeHierarchy.tsx",
       "src/pages/work/Dependencies.tsx"
     ]
@@ -42481,6 +42263,7 @@ export const usageMap: UsageMap = {
       "src/pages/project/feature-detail/FeatureAuditTab.tsx",
       "src/pages/project/feature-detail/FeatureDeliveryTab.tsx",
       "src/pages/projects/ProjectSummaryPage.tsx",
+      "src/pages/releases/CoverageReportsPage.tsx",
       "src/pages/work-tree/components/WorkTreeHierarchy.tsx",
       "src/pages/work/Dependencies.tsx"
     ]
@@ -42526,6 +42309,7 @@ export const usageMap: UsageMap = {
       "src/pages/project/feature-detail/FeatureAuditTab.tsx",
       "src/pages/project/feature-detail/FeatureDeliveryTab.tsx",
       "src/pages/projects/ProjectSummaryPage.tsx",
+      "src/pages/releases/CoverageReportsPage.tsx",
       "src/pages/work-tree/components/WorkTreeHierarchy.tsx",
       "src/pages/work/Dependencies.tsx"
     ]
@@ -42608,6 +42392,7 @@ export const usageMap: UsageMap = {
       "src/pages/project/feature-detail/FeatureAuditTab.tsx",
       "src/pages/project/feature-detail/FeatureDeliveryTab.tsx",
       "src/pages/projects/ProjectSummaryPage.tsx",
+      "src/pages/releases/CoverageReportsPage.tsx",
       "src/pages/work-tree/components/WorkTreeHierarchy.tsx",
       "src/pages/work/Dependencies.tsx"
     ]
@@ -42680,15 +42465,14 @@ export const usageMap: UsageMap = {
       "src/components/chat/dock/ChatDock.tsx",
       "src/components/project-hub/dashboard/widgets/DemandFulfilmentGadget.tsx",
       "src/components/projecthub/AllProjectsToolbar.tsx",
-      "src/components/wiki-hub/database/DatabaseSurface.tsx",
       "src/features/kanban-board/components/SelectCoverPanel.tsx",
       "src/modules/docintel/pages/DocintelWorkspacePage.tsx",
       "src/modules/project-work-hub/components/WorkItemDetailsDrawer.tsx",
-      "src/modules/strata/components/InitiativeDetailModal.tsx",
       "src/modules/strata/components/ProjectCardDetailView.tsx",
       "src/modules/strata/pages/StrataAdminConfigPage.tsx",
       "src/pages/UserProfile.tsx",
       "src/pages/admin/AdminAccessPage.tsx",
+      "src/pages/admin/ModuleAccessAdminPage.tsx",
       "src/pages/admin/ReleaseOpsAdminPage.tsx",
       "src/pages/admin/RolesAdminPage.tsx",
       "src/pages/admin/components/ComponentsAdminPage.tsx",
@@ -42720,11 +42504,12 @@ export const usageMap: UsageMap = {
       "src/features/kanban-board/components/SelectCoverPanel.tsx",
       "src/modules/docintel/pages/DocintelWorkspacePage.tsx",
       "src/modules/project-work-hub/components/WorkItemDetailsDrawer.tsx",
-      "src/modules/strata/components/InitiativeDetailModal.tsx",
       "src/modules/strata/components/ProjectCardDetailView.tsx",
       "src/modules/strata/pages/StrataAdminConfigPage.tsx",
       "src/pages/UserProfile.tsx",
       "src/pages/admin/AdminAccessPage.tsx",
+      "src/pages/admin/AdminStorybookPage.tsx",
+      "src/pages/admin/ModuleAccessAdminPage.tsx",
       "src/pages/admin/ReleaseOpsAdminPage.tsx",
       "src/pages/admin/RolesAdminPage.tsx",
       "src/pages/admin/components/ComponentsAdminPage.tsx",
@@ -42750,6 +42535,7 @@ export const usageMap: UsageMap = {
       "src/components/capacity/CapacityPlanningPage.tsx",
       "src/components/dependencies/DependencyAnalyticsPanel.tsx",
       "src/components/dependencies/DependencyDetailsDrawer.tsx",
+      "src/components/epic-backlog/modals/WSJFModal.tsx",
       "src/components/features/AssignModal.tsx",
       "src/components/incidents/detail/CommitteeModal.tsx",
       "src/components/incidents/detail/IncidentWorkArea.tsx",
@@ -42758,7 +42544,6 @@ export const usageMap: UsageMap = {
       "src/components/items/features/FeatureDetailsPanel.tsx",
       "src/components/items/features/FeatureWSJFDialog.tsx",
       "src/components/modals/LinkWorkItemModal.tsx",
-      "src/components/okr/ObjectiveDetailsPanelNew.tsx",
       "src/components/project-hub/settings/WorkflowTab.tsx",
       "src/components/risks/RiskDetailPanel.tsx",
       "src/components/settings/FieldConfigurationsSettings.tsx",
@@ -42771,8 +42556,6 @@ export const usageMap: UsageMap = {
       "src/modules/in-jira/pages/SettingsPage.tsx",
       "src/modules/incidents/analytics/components/RequiresAttentionTabs.tsx",
       "src/modules/incidents/analytics/pages/IncidentInsightsPage.tsx",
-      "src/modules/objectives/components/KeyResults/KeyResultReportsModal.tsx",
-      "src/modules/okr-v2/components/ObjectiveDrawerV2.tsx",
       "src/modules/project-work-hub/ProjectWorkHubPage.tsx",
       "src/modules/work-hub/views/AllWorkView.tsx",
       "src/pages/KanbanBoardSetup.tsx",
@@ -42784,6 +42567,7 @@ export const usageMap: UsageMap = {
       "src/pages/items/EpicsPage.tsx",
       "src/pages/project/FeatureDetailPage.tsx",
       "src/pages/projects/ProjectSummaryPage.tsx",
+      "src/pages/releases/CoverageReportsPage.tsx",
       "src/pages/work/Dependencies.tsx"
     ]
   },
@@ -42799,15 +42583,15 @@ export const usageMap: UsageMap = {
       "src/components/chat/dock/ChatDock.tsx",
       "src/components/project-hub/dashboard/widgets/DemandFulfilmentGadget.tsx",
       "src/components/projecthub/AllProjectsToolbar.tsx",
-      "src/components/wiki-hub/database/DatabaseSurface.tsx",
       "src/features/kanban-board/components/SelectCoverPanel.tsx",
       "src/modules/docintel/pages/DocintelWorkspacePage.tsx",
       "src/modules/project-work-hub/components/WorkItemDetailsDrawer.tsx",
-      "src/modules/strata/components/InitiativeDetailModal.tsx",
       "src/modules/strata/components/ProjectCardDetailView.tsx",
       "src/modules/strata/pages/StrataAdminConfigPage.tsx",
       "src/pages/UserProfile.tsx",
       "src/pages/admin/AdminAccessPage.tsx",
+      "src/pages/admin/AdminStorybookPage.tsx",
+      "src/pages/admin/ModuleAccessAdminPage.tsx",
       "src/pages/admin/ReleaseOpsAdminPage.tsx",
       "src/pages/admin/RolesAdminPage.tsx",
       "src/pages/admin/components/ComponentsAdminPage.tsx",
@@ -42846,6 +42630,7 @@ export const usageMap: UsageMap = {
       "src/components/capacity/CapacityPlanningPage.tsx",
       "src/components/dependencies/DependencyAnalyticsPanel.tsx",
       "src/components/dependencies/DependencyDetailsDrawer.tsx",
+      "src/components/epic-backlog/modals/WSJFModal.tsx",
       "src/components/features/AssignModal.tsx",
       "src/components/incidents/detail/CommitteeModal.tsx",
       "src/components/incidents/detail/IncidentWorkArea.tsx",
@@ -42853,7 +42638,6 @@ export const usageMap: UsageMap = {
       "src/components/items/features/FeatureDetailsPanel.tsx",
       "src/components/items/features/FeatureWSJFDialog.tsx",
       "src/components/modals/LinkWorkItemModal.tsx",
-      "src/components/okr/ObjectiveDetailsPanelNew.tsx",
       "src/components/project-hub/settings/WorkflowTab.tsx",
       "src/components/risks/RiskDetailPanel.tsx",
       "src/components/settings/FieldConfigurationsSettings.tsx",
@@ -42866,8 +42650,6 @@ export const usageMap: UsageMap = {
       "src/modules/in-jira/pages/SettingsPage.tsx",
       "src/modules/incidents/analytics/components/RequiresAttentionTabs.tsx",
       "src/modules/incidents/analytics/pages/IncidentInsightsPage.tsx",
-      "src/modules/objectives/components/KeyResults/KeyResultReportsModal.tsx",
-      "src/modules/okr-v2/components/ObjectiveDrawerV2.tsx",
       "src/modules/project-work-hub/ProjectWorkHubPage.tsx",
       "src/pages/KanbanBoardSetup.tsx",
       "src/pages/PortfolioRoadmap.tsx",
@@ -42875,6 +42657,7 @@ export const usageMap: UsageMap = {
       "src/pages/Stories.tsx",
       "src/pages/project/FeatureDetailPage.tsx",
       "src/pages/projects/ProjectSummaryPage.tsx",
+      "src/pages/releases/CoverageReportsPage.tsx",
       "src/pages/work/Dependencies.tsx"
     ]
   },
@@ -42887,6 +42670,7 @@ export const usageMap: UsageMap = {
       "src/components/capacity/CapacityPlanningPage.tsx",
       "src/components/dependencies/DependencyAnalyticsPanel.tsx",
       "src/components/dependencies/DependencyDetailsDrawer.tsx",
+      "src/components/epic-backlog/modals/WSJFModal.tsx",
       "src/components/features/AssignModal.tsx",
       "src/components/incidents/detail/CommitteeModal.tsx",
       "src/components/incidents/detail/IncidentWorkArea.tsx",
@@ -42895,7 +42679,6 @@ export const usageMap: UsageMap = {
       "src/components/items/features/FeatureDetailsPanel.tsx",
       "src/components/items/features/FeatureWSJFDialog.tsx",
       "src/components/modals/LinkWorkItemModal.tsx",
-      "src/components/okr/ObjectiveDetailsPanelNew.tsx",
       "src/components/project-hub/settings/WorkflowTab.tsx",
       "src/components/risks/RiskDetailPanel.tsx",
       "src/components/settings/FieldConfigurationsSettings.tsx",
@@ -42908,8 +42691,6 @@ export const usageMap: UsageMap = {
       "src/modules/in-jira/pages/SettingsPage.tsx",
       "src/modules/incidents/analytics/components/RequiresAttentionTabs.tsx",
       "src/modules/incidents/analytics/pages/IncidentInsightsPage.tsx",
-      "src/modules/objectives/components/KeyResults/KeyResultReportsModal.tsx",
-      "src/modules/okr-v2/components/ObjectiveDrawerV2.tsx",
       "src/modules/project-work-hub/ProjectWorkHubPage.tsx",
       "src/modules/work-hub/views/AllWorkView.tsx",
       "src/pages/KanbanBoardSetup.tsx",
@@ -42921,6 +42702,7 @@ export const usageMap: UsageMap = {
       "src/pages/items/EpicsPage.tsx",
       "src/pages/project/FeatureDetailPage.tsx",
       "src/pages/projects/ProjectSummaryPage.tsx",
+      "src/pages/releases/CoverageReportsPage.tsx",
       "src/pages/work/Dependencies.tsx"
     ]
   },
@@ -42933,6 +42715,7 @@ export const usageMap: UsageMap = {
       "src/components/capacity/CapacityPlanningPage.tsx",
       "src/components/dependencies/DependencyAnalyticsPanel.tsx",
       "src/components/dependencies/DependencyDetailsDrawer.tsx",
+      "src/components/epic-backlog/modals/WSJFModal.tsx",
       "src/components/features/AssignModal.tsx",
       "src/components/incidents/detail/CommitteeModal.tsx",
       "src/components/incidents/detail/IncidentWorkArea.tsx",
@@ -42941,7 +42724,6 @@ export const usageMap: UsageMap = {
       "src/components/items/features/FeatureDetailsPanel.tsx",
       "src/components/items/features/FeatureWSJFDialog.tsx",
       "src/components/modals/LinkWorkItemModal.tsx",
-      "src/components/okr/ObjectiveDetailsPanelNew.tsx",
       "src/components/project-hub/settings/WorkflowTab.tsx",
       "src/components/risks/RiskDetailPanel.tsx",
       "src/components/settings/FieldConfigurationsSettings.tsx",
@@ -42954,8 +42736,6 @@ export const usageMap: UsageMap = {
       "src/modules/in-jira/pages/SettingsPage.tsx",
       "src/modules/incidents/analytics/components/RequiresAttentionTabs.tsx",
       "src/modules/incidents/analytics/pages/IncidentInsightsPage.tsx",
-      "src/modules/objectives/components/KeyResults/KeyResultReportsModal.tsx",
-      "src/modules/okr-v2/components/ObjectiveDrawerV2.tsx",
       "src/modules/project-work-hub/ProjectWorkHubPage.tsx",
       "src/modules/work-hub/views/AllWorkView.tsx",
       "src/pages/KanbanBoardSetup.tsx",
@@ -42967,6 +42747,7 @@ export const usageMap: UsageMap = {
       "src/pages/items/EpicsPage.tsx",
       "src/pages/project/FeatureDetailPage.tsx",
       "src/pages/projects/ProjectSummaryPage.tsx",
+      "src/pages/releases/CoverageReportsPage.tsx",
       "src/pages/work/Dependencies.tsx"
     ]
   },
@@ -43032,6 +42813,7 @@ export const usageMap: UsageMap = {
       "src/components/knowledge-assist/KAItemDetailPanel.tsx",
       "src/components/layout/EnterpriseSidebar.tsx",
       "src/components/layout/ItemsDropdown.tsx",
+      "src/components/layout/TeamRoomSidebar.tsx",
       "src/components/layout/dropdowns/ItemsDropdown.tsx",
       "src/components/layout/dropdowns/StarredDropdown.tsx",
       "src/components/skills-inventory/SkillsInventoryReport.tsx",
@@ -43041,22 +42823,6 @@ export const usageMap: UsageMap = {
       "src/modules/in-jira/components/drawer/ActivityTabs.tsx",
       "src/modules/in-jira/components/drawer/DetailsPanel.tsx",
       "src/modules/in-jira/pages/ScrumBoardPage.tsx",
-      "src/modules/objectives/components/AlignedItems/LinkObjectiveDialog.tsx",
-      "src/modules/objectives/components/AlignedItems/ObjectivesSection.tsx",
-      "src/modules/objectives/components/KeyResults/KeyResultReportsModal.tsx",
-      "src/modules/objectives/components/ObjectiveHierarchyDialog.tsx",
-      "src/modules/objectives/components/ProgramBoard/ObjectivesRow.tsx",
-      "src/modules/objectives/components/Widgets/ObjectiveSummaryCard.tsx",
-      "src/modules/objectives/components/Widgets/ObjectivesWidget.tsx",
-      "src/modules/okr-v2/components/CreateObjectiveDialogV2.tsx",
-      "src/modules/okr-v2/components/KRWorkAlignmentDrawer.tsx",
-      "src/modules/okr-v2/components/KeyResultAnalyticsDrawer/KeyResultAnalyticsDrawer.tsx",
-      "src/modules/okr-v2/components/LinkedWorkTabV2.tsx",
-      "src/modules/okr-v2/components/ObjectiveAnalyticsDrawer/ObjectiveAnalyticsDrawer.tsx",
-      "src/modules/okr-v2/components/ObjectiveDrawerV2.tsx",
-      "src/modules/okr-v2/components/StrategyAnalyticsModal.tsx",
-      "src/modules/okr-v2/components/StrategyCockpit/AnalyticsDrawerContent.tsx",
-      "src/modules/okr-v2/components/StrategyCockpit/StrategyTree.tsx",
       "src/modules/strata/pages/StrataKpiLibraryPage.tsx",
       "src/modules/strata/pages/StrataStrategyElementDetailPage.tsx",
       "src/modules/strata/pages/StrataStrategyMapPage.tsx",
@@ -43064,8 +42830,11 @@ export const usageMap: UsageMap = {
       "src/pages/PIObjectives.tsx",
       "src/pages/PortfolioRoadmap.tsx",
       "src/pages/SkillsInventory.tsx",
+      "src/pages/TeamRoom.tsx",
       "src/pages/producthub/IdeasThemePage.tsx",
       "src/pages/project/FeatureDetailPage.tsx",
+      "src/pages/releases/CommandCenterPage.tsx",
+      "src/pages/releases/CoverageReportsPage.tsx",
       "src/pages/work-tree/components/WorkTreeLegend.tsx"
     ]
   },
@@ -43626,6 +43395,14 @@ export const usageMap: UsageMap = {
       "src/pages/MyTeamPage.tsx"
     ]
   },
+  "TeamRoomSidebar::@/components/layout/TeamRoomSidebar": {
+    "name": "TeamRoomSidebar",
+    "source": "@/components/layout/TeamRoomSidebar",
+    "origin": "internal",
+    "consumers": [
+      "src/stories/components/LayoutSidebars.stories.tsx"
+    ]
+  },
   "TeamUtilizationSection::./TeamUtilizationSection": {
     "name": "TeamUtilizationSection",
     "source": "./TeamUtilizationSection",
@@ -43796,6 +43573,14 @@ export const usageMap: UsageMap = {
       "src/hooks/useReportAnalytics.ts"
     ]
   },
+  "TestExecutionTable::@/components/releases/dashboard/TestExecutionTable": {
+    "name": "TestExecutionTable",
+    "source": "@/components/releases/dashboard/TestExecutionTable",
+    "origin": "internal",
+    "consumers": [
+      "src/pages/releases/ReleaseDashboardPage.tsx"
+    ]
+  },
   "TestHubSection::@/modules/project-work-hub/components/dialogs/story-detail-modules/TestHubSection": {
     "name": "TestHubSection",
     "source": "@/modules/project-work-hub/components/dialogs/story-detail-modules/TestHubSection",
@@ -43818,6 +43603,14 @@ export const usageMap: UsageMap = {
     "origin": "internal",
     "consumers": [
       "src/stories/components/LayoutShell.stories.tsx"
+    ]
+  },
+  "TestPlan::@/types/testPlans": {
+    "name": "TestPlan",
+    "source": "@/types/testPlans",
+    "origin": "internal",
+    "consumers": [
+      "src/hooks/useTestPlansG26.ts"
     ]
   },
   "TestsTable::./TestsTable": {
@@ -43845,7 +43638,8 @@ export const usageMap: UsageMap = {
     "origin": "internal",
     "consumers": [
       "src/components/releasehub/EmptyState.tsx",
-      "src/components/releases/quality-gates/ReleaseTestSummaryPanel.tsx"
+      "src/components/releases/quality-gates/ReleaseTestSummaryPanel.tsx",
+      "src/pages/releases/CommandCenterPage.tsx"
     ]
   },
   "Text::@atlaskit/primitives": {
@@ -43872,6 +43666,7 @@ export const usageMap: UsageMap = {
       "src/components/committee/CommitteeQueueDrawer.tsx",
       "src/components/dependencies/CreateDependencyDialog.tsx",
       "src/components/dependencies/DependencyDetailsDrawer.tsx",
+      "src/components/epic-backlog/modals/MilestoneModal.tsx",
       "src/components/epic-backlog/tabs/BenefitsTab.tsx",
       "src/components/epic-backlog/tabs/DesignTab.tsx",
       "src/components/evidence/defect/CreateDefectModal.tsx",
@@ -43891,9 +43686,6 @@ export const usageMap: UsageMap = {
       "src/components/items/epics/drawer-tabs/TechnicalScoreViewTab.tsx",
       "src/components/items/features/tabs/FeatureOverviewTab.tsx",
       "src/components/knowledge-hub/MentionInput.tsx",
-      "src/components/okr/CheckInModal.tsx",
-      "src/components/okr/ConfidenceScoreModal.tsx",
-      "src/components/okr/ObjectiveDetailsPanelNew.tsx",
       "src/components/programs/CreateProgramDialog.tsx",
       "src/components/projects/CreateProjectDialog.tsx",
       "src/components/releases/defects/EditDefectModal.tsx",
@@ -43913,6 +43705,7 @@ export const usageMap: UsageMap = {
       "src/components/skills-inventory/EditSkillModal.tsx",
       "src/components/stories/AcceptanceCriteriaEditor.tsx",
       "src/components/stories/CreateEditStoryPanel.tsx",
+      "src/components/stories/CreateStoryModal.tsx",
       "src/components/stories/StoryDetailPanel.tsx",
       "src/components/templates/CreateTemplateModal.tsx",
       "src/components/testhub/AIGenerateTestCasesDialog.tsx",
@@ -43932,10 +43725,6 @@ export const usageMap: UsageMap = {
       "src/modules/in-jira/components/releases/VersionDialog.tsx",
       "src/modules/in-jira/pages/ScrumBoardPage.tsx",
       "src/modules/incidents/kanban/components/SetCommitteeApproversModal.tsx",
-      "src/modules/objectives/components/KeyResults/KeyResultCheckIn.tsx",
-      "src/modules/objectives/components/ObjectivePanel/ObjectiveForm.tsx",
-      "src/modules/okr-v2/components/CreateObjectiveDialogV2.tsx",
-      "src/modules/okr-v2/components/ObjectiveOverviewTabV2.tsx",
       "src/modules/tasks/components/kanban/TaskDetailDrawer.tsx",
       "src/modules/work-hub/components/CreateVersionDialog.tsx",
       "src/modules/work-hub/views/ReleaseDetailsView.tsx",
@@ -43943,7 +43732,9 @@ export const usageMap: UsageMap = {
       "src/pages/ProjectSettingsPage.tsx",
       "src/pages/incidenthub/components/NewIncidentModal.tsx",
       "src/pages/project/components/FeatureChildStories.tsx",
-      "src/pages/project/feature-detail/FeatureActivityTab.tsx"
+      "src/pages/project/feature-detail/FeatureActivityTab.tsx",
+      "src/pages/releases/DefectDetailPage.tsx",
+      "src/pages/releases/QualityGatesPage.tsx"
     ]
   },
   "Textarea::@atlaskit/textarea": {
@@ -44112,7 +43903,6 @@ export const usageMap: UsageMap = {
       "src/components/testhub/reports/SaveViewModal.tsx",
       "src/components/workhub/create-story/CreateStoryModal.tsx",
       "src/features/kanban-board/components/Toolbar.tsx",
-      "src/features/voice-flow/VoiceSettingsTab.tsx",
       "src/modules/project-work-hub/components/AddPeopleModal.tsx",
       "src/modules/project-work-hub/components/SubtasksPanel/InlineCreateWithAI.tsx",
       "src/modules/project-work-hub/components/WorkItemDetailsDrawer.tsx",
@@ -44130,12 +43920,17 @@ export const usageMap: UsageMap = {
       "src/pages/ArchiveManagerPage.tsx",
       "src/pages/UserProfile.tsx",
       "src/pages/admin/AdminAccessPage.tsx",
+      "src/pages/admin/AdminOverview.tsx",
       "src/pages/admin/AiTranslationsAuditPage.tsx",
+      "src/pages/admin/BusinessOwners.tsx",
       "src/pages/admin/CapacityDepartments.tsx",
       "src/pages/admin/Departments.tsx",
+      "src/pages/admin/FeatureFlagsPage.tsx",
+      "src/pages/admin/NotificationTriggers.tsx",
       "src/pages/admin/PermissionsAdminPage.tsx",
       "src/pages/admin/ReleaseOpsAdminPage.tsx",
       "src/pages/admin/ResourceAssignments.tsx",
+      "src/pages/admin/UserAccessPage.tsx",
       "src/pages/admin/avatars/AdminAvatarsPage.tsx",
       "src/pages/admin/components/ComponentsAdminPage.tsx",
       "src/pages/admin/components/PublishTab.tsx",
@@ -44145,6 +43940,7 @@ export const usageMap: UsageMap = {
       "src/pages/admin/connections/VercelConnectionPage.tsx",
       "src/pages/admin/icons/AdminIconsPage.tsx",
       "src/pages/admin/test/TestCaseTypesPage.tsx",
+      "src/pages/admin/test/TestCaseWorkflowPage.tsx",
       "src/pages/admin/test/TestPrioritiesPage.tsx",
       "src/pages/product-hub/AllProductsPage.tsx",
       "src/pages/project-hub/ConvertToSubtaskPage.tsx",
@@ -44219,30 +44015,12 @@ export const usageMap: UsageMap = {
     ],
     "package": "@atlaskit/icon"
   },
-  "Theme::../lib/okrTypes": {
-    "name": "Theme",
-    "source": "../lib/okrTypes",
-    "origin": "internal",
-    "consumers": [
-      "src/modules/okr-v2/hooks/useOKRStrategicData.ts"
-    ]
-  },
   "Theme::../types/objective-roadmap": {
     "name": "Theme",
     "source": "../types/objective-roadmap",
     "origin": "internal",
     "consumers": [
       "src/utils/objective-roadmap-utils.ts"
-    ]
-  },
-  "Theme::./okrTypes": {
-    "name": "Theme",
-    "source": "./okrTypes",
-    "origin": "internal",
-    "consumers": [
-      "src/modules/okr-v2/lib/objectiveAnalytics.ts",
-      "src/modules/okr-v2/lib/okrAnalytics.ts",
-      "src/modules/okr-v2/lib/okrMetrics.ts"
     ]
   },
   "Theme::@/types/objective-roadmap": {
@@ -44805,6 +44583,17 @@ export const usageMap: UsageMap = {
       "src/modules/incidents/analytics/pages/IncidentAnalyticsPage.tsx"
     ]
   },
+  "TimeScale::../types": {
+    "name": "TimeScale",
+    "source": "../types",
+    "origin": "internal",
+    "consumers": [
+      "src/features/release-calendar/components/CalendarGrid.tsx",
+      "src/features/release-calendar/components/CalendarHeader.tsx",
+      "src/features/release-calendar/components/ReleaseCalendar.tsx",
+      "src/features/release-calendar/utils/calendarUtils.ts"
+    ]
+  },
   "TimeScale::./roadmapConstants": {
     "name": "TimeScale",
     "source": "./roadmapConstants",
@@ -44945,7 +44734,8 @@ export const usageMap: UsageMap = {
     "source": "@/types/test-management",
     "origin": "internal",
     "consumers": [
-      "src/hooks/test-management/useFolders.ts"
+      "src/hooks/test-management/useFolders.ts",
+      "src/hooks/test-management/useRepositoryData.ts"
     ]
   },
   "TMProject::@/types/test-management": {
@@ -44996,9 +44786,12 @@ export const usageMap: UsageMap = {
       "src/components/sprints/SprintCreateModal.tsx",
       "src/components/testhub/reports/SaveViewModal.tsx",
       "src/features/kanban-board/components/Toolbar.tsx",
-      "src/features/voice-flow/VoiceSettingsTab.tsx",
+      "src/pages/admin/BusinessOwners.tsx",
       "src/pages/admin/Departments.tsx",
+      "src/pages/admin/FeatureFlagsPage.tsx",
       "src/pages/admin/GovernanceSettings.tsx",
+      "src/pages/admin/NotificationTriggers.tsx",
+      "src/pages/admin/QuartersAdminPage.tsx",
       "src/pages/admin/ReleaseOpsAdminPage.tsx",
       "src/pages/admin/ResourceAssignments.tsx",
       "src/pages/admin/components/PublishTab.tsx",
@@ -45156,6 +44949,7 @@ export const usageMap: UsageMap = {
       "src/components/shared/JiraSyncChip.tsx",
       "src/components/shared/TechnicalScoreBadge.tsx",
       "src/components/shared/WorkItemStarButton.tsx",
+      "src/components/shared/okr-pills/OkrThemeDot.tsx",
       "src/components/skills-inventory/SkillsFiltersDialog.tsx",
       "src/components/ui/SyncStatusIndicator.tsx",
       "src/components/ui/catalyst/CatalystOwnerAvatar.tsx",
@@ -45163,7 +44957,9 @@ export const usageMap: UsageMap = {
       "src/components/work-items/WorkItemPresence.tsx",
       "src/components/work-items/WorkItemWatchers.tsx",
       "src/components/workload/AvailabilityCalendar.tsx",
+      "src/features/all-releases/components/TimelineView.tsx",
       "src/features/my-test-scope/components/TestsTable.tsx",
+      "src/features/release-calendar/components/ReleaseBar.tsx",
       "src/modules/backlog/components/BacklogHeader.tsx",
       "src/modules/backlog/components/split-panel/EpicListPanel.tsx",
       "src/modules/epic-balancing/components/EpicBalancingLegend.tsx",
@@ -45172,10 +44968,6 @@ export const usageMap: UsageMap = {
       "src/modules/in-jira/components/IssueDrawer.tsx",
       "src/modules/in-jira/pages/KanbanBoardPage.tsx",
       "src/modules/incidents/kanban/components/KanbanCard.tsx",
-      "src/modules/okr-v2/components/StrategyCockpit/StrategyTree.tsx",
-      "src/modules/okr-v2/components/TrendIcon.tsx",
-      "src/modules/okr-v2/components/shared/OkrThemeDot.tsx",
-      "src/modules/okr-v2/components/shared/OkrWorkItemBadge.tsx",
       "src/modules/product-backlog/components/split-panel/RequestListPanel.tsx",
       "src/modules/product-roadmap/components/RoadmapToolbar.tsx",
       "src/modules/project-work-hub/ProjectWorkHubPage.tsx",
@@ -45183,6 +44975,7 @@ export const usageMap: UsageMap = {
       "src/modules/project-work-hub/components/tabs/KanbanBoardTab.tsx",
       "src/modules/project-work-hub/components/tabs/ReleasesTab.tsx",
       "src/modules/strata/components/ProjectCardDetailView.tsx",
+      "src/modules/strata/components/shared.tsx",
       "src/modules/strata/pages/StrataDataPipelinePage.tsx",
       "src/modules/strata/pages/StrataExecutionPage.tsx",
       "src/modules/strata/pages/StrataKpiLibraryPage.tsx",
@@ -45196,6 +44989,7 @@ export const usageMap: UsageMap = {
       "src/pages/Roadmaps.tsx",
       "src/pages/StarredPage.tsx",
       "src/pages/admin/CapacityDepartments.tsx",
+      "src/pages/admin/NotificationTriggers.tsx",
       "src/pages/admin/ResourceAssignments.tsx",
       "src/pages/enterprise/capacity-planner/TableView.tsx",
       "src/pages/program/ExecutionWorkbench/WorkbenchFiltersDialog.tsx",
@@ -45271,7 +45065,7 @@ export const usageMap: UsageMap = {
       "src/components/ui/CatyIconCTA.tsx",
       "src/features/kanban-board/components/Card.tsx",
       "src/features/kanban-board/components/SelectCoverPanel.tsx",
-      "src/features/voice-flow/VoiceMicButton.tsx",
+      "src/features/voice-flow/DictationCTA.tsx",
       "src/modules/project-work-hub/components/SubtasksPanel/AiSuggestChildrenPanel.tsx",
       "src/modules/project-work-hub/components/SubtasksPanel/index.tsx",
       "src/modules/project-work-hub/components/dialogs/story-detail-modules/AttachmentsSection.tsx",
@@ -45291,6 +45085,14 @@ export const usageMap: UsageMap = {
       "src/stories/components/Tooltip.stories.tsx"
     ],
     "package": "@atlaskit/tooltip"
+  },
+  "TopNav::./shell/TopNav": {
+    "name": "TopNav",
+    "source": "./shell/TopNav",
+    "origin": "internal",
+    "consumers": [
+      "src/components/project-hub/ProjectHubShell.tsx"
+    ]
   },
   "TotalResourcesModal::./DataQualityDetailModals": {
     "name": "TotalResourcesModal",
@@ -45346,22 +45148,6 @@ export const usageMap: UsageMap = {
     "origin": "internal",
     "consumers": [
       "src/modules/docintel/pages/DocintelWorkspacePage.tsx"
-    ]
-  },
-  "TranslatePreviewDialog::./TranslatePreviewDialog": {
-    "name": "TranslatePreviewDialog",
-    "source": "./TranslatePreviewDialog",
-    "origin": "internal",
-    "consumers": [
-      "src/components/chat/main/MessageComposer.tsx"
-    ]
-  },
-  "TranslatePreviewDialog::@/components/chat/main/TranslatePreviewDialog": {
-    "name": "TranslatePreviewDialog",
-    "source": "@/components/chat/main/TranslatePreviewDialog",
-    "origin": "internal",
-    "consumers": [
-      "src/features/chat-v2/components/Composer/Composer.tsx"
     ]
   },
   "TranslationView::@/components/requirement-assist/TranslationView": {
@@ -45429,7 +45215,6 @@ export const usageMap: UsageMap = {
       "src/components/kanban/setup/ManageUsersTab.tsx",
       "src/components/kanban/setup/SwimLanesSetupTab.tsx",
       "src/components/knowledge-hub/DocumentComments.tsx",
-      "src/components/okr/KeyResultsList.tsx",
       "src/components/planner/task-modal/molecules/ChecklistItem.tsx",
       "src/components/planner/task-modal/molecules/FileItem.tsx",
       "src/components/planner/task-modal/molecules/LinkItem.tsx",
@@ -45488,12 +45273,6 @@ export const usageMap: UsageMap = {
       "src/modules/in-jira/components/drawer/IssueActionsMenu.tsx",
       "src/modules/in-jira/components/releases/VersionCard.tsx",
       "src/modules/incidents/kanban/components/ManageColumnsDialog.tsx",
-      "src/modules/objectives/components/KeyResults/KeyResultCard.tsx",
-      "src/modules/okr-v2/components/KRWorkAlignmentDrawer.tsx",
-      "src/modules/okr-v2/components/KRWorkContributionsV2.tsx",
-      "src/modules/okr-v2/components/KeyResultsTabV2.tsx",
-      "src/modules/okr-v2/components/LinkedWorkTabV2.tsx",
-      "src/modules/okr-v2/components/ObjectiveDrawerV2.tsx",
       "src/modules/priorities/components/PriPriorityCard.tsx",
       "src/modules/product-backlog/components/split-panel/AttachmentUploadModal.tsx",
       "src/modules/product-backlog/components/split-panel/RequestDetailPanel.tsx",
@@ -45548,6 +45327,8 @@ export const usageMap: UsageMap = {
       "src/pages/project-hub/MapStatusesPage.tsx",
       "src/pages/project/feature-detail/FeatureOverviewTab.tsx",
       "src/pages/releasehub/FreezeWindowsPage.tsx",
+      "src/pages/releases/DefectDetailPage.tsx",
+      "src/pages/releases/QualityGatesPage.tsx",
       "src/pages/testhub/reports/lab/ReportNavigator.tsx",
       "src/pages/testhub/repository/StepEditor.tsx"
     ]
@@ -45586,14 +45367,6 @@ export const usageMap: UsageMap = {
     ],
     "package": "@atlaskit/icon"
   },
-  "TreeItem::./okrTypes": {
-    "name": "TreeItem",
-    "source": "./okrTypes",
-    "origin": "internal",
-    "consumers": [
-      "src/modules/okr-v2/lib/okrMetrics.ts"
-    ]
-  },
   "TrendDataPoint::@/types/reports": {
     "name": "TrendDataPoint",
     "source": "@/types/reports",
@@ -45601,15 +45374,6 @@ export const usageMap: UsageMap = {
     "consumers": [
       "src/components/reports/ExecutionTrendChart.tsx",
       "src/hooks/useReportAnalytics.ts"
-    ]
-  },
-  "TrendDirection::./sharedAnalyticsTypes": {
-    "name": "TrendDirection",
-    "source": "./sharedAnalyticsTypes",
-    "origin": "internal",
-    "consumers": [
-      "src/modules/okr-v2/lib/keyResultAnalytics.ts",
-      "src/modules/okr-v2/lib/workItemAnalytics.ts"
     ]
   },
   "TrendingDown::@/lib/atlaskit-icons": {
@@ -45622,21 +45386,19 @@ export const usageMap: UsageMap = {
       "src/components/dashboard/MetricCard.tsx",
       "src/components/releases/quality-gates/GateHistoryPanel.tsx",
       "src/components/reports/KPICard.tsx",
+      "src/components/shared/okr-pills/OkrProgressCell.tsx",
       "src/components/workhub/capacity/CapacityTable.tsx",
       "src/components/workload/WorkloadTrendChart.tsx",
       "src/modules/in-jira/pages/SummaryPage.tsx",
       "src/modules/incidents/analytics/pages/IncidentInsightsPage.tsx",
-      "src/modules/okr-v2/components/KeyResultAnalyticsDrawer/KeyResultAnalyticsDrawer.tsx",
-      "src/modules/okr-v2/components/KeyResultsTabV2.tsx",
-      "src/modules/okr-v2/components/ObjectiveAnalyticsDrawer/ObjectiveAnalyticsDrawer.tsx",
-      "src/modules/okr-v2/components/StrategyAnalyticsModal.tsx",
-      "src/modules/okr-v2/components/TrendIcon.tsx",
-      "src/modules/okr-v2/components/WorkItemAnalyticsDrawer/WorkItemAnalyticsDrawer.tsx",
-      "src/modules/okr-v2/components/shared/OkrProgressCell.tsx",
       "src/modules/strata/pages/StrataExecutionPage.tsx",
       "src/modules/tasks/components/insights/MonthlyChronicleView.tsx",
       "src/modules/tasks/components/insights/WeeklySummaryView.tsx",
-      "src/pages/SkillsInventory.tsx"
+      "src/pages/SkillsInventory.tsx",
+      "src/pages/TeamRoom.tsx",
+      "src/pages/releases/CommandCenterPage.tsx",
+      "src/pages/releases/CoverageReportsPage.tsx",
+      "src/pages/releases/QualityGatesPage.tsx"
     ]
   },
   "TrendingUp::@/lib/atlaskit-icons": {
@@ -45652,10 +45414,11 @@ export const usageMap: UsageMap = {
       "src/components/capacity/ExecutiveSummaryStrip.tsx",
       "src/components/dashboard/MetricCard.tsx",
       "src/components/features/FeaturesBacklogHeader.tsx",
-      "src/components/okr/KeyResultsList.tsx",
+      "src/components/layout/TeamRoomSidebar.tsx",
       "src/components/releases/quality-gates/GateHistoryPanel.tsx",
       "src/components/releases/quality-gates/ReleaseTestSummaryPanel.tsx",
       "src/components/reports/KPICard.tsx",
+      "src/components/shared/okr-pills/OkrProgressCell.tsx",
       "src/components/workhub/capacity/CapacityPage.tsx",
       "src/components/workhub/capacity/CapacityTable.tsx",
       "src/components/workhub/releases/ReleaseDetail.tsx",
@@ -45666,18 +45429,6 @@ export const usageMap: UsageMap = {
       "src/modules/backlog/components/BacklogToolbar.tsx",
       "src/modules/in-jira/pages/SummaryPage.tsx",
       "src/modules/incidents/analytics/pages/IncidentInsightsPage.tsx",
-      "src/modules/objectives/components/KeyResults/KeyResultCard.tsx",
-      "src/modules/objectives/components/KeyResults/KeyResultReportsModal.tsx",
-      "src/modules/objectives/components/Widgets/ObjectiveSummaryCard.tsx",
-      "src/modules/okr-v2/components/KeyResultAnalyticsDrawer/KeyResultAnalyticsDrawer.tsx",
-      "src/modules/okr-v2/components/KeyResultsTabV2.tsx",
-      "src/modules/okr-v2/components/ObjectiveAnalyticsDrawer/ObjectiveAnalyticsDrawer.tsx",
-      "src/modules/okr-v2/components/ObjectiveDrawerV2.tsx",
-      "src/modules/okr-v2/components/StrategyAnalyticsModal.tsx",
-      "src/modules/okr-v2/components/StrategyCockpit/AnalyticsDrawerContent.tsx",
-      "src/modules/okr-v2/components/TrendIcon.tsx",
-      "src/modules/okr-v2/components/WorkItemAnalyticsDrawer/WorkItemAnalyticsDrawer.tsx",
-      "src/modules/okr-v2/components/shared/OkrProgressCell.tsx",
       "src/modules/strata/pages/StrataCommandCenterPage.tsx",
       "src/modules/strata/pages/StrataExecutionPage.tsx",
       "src/modules/task10/components/completed/T10CompletedSummaryCards.tsx",
@@ -45686,9 +45437,13 @@ export const usageMap: UsageMap = {
       "src/pages/KanbanBoardAnalytics.tsx",
       "src/pages/PortfolioRoadmap.tsx",
       "src/pages/SkillsInventory.tsx",
+      "src/pages/TeamRoom.tsx",
       "src/pages/enterprise/DemandSummaryPage.tsx",
       "src/pages/enterprise/capacity-planner/RecommendationCard.tsx",
-      "src/pages/producthub/IdeasThemePage.tsx"
+      "src/pages/producthub/IdeasThemePage.tsx",
+      "src/pages/releases/CommandCenterPage.tsx",
+      "src/pages/releases/CoverageReportsPage.tsx",
+      "src/pages/releases/QualityGatesPage.tsx"
     ]
   },
   "TriggerChevron::./PortalMenu": {
@@ -45782,6 +45537,14 @@ export const usageMap: UsageMap = {
     "origin": "internal",
     "consumers": [
       "src/pages/ProgramDirectory.tsx"
+    ]
+  },
+  "UITooltip::@/components/ads": {
+    "name": "UITooltip",
+    "source": "@/components/ads",
+    "origin": "internal",
+    "consumers": [
+      "src/pages/releases/CommandCenterPage.tsx"
     ]
   },
   "UnassignedAvatar::./UnassignedAvatar": {
@@ -45900,7 +45663,6 @@ export const usageMap: UsageMap = {
     "consumers": [
       "src/components/backlog/CatalystThemeDrawer.tsx",
       "src/components/items/epics/drawer-tabs/EpicAuditHistoryTab.tsx",
-      "src/modules/okr-v2/components/ObjectiveDrawerV2.tsx",
       "src/stories/components/SharedRemaining.stories.tsx"
     ]
   },
@@ -45910,7 +45672,6 @@ export const usageMap: UsageMap = {
     "origin": "internal",
     "consumers": [
       "src/components/items/epics/drawer-tabs/EpicLinksViewTab.tsx",
-      "src/modules/okr-v2/components/ObjectiveDrawerV2.tsx",
       "src/stories/components/SharedRemaining.stories.tsx"
     ]
   },
@@ -46072,6 +45833,15 @@ export const usageMap: UsageMap = {
       "src/pages/project/feature-detail/FeatureOverviewTab.tsx"
     ]
   },
+  "UploadIcon::@atlaskit/icon/core/upload": {
+    "name": "UploadIcon",
+    "source": "@atlaskit/icon/core/upload",
+    "origin": "atlaskit",
+    "consumers": [
+      "src/pages/admin/NotificationTriggers.tsx"
+    ],
+    "package": "@atlaskit/icon"
+  },
   "UploadIcon::@atlaskit/icon/glyph/upload": {
     "name": "UploadIcon",
     "source": "@atlaskit/icon/glyph/upload",
@@ -46176,7 +45946,8 @@ export const usageMap: UsageMap = {
       "src/modules/work-hub/components/GroupByMenu.tsx",
       "src/pages/program/ExecutionWorkbench/WorkbenchDetailsDrawer.tsx",
       "src/pages/project/feature-detail/FeatureAuditTab.tsx",
-      "src/pages/project/feature-detail/FeatureRightRail.tsx"
+      "src/pages/project/feature-detail/FeatureRightRail.tsx",
+      "src/pages/releases/CommandCenterPage.tsx"
     ]
   },
   "UserAvatar::@/components/shared/UserAvatar": {
@@ -46188,6 +45959,7 @@ export const usageMap: UsageMap = {
       "src/components/project-hub/dashboard/widgets/OverdueWidget.tsx",
       "src/components/project-hub/dashboard/widgets/ProductionIncidentsWidget.tsx",
       "src/components/project-hub/dashboard/widgets/QADefectsWidget.tsx",
+      "src/components/project-hub/dashboard/widgets/TeamMemberHoverCard 2.tsx",
       "src/components/project-hub/dashboard/widgets/TeamMemberHoverCard.tsx",
       "src/components/project-hub/dashboard/widgets/TeamWorkloadWidget.tsx",
       "src/components/project-hub/dashboard/widgets/TimeInStatusFullscreenModal.tsx",
@@ -46265,7 +46037,6 @@ export const usageMap: UsageMap = {
       "src/components/items/epics/drawer-tabs/EpicDetailsViewTab.tsx",
       "src/components/releases/defects/ReportDefectModal.tsx",
       "src/modules/backlog/components/CreateEpicModal.tsx",
-      "src/modules/okr-v2/components/OKRSmartFiltersDialog.tsx",
       "src/modules/program-epics/components/CreateEpicDialog.tsx",
       "src/modules/program-epics/components/EditEpicDialog.tsx"
     ]
@@ -46307,7 +46078,8 @@ export const usageMap: UsageMap = {
       "src/modules/task10/components/panel/T10ActivityTimeline.tsx",
       "src/modules/tasks/components/workstreams/WorkstreamDrawer.tsx",
       "src/pages/SkillsInventory.tsx",
-      "src/pages/project/FeatureDetailPage.tsx"
+      "src/pages/project/FeatureDetailPage.tsx",
+      "src/pages/releases/DefectDetailPage.tsx"
     ]
   },
   "UserProfile::@/hooks/useUsers": {
@@ -46377,7 +46149,6 @@ export const usageMap: UsageMap = {
       "src/modules/incidents/kanban/components/KanbanCard.tsx",
       "src/modules/incidents/kanban/components/KanbanFiltersBar.tsx",
       "src/modules/incidents/kanban/components/SetCommitteeApproversModal.tsx",
-      "src/modules/okr-v2/components/ObjectiveDrawerV2.tsx",
       "src/modules/project-work-hub/ProjectWorkHubPage.tsx",
       "src/modules/strata/pages/StrataAdminConfigPage.tsx",
       "src/modules/strata/pages/StrataKpiDetailPage.tsx",
@@ -46389,6 +46160,7 @@ export const usageMap: UsageMap = {
       "src/modules/tasks/components/dashboard/DashboardTeamWorkloadV2.tsx",
       "src/modules/tasks/components/workstreams/CreateWorkstreamModal.tsx",
       "src/modules/tasks/components/workstreams/WorkstreamMembersDialog.tsx",
+      "src/modules/work-hub/WorkHubLayout.tsx",
       "src/pages/SkillsInventory.tsx",
       "src/pages/WorkManager.tsx",
       "src/pages/enterprise/CapacityPlannerPage.tsx",
@@ -46396,7 +46168,8 @@ export const usageMap: UsageMap = {
       "src/pages/enterprise/capacity-planner/RecommendationCard.tsx",
       "src/pages/enterprise/capacity-planner/TableView.tsx",
       "src/pages/enterprise/capacity-planner/TimelineView.tsx",
-      "src/pages/items/reports/EpicResponsibilityMatrix.tsx"
+      "src/pages/items/reports/EpicResponsibilityMatrix.tsx",
+      "src/pages/releases/CommandCenterPage.tsx"
     ]
   },
   "Users2::@/lib/atlaskit-icons": {
@@ -46605,7 +46378,8 @@ export const usageMap: UsageMap = {
     "source": "@/lib/atlaskit-icons",
     "origin": "internal",
     "consumers": [
-      "src/components/evidence/reports/EvidenceStats.tsx"
+      "src/components/evidence/reports/EvidenceStats.tsx",
+      "src/pages/releases/DefectDetailPage.tsx"
     ]
   },
   "VideoIcon::@atlaskit/icon/core/video": {
@@ -46640,8 +46414,7 @@ export const usageMap: UsageMap = {
     "source": "@atlaskit/icon/core/video-stop",
     "origin": "atlaskit",
     "consumers": [
-      "src/components/catalyst-detail-views/shared/sections/Description/_components/MicRecordingBar/MicRecordingBar.tsx",
-      "src/features/voice-flow/VoiceMicButton.tsx"
+      "src/components/catalyst-detail-views/shared/sections/Description/_components/MicRecordingBar/MicRecordingBar.tsx"
     ],
     "package": "@atlaskit/icon"
   },
@@ -46716,6 +46489,15 @@ export const usageMap: UsageMap = {
     "consumers": [
       "src/components/backlog/BacklogHeader.tsx",
       "src/components/backlog/ViewingDropdown.tsx"
+    ]
+  },
+  "ViewMode::../types": {
+    "name": "ViewMode",
+    "source": "../types",
+    "origin": "internal",
+    "consumers": [
+      "src/features/all-releases/components/Toolbar.tsx",
+      "src/features/all-releases/components/ViewToggle.tsx"
     ]
   },
   "ViewMode::./RoadmapToolbar": {
@@ -46832,23 +46614,6 @@ export const usageMap: UsageMap = {
       "src/App.tsx"
     ]
   },
-  "VoiceMicButton::@/features/voice-flow": {
-    "name": "VoiceMicButton",
-    "source": "@/features/voice-flow",
-    "origin": "internal",
-    "consumers": [
-      "src/components/chat/main/MessageComposer.tsx",
-      "src/features/chat-v2/components/Composer/Composer.tsx"
-    ]
-  },
-  "VoiceSettingsTab::@/features/voice-flow/VoiceSettingsTab": {
-    "name": "VoiceSettingsTab",
-    "source": "@/features/voice-flow/VoiceSettingsTab",
-    "origin": "internal",
-    "consumers": [
-      "src/pages/UserProfile.tsx"
-    ]
-  },
   "Wallet::@/lib/atlaskit-icons": {
     "name": "Wallet",
     "source": "@/lib/atlaskit-icons",
@@ -46885,7 +46650,11 @@ export const usageMap: UsageMap = {
       "src/components/layout/CatalystShell.tsx",
       "src/components/shared/JiraTable/flags.tsx",
       "src/config/workItemConfig.ts",
+      "src/features/all-releases/components/AIInsightsBar.tsx",
+      "src/features/all-releases/components/AIInsightsDrawer.tsx",
+      "src/features/all-releases/components/SummaryCards.tsx",
       "src/features/my-test-scope/components/IncidentsPanel.tsx",
+      "src/features/release-calendar/components/CalendarAIInsights.tsx",
       "src/features/release-compare/components/CompareInsightsBar.tsx",
       "src/features/release-compare/components/ComparisonTable.tsx",
       "src/features/release-compare/components/QualityGateBar.tsx",
@@ -46895,6 +46664,7 @@ export const usageMap: UsageMap = {
       "src/modules/project-work-hub/components/linked-work-items/LinkedWorkItemsBody.tsx",
       "src/modules/workhub/admin/components/SyncLogs.tsx",
       "src/pages/admin/CapacityDepartments.tsx",
+      "src/pages/admin/FeatureFlagsPage.tsx",
       "src/pages/admin/GovernanceSettings.tsx",
       "src/pages/admin/ResourceAssignments.tsx"
     ],
@@ -47367,14 +47137,6 @@ export const usageMap: UsageMap = {
       "src/modules/project-work-hub/components/tabs/ListTab.tsx"
     ]
   },
-  "WorkItem::../lib/okrTypes": {
-    "name": "WorkItem",
-    "source": "../lib/okrTypes",
-    "origin": "internal",
-    "consumers": [
-      "src/modules/okr-v2/hooks/useOKRStrategicData.ts"
-    ]
-  },
   "WorkItem::../types": {
     "name": "WorkItem",
     "source": "../types",
@@ -47386,16 +47148,6 @@ export const usageMap: UsageMap = {
       "src/pages/program/ExecutionWorkbench/views/BoardView.tsx",
       "src/pages/program/ExecutionWorkbench/views/RoadmapView.tsx",
       "src/pages/program/ExecutionWorkbench/views/TableView.tsx"
-    ]
-  },
-  "WorkItem::./okrTypes": {
-    "name": "WorkItem",
-    "source": "./okrTypes",
-    "origin": "internal",
-    "consumers": [
-      "src/modules/okr-v2/lib/objectiveAnalytics.ts",
-      "src/modules/okr-v2/lib/okrAnalytics.ts",
-      "src/modules/okr-v2/lib/okrMetrics.ts"
     ]
   },
   "WorkItem::./types": {
@@ -47432,22 +47184,6 @@ export const usageMap: UsageMap = {
     "consumers": [
       "src/lib/date-pulse/DatePulseEngine.ts",
       "src/lib/date-pulse/HealthStatusEngine.ts"
-    ]
-  },
-  "WorkItemAnalyticsData::../lib/workItemAnalytics": {
-    "name": "WorkItemAnalyticsData",
-    "source": "../lib/workItemAnalytics",
-    "origin": "internal",
-    "consumers": [
-      "src/modules/okr-v2/hooks/useWorkItemAnalytics.ts"
-    ]
-  },
-  "WorkItemAnalyticsDrawer::../WorkItemAnalyticsDrawer": {
-    "name": "WorkItemAnalyticsDrawer",
-    "source": "../WorkItemAnalyticsDrawer",
-    "origin": "internal",
-    "consumers": [
-      "src/modules/okr-v2/components/StrategyCockpit/StrategyCockpit.tsx"
     ]
   },
   "WorkItemBadge::@/components/dependencies/WorkItemIcon": {
@@ -47574,7 +47310,6 @@ export const usageMap: UsageMap = {
       "src/components/catalyst-ai/AINextItem.tsx",
       "src/components/catalyst-ai/AIPriorityCard.tsx",
       "src/modules/backlog/components/BacklogSection.tsx",
-      "src/modules/okr-v2/components/shared/OkrWorkItemBadge.tsx",
       "src/modules/work-hub/views/SummaryView.tsx",
       "src/pages/StarredPage.tsx",
       "src/pages/enterprise/EnterpriseEpics.tsx",
@@ -47590,14 +47325,6 @@ export const usageMap: UsageMap = {
       "src/components/global-search/GlobalSearchPanel.tsx",
       "src/features/notifications/components/DirectWorkItemIcon.tsx",
       "src/stories/components/SharedRemaining.stories.tsx"
-    ]
-  },
-  "WorkItemKind::../lib/okrTypes": {
-    "name": "WorkItemKind",
-    "source": "../lib/okrTypes",
-    "origin": "internal",
-    "consumers": [
-      "src/modules/okr-v2/hooks/useOKRStrategicData.ts"
     ]
   },
   "WorkItemLabel::@/hooks/useWorkItemLabels": {
@@ -48501,7 +48228,6 @@ export const usageMap: UsageMap = {
       "src/components/releasehub/CreateSopTemplateModal.tsx",
       "src/components/releasehub/FacetFilterBar.tsx",
       "src/components/releasehub/detail/ReleaseDetailTabs.tsx",
-      "src/components/releasehub/foryou/ReleaseChangeAnnouncementBanner.tsx",
       "src/components/releases/all-releases/ReleasesBulkActionBar.tsx",
       "src/components/releases/all-releases/ReleasesToolbar.tsx",
       "src/components/releases/dashboard/FilterBar.tsx",
@@ -48527,6 +48253,7 @@ export const usageMap: UsageMap = {
       "src/components/shared/rich-text/atlaskit/atlaskitMediaOverrides.tsx",
       "src/components/skills-inventory/AddTeamMemberModal.tsx",
       "src/components/skills-inventory/SkillsFiltersDialog.tsx",
+      "src/components/stories/CreateStoryModal.tsx",
       "src/components/stories/StoryLinks.tsx",
       "src/components/stories/StoryQuickAdd.tsx",
       "src/components/teams/AddTeamMemberDialog.tsx",
@@ -48578,15 +48305,6 @@ export const usageMap: UsageMap = {
       "src/modules/incidents/analytics/components/DrilldownDrawer.tsx",
       "src/modules/incidents/kanban/components/KanbanFiltersBar.tsx",
       "src/modules/incidents/kanban/components/SetCommitteeApproversModal.tsx",
-      "src/modules/objectives/components/AlignedItems/ObjectivesSection.tsx",
-      "src/modules/okr-v2/components/CreateObjectiveDialogV2.tsx",
-      "src/modules/okr-v2/components/KeyResultAnalyticsDrawer/KeyResultAnalyticsDrawer.tsx",
-      "src/modules/okr-v2/components/OKRSmartFiltersDialog.tsx",
-      "src/modules/okr-v2/components/ObjectiveAnalyticsDrawer/ObjectiveAnalyticsDrawer.tsx",
-      "src/modules/okr-v2/components/ObjectiveDrawerV2.tsx",
-      "src/modules/okr-v2/components/StrategyAnalyticsModal.tsx",
-      "src/modules/okr-v2/components/StrategyCockpit/StrategyCockpit.tsx",
-      "src/modules/okr-v2/components/WorkItemAnalyticsDrawer/WorkItemAnalyticsDrawer.tsx",
       "src/modules/priorities/components/PriCheckoutModal.tsx",
       "src/modules/priorities/components/PriSidePanel.tsx",
       "src/modules/priorities/components/PriToastContainer.tsx",
@@ -48661,6 +48379,7 @@ export const usageMap: UsageMap = {
       "src/pages/project/components/FeatureChildStories.tsx",
       "src/pages/r360-member/DetailPanel.tsx",
       "src/pages/r360-member/TicketListDrawer.tsx",
+      "src/pages/releases/AllReleasesPage.tsx",
       "src/pages/testhub/cycles/CyclesPage.tsx",
       "src/pages/work-tree/components/WorkTreeDashboard.tsx",
       "src/pages/work/Dependencies.tsx"
@@ -48700,7 +48419,9 @@ export const usageMap: UsageMap = {
       "src/pages/enterprise/DemandSummaryPage.tsx",
       "src/pages/enterprise/EnterpriseEpics.tsx",
       "src/pages/items/EpicsPage.tsx",
-      "src/pages/project/feature-detail/FeatureAuditTab.tsx"
+      "src/pages/project/feature-detail/FeatureAuditTab.tsx",
+      "src/pages/releases/DefectDetailPage.tsx",
+      "src/pages/releases/QualityGatesPage.tsx"
     ]
   },
   "XIcon::../shared/Icon": {
@@ -48785,6 +48506,7 @@ export const usageMap: UsageMap = {
       "src/modules/task10/components/week/T10WeekViewV3.tsx",
       "src/modules/tasks/components/TaskChecklist.tsx",
       "src/modules/work-hub/views/AllWorkView.tsx",
+      "src/pages/ForYouPage.tsx",
       "src/pages/ReqAssistLibrary.tsx",
       "src/pages/ResourceListingPage.tsx",
       "src/pages/admin/test/TestCaseTypesPage.tsx",
@@ -48824,10 +48546,10 @@ export const usageMap: UsageMap = {
 };
 
 export const usageMapStats = {
-  total: 4071,
-  atlaskit: 662,
-  internal: 3409,
-  generatedAt: '2026-07-09T12:38:14.114Z',
+  total: 4039,
+  atlaskit: 670,
+  internal: 3369,
+  generatedAt: '2026-07-09T12:41:36.450Z',
 };
 
 /**

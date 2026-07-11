@@ -40,7 +40,7 @@ const cardStyle: React.CSSProperties = {
   background: token('elevation.surface.raised', 'var(--ds-surface)'),
   borderRadius: 8,
   padding: 24,
-  boxShadow: token('elevation.shadow.raised', '0 1px 3px var(--ds-background-neutral-subtle-pressed, rgba(9,30,66,0.13))'),
+  boxShadow: token('elevation.shadow.raised', '0 1px 3px var(--ds-background-neutral-subtle-pressed)'),
 };
 
 const sectionTitle: React.CSSProperties = {

@@ -78,3 +78,29 @@ export function labelize(key: string | null | undefined): string {
   const s = String(key).replace(/[_-]+/g, ' ').trim();
   return s.charAt(0).toUpperCase() + s.slice(1);
 }
+
+/**
+ * Curated business labels for `strata_audit_events.action` values that don't
+ * read well verbatim ("RPC:upsert_theme_charter" → "Charter updated").
+ * Row-level INSERT/UPDATE/DELETE and unmapped RPC:<name> values fall back to
+ * a humanized version of the raw action — never invented text, no silent drop.
+ */
+const AUDIT_ACTION_LABELS: Record<string, string> = {
+  INSERT: 'Created',
+  UPDATE: 'Updated',
+  DELETE: 'Deleted',
+  'RPC:create_strategy_element': 'Created',
+  'RPC:update_element': 'Details updated',
+  'RPC:upsert_theme_charter': 'Charter updated',
+  'RPC:promote_element': 'Promoted',
+  'RPC:retire_element': 'Retired',
+};
+
+/** Business-readable audit action label — see AUDIT_ACTION_LABELS. */
+export function formatAuditAction(action: string | null | undefined): string {
+  if (!action) return '—';
+  const known = AUDIT_ACTION_LABELS[action];
+  if (known) return known;
+  const rpcName = action.match(/^RPC:(.+)$/)?.[1];
+  return rpcName ? labelize(rpcName) : action;
+}

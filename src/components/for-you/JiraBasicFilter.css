@@ -26,14 +26,14 @@
   font-size: 14px;
   font-weight: 500;
   line-height: 20px;
-  color: var(--ds-text, rgb(23, 43, 77));
+  color: var(--ds-text);
   font-family: var(--cp-font-body);
   transition: background-color 0.1s, border-color 0.1s;
 }
 .jf-trigger-btn:hover { background-color: var(--ds-background-neutral-subtle-pressed); }
 .jf-trigger-btn--active {
   background-color: var(--ds-background-information);
-  color: var(--ds-link, rgb(24, 104, 219));
+  color: var(--ds-link);
 }
 .jf-trigger-icon { flex-shrink: 0; }
 .jf-trigger-text {
@@ -48,8 +48,8 @@
   min-width: 24px;
   height: 16px;
   padding: 0 4px;
-  background-color: var(--ds-background-information, rgb(143, 184, 246));
-  color: var(--ds-text, rgb(23, 43, 77));
+  background-color: var(--ds-background-information);
+  color: var(--ds-text);
   border-radius: 2px;
   font-size: 14px;
   font-weight: 500;
@@ -63,14 +63,14 @@
   left: 0;
   margin-top: 4px;
   width: 480px;
-  background: var(--ds-surface, rgb(255, 255, 255));
+  background: var(--ds-surface);
   border-radius: 4px;
   box-shadow:
     var(--ds-text) 0px 8px 12px 0px,
     var(--ds-text) 0px 0px 1px 0px;
   overflow: hidden;
   z-index: 500;
-  color: var(--ds-text, rgb(23, 43, 77));
+  color: var(--ds-text);
   font-size: 14px;
   line-height: 20px;
 }
@@ -123,7 +123,7 @@
   font-size: 14px;
   font-weight: 500;
   line-height: 20px;
-  color: var(--ds-text, rgb(23, 43, 77));
+  color: var(--ds-text);
   background: transparent;
   white-space: nowrap;
   font-family: inherit;
@@ -132,7 +132,7 @@
 .jf-tab:hover:not(.jf-tab--active):not(:disabled) { background-color: var(--ds-background-neutral-subtle-hovered); }
 .jf-tab--active {
   background-color: var(--ds-background-information);
-  color: var(--ds-link, rgb(24, 104, 219));
+  color: var(--ds-link);
 }
 .jf-tab:disabled { opacity: 0.4; cursor: default; }
 
@@ -198,7 +198,7 @@
   font-size: 13.3333px;
   font-weight: 400;
   line-height: normal;
-  color: var(--ds-text, rgb(23, 43, 77));
+  color: var(--ds-text);
   text-align: left;
   overflow: hidden;
   font-family: inherit;
@@ -207,7 +207,7 @@
 .jf-category-item:hover:not(.jf-category-item--active) { background-color: var(--ds-background-neutral-subtle-hovered); }
 .jf-category-item--active {
   background-color: var(--ds-background-information);
-  color: var(--ds-link, rgb(24, 104, 219));
+  color: var(--ds-link);
 }
 .jf-category-item--active::before {
   content: "";
@@ -217,7 +217,7 @@
   top: 0;
   width: 2px;
   height: 100%;
-  background-color: var(--ds-link, rgb(24, 104, 219));
+  background-color: var(--ds-link);
 }
 .jf-category-label { display: flex; flex: 1 1 auto; color: inherit; font-size: inherit; }
 .jf-category-text {
@@ -233,7 +233,7 @@
   align-items: center;
   margin-left: 4px;
   flex-shrink: 0;
-  color: var(--ds-link, rgb(24, 104, 219));
+  color: var(--ds-link);
 }
 .jf-category-badge {
   display: flex;
@@ -242,8 +242,8 @@
   min-width: 24px;
   height: 16px;
   padding: 0 4px;
-  background-color: var(--ds-background-information, rgb(143, 184, 246));
-  color: var(--ds-text, rgb(23, 43, 77));
+  background-color: var(--ds-background-information);
+  color: var(--ds-text);
   border-radius: 2px;
   font-size: 13.3333px;
   line-height: 1;
@@ -262,11 +262,11 @@
   cursor: pointer;
   font-size: 14px;
   font-weight: 500;
-  color: var(--ds-text, rgb(23, 43, 77));
+  color: var(--ds-text);
   font-family: inherit;
   transition: color 0.1s;
 }
-.jf-clear-btn:hover:not(:disabled) { color: var(--ds-text, rgb(41, 42, 46)); }
+.jf-clear-btn:hover:not(:disabled) { color: var(--ds-text); }
 .jf-clear-btn:disabled { opacity: 0.5; cursor: default; }
 
 /* ─── RIGHT PANE ─── */
@@ -303,7 +303,7 @@
   width: 100%;
   height: 32px;
   flex-shrink: 0;
-  background: var(--ds-surface, rgb(255, 255, 255));
+  background: var(--ds-surface);
   border: 0.556px solid rgb(140, 143, 151); /* ads-scanner:ignore-line — intentional design color, no ADS token equivalent */
   border-radius: 3px;
 }
@@ -312,7 +312,7 @@
   padding: 0 2px 0 8px;
   flex-shrink: 0;
   width: 26px;
-  color: var(--ds-text, rgb(23, 43, 77));
+  color: var(--ds-text);
 }
 .jf-search-input-area {
   display: grid;
@@ -346,7 +346,7 @@
   padding: 0;
   font-size: 14px;
   line-height: 20px;
-  color: var(--ds-text, rgb(23, 43, 77));
+  color: var(--ds-text);
   font-family: inherit;
   width: 100%;
 }
@@ -396,7 +396,7 @@
   align-items: center;
   gap: 8px;
   height: 24px;
-  color: var(--ds-text, rgb(23, 43, 77));
+  color: var(--ds-text);
   font-size: 14px;
   font-weight: 400;
 }
@@ -415,7 +415,7 @@
   height: 24px;
   border-radius: 50%;
   overflow: hidden;
-  box-shadow: var(--ds-surface, rgb(255, 255, 255)) 0px 0px 0px 2px;
+  box-shadow: var(--ds-surface) 0px 0px 0px 2px;
 }
 .jf-avatar-img { width: 24px; height: 24px; border-radius: 9999px; object-fit: cover; }
 .jf-avatar-initials-text {
@@ -429,7 +429,7 @@
 .jf-option-label {
   font-size: 14px;
   font-weight: 400;
-  color: var(--ds-text, rgb(23, 43, 77));
+  color: var(--ds-text);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -466,15 +466,15 @@
   cursor: pointer;
   font-size: 14px;
   font-weight: 500;
-  color: var(--ds-text, rgb(23, 43, 77));
+  color: var(--ds-text);
   padding: 0;
   font-family: inherit;
 }
-.jf-feedback-btn:hover { color: var(--ds-text, rgb(41, 42, 46)); }
+.jf-feedback-btn:hover { color: var(--ds-text); }
 .jf-shortcut {
   font-size: 14px;
   font-weight: 400;
-  color: var(--ds-text, rgb(23, 43, 77));
+  color: var(--ds-text);
   display: flex;
   align-items: center;
   gap: 4px;
@@ -485,7 +485,7 @@
   align-items: center;
   justify-content: center;
   background-color: var(--ds-shadow-overlay);
-  color: var(--ds-text, rgb(23, 43, 77));
+  color: var(--ds-text);
   border-radius: 3px;
   padding: 0px 8px;
   font-family: inherit;

@@ -181,9 +181,9 @@ function SortableRow({
           <button
             onClick={() => onResourceCountClick(assignment, budgetData?.linkedResources || [])}
             className="flex items-center gap-1.5 px-2 py-1 rounded transition-colors cursor-pointer"
-            style={{ background: 'var(--ds-background-success-bold, rgba(34,197,94,0.1))', color: 'var(--ds-text-success)' }}
-            onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = 'var(--ds-background-success-bold, rgba(34,197,94,0.2))')}
-            onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background = 'var(--ds-background-success-bold, rgba(34,197,94,0.1))')}
+            style={{ background: 'var(--ds-background-success-bold)', color: 'var(--ds-text-success)' }}
+            onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = 'var(--ds-background-success-bold)')}
+            onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background = 'var(--ds-background-success-bold)')}
           >
             <span style={{ display: 'inline-flex' }}><PeopleGroupIcon label="" size="small" /></span>
             <span className="text-sm font-medium">{resourceCount}</span>
@@ -895,7 +895,7 @@ export default function ResourceAssignmentsPage() {
                   onDragEnd={(e) => handleDragEnd(e, group.type)}
                 >
                   <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                    {/* Jira-parity table headers: 12/653/var(--ds-text-subtle, rgb(80,82,88)) SENTENCE-CASE
+                    {/* Jira-parity table headers: 12/653/var(--ds-text-subtle) SENTENCE-CASE
                         (not uppercase), hairline bottom border, padding 8px 12px 8px 0. */}
                     <thead>
                       <tr>
@@ -923,7 +923,7 @@ export default function ResourceAssignmentsPage() {
                               fontWeight: 653,
                               color: 'var(--ds-text-subtle)',
                               padding: '8px 12px 8px 0',
-                              borderBottom: '1.67px solid var(--ds-text, rgba(11, 18, 14, 0.14))',
+                              borderBottom: '1.67px solid var(--ds-text)',
                               textTransform: 'none',
                               letterSpacing: 'normal',
                               lineHeight: '16px',
@@ -1245,7 +1245,7 @@ export default function ResourceAssignmentsPage() {
         <DialogContent className="sm:max-w-lg">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{ background: 'var(--ds-background-success-bold, rgba(34,197,94,0.1))' }}>
+              <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{ background: 'var(--ds-background-success-bold)' }}>
                 <span style={{ display: 'inline-flex', color: 'var(--ds-text-success)' }}><PeopleGroupIcon label="" size="small" /></span>
               </div>
               <div>

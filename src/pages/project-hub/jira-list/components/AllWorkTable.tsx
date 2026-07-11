@@ -280,7 +280,7 @@ export function AllWorkTable({ items, isLoading, onOpenItem, pageTitle = 'All Wo
               borderRadius: 3,
               fontSize: 'var(--ds-font-size-100)', fontWeight: 600,
               color: sortBy === 'updated' ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' : T.textSecondary,
-              background: sortBy === 'updated' ? 'var(--ds-background-selected, rgba(37,99,235,0.06))' : T.white,
+              background: sortBy === 'updated' ? 'var(--ds-background-selected)' : T.white,
               cursor: 'pointer', fontFamily: 'var(--cp-font-body)',
             }}
           >
@@ -294,7 +294,7 @@ export function AllWorkTable({ items, isLoading, onOpenItem, pageTitle = 'All Wo
               borderRadius: 3,
               fontSize: 'var(--ds-font-size-100)', fontWeight: 600,
               color: sortBy === 'created' ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' : T.textSecondary,
-              background: sortBy === 'created' ? 'var(--ds-background-selected, rgba(37,99,235,0.06))' : T.white,
+              background: sortBy === 'created' ? 'var(--ds-background-selected)' : T.white,
               cursor: 'pointer', fontFamily: 'var(--cp-font-body)',
             }}
           >
@@ -390,7 +390,7 @@ function PaginationBtn({ children, disabled, active, onClick }: {
         borderRadius: 3,
         fontSize: 'var(--ds-font-size-200)', fontWeight: active ? 600 : 400,
         color: disabled ? 'var(--cp-text-muted)' : active ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' : 'var(--cp-text-secondary, var(--cp-text-secondary, var(--cp-text-secondary)))',
-        background: active ? 'var(--ds-background-selected, rgba(37,99,235,0.06))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
+        background: active ? 'var(--ds-background-selected)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
         cursor: disabled ? 'default' : 'pointer',
         fontFamily: 'var(--cp-font-body)',
         opacity: disabled ? 0.5 : 1,

@@ -136,14 +136,14 @@ export function MoveWorkItemModal({ issue, currentProjectKey, tk, onClose, onMov
       onClick={handleOverlayClick}
       style={{
         position: 'fixed', inset: 0, zIndex: 10001,
-        background: 'var(--ds-shadow-raised, rgba(0,0,0,0.5))',
+        background: 'var(--ds-shadow-raised)',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
       }}
     >
       <div style={{
         width: 520, maxHeight: '80vh', background: modalBg,
         borderRadius: 8, border: `1px solid ${border}`,
-        boxShadow: '0 8px 24px var(--ds-shadow-raised, rgba(0,0,0,0.3))',
+        boxShadow: '0 8px 24px var(--ds-shadow-raised)',
         display: 'flex', flexDirection: 'column', overflow: 'hidden',
       }}>
         {/* Header */}

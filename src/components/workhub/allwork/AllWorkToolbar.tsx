@@ -46,7 +46,7 @@ function FilterDropdown({ label, options, selected, onToggle, isLoading }: {
         style={{
           borderColor: selected.length > 0 ? 'var(--cp-blue)' : 'var(--bd-default, var(--cp-ink-1))',
           color: selected.length > 0 ? 'var(--cp-blue)' : 'var(--fg-2)',
-          backgroundColor: selected.length > 0 ? 'var(--ds-background-information, rgba(37,99,235,0.08))' : 'var(--bg-app)',
+          backgroundColor: selected.length > 0 ? 'var(--ds-background-information)' : 'var(--bg-app)',
           fontWeight: selected.length > 0 ? 500 : 400,
           fontFamily: 'var(--cp-font-body)',
         }}
@@ -164,7 +164,7 @@ export function AllWorkToolbar({
       {hasFilters && (
         <button
           onClick={() => onFilterChange({})}
-          className="inline-flex items-center gap-1 px-2 h-8 text-[12px] rounded hover:bg-[var(--ds-background-danger-bold, rgba(220,38,38,0.06))] transition-colors duration-80 focus-visible:outline-2 focus-visible:outline-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))]"
+          className="inline-flex items-center gap-1 px-2 h-8 text-[12px] rounded hover:bg-[var(--ds-background-danger-bold)] transition-colors duration-80 focus-visible:outline-2 focus-visible:outline-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))]"
           style={{ color: 'var(--sem-danger)' }}
           aria-label="Clear all filters"
         >
@@ -248,11 +248,11 @@ export function AllWorkToolbar({
             onClick={() => onViewModeChange(key)}
             className="flex items-center gap-1.5 px-3 h-8 text-[12px] transition-colors duration-80 focus-visible:outline-2 focus-visible:outline-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))]"
             style={{
-              backgroundColor: viewMode === key ? 'var(--ds-background-information, rgba(37,99,235,0.08))' : 'var(--bg-app)',
+              backgroundColor: viewMode === key ? 'var(--ds-background-information)' : 'var(--bg-app)',
               color: viewMode === key ? 'var(--cp-blue)' : 'var(--fg-3)',
               fontWeight: viewMode === key ? 500 : 400,
               borderLeft: key === 'split' ? '1px solid var(--bd-default, var(--cp-ink-1))' : 'none',
-              boxShadow: viewMode === key ? 'inset 0 1px 2px var(--ds-shadow-raised, rgba(0,0,0,0.06))' : 'none',
+              boxShadow: viewMode === key ? 'inset 0 1px 2px var(--ds-shadow-raised)' : 'none',
               fontFamily: 'var(--cp-font-body)',
             }}
             role="radio"

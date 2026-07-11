@@ -368,7 +368,7 @@ export function AddParentPicker({
         className="p-0 z-[10001]"
         style={{
           borderRadius: 8,
-          boxShadow: '0 8px 16px var(--ds-shadow-raised, rgba(0,0,0,0.12)), 0 0 1px var(--ds-shadow-raised, rgba(0,0,0,0.12))',
+          boxShadow: '0 8px 16px var(--ds-shadow-raised), 0 0 1px var(--ds-shadow-raised)',
           width: showAllPanel ? 480 : 380,
         }}
       >

@@ -11,16 +11,23 @@
  * Data-state labels (live/draft/pending/locked) are SYSTEM states (DB CHECKs);
  * band labels/appearances come from governed threshold-scheme config at runtime.
  */
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import {
-  Button, DropdownMenu, Heading, Lozenge,
-  Modal, ModalBody, ModalFooter, ModalHeader, ModalTitle, SectionMessage, Textfield,
+  Button, DropdownMenu, Heading, Lozenge, ProgressBar,
+  Modal, ModalBody, ModalFooter, ModalHeader, ModalTitle, SectionMessage, Spinner, Textfield, Tooltip,
 } from '@/components/ads';
 import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
-import { ChevronDown } from '@/lib/atlaskit-icons';
+import { ChevronDown, ChevronRight, Plus } from '@/lib/atlaskit-icons';
+import { JiraTable } from '@/components/shared/JiraTable';
+import type { Column } from '@/components/shared/JiraTable';
+import { kpiApi } from '../domain';
 import { useBandResolver, useStrataContext } from '../hooks/useStrata';
-import { fmtScore } from './format';
-import type { DataState, ThresholdBand } from '../types';
+import { StrataNotificationBell } from './StrataNotificationBell';
+import { fmtPct, fmtRatioPct, fmtSarCompact, fmtScore, fmtUnit, labelize } from './format';
+import type { DataState, StrataDependency, StrataKeyResult, StrataOkr, StrataProjectCard, ThresholdBand } from '../types';
+
+const STALE = 30_000;
 
 export const T = {
   text: 'var(--ds-text)',
@@ -64,10 +71,23 @@ const EXECUTION_HEALTH_APPEARANCE: Record<ExecutionHealthKey, React.ComponentPro
   on_track: 'success', minor_delay: 'moved', major_delay: 'removed',
   not_started: 'default', not_available: 'default', on_hold: 'default',
 };
+// Meanings mirror the server rules in strata_calc_execution_progress
+// (20260706231000) verbatim — if the RPC thresholds change, change these too.
+const EXECUTION_HEALTH_MEANING: Record<ExecutionHealthKey, string> = {
+  on_track: 'Schedule variance is under 10% and forecast is within 30 days of baseline end.',
+  minor_delay: 'Schedule variance is in the 10–20% minor-delay band.',
+  major_delay: 'Schedule variance is at or above 20%, or forecast end is more than 30 days beyond baseline end.',
+  not_started: 'Baseline window has not started and no progress recorded yet.',
+  not_available: 'Insufficient milestone baseline or progress data to calculate health.',
+  on_hold: 'Project is on hold — excluded from execution rollups.',
+};
 export function StrataExecutionHealthLozenge({ health }: { health: ExecutionHealthKey | string | null | undefined }) {
   const key = (health ?? 'not_available') as ExecutionHealthKey;
   const label = EXECUTION_HEALTH_LABEL[key] ?? String(health);
-  return <Lozenge appearance={EXECUTION_HEALTH_APPEARANCE[key] ?? 'default'}>{label}</Lozenge>;
+  const lozenge = <Lozenge appearance={EXECUTION_HEALTH_APPEARANCE[key] ?? 'default'}>{label}</Lozenge>;
+  const meaning = EXECUTION_HEALTH_MEANING[key];
+  if (!meaning) return lozenge;
+  return <Tooltip content={`${label} — ${meaning}`}><span style={{ display: 'inline-flex' }}>{lozenge}</span></Tooltip>;
 }
 
 // ── Band lozenge + band tone (governed config; zero-assumption when unknown) ─
@@ -76,9 +96,13 @@ export function StrataBandLozenge({ bandKey, band }: { bandKey?: string | null; 
   const resolved = band ?? resolve(bandKey ?? null);
   if (!resolved) return bandKey ? <Lozenge appearance="default">{bandKey}</Lozenge> : null;
   return (
-    <Lozenge appearance={(resolved.appearance as React.ComponentProps<typeof Lozenge>['appearance']) ?? 'default'}>
-      {resolved.label}
-    </Lozenge>
+    <Tooltip content={`${resolved.label} — governed threshold band, score ≥ ${resolved.min_score}.`}>
+      <span style={{ display: 'inline-flex' }}>
+        <Lozenge appearance={(resolved.appearance as React.ComponentProps<typeof Lozenge>['appearance']) ?? 'default'}>
+          {resolved.label}
+        </Lozenge>
+      </span>
+    </Tooltip>
   );
 }
 
@@ -127,6 +151,73 @@ export function StrataScoreRing({
         {fmtScore(score)}
       </span>
     </div>
+  );
+}
+
+// ── Segmented value bar (Command Room SRC-M5) ────────────────────────────────
+// Planned→Forecast→Realized→Validated as ONE visual; leakage = the visible gap.
+// No canonical magnitude-overlay bar exists: WorkItemsProgressBar's contract is
+// count buckets partitioning a total, while value kinds are NESTED magnitudes
+// (validated ⊆ realized; forecast vs planned reference) — proof in sessions/011.
+// Token-pure like StrataScoreRing; zero-assumption (renders nothing w/o scale).
+export function StrataValueBar({
+  planned, forecast, realized, validated, periodName, testId,
+}: {
+  planned: number | null; forecast: number | null; realized: number | null; validated: number | null;
+  periodName?: string | null; testId?: string;
+}) {
+  const scale = Math.max(planned ?? 0, forecast ?? 0, realized ?? 0);
+  if (!(scale > 0)) return null;
+  const pct = (v: number | null) => (v == null ? null : Math.max(0, Math.min(100, (v / scale) * 100)));
+  const p = pct(planned); const f = pct(forecast); const r = pct(realized); const va = pct(validated);
+  const leakage = planned != null && forecast != null && forecast < planned ? planned - forecast : null;
+  const summary = [
+    planned != null ? `Planned ${fmtSarCompact(planned)}` : null,
+    forecast != null ? `Forecast ${fmtSarCompact(forecast)}` : null,
+    realized != null ? `Realized ${fmtSarCompact(realized)}` : null,
+    validated != null ? `Validated ${fmtSarCompact(validated)}` : null,
+    leakage != null ? `Leakage ${fmtSarCompact(leakage)}` : null,
+  ].filter(Boolean).join(' · ');
+  return (
+    <div data-testid={testId} style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+      <Tooltip content={`${periodName ? `${periodName} — ` : ''}${summary}`}>
+        <div role="img" aria-label={summary} style={{
+          position: 'relative', height: 10, borderRadius: 5, overflow: 'hidden',
+          background: 'var(--ds-background-neutral)',
+        }}>
+          {leakage != null && f != null && p != null ? (
+            <div style={{ position: 'absolute', left: `${f}%`, width: `${p - f}%`, top: 0, bottom: 0, background: 'var(--ds-background-danger)' }} />
+          ) : null}
+          {r != null ? (
+            <div style={{ position: 'absolute', left: 0, width: `${r}%`, top: 0, bottom: 0, background: 'var(--ds-background-success)' }} />
+          ) : null}
+          {va != null ? (
+            <div style={{ position: 'absolute', left: 0, width: `${va}%`, top: 0, bottom: 0, background: 'var(--ds-background-success-bold)' }} />
+          ) : null}
+          {f != null ? (
+            <div style={{ position: 'absolute', left: `calc(${f}% - 1px)`, width: 2, top: 0, bottom: 0, background: 'var(--ds-border-bold)' }} />
+          ) : null}
+        </div>
+      </Tooltip>
+      <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap', fontSize: 'var(--ds-font-size-100)', color: T.subtle }}>
+        <ValueBarKey swatch="var(--ds-background-neutral)" label="Planned" text={planned != null ? fmtSarCompact(planned) : '—'} />
+        <ValueBarKey swatch="var(--ds-border-bold)" label="Forecast" text={forecast != null ? fmtSarCompact(forecast) : '—'} />
+        <ValueBarKey swatch="var(--ds-background-success)" label="Realized" text={realized != null ? fmtSarCompact(realized) : '—'} />
+        <ValueBarKey swatch="var(--ds-background-success-bold)" label="Validated" text={validated != null ? fmtSarCompact(validated) : '—'} />
+        {leakage != null ? (
+          <ValueBarKey swatch="var(--ds-background-danger)" label="Leakage" text={fmtSarCompact(leakage)} />
+        ) : null}
+      </div>
+    </div>
+  );
+}
+
+function ValueBarKey({ swatch, label, text }: { swatch: string; label: string; text: string }) {
+  return (
+    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, whiteSpace: 'nowrap' }}>
+      <span aria-hidden style={{ width: 10, height: 10, borderRadius: 2, background: swatch, flexShrink: 0, border: `1px solid ${T.border}` }} />
+      {label} <strong style={{ color: T.text, fontWeight: 600, fontVariantNumeric: 'tabular-nums' }}>{text}</strong>
+    </span>
   );
 }
 
@@ -349,7 +440,14 @@ export function StrataPageShell({
         * so overhanging it clips the header's left edge (the "TRATA" bug —
         * CAT-STRATA-ADS-UPLIFT-20260706-001). Align to the content grid instead. */}
       <div style={{ margin: '-12px 0 0' }}>
-        <ProjectPageHeader hubType="strata" paddingX={0} trail={trail} title={title} hideTitle={hideTitle} actions={headerActions} />
+        <ProjectPageHeader
+          hubType="strata"
+          paddingX={0}
+          trail={trail}
+          title={title}
+          hideTitle={hideTitle}
+          actions={<span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}><StrataNotificationBell />{headerActions}</span>}
+        />
       </div>
       <div style={{ margin: '8px 0 16px' }}>
         <StrataContextToolbar modelLabel={modelLabel} extra={
@@ -656,3 +754,225 @@ export function StrataPanel({
 // The evidence drawer became a full page: pages/StrataEvidencePage.tsx
 // (routes kpis/:slug/evidence · scorecards/:slug/evidence · portfolio/:slug/evidence).
 // Its rendering primitives live in components/evidence.tsx.
+
+// ── OKR / key-result accordion (canonical — shared by KPI Library's OKR panel ──
+//    and Theme/Objective detail's OKR Performance panel, CAT-STRATA-THEME-DETAIL
+//    -20260710-001 Slice 2. One definition, two call sites.) ──
+const OkrDash = () => <span style={{ color: T.subtlest }}>—</span>;
+
+export const OKR_STATUS_LOZENGE: Record<StrataOkr['status'], { label: string; appearance: React.ComponentProps<typeof Lozenge>['appearance'] }> = {
+  draft: { label: 'Draft', appearance: 'default' },
+  active: { label: 'Active', appearance: 'inprogress' },
+  closed: { label: 'Closed', appearance: 'default' },
+};
+
+/** Display-only progress of current within baseline→target (mandated by S-116). */
+export const krProgressFraction = (kr: StrataKeyResult): number | null => {
+  if (kr.target == null || kr.current_value == null) return null;
+  const base = kr.baseline ?? 0;
+  const span = kr.target - base;
+  if (span === 0) return null;
+  return Math.max(0, Math.min(1, (kr.current_value - base) / span));
+};
+
+/** Lazy key-result fetch — mounts only when the OKR row is expanded (S-115/S-116). */
+export function KeyResultsList({ okrId }: { okrId: string }) {
+  const q = useQuery({
+    queryKey: ['strata', 'key-results', okrId],
+    queryFn: () => kpiApi.keyResults(okrId),
+    staleTime: STALE,
+  });
+
+  const columns = useMemo<Column<StrataKeyResult>[]>(() => [
+    {
+      id: 'name',
+      label: 'Key result',
+      flex: true,
+      cell: ({ row }) => (
+        <span style={{ fontWeight: 600, color: T.text, fontSize: 'var(--ds-font-size-400)', lineHeight: 'var(--ds-line-height-body)' }}>
+          {row.name}
+        </span>
+      ),
+    },
+    {
+      id: 'range',
+      label: 'Baseline → target',
+      width: 18,
+      cell: ({ row }) => (
+        <span style={{ color: T.subtle, fontVariantNumeric: 'tabular-nums' }}>
+          {fmtUnit(row.baseline, row.unit)} → {fmtUnit(row.target, row.unit)}
+        </span>
+      ),
+    },
+    {
+      id: 'current_value',
+      label: 'Current',
+      width: 12,
+      cell: ({ row }) => (
+        <span style={{ fontWeight: 600, color: T.text, fontVariantNumeric: 'tabular-nums' }}>
+          {fmtUnit(row.current_value, row.unit)}
+        </span>
+      ),
+    },
+    {
+      id: 'progress',
+      label: 'Progress',
+      width: 16,
+      cell: ({ row }) => {
+        const frac = krProgressFraction(row);
+        return frac == null
+          ? <OkrDash />
+          : <ProgressBar value={frac} aria-label={`Progress ${Math.round(frac * 100)}%`} />;
+      },
+    },
+  ], []);
+
+  if (q.isLoading) return <div style={{ padding: '8px 0' }}><Spinner size="small" aria-label="Loading key results" /></div>;
+  if (q.isError) {
+    return <p style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-danger)', margin: '8px 0' }}>Failed to load key results.</p>;
+  }
+  const krs = (q.data ?? []) as StrataKeyResult[];
+  if (krs.length === 0) {
+    return <p style={{ fontSize: 'var(--ds-font-size-100)', color: T.subtle, margin: '8px 0' }}>No key results recorded.</p>;
+  }
+  return (
+    <div style={{ marginTop: 8 }}>
+      <JiraTable<StrataKeyResult>
+        columns={columns}
+        data={krs}
+        getRowId={(row) => row.id}
+        density="compact"
+        showRowCount={false}
+        rowsPerPage={100}
+        ariaLabel="Key results"
+      />
+    </div>
+  );
+}
+
+/** Accordion row — canonical chrome: chevron icon, hover bg, structured header (S-117). */
+export function OkrRow({ okr, objectiveName, isOpen, onToggle, onAddKeyResult }: {
+  okr: StrataOkr;
+  objectiveName: string | null;
+  isOpen: boolean;
+  onToggle: () => void;
+  onAddKeyResult?: () => void;
+}) {
+  const [hover, setHover] = useState(false);
+  const status = OKR_STATUS_LOZENGE[okr.status];
+  const confidenceText = okr.confidence != null
+    ? `Confidence ${okr.confidence <= 1 ? fmtRatioPct(okr.confidence) : fmtPct(okr.confidence)}`
+    : null;
+  return (
+    <div style={{ borderBottom: `1px solid ${T.border}` }}>
+      <button
+        type="button"
+        onClick={onToggle}
+        aria-expanded={isOpen}
+        onMouseEnter={() => setHover(true)}
+        onMouseLeave={() => setHover(false)}
+        style={{
+          display: 'flex', alignItems: 'center', gap: 8, width: '100%',
+          background: hover ? T.sunken : 'none', border: 'none', padding: '12px 8px', cursor: 'pointer',
+          font: 'inherit', textAlign: 'left', color: T.text, borderRadius: 4,
+        }}
+      >
+        <span aria-hidden style={{ display: 'inline-flex', color: 'var(--ds-icon-subtle)', flexShrink: 0 }}>
+          {isOpen ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+        </span>
+        <span style={{ fontWeight: 600, fontSize: 'var(--ds-font-size-400)', lineHeight: 'var(--ds-line-height-body)', flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+          {okr.name}
+        </span>
+        {objectiveName ? (
+          <span style={{ fontSize: 'var(--ds-font-size-100)', color: T.subtle, whiteSpace: 'nowrap' }}>
+            Objective · {objectiveName}
+          </span>
+        ) : null}
+        {confidenceText ? (
+          <span style={{ fontSize: 'var(--ds-font-size-100)', color: T.subtle, minWidth: 110, textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>
+            {confidenceText}
+          </span>
+        ) : null}
+        {status
+          ? <Lozenge appearance={status.appearance}>{status.label}</Lozenge>
+          : <Lozenge appearance="default">{labelize(okr.status)}</Lozenge>}
+      </button>
+      {isOpen ? (
+        <div style={{ padding: '0 8px 12px 32px' }}>
+          <KeyResultsList okrId={okr.id} />
+          {onAddKeyResult ? (
+            <div style={{ marginTop: 8 }}>
+              <Button
+                appearance="default"
+                spacing="compact"
+                iconBefore={<Plus size={14} />}
+                onClick={onAddKeyResult}
+                testId={`strata-add-kr-${okr.id}`}
+              >
+                Add key result
+              </Button>
+            </div>
+          ) : null}
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+// ── Project Card rollup + forecast resolver (canonical — shared by Execution ──
+//    page's own rollup panels and Theme detail's Execution Summary, CAT-STRATA
+//    -THEME-DETAIL-20260710-001 Slice 3. One definition, two call sites.) ──
+export interface CardRollup {
+  total: number;
+  onHold: number;
+  onTrack: number;
+  minorDelay: number;
+  majorDelay: number;
+  notStarted: number;
+  notAvailable: number;
+  avgProgress: number | null;
+  blockedDependencies: number;
+}
+
+/** Rule 2/14: On Hold projects are counted separately and excluded from
+ * overall progress rollups and the on-track/minor/major/not-started/
+ * not-available counts. Self-contained — does not depend on page-local
+ * healthBucketOf/isOpenBlocker helpers. */
+export function computeCardRollup(cards: StrataProjectCard[], dependencies: StrataDependency[]): CardRollup {
+  const ids = new Set(cards.map((c) => c.id));
+  let onHold = 0; let onTrack = 0; let minorDelay = 0; let majorDelay = 0; let notStarted = 0; let notAvailable = 0;
+  let progressSum = 0; let progressCount = 0;
+  cards.forEach((c) => {
+    const bucket = c.calculated_health ?? 'not_available';
+    if (bucket === 'on_hold') { onHold += 1; return; }
+    if (bucket === 'on_track') onTrack += 1;
+    else if (bucket === 'minor_delay') minorDelay += 1;
+    else if (bucket === 'major_delay') majorDelay += 1;
+    else if (bucket === 'not_started') notStarted += 1;
+    else notAvailable += 1;
+    const v = c.actual_progress;
+    const frac = v == null ? null : Math.max(0, Math.min(1, v > 1 ? v / 100 : v));
+    if (frac != null) { progressSum += frac; progressCount += 1; }
+  });
+  const isOpenBlocker = (d: StrataDependency) => d.is_blocker && d.status !== 'resolved' && d.status !== 'cancelled';
+  const blockedDependencies = dependencies.filter((d) => isOpenBlocker(d) && (
+    (d.requesting_type === 'project_card' && ids.has(d.requesting_id))
+    || (d.serving_type === 'project_card' && !!d.serving_id && ids.has(d.serving_id))
+  )).length;
+  return {
+    total: cards.length, onHold, onTrack, minorDelay, majorDelay, notStarted, notAvailable,
+    avgProgress: progressCount > 0 ? progressSum / progressCount : null, blockedDependencies,
+  };
+}
+
+/**
+ * Forecast source — `final_forecast_end` is already the canonical resolved
+ * value (server-computed as GREATEST(system_forecast_end, forecast_end) or
+ * whichever exists — "Rule 8",
+ * supabase/migrations/20260706231000_strata_execution_health_forecast_rpcs.sql:93-98).
+ * This does not recompute the forecast; it only reports which input won.
+ */
+export function forecastSource(card: StrataProjectCard): 'system' | 'manual' | null {
+  if (card.final_forecast_end == null) return null;
+  return card.final_forecast_end === card.system_forecast_end ? 'system' : 'manual';
+}

@@ -131,7 +131,7 @@ export function MultiSelectDropdown({
           <div style={{
             position: 'absolute', top: '48%', left: 0, right: 0, marginTop: '4px',
             background: 'var(--bg-app)', border: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken)))', borderRadius: '8px',
-            boxShadow: '0 8px 24px var(--ds-shadow-raised, rgba(0,0,0,.12))', zIndex: 9999, overflow: 'hidden',
+            boxShadow: '0 8px 24px var(--ds-shadow-raised)', zIndex: 9999, overflow: 'hidden',
           }}>
             {/* Search */}
             <div style={{ padding: '8px 10px', borderBottom: '1px solid var(--cp-bg-sunken, var(--cp-bg-sunken))', display: 'flex', alignItems: 'center', gap: '4px' }}>

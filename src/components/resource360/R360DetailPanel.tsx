@@ -133,14 +133,14 @@ export const R360DetailPanel: React.FC<Props> = ({ item, siblings, onClose, onSi
   return (
     <>
       {/* Overlay */}
-      <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'var(--ds-shadow-overlay, rgba(15,23,42,.15))', zIndex: 200 }} />
+      <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'var(--ds-shadow-overlay)', zIndex: 200 }} />
 
       {/* Panel */}
       <div ref={panelRef} style={{
         position: 'fixed', top: 0, right: 0, bottom: 0, width: '460px',
         background: 'var(--cp-float)', borderLeft: '1px solid var(--divider)', zIndex: 201,
         display: 'flex', flexDirection: 'column', overflow: 'hidden',
-        boxShadow: '-4px 0 20px var(--ds-shadow-overlay, rgba(15,23,42,.08))',
+        boxShadow: '-4px 0 20px var(--ds-shadow-overlay)',
         fontFamily: 'var(--cp-font-body)',
         animation: 'r3SlideIn 250ms cubic-bezier(.32,.72,0,1) forwards',
       }}>

@@ -933,7 +933,7 @@ export function makeSprintReleaseCell(
             style={{
               display: "inline-block",
               border:
-                "0.556px solid var(--ds-border-neutral, rgb(183,185,190))",
+                "0.556px solid var(--ds-border-neutral)",
               borderRadius: 4,
               padding: "0px 4px",
               fontSize: 'var(--ds-font-size-400)',

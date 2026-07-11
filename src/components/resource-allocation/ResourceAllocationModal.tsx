@@ -114,7 +114,7 @@ export function AllocationModal({ resource, onClose }: AllocationModalProps) {
         <div 
           className={cn(
             "bg-card rounded-2xl w-full max-w-[1200px] max-h-[90vh] flex flex-col overflow-hidden",
-            "shadow-[0_20px_60px_var(--ds-shadow-raised, rgba(0,0,0,0.2))] border border-border"
+            "shadow-[0_20px_60px_var(--ds-shadow-raised)] border border-border"
           )}
           onClick={(e) => e.stopPropagation()}
           role="dialog"
@@ -129,7 +129,7 @@ export function AllocationModal({ resource, onClose }: AllocationModalProps) {
               className="w-[52px] h-[52px] rounded-[14px] flex items-center justify-center text-[18px] font-extrabold text-white flex-shrink-0 overflow-hidden"
               style={{ 
                 background: resource.avatarUrl ? 'transparent' : departmentGradient,
-                boxShadow: resource.avatarUrl ? 'none' : '0 4px 12px var(--ds-background-information, rgba(37, 99, 235, 0.3))'
+                boxShadow: resource.avatarUrl ? 'none' : '0 4px 12px var(--ds-background-information)'
               }}
             >
               {resource.avatarUrl ? (
@@ -163,7 +163,7 @@ export function AllocationModal({ resource, onClose }: AllocationModalProps) {
             {/* Add Assignment Button */}
             <Button
               onClick={() => setShowAddAssignment(true)}
-              className="bg-[var(--ds-chart-teal-bold)] hover:bg-[var(--ds-background-accent-teal-bolder)] text-white rounded-[10px] text-[13px] font-semibold shadow-[0_2px_8px_var(--ds-background-success, rgba(13,148,136,0.3))] hover:shadow-[0_4px_12px_var(--ds-background-success, rgba(13,148,136,0.4))]"
+              className="bg-[var(--ds-chart-teal-bold)] hover:bg-[var(--ds-background-accent-teal-bolder)] text-white rounded-[10px] text-[13px] font-semibold shadow-[0_2px_8px_var(--ds-background-success)] hover:shadow-[0_4px_12px_var(--ds-background-success)]"
               size="sm"
             >
               <Plus className="w-4 h-4 mr-1.5" />

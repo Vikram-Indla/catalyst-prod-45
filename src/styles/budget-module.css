@@ -17,7 +17,7 @@
      ============================================ */
   --budget-primary: var(--ds-text-brand, var(--cp-workstream-catalyst-primary));
   --budget-primary-dark: var(--ds-background-brand-bold-hovered);
-  --budget-primary-light: var(--ds-background-information, rgba(37, 99, 235, 0.08));
+  --budget-primary-light: var(--ds-background-information);
   --budget-primary-bg: var(--ds-background-selected);
 
   /* ============================================
@@ -25,19 +25,19 @@
      ============================================ */
   --budget-insourced: var(--ds-text-brand, var(--cp-workstream-catalyst-primary));      /* Blue */
   --budget-insourced-dark: var(--ds-background-brand-bold-hovered);
-  --budget-insourced-light: var(--ds-background-information, rgba(37, 99, 235, 0.08));
+  --budget-insourced-light: var(--ds-background-information);
   
   --budget-cosourced: var(--ds-chart-teal-bold);      /* Teal */
   --budget-cosourced-dark: var(--ds-chart-teal-bolder);
-  --budget-cosourced-light: var(--ds-background-success, rgba(13, 148, 136, 0.1));
+  --budget-cosourced-light: var(--ds-background-success);
   
   --budget-outsourced: var(--ds-text-warning);     /* Amber */
   --budget-outsourced-dark: var(--ds-background-warning-bold);
-  --budget-outsourced-light: var(--ds-background-warning, rgba(217, 119, 6, 0.1));
+  --budget-outsourced-light: var(--ds-background-warning);
   
   --budget-licenses: var(--ds-background-discovery-bold);       /* Violet */
   --budget-licenses-dark: var(--ds-background-discovery-bold);
-  --budget-licenses-light: var(--ds-background-discovery-bold, rgba(124, 58, 237, 0.1));
+  --budget-licenses-light: var(--ds-background-discovery-bold);
 
   /* ============================================
      V8 SEMANTIC COLORS
@@ -45,9 +45,9 @@
   --budget-success: var(--quality-high, var(--ds-background-success-bold));
   --budget-success-light: rgba(5, 150, 105, 0.1);
   --budget-warning: var(--ds-text-warning);
-  --budget-warning-light: var(--ds-background-warning, rgba(217, 119, 6, 0.1));
+  --budget-warning-light: var(--ds-background-warning);
   --budget-danger: var(--ds-text-danger);
-  --budget-danger-light: var(--ds-background-danger-bold, rgba(220, 38, 38, 0.1));
+  --budget-danger-light: var(--ds-background-danger-bold);
   --budget-info: var(--ds-text-brand, var(--cp-workstream-catalyst-primary));
 
   /* ============================================
@@ -82,9 +82,9 @@
   /* ============================================
      V8 SHADOWS
      ============================================ */
-  --budget-shadow-sm: 0 1px 2px var(--ds-shadow-raised, rgba(0,0,0,0.05));
-  --budget-shadow-md: 0 4px 6px -1px var(--ds-shadow-raised, rgba(0,0,0,0.1)), 0 2px 4px -1px var(--ds-shadow-raised, rgba(0,0,0,0.06));
-  --budget-shadow-lg: 0 10px 15px -3px var(--ds-shadow-raised, rgba(0,0,0,0.1)), 0 4px 6px -2px var(--ds-shadow-raised, rgba(0,0,0,0.05));
+  --budget-shadow-sm: 0 1px 2px var(--ds-shadow-raised);
+  --budget-shadow-md: 0 4px 6px -1px var(--ds-shadow-raised), 0 2px 4px -1px var(--ds-shadow-raised);
+  --budget-shadow-lg: 0 10px 15px -3px var(--ds-shadow-raised), 0 4px 6px -2px var(--ds-shadow-raised);
 
   /* ============================================
      V8 TYPOGRAPHY
@@ -143,31 +143,31 @@
   --budget-border-light: var(--ds-border, var(--cp-ink-1));
 
   /* Primary surfaces used in info/expanded rows */
-  --budget-primary-bg: var(--ds-background-information-bold, rgba(59,130,246,0.10));
-  --budget-primary-light: var(--ds-background-information-bold, rgba(59,130,246,0.12));
+  --budget-primary-bg: var(--ds-background-information-bold);
+  --budget-primary-light: var(--ds-background-information-bold);
 
   /* Semantic — darkened for dark bg */
   --budget-success: var(--ds-background-success);
-  --budget-success-light: var(--ds-background-success-bold, rgba(74,222,128,0.12));
+  --budget-success-light: var(--ds-background-success-bold);
   --budget-warning: var(--ds-background-warning);
-  --budget-warning-light: var(--ds-background-warning, rgba(253,230,138,0.10));
+  --budget-warning-light: var(--ds-background-warning);
   --budget-danger: var(--ds-border-danger);
-  --budget-danger-light: var(--ds-background-danger, rgba(239,68,68,0.10));
+  --budget-danger-light: var(--ds-background-danger);
   --budget-info: var(--ds-text-brand);
 
   /* Budget type colors — lightened for dark bg */
   --budget-insourced: var(--ds-text-brand);
   --budget-insourced-dark: var(--ds-text-brand);
-  --budget-insourced-light: var(--ds-background-information-bold, rgba(59,130,246,0.10));
+  --budget-insourced-light: var(--ds-background-information-bold);
   --budget-cosourced: var(--ds-background-success);
   --budget-cosourced-dark: var(--ds-background-success);
-  --budget-cosourced-light: var(--ds-background-success, rgba(13,148,136,0.10));
+  --budget-cosourced-light: var(--ds-background-success);
   --budget-outsourced: var(--ds-background-warning);
   --budget-outsourced-dark: var(--ds-background-warning-bold);
-  --budget-outsourced-light: var(--ds-background-warning, rgba(217,119,6,0.10));
+  --budget-outsourced-light: var(--ds-background-warning);
   --budget-licenses: var(--ds-background-discovery);
   --budget-licenses-dark: var(--ds-background-discovery-bold);
-  --budget-licenses-light: var(--ds-background-discovery-bold, rgba(124,58,237,0.10));
+  --budget-licenses-light: var(--ds-background-discovery-bold);
 
   /* Shadows — suppressed */
   --budget-shadow-sm: none;
@@ -207,7 +207,7 @@
 .budget-module .period-btn.active {
   color: var(--budget-primary);
   background: var(--white);
-  box-shadow: 0 1px 3px var(--ds-shadow-raised, rgba(0,0,0,0.1)), 0 1px 2px var(--ds-shadow-raised, rgba(0,0,0,0.06));
+  box-shadow: 0 1px 3px var(--ds-shadow-raised), 0 1px 2px var(--ds-shadow-raised);
 }
 
 /* ============================================
@@ -264,14 +264,14 @@
 }
 
 .budget-module .dept-tab:hover {
-  border-color: var(--ds-background-information, rgba(37, 99, 235, 0.5));
+  border-color: var(--ds-background-information);
   box-shadow: var(--budget-shadow-sm);
 }
 
 /* ACTIVE STATE with gradient + left accent bar */
 .budget-module .dept-tab.active {
   border-color: var(--budget-primary);
-  background: linear-gradient(135deg, var(--ds-background-information, rgba(37, 99, 235, 0.05)) 0%, var(--ds-background-information, rgba(37, 99, 235, 0.08)) 50%, var(--ds-background-information, rgba(37, 99, 235, 0.05)) 100%);
+  background: linear-gradient(135deg, var(--ds-background-information) 0%, var(--ds-background-information) 50%, var(--ds-background-information) 100%);
   box-shadow: var(--budget-shadow-sm);
 }
 
@@ -289,7 +289,7 @@
 
 /* INACTIVE NO BUDGET (muted) */
 .budget-module .dept-tab.no-budget {
-  background: var(--ds-surface, rgba(248, 250, 252, 0.5));
+  background: var(--ds-surface);
   border-color: var(--slate-200);
 }
 
@@ -338,7 +338,7 @@
 }
 
 .budget-module .dept-tab.active .dept-tab-count {
-  color: var(--ds-background-information, rgba(37, 99, 235, 0.7));
+  color: var(--ds-background-information);
 }
 
 .budget-module .dept-tab-count .warning {
@@ -429,16 +429,16 @@
 }
 
 .budget-module .summary-card.insourced.active { 
-  box-shadow: 0 0 0 2px var(--ds-background-information, rgba(37, 99, 235, 0.3)), var(--budget-shadow-lg);
+  box-shadow: 0 0 0 2px var(--ds-background-information), var(--budget-shadow-lg);
 }
 .budget-module .summary-card.cosourced.active { 
-  box-shadow: 0 0 0 2px var(--ds-background-success, rgba(13, 148, 136, 0.3)), var(--budget-shadow-lg);
+  box-shadow: 0 0 0 2px var(--ds-background-success), var(--budget-shadow-lg);
 }
 .budget-module .summary-card.outsourced.active { 
-  box-shadow: 0 0 0 2px var(--ds-background-warning, rgba(217, 119, 6, 0.3)), var(--budget-shadow-lg);
+  box-shadow: 0 0 0 2px var(--ds-background-warning), var(--budget-shadow-lg);
 }
 .budget-module .summary-card.licenses.active { 
-  box-shadow: 0 0 0 2px var(--ds-background-discovery-bold, rgba(124, 58, 237, 0.3)), var(--budget-shadow-lg);
+  box-shadow: 0 0 0 2px var(--ds-background-discovery-bold), var(--budget-shadow-lg);
 }
 
 .budget-module .summary-header {
@@ -974,7 +974,7 @@
 .budget-module .modal-overlay {
   position: fixed;
   inset: 0;
-  background: var(--ds-shadow-raised, rgba(0, 0, 0, 0.5));
+  background: var(--ds-shadow-raised);
   backdrop-filter: blur(4px); /* per spec I1.2 */
   display: flex;
   align-items: center;
@@ -1215,7 +1215,7 @@
 
 .budget-module .exec-summary-btn:hover {
   transform: translateY(-1px);
-  box-shadow: 0 6px 16px var(--ds-shadow-overlay, rgba(15, 23, 42, 0.35));
+  box-shadow: 0 6px 16px var(--ds-shadow-overlay);
 }
 
 .budget-module .exec-summary-btn:active {
@@ -1246,7 +1246,7 @@
 .budget-module button:focus-visible,
 .budget-module .dept-tab:focus-visible {
   outline: 1px solid var(--ds-border-focused);
-  box-shadow: 0 0 0 3px var(--ds-background-information, rgba(37, 99, 235, 0.3));
+  box-shadow: 0 0 0 3px var(--ds-background-information);
 }
 
 /* ============================================

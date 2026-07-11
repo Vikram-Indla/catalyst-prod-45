@@ -834,7 +834,7 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
                     display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                     minWidth: 28, height: 28, borderRadius: 4, padding: '0 6px',
                     border: page === p ? '1.5px solid var(--ds-link)' : '1px solid var(--cp-border, var(--cp-bg-sunken, var(--ds-border)))',
-                    background: page === p ? 'var(--ds-background-information, rgba(37,99,235,0.06))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))',
+                    background: page === p ? 'var(--ds-background-information)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))',
                     color: page === p ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' : 'var(--ds-text-subtle)',
                     fontWeight: page === p ? 600 : 400,
                     fontSize: 'var(--ds-font-size-300)', cursor: 'pointer',
@@ -1022,7 +1022,7 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
                         onClick={() => { setFocusedIndex(currentRowIndex); openStoryDetail(story.id, story.story_key); }}
                         style={{
                           cursor: 'pointer',
-                          background: isPanelSelected ? 'var(--ds-background-information)' : isSelected ? 'var(--ds-background-information, rgba(37,99,235,0.08))' : isFocused ? 'var(--ds-shadow-raised, rgba(0,0,0,0.04))' : undefined,
+                          background: isPanelSelected ? 'var(--ds-background-information)' : isSelected ? 'var(--ds-background-information)' : isFocused ? 'var(--ds-shadow-raised)' : undefined,
                         }}
                       >
                         {orderedColumns.map(c => renderCell(c.key, story, isSelected, isFocused))}
@@ -1077,7 +1077,7 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
                         display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                         minWidth: 28, height: 28, borderRadius: 4, padding: '0 6px',
                         border: page === p ? '1.5px solid var(--ds-link)' : '1px solid var(--cp-border, var(--cp-bg-sunken, var(--ds-border)))',
-                        background: page === p ? 'var(--ds-background-information, rgba(37,99,235,0.06))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))',
+                        background: page === p ? 'var(--ds-background-information)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))',
                         color: page === p ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' : 'var(--ds-text-subtle)',
                         fontWeight: page === p ? 600 : 400,
                         fontSize: 'var(--ds-font-size-300)', cursor: 'pointer',

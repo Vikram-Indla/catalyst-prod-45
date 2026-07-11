@@ -9,10 +9,10 @@ import { ChevronRight, ChevronDown } from '@/lib/atlaskit-icons';
 import { Tooltip } from '@/components/ads';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
-// Shared presentational components from OKR module
-import { OkrStatusPill } from '@/modules/okr-v2/components/shared/OkrStatusPill';
-import { OkrProgressCell } from '@/modules/okr-v2/components/shared/OkrProgressCell';
-import { OkrThemeDot } from '@/modules/okr-v2/components/shared/OkrThemeDot';
+// Shared presentational pills (extracted from the retired okr-v2 stack, CON-002)
+import { OkrStatusPill } from '@/components/shared/okr-pills/OkrStatusPill';
+import { OkrProgressCell } from '@/components/shared/okr-pills/OkrProgressCell';
+import { OkrThemeDot } from '@/components/shared/okr-pills/OkrThemeDot';
 
 // ─────────────────────────────────────────────────────────────────────────────────
 // TYPE DEFINITIONS

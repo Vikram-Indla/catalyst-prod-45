@@ -64,11 +64,11 @@ export function WeekStripCollapsible({
         </span>
 
         <button style={{ width: '28px', height: '28px', border: `1px solid ${'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))'}`, borderRadius: '4px', background: isDark ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))' : 'var(--ds-surface)', cursor: 'pointer', fontSize: 'var(--ds-font-size-300)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', transition: 'background 120ms ease' }} onClick={() => onNavigatePeriod(-1)}
-          onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))'; }}
+          onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered)'; }}
           onMouseLeave={e => { e.currentTarget.style.background = isDark ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))' : 'var(--ds-surface)'; }}
         >{'\u2039'}</button>
         <button style={{ width: '28px', height: '28px', border: `1px solid ${'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))'}`, borderRadius: '4px', background: isDark ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))' : 'var(--ds-surface)', cursor: 'pointer', fontSize: 'var(--ds-font-size-300)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', transition: 'background 120ms ease' }} onClick={() => onNavigatePeriod(1)}
-          onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))'; }}
+          onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered)'; }}
           onMouseLeave={e => { e.currentTarget.style.background = isDark ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))' : 'var(--ds-surface)'; }}
         >{'\u203A'}</button>
 
@@ -84,12 +84,12 @@ export function WeekStripCollapsible({
             <span key={f.key ?? 'all'} onClick={() => setStatusFilter(statusFilter === f.key ? null : f.key)} style={{
               padding: '4px 14px', fontSize: '12.5px', fontWeight: isActive ? 600 : 500,
               borderRadius: '6px', cursor: 'pointer', transition: 'all 120ms ease',
-              background: isActive ? 'var(--ds-background-information, rgba(37,99,235,0.10))' : 'transparent',
+              background: isActive ? 'var(--ds-background-information)' : 'transparent',
               color: isActive ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' : ('var(--ds-text-subtlest)'),
               border: 'none',
             }}
-            onMouseEnter={e => { if (!isActive) e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))'; }}
-            onMouseLeave={e => { if (!isActive) e.currentTarget.style.background = isActive ? 'var(--ds-background-information, rgba(37,99,235,0.10))' : 'transparent'; }}
+            onMouseEnter={e => { if (!isActive) e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered)'; }}
+            onMouseLeave={e => { if (!isActive) e.currentTarget.style.background = isActive ? 'var(--ds-background-information)' : 'transparent'; }}
             >{f.label}</span>
           );
         })}

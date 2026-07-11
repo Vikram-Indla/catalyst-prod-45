@@ -63,7 +63,7 @@ export function RoadmapToolbar({
               fontFamily: 'var(--cp-font-body)', outline: 'none', transition: 'all 150ms',
               background: view === v ? 'var(--bg-app)' : 'transparent',
               color: view === v ? 'var(--ds-text)' : 'var(--fg-3)',
-              boxShadow: view === v ? '0 1px 2px var(--ds-shadow-raised, rgba(0,0,0,.06))' : 'none',
+              boxShadow: view === v ? '0 1px 2px var(--ds-shadow-raised)' : 'none',
             }}
           >
             {v === 'roadmap' ? 'Roadmap' : 'Dates'}

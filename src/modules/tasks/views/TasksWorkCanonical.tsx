@@ -73,7 +73,7 @@ function TasksLeftToolbarSlot({
     background: token('elevation.surface.overlay', 'var(--ds-surface)'),
     border: `1px solid ${borderSubtle}`,
     borderRadius: 6,
-    boxShadow: '0 8px 28px var(--ds-shadow-raised, rgba(9,30,66,0.25))',
+    boxShadow: '0 8px 28px var(--ds-shadow-raised)',
     padding: '4px 0',
     zIndex: 1000,
     fontFamily: 'inherit',

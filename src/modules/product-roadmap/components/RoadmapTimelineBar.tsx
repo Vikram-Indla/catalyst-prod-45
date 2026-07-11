@@ -117,8 +117,8 @@ export function RoadmapTimelineBar({ item, left, width, isSelected, onClick, end
             className="absolute left-0 top-0 bottom-0"
             style={{
               width: `${Math.min(100, item.progress)}%`,
-              background: 'var(--ds-surface, rgba(255,255,255,0.18))',
-              borderRight: item.progress < 100 ? '2px solid var(--ds-surface, rgba(255,255,255,0.35))' : 'none',
+              background: 'var(--ds-surface)',
+              borderRight: item.progress < 100 ? '2px solid var(--ds-surface)' : 'none',
               zIndex: 0,
               pointerEvents: 'none',
             }}
@@ -138,7 +138,7 @@ export function RoadmapTimelineBar({ item, left, width, isSelected, onClick, end
               paddingRight: 8,
               lineHeight: '32px',
               letterSpacing: '-0.01em',
-              textShadow: '0 1px 2px var(--ds-shadow-raised, rgba(0,0,0,0.15))',
+              textShadow: '0 1px 2px var(--ds-shadow-raised)',
               flex: 1,
             }}
           >
@@ -154,7 +154,7 @@ export function RoadmapTimelineBar({ item, left, width, isSelected, onClick, end
               fontSize: 'var(--ds-font-size-50)',
               fontWeight: 700,
               color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
-              background: 'var(--ds-surface, rgba(255,255,255,0.2))',
+              background: 'var(--ds-surface)',
               borderRadius: 4,
               padding: '0px 6px',
               zIndex: 2,
@@ -172,7 +172,7 @@ export function RoadmapTimelineBar({ item, left, width, isSelected, onClick, end
             top: 0,
             bottom: 0,
             width: 3,
-            background: 'var(--ds-surface, rgba(255,255,255,0.4))',
+            background: 'var(--ds-surface)',
             borderRadius: '0 6px 6px 0',
           }} />
         )}
@@ -183,7 +183,7 @@ export function RoadmapTimelineBar({ item, left, width, isSelected, onClick, end
         <div style={{
           position: 'fixed', left: tooltipPos.x, top: tooltipPos.y, zIndex: 9999,
           background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', border: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken)))', borderRadius: 12,
-          boxShadow: '0 20px 60px var(--ds-shadow-raised, rgba(0,0,0,0.12))', pointerEvents: 'none',
+          boxShadow: '0 20px 60px var(--ds-shadow-raised)', pointerEvents: 'none',
           maxWidth: 320, minWidth: 260, padding: 12,
         }}>
           <div style={{ fontWeight: 600, fontSize: 'var(--ds-font-size-300)', color: 'var(--fg-1, var(--cp-ink-1, var(--cp-ink-1)))', marginBottom: 4 }}>

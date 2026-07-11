@@ -14,7 +14,7 @@ export function CapabilityCard({ config }: CapabilityCardProps) {
       onClick={() => navigate(`/producthub/requirement-assist/compose?capability=${config.key}`)}
       className={cn(
         'relative text-left w-full bg-white border rounded-xl p-5 transition-all duration-150',
-        'hover:shadow-[0_4px_16px_var(--ds-shadow-raised, rgba(0,0,0,0.06))] hover:-translate-y-px',
+        'hover:shadow-[0_4px_16px_var(--ds-shadow-raised)] hover:-translate-y-px',
         'border-[hsl(var(--border))] hover:border-zinc-300'
       )}
       style={{ borderRadius: 'var(--radius-lg, 12px)' }}

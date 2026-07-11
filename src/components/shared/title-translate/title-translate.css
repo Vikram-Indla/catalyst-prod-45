@@ -52,7 +52,7 @@
   opacity: 1;
 }
 .ttw-translate-chip:hover:not(:disabled) {
-  background: var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06));
+  background: var(--ds-background-neutral-subtle-hovered);
   border-color: var(--ds-border-bold);
 }
 .ttw-translate-chip:disabled {

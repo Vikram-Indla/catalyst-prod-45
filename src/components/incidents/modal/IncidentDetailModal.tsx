@@ -92,7 +92,7 @@ export default function IncidentDetailModal({ incident, isOpen, onClose, parentI
   const modalContent = (
     <div 
       className="fixed inset-0 z-[1000] flex justify-center items-start pt-8 overflow-y-auto"
-      style={{ background: 'var(--ds-shadow-raised, rgba(9, 30, 66, 0.54))' }}
+      style={{ background: 'var(--ds-shadow-raised)' }}
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
@@ -104,7 +104,7 @@ export default function IncidentDetailModal({ incident, isOpen, onClose, parentI
           isExpanded ? "max-w-[calc(100vw-64px)]" : "max-w-[1000px]"
         )}
         style={{ 
-          boxShadow: '0 0 0 1px var(--ds-background-neutral-subtle-pressed, rgba(9, 30, 66, 0.08)), 0 2px 1px var(--ds-background-neutral-subtle-pressed, rgba(9, 30, 66, 0.08)), 0 0 20px -6px var(--ds-shadow-raised, rgba(9, 30, 66, 0.31))'
+          boxShadow: '0 0 0 1px var(--ds-background-neutral-subtle-pressed), 0 2px 1px var(--ds-background-neutral-subtle-pressed), 0 0 20px -6px var(--ds-shadow-raised)'
         }}
         onClick={(e) => e.stopPropagation()}
       >

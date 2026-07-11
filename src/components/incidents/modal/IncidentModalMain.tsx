@@ -49,7 +49,7 @@ export function IncidentModalMain({ incident, onFieldChange }: IncidentModalMain
           suppressContentEditableWarning
           className={`text-2xl font-semibold text-foreground leading-7 p-1 rounded border-2 transition-all cursor-text ${
             isTitleFocused 
-              ? 'border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))] shadow-[0_0_0_2px_var(--ds-background-information, rgba(37,99,235,0.3))] bg-card' 
+              ? 'border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))] shadow-[0_0_0_2px_var(--ds-background-information)] bg-card' 
               : 'border-transparent hover:bg-muted hover:border-border'
           }`}
           onFocus={() => setIsTitleFocused(true)}
@@ -62,7 +62,7 @@ export function IncidentModalMain({ incident, onFieldChange }: IncidentModalMain
         </h1>
         <div className="flex gap-1 mt-2">
           <button 
-            className="w-8 h-8 flex items-center justify-center border border-border rounded bg-card text-muted-foreground hover:bg-muted hover:border-border focus:outline-none focus:border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))] focus:shadow-[0_0_0_1px_var(--ds-background-information, rgba(37,99,235,0.5))]"
+            className="w-8 h-8 flex items-center justify-center border border-border rounded bg-card text-muted-foreground hover:bg-muted hover:border-border focus:outline-none focus:border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))] focus:shadow-[0_0_0_1px_var(--ds-background-information)]"
             title="Add"
           >
             <Plus className="w-4 h-4" />

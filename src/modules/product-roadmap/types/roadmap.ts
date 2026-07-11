@@ -143,22 +143,22 @@ export interface RoadmapGroup {
 
 // Status config for display
 export const STATUS_CONFIG: Record<string, { label: string; color: string; bgColor: string }> = {
-  new_request: { label: 'New Request', color: 'var(--ds-text-brand)', bgColor: 'var(--ds-background-information-bold, rgba(59, 130, 246, 0.1))' },
+  new_request: { label: 'New Request', color: 'var(--ds-text-brand)', bgColor: 'var(--ds-background-information-bold)' },
   draft: { label: 'Draft', color: 'var(--ds-text-subtlest)', bgColor: 'rgba(115, 115, 115, 0.1)' },
-  submitted: { label: 'Submitted', color: 'var(--ds-text-brand)', bgColor: 'var(--ds-background-information-bold, rgba(59, 130, 246, 0.1))' },
-  in_review: { label: 'In Review', color: 'var(--ds-text-warning)', bgColor: 'var(--ds-background-warning-bold, rgba(245, 158, 11, 0.1))' },
-  approved: { label: 'Approved', color: 'var(--ds-text-success)', bgColor: 'var(--ds-background-success-bold, rgba(34, 197, 94, 0.1))' },
-  rejected: { label: 'Rejected', color: 'var(--ds-text-danger)', bgColor: 'var(--ds-background-danger, rgba(239, 68, 68, 0.1))' },
-  in_progress: { label: 'In Progress', color: 'var(--ds-background-discovery-bold)', bgColor: 'var(--ds-background-discovery-bold, rgba(139, 92, 246, 0.1))' },
+  submitted: { label: 'Submitted', color: 'var(--ds-text-brand)', bgColor: 'var(--ds-background-information-bold)' },
+  in_review: { label: 'In Review', color: 'var(--ds-text-warning)', bgColor: 'var(--ds-background-warning-bold)' },
+  approved: { label: 'Approved', color: 'var(--ds-text-success)', bgColor: 'var(--ds-background-success-bold)' },
+  rejected: { label: 'Rejected', color: 'var(--ds-text-danger)', bgColor: 'var(--ds-background-danger)' },
+  in_progress: { label: 'In Progress', color: 'var(--ds-background-discovery-bold)', bgColor: 'var(--ds-background-discovery-bold)' },
   completed: { label: 'Completed', color: 'var(--ds-background-success-bold)', bgColor: 'rgba(21, 128, 61, 0.1)' },
-  cancelled: { label: 'Cancelled', color: 'var(--ds-text-danger)', bgColor: 'var(--ds-background-danger-bold, rgba(220, 38, 38, 0.1))' },
+  cancelled: { label: 'Cancelled', color: 'var(--ds-text-danger)', bgColor: 'var(--ds-background-danger-bold)' },
 };
 
 export const PRIORITY_CONFIG: Record<string, { label: string; color: string; bgColor: string }> = {
-  critical: { label: 'Critical', color: 'var(--ds-text-danger)', bgColor: 'var(--ds-background-danger, rgba(239, 68, 68, 0.1))' },
-  high: { label: 'High', color: 'var(--ds-text-warning)', bgColor: 'var(--ds-background-warning-bold, rgba(245, 158, 11, 0.1))' },
-  medium: { label: 'Medium', color: 'var(--ds-text-brand)', bgColor: 'var(--ds-background-information-bold, rgba(59, 130, 246, 0.1))' },
-  low: { label: 'Low', color: 'var(--ds-text-success)', bgColor: 'var(--ds-background-success-bold, rgba(34, 197, 94, 0.1))' },
+  critical: { label: 'Critical', color: 'var(--ds-text-danger)', bgColor: 'var(--ds-background-danger)' },
+  high: { label: 'High', color: 'var(--ds-text-warning)', bgColor: 'var(--ds-background-warning-bold)' },
+  medium: { label: 'Medium', color: 'var(--ds-text-brand)', bgColor: 'var(--ds-background-information-bold)' },
+  low: { label: 'Low', color: 'var(--ds-text-success)', bgColor: 'var(--ds-background-success-bold)' },
 };
 
 // Default filter state

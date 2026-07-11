@@ -171,6 +171,18 @@ export interface StrataStrategyElement {
   map_position: { x: number; y: number } | null;
 }
 
+/**
+ * Legacy 'play' rows were consolidated into 'theme' (CAT-STRATA-HIERARCHY-20260706-001)
+ * and the DB CHECK constraint (strata_strategy_elements_type_check) blocks new 'play'
+ * rows, but pre-migration data or other environments may still hold them. Treat both as
+ * Theme-equivalent everywhere Theme-only UI is gated — never gate on a bare
+ * `element_type === 'theme'` check.
+ */
+export const THEME_EQUIVALENT_TYPES = ['theme', 'play'] as const;
+export function isThemeElement(elementType: string): boolean {
+  return (THEME_EQUIVALENT_TYPES as readonly string[]).includes(elementType);
+}
+
 export interface StrataMapEdge {
   id: string;
   cycle_id: string;
@@ -180,7 +192,7 @@ export interface StrataMapEdge {
   confidence: number | null;
 }
 
-export interface StrataPlayCharter {
+export interface StrataThemeCharter {
   id: string;
   element_id: string;
   hypothesis: string | null;
@@ -372,6 +384,8 @@ export interface StrataProjectCard {
   source_key: string | null;
   /** The single Strategic Theme this card belongs to by default. Must reference a strata_strategy_elements row with element_type='theme'. */
   theme_id: string | null;
+  /** Linked Strategic Objective (locked rule 5). Theme-context objective; when theme_id is set it must belong to that Theme (DB-validated, REQ-007). */
+  objective_element_id: string | null;
   card_type: string;
   pm_id: string | null;
   business_owner_id: string | null;
@@ -681,6 +695,8 @@ export interface StrataDecision {
   decision_key: string;
   forum: string | null;
   snapshot_id: string | null;
+  /** Theme-scoped governance (CAT-STRATA-THEME-DETAIL-20260710-001 Slice 4) — nullable, independent of snapshot_id. */
+  element_id: string | null;
   decision_type: 'governance' | 'gate' | 'escalation' | 'action_only';
   title: string;
   description: string | null;
@@ -710,6 +726,32 @@ export interface StrataBoardPack {
   storage_path: string | null;
   status: 'pending' | 'generating' | 'ready' | 'failed';
   generated_at: string | null;
+}
+
+// ── Notifications (CAT-STRATA-CLOSEOUT-20260710-001 W3) ──────────────────────
+export interface StrataNotification {
+  id: string;
+  user_id: string;
+  event_type: string;
+  entity_table: string | null;
+  entity_id: string | null;
+  title: string;
+  body: string | null;
+  read_at: string | null;
+  created_at: string;
+}
+
+export interface StrataNotificationRule {
+  id: string;
+  event_type: string;
+  label: string;
+  description: string | null;
+  audience: string;
+  channel: string;
+  enabled: boolean;
+  status: string;
+  change_reason: string | null;
+  updated_at: string;
 }
 
 export interface StrataAiOutput {

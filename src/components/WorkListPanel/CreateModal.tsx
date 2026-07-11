@@ -46,7 +46,7 @@ export const CreateModal = memo(function CreateModal({
       style={{
         position: 'fixed',
         inset: 0,
-        backgroundColor: 'var(--ds-shadow-raised, rgba(0, 0, 0, 0.5))',
+        backgroundColor: 'var(--ds-shadow-raised)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -63,7 +63,7 @@ export const CreateModal = memo(function CreateModal({
           padding: '24px',
           maxWidth: '400px',
           width: '90%',
-          boxShadow: '0 8px 24px var(--ds-shadow-raised, rgba(0, 0, 0, 0.2))',
+          boxShadow: '0 8px 24px var(--ds-shadow-raised)',
         }}
       >
         <h2

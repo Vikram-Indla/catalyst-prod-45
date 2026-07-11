@@ -17,8 +17,8 @@ export const SUCCESS = 'var(--ds-text-success, var(--cp-success))';
 export const WARNING = 'var(--ds-text-warning, var(--cp-warning))';
 export const DANGER = 'var(--ds-text-danger, var(--cp-danger))';
 export const BRAND = 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))';
-export const BORDER = 'var(--ds-shadow-overlay, rgba(15,23,42,0.12))';
-export const BORDER_LIGHT = 'var(--ds-shadow-overlay, rgba(15,23,42,0.06))';
+export const BORDER = 'var(--ds-shadow-overlay)';
+export const BORDER_LIGHT = 'var(--ds-shadow-overlay)';
 export const SLATE = 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))';
 
 export const TYPE_COLORS: Record<string, { color: string; opacity: number }> = {
@@ -137,7 +137,7 @@ export function FilteredListPanel({
                 borderBottom: idx < items.length - 1 ? '0.75px solid var(--divider)' : 'none',
                 background: 'var(--bg-app)', cursor: 'pointer', transition: 'background 120ms',
               }}
-              onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-shadow-raised, rgba(0,0,0,0.03))'; }}
+              onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-shadow-raised)'; }}
               onMouseLeave={e => { e.currentTarget.style.background = 'var(--bg-app)'; }}
             >
               <span style={{ width: 20, flexShrink: 0, display: 'flex', justifyContent: 'center' }}>

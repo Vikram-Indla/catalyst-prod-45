@@ -1,0 +1,28 @@
+{
+  "subject": "Canonical STRATA Product Foundation",
+  "slug": "strata-foundation",
+  "feature_work_id": "CAT-STRATA-FOUNDATION-20260709-001",
+  "mode": "deep-discovery",
+  "stage": 6,
+  "step": "BUILD: W1-W4c+REQ-006 pushed; session 005 APPLIED all 4 migrations to staging (incl. 20260709180000 chain repair, D-BUILD-002), ledger 1:1, rules 5-15 verified by SQL incl. negative tests; DOM acceptance on :8081 done (REQ-004/005/006/001/003/013-CEO-leg). Open: Sector/CXO seed gap, AC8 tooltips, AC5/6 instrumentation, screenshot signoff.",
+  "gates": {
+    "R1": "approved 2026-07-09 by user 'approved' reply \u2014 workspace = features/CAT-STRATA-FOUNDATION-20260709-001/, deep-discovery, repo-evidence-first, 0 web budget, no code changes",
+    "R2": "approved 2026-07-09 (resume session, structured question): CON-001 full rename incl. DB; CON-002 decommission+migrate (amendment A1); CON-003 strata-standalone branch + /strata IA; CON-006 delete Astryx + update CLAUDE.md",
+    "R3": "FROZEN 2026-07-09 \u2014 REQ-001..023, all mechanical checks pass (READINESS.md v1.1)",
+    "R4": "n/a this phase (research-only contract; build handoff scored after Plan Lock + waves)"
+  },
+  "counters": {
+    "SRC": 4,
+    "REQ": 23,
+    "RES": 0,
+    "CON": 6,
+    "ASM": 8,
+    "CAP": 7
+  },
+  "budget": {
+    "mode_cap_websearches": 0,
+    "used_websearches": 0
+  },
+  "next_action": "SESSION 017: AC5 FULLY CLOSED — 100-node local-only dataset (client-side injection, zero DB writes, cleanup verified): p50 16.7ms/p95 17.6ms, 0 frames >50ms over 617 frames at 100 nodes/95 edges. Limitation retired. Session 016 recap: REQ-022 CLOSED no-op (prod 0 rows, read-only), theme-detail crash fixed (D-BUILD-003), 67/67 green, gates at baseline. DECISION: Ready for Product Owner Review (60_delivery/RELEASE_READINESS.md). WAITING ON VIKRAM/JK: SCREENSHOT_SIGNOFF.md (13 surfaces + checklist) — the ONLY remaining gate. Then staging bake -> main-merge planning per GOD_MODE §J.",
+  "blocked_on": "product-owner screenshot signoff"
+}

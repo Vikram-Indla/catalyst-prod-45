@@ -263,7 +263,7 @@ export function StatusLozengeDropdown({
             background: token('elevation.surface.overlay', 'var(--ds-surface-overlay)'),
             border: `1px solid ${token('color.border', 'var(--ds-border)')}`,
             borderRadius: 'var(--ds-border-radius, 4px)',
-            boxShadow: '0 8px 16px -4px var(--ds-shadow-overlay-perimeter, rgba(9,30,66,0.15)), 0 0 1px var(--ds-shadow-overlay, rgba(9,30,66,0.31))',
+            boxShadow: '0 8px 16px -4px var(--ds-shadow-overlay-perimeter), 0 0 1px var(--ds-shadow-overlay)',
             padding: 0,
             zIndex: 9999,
             fontFamily: 'var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif',

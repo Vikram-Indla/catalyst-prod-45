@@ -36,15 +36,15 @@ export default function KanbanCardComponent({ card, onCardClick }: Props) {
     transition: transition ?? undefined,
     opacity: isDragging ? 0.6 : (card.statusId === 'done' ? 0.85 : 1),
     background: 'var(--bg-app)',
-    border: '0.75px solid var(--ds-shadow-overlay, rgba(15,23,42,0.12))',
+    border: '0.75px solid var(--ds-shadow-overlay)',
     borderLeftWidth: card.isBlocked ? 3 : 0.75,
-    borderLeftColor: card.isBlocked ? 'var(--sem-danger)' : 'var(--ds-shadow-overlay, rgba(15,23,42,0.12))',
+    borderLeftColor: card.isBlocked ? 'var(--sem-danger)' : 'var(--ds-shadow-overlay)',
     borderRadius: 6,
     padding: '8px 11px 9px',
     cursor: isDragging ? 'grabbing' : 'grab',
     boxShadow: isDragging
-      ? '0 8px 24px var(--ds-shadow-overlay, rgba(15,23,42,0.18))'
-      : hover ? '0 2px 8px var(--ds-shadow-overlay, rgba(15,23,42,0.10))' : 'none',
+      ? '0 8px 24px var(--ds-shadow-overlay)'
+      : hover ? '0 2px 8px var(--ds-shadow-overlay)' : 'none',
     position: 'relative' as const,
   };
 

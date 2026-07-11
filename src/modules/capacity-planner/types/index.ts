@@ -179,10 +179,10 @@ export const CatalystColors = {
   brand: {
     blue: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))',
     blueHover: 'var(--ds-background-brand-bold-hovered)',
-    blueBg: 'var(--ds-background-information, rgba(37, 99, 235, 0.08))',
+    blueBg: 'var(--ds-background-information)',
     teal: 'var(--ds-chart-teal-bold)',
     tealHover: 'var(--ds-chart-teal-bolder)',
-    tealBg: 'var(--ds-background-success, rgba(13, 148, 136, 0.08))',
+    tealBg: 'var(--ds-background-success)',
   },
   secondary: {
     olive: 'var(--ds-chart-teal-bold)',
@@ -192,11 +192,11 @@ export const CatalystColors = {
   },
   status: {
     success: 'var(--ds-chart-teal-bold)',
-    successBg: 'var(--ds-background-success, rgba(13, 148, 136, 0.08))',
+    successBg: 'var(--ds-background-success)',
     warning: 'var(--ds-text-warning)',
-    warningBg: 'var(--ds-background-warning, rgba(217, 119, 6, 0.08))',
+    warningBg: 'var(--ds-background-warning)',
     danger: 'var(--ds-text-danger)',
-    dangerBg: 'var(--ds-background-danger-bold, rgba(220, 38, 38, 0.08))',
+    dangerBg: 'var(--ds-background-danger-bold)',
   },
 };
 

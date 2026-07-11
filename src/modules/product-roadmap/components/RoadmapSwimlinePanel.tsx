@@ -89,7 +89,7 @@ export function RoadmapSwimlanePanel({ items, config, selectedItemId, onItemClic
               minWidth: periodMinWidth,
               width: `${100 / periods.length}%`,
               borderRight: `1px solid ${isQuarterBoundary ? borderColor : 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))'}`,
-              background: period.isCurrent ? 'var(--ds-background-information, rgba(37,99,235,0.03))' : 'transparent',
+              background: period.isCurrent ? 'var(--ds-background-information)' : 'transparent',
             }}
           />
         );
@@ -167,7 +167,7 @@ export function RoadmapSwimlanePanel({ items, config, selectedItemId, onItemClic
                         className="relative flex items-center cursor-pointer transition-colors"
                         style={{
                           height: 40,
-                          backgroundColor: isSelected ? 'var(--ds-background-information, rgba(37,99,235,0.06))' : 'transparent',
+                          backgroundColor: isSelected ? 'var(--ds-background-information)' : 'transparent',
                           borderBottom: '1px solid var(--cp-bg-sunken, var(--cp-bg-sunken))',
                         }}
                         onClick={() => onItemClick(item.id)}

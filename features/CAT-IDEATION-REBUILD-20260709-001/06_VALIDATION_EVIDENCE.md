@@ -62,3 +62,137 @@ Notes: G1 first attempt failed on `created_by NOT NULL` (definer context has nul
 | admin_nav_modules | PASS: ideation → core/main, sort 8 (D12) |
 | admin_role_module_permissions | PASS: 26 rows — full=7, view=19 (D11 exactly) |
 | notification_trigger_config | SKIPPED with NOTICE (table absent on staging — D10 waiver; seeds will apply where table exists) |
+
+## S5 — shell + routes (no migration) · localhost:8080 · 2026-07-09 · session 005
+
+**Gates**: `lint:colors:gate` ✅ 0/0 · `audit:ads:gate` ✅ (ratcheted down: tokens 22469→22293, typography 1427→1405) · `npm run build` ✅ exit 0 (twice: post-scaffold, post-nav-gate-fix) · legacy-route grep clean (comments only).
+
+**Flag-ON probes (VITE_ENABLE_IDEATION=true, signed in)**:
+| Route/surface | Outcome |
+|---|---|
+| /ideation (Inbox) | PASS — sidebar + HubPageHeader + ADS EmptyState, CTAs navigate (dark ss_0183geriy, light ss_61807z6zc) |
+| /ideation/explore | PASS (ss_2697265jw) |
+| /ideation/portfolio | PASS (ss_3218o92kk) |
+| /ideation/ideas/:slug | PASS — slug echoed, title derives "Test Slug Probe" (ss_0377wxywc) |
+| /ideation/submit | PASS (text probe; first attempt 404'd only because the checkout had been switched to strata-standalone mid-probe — see session 005 incident note) |
+| /admin/ideation | PASS — renders inside AdminLayout (ss_1523546qe) |
+| HubSwitcher | PASS — Ideation tile + ⌘3 under Discover; tile click navigates to /ideation (ss_5260uaq0q) |
+| Console | Clean — no errors post-restore |
+
+**Flag-OFF probes (server without the env var)**:
+| Surface | Outcome |
+|---|---|
+| /ideation | PASS — 404, NO ideation sidebar (leak fixed this session; ss_3601wtyyi) |
+| HubSwitcher | PASS — no tile, ⌘ chips skip 3 (ss_4454qq2qc) |
+| Home surfaces | PASS — no trace (ss_1770ulmrs) |
+
+**Known env limitation**: vitest cannot start locally (rolldown `styleText` array arg vs Node 20.12) — pre-existing, affects all suites; HubSwitcher suite (updated hrefs + pinned flag mock) runs in CI.
+
+## Phase 2 Slice S1 — Inbox 2-pane triage · localhost:8082 (isolated instance) · 2026-07-10
+
+**Plan Lock**: `03_PLAN_LOCK_PHASE2_S1_INBOX.md`. Scope: real 2-pane triage queue (JiraTable + StatusLozenge, both canonical) reading live `idn_ideas`, replacing the Phase 1 empty-state stub. Design evidence: `features/CAT-IDEATION-DISCOVERY-20260709-001/05_MOBBIN_UX_EVIDENCE.md` §C row 1.
+
+**Data**: `idn_ideas` had 0 rows on staging pre-slice (S3 seed only touched scoring/workflow/notifications/roles). Seeded 6 demo rows directly via Supabase MCP (`execute_sql`, not a migration — content, not schema): IDEA-6..11, spanning submitted(2)/screening(2)/evaluation(2), real `submitter_id` FKs to approved staging profiles. Left in place for later Phase 2 slices (Explore/Portfolio/Detail) to build against.
+
+**Gates**: `npx tsc --noEmit` ✅ 0 errors · `node scripts/no-hardcoded-colors.cjs` ✅ 0 hits on touched files.
+
+**Isolated dev instance**: existing shared dev servers (8080, 8081) belong to other concurrent sessions per CLAUDE.md concurrent-sessions rule — not touched/restarted. Started a throwaway instance (`VITE_ENABLE_IDEATION=true npm run dev -- --port 8082 --strictPort`, killed after screenshotting) rather than editing the tracked `.env.development`.
+
+**Screenshots** (Chrome MCP, signed-in session, user authenticated the tab manually — no credentials entered by the assistant):
+| Surface | Outcome |
+|---|---|
+| /ideation (Inbox), light | PASS — 2-pane: JiraTable queue (Key/Class/Summary/Status) + counts header ("2 Submitted · 2 Screening · 2 Evaluation") + sticky preview pane, real idn_ideas rows (ss_99486r8yt initial, ss_0980zx4lt post column-width fix) |
+| Row-click interaction | PASS — clicking IDEA-9 updates the preview pane (title/class/problem-statement/Open-idea button) live (ss_232723g55) |
+| /ideation (Inbox), dark | PASS — StatusLozenge + ClassBadge + table chrome all hold contrast via ADS tokens, no new color logic (ss_8857wb15z) |
+
+**Bug found + fixed during this slice**: initial column widths (`flex: true` Summary column has a 640px `FLEX_SUM_FLOOR` in JiraTable) overflowed the 2-pane's `1fr` track, clipping the Status column behind the preview pane (ss_33657c2mw/ss_7185gww35 predecessor — actually first: ss_51519j54y showed the clipped state). Fixed by dropping the `created_at` column and switching Summary to a fixed `width: 42` instead of `flex`, rebalancing Key/Class/Status widths so the table's natural width fits the available track without internal scroll.
+
+**Not yet built this slice** (Phase 2 continues): Detail page (still placeholder), Explore/Portfolio real data, AI Copilot rail tab, vote/importance control, create modal.
+
+## Phase 2 Slice S3 — Idea Detail (read + comments) · localhost:8082 (isolated instance) · 2026-07-10
+
+**Plan Lock**: `03_PLAN_LOCK_PHASE2_S3_DETAIL.md`. Scope: real detail page for `/ideation/ideas/:slug` — problem/proposed-value ADF via canonical `DisplayView`, a read-only property rail, and working comments via canonical `ActivityPanel`/`CommentEditor`. Design evidence: `05_MOBBIN_UX_EVIDENCE.md` §C row 4 (Linear issue detail — "Structural 1:1 with C.4"). Deliberately touched none of the files `03_PLAN_LOCK_PHASE2_S2_CREATE.md` (a concurrent, unapproved session) claims, to avoid collision.
+
+**Gates**: `npx tsc --noEmit` ✅ 0 errors · `node scripts/no-hardcoded-colors.cjs` ✅ 0 hits on touched files.
+
+**Screenshots + live write-path proof** (Chrome MCP, signed-in session as Vikram Indla):
+| Surface | Outcome |
+|---|---|
+| `/ideation/ideas/bulk-re-assign-ideas-during-triage`, light | PASS — real title/problem/rail (Stage=Submitted, Class=Problem, Submitter=Jahanara Khan resolved from `profiles`), empty Activity state honest ("No activity yet") (ss_6404nco18) |
+| Comment write path | PASS — typed + saved a real comment through the canonical `CommentEditor`; UI updated live via query invalidation, author "Vikram Indla" resolved correctly (ss_6448ljdgk). **Independently verified in the DB**: `SELECT ... FROM idn_comments JOIN idn_ideas` returned the row with matching ADF content, `user_id` = Vikram's profile id, timestamped 2026-07-10 11:29:14 UTC |
+| Dark mode | PASS — rail, lozenges, comment thread all hold contrast via ADS tokens (ss_3567vvd06) |
+
+**Not yet built this slice**: AI Copilot rail tab, vote/importance control, evidence panel, scoring display, watchers, linked-BR block, owner/sponsor editing, comment mentions — all explicitly deferred in the Plan Lock's non-scope.
+
+## Phase 2 Slice S4 — Explore (full list + filter chips + search) · localhost:8082 (isolated instance) · 2026-07-11
+
+**Plan Lock**: `03_PLAN_LOCK_PHASE2_S4_EXPLORE.md`. Scope: real browse/search surface — every `idn_ideas` row (not just Inbox's triage subset), a filter-chip row (Status + Class, Deel evidence 05 §C row 2), and a search box, in `JiraTable`. Built on top of the other session's S2 (`5c08c939d`, Create form) without touching any of its files — `ExplorePage.tsx`'s existing `CreateIdeaModal`/`useCreateIdeaParam` wiring from S2 was kept intact, not reverted.
+
+**Gates**: `npx tsc --noEmit` ✅ 0 errors · `node scripts/no-hardcoded-colors.cjs` ✅ 0 hits on touched files.
+
+**Data**: read live — by this slice `idn_ideas` had grown to 8 rows (IDEA-6..11 from S1's seed, plus IDEA-12/13 created for real through the other session's Create form) — confirms Explore reads genuinely live data, not just my own seeds.
+
+**Screenshots + interaction proof** (Chrome MCP, signed-in session):
+| Surface | Outcome |
+|---|---|
+| `/ideation/explore`, light, unfiltered | PASS — all 8 ideas, filter chips derived only from statuses/classes actually present (Draft/Submitted/Screening/Evaluation + Problem/Opportunity/Improvement — no fabricated "Approved" etc.) (ss_3306jpt33) |
+| Status filter chip ("Evaluation") | PASS — clicked, list narrowed live to 2 matching rows, footer correctly reads "2 of 8 items" via `totalRowCount` (ss_37030elg5) |
+| Search ("voice") | PASS — narrowed live to the 2 title-matching rows, chip filter independently clearable (ss_57679d1q6) |
+| Dark mode, filters cleared | PASS — back to all 8 items, chips/table hold contrast via ADS tokens (ss_43459krax) |
+
+**Not yet built this slice**: column customizer (already provided by `JiraTable` itself, no new work needed), votes/score columns, saved views — all deferred per the Plan Lock's non-scope.
+
+## Phase 2 Slice S2 — Create/Submit Idea form · localhost:8082 (isolated instance, worktree ideation-s2-create) · 2026-07-10
+
+**Plan Lock**: `03_PLAN_LOCK_PHASE2_S2_CREATE.md` (APPROVED — D13/D14/D15 as recommended). First WRITE path over `idn_ideas`: CreateIdeaModal (PortalFix chrome + shared CreateIdeaForm), `?create=idea` deep link on Inbox/Explore/Portfolio, SubmitPage full-page host, "New idea" sidebar nav item.
+
+**Gates**: `npx tsc --noEmit` ✅ 0 errors · `npm run lint:colors:gate` ✅ 0 = baseline 0 · touched files clean in full color scan.
+
+**Isolation**: implemented + validated in git worktree `ideation-s2-create` (branch `worktree-ideation-s2-create`, base origin/main `56d798c2a`) — origin checkout belongs to a parallel session. Dev instance: `VITE_ENABLE_IDEATION=true npm run dev -- --port 8082 --strictPort` from the worktree, killed after evidence; 8080/8081 untouched. Signed-in browser session reused (no credentials handled by the assistant).
+
+**DB probes (staging cyijbdeuehohvhnsywig, Supabase MCP)**:
+| Probe | Outcome |
+|---|---|
+| Baseline pre-test | 6 idn_ideas (2 submitted / 2 screening / 2 evaluation), 0 drafts |
+| UI Submit → IDEA-12 | PASS — key+slug trigger-generated (`let-submitters-attach-a-voice-note-to-an-idea`), status `submitted`, class `improvement`, origin_channel `form`, submitter_id set, 1 watcher row (reason `submitter`), audit_actions `[created, status_changed]` — D13 contract exact |
+| UI Save draft → IDEA-13 | PASS — status `draft`, audit `[created]` only (no transition row), watcher present |
+| Draft exclusion | PASS — Inbox header stayed "3 Submitted" with IDEA-13 existing; draft never rendered in queue |
+
+**Screenshots (Chrome MCP)**:
+| Surface | Outcome |
+|---|---|
+| ?create=idea deep link | PASS — modal opens, `create` param stripped via replace (URL clean) (ss_7095iit58 dark, ss_0160l5hwq light) |
+| Inline validation | PASS — empty submit blocks insert; "Give the idea a title" / "Describe the problem or opportunity" / "Pick a class" ErrorMessages (ss_87944wh29) |
+| Filled form | PASS — title-first + ADF editor + class select (ss_7251ucsa1, ss_0582ayoe7 open select) |
+| Submit → Detail | PASS — spinner (ss_4374w35q0) → navigated to slug URL, IDEA-12 SUBMITTED/IMPROVEMENT rendered (ss_8064fvtmp) |
+| Inbox refresh | PASS — IDEA-12 top row, counts "3 Submitted" (ss_1829rt7fp background) |
+| Create another (D15) | PASS — modal stays open, form fully reset, inline "IDEA-13 saved as draft" note (ss_5062s38bc) |
+| SubmitPage full page | PASS — dark ss_6753gk9zl, light ss_7966icd1r; "New idea" sidebar item active (D14) |
+
+**Recorded deviations (component-tier equivalent, not drift)**: (1) `@atlaskit/toggle` not installed → `@atlaskit/checkbox` "Create another" (Jira-parity); (2) success flag is a platform-wide no-op (suppressed 2026-06-16) → exemplar pattern: call kept + navigation/inline-note as confirmation.
+
+**Demo rows**: IDEA-12 (submitted) + IDEA-13 (draft) left on staging as realistic content for later slices (draft handling, Explore).
+
+**Not built this slice** (non-scope): voice capture, attachments/evidence, AI enrichment (static note only), ContextSwitcher entry, strategy/language pickers.
+
+## Phase 2 Slice S5 — Portfolio (Value × Effort field chart) · localhost:8082 (isolated instance) · 2026-07-11
+
+**Plan Lock**: `03_PLAN_LOCK_PHASE2_S5_PORTFOLIO.md`. Scope: real scatter over `idn_idea_scores` for the `default-v1` model's value/effort drivers, quadrant labels verbatim from 04 §C.7's mock (Quick Wins/Big Bets/Fill-ins/Money Pit), empty-state coaching text adopted from Mobbin evidence 05 §C row 7 (TheyDo blank-matrix coaching), unscored-ideas tray per 04 §C.7's required state.
+
+**Gates**: `npx tsc --noEmit` ✅ 0 errors · `node scripts/no-hardcoded-colors.cjs` ✅ 0 hits on touched files.
+
+**Data**: `idn_idea_scores` had 0 rows pre-slice. Seeded 10 score rows (value + effort per idea) across 5 of the 8 `idn_ideas` via Supabase MCP `execute_sql` (data, not schema) — spanning all 4 quadrants by design. Verified the `idn_idea_scores_recompute` trigger fired correctly: `SELECT idea_key, score_total FROM idn_ideas` showed real computed totals for the 5 scored ideas and `NULL` for the 3 left deliberately unscored (IDEA-9/12/13).
+
+**Bug found + fixed during this slice**: the initial build colored scatter points via `<Scatter><Cell fill=.../></Scatter>` (the pattern recharts normally supports) — DOM inspection showed 5 `<g class="recharts-scatter-symbol">` groups existed with a valid `fill` and correct `transform` position, but their `<path>` geometry was a degenerate `d="M0,0"` (zero-size, invisible) in this recharts version. Root-caused via `javascript_tool` DOM inspection (`getBBox()` returned `{w:0,h:0}`), not guessed. Found the working precedent (`src/modules/epic-balancing/components/EpicBalancingChart.tsx`) already hit and solved the same issue with a custom `shape` render function instead of `Cell`; applied the same fix here (`PortfolioDot` component rendering an explicit `<circle>`). Re-verified after the fix: 5 visible, correctly positioned, correctly colored points.
+
+**Screenshots + interaction proof** (Chrome MCP, signed-in session):
+| Surface | Outcome |
+|---|---|
+| `/ideation/portfolio`, before fix | FAIL (documented, not shipped) — axes/quadrant labels/unscored tray rendered but 0 visible points despite 5 scored ideas (ss_6976ijwxc) |
+| `/ideation/portfolio`, light, after fix | PASS — 5 points visible, cross-checked by hand against seeded value/effort against each point's quadrant position and class color (ss_42065pa9z) |
+| Point click → navigate | PASS — clicked the green (Opportunity) point at (4, 4.5) → navigated to `/ideation/ideas/auto-flag-likely-duplicate-ideas-on-submit` (IDEA-7, the exact idea seeded at that position) |
+| Dark mode | PASS — axes, gridlines, quadrant labels, and points all hold contrast via ADS tokens (ss_4922r4vi7) |
+
+**Not yet built this slice**: Funnel/board toggle, inline decide actions (Approve/Park/Decline — needs Phase 3 workflow guards), votes-as-bubble-size, model switcher (only one model exists) — all explicitly deferred in the Plan Lock's non-scope.
+
+**Open question flagged, not silently resolved**: the 04 §C.7 ASCII mock's exact left/right quadrant placement is ambiguous against a literal "Effort ▶" reading (see code comment in `PortfolioPage.tsx`) — this build used the industry-standard mapping (Quick Win = high value + low effort) since that's the meaning "Quick Win" carries everywhere else in the design pack; worth a quick confirm with Vikram rather than treated as settled.

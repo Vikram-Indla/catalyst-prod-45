@@ -13,21 +13,23 @@ import {
   Lozenge, Modal, ModalBody, ModalFooter, ModalHeader, ModalTitle, SectionMessage, Select, Spinner, Textfield,
 } from '@/components/ads';
 import type { SelectOption } from '@/components/ads';
-import { DatePicker } from '@atlaskit/datetime-picker';
 import { Routes } from '@/lib/routes';
 import {
   ChevronDown, ChevronRight, Gem, GitBranch, MoveRight, Network, Target, X,
 } from '@/lib/atlaskit-icons';
 import {
   useElementKpis, useGateModels, useInvalidateStrata, useKpis, useMapEdges, usePerspectives,
-  usePlayCharters, useProfileNames, useStrataContext, useStrataRoles, useStrategyElements,
+  useThemeCharters, useProfileNames, useStrataContext, useStrataRoles, useStrategyElements,
 } from '@/modules/strata/hooks/useStrata';
-import { strategyApi, valueApi } from '@/modules/strata/domain';
-import { StrataChipMenu, StrataPageShell, StrataPanel, T } from '@/modules/strata/components/shared';
-import type { StrataMenuOption } from '@/modules/strata/components/shared';
-import { StrataFormModal } from '@/modules/strata/components/authoring';
+import { strategyApi } from '@/modules/strata/domain';
+import { StrataChipMenu, StrataPageShell, StrataPanel, StrataStatStrip, T } from '@/modules/strata/components/shared';
+import type { StrataMenuOption, StrataStat } from '@/modules/strata/components/shared';
+import {
+  EditElementModal, gateModelSelectOptions, NewElementModal, perspectiveSelectOptions, StrataFormModal,
+  str, themeParentOptions, ThemeCharterModal,
+} from '@/modules/strata/components/authoring';
 import { fmtRatioPct, labelize } from '@/modules/strata/components/format';
-import type { StrataGateModel, StrataKpi, StrataStrategyElement } from '@/modules/strata/types';
+import type { StrataKpi, StrataStrategyElement } from '@/modules/strata/types';
 
 type LozengeAppearance = React.ComponentProps<typeof Lozenge>['appearance'];
 
@@ -42,8 +44,8 @@ const STATUS_APPEARANCE: Record<StrataStrategyElement['status'], LozengeAppearan
 
 /**
  * Per-type visual identity — element types are SYSTEM values (DB CHECK).
- * 'play' was consolidated into 'theme' (CAT-STRATA-HIERARCHY-20260706-001):
- * Theme and Play are the same business concept, so legacy Play rows were
+ * the legacy tier-2 term was consolidated into 'theme' (CAT-STRATA-HIERARCHY-20260706-001):
+ * both tiers were the same business concept, so legacy rows were
  * relabeled to 'theme' and no longer need a distinct entry here.
  */
 const TYPE_META: Record<string, { icon: React.ComponentType<{ size?: number }>; bg: string; fg: string }> = {
@@ -80,21 +82,8 @@ const TREE_CSS = `
 
 /** Roles allowed to author strategy structure — UI gate only; DB RPCs enforce. */
 const AUTHOR_ROLES = ['strategy_office', 'strata_admin'] as const;
-/**
- * SYSTEM element types (DB CHECK on strata_strategy_elements.element_type).
- * Active hierarchy is Theme -> Objective (2-tier). 'play' is not a creatable
- * type — legacy rows were relabeled to 'theme' (CAT-STRATA-HIERARCHY-20260706-001).
- */
-const ELEMENT_TYPES = ['theme', 'objective'] as const;
 /** SYSTEM granularities (DB CHECK on strata_cycles.period_granularity). */
 const GRANULARITIES = ['month', 'quarter', 'half', 'year'] as const;
-
-/** Form value → trimmed RPC string arg; empty/non-string → undefined (no-op param). */
-const str = (v: string | number | boolean | null | undefined): string | undefined => {
-  if (typeof v !== 'string') return undefined;
-  const t = v.trim();
-  return t === '' ? undefined : t;
-};
 
 /** One authoring surface open at a time — row menus and header actions feed this. */
 type AuthoringState =
@@ -103,8 +92,7 @@ type AuthoringState =
   | { kind: 'edit-element'; element: StrataStrategyElement }
   | { kind: 'retire-element'; element: StrataStrategyElement }
   | { kind: 'charter'; element: StrataStrategyElement }
-  | { kind: 'kpi-links'; element: StrataStrategyElement }
-  | { kind: 'schedule-gate'; element: StrataStrategyElement };
+  | { kind: 'kpi-links'; element: StrataStrategyElement };
 
 function AuthoringFieldLabel({ children }: { children: React.ReactNode }) {
   return (
@@ -254,236 +242,12 @@ function KpiLinksModal({
   );
 }
 
-/**
- * Governance gate scheduling for a play — the stage select depends on the
- * chosen model's stages, so it composes ads primitives directly.
- */
-function GateScheduleModal({
-  element, gateModels, onClose, onScheduled,
-}: {
-  element: StrataStrategyElement;
-  gateModels: StrataGateModel[];
-  onClose: () => void;
-  onScheduled: () => void;
-}) {
-  const [modelId, setModelId] = useState<string | null>(null);
-  const [stageId, setStageId] = useState<string | null>(null);
-  const [scheduledFor, setScheduledFor] = useState<string | null>(null);
-  const [busy, setBusy] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const modelOptions: SelectOption<string>[] = gateModels
-    .filter((m) => m.status === 'approved')
-    .map((m) => ({ value: m.id, label: m.name }));
-  const stages = gateModels.find((m) => m.id === modelId)?.stages ?? [];
-  const stageOptions: SelectOption<string>[] = stages.map((s) => ({ value: s.id, label: s.name }));
-
-  const submit = async () => {
-    if (!modelId || !stageId) { setError('Required: Gate model, Stage'); return; }
-    setBusy(true);
-    setError(null);
-    try {
-      await valueApi.scheduleGate({
-        gateModelId: modelId, stageId,
-        subjectType: 'element', subjectId: element.id,
-        scheduledFor: scheduledFor ?? undefined,
-      });
-      onScheduled();
-      onClose();
-    } catch (e) {
-      setError(e instanceof Error ? e.message : String(e));
-    } finally {
-      setBusy(false);
-    }
-  };
-
-  return (
-    <Modal isOpen onClose={busy ? () => {} : onClose} width="medium" testId="strata-schedule-gate-modal">
-      <ModalHeader><ModalTitle>Schedule gate — {element.name}</ModalTitle></ModalHeader>
-      <ModalBody>
-        <div style={{ display: 'grid', gap: 12 }}>
-          <div>
-            <AuthoringFieldLabel>Gate model (approved)</AuthoringFieldLabel>
-            <Select
-              options={modelOptions}
-              value={modelOptions.find((o) => o.value === modelId) ?? null}
-              onChange={(next) => { setModelId(next?.value ?? null); setStageId(null); }}
-              placeholder="Select gate model…"
-              isSearchable
-              usePortal
-              aria-label="Gate model"
-            />
-          </div>
-          <div>
-            <AuthoringFieldLabel>Stage</AuthoringFieldLabel>
-            <Select
-              options={stageOptions}
-              value={stageOptions.find((o) => o.value === stageId) ?? null}
-              onChange={(next) => setStageId(next?.value ?? null)}
-              placeholder={modelId ? 'Select stage…' : 'Select a gate model first'}
-              isDisabled={!modelId}
-              usePortal
-              aria-label="Stage"
-            />
-          </div>
-          <div>
-            <AuthoringFieldLabel>Scheduled for</AuthoringFieldLabel>
-            <DatePicker
-              value={scheduledFor ?? ''}
-              onChange={(iso) => setScheduledFor(iso || null)}
-              shouldShowCalendarButton
-              clearControlLabel="Clear scheduled date"
-              label="Scheduled for"
-            />
-          </div>
-        </div>
-        {error ? (
-          <div style={{ marginTop: 12 }}>
-            <SectionMessage appearance="error" title="Action rejected">
-              <p style={{ whiteSpace: 'pre-wrap' }}>{error}</p>
-            </SectionMessage>
-          </div>
-        ) : null}
-      </ModalBody>
-      <ModalFooter>
-        <Button appearance="subtle" onClick={onClose} isDisabled={busy}>Cancel</Button>
-        <Button appearance="primary" onClick={submit} isDisabled={busy}>
-          {busy ? 'Working…' : 'Schedule gate'}
-        </Button>
-      </ModalFooter>
-    </Modal>
-  );
-}
-
-
-/**
- * New element — Type-reactive (Theme has no parent field at all; Objective's
- * parent is required and restricted to Themes). StrataFormModal's field spec
- * is static per render and can't react to a value chosen inside the same
- * modal session, so this mirrors GateScheduleModal's local-state pattern
- * instead (CAT-STRATA-HIERARCHY-20260706-001, approved 2-tier hierarchy).
- */
-function NewElementModal({
-  cycleId, cycleName, themeOptions, perspectiveOptions, onClose, onCreated,
-}: {
-  cycleId: string;
-  cycleName: string;
-  themeOptions: SelectOption<string>[];
-  perspectiveOptions: SelectOption<string>[];
-  onClose: () => void;
-  onCreated: () => void;
-}) {
-  const [elementType, setElementType] = useState<'theme' | 'objective' | null>(null);
-  const [name, setName] = useState('');
-  const [parentId, setParentId] = useState<string | null>(null);
-  const [perspectiveId, setPerspectiveId] = useState<string | null>(null);
-  const [busy, setBusy] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const typeOptions: SelectOption<string>[] = ELEMENT_TYPES.map((t) => ({ value: t, label: labelize(t) }));
-
-  const submit = async () => {
-    if (!elementType) { setError('Required: Type'); return; }
-    if (!name.trim()) { setError('Required: Name'); return; }
-    if (elementType === 'objective' && !parentId) {
-      setError('Required: Parent — an Objective must be parented to a Theme');
-      return;
-    }
-    setBusy(true);
-    setError(null);
-    try {
-      await strategyApi.createElement({
-        cycleId, elementType, name: name.trim(),
-        parentId: elementType === 'objective' ? (parentId ?? undefined) : undefined,
-        perspectiveId: perspectiveId ?? undefined,
-      });
-      onCreated();
-      onClose();
-    } catch (e) {
-      setError(e instanceof Error ? e.message : String(e));
-    } finally {
-      setBusy(false);
-    }
-  };
-
-  return (
-    <Modal isOpen onClose={busy ? () => {} : onClose} width="medium" testId="strata-create-element-modal">
-      <ModalHeader><ModalTitle>New element</ModalTitle></ModalHeader>
-      <ModalBody>
-        <p style={{ margin: '0 0 12px', fontSize: 'var(--ds-font-size-100)', color: T.subtle }}>
-          Created as a draft in <strong>{cycleName}</strong>.
-        </p>
-        <div style={{ display: 'grid', gap: 12 }}>
-          <div>
-            <AuthoringFieldLabel>Type</AuthoringFieldLabel>
-            <Select
-              options={typeOptions}
-              value={typeOptions.find((o) => o.value === elementType) ?? null}
-              onChange={(next) => { setElementType((next?.value as 'theme' | 'objective') ?? null); setParentId(null); }}
-              placeholder="Select type…"
-              usePortal
-              aria-label="Type"
-            />
-          </div>
-          <div>
-            <AuthoringFieldLabel>Name</AuthoringFieldLabel>
-            <Textfield value={name} onChange={(e) => setName(e.currentTarget.value)} aria-label="Name" />
-          </div>
-          {elementType === 'objective' ? (
-            <div>
-              <AuthoringFieldLabel>Parent (Theme)</AuthoringFieldLabel>
-              <Select
-                options={themeOptions}
-                value={themeOptions.find((o) => o.value === parentId) ?? null}
-                onChange={(next) => setParentId(next?.value ?? null)}
-                placeholder="Select the Theme this Objective belongs to…"
-                isSearchable
-                usePortal
-                aria-label="Parent"
-              />
-            </div>
-          ) : elementType === 'theme' ? (
-            <p style={{ margin: 0, fontSize: 'var(--ds-font-size-100)', color: T.subtlest }}>
-              Themes are root-level — no parent to select.
-            </p>
-          ) : null}
-          <div>
-            <AuthoringFieldLabel>Perspective</AuthoringFieldLabel>
-            <Select
-              options={perspectiveOptions}
-              value={perspectiveOptions.find((o) => o.value === perspectiveId) ?? null}
-              onChange={(next) => setPerspectiveId(next?.value ?? null)}
-              placeholder="Select perspective…"
-              isClearable
-              usePortal
-              aria-label="Perspective"
-            />
-          </div>
-        </div>
-        {error ? (
-          <div style={{ marginTop: 12 }}>
-            <SectionMessage appearance="error" title="Action rejected">
-              <p style={{ whiteSpace: 'pre-wrap' }}>{error}</p>
-            </SectionMessage>
-          </div>
-        ) : null}
-      </ModalBody>
-      <ModalFooter>
-        <Button appearance="subtle" onClick={onClose} isDisabled={busy}>Cancel</Button>
-        <Button appearance="primary" onClick={submit} isDisabled={busy}>
-          {busy ? 'Working…' : 'Create element'}
-        </Button>
-      </ModalFooter>
-    </Modal>
-  );
-}
-
 export default function StrataStrategyRoomPage() {
   const navigate = useNavigate();
   const { activeCycle, isLoading: contextLoading } = useStrataContext();
   const elementsQ = useStrategyElements(activeCycle?.id);
   const edgesQ = useMapEdges(activeCycle?.id);
-  const chartersQ = usePlayCharters();
+  const chartersQ = useThemeCharters();
   const elementKpisQ = useElementKpis();
   const kpisQ = useKpis();
   const perspectivesQ = usePerspectives();
@@ -519,6 +283,35 @@ export default function StrataStrategyRoomPage() {
     (id ? perspectives.find((p) => p.id === id)?.name : null) ?? '—';
   const ownerName = (ownerId: string | null): string =>
     (ownerId ? profiles?.get(ownerId)?.name : null) ?? '—';
+
+  // Executive KPI band (Command Room SRC-M3) — derived from already-loaded
+  // data, zero fabrication; charter completeness matches the row lozenge rule.
+  const bandStats = useMemo((): StrataStat[] => {
+    const themes = elements.filter((e) => e.element_type === 'theme');
+    const activeThemes = themes.filter((e) => e.status === 'active');
+    const themeObjectives = elements.filter((e) => e.element_type === 'objective' && e.context === 'theme');
+    const activeObjectives = themeObjectives.filter((e) => e.status === 'active');
+    const chartersComplete = activeThemes.filter((t) => {
+      const c = charterByElement.get(t.id);
+      return !!(c && c.hypothesis && c.value_thesis && c.owner_id);
+    }).length;
+    const kpiLinked = new Set(elementKpis.map((l) => l.element_id));
+    const objectivesMeasured = activeObjectives.filter((o) => kpiLinked.has(o.id)).length;
+    return [
+      { key: 'themes', label: 'Active themes', value: activeThemes.length, caption: `of ${themes.length} in cycle` },
+      { key: 'objectives', label: 'Active objectives', value: activeObjectives.length, caption: 'strategic objectives' },
+      {
+        key: 'charters', label: 'Charters complete', value: `${chartersComplete}/${activeThemes.length}`,
+        caption: chartersComplete < activeThemes.length ? 'governance drift' : 'all active themes chartered',
+        captionTone: chartersComplete < activeThemes.length ? 'warning' : 'success',
+      },
+      {
+        key: 'coverage', label: 'Objectives measured', value: `${objectivesMeasured}/${activeObjectives.length}`,
+        caption: objectivesMeasured < activeObjectives.length ? 'missing KPI links' : 'full KPI coverage',
+        captionTone: objectivesMeasured < activeObjectives.length ? 'warning' : 'success',
+      },
+    ];
+  }, [elements, charterByElement, elementKpis]);
 
   const distinctTypes = useMemo(
     () => Array.from(new Set(elements.map((e) => e.element_type))),
@@ -561,29 +354,12 @@ export default function StrataStrategyRoomPage() {
     });
   };
 
-  // ── Authoring option builders — approved-only, current value kept selectable ──
-  const approvedPerspectiveOptions = (currentId?: string | null) => {
-    const approved = perspectives.filter((p) => p.status === 'approved');
-    const opts = approved.map((p) => ({ value: p.id, label: p.name }));
-    if (currentId && !approved.some((p) => p.id === currentId)) {
-      opts.push({ value: currentId, label: perspectiveName(currentId) });
-    }
-    return opts;
-  };
-  /** Objective's only valid parent is a Theme (2-tier hierarchy, enforced server-side too). */
-  const parentOptions = (excludeId?: string) =>
-    elements
-      .filter((e) => e.id !== excludeId && e.element_type === 'theme')
-      .map((e) => ({ value: e.id, label: e.name }));
-  const gateModelOptions = (currentId?: string | null) => {
-    const models = gateModelsQ.data ?? [];
-    const approved = models.filter((m) => m.status === 'approved');
-    const opts = approved.map((m) => ({ value: m.id, label: m.name }));
-    if (currentId && !approved.some((m) => m.id === currentId)) {
-      opts.push({ value: currentId, label: models.find((m) => m.id === currentId)?.name ?? '—' });
-    }
-    return opts;
-  };
+  // ── Authoring option builders — approved-only, current value kept selectable.
+  //    Shared with the detail pages via components/authoring.tsx so both call
+  //    sites derive options identically (CAT-STRATA-THEME-DETAIL-20260710-001). ──
+  const approvedPerspectiveOptions = (currentId?: string | null) => perspectiveSelectOptions(perspectives, currentId);
+  const parentOptions = (excludeId?: string) => themeParentOptions(elements, excludeId);
+  const gateModelOptions = (currentId?: string | null) => gateModelSelectOptions(gateModelsQ.data ?? [], currentId);
 
   /** Authoring row menu — every mutation is RPC-validated server-side. */
   const rowActions = (el: StrataStrategyElement): StrataMenuOption[] => [
@@ -592,9 +368,6 @@ export default function StrataStrategyRoomPage() {
       ? [{ key: 'charter', label: 'Charter', onClick: () => setAuthoring({ kind: 'charter', element: el }) }]
       : []),
     { key: 'kpis', label: 'KPI links', onClick: () => setAuthoring({ kind: 'kpi-links', element: el }) },
-    ...(el.element_type === 'theme'
-      ? [{ key: 'gate', label: 'Schedule gate', onClick: () => setAuthoring({ kind: 'schedule-gate', element: el }) }]
-      : []),
     ...(el.status !== 'retired'
       ? [{ key: 'retire', label: 'Retire…', onClick: () => setAuthoring({ kind: 'retire-element', element: el }) }]
       : []),
@@ -823,7 +596,7 @@ export default function StrataStrategyRoomPage() {
       ) : !activeCycle || elements.length === 0 ? (
         <EmptyState
           header="No strategy elements yet"
-          description="This cycle has no themes, plays or objectives. Draft the strategy structure in STRATA Configuration, then elements appear here."
+          description="This cycle has no themes or objectives. Draft the strategy structure in STRATA Configuration, then elements appear here."
           primaryAction={
             <Button onClick={() => navigate(Routes.strata.admin())}>Open Configuration</Button>
           }
@@ -837,6 +610,8 @@ export default function StrataStrategyRoomPage() {
               </SectionMessage>
             </div>
           ) : null}
+
+          <StrataStatStrip items={bandStats} testId="strata-strategy-band" />
 
           {/* Hierarchy */}
           <div style={{ marginBottom: 16 }}>
@@ -957,7 +732,7 @@ export default function StrataStrategyRoomPage() {
             width="small"
           >
             <ModalHeader>
-              <ModalTitle>Promote play</ModalTitle>
+              <ModalTitle>Promote element</ModalTitle>
             </ModalHeader>
             <ModalBody>
               <p style={{ margin: 0, fontSize: 'var(--ds-font-size-200)', color: T.text }}>
@@ -1027,44 +802,15 @@ export default function StrataStrategyRoomPage() {
         />
       ) : null}
 
-      {authoring?.kind === 'edit-element' ? (() => {
-        const el = authoring.element;
-        return (
-          <StrataFormModal
-            open
-            onClose={closeAuthoring}
-            title={`Edit ${labelize(el.element_type)}`}
-            description={el.element_type === 'theme' ? 'Themes are root-level — no parent to edit.' : undefined}
-            fields={[
-              { key: 'name', label: 'Name', kind: 'text', required: true },
-              { key: 'description', label: 'Description', kind: 'textarea' },
-              { key: 'ownerId', label: 'Owner', kind: 'user' },
-              { key: 'perspectiveId', label: 'Perspective', kind: 'select', options: approvedPerspectiveOptions(el.perspective_id) },
-              // Theme has no valid parent (2-tier hierarchy) — field only shown for Objective.
-              ...(el.element_type === 'objective'
-                ? [{ key: 'parentId', label: 'Parent (Theme)', kind: 'select' as const, required: true, options: parentOptions(el.id) }]
-                : []),
-              { key: 'stage', label: 'Stage', kind: 'text' },
-            ]}
-            initial={{
-              name: el.name, description: el.description, ownerId: el.owner_id,
-              perspectiveId: el.perspective_id, parentId: el.parent_id, stage: el.stage,
-            }}
-            submitLabel="Save"
-            testId="strata-edit-element-modal"
-            onSubmit={async (v) => {
-              await strategyApi.updateElement(el.id, {
-                name: str(v.name), description: str(v.description),
-                ownerId: str(v.ownerId), perspectiveId: str(v.perspectiveId),
-                parentId: str(v.parentId), stage: str(v.stage),
-                clearOwner: !str(v.ownerId) && !!el.owner_id,
-                clearParent: !str(v.parentId) && !!el.parent_id,
-              });
-              invalidate();
-            }}
-          />
-        );
-      })() : null}
+      {authoring?.kind === 'edit-element' ? (
+        <EditElementModal
+          element={authoring.element}
+          perspectiveOptions={approvedPerspectiveOptions(authoring.element.perspective_id)}
+          parentOptions={parentOptions(authoring.element.id)}
+          onClose={closeAuthoring}
+          onSaved={invalidate}
+        />
+      ) : null}
 
       {authoring?.kind === 'retire-element' ? (
         <StrataFormModal
@@ -1082,39 +828,15 @@ export default function StrataStrategyRoomPage() {
         />
       ) : null}
 
-      {authoring?.kind === 'charter' ? (() => {
-        const el = authoring.element;
-        const charter = charterByElement.get(el.id);
-        return (
-          <StrataFormModal
-            open
-            onClose={closeAuthoring}
-            title="Play charter"
-            description={<>Charter for <strong>{el.name}</strong> — completeness is derived server-side.</>}
-            fields={[
-              { key: 'hypothesis', label: 'Hypothesis', kind: 'textarea' },
-              { key: 'scope', label: 'Scope', kind: 'textarea' },
-              { key: 'valueThesis', label: 'Value thesis', kind: 'textarea' },
-              { key: 'gateModelId', label: 'Gate model', kind: 'select', options: gateModelOptions(charter?.gate_model_id) },
-              { key: 'ownerId', label: 'Owner', kind: 'user' },
-            ]}
-            initial={{
-              hypothesis: charter?.hypothesis ?? null, scope: charter?.scope ?? null,
-              valueThesis: charter?.value_thesis ?? null,
-              gateModelId: charter?.gate_model_id ?? null, ownerId: charter?.owner_id ?? null,
-            }}
-            submitLabel="Save charter"
-            testId="strata-charter-modal"
-            onSubmit={async (v) => {
-              await strategyApi.upsertCharter({
-                elementId: el.id, hypothesis: str(v.hypothesis), scope: str(v.scope),
-                valueThesis: str(v.valueThesis), gateModelId: str(v.gateModelId), ownerId: str(v.ownerId),
-              });
-              invalidate();
-            }}
-          />
-        );
-      })() : null}
+      {authoring?.kind === 'charter' ? (
+        <ThemeCharterModal
+          element={authoring.element}
+          charter={charterByElement.get(authoring.element.id)}
+          gateModelOptions={gateModelOptions(charterByElement.get(authoring.element.id)?.gate_model_id)}
+          onClose={closeAuthoring}
+          onSaved={invalidate}
+        />
+      ) : null}
 
       {authoring?.kind === 'kpi-links' ? (
         <KpiLinksModal
@@ -1123,15 +845,6 @@ export default function StrataStrategyRoomPage() {
           kpis={kpis}
           onClose={closeAuthoring}
           onChanged={invalidate}
-        />
-      ) : null}
-
-      {authoring?.kind === 'schedule-gate' ? (
-        <GateScheduleModal
-          element={authoring.element}
-          gateModels={gateModelsQ.data ?? []}
-          onClose={closeAuthoring}
-          onScheduled={invalidate}
         />
       ) : null}
     </StrataPageShell>

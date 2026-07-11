@@ -72,10 +72,10 @@
   --pln-cal-radius-lg: 8px;
   
   /* ==================== SHADOWS ==================== */
-  --pln-cal-shadow-sm: 0 1px 2px var(--ds-shadow-raised, rgba(0, 0, 0, 0.05));
-  --pln-cal-shadow-md: 0 4px 12px var(--ds-shadow-raised, rgba(0, 0, 0, 0.1));
-  --pln-cal-shadow-lg: 0 8px 24px var(--ds-shadow-raised, rgba(0, 0, 0, 0.15));
-  --pln-cal-shadow-hover: 0 4px 16px var(--ds-background-information, rgba(37, 99, 235, 0.15));
+  --pln-cal-shadow-sm: 0 1px 2px var(--ds-shadow-raised);
+  --pln-cal-shadow-md: 0 4px 12px var(--ds-shadow-raised);
+  --pln-cal-shadow-lg: 0 8px 24px var(--ds-shadow-raised);
+  --pln-cal-shadow-hover: 0 4px 16px var(--ds-background-information);
   
   /* ==================== TYPOGRAPHY ==================== */
   --pln-cal-font-family: var(--cp-font-body);
@@ -518,7 +518,7 @@
 }
 
 .cal-filter-chip-remove:hover {
-  background: var(--ds-background-information, rgba(37, 99, 235, 0.2));
+  background: var(--ds-background-information);
 }
 
 .cal-filter-clear-all {
@@ -819,10 +819,10 @@
   --pln-cal-border-focus: var(--ds-text-brand);
   
   /* Shadows */
-  --pln-cal-shadow-sm: 0 1px 2px var(--ds-shadow-raised, rgba(0, 0, 0, 0.3));
-  --pln-cal-shadow-md: 0 4px 12px var(--ds-shadow-raised, rgba(0, 0, 0, 0.4));
-  --pln-cal-shadow-lg: 0 8px 24px var(--ds-shadow-raised, rgba(0, 0, 0, 0.5));
-  --pln-cal-shadow-hover: 0 4px 16px var(--ds-background-information-bold, rgba(59, 130, 246, 0.3));
+  --pln-cal-shadow-sm: 0 1px 2px var(--ds-shadow-raised);
+  --pln-cal-shadow-md: 0 4px 12px var(--ds-shadow-raised);
+  --pln-cal-shadow-lg: 0 8px 24px var(--ds-shadow-raised);
+  --pln-cal-shadow-hover: 0 4px 16px var(--ds-background-information-bold);
   
   /* Accent */
   --pln-cal-accent: var(--ds-text-brand);
@@ -832,12 +832,12 @@
 /* Overdue badge dark mode adjustment */
 .dark .cal-overdue-badge,
 .dark .cal-overdue-badge , [data-theme="dark"] .cal-overdue-badge {
-  background: var(--ds-background-danger-bold, rgba(220, 38, 38, 0.2));
+  background: var(--ds-background-danger-bold);
   color: var(--ds-border-danger);
 }
 
 /* Context menu dark mode danger item */
 .dark .cal-context-menu-item.danger:hover,
 .dark .cal-context-menu-item.danger:hover , [data-theme="dark"] .cal-context-menu-item.danger:hover {
-  background: var(--ds-background-danger-bold, rgba(220, 38, 38, 0.15));
+  background: var(--ds-background-danger-bold);
 }

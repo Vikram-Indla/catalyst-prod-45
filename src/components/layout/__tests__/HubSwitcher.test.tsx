@@ -20,6 +20,16 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 
+// Ideation is flag-gated (VITE_ENABLE_IDEATION, off in the test env). These
+// specs assert the full 10-hub catalogue, so pin the flag on. Flag-off
+// behavior (tile absent) is verified manually per the Phase 1 screenshot
+// checklist — a per-state module mock needs vi.resetModules churn that isn't
+// worth it for a boolean filter.
+vi.mock('@/lib/featureFlags', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('@/lib/featureFlags')>()),
+  ENABLE_IDEATION: true,
+}));
+
 vi.mock('@/contexts/CatalystContext', () => ({
   useCatalystContext: () => ({
     setSidebarHidden: vi.fn(),
@@ -130,7 +140,7 @@ describe('HubSwitcher v2 — sectioned popover with bespoke tiles', () => {
     );
     expect(hrefByLabel.Home).toBe('/for-you');
     expect(hrefByLabel.STRATA).toBe('/strata');
-    expect(hrefByLabel.Ideation).toBe('/ideation/backlog');
+    expect(hrefByLabel.Ideation).toBe('/ideation');
     expect(hrefByLabel.Product).toBe('/product-hub');
     expect(hrefByLabel.Project).toBe('/project-hub');
     expect(hrefByLabel.Release).toBe('/release-hub/overview');
@@ -225,7 +235,7 @@ describe('HubSwitcher v2 — Step 7.4: ⌘1–⌘9 + ⌘- keyboard shortcuts', (
   it.each([
     ['1', '/for-you'],
     ['2', '/strata'],
-    ['3', '/ideation/backlog'],
+    ['3', '/ideation'],
     ['4', '/product-hub'],
     ['5', '/project-hub'],
     ['6', '/release-hub/overview'],

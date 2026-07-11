@@ -234,7 +234,7 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
   return (
     <>
       {/* Backdrop */}
-      <div style={{ position: 'fixed', inset: 0, background: 'var(--ds-shadow-raised, rgba(0,0,0,0.45))', zIndex: 60 }} onClick={onClose} />
+      <div style={{ position: 'fixed', inset: 0, background: 'var(--ds-shadow-raised)', zIndex: 60 }} onClick={onClose} />
 
       {/* Modal */}
       <div style={{

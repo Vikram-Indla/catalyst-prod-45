@@ -440,9 +440,9 @@ export function ImproveIssueDropdown({
         {/* jira-compare 2026-05-02 (real probe): Vikram pulled DOM on the
             actual Jira button — testid issue-improve-issue-dropdown.
             improve-issue-dropdown--trigger. Measured:
-              bg=var(--ds-shadow-raised, rgba(0,0,0,0))  color=var(--ds-text, rgb(41,42,46))  border=0px
+              bg=var(--ds-shadow-raised)  color=var(--ds-text)  border=0px
               h=32px  pad=0 10px  br=3px  fontSize={'var(--ds-font-size-400)'}  fontWeight=500
-              icon: 16×16  fill=black  color=var(--ds-text, rgb(41,42,46))
+              icon: 16×16  fill=black  color=var(--ds-text)
             No purple anywhere — appearance="subtle" with dark text +
             dark icon. The earlier "subtle discovery" was fabricated. */}
         <button
@@ -491,7 +491,7 @@ export function ImproveIssueDropdown({
               background: token('elevation.surface.overlay', 'var(--ds-surface)'),
               border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral))')}`,
               borderRadius: 6,
-              boxShadow: '0 8px 24px var(--ds-shadow-raised, rgba(9, 30, 66, 0.16))',
+              boxShadow: '0 8px 24px var(--ds-shadow-raised)',
               zIndex: 2000,
               padding: '4px 0',
             }}
@@ -649,7 +649,7 @@ export function ImproveIssueDropdown({
             background: token('elevation.surface.overlay', 'var(--ds-surface)'),
             border: `1px solid ${token('color.border', 'var(--ds-border)')}`,
             borderRadius: 8,
-            boxShadow: '0 4px 16px var(--ds-background-neutral-subtle-pressed, rgba(9, 30, 66, 0.14))',
+            boxShadow: '0 4px 16px var(--ds-background-neutral-subtle-pressed)',
             padding: '12px 16px',
             maxWidth: 260,
             fontSize: 'var(--ds-font-size-400)',
@@ -711,7 +711,7 @@ export function ImproveIssueDropdown({
               style={{
                 position: 'fixed',
                 top: 0, left: 0, right: 0, bottom: 0,
-                background: 'var(--ds-surface, rgba(255,255,255,0.75))',
+                background: 'var(--ds-surface)',
                 zIndex: 99990,
                 display: 'flex',
                 flexDirection: 'column',

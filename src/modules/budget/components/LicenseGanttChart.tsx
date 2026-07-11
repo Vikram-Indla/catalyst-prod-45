@@ -203,7 +203,7 @@ export function LicenseGanttChart({ licenses }: LicenseGanttChartProps) {
                         left: `${segment.left}%`,
                         width: `${Math.max(segment.width, 2)}%`,
                         minWidth: '20px',
-                        borderRight: idx < monthlySegments.length - 1 ? '1px solid var(--ds-surface, rgba(255,255,255,0.3))' : 'none',
+                        borderRight: idx < monthlySegments.length - 1 ? '1px solid var(--ds-surface)' : 'none',
                       }}
                       title={`${segment.month}: ${formatSAR(monthlyCost)}`}
                     >

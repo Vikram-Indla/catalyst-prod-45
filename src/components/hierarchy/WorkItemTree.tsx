@@ -156,7 +156,7 @@ function ActionsMenu({ item, onDelete }: { item: WorkItem; onDelete?: (item: Wor
               color: 'var(--sem-danger)', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left',
               display: 'flex', alignItems: 'center', gap: 8,
             }}
-            onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--ds-background-danger-bold, rgba(220, 38, 38, 0.06))')}
+            onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--ds-background-danger-bold)')}
             onMouseLeave={(e) => (e.currentTarget.style.background = '')}
           >
             <Trash2 size={14} /> Delete
@@ -280,7 +280,7 @@ function TreeRow({
       <ProgressBar stats={item.stats} />
 
       {item.fixVersion && (
-        <span style={{ height: 20, padding: '0 8px', fontSize: 'var(--ds-font-size-50)', fontWeight: 600, color: 'var(--ds-chart-teal-bolder)', background: 'var(--ds-background-success)', border: '1px solid var(--ds-background-success, rgba(13,148,136,0.2))', borderRadius: 9999, display: 'inline-flex', alignItems: 'center', whiteSpace: 'nowrap' }}>
+        <span style={{ height: 20, padding: '0 8px', fontSize: 'var(--ds-font-size-50)', fontWeight: 600, color: 'var(--ds-chart-teal-bolder)', background: 'var(--ds-background-success)', border: '1px solid var(--ds-background-success)', borderRadius: 9999, display: 'inline-flex', alignItems: 'center', whiteSpace: 'nowrap' }}>
           {item.fixVersion.name}
         </span>
       )}

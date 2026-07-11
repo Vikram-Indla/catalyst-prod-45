@@ -1064,7 +1064,7 @@ export default function CleanupPage() {
                             onClick={() => handleOpenDetailList(item, idx)}
                             style={{
                               height: 44, borderBottom: '1px solid var(--cp-bg-sunken, var(--cp-bg-sunken, var(--ds-surface-sunken)))', cursor: 'pointer',
-                              background: isSelected ? 'var(--ds-background-information, rgba(37,99,235,0.04))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))',
+                              background: isSelected ? 'var(--ds-background-information)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))',
                               borderLeft: isSelected ? '2px solid var(--ds-link)' : '2px solid transparent',
                               transition: 'background .1s',
                             }}
@@ -1401,7 +1401,7 @@ export default function CleanupPage() {
           style={{
             maxWidth: 680, width: '90vw', borderRadius: 8,
             backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))', border: 'none',
-            boxShadow: '0 8px 32px var(--ds-shadow-raised, rgba(0,0,0,0.18)), 0 2px 8px var(--ds-shadow-raised, rgba(0,0,0,0.10))',
+            boxShadow: '0 8px 32px var(--ds-shadow-raised), 0 2px 8px var(--ds-shadow-raised)',
             padding: 0,
           }}
         >

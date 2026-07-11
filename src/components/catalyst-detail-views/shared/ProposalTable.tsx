@@ -149,7 +149,7 @@ export function ProposalTable({
                   background: token('color.background.overlay', 'var(--ds-surface)'),
                   border: `1px solid ${token('color.border', 'var(--ds-border)')}`,
                   borderRadius: 4,
-                  boxShadow: token('elevation.shadow.overlay', '0 8px 16px var(--ds-shadow-raised, rgba(9,30,66,0.25))'),
+                  boxShadow: token('elevation.shadow.overlay', '0 8px 16px var(--ds-shadow-raised)'),
                   padding: '4px 0',
                   minWidth: 220,
                   maxHeight: 240,
@@ -186,7 +186,7 @@ export function ProposalTable({
                     background: 'transparent', cursor: 'pointer', fontSize: 'var(--ds-font-size-300)',
                     color: token('color.text', 'var(--ds-text)'),
                   }}
-                  onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))'); }}
+                  onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle-hovered)'); }}
                   onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
                 >
                   <CatalystAvatar size="xsmall" appearance="circle" />
@@ -203,7 +203,7 @@ export function ProposalTable({
                       background: 'transparent', cursor: 'pointer', fontSize: 'var(--ds-font-size-300)',
                       color: token('color.text', 'var(--ds-text)'),
                     }}
-                    onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))'); }}
+                    onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle-hovered)'); }}
                     onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
                   >
                     <CatalystAvatar size="xsmall" name={opt.name} src={opt.avatarUrl ?? undefined} appearance="circle" />

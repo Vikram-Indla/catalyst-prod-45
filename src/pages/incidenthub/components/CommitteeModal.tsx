@@ -29,12 +29,12 @@ export function CommitteeModal({ open, onClose, committee, incidentId }: Committ
   return (
     <Dialog open={open} onOpenChange={v => { if (!v) onClose(); }}>
       <DialogContent className="sm:max-w-[760px]" style={{ borderRadius: 8, padding: 0 }}>
-        <DialogHeader className="px-6 pt-5 pb-3" style={{ borderBottom: '0.75px solid var(--ds-shadow-overlay, rgba(15,23,42,0.06))' }}>
+        <DialogHeader className="px-6 pt-5 pb-3" style={{ borderBottom: '0.75px solid var(--ds-shadow-overlay)' }}>
           <DialogTitle style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 'var(--ds-font-size-500)', fontWeight: 700 }}>Escalation Committee</DialogTitle>
         </DialogHeader>
 
         {/* Tabs */}
-        <div className="flex items-center gap-1 px-6" style={{ borderBottom: '0.75px solid var(--ds-shadow-overlay, rgba(15,23,42,0.06))' }}>
+        <div className="flex items-center gap-1 px-6" style={{ borderBottom: '0.75px solid var(--ds-shadow-overlay)' }}>
           {TABS.map((tab, i) => (
             <button
               key={tab}
@@ -96,7 +96,7 @@ export function CommitteeModal({ open, onClose, committee, incidentId }: Committ
                             color: voteStatus === v
                               ? (v === 'approved' ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))' : v === 'rejected' ? 'var(--ds-text-danger)' : 'var(--ds-text-subtle)')
                               : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))',
-                            border: voteStatus === v ? 'none' : '1px solid var(--ds-shadow-overlay, rgba(15,23,42,0.08))',
+                            border: voteStatus === v ? 'none' : '1px solid var(--ds-shadow-overlay)',
                           }}
                         >
                           {v === 'approved' ? 'Approve' : v === 'rejected' ? 'Reject' : 'Pending'}
@@ -118,7 +118,7 @@ export function CommitteeModal({ open, onClose, committee, incidentId }: Committ
           )}
         </div>
 
-        <DialogFooter className="px-6 py-3" style={{ borderTop: '0.75px solid var(--ds-shadow-overlay, rgba(15,23,42,0.06))' }}>
+        <DialogFooter className="px-6 py-3" style={{ borderTop: '0.75px solid var(--ds-shadow-overlay)' }}>
           <Button variant="ghost" onClick={onClose} style={{ borderRadius: 6 }}>Close</Button>
           <Button
             disabled={!quorumMet}

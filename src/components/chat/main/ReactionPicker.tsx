@@ -167,7 +167,7 @@ export function ReactionPicker({
         background: 'var(--ds-surface-overlay)',
         border: `1px solid var(--ds-border)`,
         borderRadius: 8,
-        boxShadow: '0 4px 12px var(--ds-background-neutral-subtle-pressed, rgba(9,30,66,0.13))',
+        boxShadow: '0 4px 12px var(--ds-background-neutral-subtle-pressed)',
         width: 320,
         maxHeight: 420,
         display: 'flex',
@@ -228,7 +228,7 @@ export function ReactionPicker({
                 transition: 'background 100ms',
               }}
               onMouseEnter={(e) => {
-                (e.target as HTMLElement).style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))';
+                (e.target as HTMLElement).style.background = 'var(--ds-background-neutral-subtle-hovered)';
               }}
               onMouseLeave={(e) => {
                 (e.target as HTMLElement).style.background = 'transparent';
@@ -308,7 +308,7 @@ export function ReactionPicker({
               transition: 'background 100ms',
             }}
             onMouseEnter={(e) => {
-              (e.target as HTMLElement).style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))';
+              (e.target as HTMLElement).style.background = 'var(--ds-background-neutral-subtle-hovered)';
             }}
             onMouseLeave={(e) => {
               (e.target as HTMLElement).style.background = 'transparent';

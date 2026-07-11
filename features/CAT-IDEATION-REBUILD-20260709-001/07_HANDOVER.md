@@ -4,7 +4,7 @@
 
 ## State
 - Phase 0 (design lock): ✅ EXITED. D1–D9 decided (09_DECISIONS.md). Design of record ratified = discovery folder 03 (architecture) + 04 (design pack) + 05 v2.1 (Mobbin MCP evidence).
-- Phase 1 (foundations, 5 slices): **S1 ✅ · S2 ✅ · S3–S5 ⏳ pending**.
+- Phase 1 (foundations, 5 slices): **S1 ✅ · S2 ✅ · S3 ✅ (staging, post DRIFT-001 repair) · S4 ✅ · S5 ✅ (validated, commit pending)**.
 - Active Plan Lock: `03_PLAN_LOCK_PHASE1.md` (APPROVED — code authorized through S5).
 
 ## Commits (main)
@@ -24,17 +24,17 @@
 ## Status (updated session 004, 2026-07-09)
 - **S3**: ✅ APPLIED to staging + validated (12/12 probes, 06_VALIDATION_EVIDENCE.md) — after DRIFT-001 fix. The committed migration had 4 schema mismatches (wrong table `ph_wf_templates`, missing `notification_trigger_config`, wrong `admin_nav_modules` columns, non-existent role codes). Amended per D10–D12 (09_DECISIONS.md). **Amended migration file + feature docs not yet committed — commit approval pending.**
 - **S4**: Code complete (committed `55725710f`); DB side now live via S3.
-- **S5**: Not started. Plan at `sessions/003_s5_shell_routes_plan.md`.
+- **S3 amendment**: ✅ committed `41a6bf47c` (session 004).
+- **S5**: ✅ Code complete + validated live both flag states, both themes (session 005). Routes/scaffold/sidebar/shell done; legacy /ideation/* + /product/ideas/* mounts removed (D1); flag-off nav-leak fixed (CatalystShell/HubSwitcher/HomeSidebar). Commit pending gate approval.
 
 ## Handoff to Next Session
 
 **Immediate next steps**:
-1. Commit the S3 amendment (supabase/migrations/20260709160000_idn_seeds_phase1.sql + feature-folder docs) — needs Vikram file-list + message approval per COMMIT GATE
-2. Implement S5 per `sessions/003_s5_shell_routes_plan.md` (routes, scaffold, shell integration, legacy route-mount removal per D1)
-3. Local smoke test (VITE_ENABLE_IDEATION=true) + flag-off validation
-4. Staging readiness review + Phase 2 Plan Lock planning
+1. Land the S5 commit (if not landed this session)
+2. Phase 1 exit review → Phase 2 Plan Lock (Inbox 2-pane triage, Explore list via JiraTable proof, submit form — CRUD over idn_*)
+3. Env note: vitest cannot start locally (rolldown styleText vs Node 20.12) — consider Node bump; suites run in CI
 
-**Known blockers**: None. D10 note: staging exit-criterion "notification triggers present" is waived (table absent on staging; conditional seed applies where it exists).
+**Known blockers**: None. D10 note: staging exit-criterion "notification triggers present" is waived (table absent on staging; conditional seed applies where it exists). Session-ops: GitHub Desktop switched the shared checkout mid-session — see session 005 incident note; user's strata DECISIONS.md edit is preserved in named stash@{0}.
 
 ## Next: S5 — Shell + Routes
 1. Ideation workflow in `ph_wf_*` (states per discovery-03 §4: draft→submitted→screening→evaluation→decided(+approved/declined/parked/merged)→converted→delivered) — **discover ph_wf_* table shapes first** (src/lib/workflow/canonical/runtime.ts + ph_wf migrations).

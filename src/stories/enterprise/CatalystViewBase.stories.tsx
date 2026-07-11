@@ -35,6 +35,11 @@ export const CatalystDetailRouterDefault: StoryObj = {
   render: () => <Wrap><CatalystDetailRouter  /></Wrap>,
 }
 
+// CatalystAssessmentFeatureField story removed — CLAUDE.md 2026-05-07:
+// Assessment Feature permanently banned from ALL Catalyst views.
+// CatalystMdtRefField story removed — CLAUDE.md 2026-05-05: MDT Ref field
+// permanently banned (both enforced by the banned-orphans / ads-violations gates).
+
 export const BrSidebarAdapterDefault: StoryObj = {
   name: 'BrSidebarAdapter / Default',
   render: () => <Wrap><BrSidebarAdapter  /></Wrap>,

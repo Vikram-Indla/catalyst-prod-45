@@ -38,13 +38,13 @@
 
   --cp-interact-hover: var(--ds-background-neutral-subtle);
   --cp-interact-press: var(--ds-background-neutral);
-  --cp-interact-selected: var(--ds-background-information, rgba(37, 99, 235, 0.08));
-  --cp-interact-selected-hover: var(--ds-background-information, rgba(37, 99, 235, 0.12));
+  --cp-interact-selected: var(--ds-background-information);
+  --cp-interact-selected-hover: var(--ds-background-information);
 
   --cp-toolbar-bg: var(--ds-background-neutral-subtle);
   --cp-toolbar-bg-hover: var(--ds-background-neutral-subtle);
   --cp-toolbar-bg-press: var(--ds-background-neutral);
-  --cp-toolbar-bg-active: var(--ds-background-information, rgba(37, 99, 235, 0.10));
+  --cp-toolbar-bg-active: var(--ds-background-information);
 
   --cp-input-bg: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))));
   --cp-input-border: var(--ds-border);
@@ -60,7 +60,7 @@
   --cp-radius-full: 9999px;
 
   --cp-shadow-xs: var(--ds-shadow-raised);
-  --cp-shadow-focus: 0 0 0 2px var(--ds-background-information, rgba(37, 99, 235, 0.18));
+  --cp-shadow-focus: 0 0 0 2px var(--ds-background-information);
 
   --cp-lozenge-grey-bg: var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)));
   --cp-lozenge-grey-text: var(--ds-text);
@@ -128,20 +128,20 @@
 
   --cp-interact-hover: var(--ds-surface-overlay);
   --cp-interact-press: var(--ds-border, var(--cp-ink-1));
-  --cp-interact-selected: var(--ds-background-information-bold, rgba(59,130,246,0.10));
-  --cp-interact-selected-hover: var(--ds-background-information-bold, rgba(59,130,246,0.15));
+  --cp-interact-selected: var(--ds-background-information-bold);
+  --cp-interact-selected-hover: var(--ds-background-information-bold);
 
   --cp-toolbar-bg: var(--ds-border, var(--cp-ink-1));
   --cp-toolbar-bg-hover: var(--ds-border, var(--cp-ink-1));
   --cp-toolbar-bg-press: var(--ds-border-bold);
-  --cp-toolbar-bg-active: var(--ds-background-information-bold, rgba(59,130,246,0.12));
+  --cp-toolbar-bg-active: var(--ds-background-information-bold);
 
   --cp-input-bg: transparent;
   --cp-input-border: var(--ds-border-bold);
   --cp-input-border-hover: var(--ds-border-bold);
 
   --cp-shadow-xs: none;
-  --cp-shadow-focus: 0 0 0 2px var(--ds-background-information-bold, rgba(59,130,246,0.25));
+  --cp-shadow-focus: 0 0 0 2px var(--ds-background-information-bold);
 
   --cp-lozenge-grey-bg: var(--ds-text);
   --cp-lozenge-grey-text: var(--ds-background-neutral-hovered);
@@ -250,12 +250,12 @@
   background: linear-gradient(135deg, var(--cp-primary-60), var(--cp-primary-70));
   color: var(--cp-text-inverse);
   font-weight: 600;
-  box-shadow: 0 2px 8px var(--ds-background-information, rgba(37, 99, 235, 0.15));
+  box-shadow: 0 2px 8px var(--ds-background-information);
 }
 .pb-toolbar-btn-primary:hover {
   background: linear-gradient(135deg, var(--cp-primary-70), var(--cp-primary-80));
   transform: translateY(-1px);
-  box-shadow: 0 4px 16px var(--ds-background-information, rgba(37, 99, 235, 0.22));
+  box-shadow: 0 4px 16px var(--ds-background-information);
 }
 .pb-toolbar-btn-primary:active {
   background: var(--cp-primary-80);
@@ -353,7 +353,7 @@
 .pb-chip-active {
   color: var(--cp-primary-60);
   background: var(--cp-interact-selected);
-  border-color: var(--ds-background-information, rgba(37, 99, 235, 0.25));
+  border-color: var(--ds-background-information);
   font-weight: 600;
 }
 .pb-chip-active:hover {
@@ -364,7 +364,7 @@
   font-size: 10px;
   font-weight: 600;
   font-variant-numeric: tabular-nums;
-  background: var(--ds-background-information, rgba(37, 99, 235, 0.12));
+  background: var(--ds-background-information);
   color: var(--cp-primary-60);
   border-radius: var(--cp-radius-full);
   padding: 0px 8px;
@@ -783,7 +783,7 @@
   color: var(--cp-danger-60);
 }
 .pb-bulk-btn-danger:hover {
-  background: var(--ds-background-danger-bold, rgba(220, 38, 38, 0.08));
+  background: var(--ds-background-danger-bold);
 }
 .pb-bulk-cancel {
   font-family: var(--cp-font-body);
@@ -825,7 +825,7 @@
   height: 100vh;
   background: var(--cp-bg-page);
   border-inline-start: 1px solid var(--cp-border-default);
-  box-shadow: -8px 0 32px var(--ds-shadow-raised, rgba(0, 0, 0, 0.08));
+  box-shadow: -8px 0 32px var(--ds-shadow-raised);
   z-index: 510;
   display: flex;
   flex-direction: column;
@@ -981,7 +981,7 @@
   height: 16px;
   border-radius: var(--cp-radius-full);
   background: var(--cp-text-inverse);
-  box-shadow: 0 1px 3px var(--ds-shadow-raised, rgba(0, 0, 0, 0.1));
+  box-shadow: 0 1px 3px var(--ds-shadow-raised);
   transition: inset-inline-start 200ms;
 }
 .pb-toggle-on {

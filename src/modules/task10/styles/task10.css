@@ -45,11 +45,11 @@
   --t10-gray-900: var(--ds-text);
 
   /* Shadows */
-  --t10-shadow-xs: 0 1px 2px var(--ds-shadow-raised, rgba(0,0,0,0.05));
-  --t10-shadow-sm: 0 1px 3px var(--ds-shadow-raised, rgba(0,0,0,0.1)), 0 1px 2px var(--ds-shadow-raised, rgba(0,0,0,0.06));
-  --t10-shadow-md: 0 4px 6px -1px var(--ds-shadow-raised, rgba(0,0,0,0.1)), 0 2px 4px -1px var(--ds-shadow-raised, rgba(0,0,0,0.06));
-  --t10-shadow-lg: 0 10px 15px -3px var(--ds-shadow-raised, rgba(0,0,0,0.1)), 0 4px 6px -2px var(--ds-shadow-raised, rgba(0,0,0,0.05));
-  --t10-shadow-xl: 0 20px 25px -5px var(--ds-shadow-raised, rgba(0,0,0,0.1)), 0 10px 10px -5px var(--ds-shadow-raised, rgba(0,0,0,0.04));
+  --t10-shadow-xs: 0 1px 2px var(--ds-shadow-raised);
+  --t10-shadow-sm: 0 1px 3px var(--ds-shadow-raised), 0 1px 2px var(--ds-shadow-raised);
+  --t10-shadow-md: 0 4px 6px -1px var(--ds-shadow-raised), 0 2px 4px -1px var(--ds-shadow-raised);
+  --t10-shadow-lg: 0 10px 15px -3px var(--ds-shadow-raised), 0 4px 6px -2px var(--ds-shadow-raised);
+  --t10-shadow-xl: 0 20px 25px -5px var(--ds-shadow-raised), 0 10px 10px -5px var(--ds-shadow-raised);
 
   /* Typography */
   --t10-font: var(--cp-font-body);
@@ -937,7 +937,7 @@
 .t10-module .t10-modal-overlay {
   position: fixed !important;
   inset: 0 !important;
-  background: var(--ds-shadow-overlay, rgba(17, 24, 39, 0.5)) !important;
+  background: var(--ds-shadow-overlay) !important;
   backdrop-filter: blur(4px) !important;
   z-index: 300 !important;
   display: flex !important;
@@ -1592,7 +1592,7 @@
 .t10-module .t10-rank-top {
   background: linear-gradient(135deg, var(--t10-blue) 0%, var(--t10-blue-darker) 100%) !important;
   color: white !important;
-  box-shadow: 0 2px 4px var(--ds-background-information, rgba(37, 99, 235, 0.3)) !important;
+  box-shadow: 0 2px 4px var(--ds-background-information) !important;
 }
 
 .t10-module .t10-rank-mid {
@@ -1819,7 +1819,7 @@
 .t10-overlay {
   position: fixed !important;
   inset: 0 !important;
-  background: var(--ds-shadow-overlay, rgba(17, 24, 39, 0.4)) !important;
+  background: var(--ds-shadow-overlay) !important;
   backdrop-filter: blur(4px) !important;
   z-index: 9998 !important;
   opacity: 0 !important;
@@ -1844,7 +1844,7 @@
   width: 420px !important;
   max-width: 100% !important;
   background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface)))) !important;
-  box-shadow: -4px 0 24px var(--ds-shadow-raised, rgba(0, 0, 0, 0.15)) !important;
+  box-shadow: -4px 0 24px var(--ds-shadow-raised) !important;
   z-index: 9999 !important;
   display: flex !important;
   flex-direction: column !important;
@@ -2222,7 +2222,7 @@
   background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface)))) !important;
   border: 1px solid var(--ds-border) !important;
   border-radius: 8px !important;
-  box-shadow: 0 4px 16px var(--ds-shadow-raised, rgba(0, 0, 0, 0.12)) !important;
+  box-shadow: 0 4px 16px var(--ds-shadow-raised) !important;
   padding: 12px !important;
   z-index: 10 !important;
   display: flex !important;
@@ -2242,7 +2242,7 @@
 
 .t10-module .t10-date-input:focus {
   border-color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary)) !important;
-  box-shadow: 0 0 0 3px var(--ds-background-information, rgba(37, 99, 235, 0.1)) !important;
+  box-shadow: 0 0 0 3px var(--ds-background-information) !important;
 }
 
 .t10-module .t10-clear-date-btn {
@@ -2284,7 +2284,7 @@
   background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface)))) !important;
   border: 1px solid var(--ds-border) !important;
   border-radius: 8px !important;
-  box-shadow: 0 4px 16px var(--ds-shadow-raised, rgba(0, 0, 0, 0.12)) !important;
+  box-shadow: 0 4px 16px var(--ds-shadow-raised) !important;
   padding: 8px !important;
   z-index: 10 !important;
   display: flex !important;
@@ -2628,7 +2628,7 @@
 .t10-spinner {
   width: 16px !important;
   height: 16px !important;
-  border: 2px solid var(--ds-surface, rgba(255, 255, 255, 0.3)) !important;
+  border: 2px solid var(--ds-surface) !important;
   border-top-color: white !important;
   border-radius: 50% !important;
   animation: t10-spin 0.6s linear infinite !important;
@@ -3169,7 +3169,7 @@
   background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface)))) !important;
   border: 1px solid var(--ds-border) !important;
   border-radius: 12px !important;
-  box-shadow: 0 20px 50px -10px var(--ds-shadow-raised, rgba(0, 0, 0, 0.15)) !important;
+  box-shadow: 0 20px 50px -10px var(--ds-shadow-raised) !important;
   overflow: hidden !important;
 }
 
@@ -4550,7 +4550,7 @@
 }
 
 .t10-module .t10-ai-banner-v2-header:hover {
-  background-color: var(--ds-background-discovery-bold, rgba(139, 92, 246, 0.05)) !important;
+  background-color: var(--ds-background-discovery-bold) !important;
 }
 
 .t10-module .t10-ai-banner-v2-header-left {
@@ -4635,7 +4635,7 @@
 }
 
 .t10-module .t10-ai-banner-v2-dismiss:hover {
-  background-color: var(--ds-background-discovery-bold, rgba(139, 92, 246, 0.1)) !important;
+  background-color: var(--ds-background-discovery-bold) !important;
 }
 
 .t10-module .t10-ai-banner-v2-dismiss svg {
@@ -4668,7 +4668,7 @@
 
 .t10-module .t10-ai-suggestion-v2:hover {
   border-color: var(--ds-background-discovery) !important;
-  box-shadow: 0 2px 8px var(--ds-background-discovery-bold, rgba(139, 92, 246, 0.1)) !important;
+  box-shadow: 0 2px 8px var(--ds-background-discovery-bold) !important;
 }
 
 .t10-module .t10-ai-suggestion-v2-icon {

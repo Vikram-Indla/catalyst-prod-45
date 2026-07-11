@@ -75,7 +75,7 @@ export function ParentPickerPanel({
         style={{
           position: 'absolute', left: '48%', top: 0, zIndex: 10000,
           width: 260, background: tk.surfaceBg, border: `1px solid ${tk.border}`,
-          borderRadius: 8, boxShadow: '0 4px 16px var(--ds-shadow-raised, rgba(0,0,0,0.24))',
+          borderRadius: 8, boxShadow: '0 4px 16px var(--ds-shadow-raised)',
           padding: '16px',
         }}
         onClick={e => e.stopPropagation()}
@@ -94,7 +94,7 @@ export function ParentPickerPanel({
         position: 'absolute', left: '48%', top: 0, zIndex: 10000,
         width: 320, maxHeight: 420, display: 'flex', flexDirection: 'column',
         background: tk.surfaceBg, border: `1px solid ${tk.border}`,
-        borderRadius: 8, boxShadow: '0 4px 16px var(--ds-shadow-raised, rgba(0,0,0,0.24))',
+        borderRadius: 8, boxShadow: '0 4px 16px var(--ds-shadow-raised)',
         overflow: 'hidden',
       }}
       onClick={e => e.stopPropagation()}

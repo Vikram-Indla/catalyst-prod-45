@@ -94,7 +94,7 @@ export default function BoardView() {
             <div>
               <div className="flex items-center gap-2">
                 <h1 className="text-xl font-bold">Board</h1>
-                <span className="px-2 py-0.5 rounded text-xs font-medium bg-[var(--ds-background-information-bold, rgba(59,130,246,0.1))] text-[var(--ds-text-brand)]">
+                <span className="px-2 py-0.5 rounded text-xs font-medium bg-[var(--ds-background-information-bold)] text-[var(--ds-text-brand)]">
                   Features
                 </span>
               </div>

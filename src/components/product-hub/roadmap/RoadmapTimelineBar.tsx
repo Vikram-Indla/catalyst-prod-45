@@ -103,8 +103,8 @@ export function RoadmapTimelineBar({ item, left, width, isSelected, isHovered, o
             className="absolute left-0 top-0 bottom-0"
             style={{
               width: `${Math.min(100, item.progress)}%`,
-              background: 'var(--ds-surface, rgba(255,255,255,0.18))',
-              borderRight: item.progress < 100 ? '2px solid var(--ds-surface, rgba(255,255,255,0.35))' : 'none',
+              background: 'var(--ds-surface)',
+              borderRight: item.progress < 100 ? '2px solid var(--ds-surface)' : 'none',
               borderRadius: '5px 0 0 5px',
               zIndex: 0,
               pointerEvents: 'none',
@@ -137,7 +137,7 @@ export function RoadmapTimelineBar({ item, left, width, isSelected, isHovered, o
               fontFamily: FONT.mono,
               fontSize: 'var(--ds-font-size-100)',
               fontWeight: 500,
-              color: 'var(--ds-surface, rgba(255,255,255,0.7))',
+              color: 'var(--ds-surface)',
               paddingRight: 8,
               paddingLeft: 4,
             }}
@@ -150,7 +150,7 @@ export function RoadmapTimelineBar({ item, left, width, isSelected, isHovered, o
         {isFallbackEnd && (
           <div style={{
             position: 'absolute', right: 0, top: 0, bottom: 0,
-            width: 3, background: 'var(--ds-surface, rgba(255,255,255,0.4))',
+            width: 3, background: 'var(--ds-surface)',
             borderRadius: '0 5px 5px 0',
           }} />
         )}

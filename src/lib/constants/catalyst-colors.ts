@@ -95,12 +95,12 @@ export const BAR_GRADIENTS = {
 
 // Shadow System
 export const SHADOWS = {
-  sm: '0 1px 2px var(--ds-shadow-raised, rgba(0,0,0,0.04)), 0 1px 3px var(--ds-shadow-raised, rgba(0,0,0,0.06))',
-  md: '0 2px 4px var(--ds-shadow-raised, rgba(0,0,0,0.04)), 0 4px 8px var(--ds-shadow-raised, rgba(0,0,0,0.06))',
-  lg: '0 4px 8px var(--ds-shadow-raised, rgba(0,0,0,0.04)), 0 8px 16px var(--ds-shadow-raised, rgba(0,0,0,0.08)), 0 16px 32px var(--ds-shadow-raised, rgba(0,0,0,0.04))',
-  primaryGlow: `0 8px 20px var(--ds-background-information, rgba(37, 99, 235, 0.3)), 0 4px 8px var(--ds-shadow-raised, rgba(0,0,0,0.1))`,
-  tealGlow: `0 8px 20px var(--ds-background-success, rgba(13, 148, 136, 0.3)), 0 4px 8px var(--ds-shadow-raised, rgba(0,0,0,0.1))`,
-  warningGlow: `0 8px 20px var(--ds-background-warning, rgba(217, 119, 6, 0.3)), 0 4px 8px var(--ds-shadow-raised, rgba(0,0,0,0.1))`,
+  sm: '0 1px 2px var(--ds-shadow-raised), 0 1px 3px var(--ds-shadow-raised)',
+  md: '0 2px 4px var(--ds-shadow-raised), 0 4px 8px var(--ds-shadow-raised)',
+  lg: '0 4px 8px var(--ds-shadow-raised), 0 8px 16px var(--ds-shadow-raised), 0 16px 32px var(--ds-shadow-raised)',
+  primaryGlow: `0 8px 20px var(--ds-background-information), 0 4px 8px var(--ds-shadow-raised)`,
+  tealGlow: `0 8px 20px var(--ds-background-success), 0 4px 8px var(--ds-shadow-raised)`,
+  warningGlow: `0 8px 20px var(--ds-background-warning), 0 4px 8px var(--ds-shadow-raised)`,
 } as const;
 
 // Timeline Bar Style Helper
@@ -115,7 +115,7 @@ export function getTimelineBarStyle(projectName?: string | null): {
   if (name.includes('insourced') || name.includes('ops') || name.includes('platform')) {
     return {
       background: BAR_GRADIENTS.primary,
-      boxShadow: '0 2px 4px var(--ds-background-information, rgba(37, 99, 235, 0.15)), 0 1px 2px var(--ds-shadow-raised, rgba(0, 0, 0, 0.1))',
+      boxShadow: '0 2px 4px var(--ds-background-information), 0 1px 2px var(--ds-shadow-raised)',
       hoverShadow: SHADOWS.primaryGlow,
     };
   }
@@ -123,7 +123,7 @@ export function getTimelineBarStyle(projectName?: string | null): {
   if (name.includes('innovation') || name.includes('alpha') || name.includes('project')) {
     return {
       background: BAR_GRADIENTS.teal,
-      boxShadow: '0 2px 4px var(--ds-background-success, rgba(13, 148, 136, 0.15)), 0 1px 2px var(--ds-shadow-raised, rgba(0, 0, 0, 0.1))',
+      boxShadow: '0 2px 4px var(--ds-background-success), 0 1px 2px var(--ds-shadow-raised)',
       hoverShadow: SHADOWS.tealGlow,
     };
   }
@@ -131,7 +131,7 @@ export function getTimelineBarStyle(projectName?: string | null): {
   if (name.includes('website') || name.includes('design') || name.includes('review')) {
     return {
       background: BAR_GRADIENTS.warning,
-      boxShadow: '0 2px 4px var(--ds-background-warning, rgba(217, 119, 6, 0.15)), 0 1px 2px var(--ds-shadow-raised, rgba(0, 0, 0, 0.1))',
+      boxShadow: '0 2px 4px var(--ds-background-warning), 0 1px 2px var(--ds-shadow-raised)',
       hoverShadow: SHADOWS.warningGlow,
     };
   }
@@ -139,8 +139,8 @@ export function getTimelineBarStyle(projectName?: string | null): {
   // Default to slate for unknown projects
   return {
     background: BAR_GRADIENTS.slate,
-    boxShadow: '0 2px 4px var(--ds-background-neutral, rgba(71, 85, 105, 0.15)), 0 1px 2px var(--ds-shadow-raised, rgba(0, 0, 0, 0.1))',
-    hoverShadow: '0 8px 20px var(--ds-background-neutral, rgba(71, 85, 105, 0.3)), 0 4px 8px var(--ds-shadow-raised, rgba(0,0,0,0.1))',
+    boxShadow: '0 2px 4px var(--ds-background-neutral), 0 1px 2px var(--ds-shadow-raised)',
+    hoverShadow: '0 8px 20px var(--ds-background-neutral), 0 4px 8px var(--ds-shadow-raised)',
   };
 }
 

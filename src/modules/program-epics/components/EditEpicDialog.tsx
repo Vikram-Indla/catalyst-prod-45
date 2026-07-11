@@ -71,7 +71,7 @@ const CatalystInput = React.forwardRef<HTMLInputElement, React.InputHTMLAttribut
         backgroundColor: 'var(--dialog-input-bg)',
         border: '1px solid var(--dialog-input-border)',
         color: 'var(--dialog-title-color)',
-        boxShadow: 'inset 0 1px 2px var(--ds-shadow-raised, rgba(0, 0, 0, 0.1))',
+        boxShadow: 'inset 0 1px 2px var(--ds-shadow-raised)',
       }}
       {...props}
     />

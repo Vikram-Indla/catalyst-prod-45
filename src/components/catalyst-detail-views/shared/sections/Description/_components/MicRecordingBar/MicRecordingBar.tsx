@@ -89,7 +89,7 @@ export function MicRecordingBar({
             borderRadius: 999,
             background: 'var(--ds-surface-overlay)',
             border: '1px solid var(--ds-border)',
-            boxShadow: '0 2px 8px var(--ds-background-neutral-subtle-pressed, rgba(9,30,66,0.12))',
+            boxShadow: '0 2px 8px var(--ds-background-neutral-subtle-pressed)',
             animation: 'caty-pill-enter 220ms ease forwards',
             maxWidth: 480,
             minWidth: 0,
@@ -227,7 +227,7 @@ function PillBtn({
       onMouseEnter={(e) => {
         e.currentTarget.style.background = danger
           ? 'var(--ds-background-danger)'
-          : 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.08))';
+          : 'var(--ds-background-neutral-subtle-hovered)';
       }}
       onMouseLeave={(e) => {
         e.currentTarget.style.background = 'transparent';

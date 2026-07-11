@@ -434,7 +434,7 @@ const R360ProfileDrawer = memo(function R360ProfileDrawer({ resourceId, onClose 
               display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
               transition: 'background 100ms',
             }}
-            onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-shadow-overlay, rgba(15,23,42,0.04))'; }}
+            onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-shadow-overlay)'; }}
             onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
           >
             <X size={14} color={INK4} />

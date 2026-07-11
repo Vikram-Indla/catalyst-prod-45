@@ -120,7 +120,7 @@ export function ColumnManager({ columns, onChange, anchorRef, isOpen, onClose }:
         left: anchorRect.left,
         width: 240,
         maxHeight: 400,
-        boxShadow: '0 10px 40px var(--ds-shadow-raised, rgba(0,0,0,0.18))',
+        boxShadow: '0 10px 40px var(--ds-shadow-raised)',
         zIndex: 500,
       }}
     >

@@ -518,7 +518,7 @@ export function DependencyWheelMap({ quarter, selectedProgram, onDependencyClick
                           fill: 'white',
                           fontWeight: 700,
                           letterSpacing: '0.03em',
-                          textShadow: '0 1px 3px var(--ds-shadow-raised, rgba(0,0,0,0.4))',
+                          textShadow: '0 1px 3px var(--ds-shadow-raised)',
                         }}
                       >
                         {segment.name}

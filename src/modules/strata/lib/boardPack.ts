@@ -46,6 +46,30 @@ export interface BoardPackData {
 const GENERATED_NOTE =
   'Generated locally in the browser from the frozen snapshot payload — no values recalculated.';
 
+/** Result of a pack generation: the artifact blob (for storage persistence) + its filename. */
+export interface BoardPackArtifact {
+  filename: string;
+  blob: Blob;
+  contentType: string;
+}
+
+export const PACK_CONTENT_TYPE = {
+  pdf: 'application/pdf',
+  pptx: 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+} as const;
+
+/** Trigger a local browser download from an already-built blob (single generation pass). */
+function downloadBlob(blob: Blob, filename: string): void {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
+
 // Neutral executive palette (export-owned). jsPDF wants rgb triples; pptx wants hashless hex.
 const NAVY: [number, number, number] = [9, 30, 66];
 const SUBTLE: [number, number, number] = [98, 111, 134];
@@ -105,7 +129,7 @@ function provenanceRows(snapshot: StrataSnapshot): string[][] {
 
 // ── PDF ──────────────────────────────────────────────────────────────────────
 
-export async function generateBoardPackPdf(data: BoardPackData): Promise<string> {
+export async function generateBoardPackPdf(data: BoardPackData): Promise<BoardPackArtifact> {
   const [jsPDF, autoTable] = await Promise.all([loadJsPDF(), loadJsPDFAutoTable()]);
   const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
   const pageWidth = doc.internal.pageSize.getWidth();
@@ -238,8 +262,9 @@ export async function generateBoardPackPdf(data: BoardPackData): Promise<string>
   }
 
   const filename = packFileName(snapshot, 'pdf');
-  doc.save(filename);
-  return filename;
+  const blob = doc.output('blob') as Blob;
+  downloadBlob(blob, filename);
+  return { filename, blob, contentType: PACK_CONTENT_TYPE.pdf };
 }
 
 // ── PPTX ─────────────────────────────────────────────────────────────────────
@@ -252,7 +277,7 @@ const cell = (text: string, opts: Record<string, unknown> = {}) => ({
 const headCell = (text: string) =>
   cell(text, { bold: true, color: PPT.white, fill: { color: PPT.navy }, fontSize: 10 });
 
-export async function generateBoardPackPptx(data: BoardPackData): Promise<string> {
+export async function generateBoardPackPptx(data: BoardPackData): Promise<BoardPackArtifact> {
   const PptxGenJS = await loadPptxGenJS();
   const pptx = new PptxGenJS();
   pptx.layout = 'LAYOUT_WIDE';
@@ -321,6 +346,7 @@ export async function generateBoardPackPptx(data: BoardPackData): Promise<string
   );
 
   const filename = packFileName(snapshot, 'pptx');
-  await pptx.writeFile({ fileName: filename });
-  return filename;
+  const blob = (await pptx.write({ outputType: 'blob' })) as Blob;
+  downloadBlob(blob, filename);
+  return { filename, blob, contentType: PACK_CONTENT_TYPE.pptx };
 }

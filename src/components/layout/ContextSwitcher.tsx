@@ -200,7 +200,7 @@ function SwitcherPanel({
         background: 'var(--ds-surface-overlay)',
         border: '1px solid var(--ds-border)',
         borderRadius: 6,
-        boxShadow: '0 8px 32px var(--ds-shadow-raised, rgba(9,30,66,0.20)), 0 0 1px var(--ds-background-neutral-subtle-pressed, rgba(9,30,66,0.14))',
+        boxShadow: '0 8px 32px var(--ds-shadow-raised), 0 0 1px var(--ds-background-neutral-subtle-pressed)',
         zIndex: 9999,
         display: 'flex',
         flexDirection: 'column',
@@ -709,7 +709,7 @@ export function ContextSwitcher({ variant = 'topnav', expanded = true }: Context
         background: triggerBg,
         border: open
           ? '1px solid var(--ds-border-focused)'
-          : '1px solid var(--ds-border, rgba(161,189,217,0.14))',
+          : '1px solid var(--ds-border)',
         borderRadius: 4,
         cursor: 'pointer',
         fontSize: 'var(--ds-font-size-300)',

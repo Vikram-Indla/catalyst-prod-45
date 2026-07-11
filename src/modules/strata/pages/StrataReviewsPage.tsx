@@ -42,6 +42,7 @@ import {
   useStrataAudit,
   useStrataRoles,
   useInvalidateStrata,
+  useNeedsAttention,
 } from '@/modules/strata/hooks/useStrata';
 import { generateBoardPackPdf, generateBoardPackPptx } from '@/modules/strata/lib/boardPack';
 import type { BoardPackData } from '@/modules/strata/lib/boardPack';
@@ -50,6 +51,8 @@ import {
   StrataPanel,
   StrataDataStateLozenge,
   StrataBandLozenge,
+  StrataStatStrip,
+  type StrataStat,
   T,
 } from '@/modules/strata/components/shared';
 import { StrataFormModal } from '@/modules/strata/components/authoring';
@@ -100,7 +103,10 @@ const CLOSE_STATUS_LOZENGE: Record<StrataPeriod['close_status'], { label: string
 };
 
 /** Roles allowed to author decisions/actions — UI affordance only; RPCs enforce for real. */
-const DECISION_AUTHOR_ROLES: readonly string[] = ['strategy_office', 'executive_viewer', 'vmo_validator', 'strata_admin'];
+/** executive_viewer is read-only by definition ("CEO/CXO consumption; no data edits") — W2 20260710140000. */
+const DECISION_AUTHOR_ROLES: readonly string[] = ['strategy_office', 'vmo_validator', 'strata_admin'];
+/** Mirrors storage RLS on strata-board-packs (20260710130000): strategy_office, with strata_is_admin bypass. */
+const PACK_PERSIST_ROLES: readonly string[] = ['strategy_office', 'strata_admin'];
 
 const DECISION_TYPE_OPTIONS: Array<{ value: StrataDecision['decision_type']; label: string }> = [
   { value: 'governance', label: 'Governance' },
@@ -124,6 +130,22 @@ function FactChip({ icon, value, label }: { icon: React.ReactNode; value: React.
       <strong style={{ color: T.text, fontWeight: 600, fontVariantNumeric: 'tabular-nums' }}>{value}</strong>
       {label}
     </span>
+  );
+}
+
+/** Editorial numbered section header (Command Room SRC-M7) — the board pack
+ *  reads like a document: "01 — Key metrics", "02 — Frozen evidence", … */
+function PackSection({ n, title }: { n: string; title: string }) {
+  return (
+    <div style={{ display: 'flex', alignItems: 'baseline', gap: 12, marginTop: 4 }}>
+      <span aria-hidden style={{
+        fontFamily: T.fontDisplay, fontSize: 26, fontWeight: 700, color: T.subtlest,
+        lineHeight: 1, fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.02em',
+      }}>
+        {n}
+      </span>
+      <Heading as="h3" size="small">{title}</Heading>
+    </div>
   );
 }
 
@@ -341,6 +363,79 @@ export default function StrataReviewsPage() {
   const boardPacksQ = useBoardPacks(selected?.id);
   const auditQ = useStrataAudit('strata_snapshots');
   const profilesQ = useProfileNames();
+  // Period-close readiness (CLOSEOUT W5): advisory only — reuses the period-scoped
+  // needs-attention feed; the DB still enforces the real attestation guard on close.
+  const readinessQ = useNeedsAttention(activePeriod?.id);
+  const readinessChecks = useMemo(() => {
+    const rows = readinessQ.data ?? [];
+    const n = (type: string) => rows.filter((r) => r.item_type === type).length;
+    const openDecisions = ((decisionsQ.data ?? []) as StrataDecision[]).filter((d) => d.status === 'open').length;
+    return [
+      { key: 'missing_actual', label: 'KPI actuals submitted', pending: n('missing_actual') },
+      { key: 'pending_attestation', label: 'Actuals attested', pending: n('pending_attestation') },
+      { key: 'pending_benefit_validation', label: 'Benefit values validated', pending: n('pending_benefit_validation') },
+      { key: 'overdue_action', label: 'Actions cleared', pending: n('overdue_action') },
+      { key: 'overdue_gate', label: 'Gates decided', pending: n('overdue_gate') },
+      { key: 'open_decisions', label: 'Decisions resolved', pending: openDecisions },
+    ];
+  }, [readinessQ.data, decisionsQ.data]);
+  const readinessBlockers = readinessChecks.reduce((sum, c) => sum + c.pending, 0);
+
+  // Executive KPI band (Command Room SRC-M3) — derived from loaded governance
+  // data only; overdue = open/in-progress actions past their due date.
+  const governanceBand = useMemo((): StrataStat[] => {
+    const decisions = (decisionsQ.data ?? []) as StrataDecision[];
+    const actions = (actionsQ.data ?? []) as StrataAction[];
+    const openDecisions = decisions.filter((d) => d.status === 'open').length;
+    const today = new Date().toISOString().slice(0, 10);
+    const openActions = actions.filter((a) => a.status === 'open' || a.status === 'in_progress');
+    const overdue = openActions.filter((a) => a.due_date != null && a.due_date < today).length;
+    return [
+      {
+        key: 'snapshots', label: 'Snapshots', value: snapshots.length,
+        caption: snapshots[0] ? `latest ${snapshots[0].snapshot_key}` : 'none yet',
+      },
+      {
+        key: 'decisions', label: 'Open decisions', value: openDecisions,
+        caption: openDecisions > 0 ? 'awaiting a decision forum' : 'none open',
+        captionTone: openDecisions > 0 ? 'warning' : 'success',
+      },
+      {
+        key: 'actions', label: 'Overdue actions', value: overdue,
+        caption: overdue > 0 ? `of ${openActions.length} open actions` : `${openActions.length} open, none overdue`,
+        captionTone: overdue > 0 ? 'danger' : 'success',
+      },
+      {
+        key: 'period', label: 'Period close', value: activePeriod ? labelize(activePeriod.close_status) : '—',
+        caption: activePeriod ? activePeriod.name : 'no active period',
+        captionTone: activePeriod?.close_status === 'closed' ? 'success' : 'neutral',
+      },
+    ];
+  }, [decisionsQ.data, actionsQ.data, snapshots, activePeriod]);
+
+  // Board-pack "01 — Key metrics" (SRC-M7): oversized stat cards from the
+  // snapshot's own frozen payloads — value + governed band exactly as frozen,
+  // never recomputed. Zero-assumption: section renders only when values exist.
+  const keyMetrics = useMemo((): StrataStat[] => {
+    return items
+      .filter((i) => typeof i.payload?.value === 'number' || typeof i.payload?.value === 'string')
+      .slice(0, 4)
+      .map((i) => ({
+        key: i.id,
+        label: typeof i.payload?.entity_name === 'string' ? i.payload.entity_name : labelize(i.entity_type),
+        value: fmtUnit(
+          i.payload!.value as number | string,
+          typeof i.payload?.unit === 'string' ? i.payload.unit : null,
+        ),
+        caption: typeof i.payload?.name === 'string'
+          ? i.payload.name
+          : typeof i.payload?.metric_key === 'string' ? labelize(i.payload.metric_key) : undefined,
+        bandKey: typeof i.payload?.status_key === 'string' ? i.payload.status_key : null,
+      }));
+  }, [items]);
+  /** Editorial section number — shifts by one when "01 — Key metrics" renders. */
+  const packNo = (position: number): string =>
+    String(position + (keyMetrics.length > 0 ? 1 : 0)).padStart(2, '0');
 
   const [expandedDecisionId, setExpandedDecisionId] = useState<string | null>(null);
   const [lockOpen, setLockOpen] = useState(false);
@@ -423,6 +518,17 @@ export default function StrataReviewsPage() {
    * (the only role RLS lets UPDATE strata_board_packs), reconcile it to 'ready';
    * otherwise leave the row untouched and say so — never fake server generation.
    */
+  /** Fetch a short-lived signed URL for a stored pack and open it (bucket is private). */
+  const downloadStoredPack = async (_packId: string, storagePath: string) => {
+    setPackError(null);
+    try {
+      const url = await governanceApi.boardPackSignedUrl(storagePath);
+      window.open(url, '_blank', 'noopener');
+    } catch (e) {
+      setPackError(e instanceof Error ? e.message : String(e));
+    }
+  };
+
   const generatePack = async (format: 'pdf' | 'pptx') => {
     if (!selected) return;
     setPackBusy(format); setPackError(null); setPackNote(null);
@@ -455,20 +561,31 @@ export default function StrataReviewsPage() {
           .filter((a) => a.status === 'open' || a.status === 'in_progress')
           .map((a) => ({ action: a, ownerName: profileName(a.owner_id) })),
       };
-      const filename = format === 'pdf' ? await generateBoardPackPdf(data) : await generateBoardPackPptx(data);
+      const artifact = format === 'pdf' ? await generateBoardPackPdf(data) : await generateBoardPackPptx(data);
 
-      const pending = (boardPacksQ.data ?? []).find((bp) => bp.format === format && bp.status === 'pending');
-      const canReconcile = (rolesQ.data ?? []).includes('strategy_office');
-      if (pending && canReconcile) {
-        try {
-          await governanceApi.markBoardPackReady(pending.id);
-          invalidate();
-          setPackNote(`${filename} downloaded — generated locally in your browser from the frozen snapshot; the pending pack record was marked ready.`);
-        } catch {
-          setPackNote(`${filename} downloaded — generated locally in your browser from the frozen snapshot. The pack record could not be updated and was left untouched.`);
-        }
-      } else {
-        setPackNote(`${filename} downloaded — generated locally in your browser from the frozen snapshot data.`);
+      // Persist to the shared pack library (private strata-board-packs bucket).
+      // DB rule: strata_has_role(['strategy_office']) = strategy_office OR strata_is_admin —
+      // the client gate mirrors it exactly; on failure we say so, never fake success.
+      const canPersist = (rolesQ.data ?? []).some((r) => PACK_PERSIST_ROLES.includes(r));
+      if (!canPersist) {
+        setPackNote(`${artifact.filename} downloaded — generated locally from the frozen snapshot. Storing to the shared pack library requires the Strategy Office role.`);
+        return;
+      }
+      const storagePath = `${selected.snapshot_key}/${artifact.filename}`;
+      try {
+        await governanceApi.uploadBoardPackBinary(storagePath, artifact.blob, artifact.contentType);
+        const rows = boardPacksQ.data ?? [];
+        const reusable =
+          rows.find((bp) => bp.format === format && bp.status === 'pending') ??
+          rows.find((bp) => bp.format === format && bp.storage_path === storagePath);
+        if (reusable) await governanceApi.markBoardPackStored(reusable.id, storagePath);
+        else await governanceApi.createBoardPackRecord(selected.id, format, storagePath);
+        invalidate();
+        setPackNote(`${artifact.filename} downloaded and stored to the pack library — anyone with STRATA access can retrieve it from this list.`);
+      } catch (persistErr) {
+        setPackNote(
+          `${artifact.filename} downloaded locally, but storing to the pack library failed: ${persistErr instanceof Error ? persistErr.message : String(persistErr)}`,
+        );
       }
     } catch (e) {
       setPackError(e instanceof Error ? e.message : String(e));
@@ -675,6 +792,14 @@ export default function StrataReviewsPage() {
       state={selected?.status ?? null}
       testId="strata-reviews-shell"
     >
+      {/* Review Cadence (locked Governance area, REQ-015) — derived from the
+          active Strategy Cycle's period granularity; nothing fabricated. */}
+      {!isDetail && activeCycle ? (
+        <p style={{ margin: '0 0 12px', fontSize: 'var(--ds-font-size-100)', color: T.subtlest }} data-testid="strata-review-cadence">
+          Review cadence: <strong style={{ color: T.subtle }}>{labelize(activeCycle.period_granularity)}</strong>
+          {' '}· from Strategy Cycle <strong style={{ color: T.subtle }}>{activeCycle.name}</strong>
+        </p>
+      ) : null}
       {railError ? (
         <SectionMessage appearance="error" title="Could not load review data">
           <p>{railError.message}</p>
@@ -690,6 +815,7 @@ export default function StrataReviewsPage() {
         </div>
       ) : (
         <div style={{ display: 'grid', gap: 16 }}>
+          {!isDetail ? <StrataStatStrip items={governanceBand} testId="strata-reviews-band" /> : null}
           {/* ── Period governance (index only): close ritual lives with reviews ── */}
           {!isDetail && activePeriod ? (
             <StrataPanel
@@ -717,6 +843,35 @@ export default function StrataReviewsPage() {
                     : 'Closing is blocked while attestations are pending; overrides are audited.'}
                 </span>
               </div>
+              {activePeriod.close_status !== 'closed' ? (
+                <div style={{ marginTop: 'var(--ds-space-200)' }} data-testid="strata-reviews-close-readiness">
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 'var(--ds-space-100)' }}>
+                    <span style={{ ...bodyStyle, fontWeight: 600 }}>Close readiness</span>
+                    <StatusLozenge
+                      status={readinessBlockers === 0 ? 'ready' : 'attention'}
+                      label={readinessBlockers === 0 ? 'Ready to close' : `${readinessBlockers} to resolve`}
+                      appearance={readinessBlockers === 0 ? 'success' : 'moved'}
+                    />
+                    <span style={captionStyle}>Advisory — closing is still possible; the database enforces the attestation guard.</span>
+                  </div>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: 'var(--ds-space-100)' }}>
+                    {readinessChecks.map((c) => (
+                      <div
+                        key={c.key}
+                        data-testid={`strata-reviews-readiness-${c.key}`}
+                        style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, padding: 'var(--ds-space-100) var(--ds-space-150)', border: `1px solid ${T.border}`, borderRadius: 6 }}
+                      >
+                        <span style={bodyStyle}>{c.label}</span>
+                        <StatusLozenge
+                          status={c.pending === 0 ? 'clear' : 'pending'}
+                          label={c.pending === 0 ? 'Clear' : String(c.pending)}
+                          appearance={c.pending === 0 ? 'success' : 'moved'}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ) : null}
             </StrataPanel>
           ) : null}
 
@@ -778,6 +933,14 @@ export default function StrataReviewsPage() {
                     </SectionMessage>
                   ) : null}
 
+                  {keyMetrics.length > 0 ? (
+                    <div style={{ display: 'grid', gap: 8 }} data-testid="strata-pack-key-metrics">
+                      <PackSection n="01" title="Key metrics" />
+                      <StrataStatStrip items={keyMetrics} />
+                    </div>
+                  ) : null}
+
+                  <PackSection n={packNo(1)} title="Frozen evidence" />
                   <StrataPanel title="Frozen evidence" icon={<Database size={16} />} count={items.length} noPadding testId="strata-reviews-evidence">
                     {items.length === 0 ? (
                       <div style={{ padding: 16 }}>
@@ -812,6 +975,7 @@ export default function StrataReviewsPage() {
                     </SectionMessage>
                   ) : null}
 
+                  <PackSection n={packNo(2)} title="Decisions & actions" />
                   <StrataPanel
                     title="Decisions"
                     icon={<FileBarChart size={16} />}
@@ -845,6 +1009,7 @@ export default function StrataReviewsPage() {
                     </StrataPanel>
                   ) : null}
 
+                  <PackSection n={packNo(3)} title="Distribution & audit" />
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 16 }}>
                     <StrataPanel
                       title="Board packs"
@@ -853,7 +1018,7 @@ export default function StrataReviewsPage() {
                       testId="strata-reviews-board-packs"
                       actions={
                         <div style={{ display: 'flex', gap: 8 }}>
-                          <Tooltip content="Builds the executive PDF in your browser from this snapshot's frozen data">
+                          <Tooltip content="Builds the executive PDF from this snapshot's frozen data, downloads it, and stores it to the shared pack library">
                             <Button
                               appearance="primary"
                               spacing="compact"
@@ -864,7 +1029,7 @@ export default function StrataReviewsPage() {
                               {packBusy === 'pdf' ? 'Generating…' : 'Generate board pack (PDF)'}
                             </Button>
                           </Tooltip>
-                          <Tooltip content="Builds the executive PPTX in your browser from this snapshot's frozen data">
+                          <Tooltip content="Builds the executive PPTX from this snapshot's frozen data, downloads it, and stores it to the shared pack library">
                             <Button
                               appearance="default"
                               spacing="compact"
@@ -887,7 +1052,7 @@ export default function StrataReviewsPage() {
                       ) : null}
                       {packNote ? (
                         <div style={{ marginBottom: 8 }}>
-                          <SectionMessage appearance="success" title="Board pack generated locally">
+                          <SectionMessage appearance="success" title="Board pack generated">
                             <p>{packNote}</p>
                           </SectionMessage>
                         </div>
@@ -898,6 +1063,7 @@ export default function StrataReviewsPage() {
                         (boardPacksQ.data ?? []).map((bp) => {
                           const isReady = bp.status === 'ready';
                           const isUrl = typeof bp.storage_path === 'string' && /^https?:\/\//.test(bp.storage_path);
+                          const hasStoredBinary = typeof bp.storage_path === 'string' && bp.storage_path.length > 0 && !isUrl;
                           return (
                             <div key={bp.id} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 4px', borderBottom: `1px solid ${T.border}` }} data-testid={`strata-reviews-pack-${bp.id}`}>
                               <CatalystTag text={bp.format.toUpperCase()} />
@@ -907,8 +1073,14 @@ export default function StrataReviewsPage() {
                                 <Button appearance="default" spacing="compact" onClick={() => window.open(bp.storage_path as string, '_blank', 'noopener')}>
                                   Download
                                 </Button>
+                              ) : isReady && hasStoredBinary ? (
+                                <Tooltip content="Downloads via a 1-hour signed link — the pack bucket is private">
+                                  <Button appearance="default" spacing="compact" onClick={() => downloadStoredPack(bp.id, bp.storage_path as string)}>
+                                    Download
+                                  </Button>
+                                </Tooltip>
                               ) : isReady ? (
-                                <Tooltip content="Download ships with board-pack generation">
+                                <Tooltip content="Generated before pack storage existed — regenerate to store a retrievable copy">
                                   <CatalystTag text="Ready" color="green" />
                                 </Tooltip>
                               ) : null}

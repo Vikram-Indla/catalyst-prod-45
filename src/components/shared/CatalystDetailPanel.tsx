@@ -857,7 +857,7 @@ function FieldRow({ label, children }: { label: string; children: React.ReactNod
           flex: 1, minWidth: 0, fontSize: 'var(--ds-font-size-400)', color: TEXT,
           padding: '4px 6px', margin: '-4px -6px', borderRadius: 3,
           background: hovered
-            ? 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))'
+            ? 'var(--ds-background-neutral-subtle-hovered)'
             : 'transparent',
           transition: 'background 80ms ease',
         }}
@@ -881,7 +881,7 @@ function MenuItem({
         boxSizing: 'border-box', padding: '8px 14px', fontSize: 'var(--ds-font-size-400)',
         color: danger ? 'var(--ds-text-danger)' : TEXT,
       }}
-      onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))'; }}
+      onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-subtle-hovered)'; }}
       onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
     >
       {label}

@@ -291,7 +291,7 @@ export function RingView({ items, name, role, avatarUrl, onSelect, selected, ove
           background: T.surface(),
           border: `1px solid ${T.border()}`,
           borderRadius: 12,
-          boxShadow: '0 1px 3px var(--ds-background-neutral-subtle-pressed, rgba(9,30,66,0.08))',
+          boxShadow: '0 1px 3px var(--ds-background-neutral-subtle-pressed)',
           textAlign: 'center' as const,
         }}>
           {/* Avatar — 72px */}
@@ -300,7 +300,7 @@ export function RingView({ items, name, role, avatarUrl, onSelect, selected, ove
             overflow: 'hidden',
             background: avatarUrl ? T.surface() : avatarGradient,
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            boxShadow: '0 1px 3px var(--ds-background-neutral-subtle-pressed, rgba(9,30,66,0.08))',
+            boxShadow: '0 1px 3px var(--ds-background-neutral-subtle-pressed)',
             border: `2px solid ${T.surface()}`,
             outline: `1px solid ${T.border()}`,
           }}>
@@ -345,7 +345,7 @@ export function RingView({ items, name, role, avatarUrl, onSelect, selected, ove
                     marginBottom: 8, cursor: 'pointer', background: T.surface(),
                     transition: 'box-shadow 0.15s ease',
                   }}
-                    onMouseEnter={e => { e.currentTarget.style.boxShadow = '0 1px 4px var(--ds-background-neutral-subtle-pressed, rgba(9,30,66,0.12))'; }}
+                    onMouseEnter={e => { e.currentTarget.style.boxShadow = '0 1px 4px var(--ds-background-neutral-subtle-pressed)'; }}
                     onMouseLeave={e => { e.currentTarget.style.boxShadow = 'none'; }}
                   >
                     {/* Compact header: icon + key + project + age */}

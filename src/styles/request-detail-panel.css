@@ -69,12 +69,12 @@
   --idp-surface-tertiary: var(--ds-border, var(--cp-ink-1));
   --idp-border: var(--ds-border, var(--cp-ink-1));
   --idp-border-strong: var(--ds-border-bold);
-  --idp-primary-bg: var(--ds-background-information-bold, rgba(59,130,246,0.12));
-  --idp-teal-bg: var(--ds-background-success, rgba(13,148,136,0.12));
-  --idp-success-bg: var(--ds-background-success-bold, rgba(22,163,74,0.12));
-  --idp-warning-bg: var(--ds-background-warning, rgba(217,119,6,0.12));
-  --idp-danger-bg: var(--ds-background-danger-bold, rgba(220,38,38,0.12));
-  --idp-purple-bg: var(--ds-background-discovery-bold, rgba(124,58,237,0.12));
+  --idp-primary-bg: var(--ds-background-information-bold);
+  --idp-teal-bg: var(--ds-background-success);
+  --idp-success-bg: var(--ds-background-success-bold);
+  --idp-warning-bg: var(--ds-background-warning);
+  --idp-danger-bg: var(--ds-background-danger-bold);
+  --idp-purple-bg: var(--ds-background-discovery-bold);
   --idp-teal-text: var(--ds-background-success);
   --idp-success-text: var(--ds-background-success);
   --idp-warning-text: var(--ds-background-warning);
@@ -82,7 +82,7 @@
 }
 .dark .idp-panel,
 .dark .idp-panel , [data-theme="dark"] .idp-panel {
-  box-shadow: -8px 0 32px var(--ds-shadow-raised, rgba(0, 0, 0, 0.4));
+  box-shadow: -8px 0 32px var(--ds-shadow-raised);
 }
 .dark .idp-tab,
 .dark .idp-tab , [data-theme="dark"] .idp-tab {
@@ -146,7 +146,7 @@
   position: fixed;
   inset: 0;
   z-index: 500;
-  background: var(--ds-shadow-raised, rgba(0, 0, 0, 0.5));
+  background: var(--ds-shadow-raised);
 }
 .idp-backdrop-enter { animation: idpFadeIn 150ms ease-out forwards; }
 .idp-backdrop-exit { animation: idpFadeOut 200ms ease-out forwards; }
@@ -162,7 +162,7 @@
   height: 100vh;
   background: var(--idp-surface);
   border-left: 0px solid var(--idp-border);
-  box-shadow: -8px 0 32px var(--ds-shadow-raised, rgba(0, 0, 0, 0.08));
+  box-shadow: -8px 0 32px var(--ds-shadow-raised);
   z-index: 510;
   display: flex;
   flex-direction: column;
@@ -240,7 +240,7 @@
   padding: 4px 12px;
   border-radius: var(--idp-r-md);
   background: var(--idp-warning-bg);
-  border: 1px solid var(--ds-background-warning, rgba(217, 119, 6, 0.2));
+  border: 1px solid var(--ds-background-warning);
   margin-bottom: 8px;
 }
 .idp-archived-banner span:last-child {
@@ -449,7 +449,7 @@
   position: absolute;
   top: 2px;
   transition: left 0.2s;
-  box-shadow: 0 1px 3px var(--ds-shadow-raised, rgba(0, 0, 0, 0.15));
+  box-shadow: 0 1px 3px var(--ds-shadow-raised);
 }
 
 /* Field grid */
@@ -508,7 +508,7 @@
   background: var(--ds-surface);
   border: 1px solid var(--idp-border);
   border-radius: var(--idp-r-lg);
-  box-shadow: 0 12px 40px var(--ds-shadow-raised, rgba(0, 0, 0, 0.14));
+  box-shadow: 0 12px 40px var(--ds-shadow-raised);
   min-width: 210px;
   max-height: 300px;
   overflow-y: auto;
@@ -573,7 +573,7 @@
   background: var(--ds-surface);
   border: 1px solid var(--idp-border);
   border-radius: var(--idp-r-lg);
-  box-shadow: 0 12px 40px var(--ds-shadow-raised, rgba(0, 0, 0, 0.14));
+  box-shadow: 0 12px 40px var(--ds-shadow-raised);
   width: 270px;
   padding: 8px;
 }
@@ -706,7 +706,7 @@
   min-height: 100px;
   padding: 8px 12px;
   border: 1px solid var(--idp-primary);
-  box-shadow: 0 0 0 3px var(--ds-background-information, rgba(37, 99, 235, 0.1));
+  box-shadow: 0 0 0 3px var(--ds-background-information);
   border-radius: var(--idp-r-lg);
   font-size: 13px;
   font-family: var(--idp-font-body);
@@ -782,7 +782,7 @@
   min-height: 100px;
   padding: 8px 12px;
   border: 1px solid var(--idp-primary);
-  box-shadow: 0 0 0 3px var(--ds-background-information, rgba(37, 99, 235, 0.1));
+  box-shadow: 0 0 0 3px var(--ds-background-information);
   border-radius: var(--idp-r-lg);
   font-size: 13px;
   font-family: var(--idp-font-body);
@@ -1072,7 +1072,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--ds-shadow-raised, rgba(0, 0, 0, 0.5));
+  background: var(--ds-shadow-raised);
 }
 .idp-modal {
   background: var(--ds-surface);
@@ -1081,7 +1081,7 @@
   max-height: 85vh;
   display: flex;
   flex-direction: column;
-  box-shadow: 0 24px 64px var(--ds-shadow-raised, rgba(0, 0, 0, 0.2));
+  box-shadow: 0 24px 64px var(--ds-shadow-raised);
   overflow: hidden;
 }
 .idp-modal-header {
@@ -1163,7 +1163,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--ds-shadow-raised, rgba(0, 0, 0, 0.5));
+  background: var(--ds-shadow-raised);
 }
 .idp-confirm-dialog {
   background: var(--ds-surface);
@@ -1171,7 +1171,7 @@
   padding: 24px;
   width: 420px;
   max-width: 90vw;
-  box-shadow: 0 24px 64px var(--ds-shadow-raised, rgba(0, 0, 0, 0.2));
+  box-shadow: 0 24px 64px var(--ds-shadow-raised);
 }
 .idp-confirm-title {
   font-size: 16px;
@@ -1204,7 +1204,7 @@
   font-size: 13px;
   font-weight: 600;
   font-family: var(--idp-font-body);
-  box-shadow: 0 8px 32px var(--ds-shadow-raised, rgba(0, 0, 0, 0.25));
+  box-shadow: 0 8px 32px var(--ds-shadow-raised);
   animation: idpToastIn 0.25s ease;
 }
 .idp-toast--success { background: var(--ds-text); color: var(--ds-surface); }
@@ -1234,7 +1234,7 @@
   box-sizing: border-box;
   color: var(--idp-ink);
 }
-.idp-form-input:focus { border-color: var(--idp-primary); box-shadow: 0 0 0 3px var(--ds-background-information, rgba(37, 99, 235, 0.1)); }
+.idp-form-input:focus { border-color: var(--idp-primary); box-shadow: 0 0 0 3px var(--ds-background-information); }
 .idp-form-textarea {
   width: 100%;
   padding: 8px 10px;
@@ -1248,7 +1248,7 @@
   resize: vertical;
   color: var(--idp-ink);
 }
-.idp-form-textarea:focus { border-color: var(--idp-primary); box-shadow: 0 0 0 3px var(--ds-background-information, rgba(37, 99, 235, 0.1)); }
+.idp-form-textarea:focus { border-color: var(--idp-primary); box-shadow: 0 0 0 3px var(--ds-background-information); }
 
 /* ── RANGE SLIDER STYLING ── */
 [data-module="initiative-detail-panel"] input[type="range"] {
@@ -1268,7 +1268,7 @@
   background: var(--idp-primary);
   cursor: pointer;
   border: 2px solid var(--ds-surface);
-  box-shadow: 0 1px 4px var(--ds-shadow-raised, rgba(0, 0, 0, 0.2));
+  box-shadow: 0 1px 4px var(--ds-shadow-raised);
 }
 
 /* ── ANIMATIONS ── */

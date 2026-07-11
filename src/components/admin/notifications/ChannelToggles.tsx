@@ -116,8 +116,8 @@ export function ChannelToggleCard({
             disabled={disabled}
             className={`flex items-center gap-3 px-3 py-2.5 rounded-md border text-left transition-colors duration-150 ${
               channels[key]
-                ? 'bg-[var(--ds-background-information, rgba(37,99,235,0.04))] border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))]/20'
-                : 'bg-white border-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken)))] hover:bg-[var(--ds-shadow-raised, rgba(0,0,0,0.02))]'
+                ? 'bg-[var(--ds-background-information)] border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))]/20'
+                : 'bg-white border-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken)))] hover:bg-[var(--ds-shadow-raised)]'
             } ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
           >
             <span

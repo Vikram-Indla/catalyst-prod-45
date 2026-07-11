@@ -88,7 +88,7 @@ function ThemeSelector({ issueKey, currentThemeId }: { issueKey: string; current
           style={{
             minWidth: '220px',
             maxHeight: '240px',
-            boxShadow: '0 10px 25px -5px var(--ds-shadow-raised, rgba(0,0,0,0.1))',
+            boxShadow: '0 10px 25px -5px var(--ds-shadow-raised)',
             borderColor: 'var(--divider)',
           }}
         >

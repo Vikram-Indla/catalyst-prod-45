@@ -130,8 +130,8 @@ export default function IdeationMatrixView({ onOpenDetail }: Props) {
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   fontSize: 'var(--ds-font-size-50)', fontWeight: 800, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
                   fontFamily: 'var(--cp-font-mono)',
-                  textShadow: '0 1px 2px var(--ds-shadow-raised, rgba(0,0,0,0.3))',
-                  boxShadow: hoveredDot === dot.key ? '0 4px 14px var(--ds-shadow-raised, rgba(0,0,0,0.25))' : '0 2px 6px var(--ds-shadow-raised, rgba(0,0,0,0.15))',
+                  textShadow: '0 1px 2px var(--ds-shadow-raised)',
+                  boxShadow: hoveredDot === dot.key ? '0 4px 14px var(--ds-shadow-raised)' : '0 2px 6px var(--ds-shadow-raised)',
                   transform: hoveredDot === dot.key ? 'scale(1.3)' : 'scale(1)',
                   zIndex: hoveredDot === dot.key ? 10 : 2,
                   transition: 'transform 0.2s, box-shadow 0.2s',
@@ -144,7 +144,7 @@ export default function IdeationMatrixView({ onOpenDetail }: Props) {
                     position: 'absolute', bottom: `${dot.size + 8}px`, left: '48%', transform: 'translateX(-50%)',
                     background: 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1)))', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', fontSize: 'var(--ds-font-size-200)', borderRadius: '8px',
                     padding: '8px 12px', whiteSpace: 'nowrap', zIndex: 20,
-                    boxShadow: '0 4px 12px var(--ds-shadow-raised, rgba(0,0,0,0.2))',
+                    boxShadow: '0 4px 12px var(--ds-shadow-raised)',
                   }}>
                     <div style={{ fontWeight: 700, marginBottom: '0px' }}>{dot.key} · {dot.title}</div>
                     <div style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-disabled)' }}>

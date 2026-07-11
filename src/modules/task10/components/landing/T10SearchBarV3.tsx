@@ -72,7 +72,7 @@ export function T10SearchBarV3({ value, onChange }: T10SearchBarV3Props) {
         }}
         onFocus={(e) => {
           e.target.style.borderColor = 'var(--ds-text-brand)';
-          e.target.style.boxShadow = '0 0 0 3px var(--ds-background-information-bold, rgba(59, 130, 246, 0.1))';
+          e.target.style.boxShadow = '0 0 0 3px var(--ds-background-information-bold)';
         }}
         onBlur={(e) => {
           e.target.style.borderColor = 'var(--ds-border, var(--cp-bg-sunken))';

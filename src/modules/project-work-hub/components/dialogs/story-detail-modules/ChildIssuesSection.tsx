@@ -67,7 +67,7 @@ function TypeSelector({ value, onChange }: { value: string; onChange: (v: string
         <div style={{
           position: 'absolute', top: 'calc(100% + 2px)', left: 0, minWidth: 160,
           background: 'var(--ds-surface)', border: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))', borderRadius: 4,
-          boxShadow: '0 4px 8px var(--ds-shadow-raised, rgba(9,30,66,.25))', zIndex: 60, overflow: 'hidden',
+          boxShadow: '0 4px 8px var(--ds-shadow-raised)', zIndex: 60, overflow: 'hidden',
         }}>
           {TYPE_OPTIONS.map(opt => (
             <div key={opt.key} onClick={() => { onChange(opt.key); setOpen(false); }}
@@ -130,7 +130,7 @@ function InlineStatusDropdown({ item, onUpdate }: { item: PhIssueRow; onUpdate: 
         <div style={{
           position: 'absolute', top: 'calc(100% + 4px)', right: 0, minWidth: 200, maxHeight: 320, overflowY: 'auto',
           background: 'var(--ds-surface)', border: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))', borderRadius: 6,
-          boxShadow: '0 8px 24px var(--ds-shadow-raised, rgba(9,30,66,.25))', zIndex: 80, padding: '4px 0',
+          boxShadow: '0 8px 24px var(--ds-shadow-raised)', zIndex: 80, padding: '4px 0',
         }}>
           {childDisplayGroups.map(group => (
             <div key={group.groupLabel}>
@@ -227,7 +227,7 @@ function DynamicRow({ item, columns, onDelete, onCopyLink, onStatusUpdate, onCli
           {item.issue_key}
         </button>
         <span style={{
-          fontSize: 'var(--ds-font-size-300)', color: isDone ? 'var(--ds-shadow-raised, rgba(9,30,66,0.4))' : 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))',
+          fontSize: 'var(--ds-font-size-300)', color: isDone ? 'var(--ds-shadow-raised)' : 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))',
           textDecoration: isDone ? 'line-through' : 'none',
           overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
         }}>{item.summary}</span>

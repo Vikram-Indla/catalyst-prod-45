@@ -182,7 +182,7 @@ export function ChatRightPane({
         }
 
         .cv-right-pane [role="tab"]:hover {
-          background: var(--ds-background-neutral-subtle-hovered, rgba(9, 30, 66, 0.06));
+          background: var(--ds-background-neutral-subtle-hovered);
         }
 
         .cv-right-pane-content {
@@ -213,7 +213,7 @@ export function ChatRightPane({
         }
 
         .cc-thread-row:hover {
-          background: var(--ds-background-neutral-subtle-hovered, rgba(9, 30, 66, 0.06));
+          background: var(--ds-background-neutral-subtle-hovered);
         }
 
         .cc-thread-snippet {

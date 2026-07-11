@@ -138,8 +138,8 @@ export default function NotificationPanel({
     hover: "var(--ds-background-neutral-subtle-hovered)",
     press: "var(--ds-background-neutral-subtle-pressed)",
     shadow: isDark
-      ? "0 8px 24px var(--ds-shadow-raised, rgba(0,0,0,0.4)), 0 0 1px var(--ds-shadow-raised, rgba(0,0,0,0.5))"
-      : "0 8px 24px var(--ds-shadow-overlay, rgba(15,23,42,0.12)), 0 0 1px var(--ds-shadow-overlay, rgba(15,23,42,0.08))",
+      ? "0 8px 24px var(--ds-shadow-raised), 0 0 1px var(--ds-shadow-raised)"
+      : "0 8px 24px var(--ds-shadow-overlay), 0 0 1px var(--ds-shadow-overlay)",
     menuBg:
       "var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))",
     divider: "var(--cp-border-subtle, rgba(15,23,42,0.08))",
@@ -362,7 +362,7 @@ export default function NotificationPanel({
         width: PANEL_WIDTH,
         bottom: 16,
         background: "var(--ds-surface-overlay)",
-        border: "1px solid var(--ds-border, rgba(9,30,66,0.14))",
+        border: "1px solid var(--ds-border)",
         borderRadius: 6,
         boxShadow: "var(--ds-shadow-overlay, 0 8px 12px rgba(9,30,66,0.15), 0 0 1px rgba(9,30,66,0.31))",
         zIndex: 400,

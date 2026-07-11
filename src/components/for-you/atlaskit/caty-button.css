@@ -9,7 +9,7 @@
   border-radius: var(--radius-full, 9999px);
   background: var(--bg-elevated, var(--ds-surface));
   border: 1px solid var(--border-bold, var(--ds-icon-subtle));
-  box-shadow: var(--shadow-xs, 0 1px 1px var(--ds-background-neutral-subtle-pressed, rgba(9, 30, 66, 0.12)));
+  box-shadow: var(--shadow-xs, 0 1px 1px var(--ds-background-neutral-subtle-pressed));
   font-family: var(--font-body, inherit);
   font: var(--ds-font-body);
   font-weight: 600;

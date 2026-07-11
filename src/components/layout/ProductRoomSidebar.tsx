@@ -149,8 +149,8 @@ function ProductSwitcher({ products, currentCode, onClose, onSelect }: ProductSw
         background: isDark ? 'var(--ds-surface-raised, var(--cp-ink-1))' : 'var(--ds-surface)',
         border: `1px solid ${isDark ? 'var(--ds-border, var(--cp-ink-1))' : 'var(--ds-border, var(--cp-border, var(--cp-bg-sunken)))'}`,
         boxShadow: isDark
-          ? '0 8px 24px var(--ds-shadow-raised, rgba(0,0,0,0.60))'
-          : '0 4px 6px -1px var(--ds-shadow-raised, rgba(0,0,0,.07)), 0 2px 4px -2px var(--ds-shadow-raised, rgba(0,0,0,.05))',
+          ? '0 8px 24px var(--ds-shadow-raised)'
+          : '0 4px 6px -1px var(--ds-shadow-raised), 0 2px 4px -2px var(--ds-shadow-raised)',
         fontFamily: 'var(--cp-font-body)',
         overflow: 'hidden',
       }}

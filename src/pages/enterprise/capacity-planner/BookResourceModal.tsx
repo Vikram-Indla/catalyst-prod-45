@@ -423,7 +423,7 @@ export function BookResourceModal({ open, onOpenChange, availableUsers, resource
               const total = bookingAllocations.reduce((sum, a) => sum + (a.assignmentId ? (a.percent || 0) : 0), 0);
               const isOver = total > 100;
               const statusColor = isOver ? 'var(--ds-text-warning)' : total === 100 ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' : 'var(--ds-icon-information)';
-              const statusBg = isOver ? 'var(--ds-background-warning, rgba(217,119,6,0.08))' : total === 100 ? 'var(--ds-background-information, rgba(37,99,235,0.08))' : 'var(--ds-background-success, rgba(13,148,136,0.08))';
+              const statusBg = isOver ? 'var(--ds-background-warning)' : total === 100 ? 'var(--ds-background-information)' : 'var(--ds-background-success)';
 
               if (!hasSelectedUser) {
                 return (

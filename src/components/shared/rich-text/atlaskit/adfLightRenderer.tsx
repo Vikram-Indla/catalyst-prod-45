@@ -74,7 +74,7 @@ function renderMark(
     case 'code':
       return (
         <code key={key} style={{
-          background: token('color.background.neutral', 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))'),
+          background: token('color.background.neutral', 'var(--ds-background-neutral-subtle-hovered)'),
           padding: '0px 4px', borderRadius: 3,
           fontSize: '0.875em',
           fontFamily: 'var(--cp-font-mono, ui-monospace, monospace)',

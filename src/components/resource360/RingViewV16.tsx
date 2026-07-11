@@ -218,9 +218,9 @@ function weekRange(weekStart: string): string {
 
 // ─── STATUS PILL — canonical Jira-parity spec (11px/700/uppercase/borderRadius 3) ───
 const R360_PILL_BG: Record<StatusCat, string> = {
-  todo:     'var(--ds-background-neutral, rgb(221, 222, 225))',
-  progress: 'var(--ds-background-information, rgb(143, 184, 246))',
-  done:     'var(--ds-background-success-bold, rgb(179, 223, 114))',
+  todo:     'var(--ds-background-neutral)',
+  progress: 'var(--ds-background-information)',
+  done:     'var(--ds-background-success-bold)',
 };
 const StatusPill: React.FC<{ status: StatusCat; small?: boolean }> = ({ status, small }) => {
   const bg = R360_PILL_BG[status] ?? R360_PILL_BG.todo;
@@ -234,7 +234,7 @@ const StatusPill: React.FC<{ status: StatusCat; small?: boolean }> = ({ status, 
     }}>
       <span style={{
         fontSize: 'var(--ds-font-size-100)', fontWeight: 700, lineHeight: `${h}px`,
-        color: 'var(--ds-text, rgb(41, 42, 46))', textTransform: 'uppercase',
+        color: 'var(--ds-text)', textTransform: 'uppercase',
         letterSpacing: '0.06em', whiteSpace: 'nowrap',
       }}>
         {label}
@@ -515,7 +515,7 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems, on
       <div style={{
         height: 50, display: 'flex', alignItems: 'center', gap: 8, padding: '0 20px',
         borderBottom: `1px solid ${T.border}`, flexShrink: 0,
-        background: 'linear-gradient(90deg, var(--ds-background-information, rgba(37,99,235,0.06)), transparent 60%)',
+        background: 'linear-gradient(90deg, var(--ds-background-information), transparent 60%)',
       }}>
         <button onClick={() => setWeekIdx(Math.min(weekIdx + 1, weeks.length - 1))}
           disabled={weekIdx >= weeks.length - 1}
@@ -622,7 +622,7 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems, on
                 width: 76, height: 76, borderRadius: '50%', margin: '0 auto',
                 background: 'linear-gradient(135deg, var(--cp-blue), var(--ds-background-brand-bold-hovered))',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                boxShadow: '0 0 0 4px var(--ds-surface), 0 0 0 6px var(--cp-blue), 0 0 20px var(--ds-background-information, rgba(37,99,235,.2))',
+                boxShadow: '0 0 0 4px var(--ds-surface), 0 0 0 6px var(--cp-blue), 0 0 20px var(--ds-background-information)',
               }}>
                 <span style={{ fontFamily: T.sora, fontSize: 'var(--ds-font-size-800)', fontWeight: 800, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))' }}>{initials}</span>
               </div>
@@ -729,7 +729,7 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems, on
                   background: 'var(--sem-success)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   fontFamily: T.mono, fontSize: 'var(--ds-font-size-600)', fontWeight: 700,
-                  boxShadow: '0 2px 8px var(--ds-background-success-bold, rgba(22,163,74,.3))',
+                  boxShadow: '0 2px 8px var(--ds-background-success-bold)',
                 }}>{doneCount}</div>
                 <span style={{
                   fontSize: 9.5, fontWeight: 700, color: 'var(--ds-text-success)',
@@ -962,7 +962,7 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems, on
                     {/* Current node — blue border highlight */}
                     <div style={{
                       padding: '8px 12px', borderRadius: 8,
-                      border: `1px solid ${T.accent}`, background: 'var(--ds-background-information, rgba(37,99,235,0.03))',
+                      border: `1px solid ${T.accent}`, background: 'var(--ds-background-information)',
                       display: 'flex', alignItems: 'center', gap: 8,
                     }}>
                       {getJiraIconForType(selectedItem.type)}

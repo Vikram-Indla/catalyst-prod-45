@@ -50,7 +50,7 @@ export function PriorityDropdown({ currentPriority, onSelect, onClose }: Priorit
       style={{
         position: 'absolute', top: '48%', left: 0, marginTop: 4, width: 180,
         background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', border: isDark ? '1px solid var(--ds-text)' : '1px solid var(--cp-border, var(--cp-bg-sunken))', borderRadius: 6,
-        boxShadow: isDark ? '0 4px 16px var(--ds-shadow-raised, rgba(0,0,0,0.30))' : '0 4px 16px var(--ds-shadow-raised, rgba(0,0,0,0.10))', zIndex: 9999, overflow: 'hidden',
+        boxShadow: isDark ? '0 4px 16px var(--ds-shadow-raised)' : '0 4px 16px var(--ds-shadow-raised)', zIndex: 9999, overflow: 'hidden',
       }}
     >
       {PRIORITIES.map((p) => {

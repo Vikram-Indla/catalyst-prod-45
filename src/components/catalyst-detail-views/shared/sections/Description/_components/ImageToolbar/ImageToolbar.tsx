@@ -454,7 +454,7 @@ const ToolBtn = forwardRef<
       onMouseEnter={(e) => {
         if (active) return;
         e.currentTarget.style.background =
-          'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))';
+          'var(--ds-background-neutral-subtle-hovered)';
       }}
       onMouseLeave={(e) => {
         if (active) return;
@@ -583,7 +583,7 @@ function MenuRow({
         background: hovered
           ? danger
             ? 'var(--ds-background-danger)'
-            : 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))'
+            : 'var(--ds-background-neutral-subtle-hovered)'
           : 'transparent',
         color: danger
           ? 'var(--ds-text-danger)'

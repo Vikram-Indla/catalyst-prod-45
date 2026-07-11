@@ -26,7 +26,7 @@ export function ArchiveConfirmDialog({ issueKey, tk, onConfirm, onCancel }: Prop
   return (
     <div style={{
       position: 'fixed', inset: 0, zIndex: 10001,
-      background: 'var(--ds-shadow-raised, rgba(0,0,0,0.4))',
+      background: 'var(--ds-shadow-raised)',
       display: 'flex', alignItems: 'center', justifyContent: 'center',
     }} onClick={onCancel}>
       <div
@@ -37,7 +37,7 @@ export function ArchiveConfirmDialog({ issueKey, tk, onConfirm, onCancel }: Prop
         onClick={e => e.stopPropagation()}
         style={{
           width: 400, background: tk.surfaceBg, borderRadius: 8,
-          border: `1px solid ${tk.border}`, boxShadow: '0 8px 32px var(--ds-shadow-raised, rgba(0,0,0,0.3))',
+          border: `1px solid ${tk.border}`, boxShadow: '0 8px 32px var(--ds-shadow-raised)',
           padding: 24, fontFamily: 'var(--cp-font-body)',
         }}
       >

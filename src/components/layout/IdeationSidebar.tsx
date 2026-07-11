@@ -1,32 +1,21 @@
 /**
  * IdeationSidebar — Ideation hub sidebar.
  *
- * Phase 6 (2026-05-02) — Ideation lifted out of Product Hub into its own
- * peer hub at /ideation/*. This sidebar renders the canonical Ideation
- * nav (Backlog / Board / Matrix / Themes / Analytics / Triage / Intelligence)
- * for any URL under /ideation. Uses SidebarBase for visual parity with
- * other hub sidebars.
+ * CAT-IDEATION-REBUILD-20260709-001 (S5): config replaced for the greenfield
+ * module — Inbox / Explore / Portfolio + Admin (design 04 §C). The legacy
+ * Backlog/Board/Matrix/Themes/Analytics/Triage/Intelligence nav went with the
+ * legacy /ideation/* mounts (D1 routes-only decommission).
  *
  * Why peer (not under Product Hub):
  *   Ideas are organization-wide intake. Product affinity is decided at the
- *   conversion wizard (Idea → Request[]), never at submission. Putting
- *   Ideation under Product Hub previously implied per-product ownership,
- *   which doesn't match the data model — see ph_ideas + idea_requests.
+ *   conversion wizard (Idea → Business Request), never at submission.
  *
- * ADS note (2026-05-02): SidebarBase is a mixed-icon component (Atlaskit
- * + lucide). Following codebase convention here. Pure-ADS migration of
- * the sidebar primitives is tracked separately.
+ * Icons come from @/lib/atlaskit-icons — the @atlaskit/icon/core-backed shim
+ * (zero lucide per the Phase 1 Plan Lock).
  */
 
-import {
-  Lightbulb,
-  Columns,
-  ScatterChart,
-  Rocket,
-  BarChart3,
-  Inbox,
-  Sparkles,
-} from '@/lib/atlaskit-icons';
+import { Inbox, Plus, Search, ScatterChart, Settings } from '@/lib/atlaskit-icons';
+import { Routes } from '@/lib/routes';
 import { SidebarBase, SidebarConfig } from './SidebarBase';
 
 interface IdeationSidebarProps {
@@ -42,19 +31,18 @@ const IDEATION_CONFIG: SidebarConfig = {
     {
       title: '',
       items: [
-        { id: 'idea-backlog',  title: 'Ideas Backlog',     path: '/ideation/backlog',     icon: Lightbulb,    exact: true },
-        { id: 'idea-board',    title: 'Ideas Board',       path: '/ideation/board',       icon: Columns,      exact: true },
-        { id: 'idea-matrix',   title: 'Impact Matrix',     path: '/ideation/matrix',      icon: ScatterChart, exact: true },
-        { id: 'idea-roadmap',  title: 'Ideas Roadmap',     path: '/ideation/roadmap',     icon: Rocket,       exact: true },
-        { id: 'idea-themes',   title: 'Ideas Themes',      path: '/ideation/themes',      icon: Rocket,       exact: true },
-        { id: 'idea-analytics', title: 'Ideas Analytics',  path: '/ideation/analytics',   icon: BarChart3,    exact: true },
+        // D14 (Phase 2 S2): create entry is a nav item — SidebarBase has no
+        // action-button slot, and query-string paths break active-state logic.
+        { id: 'idn-new',       title: 'New idea',  path: Routes.ideation.submit(),    icon: Plus,         exact: true },
+        { id: 'idn-inbox',     title: 'Inbox',     path: Routes.ideation.inbox(),     icon: Inbox,        exact: true },
+        { id: 'idn-explore',   title: 'Explore',   path: Routes.ideation.explore(),   icon: Search,       exact: true },
+        { id: 'idn-portfolio', title: 'Portfolio', path: Routes.ideation.portfolio(), icon: ScatterChart, exact: true },
       ],
     },
     {
-      title: 'Workflow',
+      title: 'Manage',
       items: [
-        { id: 'idea-triage',       title: 'Triage Queue',          path: '/ideation/triage',       icon: Inbox,    exact: true },
-        { id: 'idea-intelligence', title: 'Intelligence',           path: '/ideation/intelligence', icon: Sparkles, exact: true, textBadge: 'AI' },
+        { id: 'idn-admin', title: 'Admin', path: Routes.ideation.admin.root(), icon: Settings, exact: false },
       ],
     },
   ],

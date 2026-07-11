@@ -42,7 +42,7 @@ export function PHDetailDrawer({ issue, children: childIssues, releases, open, o
       {/* Backdrop */}
       <div
         className="fixed inset-0 z-40"
-        style={{ background: 'var(--ds-shadow-overlay, rgba(15,23,42,.4))', animation: 'phFadeIn 200ms ease' }}
+        style={{ background: 'var(--ds-shadow-overlay)', animation: 'phFadeIn 200ms ease' }}
         onClick={onClose}
       />
 
@@ -52,7 +52,7 @@ export function PHDetailDrawer({ issue, children: childIssues, releases, open, o
         style={{
           width: 560,
           borderLeft: '1px solid var(--divider)',
-          boxShadow: '-8px 0 30px var(--ds-shadow-overlay, rgba(15,23,42,.1))',
+          boxShadow: '-8px 0 30px var(--ds-shadow-overlay)',
           animation: 'phSlideInRight 200ms ease',
           fontFamily: 'var(--cp-font-body)',
         }}

@@ -105,14 +105,14 @@ export function DataScope() {
       <span style={{
         width: 18, height: 18, borderRadius: '50%', background: 'var(--bg-app)', position: 'absolute',
         top: 2, left: checked ? 18 : 2, transition: 'left .2s',
-        boxShadow: '0 1px 3px var(--ds-shadow-raised, rgba(0,0,0,.2))',
+        boxShadow: '0 1px 3px var(--ds-shadow-raised)',
       }} />
     </button>
   )
 
   const cardStyle: React.CSSProperties = {
     background: 'var(--bg-app)', border: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken)))', borderRadius: 8,
-    padding: 16, marginBottom: 16, boxShadow: '0 1px 2px var(--ds-shadow-raised, rgba(0,0,0,.05))',
+    padding: 16, marginBottom: 16, boxShadow: '0 1px 2px var(--ds-shadow-raised)',
   }
 
   const activeCount = includedProjects.length

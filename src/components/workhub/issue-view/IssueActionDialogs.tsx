@@ -41,11 +41,11 @@ function tiptapPlainText(doc: TiptapDoc | null): string {
 const overlayStyle: React.CSSProperties = {
   position: 'fixed', inset: 0, zIndex: 10000,
   display: 'flex', alignItems: 'center', justifyContent: 'center',
-  background: 'var(--ds-shadow-raised, rgba(9,30,66,0.54))',
+  background: 'var(--ds-shadow-raised)',
 };
 const modalBase: React.CSSProperties = {
   background: 'var(--ds-surface)', borderRadius: 8, maxWidth: '95vw', maxHeight: '85vh',
-  overflow: 'hidden', boxShadow: '0 12px 40px var(--ds-shadow-raised, rgba(9,30,66,.35))',
+  overflow: 'hidden', boxShadow: '0 12px 40px var(--ds-shadow-raised)',
 };
 const btnPrimary: React.CSSProperties = {
   padding: '8px 20px', borderRadius: 4, fontSize: 'var(--ds-font-size-400)', fontWeight: 600,
@@ -265,7 +265,7 @@ export function FlagPopover({ issueId, issueKey, flagged, anchorRef, onClose, ta
       <div style={{
         position: 'fixed', top: pos.top, left: pos.left,
         background: 'var(--ds-surface)', borderRadius: 8, width: 360, padding: '16px 24px',
-        boxShadow: '0 8px 28px var(--ds-shadow-raised, rgba(9,30,66,0.25))', zIndex: 100,
+        boxShadow: '0 8px 28px var(--ds-shadow-raised)', zIndex: 100,
         border: '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border)))',
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>

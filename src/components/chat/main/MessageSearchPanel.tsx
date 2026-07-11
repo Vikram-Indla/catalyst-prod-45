@@ -224,7 +224,7 @@ export function MessageSearchPanel({
                 cursor: 'pointer',
                 font: 'inherit',
               }}
-              onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,.06))')}
+              onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered)')}
               onMouseLeave={(e) => (e.currentTarget.style.background = 'none')}
             >
               <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: 'var(--ds-text)' }}>

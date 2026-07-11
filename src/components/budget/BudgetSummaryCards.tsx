@@ -27,26 +27,26 @@ const cardColors = {
   insourced: {
     bar: 'bg-gradient-to-r from-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))] to-[var(--ds-text-brand)]',
     value: 'text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))]',
-    badge: 'bg-[var(--ds-background-information, rgba(37,99,235,0.08))] text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))]',
+    badge: 'bg-[var(--ds-background-information)] text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))]',
     ring: 'shadow-[0_0_0_2px_var(--ds-background-information, var(--ds-background-information, rgba(37,99,235,0.3)))]'
   },
   cosourced: {
     bar: 'bg-gradient-to-r from-[var(--ds-chart-teal-bolder)] to-[var(--ds-chart-teal-bold)]',
     value: 'text-[var(--ds-chart-teal-bold)]',
-    badge: 'bg-[var(--ds-background-success, rgba(13,148,136,0.1))] text-[var(--ds-icon-information)]',
+    badge: 'bg-[var(--ds-background-success)] text-[var(--ds-icon-information)]',
     ring: 'shadow-[0_0_0_2px_var(--ds-background-success, var(--ds-background-success, rgba(13,148,136,0.3)))]'
   },
   outsourced: {
     bar: 'bg-gradient-to-r from-[var(--ds-text-warning)] to-[var(--ds-text-warning)]',
     value: 'text-[var(--ds-text-warning)]',
-    badge: 'bg-[var(--ds-background-warning, rgba(217,119,6,0.1))] text-[var(--ds-text-warning)]',
+    badge: 'bg-[var(--ds-background-warning)] text-[var(--ds-text-warning)]',
     ring: 'shadow-[0_0_0_2px_var(--ds-background-warning, var(--ds-background-warning, rgba(217,119,6,0.3)))]'
   },
   licenses: {
     bar: 'bg-gradient-to-r from-[var(--ds-background-discovery-bold)] to-[var(--ds-background-discovery)]',
     value: 'text-[var(--ds-background-discovery-bold)]',
-    badge: 'bg-[var(--ds-background-discovery-bold, rgba(124,58,237,0.1))] text-[var(--ds-background-discovery-bold)]',
-    ring: 'shadow-[0_0_0_2px_var(--ds-background-discovery-bold, rgba(124,58,237,0.3))]'
+    badge: 'bg-[var(--ds-background-discovery-bold)] text-[var(--ds-background-discovery-bold)]',
+    ring: 'shadow-[0_0_0_2px_var(--ds-background-discovery-bold)]'
   }
 };
 
@@ -257,9 +257,9 @@ export function BudgetSummaryCards({
 
       {/* V8: Expanded Panel - Insourced - with colored border */}
       {activePanel === 'insourced' && (
-        <div className="mt-4 rounded-xl border overflow-hidden border-[var(--ds-background-information, rgba(37,99,235,0.2))] bg-[var(--ds-background-information, rgba(37,99,235,0.02))] animate-in slide-in-from-top-2 duration-200 mb-6">
+        <div className="mt-4 rounded-xl border overflow-hidden border-[var(--ds-background-information)] bg-[var(--ds-background-information)] animate-in slide-in-from-top-2 duration-200 mb-6">
           {/* Panel Header */}
-          <div className="flex justify-between items-center px-5 py-3 border-b bg-[var(--ds-background-information, rgba(37,99,235,0.05))] border-[var(--ds-background-information, rgba(37,99,235,0.1))]">
+          <div className="flex justify-between items-center px-5 py-3 border-b bg-[var(--ds-background-information)] border-[var(--ds-background-information)]">
             <h4 className="text-sm font-bold text-slate-700">Insourced Breakdown</h4>
             <button 
               onClick={(e) => { e.stopPropagation(); setActivePanel(null); }}
