@@ -74,14 +74,19 @@ partially and remain OPEN** pending backend/schema decisions + QA retest.
 - 006 and every claimed fix (015 + the 010/013 partials) stay PENDING independent QA retest.
 - 010 and 013 additionally stay OPEN pending backend/schema decisions (above).
 
-## Follow-up 4 — FeatureGate version-skew cleanup (OPEN, not started)
-- Two majors coexist on disk: `@atlaskit/feature-gate-js-client` 5.7.0 (top-level) and 6.0.0
-  (nested under progress-tracker/primitives/tokens/react-compiler-gating chains). This is the
-  source of the runtime "FeatureGateClients version skew" console warning (009 reported 5.6.0
-  vs 5.8.0 at runtime).
-- No `resolutions` field and no feature-gate entry in the package.json `overrides` block — nothing
-  dedupes it. Fix = add an overrides/resolutions pin to a single major + reinstall, then re-verify
-  the warning is gone. The 009 commit (`68939c1b0`) documented this as a deferred follow-up.
+## Follow-up 4 — FeatureGate version-skew (OPEN — a pin does NOT fix it; tested 2026-07-11)
+- Package manager is **Bun** (`bun.lockb`); reinstall is `bun install`, NOT npm/yarn.
+- On disk: 1× `@atlaskit/feature-gate-js-client@5.8.0` + 4× `@6.0.0`. Root cause is **two coexisting
+  majors of `@atlaskit/platform-feature-flags`**: older v1.x → `feature-gate ^5.x`; newer
+  `platform-feature-flags@2.0.0` (bundled with the newer `tokens`/`primitives`/`progress-tracker`/
+  `react-compiler-gating`) → `feature-gate ^6.0.0`.
+- **Tested and reverted:** adding `overrides["@atlaskit/feature-gate-js-client"]="5.8.0"` + `bun
+  install` produced NO change (bun.lockb untouched) — it can't satisfy the `^6.0.0` subtree, and
+  forcing it would push 5.8.0 onto core tokens/primitives against their `^6.0.0` requirement (core-UI
+  breaking). So a one-line feature-gate pin is the wrong tool.
+- **Real fix options:** (a) align `@atlaskit/platform-feature-flags` to one major via a coordinated
+  @atlaskit package upgrade (correct but a real, test-heavy dependency project); (b) accept the
+  benign multi-instance console warning (no functional impact). Do NOT `--force` a feature-gate pin.
 
 ## Build/version note
 Repo has no semver (`package.json` version `0.0.0`); the build identifier is the git SHA. There is
