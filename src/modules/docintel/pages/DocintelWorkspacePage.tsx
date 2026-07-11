@@ -29,6 +29,7 @@ import { FactsReviewPanel } from "../components/FactsReviewPanel";
 import { TraceabilityMatrix } from "../components/TraceabilityMatrix";
 import { AskPanel } from "../components/AskPanel";
 import { DocumentLinksPanel } from "../components/DocumentLinksPanel";
+import { ThemeTags } from "../components/ThemeTags";
 import type { DocintelStatus } from "../types";
 
 function docStatusAppearance(status: DocintelStatus): LozengeAppearance {
@@ -138,6 +139,10 @@ export default function DocintelWorkspacePage() {
           </span>
         }
       />
+
+      <div style={{ marginTop: 12 }}>
+        <ThemeTags projectId={document.project_id} documentId={document.id} />
+      </div>
 
       <div style={{ marginTop: 16 }}>
         <Tabs id="docintel-workspace-tabs">
