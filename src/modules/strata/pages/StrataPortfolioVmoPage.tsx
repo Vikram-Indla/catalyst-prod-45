@@ -646,11 +646,18 @@ function BenefitDetailSection({ benefit, isFirst, canAuthor, canAuthorValues }: 
           { key: 'value', label: 'Value', kind: 'number', required: true, helper: benefit.unit ?? undefined },
         ]}
         onSubmit={async (v) => {
+          // Reject negative/non-finite before the RPC round-trip; server RPC
+          // enforces the same guard (strata_create_benefit_value). Throwing
+          // keeps the modal open with an in-modal field error (V4-OPEN-021).
+          const amount = Number(v.value);
+          if (!Number.isFinite(amount) || amount < 0) {
+            throw new Error('Value must be a finite, non-negative number.');
+          }
           await valueApi.createBenefitValue({
             benefitId: benefit.id,
             periodId: v.periodId as string,
             valueKind: v.valueKind as StrataBenefitValue['value_kind'],
-            value: Number(v.value),
+            value: amount,
           });
           invalidate();
         }}
