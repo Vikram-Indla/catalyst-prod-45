@@ -891,7 +891,7 @@
   left: 0;
   right: 0;
   text-align: center;
-  font-size: var(--ds-font-size-500); /* 17px — Slack screen title */
+  font-size: var(--ds-font-size-400); /* match huddles/threads detail title */
   font-weight: var(--cc-fw-bold);
   color: var(--ds-text);
   pointer-events: none;
@@ -2723,6 +2723,44 @@
   font-size: var(--ds-font-size-100);
 }
 
+/* ── Home-card full-screen detail (Later / Huddles / Threads) ── */
+.cc-cardv {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--ds-surface);
+}
+.cc-cardv__hdr {
+  position: relative;
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  padding: var(--ds-space-100) var(--ds-space-150);
+  background: var(--ds-surface);
+}
+.cc-cardv__title {
+  position: absolute;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-size: var(--ds-font-size-400);
+  font-weight: var(--cc-fw-bold);
+  color: var(--ds-text);
+  pointer-events: none;
+}
+.cc-cardv__body { flex: 1; min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
+
+/* ── Caty in DM-detail shell: single header (hide CatyPanel's own sub-header) ── */
+.cc-caty-pane .cp-sub-header { display: none; }
+.cc-caty-pane__face {
+  display: block;
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
 /* Dock detail: DockConvHeader already shows the thread title — hide ThreadPanel's own header */
 .cc-conv-pane .cv2-thread-header { display: none !important; }
 
@@ -2792,6 +2830,33 @@
   font-size: var(--ds-font-size-50); /* 11px */
   color: var(--ds-text-subtlest);
 }
+
+/* Live huddle state — Slack lights the card purple with count + avatars */
+.cc-cards__card--live {
+  background: var(--ds-background-selected);
+  border-color: var(--ds-border-selected);
+}
+.cc-cards__card--live:hover { background: var(--ds-background-selected-hovered); }
+.cc-cards__card--live .cc-cards__icon { color: var(--ds-text-selected); }
+.cc-cards__card--live .cc-cards__title { color: var(--ds-text-selected); font-weight: var(--cc-fw-bold); }
+.cc-cards__card--live .cc-cards__sub { color: var(--ds-text-selected); }
+.cc-cards__hrow {
+  display: flex;
+  align-items: center;
+  gap: var(--ds-space-100);
+  height: 18px;
+  margin-bottom: var(--ds-space-025);
+}
+.cc-cards__hrow .cc-cards__icon { margin-bottom: 0; }
+.cc-cards__stack { display: inline-flex; align-items: center; }
+.cc-cards__stack-ava {
+  display: inline-flex;
+  border-radius: 50%;
+  box-shadow: 0 0 0 2px var(--ds-background-selected);
+}
+.cc-cards__stack-ava > div,
+.cc-cards__stack-ava > div * { border-radius: 50% !important; }
+.cc-cards__stack-ava + .cc-cards__stack-ava { margin-left: calc(-1 * var(--ds-space-075)); }
 
 /* Home directory search field — hidden (search lives in the bottom nav) */
 .cc-dir__searchwrap { display: none; }

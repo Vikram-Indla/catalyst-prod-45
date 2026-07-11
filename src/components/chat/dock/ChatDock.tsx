@@ -19,7 +19,6 @@ import { useIncomingHuddle } from "@/hooks/chat/useIncomingHuddle";
 import type { ChatConversation } from "@/types/chat";
 import { CatyMoodFace } from "../caty-mood/CatyMoodFace";
 import { useDraggableFab } from "./useDraggableFab";
-import { CatyPanel } from "./CatyPanel";
 import { DockConversationPane } from "./DockConversationPane";
 import { DockDirectory } from "./DockDirectory";
 import { DockDmsTab } from "./DockDmsTab";
@@ -32,7 +31,8 @@ import { DockNewMessageModal } from "./DockNewMessageModal";
 import { DockCreateChannelModal } from "./DockCreateChannelModal";
 import { DockNewHuddleModal } from "./DockNewHuddleModal";
 import { DockHomeCards } from "./DockHomeCards";
-import { DockCardSheet, type CardKind } from "./DockCardSheet";
+import { DockCardView, type CardKind } from "./DockCardView";
+import { DockCatyPane } from "./DockCatyPane";
 import { DockTabBar, type DockTab } from "./DockTabBar";
 // ads-scanner:ignore-next-line — dock.css is a tokens-only stylesheet (audited clean)
 import "./dock.css";
@@ -179,9 +179,13 @@ export function ChatDock({
   const meName = meMeta.full_name || meMeta.name || user?.email || "You";
   const meSeed = user?.id ?? meName;
 
+  // Home cards (Later/Huddles/Threads) open a full-screen detail with its own
+  // back header — like a DM detail, but the bottom nav stays visible.
+  const inCardView = !!cardSheet && !inConversation && !searchOpen;
+
   // Primary list view (any tab, incl. search) — each tab's title header scrolls
   // away with the content while the action cluster stays sticky (Slack style).
-  const primaryList = !inConversation && !dirBrowsing;
+  const primaryList = !inConversation && !dirBrowsing && !inCardView;
 
   // Action cluster (expand + close + filter/avatar pill). Reused by the fixed
   // header (other tabs) and the sticky floating cluster (Home).
@@ -403,7 +407,7 @@ export function ChatDock({
           <div className="cc-dock__messages-inner">
             {activeId === CATY_ID ? (
               <ChatPaneErrorBoundary conversationId={CATY_ID}>
-                <CatyPanel viewMode="floating" onViewModeChange={() => {}} />
+                <DockCatyPane onBack={() => onFocusDirectory?.()} />
               </ChatPaneErrorBoundary>
             ) : activeId ? (
               <ChatPaneErrorBoundary conversationId={activeId}>
@@ -424,6 +428,14 @@ export function ChatDock({
                   onBack={() => onFocusDirectory?.()}
                 />
               </ChatPaneErrorBoundary>
+            ) : inCardView ? (
+              <ChatDirectoryErrorBoundary>
+                <DockCardView
+                  kind={cardSheet!}
+                  onBack={() => setCardSheet(null)}
+                  onSelect={onSelect}
+                />
+              </ChatDirectoryErrorBoundary>
             ) : searchOpen ? (
               <ChatDirectoryErrorBoundary>
                 <DockSearchTab conversations={listConversations} onSelect={onSelect} />
@@ -446,6 +458,7 @@ export function ChatDock({
                           <span className="cc-dock__wordmark">Catalyst</span>
                         </div>
                         <DockHomeCards
+                          conversations={listConversations}
                           onOpenCaty={() => onSelect(CATY_ID)}
                           onThreads={() => setCardSheet("threads")}
                           onHuddles={() => setCardSheet("huddles")}
@@ -477,7 +490,7 @@ export function ChatDock({
           </div>
 
           {/* Slack-style compose FAB — Home / DMs list view. */}
-          {!inConversation && !searchOpen && !dirBrowsing && (activeTab === "home" || activeTab === "dms") && (
+          {!inConversation && !searchOpen && !dirBrowsing && !inCardView && (activeTab === "home" || activeTab === "dms") && (
             <button
               type="button"
               className="cc-dock__compose-fab"
@@ -504,13 +517,6 @@ export function ChatDock({
         </div>
 
         {youOpen && <DockYouModal onClose={() => setYouOpen(false)} />}
-        {cardSheet && (
-          <DockCardSheet
-            kind={cardSheet}
-            onClose={() => setCardSheet(null)}
-            onSelect={onSelect}
-          />
-        )}
         {composeOpen && (
           <DockComposeMenu
             onClose={() => setComposeOpen(false)}

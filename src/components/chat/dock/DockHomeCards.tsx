@@ -8,6 +8,9 @@
  */
 import React from "react";
 import { CatyMoodFace } from "../caty-mood/CatyMoodFace";
+import { AtlaskitAvatar } from "@/components/chat/main/AtlaskitAvatar";
+import { useActiveHuddleIds, useActiveHuddle } from "@/hooks/chat/useHuddleData";
+import type { ChatConversation } from "@/types/chat";
 
 const svg = (path: React.ReactNode) => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
@@ -16,13 +19,28 @@ const svg = (path: React.ReactNode) => (
 );
 
 interface DockHomeCardsProps {
+  conversations: ChatConversation[];
   onOpenCaty: () => void;
   onThreads: () => void;
   onHuddles: () => void;
   onLater: () => void;
 }
 
-export function DockHomeCards({ onOpenCaty, onThreads, onHuddles, onLater }: DockHomeCardsProps) {
+export function DockHomeCards({ conversations, onOpenCaty, onThreads, onHuddles, onLater }: DockHomeCardsProps) {
+  // Live huddles: conversations that currently have an active huddle. When any
+  // are live, the Huddles card lights up (purple) with a count + participant
+  // avatars — Slack-mobile parity.
+  const activeHuddleIds = useActiveHuddleIds();
+  const liveHuddles = conversations.filter((c) => activeHuddleIds.has(c.id));
+  const liveCount = activeHuddleIds.size;
+  const isLive = liveCount > 0;
+
+  // Participants of the first live huddle → grouped avatars (me + others), so
+  // the card shows every face in the call, not just the DM's other person.
+  const firstLiveId = liveHuddles[0]?.id ?? null;
+  const { huddle } = useActiveHuddle(firstLiveId);
+  const participants = huddle?.participants ?? [];
+
   return (
     <div className="cc-cards" role="list" aria-label="Quick access">
       <button type="button" role="listitem" className="cc-cards__card" onClick={onOpenCaty}>
@@ -41,12 +59,31 @@ export function DockHomeCards({ onOpenCaty, onThreads, onHuddles, onLater }: Doc
         <span className="cc-cards__sub">View replies</span>
       </button>
 
-      <button type="button" role="listitem" className="cc-cards__card" onClick={onHuddles}>
-        <span className="cc-cards__icon" aria-hidden>
-          {svg(<><path d="M3 14v-2a9 9 0 0 1 18 0v2" /><path d="M21 15a2 2 0 0 1-2 2h-1v-5h1a2 2 0 0 1 2 2z" /><path d="M3 15a2 2 0 0 0 2 2h1v-5H5a2 2 0 0 0-2 2z" /></>)}
+      <button
+        type="button"
+        role="listitem"
+        className={`cc-cards__card${isLive ? " cc-cards__card--live" : ""}`}
+        onClick={onHuddles}
+      >
+        <span className="cc-cards__hrow">
+          <span className="cc-cards__icon" aria-hidden>
+            {svg(<><path d="M3 14v-2a9 9 0 0 1 18 0v2" /><path d="M21 15a2 2 0 0 1-2 2h-1v-5h1a2 2 0 0 1 2 2z" /><path d="M3 15a2 2 0 0 0 2 2h1v-5H5a2 2 0 0 0-2 2z" /></>)}
+          </span>
+          {isLive && (
+            <span className="cc-cards__stack" aria-hidden>
+              {(participants.length > 0
+                ? participants.slice(0, 3).map((p) => ({ key: p.userId, name: p.name, seed: p.userId }))
+                : liveHuddles.slice(0, 2).map((c) => ({ key: c.id, name: c.title, seed: c.id }))
+              ).map((a) => (
+                <span key={a.key} className="cc-cards__stack-ava">
+                  <AtlaskitAvatar name={a.name} seed={a.seed} pixelSize={20} />
+                </span>
+              ))}
+            </span>
+          )}
         </span>
         <span className="cc-cards__title">Huddles</span>
-        <span className="cc-cards__sub">Recent calls</span>
+        <span className="cc-cards__sub">{isLive ? `${liveCount} live` : "Recent calls"}</span>
       </button>
 
       <button type="button" role="listitem" className="cc-cards__card" onClick={onLater}>
