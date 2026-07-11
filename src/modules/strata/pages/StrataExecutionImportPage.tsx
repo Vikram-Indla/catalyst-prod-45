@@ -287,6 +287,20 @@ export default function StrataExecutionImportPage() {
   const [sheets, setSheets] = useState<ClassifiedSheet[] | null>(null);
   const [parseError, setParseError] = useState<string | null>(null);
   const [parsing, setParsing] = useState(false);
+  const [templateError, setTemplateError] = useState<string | null>(null);
+  const [downloadingTemplate, setDownloadingTemplate] = useState(false);
+
+  const handleDownloadTemplate = async () => {
+    setTemplateError(null);
+    setDownloadingTemplate(true);
+    try {
+      await downloadTemplate();
+    } catch (e) {
+      setTemplateError(e instanceof Error ? e.message : String(e));
+    } finally {
+      setDownloadingTemplate(false);
+    }
+  };
 
   const [columnMap, setColumnMap] = useState<Record<TargetType, Record<string, string | null>>>({
     project_cards: {}, milestones: {}, dependencies: {},
@@ -623,14 +637,19 @@ export default function StrataExecutionImportPage() {
                 <Button iconBefore={<FileUp size={14} />} onClick={() => fileRef.current?.click()} isDisabled={parsing}>
                   Choose file (.xlsx / .xls / .csv)
                 </Button>
-                <Button appearance="subtle" iconBefore={<Download size={14} />} onClick={() => void downloadTemplate()}>
+                <Button appearance="subtle" iconBefore={<Download size={14} />} onClick={() => void handleDownloadTemplate()} isDisabled={downloadingTemplate}>
                   Download STRATA import template
                 </Button>
-                {parsing ? <Spinner size="small" /> : null}
+                {parsing || downloadingTemplate ? <Spinner size="small" /> : null}
               </div>
               {parseError ? (
                 <SectionMessage appearance="error" title="Could not parse the file">
                   <p>{parseError}</p>
+                </SectionMessage>
+              ) : null}
+              {templateError ? (
+                <SectionMessage appearance="error" title="Could not generate the import template">
+                  <p>{templateError}</p>
                 </SectionMessage>
               ) : null}
               {sheets ? (
