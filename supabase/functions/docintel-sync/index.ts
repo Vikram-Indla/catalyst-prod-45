@@ -51,6 +51,7 @@ import {
   getServiceClient,
   json,
   markDocumentFailed,
+  requireMember,
   requireServiceRole,
 } from "../_shared/docintel.ts";
 import { embed, generateText, logUsage, type LlmMessage } from "../_shared/llm.ts";
@@ -138,6 +139,133 @@ const emptyCounts = (): ProjectCounts => ({
   conflicts_found: 0,
 });
 
+// ── Jira → RAG ingestion (Slice 6) ───────────────────────────────────────────
+const JIRA_DEFAULT_LIMIT = 100;
+const JIRA_MAX_LIMIT = 300;
+const JIRA_CONTENT_CAP = 4000;
+
+type JiraIssueRow = {
+  id: string;
+  issue_key: string | null;
+  summary: string | null;
+  description_text: string | null;
+  issue_type: string | null;
+  status: string | null;
+};
+
+function jiraIssueContent(i: JiraIssueRow): string {
+  const head = `${i.issue_key ?? ""} — ${i.summary ?? ""}`.trim();
+  const meta = [i.issue_type && `Type: ${i.issue_type}`, i.status && `Status: ${i.status}`]
+    .filter(Boolean)
+    .join(" · ");
+  const body = (i.description_text ?? "").trim();
+  const text = [head, meta, body].filter(Boolean).join("\n\n");
+  return text.length > JIRA_CONTENT_CAP ? text.slice(0, JIRA_CONTENT_CAP) : text;
+}
+
+async function ingestJiraIssues(
+  admin: SupabaseClient,
+  projectId: string,
+  userId: string,
+  rawLimit?: number,
+): Promise<{ ingested: number; total_issues: number; capped: boolean }> {
+  const limit = Math.min(
+    typeof rawLimit === "number" && rawLimit > 0 ? rawLimit : JIRA_DEFAULT_LIMIT,
+    JIRA_MAX_LIMIT,
+  );
+
+  const { data: proj, error: projErr } = await admin
+    .from("ph_projects")
+    .select("key")
+    .eq("id", projectId)
+    .maybeSingle();
+  if (projErr) throw new Error(`project lookup failed: ${projErr.message}`);
+  const projectKey = (proj as { key: string } | null)?.key;
+  if (!projectKey) throw new Error("project has no Jira key");
+
+  const { count: totalIssues } = await admin
+    .from("ph_issues")
+    .select("id", { count: "exact", head: true })
+    .eq("project_key", projectKey)
+    .is("deleted_at", null);
+
+  const { data: issues, error: issErr } = await admin
+    .from("ph_issues")
+    .select("id, issue_key, summary, description_text, issue_type, status")
+    .eq("project_key", projectKey)
+    .is("deleted_at", null)
+    .order("jira_updated_at", { ascending: false, nullsFirst: false })
+    .limit(limit);
+  if (issErr) throw new Error(`issue fetch failed: ${issErr.message}`);
+
+  const rows = ((issues ?? []) as JiraIssueRow[]).filter((i) => jiraIssueContent(i).length > 0);
+  if (rows.length === 0) return { ingested: 0, total_issues: totalIssues ?? 0, capped: false };
+
+  // Clean rebuild: drop existing Jira docs for the project (cascade drops chunks/embeddings).
+  const { error: delErr } = await admin
+    .from("ai_documents")
+    .delete()
+    .eq("project_id", projectId)
+    .eq("source_type", "jira");
+  if (delErr) throw new Error(`cleanup failed: ${delErr.message}`);
+
+  const contents = rows.map(jiraIssueContent);
+  const embedded = await embed(contents);
+  if (embedded.embeddings.length !== rows.length) {
+    throw new Error(`embedding count mismatch: ${embedded.embeddings.length} vs ${rows.length}`);
+  }
+
+  let ingested = 0;
+  for (let i = 0; i < rows.length; i++) {
+    const issue = rows[i];
+    const title = `${issue.issue_key ?? "Issue"} — ${issue.summary ?? ""}`.slice(0, 300);
+
+    const { data: docRow, error: docErr } = await admin
+      .from("ai_documents")
+      .insert({
+        project_id: projectId,
+        title,
+        status: "ready",
+        source_type: "jira",
+        source_language: "en",
+        created_by: userId,
+      })
+      .select("id")
+      .single();
+    if (docErr) throw new Error(`doc insert failed (${issue.issue_key}): ${docErr.message}`);
+    const documentId = (docRow as { id: string }).id;
+
+    const { data: chunkRow, error: chunkErr } = await admin
+      .from("ai_document_chunks")
+      .insert({
+        document_id: documentId,
+        scope: "page",
+        lang: "en",
+        content: contents[i],
+        char_count: contents[i].length,
+        section_path: issue.issue_key,
+      })
+      .select("id")
+      .single();
+    if (chunkErr) throw new Error(`chunk insert failed (${issue.issue_key}): ${chunkErr.message}`);
+    const chunkId = (chunkRow as { id: string }).id;
+
+    const { error: embErr } = await admin.from("ai_document_embeddings").insert({
+      chunk_id: chunkId,
+      document_id: documentId,
+      project_id: projectId,
+      content_kind: "en_text",
+      embedding: embedded.embeddings[i] as unknown as string,
+      embedding_model: embedded.model,
+    });
+    if (embErr) throw new Error(`embedding insert failed (${issue.issue_key}): ${embErr.message}`);
+
+    ingested++;
+  }
+
+  return { ingested, total_issues: totalIssues ?? rows.length, capped: (totalIssues ?? 0) > ingested };
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
@@ -159,6 +287,28 @@ Deno.serve(async (req) => {
   }
 
   const admin = getServiceClient();
+
+  // ── Jira-ingest mode (CAT-DOCINTEL-V2 Slice 6) ─────────────────────────────
+  // Folded into docintel-sync (rather than a new function) because the project is at
+  // its edge-function count cap. `{ mode: 'jira', projectId, limit? }` brings a project's
+  // Jira issues into the SAME RAG substrate (ai_documents source_type='jira' + chunk +
+  // embedding) so Ask/hybrid_search can answer over them. Member-gated per project.
+  const reqBody = (await req.clone().json().catch(() => null)) as
+    | { mode?: string; projectId?: string; limit?: number }
+    | null;
+  if (reqBody?.mode === "jira") {
+    const projectId = reqBody.projectId;
+    if (!projectId) return json({ error: "projectId is required" }, 400);
+    const memberId = await requireMember(req, projectId, admin);
+    if (!memberId) return json({ error: "FORBIDDEN" }, 403);
+    try {
+      const result = await ingestJiraIssues(admin, projectId, memberId, reqBody.limit);
+      return json(result);
+    } catch (e) {
+      return json({ error: e instanceof Error ? e.message : String(e) }, 500);
+    }
+  }
+
   const startedAt = new Date().toISOString();
   const t0 = Date.now();
 
