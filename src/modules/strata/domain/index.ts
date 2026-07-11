@@ -15,7 +15,7 @@ import type {
   StrataKpiTypeConfig, StrataMapEdge, StrataMilestone, StrataModelPerspective, StrataNotification, StrataNotificationRule, StrataOkr,
   StrataPeriod, StrataPerspective, StrataThemeCharter, StrataPortfolio, StrataProjectCard,
   StrataProjectCardFieldConfig, StrataProjectCardPicklist, StrataProjectCardSectionConfig,
-  StrataProjectCardTabConfig, StrataRole, StrataScorecardInstance, StrataScorecardLine,
+  StrataProjectCardTabConfig, StrataRisk, StrataRole, StrataScorecardInstance, StrataScorecardLine,
   StrataScorecardModel, StrataSnapshot, StrataStagingRow, StrataStrategyElement, StrataThresholdScheme,
   StrataUploadRun, StrataUploadTemplate, StrataValidationResult, StrataValueCategory,
   StrataWorkflowConfig,
@@ -634,6 +634,35 @@ export const executionApi = {
       p_source_system: patch.sourceSystem ?? null, p_source_reference_key: patch.sourceReferenceKey ?? null,
       p_source_issue_id: patch.sourceIssueId ?? null, p_clear_owner: patch.clearOwner ?? false,
     })),
+  // ── Risks (STRATA-E2E-006) ────────────────────────────────────────────────
+  risks: (projectCardId?: string): Promise<StrataRisk[]> => {
+    let q = typedQuery('strata_risks').select('*').order('created_at', { ascending: false });
+    if (projectCardId) q = q.eq('project_card_id', projectCardId);
+    return run(q);
+  },
+  createRisk: (input: {
+    projectId: string; title: string; description?: string;
+    likelihood?: string; impact?: string; status?: string;
+    ownerId?: string; mitigation?: string; targetDate?: string;
+  }): Promise<string> =>
+    run(typedRpc('strata_create_risk', {
+      p_project: input.projectId, p_title: input.title, p_description: input.description ?? null,
+      p_likelihood: input.likelihood ?? null, p_impact: input.impact ?? null,
+      p_status: input.status ?? 'open', p_owner: input.ownerId ?? null,
+      p_mitigation: input.mitigation ?? null, p_target_date: input.targetDate ?? null,
+    })),
+  updateRisk: (riskId: string, patch: {
+    title?: string; description?: string; likelihood?: string; impact?: string;
+    status?: string; ownerId?: string; mitigation?: string; targetDate?: string; clearOwner?: boolean;
+  }) =>
+    run(typedRpc('strata_update_risk', {
+      p_risk: riskId, p_title: patch.title ?? null, p_description: patch.description ?? null,
+      p_likelihood: patch.likelihood ?? null, p_impact: patch.impact ?? null,
+      p_status: patch.status ?? null, p_owner: patch.ownerId ?? null,
+      p_mitigation: patch.mitigation ?? null, p_target_date: patch.targetDate ?? null,
+      p_clear_owner: patch.clearOwner ?? false,
+    })),
+  deleteRisk: (riskId: string) => run(typedRpc('strata_delete_risk', { p_risk: riskId })),
 };
 
 // ── Value / VMO ──────────────────────────────────────────────────────────────

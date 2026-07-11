@@ -335,6 +335,12 @@ export const useMilestones = (projectCardId?: string) =>
   });
 export const useDependencies = () =>
   useQuery({ queryKey: ['strata', 'dependencies'], queryFn: executionApi.dependencies, staleTime: STALE });
+export const useRisks = (projectCardId?: string) =>
+  useQuery({
+    queryKey: ['strata', 'risks', projectCardId ?? 'all'],
+    queryFn: () => executionApi.risks(projectCardId),
+    staleTime: STALE,
+  });
 export const useProjectCardBySlug = (slug?: string) =>
   useQuery({
     queryKey: ['strata', 'project-card', slug],

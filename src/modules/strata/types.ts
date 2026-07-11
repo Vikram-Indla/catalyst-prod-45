@@ -447,6 +447,21 @@ export interface StrataMilestone {
   source_issue_id: string | null;
 }
 
+export interface StrataRisk {
+  id: string;
+  project_card_id: string;
+  title: string;
+  description: string | null;
+  likelihood: 'low' | 'medium' | 'high' | null;
+  impact: 'low' | 'medium' | 'high' | null;
+  status: 'open' | 'mitigating' | 'accepted' | 'closed';
+  owner_id: string | null;
+  mitigation: string | null;
+  target_resolution_date: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface StrataDependency {
   id: string;
   /** Added for the Execution Excel import (D-014) — nullable: NULL on rows created before this column existed. */

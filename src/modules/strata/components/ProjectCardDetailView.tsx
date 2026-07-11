@@ -26,11 +26,11 @@ import { executionApi } from '../domain';
 import {
   useDependencies, useMilestones, useProfileNames, useProjectCardFieldConfigs,
   useProjectCardPicklists, useProjectCardSectionConfigs, useProjectKpis,
-  useProjectObjectives, useInvalidateStrata, useKpis, useStrataContext, useStrataRoles,
+  useProjectObjectives, useInvalidateStrata, useKpis, useRisks, useStrataContext, useStrataRoles,
   useStrategyElements,
 } from '../hooks/useStrata';
 import type {
-  StrataDependency, StrataMilestone, StrataProjectCard, StrataRole, StrataStrategyElement,
+  StrataDependency, StrataMilestone, StrataProjectCard, StrataRisk, StrataRole, StrataStrategyElement,
 } from '../types';
 import { fmtDate, fmtSarCompact, labelize } from './format';
 import { StrataFormModal } from './authoring';
@@ -54,6 +54,15 @@ const DEPENDENCY_STATUS: Record<StrataDependency['status'], React.ComponentProps
 const DEPENDENCY_STATUS_OPTIONS = ['open', 'at_risk', 'blocked', 'resolved', 'cancelled'];
 const DEPENDENCY_TYPE_OPTIONS = ['delivery', 'data', 'decision', 'resource', 'external'];
 const MILESTONE_STATUS_OPTIONS = ['planned', 'in_progress', 'done', 'missed', 'descoped'];
+const RISK_STATUS: Record<StrataRisk['status'], React.ComponentProps<typeof Lozenge>['appearance']> = {
+  open: 'default', mitigating: 'inprogress', accepted: 'moved', closed: 'success',
+};
+// Lozenge owns its color per ADS; higher risk = more urgent appearance.
+const RISK_LEVEL: Record<'low' | 'medium' | 'high', React.ComponentProps<typeof Lozenge>['appearance']> = {
+  low: 'default', medium: 'moved', high: 'removed',
+};
+const RISK_STATUS_OPTIONS = ['open', 'mitigating', 'accepted', 'closed'];
+const RISK_LEVEL_OPTIONS = ['low', 'medium', 'high'];
 const KPI_DIRECTION_OPTIONS = ['higher_better', 'lower_better', 'band', 'manual'];
 const KPI_FREQUENCY_OPTIONS = ['weekly', 'monthly', 'quarterly', 'half_yearly', 'yearly'];
 
@@ -105,7 +114,8 @@ function LinkedRow({ primary, meta, actionLabel = 'Unlink', onAction, canAct }: 
 type FormKey =
   | 'edit' | 'archive'
   | 'new-milestone' | 'edit-milestone'
-  | 'new-dependency' | 'edit-dependency'
+  | 'new-dependency' | 'edit-dependency' | 'new-blocker'
+  | 'new-risk' | 'edit-risk'
   | 'new-objective' | 'new-kpi'
   | null;
 
@@ -123,6 +133,7 @@ export function ProjectCardDetailView({ card, theme }: {
 
   const milestonesQ = useMilestones(card.id);
   const dependenciesQ = useDependencies();
+  const risksQ = useRisks(card.id);
   const objectivesQ = useProjectObjectives(card.id);
   const projectKpisQ = useProjectKpis(card.id);
   const allKpisQ = useKpis();
@@ -137,8 +148,10 @@ export function ProjectCardDetailView({ card, theme }: {
   const [form, setForm] = useState<FormKey>(null);
   const [editMilestone, setEditMilestone] = useState<StrataMilestone | null>(null);
   const [editDependency, setEditDependency] = useState<StrataDependency | null>(null);
+  const [editRisk, setEditRisk] = useState<StrataRisk | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
 
+  const risks = risksQ.data ?? [];
   const milestones = milestonesQ.data ?? [];
   const objectives = objectivesQ.data ?? [];
   const projectKpis = projectKpisQ.data ?? [];
@@ -221,6 +234,22 @@ export function ProjectCardDetailView({ card, theme }: {
     }] : []),
     // eslint-disable-next-line react-hooks/exhaustive-deps
   ], [canWrite, card.id, profilesQ.data]);
+
+  const riskColumns = useMemo<Column<StrataRisk>[]>(() => [
+    { id: 'title', label: 'Risk', flex: true, cell: ({ row }) => <span style={{ fontWeight: 600, color: T.text }}>{row.title}</span> },
+    { id: 'likelihood', label: 'Likelihood', width: 11, cell: ({ row }) => (row.likelihood ? <Lozenge appearance={RISK_LEVEL[row.likelihood]}>{labelize(row.likelihood)}</Lozenge> : <Dash />) },
+    { id: 'impact', label: 'Impact', width: 11, cell: ({ row }) => (row.impact ? <Lozenge appearance={RISK_LEVEL[row.impact]}>{labelize(row.impact)}</Lozenge> : <Dash />) },
+    { id: 'owner', label: 'Owner', width: 12, cell: ({ row }) => (profileName(row.owner_id) ? <span style={{ color: T.subtle }}>{profileName(row.owner_id)}</span> : <Dash />) },
+    { id: 'target', label: 'Target', width: 11, cell: ({ row }) => (row.target_resolution_date ? <span style={{ color: T.subtle }}>{fmtDate(row.target_resolution_date)}</span> : <Dash />) },
+    { id: 'status', label: 'Status', width: 11, cell: ({ row }) => <StatusLozenge status={row.status} appearance={RISK_STATUS[row.status] ?? 'default'} /> },
+    ...(canWrite ? [{
+      id: 'actions', label: '', width: 8, align: 'end' as const,
+      cell: ({ row }: { row: StrataRisk }) => (
+        <Button appearance="subtle" spacing="compact" onClick={() => { setEditRisk(row); setForm('edit-risk'); }}>Edit</Button>
+      ),
+    }] : []),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  ], [canWrite, profilesQ.data]);
 
   return (
     <div data-testid="strata-project-card-detail" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
@@ -391,8 +420,24 @@ export function ProjectCardDetailView({ card, theme }: {
               </TabSection>
             ) : null}
 
+            {sectionVisible('delivery', 'risks') ? (
+              <TabSection
+                title={`Risks (${risks.length})`}
+                action={canWrite ? <Button spacing="compact" onClick={() => { setEditRisk(null); setForm('new-risk'); }} testId="strata-new-risk">New risk</Button> : undefined}
+              >
+                {risks.length === 0 ? (
+                  <EmptyState size="compact" header="No risks" description="Track delivery risks with a likelihood × impact assessment and mitigation." />
+                ) : (
+                  <JiraTable<StrataRisk> columns={riskColumns} data={risks} getRowId={(r) => r.id} density="compact" showRowCount={false} rowsPerPage={100} ariaLabel="Risks" />
+                )}
+              </TabSection>
+            ) : null}
+
             {sectionVisible('delivery', 'dependencies') ? (
-              <TabSection title={`Blockers (${blockers.length})`}>
+              <TabSection
+                title={`Blockers (${blockers.length})`}
+                action={canWrite ? <Button spacing="compact" onClick={() => setForm('new-blocker')} testId="strata-new-blocker">New blocker</Button> : undefined}
+              >
                 {blockers.length === 0 ? (
                   <EmptyState size="compact" header="No active blockers" description="Blocking dependencies in either direction surface here until resolved." />
                 ) : (
@@ -577,10 +622,12 @@ export function ProjectCardDetailView({ card, theme }: {
       />
 
       <StrataFormModal
-        open={form === 'new-dependency'}
+        open={form === 'new-dependency' || form === 'new-blocker'}
         onClose={() => setForm(null)}
-        title="New delivery dependency"
-        description={`Requesting project: "${card.name}".`}
+        title={form === 'new-blocker' ? 'New blocker' : 'New delivery dependency'}
+        description={form === 'new-blocker'
+          ? `A blocker is a delivery dependency flagged as blocking. Requesting project: "${card.name}".`
+          : `Requesting project: "${card.name}".`}
         submitLabel="Create"
         fields={[
           { key: 'dependencyName', label: 'Dependency Name', kind: 'text' },
@@ -594,7 +641,7 @@ export function ProjectCardDetailView({ card, theme }: {
           { key: 'impact', label: 'Blocker / Impact Note', kind: 'textarea' },
           { key: 'isBlocker', label: 'Blocker', kind: 'checkbox', placeholder: 'This dependency blocks delivery' },
         ]}
-        initial={{ dependencyType: 'delivery' }}
+        initial={{ dependencyType: 'delivery', isBlocker: form === 'new-blocker' }}
         onSubmit={submitAndRefresh((v) => executionApi.createDependency({
           requestingType: 'project_card', requestingId: card.id,
           servingType: 'external', servingLabel: fvStr(v.servingLabel),
@@ -634,6 +681,60 @@ export function ProjectCardDetailView({ card, theme }: {
           clearOwner: wasCleared(editDependency?.owner_id, v.ownerId),
         }))}
         testId="strata-project-dependency-edit-modal"
+      />
+
+      <StrataFormModal
+        open={form === 'new-risk'}
+        onClose={() => setForm(null)}
+        title="New risk"
+        description={`Delivery risk for "${card.name}".`}
+        submitLabel="Create"
+        fields={[
+          { key: 'title', label: 'Risk Title', kind: 'text', required: true },
+          { key: 'description', label: 'Description', kind: 'textarea' },
+          { key: 'likelihood', label: 'Likelihood', kind: 'select', options: RISK_LEVEL_OPTIONS.map((s) => ({ value: s, label: labelize(s) })) },
+          { key: 'impact', label: 'Impact', kind: 'select', options: RISK_LEVEL_OPTIONS.map((s) => ({ value: s, label: labelize(s) })) },
+          { key: 'status', label: 'Status', kind: 'select', options: RISK_STATUS_OPTIONS.map((s) => ({ value: s, label: labelize(s) })) },
+          { key: 'ownerId', label: 'Owner', kind: 'user' },
+          { key: 'mitigation', label: 'Mitigation', kind: 'textarea' },
+          { key: 'targetDate', label: 'Target Resolution Date', kind: 'date' },
+        ]}
+        initial={{ status: 'open' }}
+        onSubmit={submitAndRefresh((v) => executionApi.createRisk({
+          projectId: card.id, title: String(v.title ?? '').trim(), description: fvStr(v.description),
+          likelihood: fvStr(v.likelihood), impact: fvStr(v.impact), status: fvStr(v.status),
+          ownerId: fvStr(v.ownerId), mitigation: fvStr(v.mitigation), targetDate: fvStr(v.targetDate),
+        }))}
+        testId="strata-risk-create-modal"
+      />
+
+      <StrataFormModal
+        open={form === 'edit-risk' && editRisk != null}
+        onClose={() => { setForm(null); setEditRisk(null); }}
+        title="Edit risk"
+        submitLabel="Save"
+        fields={[
+          { key: 'title', label: 'Risk Title', kind: 'text', required: true },
+          { key: 'description', label: 'Description', kind: 'textarea' },
+          { key: 'likelihood', label: 'Likelihood', kind: 'select', options: RISK_LEVEL_OPTIONS.map((s) => ({ value: s, label: labelize(s) })) },
+          { key: 'impact', label: 'Impact', kind: 'select', options: RISK_LEVEL_OPTIONS.map((s) => ({ value: s, label: labelize(s) })) },
+          { key: 'status', label: 'Status', kind: 'select', required: true, options: RISK_STATUS_OPTIONS.map((s) => ({ value: s, label: labelize(s) })) },
+          { key: 'ownerId', label: 'Owner', kind: 'user' },
+          { key: 'mitigation', label: 'Mitigation', kind: 'textarea' },
+          { key: 'targetDate', label: 'Target Resolution Date', kind: 'date' },
+        ]}
+        initial={editRisk ? {
+          title: editRisk.title, description: editRisk.description,
+          likelihood: editRisk.likelihood, impact: editRisk.impact, status: editRisk.status,
+          ownerId: editRisk.owner_id, mitigation: editRisk.mitigation, targetDate: editRisk.target_resolution_date,
+        } : undefined}
+        onSubmit={submitAndRefresh((v) => executionApi.updateRisk(editRisk!.id, {
+          title: fvStr(v.title), description: fvStr(v.description),
+          likelihood: fvStr(v.likelihood), impact: fvStr(v.impact), status: fvStr(v.status),
+          ownerId: fvStr(v.ownerId), mitigation: fvStr(v.mitigation), targetDate: fvStr(v.targetDate),
+          clearOwner: wasCleared(editRisk?.owner_id, v.ownerId),
+        }))}
+        testId="strata-risk-edit-modal"
       />
     </div>
   );
