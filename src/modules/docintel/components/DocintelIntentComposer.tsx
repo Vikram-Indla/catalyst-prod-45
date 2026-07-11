@@ -47,6 +47,7 @@ const composerStyles = xcss({
 });
 
 const panelStyles = xcss({
+  width: '100%',
   paddingBlockStart: 'space.200',
 });
 
