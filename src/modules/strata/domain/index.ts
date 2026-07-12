@@ -359,18 +359,20 @@ export const kpiApi = {
   // ── Authoring write paths (Recovery: Lane B) ──────────────────────────────
   createKpi: (input: {
     name: string; unit?: string; direction?: string; frequency?: string; entryMethod?: string;
+    isStrategic?: boolean;
   }): Promise<string> =>
     run(typedRpc('strata_create_kpi', {
       p_name: input.name, p_unit: input.unit ?? null,
       p_direction: input.direction ?? 'higher_better',
       p_frequency: input.frequency ?? 'quarterly',
       p_entry_method: input.entryMethod ?? 'upload',
+      p_is_strategic: input.isStrategic ?? false,
     })),
   updateKpi: (kpiId: string, patch: {
     name?: string; unit?: string; direction?: string; frequency?: string; entryMethod?: string;
     accountableOwnerId?: string; dataOwnerId?: string; reporterId?: string;
     validatorId?: string; escalationOwnerId?: string; dataSourceId?: string;
-    thresholdSchemeId?: string; kpiTypeId?: string;
+    thresholdSchemeId?: string; kpiTypeId?: string; isStrategic?: boolean;
     clearValidator?: boolean; clearDataSource?: boolean; clearEscalationOwner?: boolean;
   }) =>
     run(typedRpc('strata_update_kpi', {
@@ -382,6 +384,7 @@ export const kpiApi = {
       p_validator: patch.validatorId ?? null, p_escalation_owner: patch.escalationOwnerId ?? null,
       p_data_source: patch.dataSourceId ?? null, p_threshold_scheme: patch.thresholdSchemeId ?? null,
       p_kpi_type: patch.kpiTypeId ?? null,
+      p_is_strategic: patch.isStrategic ?? null,
       p_clear_validator: patch.clearValidator ?? false,
       p_clear_data_source: patch.clearDataSource ?? false,
       p_clear_escalation_owner: patch.clearEscalationOwner ?? false,

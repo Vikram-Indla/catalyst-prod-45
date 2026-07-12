@@ -277,6 +277,9 @@ export interface StrataKpi extends GovernedEnvelope {
   description: string | null;
   business_meaning: string | null;
   kpi_type_id: string | null;
+  /** Strategic KPI (vs operational). When true, approval requires >=1 governed
+   * strategy association (cycle/theme/objective/perspective). STRATA-E2E-010. */
+  is_strategic: boolean;
   unit: string | null;
   direction: 'higher_better' | 'lower_better' | 'band' | 'manual';
   frequency: string;
