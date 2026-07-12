@@ -209,7 +209,11 @@ export function StrataFormModal({
   ).some((k) => normalize(values[k]) !== normalize(initialValues[k]));
 
   // Native "Leave site?" prompt on refresh / tab-close / hard-nav while dirty.
-  // (SPA sidebar/breadcrumb nav is out of scope — BrowserRouter has no blocker.)
+  // (SPA browser Back/Forward is NOT intercepted here — the app is on BrowserRouter,
+  // where react-router's useBlocker is unavailable. A history-sentinel workaround was
+  // trialled and rejected as too fragile (V5-OPEN-022 / D-3); the correct fix is a
+  // data-router migration, tracked separately. Sidebar/in-app link nav is guarded via
+  // handleRequestClose below; refresh/close via useBeforeUnload.)
   useBeforeUnload(open && isDirty && !busy);
 
   // User-initiated close (Modal onClose / backdrop / Cancel). Confirms discard

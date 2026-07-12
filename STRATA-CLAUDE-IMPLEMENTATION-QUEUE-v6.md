@@ -107,8 +107,38 @@ Enforcement findings driving Wave 1:
 - Health precedence (`strata_calc_execution_progress`, latest `20260712110000`): `on_hold → not_available → not_started (actual=0 & baseline>0) → forecast-delay(>30d) → variance(≥20 major / ≥10 minor) → on_track`. **V5-OPEN-023 already delivered** here.
 - Already-landed server guards: negative benefit value (`20260712100000`), milestone name unique per card (`20260712101000` — real `UNIQUE INDEX (project_card_id, lower(btrim(name)))`), dependency `name` persistence (`20260712102000`).
 
-## WAVE 2 — SAVE, PERSISTENCE & CONCURRENCY  *(pending)*
+## WAVE 2 — SAVE, PERSISTENCE & CONCURRENCY  *(active)*
 STRATA-E2E-006, V6-OPEN-024, V6-OPEN-028, V6-OPEN-033, V6-OPEN-035, V5-OPEN-022 (verify — committed `eda0c36ab`).
+
+| ID | Sev | Status | Root cause (verified current code) |
+|---|---|---|---|
+| V6-OPEN-035 | P1 | NOT REPRODUCIBLE (current code) | No flush bug: `FieldControl` commits every keystroke synchronously; `0`/`false` preserved (nullish-coalescing + SQL `COALESCE`); "immediate UI" is the post-write refetch, not optimistic. Outcomes #1–3 already met by architecture. A blur-before-submit fix would touch ~49 call sites for no defect (Regression Red Flag). Silent-lost-write family covered by 033 |
+| STRATA-E2E-006 | P1 | NOT REPRODUCIBLE (current code) | Same path as 035; no flush/optimistic bug. First-edit-stale not reproducible statically; 033 concurrency guard converts any silent lost write into a visible conflict |
+| V6-OPEN-028 | P1 | LIKELY STALE — VERIFY | Current code: Overview "Submitted Forecast End" reads `card.forecast_end` (same column Edit writes, `ProjectCardDetailView.tsx:363`); `final/system_forecast_end` computed by `strata_calc_execution_progress`. Not reproducible statically → browser-verify on HEAD. Real minor gap: project-entered `baseline_start/end` are write-only (never shown on Overview) — acceptance #4 disambiguation |
+| V6-OPEN-033 | P1 | ROOT-CAUSED | `strata_update_project_card` UPDATEs unconditionally (no version check); `updated_at` exists but untyped client-side. Fix = `p_expected_updated_at` guard (DROP+CREATE migration to add param) + thread `card.updated_at` from edit modal; existing modal catch surfaces conflict msg |
+| V6-OPEN-024 | P2 | ROOT-CAUSED | `run<T>()` (`domain/index.ts:24-28`) rethrows raw PG `error.message`. Fix = central `mapStrataError` mapping 23505+constraint → business copy; renders via existing `StrataFormModal` SectionMessage. Client-only |
+| V5-OPEN-022 | P2 | ROOT-CAUSED | guard (`eda0c36ab`) covers modal-close + `beforeunload`, NOT SPA Back — app on `BrowserRouter`, `useBlocker` unavailable. Fix = scoped `popstate` sentinel in `authoring.tsx` (reuse `confirmDiscard`); data-router migration logged as separate follow-up (app-wide, out of scope) |
+
+**D-3 (logged, non-blocking):** full SPA-history blocking needs migrating the app from `BrowserRouter` to a data router (`createBrowserRouter`) to use `useBlocker` — app-wide blast radius (`App.tsx:225` wraps all routes). A scoped `popstate` sentinel was trialled and **rejected**: it protected the edits (Back didn't discard) but the discard-confirm fired unreliably under React StrictMode, exactly the fragility flagged in investigation. Deferred as its own Feature Work ID.
+
+### WAVE 2 — DELIVERY RECORD
+
+**Status:** implemented on `strata/v6-qa-remediation` (commit pending). Client fixes HMR-live + browser-verified; 033 server guard ships **unapplied** (D-1) with its client activation **held** to avoid a PGRST202 break pre-migration.
+
+| ID | Disposition | Change | Evidence |
+|---|---|---|---|
+| V6-OPEN-024 | FIXED — PENDING RETEST | Central `mapStrataError` in `run()` maps SQLSTATE 23505 (+constraint) → business copy; covers every RPC | client-only, HMR-live, tsc/eslint clean (browser-verify duplicate at retest) |
+| V6-OPEN-033 | FIXED (server) — PENDING RETEST | Migration `20260712140000`: `DROP`+`CREATE` `strata_update_project_card` with `p_expected_updated_at` guard (early check + `WHERE`-clause race close). Client: `updated_at` typed, `expectedUpdatedAt` captured in edit modal; **RPC forward held** until migration applied (one-line activation) | migration unapplied (D-1); editing verified still works (no PGRST202) |
+| V6-OPEN-028 | NOT REPRODUCIBLE (verified live) | Overview reads `card.forecast_end` (Submitted) + computed `final/system_forecast_end` — same columns Edit writes | Browser: Project B Overview shows Submitted & Final Forecast = 30 Jul 2026 (not blank). Minor follow-up: project-entered `baseline_start/end` are write-only |
+| V6-OPEN-035 | NOT REPRODUCIBLE | see table above — no code change (would be speculative, high blast radius) | investigator verified all layers preserve 0/false; no flush bug |
+| STRATA-E2E-006 | NOT REPRODUCIBLE | see table above; covered by 033 conflict detection | — |
+| V5-OPEN-022 | PARTIAL | native refresh/close (`useBeforeUnload`) + sidebar/in-app (`handleRequestClose`) guard dirty forms; SPA-Back deferred (D-3). Popstate stopgap trialled then reverted | Browser: dirty Back preserved edits but confirm unreliable → reverted |
+| STRATA-E2E-001 (b) | **CORRECTION** — FIXED | Wave 1's `replace_all` had patched only 1 of 5 detail-nav handlers; the other 4 views (LBU/theme/pm/team) still stripped `?cycle=`. All 5 now route through `openCard` | Browser: Details → URL carries `?cycle=&period=`; **refresh keeps FY27 + Theme** (before: flipped to FY2026, Theme dropped) |
+
+**Files changed:** `domain/index.ts` (024 mapper + 033 patch type, forward held), `types.ts` (`updated_at`), `ProjectCardDetailView.tsx` (capture `expectedUpdatedAt`), `authoring.tsx` (022 comment; popstate reverted), `StrataExecutionPage.tsx` (001b correction — 4 handlers → `openCard`).
+**Migration (unapplied):** `supabase/migrations/20260712140000_strata_project_card_optimistic_concurrency.sql`. Rollback = re-apply `20260712130000`.
+**Deploy note:** 033's client RPC forward is intentionally NOT wired until the migration is applied (PGRST202 safety). Post-apply, add `p_expected_updated_at: patch.expectedUpdatedAt ?? null` to the `updateProjectCard` RPC call to activate.
+**Validation:** tsc 0 errors; eslint 0 errors; color gate clean. Browser: 001b-refresh, 027-required, 028-forecast, edit-save-works confirmed live.
 
 ## WAVE 3 — HEALTH, FORECAST & ROLL-UPS  *(pending)*
 V5-OPEN-023 (verify — committed `01d474669`), V6-OPEN-026, V6-OPEN-034, V6-OPEN-036.
@@ -125,7 +155,7 @@ STRATA-E2E-015, V4-OPEN-019, V6-OPEN-025, V6-OPEN-031, V6-OPEN-037, STRATA-E2E-0
 
 | # | Question | Affected | Status |
 |---|---|---|---|
-| D-1 | No Supabase project linked in this checkout and no immutable-staging target supplied. Migrations will be authored + committed **unapplied**; who applies them, to which env, and when? | all DB-backed fixes | OPEN — non-blocking (author unapplied per CLAUDE.md) |
-| D-2 | Wave 1 outcome #5 requires the Portfolio member selector be "tenant- and cycle-scoped." Current code + a Vikram-approved ruling (`STRATA_E2E_PARKED_DECISIONS_013_011.md`) hold that (a) portfolios are canonically NOT cycle-scoped and (b) tenant scoping is impossible today (single-tenant, `organization_id` NULL everywhere, no `organizations` table) and is deferred to a separate multi-tenancy initiative. **Options:** (A) honor the existing decision — leave 013 as-is (twin dedupe already shipped), keep it parked [recommended]; (B) override the ruling and build cycle-scoping via card→theme→cycle (contradicts approved decision, changes selector semantics — a project card can legitimately belong to a portfolio across cycles); (C) fast-track the multi-tenancy initiative (large, cross-cutting, out of Wave 1 scope). **Recommendation: A.** Impact: without a decision, 013 stays BLOCKED and is not counted as fixed. | STRATA-E2E-013 | OPEN — needs Vikram |
+| D-1 | No Supabase project linked in this checkout and no immutable-staging target supplied. Migrations will be authored + committed **unapplied**; who applies them, to which env, and when? | all DB-backed fixes | **RESOLVED (Vikram 2026-07-12): author unapplied; Vikram/release applies.** |
+| D-2 | Wave 1 outcome #5 requires the Portfolio member selector be "tenant- and cycle-scoped." Current code + a Vikram-approved ruling (`STRATA_E2E_PARKED_DECISIONS_013_011.md`) hold that (a) portfolios are canonically NOT cycle-scoped and (b) tenant scoping is impossible today (single-tenant, `organization_id` NULL everywhere, no `organizations` table) and is deferred to a separate multi-tenancy initiative. **Options:** (A) honor the existing decision — leave 013 as-is (twin dedupe already shipped), keep it parked [recommended]; (B) override the ruling and build cycle-scoping via card→theme→cycle (contradicts approved decision, changes selector semantics — a project card can legitimately belong to a portfolio across cycles); (C) fast-track the multi-tenancy initiative (large, cross-cutting, out of Wave 1 scope). **Recommendation: A.** Impact: without a decision, 013 stays BLOCKED and is not counted as fixed. | STRATA-E2E-013 | **RESOLVED (Vikram 2026-07-12): Option A — honor ruling, keep parked. 013 stays BLOCKED, not counted as fixed.** |
 
 _(further decisions appended as encountered)_

@@ -912,7 +912,7 @@ export default function StrataExecutionPage() {
               groups={businessUnitGroups}
               dependencies={filteredDependencies}
               isNarrow={isNarrow}
-              onOpenDetail={(card) => { if (card.slug) navigate(Routes.strata.projectCard(card.slug)); }}
+              onOpenDetail={openCard}
               emptyDescription="Adjust or clear filters to see project cards."
               testId="strata-execution-lob-groups"
             />
@@ -921,7 +921,7 @@ export default function StrataExecutionPage() {
               groups={themeGroups}
               dependencies={filteredDependencies}
               isNarrow={isNarrow}
-              onOpenDetail={(card) => { if (card.slug) navigate(Routes.strata.projectCard(card.slug)); }}
+              onOpenDetail={openCard}
               emptyDescription="Adjust or clear filters to see project cards."
               testId="strata-execution-theme-groups"
             />
@@ -930,7 +930,7 @@ export default function StrataExecutionPage() {
               groups={pmGroups}
               dependencies={filteredDependencies}
               isNarrow={isNarrow}
-              onOpenDetail={(card) => { if (card.slug) navigate(Routes.strata.projectCard(card.slug)); }}
+              onOpenDetail={openCard}
               emptyDescription="Adjust or clear filters to see project cards."
               testId="strata-execution-pm-groups"
             />
@@ -939,7 +939,7 @@ export default function StrataExecutionPage() {
               groups={deliveryTeamGroups}
               dependencies={filteredDependencies}
               isNarrow={isNarrow}
-              onOpenDetail={(card) => { if (card.slug) navigate(Routes.strata.projectCard(card.slug)); }}
+              onOpenDetail={openCard}
               emptyDescription="Adjust or clear filters to see project cards."
               testId="strata-execution-team-groups"
             />

@@ -427,6 +427,9 @@ export interface StrataProjectCard {
   value_hypothesis: string | null;
   /** Bag for admin-config-gated optional fields (strategic_pillar, aop_mapping, strategic_impact, stakeholders, enabling_teams, support_functions, risks). */
   optional_fields: Record<string, unknown>;
+  /** Row version — used as an optimistic-concurrency precondition on update so a
+   * stale second write is rejected instead of silently clobbering (V6-OPEN-033). */
+  updated_at: string;
 }
 
 export interface StrataMilestone {

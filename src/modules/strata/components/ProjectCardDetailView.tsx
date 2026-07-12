@@ -543,6 +543,9 @@ export function ProjectCardDetailView({ card, theme }: {
           budget: fvNum(v.budget), sponsorId: fvStr(v.sponsorId), businessCase: fvStr(v.businessCase), valueHypothesis: fvStr(v.valueHypothesis),
           clearPm: wasCleared(card.pm_id, v.pmId), clearBusinessOwner: wasCleared(card.business_owner_id, v.businessOwnerId),
           clearSponsor: wasCleared(card.sponsor_id, v.sponsorId), clearTheme: wasCleared(card.theme_id, v.themeId),
+          // Optimistic-concurrency token captured when the modal opened — a stale
+          // second save is rejected with a conflict message (V6-OPEN-033).
+          expectedUpdatedAt: card.updated_at,
         }))}
         testId="strata-project-edit-modal"
       />
