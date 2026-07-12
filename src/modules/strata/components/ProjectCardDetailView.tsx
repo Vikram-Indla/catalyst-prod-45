@@ -295,7 +295,7 @@ export function ProjectCardDetailView({ card, theme }: {
 
       <StrataStatStrip
         items={[
-          { key: 'progress', label: 'Actual progress', value: derivedProgress == null ? '—' : `${Math.round(derivedProgress * 100)}%` },
+          { key: 'progress', label: 'Actual progress', helpText: "Milestone progress weighted by each milestone's baseline duration in days (elapsed days, not inclusive). Falls back to a weight-weighted average when no milestone has both baseline dates. Rounded to the nearest whole percent.", value: derivedProgress == null ? '—' : `${Math.round(derivedProgress * 100)}%` },
           { key: 'baseline_progress', label: 'Baseline progress', value: card.baseline_progress_pct == null ? '—' : `${Math.round(card.baseline_progress_pct)}%` },
           { key: 'variance', label: 'Variance', value: card.variance_pct == null ? '—' : `${card.variance_pct > 0 ? '+' : ''}${Math.round(card.variance_pct)}%` },
           { key: 'milestones', label: 'Milestones', value: milestones.length },

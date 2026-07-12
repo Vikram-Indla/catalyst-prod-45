@@ -580,6 +580,9 @@ export interface StrataStat {
   key: string;
   label: string;
   value: React.ReactNode;
+  /** Accessible in-context methodology (population, weighting, rounding, exclusions)
+   * surfaced as a Tooltip on the label so governed metrics are reproducible (V6-OPEN-036). */
+  helpText?: string;
   caption?: React.ReactNode;
   captionTone?: StatTone;
   bandKey?: string | null;
@@ -621,12 +624,24 @@ export function StrataStatStrip({ items, testId }: { items: StrataStat[]; testId
           >
             {m.ring ? <StrataScoreRing score={m.ring.score} bandKey={m.ring.bandKey} size={56} strokeWidth={5} /> : null}
             <span style={{ minWidth: 0, display: 'flex', flexDirection: 'column' }}>
-              <span style={{
-                fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: T.subtlest,
-                letterSpacing: '0.04em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
-              }}>
-                {m.label}
-              </span>
+              {m.helpText ? (
+                <Tooltip content={m.helpText}>
+                  <span style={{
+                    fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: T.subtlest,
+                    letterSpacing: '0.04em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+                    borderBottom: `1px dotted ${T.border}`, cursor: 'help',
+                  }}>
+                    {m.label}
+                  </span>
+                </Tooltip>
+              ) : (
+                <span style={{
+                  fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: T.subtlest,
+                  letterSpacing: '0.04em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+                }}>
+                  {m.label}
+                </span>
+              )}
               <span style={{ display: 'flex', alignItems: 'baseline', gap: 8, margin: '8px 0 4px' }}>
                 <span style={{
                   fontFamily: T.fontDisplay, fontSize: m.ring ? 24 : 28, fontWeight: 700, color: T.text,

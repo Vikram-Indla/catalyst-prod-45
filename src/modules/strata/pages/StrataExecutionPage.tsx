@@ -582,6 +582,11 @@ export default function StrataExecutionPage() {
   const businessUnitGroups = groupCards(
     filteredCards, (c) => c.lead_business_unit, (k) => k, 'Unassigned',
   );
+  // The "Unassigned Projects" headline must reconcile with the "By Leading Business
+  // Unit" panel — both mean "no Lead Business Unit". Derive it from the same grouping
+  // (same field, same cycle-filtered/archived-excluded population) rather than the
+  // theme-based unassignedCards, which counts a different field (V6-OPEN-026).
+  const unassignedLbuCount = businessUnitGroups.find((g) => g.key === '__unassigned__')?.cards.length ?? 0;
   const pmGroups = groupCards(
     filteredCards, (c) => c.pm_id, (id) => profileName(id) ?? 'Unknown owner', 'Unassigned PM',
   );
@@ -859,9 +864,9 @@ export default function StrataExecutionPage() {
               <StrataStatStrip
                 testId="strata-enterprise-stats-3"
                 items={[
-                  { key: 'avg_progress', label: 'Average Progress', value: enterpriseRollup.avgProgress == null ? '—' : `${Math.round(enterpriseRollup.avgProgress * 100)}%` },
-                  { key: 'milestone_completion', label: 'Milestone Completion', value: enterpriseMilestoneCompletion == null ? '—' : `${Math.round(enterpriseMilestoneCompletion * 100)}%` },
-                  { key: 'unassigned', label: 'Unassigned Projects', value: unassignedCards.length },
+                  { key: 'avg_progress', label: 'Average Progress', helpText: 'Arithmetic mean of the in-scope project cards’ actual progress. Excludes On Hold and archived cards.', value: enterpriseRollup.avgProgress == null ? '—' : `${Math.round(enterpriseRollup.avgProgress * 100)}%` },
+                  { key: 'milestone_completion', label: 'Milestone Completion', helpText: 'Share of in-scope milestones with status Done. A simple count ratio — not weighted by duration or progress.', value: enterpriseMilestoneCompletion == null ? '—' : `${Math.round(enterpriseMilestoneCompletion * 100)}%` },
+                  { key: 'unassigned', label: 'Unassigned Projects', value: unassignedLbuCount },
                 ]}
               />
 

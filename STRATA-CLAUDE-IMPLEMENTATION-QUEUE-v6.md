@@ -140,8 +140,27 @@ STRATA-E2E-006, V6-OPEN-024, V6-OPEN-028, V6-OPEN-033, V6-OPEN-035, V5-OPEN-022 
 **Deploy note:** 033's client RPC forward is intentionally NOT wired until the migration is applied (PGRST202 safety). Post-apply, add `p_expected_updated_at: patch.expectedUpdatedAt ?? null` to the `updateProjectCard` RPC call to activate.
 **Validation:** tsc 0 errors; eslint 0 errors; color gate clean. Browser: 001b-refresh, 027-required, 028-forecast, edit-save-works confirmed live.
 
-## WAVE 3 — HEALTH, FORECAST & ROLL-UPS  *(pending)*
+## WAVE 3 — HEALTH, FORECAST & ROLL-UPS  *(active)*
 V5-OPEN-023 (verify — committed `01d474669`), V6-OPEN-026, V6-OPEN-034, V6-OPEN-036.
+
+| ID | Sev | Status | Root cause / disposition |
+|---|---|---|---|
+| V6-OPEN-026 | P1 | FIXED (client) | Headline "Unassigned Projects" counted no-**theme** (`unassignedCards`); LBU panel counts no-**LBU**. Now derives headline from `businessUnitGroups` `__unassigned__` bucket — same field/population. `StrataExecutionPage.tsx` |
+| V6-OPEN-034 | P1 | FIXED (server) — pending retest | Real gap (NOT null-baseline): calc read `final_forecast` only from earned-schedule `sys_forecast` + project `forecast_end`; it **never read `strata_milestones.forecast_date`** — the field the milestone "Forecast End Date" writes. Migration `20260712150000` folds `max(m.forecast_date)` into `final_forecast` via NULL-safe `greatest()` |
+| V5-OPEN-023 | P1 | VERIFIED WORKING | `20260712110000` not_started precedence correct + complete + backfilled; no action |
+| V6-OPEN-036 | P2 | FIXED (client) — verified | Reusable `helpText` on `StrataStat` → `Tooltip` (same pattern as health lozenges). Wired Average Progress, Milestone Completion (enterprise) + Actual progress (project detail). GroupStatRow/Theme-summary tooltips = trivial follow-up via same mechanism |
+
+### WAVE 3 — DELIVERY RECORD
+
+| ID | Disposition | Change | Evidence |
+|---|---|---|---|
+| V6-OPEN-026 | FIXED — pending retest | Headline "Unassigned Projects" now derives from `businessUnitGroups` `__unassigned__` (no-LBU), same population as the LBU panel | Browser: headline **0→2**, reconciles with By-LBU Unassigned=2 |
+| V6-OPEN-034 | FIXED (server) — pending retest | Migration `20260712150000` (CREATE OR REPLACE, same signature) folds milestone `forecast_date` into `final_forecast`; backfill recomputes all cards | migration unapplied (D-1); verify at retest with milestone forecast 31d late → Major Delay |
+| V5-OPEN-023 | VERIFIED WORKING | no code change | investigator confirmed precedence + backfill in `20260712110000` |
+| V6-OPEN-036 | FIXED — verified | reusable `helpText`/`Tooltip` on governed metrics | Browser: hover Average Progress shows methodology tooltip |
+
+**Files changed (client):** `shared.tsx` (`StrataStat.helpText` + `Tooltip` wrap), `StrataExecutionPage.tsx` (026 headline + 036 helpText), `ProjectCardDetailView.tsx` (036 helpText). **Migration (unapplied):** `20260712150000_strata_health_milestone_forecast_override.sql`. Rollback = re-apply `20260712110000`.
+**Validation:** tsc 0 errors, eslint 0 errors, color gate clean. Browser: 026 reconcile + 036 tooltip verified live.
 
 ## WAVE 4 — STRATEGY, KPI, SCORECARD & GOVERNANCE  *(pending)*
 STRATA-E2E-005, 010, 011 (verify — committed 011 chain), V6-OPEN-032, Team/LBU/Dept/Sector blockers, KPI approval + FY27 Scorecard-instance blockers.
