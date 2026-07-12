@@ -13,7 +13,7 @@ import AkDropdownMenu, {
   DropdownItem as AkDropdownItem,
   DropdownItemGroup as AkDropdownItemGroup,
 } from '@atlaskit/dropdown-menu';
-import { type ReactNode, type Ref } from 'react';
+import { useRef, type ReactNode, type Ref } from 'react';
 
 export interface DropdownMenuItem {
   key: string;
@@ -60,6 +60,45 @@ export function DropdownMenu({
   testId,
   ...rest
 }: DropdownMenuProps) {
+  const triggerWrapRef = useRef<HTMLSpanElement>(null);
+
+  // Popper-dormancy rescue (live-debugged 2026-07-06 on the Docex page,
+  // regressed 2026-07-06 by the Strata chip-menu migration, re-restored
+  // 2026-07-10 after it recurred on the Strategy Room row Actions menu):
+  // when the trigger sits under a `position: sticky` ancestor (e.g. the
+  // shell's sticky top nav), @atlaskit/popper's update loop never runs —
+  // the popup keeps its pre-position inline style (`position: fixed;
+  // left: 0; top: 0`, NO transform) and paints at the viewport origin.
+  // Two frames after open, if that exact dormancy signature is present,
+  // position the popup from the trigger rect ourselves. When popper is
+  // alive (transform present) this is a no-op, so healthy consumers are
+  // untouched.
+  const rescueDormantPopper = (attempt = 0) => {
+    // Re-assert a few times: Atlaskit re-renders the popup right after open,
+    // which can recreate the fixed element and drop a one-shot transform.
+    if (attempt > 4) return;
+    requestAnimationFrame(() =>
+      requestAnimationFrame(() => {
+        const anchor = triggerWrapRef.current?.firstElementChild ?? triggerWrapRef.current;
+        const menu = document.querySelector<HTMLElement>('[role="menu"]');
+        const popEl = menu?.closest<HTMLElement>('[style*="position: fixed"]');
+        if (!anchor || !menu || !popEl) {
+          rescueDormantPopper(attempt + 1);
+          return;
+        }
+        if (popEl.style.transform) return; // popper alive — never interfere
+        const rect = anchor.getBoundingClientRect();
+        if (!rect.width && !rect.height) return;
+        const menuWidth = popEl.getBoundingClientRect().width || 220;
+        const alignEnd = placement.endsWith('end');
+        const x = Math.max(8, Math.round(alignEnd ? rect.right - menuWidth : rect.left));
+        const y = Math.round(placement.startsWith('top') ? rect.top - 8 : rect.bottom + 4);
+        popEl.style.transform = `translate(${x}px, ${y}px)`;
+        rescueDormantPopper(attempt + 1);
+      }),
+    );
+  };
+
   return (
     <AkDropdownMenu
       trigger={
@@ -74,13 +113,24 @@ export function DropdownMenu({
                   testId?: string;
                 } & Record<string, unknown>;
               return (
-                <span ref={triggerRef} data-testid={triggerTestId} {...domProps}>
+                <span
+                  ref={(node) => {
+                    triggerWrapRef.current = node;
+                    if (typeof triggerRef === 'function') triggerRef(node);
+                    else if (triggerRef) (triggerRef as { current: HTMLElement | null }).current = node;
+                  }}
+                  data-testid={triggerTestId}
+                  {...domProps}
+                >
                   {(trigger as (p: { isSelected: boolean }) => ReactNode)({ isSelected: Boolean(isSelected) })}
                 </span>
               );
             }
           : trigger
       }
+      onOpenChange={({ isOpen }: { isOpen: boolean }) => {
+        if (isOpen) rescueDormantPopper();
+      }}
       placement={placement}
       shouldRenderToParent
       spacing="compact"
