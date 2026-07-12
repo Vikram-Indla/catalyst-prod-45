@@ -477,6 +477,51 @@ export function StrataPageShell({
   );
 }
 
+/**
+ * StrataSnapshotBand — locked-mode chrome band (proposal §18; anchor 01 locked).
+ * Discovery-toned band that persists across drills when a governed snapshot is the
+ * basis of the view. State taxonomy: live/locked = chrome-level band; the word
+ * "LOCKED SNAPSHOT" carries the meaning (color never alone). Tokens only.
+ */
+export function StrataSnapshotBand({
+  snapshotKey, frozenAt, basis, actions, testId,
+}: {
+  /** Human snapshot key, e.g. "SNAP-2026Q2-03". */
+  snapshotKey: string;
+  /** Pre-formatted freeze timestamp, e.g. "30 Jun 2026, 18:02". */
+  frozenAt?: string | null;
+  /** Why this snapshot is the basis (e.g. "basis of the Q2 Enterprise Review"). */
+  basis?: React.ReactNode;
+  /** Right-aligned canonical actions (e.g. Return to live / Compare with live). */
+  actions?: React.ReactNode;
+  testId?: string;
+}) {
+  return (
+    <div
+      data-testid={testId}
+      role="status"
+      style={{
+        display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap',
+        padding: '8px 12px', borderRadius: 8,
+        border: '1px solid var(--ds-background-discovery-bold)',
+        background: 'var(--ds-background-discovery)',
+      }}
+    >
+      <Lozenge appearance="new" isBold>Locked snapshot</Lozenge>
+      <span style={{ fontSize: 'var(--ds-font-size-100)', color: T.text, minWidth: 0 }}>
+        <strong style={{ fontWeight: 600 }}>{snapshotKey}</strong>
+        {frozenAt ? <> · frozen {frozenAt}</> : null}
+        {basis ? <> · {basis}</> : null}
+      </span>
+      {actions ? (
+        <span style={{ marginLeft: 'auto', display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+          {actions}
+        </span>
+      ) : null}
+    </div>
+  );
+}
+
 // ── Decision modal (governance verdicts — SoD errors surface HERE, never silent) ──
 export interface StrataDecisionOption {
   value: string;

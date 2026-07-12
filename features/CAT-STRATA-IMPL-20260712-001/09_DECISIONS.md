@@ -30,3 +30,15 @@ Format: ID · statement · status (PROPOSED / CONFIRMED / REJECTED) · rationale
 - **D-6 · Add dual-mode (slug OR UUID) to `useScorecardInstanceBySlug` to satisfy CRE Grid F4.**
   Currently slug-only; a legacy UUID returns null with no redirect. Small, in Scorecard Detail slice.
   → **Recommend CONFIRM** (or explicitly waive F4 for STRATA if legacy UUID links can't exist).
+
+- **D-7 · Defer `StrataChainStrip` from slice 0B to Phase 2 (first consumer).** Anchor 01 (Command
+  Center) contains NO chain strip; the entity-lineage chain (Strategy→Initiatives→Projects→source)
+  belongs to the Phase-2 detail pages (KPI Detail anchor 06, Element Detail anchor 14), where working
+  prior art already exists inline in `StrataEvidencePage.tsx:106-338`. No Phase-1 page consumes it, and
+  building it well means refactoring a Phase-2 page. Same defer-until-consumed rationale as the
+  Vikram-approved D-4 (stepper). Slice 0B therefore ships `StrataSnapshotBand` only.
+  → **Applied** (flagged for override). Extract `ChainItem`/`ChainEmpty` → canonical `StrataChainStrip`
+  when Phase 2 KPI/Element detail is built.
+
+## Status update (D-1…D-6)
+D-1…D-6 CONFIRMED by Vikram 2026-07-12 ("proceed with all recommended decisions").

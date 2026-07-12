@@ -43,3 +43,29 @@ migration is a later cleanup. Non-regressing.
 No pre-0A pixel baseline was captured before editing. Zero-change is evidenced by (a) map source file
 untouched, (b) shared.tsx changes strictly additive (map passes no scope/freshness), (c) post-change
 live render identical. A pre/post pixel diff was not performed.
+
+### Committed
+`d4367b163` — slice 0A (5 source files + feature folder). Pre-commit gates passed.
+
+## Slice 0B — StrataSnapshotBand (new canonical component)
+Status: **implemented + gates green, NOT yet committed** (awaiting commit approval).
+
+### Scope change vs plan (logged as D-7)
+Plan 0B = StrataChainStrip + StrataSnapshotBand. **StrataChainStrip DEFERRED to Phase 2** — anchor 01
+has no chain strip; it is a Phase-2 detail-page component (KPI/Element detail) with existing inline
+prior art in `StrataEvidencePage.tsx:106-338`. No Phase-1 consumer. Same defer-until-consumed rule as
+D-4 (stepper). So 0B ships **StrataSnapshotBand only**.
+
+### Files changed (1 source)
+- `src/modules/strata/components/shared.tsx` — added `StrataSnapshotBand` (locked-mode chrome band,
+  proposal §18 / anchor 01 locked): discovery-toned band, `Lozenge appearance="new" isBold` badge
+  (canonical — no hand-rolled badge, no off-grid spacing), snapshot key + frozen timestamp + basis +
+  right-aligned `actions` slot. Tokens only. Consumed by Command Center locked mode in slice 1A.
+
+### Validation (raw)
+- `npx tsc --noEmit` → **No errors**.
+- `npm run lint:colors:gate` → ✅ 0 = baseline 0.
+- `npm run audit:ads:gate` → ✅ no category above baseline (spacing 0/0). NOTE: first attempt used a
+  hand-rolled badge with `padding:'3px 8px'`/`borderRadius:3` → tripped the off-grid-spacing ratchet;
+  fixed by switching to canonical `Lozenge appearance="new" isBold`.
+- No live visual (no consumer yet) — visual proof deferred to slice 1A.
