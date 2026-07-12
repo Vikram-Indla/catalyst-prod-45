@@ -17,6 +17,7 @@ import type { SelectOption } from '@/components/ads';
 import TextArea from '@atlaskit/textarea';
 import { DatePicker } from '@atlaskit/datetime-picker';
 import { useProfileNames } from '../hooks/useStrata';
+import { useBeforeUnload } from '../hooks/useBeforeUnload';
 import { T } from './shared';
 import { strategyApi } from '../domain';
 import { labelize } from './format';
@@ -185,6 +186,7 @@ export function StrataFormModal({
   const [values, setValues] = useState<StrataFormValues>({});
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [confirmDiscard, setConfirmDiscard] = useState(false);
   const { data: profiles } = useProfileNames();
 
   useEffect(() => {
@@ -192,9 +194,30 @@ export function StrataFormModal({
       setValues(initial ?? {});
       setError(null);
       setBusy(false);
+      setConfirmDiscard(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
+
+  // Dirty = any field differs from its seed value. Normalise null/undefined/''
+  // so an untouched form (or one edited back to its original) is NOT dirty.
+  const initialValues = initial ?? {};
+  const normalize = (v: string | number | boolean | null | undefined) =>
+    v == null || v === '' ? '' : v;
+  const isDirty = Array.from(
+    new Set([...Object.keys(initialValues), ...Object.keys(values)]),
+  ).some((k) => normalize(values[k]) !== normalize(initialValues[k]));
+
+  // Native "Leave site?" prompt on refresh / tab-close / hard-nav while dirty.
+  // (SPA sidebar/breadcrumb nav is out of scope — BrowserRouter has no blocker.)
+  useBeforeUnload(open && isDirty && !busy);
+
+  // User-initiated close (Modal onClose / backdrop / Cancel). Confirms discard
+  // when dirty; the post-submit onClose() path bypasses this entirely.
+  const handleRequestClose = () => {
+    if (isDirty && !busy) setConfirmDiscard(true);
+    else onClose();
+  };
 
   const userOptions = useMemo<SelectOption<string>[]>(() => {
     if (!profiles) return [];
@@ -231,7 +254,8 @@ export function StrataFormModal({
   };
 
   return (
-    <Modal isOpen onClose={busy ? () => {} : onClose} width={width} testId={testId}>
+    <>
+    <Modal isOpen onClose={busy ? () => {} : handleRequestClose} width={width} testId={testId}>
       <ModalHeader><ModalTitle>{title}</ModalTitle></ModalHeader>
       <ModalBody>
         {description ? (
@@ -259,12 +283,27 @@ export function StrataFormModal({
         ) : null}
       </ModalBody>
       <ModalFooter>
-        <Button appearance="subtle" onClick={onClose} isDisabled={busy}>Cancel</Button>
+        <Button appearance="subtle" onClick={handleRequestClose} isDisabled={busy}>Cancel</Button>
         <Button appearance="primary" onClick={submit} isDisabled={busy}>
           {busy ? 'Working…' : submitLabel}
         </Button>
       </ModalFooter>
     </Modal>
+    {confirmDiscard ? (
+      <Modal isOpen onClose={() => setConfirmDiscard(false)} width="small" testId="strata-discard-confirm">
+        <ModalHeader><ModalTitle>Discard unsaved changes?</ModalTitle></ModalHeader>
+        <ModalBody>
+          <p style={{ margin: 0, fontSize: 'var(--ds-font-size-200)', color: T.subtle }}>
+            You have unsaved edits. If you leave now, your changes will be lost.
+          </p>
+        </ModalBody>
+        <ModalFooter>
+          <Button appearance="subtle" onClick={() => setConfirmDiscard(false)}>Stay</Button>
+          <Button appearance="danger" onClick={() => { setConfirmDiscard(false); onClose(); }}>Discard</Button>
+        </ModalFooter>
+      </Modal>
+    ) : null}
+    </>
   );
 }
 
