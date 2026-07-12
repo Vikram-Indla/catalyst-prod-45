@@ -157,7 +157,7 @@ V5-OPEN-023 (verify — committed `01d474669`), V6-OPEN-026, V6-OPEN-034, V6-OPE
 | V6-OPEN-026 | FIXED — pending retest | Headline "Unassigned Projects" now derives from `businessUnitGroups` `__unassigned__` (no-LBU), same population as the LBU panel | Browser: headline **0→2**, reconciles with By-LBU Unassigned=2 |
 | V6-OPEN-034 | FIXED (server) — pending retest | Migration `20260712150000` (CREATE OR REPLACE, same signature) folds milestone `forecast_date` into `final_forecast`; backfill recomputes all cards | migration unapplied (D-1); verify at retest with milestone forecast 31d late → Major Delay |
 | V5-OPEN-023 | VERIFIED WORKING | no code change | investigator confirmed precedence + backfill in `20260712110000` |
-| V6-OPEN-036 | FIXED — verified | reusable `helpText`/`Tooltip` on governed metrics | Browser: hover Average Progress shows methodology tooltip |
+| V6-OPEN-036 | FIXED — verified | reusable `helpText`/`Tooltip` on governed metrics — Average Progress, Milestone Completion, **Actual progress, Baseline progress, Variance** (gap closed after V6 retest flagged Baseline/Variance undisclosed) | Browser: hover Average Progress + Baseline progress show methodology tooltips |
 
 **Files changed (client):** `shared.tsx` (`StrataStat.helpText` + `Tooltip` wrap), `StrataExecutionPage.tsx` (026 headline + 036 helpText), `ProjectCardDetailView.tsx` (036 helpText). **Migration (unapplied):** `20260712150000_strata_health_milestone_forecast_override.sql`. Rollback = re-apply `20260712110000`.
 **Validation:** tsc 0 errors, eslint 0 errors, color gate clean. Browser: 026 reconcile + 036 tooltip verified live.
@@ -182,7 +182,7 @@ STRATA-E2E-005, 010, 011 (verify — committed 011 chain), V6-OPEN-032, Team/LBU
 | ID | Disposition | Change | Evidence |
 |---|---|---|---|
 | STRATA-E2E-011 | VERIFIED DELIVERED (live) | — | Browser: admin shows exactly 5 perspectives, weights 30/25/10/20/15=100 |
-| V6-OPEN-032 | FIXED (server) — pending retest | migration `20260712160000` ancestor guard + gate-requirement removal | unapplied (D-1); retest: promote objective under Draft theme → rejected naming ancestors; promote theme w/ complete charter+KPI → succeeds |
+| V6-OPEN-032 | FIXED (server) — pending retest | migration `20260712160000` ancestor guard + gate-requirement removal **+ reconciliation DO block demoting existing active-under-non-active elements to draft** (gap closed after V6 retest confirmed the existing `Project-B-Objective` was never reconciled) | unapplied (D-1); retest AFTER apply: existing active-under-draft demoted; new promotions blocked naming ancestors |
 | Team/LBU authoring | FIXED (client) | `GOVERNED_PICKLIST_KEYS` drives the filter so LBU is selectable at 0 rows | code + tsc |
 | KPI approval | FIXED (client) — verified | "Submit for approval" button (draft) → `submitRecord`; existing Approve button then applies | Browser: button renders on draft KPI |
 | STRATA-E2E-010 | BLOCKED (D-4) | — | needs `is_strategic` marker decision |

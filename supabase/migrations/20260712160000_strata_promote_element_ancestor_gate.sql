@@ -94,3 +94,37 @@ $$;
 
 COMMENT ON FUNCTION public.strata_promote_element(uuid) IS
   'Server-side promotion guard (F-STR-008; V6-OPEN-032): rejects promotion while any ancestor is non-active, then aggregates all missing own-prerequisites. Theme requires owner + charter + >=1 KPI (gate requirement removed per CAT-STRATA-GATE-SCOPE-20260710-001).';
+
+-- ---------------------------------------------------------------------------
+-- V6-OPEN-032 data reconciliation. Existing rows that violate the new invariant
+-- (an Active element under a non-Active ancestor) are demoted back to Draft — the
+-- guard above would have blocked them. Recursive so an entire invalid subtree is
+-- corrected in one pass; reports the count via NOTICE. Idempotent (a second run
+-- finds nothing). No genuine data is guessed — the invariant is deterministic:
+-- a child cannot be Active while any ancestor is not.
+-- ---------------------------------------------------------------------------
+DO $$
+DECLARE r record; n int := 0;
+BEGIN
+  FOR r IN
+    WITH RECURSIVE bad AS (
+      SELECT c.id, c.name
+        FROM public.strata_strategy_elements c
+        JOIN public.strata_strategy_elements p ON p.id = c.parent_id
+       WHERE c.status = 'active' AND p.status <> 'active'
+      UNION
+      SELECT c.id, c.name
+        FROM public.strata_strategy_elements c
+        JOIN bad b ON c.parent_id = b.id
+       WHERE c.status = 'active'
+    )
+    SELECT id, name FROM bad
+  LOOP
+    UPDATE public.strata_strategy_elements
+       SET status = 'draft', updated_at = now()
+     WHERE id = r.id;
+    n := n + 1;
+  END LOOP;
+  RAISE NOTICE 'V6-OPEN-032 reconciliation: demoted % active element(s) that sat under a non-active ancestor back to draft.', n;
+END;
+$$;
