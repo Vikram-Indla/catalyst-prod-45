@@ -32,11 +32,11 @@ import {
   useWorkflowConfigs,
 } from '@/modules/strata/hooks/useStrata';
 import { StrataPageShell, StrataPanel, T } from '@/modules/strata/components/shared';
-import { StrataFormModal } from '@/modules/strata/components/authoring';
+import { StrataFormModal, str } from '@/modules/strata/components/authoring';
 import { fmtDate, fmtDateTime, labelize } from '@/modules/strata/components/format';
 import type {
-  GovernedEnvelope, GovernedStatus, StrataChangeRequest, StrataNotificationRule, StrataProjectCardFieldConfig,
-  StrataProjectCardPicklist, StrataRole, StrataScorecardModel,
+  GovernedEnvelope, GovernedStatus, StrataChangeRequest, StrataNotificationRule, StrataPerspective,
+  StrataProjectCardFieldConfig, StrataProjectCardPicklist, StrataRole, StrataScorecardModel,
 } from '@/modules/strata/types';
 
 type OnError = (msg: string | null) => void;
@@ -167,12 +167,14 @@ function GovActions({ table, record, isScorecardModel, onError }: {
 }
 
 /** Card wrapper for one governed record: name + envelope + lifecycle actions. */
-function GovRecordCard({ name, table, record, isScorecardModel, onError, children }: {
+function GovRecordCard({ name, table, record, isScorecardModel, onError, headerActions, children }: {
   name: string;
   table: string;
   record: GovernedEnvelope & { id: string };
   isScorecardModel?: boolean;
   onError: OnError;
+  /** Extra header controls (e.g. Edit) shown alongside the lifecycle actions. */
+  headerActions?: React.ReactNode;
   children?: React.ReactNode;
 }) {
   return (
@@ -185,7 +187,10 @@ function GovRecordCard({ name, table, record, isScorecardModel, onError, childre
     >
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 8, flexWrap: 'wrap' }}>
         <strong style={{ fontSize: 'var(--ds-font-size-200)', color: T.text }}>{name}</strong>
-        <GovActions table={table} record={record} isScorecardModel={isScorecardModel} onError={onError} />
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+          {headerActions}
+          <GovActions table={table} record={record} isScorecardModel={isScorecardModel} onError={onError} />
+        </div>
       </div>
       <GovEnvelope r={record} />
       {children}
@@ -216,19 +221,72 @@ function SectionState({ query, empty, emptyLabel, children }: {
 }
 
 // ── Sections ─────────────────────────────────────────────────────────────────
+/** Create/edit fields for a perspective. color_token is intentionally omitted:
+ * it is nullable/unused and the DB requires an ADS token NAME string — with no
+ * curated token list to source from, we render nothing rather than invent one. */
+function perspectiveFields(list: StrataPerspective[], excludeId?: string): React.ComponentProps<typeof StrataFormModal>['fields'] {
+  return [
+    { key: 'name', label: 'Name', kind: 'text', required: true },
+    { key: 'description', label: 'Description', kind: 'textarea' },
+    { key: 'orderIndex', label: 'Order index', kind: 'number', min: 0 },
+    { key: 'defaultWeight', label: 'Default weight', kind: 'number', min: 0 },
+    {
+      key: 'parentId', label: 'Parent perspective', kind: 'select',
+      options: list.filter((p) => p.id !== excludeId).map((p) => ({ value: p.id, label: p.name })),
+    },
+  ];
+}
+
+const numOrUndef = (v: string | number | boolean | null): number | undefined =>
+  v == null || v === '' ? undefined : Number(v);
+
 function PerspectivesSection({ onError }: { onError: OnError }) {
   const q = usePerspectives();
+  const roles = useStrataRoles();
+  const invalidate = useInvalidateStrata();
   const list = q.data ?? [];
   const nameById = new Map(list.map((p) => [p.id, p.name]));
+  // Same gate the DB enforces for INSERT/UPDATE on strata_perspectives.
+  const canConfigure = (roles.data ?? []).some((r) => r === 'strata_admin' || r === 'strategy_office');
+  const [createOpen, setCreateOpen] = useState(false);
+  const [editTarget, setEditTarget] = useState<StrataPerspective | null>(null);
+
   return (
-    <StrataPanel title="Perspectives" icon={<Layers size={16} />} count={list.length} testId="strata-admin-perspectives">
+    <StrataPanel
+      title="Perspectives"
+      icon={<Layers size={16} />}
+      count={list.length}
+      testId="strata-admin-perspectives"
+      actions={canConfigure ? (
+        <Button spacing="compact" onClick={() => setCreateOpen(true)} testId="strata-perspective-new">
+          New perspective
+        </Button>
+      ) : undefined}
+    >
       <p style={captionStyle}>
-        Perspectives are versioned, approved records.
+        Perspectives are versioned, approved records. New perspectives start as a draft; only drafts can be
+        edited — submit a draft for approval from its lifecycle actions.
       </p>
       <SectionState query={q} empty={list.length === 0}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
           {list.map((p) => (
-            <GovRecordCard key={p.id} name={p.name} table="strata_perspectives" record={p} onError={onError}>
+            <GovRecordCard
+              key={p.id}
+              name={p.name}
+              table="strata_perspectives"
+              record={p}
+              onError={onError}
+              headerActions={canConfigure && p.status === 'draft' ? (
+                <Button
+                  spacing="compact"
+                  appearance="subtle"
+                  onClick={() => setEditTarget(p)}
+                  testId={`strata-perspective-edit-${p.id}`}
+                >
+                  Edit
+                </Button>
+              ) : undefined}
+            >
               <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
                 <span style={metaStyle}>Order {p.order_index}</span>
                 <span style={metaStyle}>Default weight {p.default_weight ?? '—'}</span>
@@ -238,6 +296,55 @@ function PerspectivesSection({ onError }: { onError: OnError }) {
           ))}
         </div>
       </SectionState>
+
+      <StrataFormModal
+        open={createOpen}
+        onClose={() => setCreateOpen(false)}
+        title="New perspective"
+        description="Created as a draft. Submit it for approval from the record's lifecycle actions once ready."
+        fields={perspectiveFields(list)}
+        submitLabel="Create perspective"
+        testId="strata-perspective-create-modal"
+        onSubmit={async (v) => {
+          await configApi.createPerspective({
+            name: String(v.name ?? '').trim(),
+            description: str(v.description),
+            orderIndex: numOrUndef(v.orderIndex),
+            defaultWeight: numOrUndef(v.defaultWeight),
+            parentId: str(v.parentId),
+          });
+          invalidate();
+        }}
+      />
+
+      {editTarget ? (
+        <StrataFormModal
+          open
+          onClose={() => setEditTarget(null)}
+          title="Edit perspective"
+          description="Only draft perspectives can be edited. Approved records use the lifecycle actions."
+          fields={perspectiveFields(list, editTarget.id)}
+          initial={{
+            name: editTarget.name,
+            description: editTarget.description,
+            orderIndex: editTarget.order_index,
+            defaultWeight: editTarget.default_weight,
+            parentId: editTarget.parent_id,
+          }}
+          submitLabel="Save"
+          testId="strata-perspective-edit-modal"
+          onSubmit={async (v) => {
+            await configApi.updatePerspective(editTarget.id, {
+              name: String(v.name ?? '').trim(),
+              description: str(v.description),
+              orderIndex: numOrUndef(v.orderIndex),
+              defaultWeight: numOrUndef(v.defaultWeight),
+              parentId: str(v.parentId),
+            });
+            invalidate();
+          }}
+        />
+      ) : null}
     </StrataPanel>
   );
 }
@@ -252,9 +359,15 @@ const SEGMENT_TONES = [
   'var(--ds-text-subtlest)',
 ];
 
-function ModelWeights({ model }: { model: StrataScorecardModel }) {
+function ModelWeights({ model, canEditWeights }: { model: StrataScorecardModel; canEditWeights: boolean }) {
   const mp = useModelPerspectives(model.id);
   const perspectives = usePerspectives();
+  const invalidate = useInvalidateStrata();
+  const [editing, setEditing] = useState(false);
+  const [draft, setDraft] = useState<Record<string, string>>({});
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
   if (mp.isLoading) return <Spinner size="small" />;
   if (mp.isError) {
     return <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-danger)' }}>Failed to load weights</span>;
@@ -266,6 +379,81 @@ function ModelWeights({ model }: { model: StrataScorecardModel }) {
   const nameById = new Map((perspectives.data ?? []).map((p) => [p.id, p.name]));
   // Display of config integrity (sum shown to the admin) — not business logic.
   const sum = rows.reduce((acc, r) => acc + r.weight, 0);
+
+  const startEdit = () => {
+    setDraft(Object.fromEntries(rows.map((r) => [r.perspective_id, String(r.weight)])));
+    setError(null);
+    setEditing(true);
+  };
+  // Cancel restores the displayed (persisted) values by dropping the draft.
+  const cancel = () => { setEditing(false); setError(null); };
+  const draftTotal = rows.reduce((acc, r) => acc + (Number(draft[r.perspective_id]) || 0), 0);
+  const save = async () => {
+    setSaving(true);
+    setError(null);
+    try {
+      await configApi.setModelPerspectiveWeights(model.id, rows.map((r) => ({
+        perspectiveId: r.perspective_id,
+        weight: Number(draft[r.perspective_id]) || 0,
+      })));
+      invalidate();
+      setEditing(false);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : String(e));
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  if (editing) {
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+        {rows.map((r) => (
+          <div key={r.id} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <span style={{ ...metaStyle, minWidth: 160 }}>{nameById.get(r.perspective_id) ?? '—'}</span>
+            <div style={{ width: 120 }}>
+              <Textfield
+                type="number"
+                spacing="compact"
+                value={draft[r.perspective_id] ?? ''}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  setDraft((prev) => ({ ...prev, [r.perspective_id]: val }));
+                }}
+                aria-label={`Weight for ${nameById.get(r.perspective_id) ?? 'perspective'}`}
+                elemAfterInput={<span style={{ paddingRight: 'var(--ds-space-050)', color: T.subtlest }}>%</span>}
+                testId={`strata-model-weight-input-${r.perspective_id}`}
+              />
+            </div>
+          </div>
+        ))}
+        <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'center' }}>
+          <span style={metaStyle}>
+            Total <strong style={{ color: T.text, fontVariantNumeric: 'tabular-nums' }}>{draftTotal}%</strong>
+          </span>
+          {draftTotal === 100
+            ? <StatusLozenge status="valid" label="Weights valid" appearance="success" />
+            : <StatusLozenge status="invalid" label="Weights must total 100" appearance="removed" />}
+          <Button
+            spacing="compact"
+            appearance="primary"
+            isDisabled={saving || draftTotal !== 100}
+            onClick={() => void save()}
+            testId={`strata-model-weights-save-${model.id}`}
+          >
+            {saving ? 'Saving…' : 'Save weights'}
+          </Button>
+          <Button spacing="compact" appearance="subtle" isDisabled={saving} onClick={cancel}>Cancel</Button>
+        </div>
+        {error ? (
+          <SectionMessage appearance="error" title="Action rejected">
+            <p style={{ whiteSpace: 'pre-wrap' }}>{error}</p>
+          </SectionMessage>
+        ) : null}
+      </div>
+    );
+  }
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
       {/* Proportional stacked weight bar */}
@@ -285,6 +473,16 @@ function ModelWeights({ model }: { model: StrataScorecardModel }) {
         {sum === 100
           ? <StatusLozenge status="valid" label="Weights valid" appearance="success" />
           : <StatusLozenge status="invalid" label="Weights must total 100" appearance="removed" />}
+        {canEditWeights ? (
+          <Button
+            spacing="compact"
+            appearance="subtle"
+            onClick={startEdit}
+            testId={`strata-model-weights-edit-${model.id}`}
+          >
+            Edit weights
+          </Button>
+        ) : null}
       </div>
     </div>
   );
@@ -292,7 +490,10 @@ function ModelWeights({ model }: { model: StrataScorecardModel }) {
 
 function ScorecardModelsSection({ onError }: { onError: OnError }) {
   const q = useScorecardModels();
+  const roles = useStrataRoles();
   const list = q.data ?? [];
+  // strata_scorecard_model_perspectives write is strategy_office (matches RLS).
+  const canEditWeights = (roles.data ?? []).includes('strategy_office');
   return (
     <StrataPanel title="Scorecard models" icon={<Scale size={16} />} count={list.length} testId="strata-admin-scorecard-models">
       <SectionState query={q} empty={list.length === 0}>
@@ -304,7 +505,7 @@ function ScorecardModelsSection({ onError }: { onError: OnError }) {
                 <span style={metaStyle}>Rollup {labelize(m.rollup_method)}</span>
                 <span style={metaStyle}>Granularity {labelize(m.period_granularity)}</span>
               </div>
-              <ModelWeights model={m} />
+              <ModelWeights model={m} canEditWeights={canEditWeights} />
             </GovRecordCard>
           ))}
         </div>

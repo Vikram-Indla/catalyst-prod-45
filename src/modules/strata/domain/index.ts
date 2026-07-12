@@ -103,6 +103,50 @@ export const configApi = {
   upsertPicklistValue: (entry: Partial<StrataProjectCardPicklist> & { picklist_key: string; value: string; label: string }) =>
     run(typedQuery('strata_project_card_picklists').upsert(entry, { onConflict: 'picklist_key,value' }).select('*').single()),
   deletePicklistValue: (id: string) => run(typedQuery('strata_project_card_picklists').delete().eq('id', id).select('id')),
+  // ── Perspective authoring (V3-OPEN-011 #8) — direct-table writes under RLS ──
+  // INSERT requires strata_admin | strategy_office AND status='draft'; UPDATE is
+  // draft-only (WITH CHECK status='draft'). Lifecycle transitions (submit/approve/
+  // retire) stay on the RPCs above — never set status here. slug is auto-derived
+  // by a DB trigger and frozen, so it is never written.
+  createPerspective: (input: {
+    name: string; description?: string; orderIndex?: number;
+    defaultWeight?: number; colorToken?: string; parentId?: string;
+  }): Promise<StrataPerspective> =>
+    run(typedQuery('strata_perspectives').insert({
+      name: input.name,
+      description: input.description ?? null,
+      order_index: input.orderIndex ?? 0,
+      default_weight: input.defaultWeight ?? null,
+      color_token: input.colorToken ?? null,
+      parent_id: input.parentId ?? null,
+      status: 'draft',
+    }).select('*').single()),
+  updatePerspective: (id: string, patch: {
+    name?: string; description?: string; orderIndex?: number;
+    defaultWeight?: number; colorToken?: string; parentId?: string;
+  }): Promise<StrataPerspective> =>
+    run(typedQuery('strata_perspectives').update({
+      ...(patch.name !== undefined ? { name: patch.name } : {}),
+      ...(patch.description !== undefined ? { description: patch.description } : {}),
+      ...(patch.orderIndex !== undefined ? { order_index: patch.orderIndex } : {}),
+      ...(patch.defaultWeight !== undefined ? { default_weight: patch.defaultWeight } : {}),
+      ...(patch.colorToken !== undefined ? { color_token: patch.colorToken } : {}),
+      ...(patch.parentId !== undefined ? { parent_id: patch.parentId } : {}),
+    }).eq('id', id).select('*').single()),
+  // Edits the weight (+ optional order) of EXISTING model↔perspective rows only —
+  // strategy_office has full write on strata_scorecard_model_perspectives. Does not
+  // add/remove perspectives from the model. Errors surface verbatim to the caller.
+  setModelPerspectiveWeights: async (
+    modelId: string,
+    rows: Array<{ perspectiveId: string; weight: number; orderIndex?: number }>,
+  ): Promise<void> => {
+    for (const r of rows) {
+      await run(typedQuery('strata_scorecard_model_perspectives').update({
+        weight: r.weight,
+        ...(r.orderIndex !== undefined ? { order_index: r.orderIndex } : {}),
+      }).eq('model_id', modelId).eq('perspective_id', r.perspectiveId).select('id'));
+    }
+  },
 };
 
 // ── Strategy ─────────────────────────────────────────────────────────────────
