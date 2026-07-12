@@ -46,6 +46,11 @@ export interface StrataFieldSpec {
   /** For kind 'text'/'textarea' — max character length. Enforced by the input and
    * shown as a counter (V6-OPEN-038). Defaults: text 500, textarea 5000. */
   maxLength?: number;
+  /** For kind 'select'/'user' — force the clear ("×") control on/off, overriding the
+   * default (clearable only when optional). Set true on a REQUIRED field so the user
+   * can deliberately empty it and see the required-validation rejection — the missing
+   * affordance behind V6-OPEN-027. Submit is still blocked while the value is empty. */
+  isClearable?: boolean;
 }
 
 export type StrataFormValues = Record<string, string | number | boolean | null>;
@@ -133,7 +138,7 @@ function FieldControl({
           onChange={(next) => onChange(next?.value ?? null)}
           placeholder={field.placeholder ?? 'Select…'}
           isDisabled={field.isDisabled}
-          isClearable={!field.required}
+          isClearable={field.isClearable ?? !field.required}
           isSearchable
           usePortal
           aria-label={field.label}
@@ -149,7 +154,7 @@ function FieldControl({
           onChange={(next) => onChange(next?.value ?? null)}
           placeholder={field.placeholder ?? 'Select person…'}
           isDisabled={field.isDisabled}
-          isClearable={!field.required}
+          isClearable={field.isClearable ?? !field.required}
           isSearchable
           usePortal
           aria-label={field.label}

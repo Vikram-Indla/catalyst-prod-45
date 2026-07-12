@@ -507,10 +507,12 @@ export function ProjectCardDetailView({ card, theme }: {
         fields={[
           { key: 'name', label: 'Project Name', kind: 'text', required: true },
           // Strategic Theme is mandatory on Edit exactly as on Create — a card must
-          // always belong to a Theme. required:true makes the select non-clearable in
-          // StrataFormModal and blocks submit if emptied (V6-OPEN-027). Server also
-          // rejects a null result (see strata_update_project_card guard migration).
-          { key: 'themeId', label: 'Strategic Theme', kind: 'select', required: true, options: themeElements.map((t) => ({ value: t.id, label: t.name })) },
+          // always belong to a Theme. isClearable:true exposes the clear control so the
+          // required-link integrity is provable in the browser: clearing it and pressing
+          // Save triggers the required-field rejection (StrataFormModal blocks submit on
+          // an empty required field) rather than silently hiding the affordance
+          // (V6-OPEN-027). Server also rejects a null result (see strata_update_project_card guard migration).
+          { key: 'themeId', label: 'Strategic Theme', kind: 'select', required: true, isClearable: true, options: themeElements.map((t) => ({ value: t.id, label: t.name })) },
           { key: 'businessOwnerId', label: 'Business Owner', kind: 'user' },
           { key: 'pmId', label: 'Project Manager', kind: 'user' },
           { key: 'leadBusinessUnit', label: 'Lead Business Unit', kind: 'select', options: (lobPicklistQ.data ?? []).map((p) => ({ value: p.value, label: p.label })) },
