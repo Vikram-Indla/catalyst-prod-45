@@ -47,6 +47,11 @@ class TypographyEnforcer {
     let inBlockComment = false;
 
     lines.forEach((line, index) => {
+      // Skip lines carrying an inline `// ads-scanner:ignore-line` marker
+      // (mirrors the color gate, which honors both same-line and next-line).
+      if (line.includes('ads-scanner:ignore-line')) {
+        return;
+      }
       if (index > 0 && lines[index - 1].includes('ads-scanner:ignore-next-line')) {
         return;
       }

@@ -71,6 +71,8 @@ class FontImportEnforcer {
     let inBlockComment = false;
 
     lines.forEach((line, idx) => {
+      // Skip inline `// ads-scanner:ignore-line` (mirrors the color gate).
+      if (line.includes('ads-scanner:ignore-line')) return;
       if (idx > 0 && lines[idx - 1].includes('ads-scanner:ignore-next-line')) return;
 
       const trimmed = line.trim();
