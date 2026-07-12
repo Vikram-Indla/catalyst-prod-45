@@ -256,10 +256,15 @@ export const strataRoutes = {
   strategyElement: (elementSlug: string) => `/strata/strategy/elements/${elementSlug}`,
   scorecards: () => '/strata/scorecards',
   scorecard: (instanceSlug: string) => `/strata/scorecards/${instanceSlug}`,
-  scorecardEvidence: (instanceSlug: string) => `/strata/scorecards/${instanceSlug}/evidence`,
+  // Evidence routes carry an optional `?from=<origin path>` so the evidence
+  // page can render "Back to [origin]" and preserve the drill origin (STRATA
+  // navigation contract §5, CAT-STRATA-IMPL-20260712-001).
+  scorecardEvidence: (instanceSlug: string, from?: string) =>
+    `/strata/scorecards/${instanceSlug}/evidence${from ? `?from=${encodeURIComponent(from)}` : ''}`,
   kpis: () => '/strata/kpis',
   kpi: (kpiSlug: string) => `/strata/kpis/${kpiSlug}`,
-  kpiEvidence: (kpiSlug: string) => `/strata/kpis/${kpiSlug}/evidence`,
+  kpiEvidence: (kpiSlug: string, from?: string) =>
+    `/strata/kpis/${kpiSlug}/evidence${from ? `?from=${encodeURIComponent(from)}` : ''}`,
   execution: () => '/strata/execution',
   // Manual Excel import wizard (session 007) — static slug-safe path, matched
   // before execution/:slug by React Router's static-over-dynamic ranking.
@@ -269,7 +274,8 @@ export const strataRoutes = {
   // route slot (/strata/execution/:slug), no duplicate route created.
   projectCard: (projectCardSlug: string) => `/strata/execution/${projectCardSlug}`,
   portfolio: () => '/strata/portfolio',
-  portfolioEvidence: (slug: string) => `/strata/portfolio/${slug}/evidence`,
+  portfolioEvidence: (slug: string, from?: string) =>
+    `/strata/portfolio/${slug}/evidence${from ? `?from=${encodeURIComponent(from)}` : ''}`,
   benefit: (benefitSlug: string) => `/strata/portfolio/benefits/${benefitSlug}`,
   data: () => '/strata/data',
   // Governed upload wizard (static slug-safe path — no params)

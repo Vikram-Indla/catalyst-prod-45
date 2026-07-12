@@ -69,3 +69,24 @@ D-4 (stepper). So 0B ships **StrataSnapshotBand only**.
   hand-rolled badge with `padding:'3px 8px'`/`borderRadius:3` → tripped the off-grid-spacing ratchet;
   fixed by switching to canonical `Lozenge appearance="new" isBold`.
 - No live visual (no consumer yet) — visual proof deferred to slice 1A.
+
+### Committed
+`d479cce5d` — slice 0B (shared.tsx + feature docs). Phase 0 foundations complete.
+
+## Slice 1A — Command Center (SPLIT into sub-slices per 2h rule)
+Anchor-01 redesign is far larger than one 2h slice. Sub-slices:
+- **1A-1** (this): `?from=` origin threading (nav contract §5, P0) + "n days overdue" (P1).
+- **1A-2** (next): snapshot band (locked) + context-spine scope/freshness + data-trust strip.
+- **1A-3**: judgment-band redesign (score ring + composed copy) replacing the stat strip.
+- **1A-4**: restricted/403 state, "Mine" no-results clear, changes-since-snapshot (client diff), trend-dot a11y.
+
+### 1A-1 — implemented + verified, NOT yet committed
+Files (3): `src/lib/routes.ts` (scorecard/kpi/portfolio Evidence builders gain optional `from?`),
+`StrataCommandCenterPage.tsx` (`daysOverdue` helper; Due column → "n days overdue"/"Due today" in
+danger; 3 evidence call sites pass `Routes.strata.root()`), `StrataEvidencePage.tsx`
+(`STRATA_ORIGIN_LABELS` + `?from=` read + "← Back to [origin]" subtle Button). EvidencePage is a
+Phase-2 page but the change is the minimal consumer side of the §5 nav contract, not a redesign.
+
+Validation: tsc clean; lint:colors:gate / audit:ads:gate green. Live: `?from=` round-trip verified
+(CC → scorecard evidence `?from=%2Fstrata` → "← Back to Command Center" → CC). "n days overdue"
+code-verified only — current data has no overdue inbox rows to render it.

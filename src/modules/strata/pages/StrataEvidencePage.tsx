@@ -124,11 +124,25 @@ const chainListStyle: React.CSSProperties = {
   display: 'flex', flexDirection: 'column', gap: 6,
 };
 
+/** Known strata origins for the "Back to [origin]" evidence link (nav contract
+ *  §5). Exact-path match; unknown origins fall back to a generic "Back". */
+const STRATA_ORIGIN_LABELS: Record<string, string> = {
+  '/strata': 'Command Center',
+  '/strata/scorecards': 'Scorecards',
+  '/strata/kpis': 'KPIs & OKRs',
+  '/strata/portfolio': 'Portfolio & Benefits',
+};
+
 export default function StrataEvidencePage() {
   const { slug } = useParams<{ slug: string }>();
   const { pathname } = useLocation();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+
+  // Evidence-route origin preservation (nav contract §5): `?from=<path>` renders
+  // a "Back to [origin]" link that returns to the drill origin.
+  const fromParam = searchParams.get('from');
+  const originLabel = fromParam ? (STRATA_ORIGIN_LABELS[fromParam] ?? null) : null;
 
   const kind: EvidenceKind = pathname.startsWith('/strata/kpis/')
     ? 'kpi'
@@ -205,6 +219,18 @@ export default function StrataEvidencePage() {
       docTitle={entity ? `${entity.name} — Evidence` : undefined}
       testId="strata-evidence-page"
     >
+      {fromParam ? (
+        <div style={{ marginBottom: 12 }}>
+          <Button
+            appearance="subtle"
+            spacing="compact"
+            onClick={() => navigate(fromParam)}
+            testId="strata-evidence-back"
+          >
+            {originLabel ? `← Back to ${originLabel}` : '← Back'}
+          </Button>
+        </div>
+      ) : null}
       {entityQ.isLoading ? (
         <div style={{ display: 'flex', justifyContent: 'center', padding: 48 }}>
           <Spinner size="large" aria-label="Loading evidence" />

@@ -74,6 +74,13 @@ function isOverdue(iso: string | null | undefined): boolean {
   return !Number.isNaN(d.getTime()) && d.getTime() < Date.now();
 }
 
+/** Whole days a due date is past — 0 = due earlier today. */
+function daysOverdue(iso: string): number {
+  const t = new Date(iso).getTime();
+  if (Number.isNaN(t)) return 0;
+  return Math.max(0, Math.floor((Date.now() - t) / 86400000));
+}
+
 function ClickableRow({ onClick, children, testId }: { onClick?: () => void; children: React.ReactNode; testId?: string }) {
   const clickable = !!onClick;
   const [hover, setHover] = useState(false);
@@ -335,7 +342,7 @@ export default function StrataCommandCenterPage() {
   }, [trendQ.data, periods]);
 
   const openTrendEvidence = (p: TrendChartPoint) => {
-    if (p.slug) navigate(Routes.strata.scorecardEvidence(p.slug));
+    if (p.slug) navigate(Routes.strata.scorecardEvidence(p.slug, Routes.strata.root()));
   };
 
   // ── Needs attention rows (server rule engine → drill to owning surface) ────
@@ -428,18 +435,25 @@ export default function StrataCommandCenterPage() {
     },
     {
       id: 'due', label: 'Due', width: 12,
-      cell: ({ row }) => row.due ? (
-        <span style={{
-          fontSize: 'var(--ds-font-size-100)',
-          color: isOverdue(row.due) ? 'var(--ds-text-danger)' : T.subtlest,
-          fontWeight: isOverdue(row.due) ? 600 : 400,
-          whiteSpace: 'nowrap',
-        }}>
-          {fmtDate(row.due)}
-        </span>
-      ) : (
-        <span style={{ color: T.subtlest }}>—</span>
-      ),
+      cell: ({ row }) => {
+        if (!row.due) return <span style={{ color: T.subtlest }}>—</span>;
+        if (isOverdue(row.due)) {
+          const n = daysOverdue(row.due);
+          return (
+            <span style={{
+              fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-danger)',
+              fontWeight: 600, whiteSpace: 'nowrap', fontVariantNumeric: 'tabular-nums',
+            }}>
+              {n === 0 ? 'Due today' : `${n} ${n === 1 ? 'day' : 'days'} overdue`}
+            </span>
+          );
+        }
+        return (
+          <span style={{ fontSize: 'var(--ds-font-size-100)', color: T.subtlest, whiteSpace: 'nowrap' }}>
+            {fmtDate(row.due)}
+          </span>
+        );
+      },
     },
   ], []);
 
@@ -464,7 +478,7 @@ export default function StrataCommandCenterPage() {
           caption: instance
             ? (instance.slug ? 'View evidence' : 'Evidence route needs a slug')
             : 'No scorecard for this period',
-          onClick: instance?.slug ? () => navigate(Routes.strata.scorecardEvidence(instance.slug!)) : undefined,
+          onClick: instance?.slug ? () => navigate(Routes.strata.scorecardEvidence(instance.slug!, Routes.strata.root())) : undefined,
           testId: 'strata-cc-enterprise-score',
         },
     {
@@ -474,7 +488,7 @@ export default function StrataCommandCenterPage() {
       bandKey: varQ.data?.status_key,
       caption: varQ.isError ? 'Could not load' : portfolio ? (portfolio.slug ? 'View evidence' : 'Evidence route needs a slug') : 'No portfolio',
       captionTone: varQ.isError ? 'danger' : 'neutral',
-      onClick: portfolio?.slug ? () => navigate(Routes.strata.portfolioEvidence(portfolio.slug!)) : undefined,
+      onClick: portfolio?.slug ? () => navigate(Routes.strata.portfolioEvidence(portfolio.slug!, Routes.strata.root())) : undefined,
       testId: 'strata-cc-var',
     },
     {
