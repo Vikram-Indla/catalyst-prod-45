@@ -27,7 +27,8 @@ import { StrataChipMenu,
 } from '@/modules/strata/components/shared';
 import { StrataFormModal } from '@/modules/strata/components/authoring';
 import {
-  StrataPortfolioMembersPanel, StrataScheduleGateModal, VMO_AUTHOR_ROLES, VMO_VALUE_ROLES,
+  StrataAttributionRuleModal, StrataPortfolioMembersPanel, StrataScheduleGateModal,
+  VMO_AUTHOR_ROLES, VMO_VALUE_ROLES,
 } from '@/modules/strata/components/vmoAuthoring';
 import type { StrataGateSubject } from '@/modules/strata/components/vmoAuthoring';
 import {
@@ -36,7 +37,7 @@ import {
 import {
   useAssumptions, useBenefitRealization, useBenefits, useBenefitValues, useCalcValues,
   useGateInstances, useGateModels, useInvalidateStrata, usePortfolios, useProfileNames,
-  useStrataContext, useStrataRoles, useValueAtRisk, useValueCategories,
+  useProjectCards, useStrataContext, useStrataRoles, useValueAtRisk, useValueCategories,
 } from '@/modules/strata/hooks/useStrata';
 import type {
   StrataAssumption, StrataBenefit, StrataBenefitValue, StrataGateInstance, StrataGateModelStage, StrataPortfolio,
@@ -102,9 +103,15 @@ function DefRow({ label, children }: { label: string; children: React.ReactNode 
 interface AttributionRuleRow { id: string; rule_type: string; definition: unknown }
 interface AttributionSplit { label: string; pct: number | null }
 
-/** Defensive parse of an attribution rule definition into per-initiative splits.
+/** Defensive parse of an attribution rule definition into per-target splits.
+ *  Structured Project Card splits ({ splits:[{ project_card_id, pct }] }) resolve
+ *  the target's name via `resolveCardName`; legacy initiative rows still parse.
+ *  Zero-assumption: an unresolved target renders '—', never a fabricated default.
  *  Unknown shapes → null (caller renders '—'). Display-only, no business math. */
-function parseAttributionSplits(def: unknown): AttributionSplit[] | null {
+function parseAttributionSplits(
+  def: unknown,
+  resolveCardName?: (id: string) => string | null,
+): AttributionSplit[] | null {
   if (def == null || typeof def !== 'object') return null;
   const obj = def as Record<string, unknown>;
   const list = Array.isArray(def) ? def
@@ -116,7 +123,9 @@ function parseAttributionSplits(def: unknown): AttributionSplit[] | null {
       if (entry == null || typeof entry !== 'object') return null;
       const e = entry as Record<string, unknown>;
       const label =
-        (typeof e.initiative_name === 'string' && e.initiative_name)
+        (typeof e.project_card_name === 'string' && e.project_card_name)
+        || (typeof e.project_card_id === 'string' && resolveCardName?.(e.project_card_id))
+        || (typeof e.initiative_name === 'string' && e.initiative_name)
         || (typeof e.name === 'string' && e.name)
         || (typeof e.initiative_id === 'string' && `${e.initiative_id.slice(0, 8)}…`)
         || null;
@@ -197,6 +206,7 @@ function BenefitDetailSection({ benefit, isFirst, canAuthor, canAuthorValues }: 
   const assumptionsQ = useAssumptions(benefit.id);
   const gatesQ = useGateInstances();
   const gateModelsQ = useGateModels();
+  const projectCardsQ = useProjectCards();
   const attributionQ = useQuery({
     queryKey: ['strata', 'attribution-rules', benefit.id],
     queryFn: () => valueApi.attributionRules(benefit.id),
@@ -205,6 +215,10 @@ function BenefitDetailSection({ benefit, isFirst, canAuthor, canAuthorValues }: 
 
   const values = valuesQ.data ?? [];
   const assumptions = assumptionsQ.data ?? [];
+  const projectCards = projectCardsQ.data ?? [];
+  // Resolve an attribution split's Project Card target to a display name.
+  // Zero-assumption: an unknown id resolves to null → the panel renders '—'.
+  const resolveCardName = (id: string) => projectCards.find((c) => c.id === id)?.name ?? null;
   const attributionRules = (attributionQ.data ?? []) as AttributionRuleRow[];
   const gates = (gatesQ.data ?? []).filter((g) => g.subject_type === 'benefit' && g.subject_id === benefit.id);
 
@@ -440,7 +454,7 @@ function BenefitDetailSection({ benefit, isFirst, canAuthor, canAuthorValues }: 
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
             {attributionRules.map((rule) => {
-              const splits = parseAttributionSplits(rule.definition);
+              const splits = parseAttributionSplits(rule.definition, resolveCardName);
               return (
                 <div key={rule.id} style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                   <span style={{ alignSelf: 'flex-start' }}>
@@ -700,37 +714,14 @@ function BenefitDetailSection({ benefit, isFirst, canAuthor, canAuthorValues }: 
         }}
         testId="strata-assumption-modal"
       />
-      <StrataFormModal
+      <StrataAttributionRuleModal
         open={author?.kind === 'add-rule'}
         onClose={() => setAuthor(null)}
-        title="Add attribution rule"
-        description="Rules attribute realized value to Project Cards (shared benefit, counterfactual, double counting)."
-        fields={[
-          { key: 'ruleType', label: 'Rule type', kind: 'select', required: true, options: RULE_TYPE_OPTIONS },
-          {
-            key: 'definition', label: 'Definition (JSON)', kind: 'textarea', required: true,
-            placeholder: '{"splits": [{"initiative_id": "…", "pct": 50}]}',
-            helper: 'Must be a valid JSON object',
-          },
-        ]}
-        onSubmit={async (v) => {
-          let parsed: unknown;
-          try {
-            parsed = JSON.parse(String(v.definition));
-          } catch (e) {
-            throw new Error(`Definition is not valid JSON: ${e instanceof Error ? e.message : String(e)}`);
-          }
-          if (parsed == null || typeof parsed !== 'object') {
-            throw new Error('Definition must be a JSON object or array.');
-          }
-          await valueApi.createAttributionRule(
-            benefit.id,
-            v.ruleType as 'shared_benefit' | 'counterfactual' | 'double_counting',
-            parsed as Record<string, unknown>,
-          );
-          invalidate();
-        }}
-        testId="strata-attribution-rule-modal"
+        benefitId={benefit.id}
+        benefitName={benefit.name}
+        projectCards={projectCards}
+        ruleTypeOptions={RULE_TYPE_OPTIONS}
+        onChanged={invalidate}
       />
       <StrataScheduleGateModal
         open={!!gateSubject}

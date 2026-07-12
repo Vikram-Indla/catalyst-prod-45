@@ -8,7 +8,7 @@
  * no drawers, server RPCs are the source of truth — every rejection surfaces
  * verbatim via SectionMessage.
  */
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import {
   Button, CatalystTag, EmptyState, Modal, ModalBody, ModalFooter, ModalHeader,
@@ -336,6 +336,177 @@ function AddMemberModal({
         <Button appearance="subtle" onClick={onClose} isDisabled={busy}>Cancel</Button>
         <Button appearance="primary" onClick={submit} isDisabled={busy}>
           {busy ? 'Working…' : 'Add member'}
+        </Button>
+      </ModalFooter>
+    </Modal>
+  );
+}
+
+// ── Attribution rule authoring (governed Project Card splits) ────────────────
+// V3-OPEN-019: attribution rules attribute realized value to governed Project
+// Cards via structured percentage splits — never free-form JSON. Each split
+// targets one Project Card; percentages must be positive and sum to exactly
+// 100. Calculated amounts, cross-benefit double-count prevention, duplicate-rule
+// rejection and SoD are the RPC's responsibility (strata_create_attribution_rule)
+// — this modal only builds and validates the structured payload.
+export type StrataAttributionRuleType = 'shared_benefit' | 'counterfactual' | 'double_counting';
+
+interface AttributionSplitDraft { key: number; cardId: string | null; pct: number | null }
+
+export function StrataAttributionRuleModal({
+  benefitId, benefitName, open, onClose, onChanged, projectCards, ruleTypeOptions,
+}: {
+  benefitId: string;
+  benefitName?: string;
+  open: boolean;
+  onClose: () => void;
+  /** Called after the RPC succeeds (invalidate lives with the caller). */
+  onChanged: () => void;
+  projectCards: StrataProjectCard[];
+  ruleTypeOptions: SelectOption<StrataAttributionRuleType>[];
+}) {
+  const [ruleType, setRuleType] = useState<StrataAttributionRuleType | null>(null);
+  const [splits, setSplits] = useState<AttributionSplitDraft[]>([{ key: 0, cardId: null, pct: null }]);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const nextKey = useRef(1);
+
+  useEffect(() => {
+    if (open) {
+      setRuleType(null);
+      setSplits([{ key: 0, cardId: null, pct: null }]);
+      nextKey.current = 1;
+      setError(null);
+      setBusy(false);
+    }
+  }, [open]);
+
+  if (!open) return null;
+
+  // Every card is an eligible target (no cross-portfolio scoping — parked as
+  // STRATA-E2E-013); duplicate targets are caught by client validation below.
+  const cardOptions = buildProjectCardOptions(projectCards, new Set());
+
+  const addSplit = () =>
+    setSplits((prev) => [...prev, { key: nextKey.current++, cardId: null, pct: null }]);
+  const removeSplit = (key: number) =>
+    setSplits((prev) => (prev.length > 1 ? prev.filter((s) => s.key !== key) : prev));
+  const setSplitCard = (key: number, cardId: string | null) =>
+    setSplits((prev) => prev.map((s) => (s.key === key ? { ...s, cardId } : s)));
+  const setSplitPct = (key: number, pct: number | null) =>
+    setSplits((prev) => prev.map((s) => (s.key === key ? { ...s, pct } : s)));
+
+  const submit = async () => {
+    if (!ruleType) { setError('Select a rule type.'); return; }
+    if (splits.some((s) => !s.cardId)) {
+      setError('Every split must target a project card.'); return;
+    }
+    if (splits.some((s) => s.pct == null || !Number.isFinite(s.pct) || s.pct <= 0)) {
+      setError('Every split percentage must be a number greater than 0.'); return;
+    }
+    const ids = splits.map((s) => s.cardId);
+    if (new Set(ids).size !== ids.length) {
+      setError('A project card can appear in only one split.'); return;
+    }
+    const sum = splits.reduce((acc, s) => acc + (s.pct ?? 0), 0);
+    if (sum !== 100) {
+      setError(`Split percentages must add up to 100 (currently ${sum}).`); return;
+    }
+    setBusy(true);
+    setError(null);
+    try {
+      await valueApi.createAttributionRule(benefitId, ruleType, {
+        splits: splits.map((s) => ({ project_card_id: s.cardId, pct: s.pct })),
+      });
+      onChanged();
+      onClose();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : String(e));
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <Modal isOpen onClose={busy ? () => {} : onClose} width="medium" testId="strata-attribution-rule-modal">
+      <ModalHeader>
+        <ModalTitle>{benefitName ? `Add attribution rule · ${benefitName}` : 'Add attribution rule'}</ModalTitle>
+      </ModalHeader>
+      <ModalBody>
+        <p style={{ margin: '0 0 12px', fontSize: 'var(--ds-font-size-200)', color: T.subtle }}>
+          Attribute realized value to governed Project Cards. Percentages must be positive and add up to 100 —
+          calculated amounts and double-count prevention are enforced server-side.
+        </p>
+        <div style={{ display: 'grid', gap: 12 }}>
+          <FieldBlock label="Rule type" required>
+            <Select
+              options={ruleTypeOptions}
+              value={ruleTypeOptions.find((o) => o.value === ruleType) ?? null}
+              onChange={(next) => setRuleType(next?.value ?? null)}
+              placeholder="Select rule type…"
+              usePortal
+              aria-label="Rule type"
+            />
+          </FieldBlock>
+          <FieldBlock label="Splits" required helper="Each split attributes a share to one Project Card">
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              {splits.map((s, i) => {
+                const selected = cardOptions.find((o) => o.value === s.cardId) ?? null;
+                return (
+                  <div key={s.key} style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
+                    <span style={{ flex: 1, minWidth: 0 }}>
+                      <Select
+                        options={cardOptions}
+                        value={selected}
+                        onChange={(next) => setSplitCard(s.key, next?.value ?? null)}
+                        placeholder="Select project card…"
+                        isSearchable
+                        usePortal
+                        aria-label={`Project card for split ${i + 1}`}
+                      />
+                    </span>
+                    <span style={{ width: 96, flexShrink: 0 }}>
+                      <Textfield
+                        type="number"
+                        value={s.pct == null ? '' : String(s.pct)}
+                        onChange={(e) => {
+                          const raw = (e.target as HTMLInputElement).value;
+                          setSplitPct(s.key, raw === '' ? null : Number(raw));
+                        }}
+                        placeholder="%"
+                        aria-label={`Percentage for split ${i + 1}`}
+                      />
+                    </span>
+                    <Button
+                      appearance="subtle"
+                      spacing="compact"
+                      onClick={() => removeSplit(s.key)}
+                      isDisabled={splits.length <= 1}
+                      aria-label={`Remove split ${i + 1}`}
+                    >
+                      Remove
+                    </Button>
+                  </div>
+                );
+              })}
+              <span style={{ alignSelf: 'flex-start' }}>
+                <Button appearance="subtle" spacing="compact" onClick={addSplit}>Add split</Button>
+              </span>
+            </div>
+          </FieldBlock>
+        </div>
+        {error ? (
+          <div style={{ marginTop: 12 }}>
+            <SectionMessage appearance="error" title="Action rejected">
+              <p style={{ whiteSpace: 'pre-wrap' }}>{error}</p>
+            </SectionMessage>
+          </div>
+        ) : null}
+      </ModalBody>
+      <ModalFooter>
+        <Button appearance="subtle" onClick={onClose} isDisabled={busy}>Cancel</Button>
+        <Button appearance="primary" onClick={submit} isDisabled={busy}>
+          {busy ? 'Working…' : 'Add rule'}
         </Button>
       </ModalFooter>
     </Modal>
