@@ -229,6 +229,20 @@ STRATA-E2E-015, V4-OPEN-019, V6-OPEN-025, V6-OPEN-031, V6-OPEN-037, STRATA-E2E-0
 
 ---
 
+## PROGRAMME SUMMARY (all 5 waves complete)
+
+Branch `strata/v6-qa-remediation` from `main@eb1b5be64`. Commits:
+`bb642a849` (W1) · `2b4c351ff` (W2) · `0d64ddffa` (W3) · `5f6565d3d` (W4) · `1313c6e2b` (W5).
+
+**Fixed — pending independent retest:** E2E-001, 018, V6-OPEN-027, 029, 030 (W1); V6-OPEN-024, 033 (W2); V6-OPEN-026, 034, 036 (W3); V6-OPEN-032, Team/LBU, KPI-approval (W4); V6-OPEN-037, 025, 038, E2E-007 (W5).
+**Verified already-delivered (no change):** E2E-002, V4-OPEN-020, V5-OPEN-023, E2E-011, E2E-017, V4-OPEN-019, E2E-015.
+**Not reproducible on current code (no speculative fix):** V6-OPEN-035, E2E-006, V6-OPEN-028.
+**Blocked / decisions:** E2E-013 (D-2, parked), E2E-010 (D-4), Scorecard-instance (D-5), V6-OPEN-031 (D-6), V5-OPEN-022 (partial, D-3), E2E-005 (partial), E2E-009 (library noise).
+
+**4 unapplied migrations** (apply in order; D-1): `20260712130000`, `140000`, `150000`, `160000`. After apply, activate 033 by adding `p_expected_updated_at: patch.expectedUpdatedAt ?? null` to the `updateProjectCard` RPC call in `domain/index.ts`.
+
+**Validation across all waves:** `tsc --noEmit` 0 errors, `eslint` 0 errors, ADS color gate clean at every commit. Browser-verified live: 001a (no flash), 001b (refresh keeps cycle+theme), 018b (benefit portfolio), 027 (required theme), 030 (archived excluded 3→2), 028 (forecast renders), 026 (unassigned 0→2), 036 (tooltip), 011 (5 perspectives), KPI submit button, 037 (CSV export).
+
 ## DECISION LOG (product decisions that block specific items — work continues around them)
 
 | # | Question | Affected | Status |
