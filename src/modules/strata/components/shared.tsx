@@ -18,6 +18,7 @@ import {
   Modal, ModalBody, ModalFooter, ModalHeader, ModalTitle, SectionMessage, Spinner, Textfield, Tooltip,
 } from '@/components/ads';
 import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
+import VisuallyHidden from '@atlaskit/visually-hidden';
 import { ChevronDown, ChevronRight, Plus } from '@/lib/atlaskit-icons';
 import { JiraTable } from '@/components/shared/JiraTable';
 import type { Column } from '@/components/shared/JiraTable';
@@ -606,12 +607,24 @@ export function StrataStatStrip({ items, testId }: { items: StrataStat[]; testId
     >
       {items.map((m, i) => {
         const clickable = !!m.onClick;
+        const hasHelp = !!m.helpText;
+        // V6-OPEN-036: a non-clickable roll-up that carries a methodology (helpText)
+        // must stay reachable by keyboard and assistive tech. A `disabled` button is
+        // removed from the tab order and cannot host an accessible name/description, so
+        // the hover-only Tooltip was invisible to AT. Keep such a tile a live, focusable
+        // button (disabled only when it has neither a click action nor help) so the
+        // @atlaskit Tooltip also fires on focus, give it an accessible name, and expose
+        // the full methodology through aria-describedby → a VisuallyHidden node.
+        const describeId = hasHelp ? `strata-stat-help-${m.key}` : undefined;
+        const ariaLabel = hasHelp && typeof m.value === 'string' ? `${m.label}: ${m.value}` : undefined;
         return (
           <button
             key={m.key}
             type="button"
             onClick={m.onClick}
-            disabled={!clickable}
+            disabled={!clickable && !hasHelp}
+            aria-label={ariaLabel}
+            aria-describedby={describeId}
             onMouseEnter={() => setHover(m.key)}
             onMouseLeave={() => setHover(null)}
             data-testid={m.testId}
@@ -622,6 +635,7 @@ export function StrataStatStrip({ items, testId }: { items: StrataStat[]; testId
               cursor: clickable ? 'pointer' : 'default', minWidth: 0, font: 'inherit',
             }}
           >
+            {hasHelp ? <VisuallyHidden id={describeId}>{m.helpText}</VisuallyHidden> : null}
             {m.ring ? <StrataScoreRing score={m.ring.score} bandKey={m.ring.bandKey} size={56} strokeWidth={5} /> : null}
             <span style={{ minWidth: 0, display: 'flex', flexDirection: 'column' }}>
               {m.helpText ? (

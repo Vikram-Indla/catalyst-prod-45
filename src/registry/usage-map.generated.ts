@@ -4,8 +4,8 @@
  * Do NOT edit by hand. Run `npx tsx scripts/scan-components.ts` to regenerate
  * after changing any import in src/.
  *
- * Captured: 2026-07-09T12:41:36.446Z
- * Stats: 4039 components observed (670 atlaskit, 3369 internal).
+ * Captured: 2026-07-12T17:17:53.984Z
+ * Stats: 4018 components observed (662 atlaskit, 3356 internal).
  */
 
 export interface UsageMapEntry {
@@ -48,14 +48,6 @@ export const usageMap: UsageMap = {
       "src/components/shared/rich-text/atlaskit/catalystMentionProvider.ts"
     ],
     "package": "@atlaskit/mention"
-  },
-  "AcceptanceCriteriaEditor::./AcceptanceCriteriaEditor": {
-    "name": "AcceptanceCriteriaEditor",
-    "source": "./AcceptanceCriteriaEditor",
-    "origin": "internal",
-    "consumers": [
-      "src/components/stories/CreateStoryModal.tsx"
-    ]
   },
   "AcceptedStory::@/types/backlog.types": {
     "name": "AcceptedStory",
@@ -167,8 +159,7 @@ export const usageMap: UsageMap = {
       "src/modules/strata/pages/StrataEvidencePage.tsx",
       "src/modules/strata/pages/StrataKpiDetailPage.tsx",
       "src/modules/strata/pages/StrataKpiLibraryPage.tsx",
-      "src/modules/tasks/components/kanban/TaskDetailDrawer.tsx",
-      "src/pages/TeamRoom.tsx"
+      "src/modules/tasks/components/kanban/TaskDetailDrawer.tsx"
     ]
   },
   "ActivityFeed::./ActivityFeed": {
@@ -187,22 +178,6 @@ export const usageMap: UsageMap = {
       "src/components/items/features/tabs/FeatureAuditTab.tsx",
       "src/components/shared/UnifiedAuditHistoryTab.tsx",
       "src/components/stories/StoryActivityLog.tsx"
-    ]
-  },
-  "ActivityFeed::@/components/dashboard": {
-    "name": "ActivityFeed",
-    "source": "@/components/dashboard",
-    "origin": "internal",
-    "consumers": [
-      "src/pages/releases/CommandCenter.tsx"
-    ]
-  },
-  "ActivityFeedWidget::@/components/releases/dashboard/ActivityFeedWidget": {
-    "name": "ActivityFeedWidget",
-    "source": "@/components/releases/dashboard/ActivityFeedWidget",
-    "origin": "internal",
-    "consumers": [
-      "src/pages/releases/ReleaseDashboardPage.tsx"
     ]
   },
   "ActivityHeader::./ActivityHeader": {
@@ -280,6 +255,14 @@ export const usageMap: UsageMap = {
       "src/components/catalyst-detail-views/task-catalyst/TaskCatalystView.tsx",
       "src/components/catalyst-detail-views/test-case/TmActivitySection.tsx",
       "src/components/shared/CommentsSection.tsx"
+    ]
+  },
+  "ActivityPanel::@/components/catalyst-ds/activity/ActivityPanel": {
+    "name": "ActivityPanel",
+    "source": "@/components/catalyst-ds/activity/ActivityPanel",
+    "origin": "internal",
+    "consumers": [
+      "src/modules/ideation/pages/DetailPage.tsx"
     ]
   },
   "ActivityPanel::@/components/IssueDetailPane/ActivityPanel": {
@@ -469,20 +452,18 @@ export const usageMap: UsageMap = {
       "src/components/catalyst-detail-views/shared/sections/Description/_components/TableInsertHandles/TableInsertHandles.tsx",
       "src/components/catalyst-detail-views/shared/sections/designs/DesignsSection.tsx",
       "src/components/catalyst-detail-views/shared/sections/web-links/WebLinksSection.tsx",
-      "src/components/chat/dock/ChatDock.tsx",
       "src/components/filters/CanonicalFilter.tsx",
       "src/components/ja/CreateDropdown.tsx",
       "src/components/kanban/PragmaticBoard.tsx",
       "src/components/shared/CanonicalDescriptionField/DescriptionViewMode.tsx",
       "src/features/chat/components/sidebar/ConversationSidebar.tsx",
-      "src/features/release-calendar/components/CalendarHeader.tsx",
       "src/features/release-compare/components/ReleaseSelector.tsx",
+      "src/modules/ideation/pages/DetailPage.tsx",
       "src/modules/project-work-hub/components/dialogs/story-detail-modules/ChildIssuesSection.tsx",
       "src/modules/project-work-hub/components/dialogs/story-detail-modules/LinkedIssuesSection.tsx",
       "src/modules/project-work-hub/components/dialogs/story-detail-modules/TestHubSection.tsx",
       "src/modules/project-work-hub/components/linked-work-items/LinkedWorkItemsHeader.tsx",
       "src/modules/project-work-hub/components/story-test-cases/TestCasesSection.tsx",
-      "src/pages/admin/BusinessOwners.tsx",
       "src/pages/admin/CapacityDepartments.tsx",
       "src/pages/admin/Departments.tsx",
       "src/pages/admin/ResourceAssignments.tsx",
@@ -649,14 +630,6 @@ export const usageMap: UsageMap = {
       "src/pages/SkillsInventory.tsx"
     ]
   },
-  "AddTestsToCoverageDialog::@/components/releases/coverage": {
-    "name": "AddTestsToCoverageDialog",
-    "source": "@/components/releases/coverage",
-    "origin": "internal",
-    "consumers": [
-      "src/pages/releases/CoverageReportsPage.tsx"
-    ]
-  },
   "AddToCycleSetSheet::./AddToCycleSetSheet": {
     "name": "AddToCycleSetSheet",
     "source": "./AddToCycleSetSheet",
@@ -697,25 +670,18 @@ export const usageMap: UsageMap = {
     "origin": "internal",
     "consumers": [
       "src/pages/admin/AdminAccessPage.tsx",
-      "src/pages/admin/AdminOverview.tsx",
-      "src/pages/admin/AdminStorybookPage.tsx",
       "src/pages/admin/AiAccessPage.tsx",
       "src/pages/admin/AiTranslationsAuditPage.tsx",
-      "src/pages/admin/BusinessOwners.tsx",
       "src/pages/admin/CapacityDepartments.tsx",
       "src/pages/admin/Departments.tsx",
-      "src/pages/admin/FeatureFlagsPage.tsx",
       "src/pages/admin/FieldLayoutPage.tsx",
       "src/pages/admin/FieldRegistryPage.tsx",
       "src/pages/admin/GovernanceSettings.tsx",
-      "src/pages/admin/NotificationTriggers.tsx",
       "src/pages/admin/PermissionsAdminPage.tsx",
-      "src/pages/admin/QuartersAdminPage.tsx",
       "src/pages/admin/ReleaseOpsAdminPage.tsx",
       "src/pages/admin/ResourceAssignments.tsx",
       "src/pages/admin/RolesAdminPage.tsx",
       "src/pages/admin/RoutingTaxonomyPage.tsx",
-      "src/pages/admin/UserAccessPage.tsx",
       "src/pages/admin/avatars/AdminAvatarsPage.tsx",
       "src/pages/admin/components/ComponentsAdminPage.tsx",
       "src/pages/admin/connections/JiraSyncPage.tsx",
@@ -747,9 +713,7 @@ export const usageMap: UsageMap = {
       "src/components/admin/notifications/SchemeSelector.tsx",
       "src/components/admin/notifications/TriggerSearch.tsx",
       "src/pages/admin/AiTranslationsAuditPage.tsx",
-      "src/pages/admin/BusinessOwners.tsx",
-      "src/pages/admin/ResourceAssignments.tsx",
-      "src/pages/admin/UserAccessPage.tsx"
+      "src/pages/admin/ResourceAssignments.tsx"
     ],
     "package": "@atlaskit/select"
   },
@@ -972,15 +936,6 @@ export const usageMap: UsageMap = {
     "origin": "internal",
     "consumers": [
       "src/pages/admin/AiAccessPage.tsx"
-    ]
-  },
-  "AIReleaseInsight::../types": {
-    "name": "AIReleaseInsight",
-    "source": "../types",
-    "origin": "internal",
-    "consumers": [
-      "src/features/all-releases/components/AIInsightsBar.tsx",
-      "src/features/all-releases/components/AIInsightsDrawer.tsx"
     ]
   },
   "AIStartMyDay::./AIStartMyDay": {
@@ -3544,7 +3499,6 @@ export const usageMap: UsageMap = {
       "src/modules/tasks/components/workstreams/WorkstreamsPage.tsx",
       "src/modules/work-hub/views/AllWorkView.tsx",
       "src/pages/CleanupPage.tsx",
-      "src/pages/ForYouPage.tsx",
       "src/pages/InviteAcceptPage.tsx",
       "src/pages/PIObjectives.tsx",
       "src/pages/PortfolioRoadmap.tsx",
@@ -3552,7 +3506,6 @@ export const usageMap: UsageMap = {
       "src/pages/ShortLinkResolverPage.tsx",
       "src/pages/SprintBoard.tsx",
       "src/pages/enterprise/CapacityPlannerPage.tsx",
-      "src/pages/releases/QualityGatesPage.tsx",
       "src/pages/work-tree/WorkTreePage.tsx",
       "src/pages/work-tree/components/WorkTreeLegend.tsx"
     ]
@@ -3588,8 +3541,7 @@ export const usageMap: UsageMap = {
     "source": "@/components/admin/admin-alert-dialog",
     "origin": "internal",
     "consumers": [
-      "src/pages/admin/CapacityDepartments.tsx",
-      "src/pages/admin/FeatureFlagsPage.tsx"
+      "src/pages/admin/CapacityDepartments.tsx"
     ]
   },
   "AlertDialog::@/components/ui/alert-dialog": {
@@ -3755,8 +3707,7 @@ export const usageMap: UsageMap = {
     "source": "@/components/admin/admin-alert-dialog",
     "origin": "internal",
     "consumers": [
-      "src/pages/admin/CapacityDepartments.tsx",
-      "src/pages/admin/FeatureFlagsPage.tsx"
+      "src/pages/admin/CapacityDepartments.tsx"
     ]
   },
   "AlertDialogContent::@/components/ui/alert-dialog": {
@@ -3812,8 +3763,7 @@ export const usageMap: UsageMap = {
     "source": "@/components/admin/admin-alert-dialog",
     "origin": "internal",
     "consumers": [
-      "src/pages/admin/CapacityDepartments.tsx",
-      "src/pages/admin/FeatureFlagsPage.tsx"
+      "src/pages/admin/CapacityDepartments.tsx"
     ]
   },
   "AlertDialogDescription::@/components/ui/alert-dialog": {
@@ -3869,8 +3819,7 @@ export const usageMap: UsageMap = {
     "source": "@/components/admin/admin-alert-dialog",
     "origin": "internal",
     "consumers": [
-      "src/pages/admin/CapacityDepartments.tsx",
-      "src/pages/admin/FeatureFlagsPage.tsx"
+      "src/pages/admin/CapacityDepartments.tsx"
     ]
   },
   "AlertDialogFooter::@/components/ui/alert-dialog": {
@@ -3926,8 +3875,7 @@ export const usageMap: UsageMap = {
     "source": "@/components/admin/admin-alert-dialog",
     "origin": "internal",
     "consumers": [
-      "src/pages/admin/CapacityDepartments.tsx",
-      "src/pages/admin/FeatureFlagsPage.tsx"
+      "src/pages/admin/CapacityDepartments.tsx"
     ]
   },
   "AlertDialogHeader::@/components/ui/alert-dialog": {
@@ -3983,8 +3931,7 @@ export const usageMap: UsageMap = {
     "source": "@/components/admin/admin-alert-dialog",
     "origin": "internal",
     "consumers": [
-      "src/pages/admin/CapacityDepartments.tsx",
-      "src/pages/admin/FeatureFlagsPage.tsx"
+      "src/pages/admin/CapacityDepartments.tsx"
     ]
   },
   "AlertDialogTitle::@/components/ui/alert-dialog": {
@@ -4118,7 +4065,6 @@ export const usageMap: UsageMap = {
       "src/components/kanban/adapters/incidentHubBoardAdapter.tsx",
       "src/components/kanban/overflow-menu/MoveWorkItemModal.tsx",
       "src/components/layout/ItemsDropdown.tsx",
-      "src/components/layout/TeamRoomSidebar.tsx",
       "src/components/layout/TestHubSidebar.tsx",
       "src/components/layout/dropdowns/ItemsDropdown.tsx",
       "src/components/modals/LinkWorkItemModal/LinkTypeSelector.tsx",
@@ -4216,7 +4162,6 @@ export const usageMap: UsageMap = {
       "src/pages/ReqAssistGenerate.tsx",
       "src/pages/Roadmaps.tsx",
       "src/pages/SkillsInventory.tsx",
-      "src/pages/TeamRoom.tsx",
       "src/pages/enterprise/BudgetGovernancePage.tsx",
       "src/pages/enterprise/BudgetPlannerPage.tsx",
       "src/pages/enterprise/DemandSummaryPage.tsx",
@@ -4235,20 +4180,7 @@ export const usageMap: UsageMap = {
       "src/pages/project/components/RiskLinkDialog.tsx",
       "src/pages/project/feature-detail/FeatureAuditTab.tsx",
       "src/pages/project/feature-detail/FeatureOverviewTab.tsx",
-      "src/pages/releases/AllReleasesPage.tsx",
-      "src/pages/releases/CommandCenterPage.tsx",
-      "src/pages/releases/CoverageReportsPage.tsx",
-      "src/pages/releases/DefectDetailPage.tsx",
-      "src/pages/releases/QualityGatesPage.tsx",
       "src/pages/work/Dependencies.tsx"
-    ]
-  },
-  "AlertTriangleIcon::@/lib/atlaskit-icons": {
-    "name": "AlertTriangleIcon",
-    "source": "@/lib/atlaskit-icons",
-    "origin": "internal",
-    "consumers": [
-      "src/pages/ForYouPage.tsx"
     ]
   },
   "AlignImageCenterIcon::@atlaskit/icon/core/align-image-center": {
@@ -4565,8 +4497,7 @@ export const usageMap: UsageMap = {
     "origin": "atlaskit",
     "consumers": [
       "src/components/kanban/toolbar/KanbanToolbar.tsx",
-      "src/modules/project-work-hub/components/drawers/StoryActionMenu.tsx",
-      "src/pages/admin/FeatureFlagsPage.tsx"
+      "src/modules/project-work-hub/components/drawers/StoryActionMenu.tsx"
     ],
     "package": "@atlaskit/icon"
   },
@@ -4667,7 +4598,6 @@ export const usageMap: UsageMap = {
       "src/modules/task10/components/week/T10PriorityCard.tsx",
       "src/modules/tasks/components/TaskCard.tsx",
       "src/modules/work-hub/components/ColumnHeaderMenu.tsx",
-      "src/pages/admin/test/TestCaseWorkflowPage.tsx",
       "src/pages/project/feature-detail/FeatureLinksTab.tsx",
       "src/pages/testhub/repository/StepEditor.tsx"
     ]
@@ -4686,9 +4616,7 @@ export const usageMap: UsageMap = {
     "source": "@atlaskit/icon/core/arrow-down",
     "origin": "atlaskit",
     "consumers": [
-      "src/features/all-releases/components/EnterpriseTableView.tsx",
-      "src/features/chat/components/feed/MessageFeed.tsx",
-      "src/pages/admin/FeatureFlagsPage.tsx"
+      "src/features/chat/components/feed/MessageFeed.tsx"
     ],
     "package": "@atlaskit/icon"
   },
@@ -4765,7 +4693,6 @@ export const usageMap: UsageMap = {
       "src/pages/items/reports/EpicResponsibilityMatrix.tsx",
       "src/pages/project-hub/MapStatusesPage.tsx",
       "src/pages/project/components/FeatureLinkedItems.tsx",
-      "src/pages/releases/DefectDetailPage.tsx",
       "src/pages/testhub/cycles/CycleRunDetailPage.tsx",
       "src/pages/testhub/cycles/ExecutionPage.tsx"
     ]
@@ -4834,7 +4761,6 @@ export const usageMap: UsageMap = {
       "src/modules/tasks/components/insights/MonthlyChronicleView.tsx",
       "src/pages/ReqAssistLibrary.tsx",
       "src/pages/project/components/FeatureLinkedItems.tsx",
-      "src/pages/releases/CommandCenter.tsx",
       "src/pages/reports/DependencyMapsPage.tsx"
     ]
   },
@@ -4844,11 +4770,7 @@ export const usageMap: UsageMap = {
     "origin": "atlaskit",
     "consumers": [
       "src/components/boards/BoardCard.tsx",
-      "src/features/all-releases/components/AIInsightsBar.tsx",
-      "src/features/all-releases/components/AIInsightsDrawer.tsx",
-      "src/features/release-calendar/components/CalendarAIInsights.tsx",
-      "src/modules/project-work-hub/components/drawers/StoryActionMenu.tsx",
-      "src/pages/admin/AdminOverview.tsx"
+      "src/modules/project-work-hub/components/drawers/StoryActionMenu.tsx"
     ],
     "package": "@atlaskit/icon"
   },
@@ -4917,7 +4839,6 @@ export const usageMap: UsageMap = {
       "src/modules/task10/components/week/T10PriorityCard.tsx",
       "src/modules/tasks/components/TaskCard.tsx",
       "src/modules/work-hub/components/ColumnHeaderMenu.tsx",
-      "src/pages/admin/test/TestCaseWorkflowPage.tsx",
       "src/pages/project/feature-detail/FeatureLinksTab.tsx",
       "src/pages/testhub/repository/StepEditor.tsx"
     ]
@@ -4951,19 +4872,8 @@ export const usageMap: UsageMap = {
       "src/modules/task10/components/week/T10SortableList.tsx",
       "src/modules/task10/components/week/T10UnifiedSortableList.tsx",
       "src/pages/Forecast.tsx",
-      "src/pages/project/feature-detail/FeatureDeliveryTab.tsx",
-      "src/pages/releases/AllReleasesPage.tsx"
+      "src/pages/project/feature-detail/FeatureDeliveryTab.tsx"
     ]
-  },
-  "ArrowUpIcon::@atlaskit/icon/core/arrow-up": {
-    "name": "ArrowUpIcon",
-    "source": "@atlaskit/icon/core/arrow-up",
-    "origin": "atlaskit",
-    "consumers": [
-      "src/features/all-releases/components/EnterpriseTableView.tsx",
-      "src/pages/admin/FeatureFlagsPage.tsx"
-    ],
-    "package": "@atlaskit/icon"
   },
   "ArrowUpIcon::@atlaskit/icon/glyph/arrow-up": {
     "name": "ArrowUpIcon",
@@ -4990,8 +4900,7 @@ export const usageMap: UsageMap = {
     "source": "@/lib/atlaskit-icons",
     "origin": "internal",
     "consumers": [
-      "src/components/evidence/annotation/AnnotationToolbar.tsx",
-      "src/pages/releases/CoverageReportsPage.tsx"
+      "src/components/evidence/annotation/AnnotationToolbar.tsx"
     ]
   },
   "ArrowUpToLine::@/lib/atlaskit-icons": {
@@ -5019,6 +4928,15 @@ export const usageMap: UsageMap = {
       "src/components/catalyst-detail-views/epic/GenerateStoriesButton.tsx"
     ]
   },
+  "ArtifactView::../components/ArtifactView": {
+    "name": "ArtifactView",
+    "source": "../components/ArtifactView",
+    "origin": "internal",
+    "consumers": [
+      "src/modules/docintel/pages/DocintelDeliverablesPage.tsx",
+      "src/modules/docintel/pages/DocintelHomePage.tsx"
+    ]
+  },
   "ArtifactView::./ArtifactView": {
     "name": "ArtifactView",
     "source": "./ArtifactView",
@@ -5044,8 +4962,16 @@ export const usageMap: UsageMap = {
     "source": "../components/AskPanel",
     "origin": "internal",
     "consumers": [
-      "src/modules/docintel/pages/DocintelDocumentsPage.tsx",
+      "src/modules/docintel/pages/DocintelLibraryPage.tsx",
       "src/modules/docintel/pages/DocintelWorkspacePage.tsx"
+    ]
+  },
+  "AskPanel::./AskPanel": {
+    "name": "AskPanel",
+    "source": "./AskPanel",
+    "origin": "internal",
+    "consumers": [
+      "src/modules/docintel/components/DocintelIntentComposer.tsx"
     ]
   },
   "AssignedPanel::@/components/for-you/atlaskit/AssignedPanel": {
@@ -5213,7 +5139,6 @@ export const usageMap: UsageMap = {
     "source": "@atlaskit/button/new",
     "origin": "atlaskit",
     "consumers": [
-      "src/pages/admin/FeatureFlagsPage.tsx",
       "src/pages/admin/GovernanceSettings.tsx"
     ],
     "package": "@atlaskit/button"
@@ -5232,7 +5157,17 @@ export const usageMap: UsageMap = {
     "source": "@/components/chat/main/AtlaskitAvatar",
     "origin": "internal",
     "consumers": [
-      "src/components/chat/dock/DockDirectory.tsx"
+      "src/components/chat/dock/ChatDock.tsx",
+      "src/components/chat/dock/DockActivityTab.tsx",
+      "src/components/chat/dock/DockCardView.tsx",
+      "src/components/chat/dock/DockConvHeader.tsx",
+      "src/components/chat/dock/DockDirectory.tsx",
+      "src/components/chat/dock/DockDmsTab.tsx",
+      "src/components/chat/dock/DockHomeCards.tsx",
+      "src/components/chat/dock/DockNewHuddleModal.tsx",
+      "src/components/chat/dock/DockNewMessageModal.tsx",
+      "src/components/chat/dock/DockSearchTab.tsx",
+      "src/components/chat/dock/DockYouModal.tsx"
     ]
   },
   "AtlaskitBoundary::@/components/shared/rich-text/atlaskit/AtlaskitBoundary": {
@@ -5270,6 +5205,9 @@ export const usageMap: UsageMap = {
     "consumers": [
       "src/components/shared/CatalystListPage/CatalystListPageLayout.tsx",
       "src/components/shared/Timeline/TimelineView.tsx",
+      "src/modules/docintel/pages/DocintelDeliverablesPage.tsx",
+      "src/modules/docintel/pages/DocintelHomePage.tsx",
+      "src/modules/docintel/pages/DocintelReviewStartPage.tsx",
       "src/modules/project-work-hub/pages/BacklogPage.atlaskit.tsx",
       "src/pages/project-hub/ProjectBoardPage.tsx",
       "src/pages/project-hub/ProjectDashboardPage.tsx",
@@ -5494,6 +5432,24 @@ export const usageMap: UsageMap = {
     "origin": "internal",
     "consumers": [
       "src/pages/releasehub/ReleaseDetailPage.tsx"
+    ]
+  },
+  "AuthContext::@/lib/auth": {
+    "name": "AuthContext",
+    "source": "@/lib/auth",
+    "origin": "internal",
+    "consumers": [
+      "src/stories/audit-grade/22-DocintelReviewStart.stories.tsx",
+      "src/stories/audit-grade/25-DocintelDeliverables.stories.tsx",
+      "src/stories/audit-grade/26-DocintelLibrary.stories.tsx"
+    ]
+  },
+  "AuthContext::@/lib/auth-context": {
+    "name": "AuthContext",
+    "source": "@/lib/auth-context",
+    "origin": "internal",
+    "consumers": [
+      "src/lib/auth.tsx"
     ]
   },
   "AuthProvider::./lib/auth": {
@@ -6019,8 +5975,9 @@ export const usageMap: UsageMap = {
     "source": "@atlaskit/badge",
     "origin": "atlaskit",
     "consumers": [
-      "src/components/chat/dock/ChatDock.tsx",
+      "src/components/chat/dock/DockActivityTab.tsx",
       "src/components/chat/dock/DockDirectory.tsx",
+      "src/components/chat/dock/DockDmsTab.tsx",
       "src/components/ja/NotificationsPanel.tsx",
       "src/components/project-hub/dashboard/widgets/DemandFulfilmentGadget.tsx",
       "src/features/chat-v2/components/Activity/ActivityHeader.tsx",
@@ -6029,6 +5986,7 @@ export const usageMap: UsageMap = {
       "src/features/chat-v2/components/Sidebar/ChannelRow.tsx",
       "src/features/chat-v2/components/Sidebar/ConversationRow.tsx",
       "src/features/chat-v2/components/Sidebar/DmRichRow.tsx",
+      "src/modules/strata/components/StrataNotificationBell.tsx",
       "src/pages/admin/components/ADSViolationsPanel.tsx",
       "src/pages/admin/components/ComponentSpecCard.tsx",
       "src/pages/admin/components/ComponentsAdminPage.tsx",
@@ -6084,7 +6042,6 @@ export const usageMap: UsageMap = {
       "src/components/capacity/SleekCapacityHeader.tsx",
       "src/components/ideas-roadmap/RoadmapToolbar.tsx",
       "src/components/incidents/IncidentCommandBar.tsx",
-      "src/components/layout/IdeationSidebar.tsx",
       "src/components/layout/IncidentHubSidebar.tsx",
       "src/components/project-hub/shell/SidebarProjectNav.tsx",
       "src/components/workhub/capacity/CapacityPage.tsx",
@@ -6109,17 +6066,7 @@ export const usageMap: UsageMap = {
       "src/pages/enterprise/BudgetPlannerPage.tsx",
       "src/pages/enterprise/DemandSummaryPage.tsx",
       "src/pages/producthub/IdeasThemePage.tsx",
-      "src/pages/project-hub/ProjectBoardPage.tsx",
-      "src/pages/releasehub/ReleaseComparePage.tsx",
-      "src/pages/releases/CoverageReportsPage.tsx"
-    ]
-  },
-  "BarPosition::../utils/calendarUtils": {
-    "name": "BarPosition",
-    "source": "../utils/calendarUtils",
-    "origin": "internal",
-    "consumers": [
-      "src/features/release-calendar/components/ReleaseBar.tsx"
+      "src/pages/project-hub/ProjectBoardPage.tsx"
     ]
   },
   "BasicFilterBar::@/components/filters/BasicFilterBar": {
@@ -6186,6 +6133,8 @@ export const usageMap: UsageMap = {
       "src/components/templates/ApplyTemplateModal.tsx",
       "src/modules/in-jira/components/drawer/IssueActionsMenu.tsx",
       "src/modules/in-jira/pages/SettingsPage.tsx",
+      "src/modules/strata/components/StrataNotificationBell.tsx",
+      "src/modules/strata/pages/StrataAdminConfigPage.tsx",
       "src/pages/CleanupPage.tsx"
     ]
   },
@@ -6336,8 +6285,7 @@ export const usageMap: UsageMap = {
     "source": "@atlaskit/icon/core/board",
     "origin": "atlaskit",
     "consumers": [
-      "src/components/for-you/atlaskit/StarredHubList.tsx",
-      "src/pages/admin/FeatureFlagsPage.tsx"
+      "src/components/for-you/atlaskit/StarredHubList.tsx"
     ],
     "package": "@atlaskit/icon"
   },
@@ -6414,15 +6362,6 @@ export const usageMap: UsageMap = {
     "consumers": [
       "src/pages/project-hub/ProjectBoardSettingsPage.tsx"
     ]
-  },
-  "BoardsIcon::@atlaskit/icon/core/boards": {
-    "name": "BoardsIcon",
-    "source": "@atlaskit/icon/core/boards",
-    "origin": "atlaskit",
-    "consumers": [
-      "src/pages/admin/FeatureFlagsPage.tsx"
-    ],
-    "package": "@atlaskit/icon"
   },
   "BoardTaskCard::./BoardTaskCard": {
     "name": "BoardTaskCard",
@@ -6588,7 +6527,6 @@ export const usageMap: UsageMap = {
       "src/components/shared/UnifiedLinksTab.tsx",
       "src/components/stories/StoriesSidebar.tsx",
       "src/modules/project-work-hub/pages/StoryBacklogPage.tsx",
-      "src/pages/ForYouPage.tsx",
       "src/pages/ReqAssistGenerate.tsx"
     ]
   },
@@ -6599,15 +6537,6 @@ export const usageMap: UsageMap = {
     "consumers": [
       "src/pages/enterprise/CapacityPlannerPage.tsx"
     ]
-  },
-  "BookWithBookmarkIcon::@atlaskit/icon/core/book-with-bookmark": {
-    "name": "BookWithBookmarkIcon",
-    "source": "@atlaskit/icon/core/book-with-bookmark",
-    "origin": "atlaskit",
-    "consumers": [
-      "src/pages/admin/FeatureFlagsPage.tsx"
-    ],
-    "package": "@atlaskit/icon"
   },
   "BorderIcon::@atlaskit/icon/core/border": {
     "name": "BorderIcon",
@@ -6690,6 +6619,11 @@ export const usageMap: UsageMap = {
       "src/components/workhub/pickers/CreateStyleAssigneeReporter.tsx",
       "src/features/notifications/DirectPanel.tsx",
       "src/features/notifications/components/DirectNotificationRow.tsx",
+      "src/modules/docintel/components/DocintelIntentComposer.tsx",
+      "src/modules/docintel/components/DocintelNavigation.tsx",
+      "src/modules/docintel/pages/DocintelHomePage.tsx",
+      "src/modules/docintel/pages/DocintelReviewStartPage.tsx",
+      "src/modules/ideation/components/CreateIdeaModal.tsx",
       "src/modules/project-work-hub/pages/BacklogPage.atlaskit.tsx",
       "src/modules/project-work-hub/pages/StoryBacklogPage.atlaskit.tsx",
       "src/spaces/components/steps/StepFeatures.tsx",
@@ -6785,6 +6719,8 @@ export const usageMap: UsageMap = {
     "origin": "internal",
     "consumers": [
       "src/components/layout/ProjectPageHeader.tsx",
+      "src/modules/docintel/pages/DocintelLibraryPage.tsx",
+      "src/modules/docintel/pages/DocintelWorkspacePage.tsx",
       "src/modules/project-work-hub/components/TicketBreadcrumbs.tsx",
       "src/pages/ProjectSettingsPage.tsx",
       "src/pages/admin/AiAccessPage.tsx",
@@ -6797,13 +6733,10 @@ export const usageMap: UsageMap = {
     "source": "@/components/ads/Breadcrumbs",
     "origin": "internal",
     "consumers": [
-      "src/modules/docintel/pages/DocintelDocumentsPage.tsx",
       "src/modules/docintel/pages/DocintelHealthPage.tsx",
       "src/modules/docintel/pages/DocintelUploadPage.tsx",
-      "src/modules/docintel/pages/DocintelWorkspacePage.tsx",
       "src/pages/admin/test/TestCaseStatusesPage.tsx",
       "src/pages/admin/test/TestCaseTypesPage.tsx",
-      "src/pages/admin/test/TestCaseWorkflowPage.tsx",
       "src/pages/admin/test/TestPermissionsPage.tsx",
       "src/pages/admin/test/TestPrioritiesPage.tsx"
     ]
@@ -6859,7 +6792,8 @@ export const usageMap: UsageMap = {
       "src/components/ja/HomeContent.tsx",
       "src/components/ja/home/EmptyStates.tsx",
       "src/components/ja/home/HomeContentV2.tsx",
-      "src/components/layout/dropdowns/StarredDropdown.tsx"
+      "src/components/layout/dropdowns/StarredDropdown.tsx",
+      "src/modules/strata/pages/StrataStrategyElementDetailPage.tsx"
     ]
   },
   "BriefcaseIcon::@atlaskit/icon/core/briefcase": {
@@ -7016,7 +6950,6 @@ export const usageMap: UsageMap = {
       "src/components/kanban/adapters/ideasBoardAdapter.tsx",
       "src/components/kanban/adapters/teamProgramBoardAdapter.tsx",
       "src/components/layout/ReleasesManagementSidebar.tsx",
-      "src/components/layout/TeamRoomSidebar.tsx",
       "src/components/project-hub/settings/types/TypeHierarchy.tsx",
       "src/components/releases/quality-gates/ReleaseTestSummaryPanel.tsx",
       "src/components/settings/EmailNotificationsPanel.tsx",
@@ -7024,16 +6957,7 @@ export const usageMap: UsageMap = {
       "src/features/my-test-scope/components/ScopeTabs.tsx",
       "src/modules/project-work-hub/components/CreateWorkItemDropdown.tsx",
       "src/modules/project-work-hub/components/WorkTypeIcon.tsx",
-      "src/modules/tasks/components/insights/WeeklySummaryView.tsx",
-      "src/pages/releases/CommandCenterPage.tsx"
-    ]
-  },
-  "BugIcon::@/lib/atlaskit-icons": {
-    "name": "BugIcon",
-    "source": "@/lib/atlaskit-icons",
-    "origin": "internal",
-    "consumers": [
-      "src/pages/ForYouPage.tsx"
+      "src/modules/tasks/components/insights/WeeklySummaryView.tsx"
     ]
   },
   "BugIcon::@atlaskit/icon-object/glyph/bug/16": {
@@ -7052,7 +6976,6 @@ export const usageMap: UsageMap = {
     "consumers": [
       "src/components/filters/FilterTemplateGallery.tsx",
       "src/config/workItemConfig.ts",
-      "src/features/all-releases/components/ReleaseCard.tsx",
       "src/features/my-test-scope/components/AttentionCards.tsx",
       "src/features/my-test-scope/components/DefectsPanel.tsx",
       "src/pages/testhub/cycles/CycleDetailPage.tsx"
@@ -7308,15 +7231,23 @@ export const usageMap: UsageMap = {
       "src/components/project-hub/dashboard/widgets/DemandFulfilmentGadget.tsx",
       "src/modules/docintel/components/ArtifactView.tsx",
       "src/modules/docintel/components/AskPanel.tsx",
+      "src/modules/docintel/components/DocintelFindingsPanel.tsx",
+      "src/modules/docintel/components/DocintelIntentComposer.tsx",
+      "src/modules/docintel/components/DocintelWorkspaceOverview.tsx",
       "src/modules/docintel/components/DocumentLinksPanel.tsx",
       "src/modules/docintel/components/FactsReviewPanel.tsx",
       "src/modules/docintel/components/GenerationPanel.tsx",
       "src/modules/docintel/components/PdfThumbnails.tsx",
-      "src/modules/docintel/pages/DocintelDocumentsPage.tsx",
+      "src/modules/docintel/components/ThemeTags.tsx",
+      "src/modules/docintel/pages/DocintelDeliverablesPage.tsx",
       "src/modules/docintel/pages/DocintelHealthPage.tsx",
+      "src/modules/docintel/pages/DocintelHomePage.tsx",
+      "src/modules/docintel/pages/DocintelLibraryPage.tsx",
+      "src/modules/docintel/pages/DocintelReviewStartPage.tsx",
       "src/modules/docintel/pages/DocintelUploadPage.tsx",
       "src/modules/docintel/pages/DocintelWorkspacePage.tsx",
       "src/modules/strata/components/ProjectCardDetailView.tsx",
+      "src/modules/strata/components/StrataNotificationBell.tsx",
       "src/modules/strata/components/authoring.tsx",
       "src/modules/strata/components/shared.tsx",
       "src/modules/strata/components/vmoAuthoring.tsx",
@@ -7331,6 +7262,7 @@ export const usageMap: UsageMap = {
       "src/modules/strata/pages/StrataPortfolioVmoPage.tsx",
       "src/modules/strata/pages/StrataReviewsPage.tsx",
       "src/modules/strata/pages/StrataScorecardDetailPage.tsx",
+      "src/modules/strata/pages/StrataStrategyElementDetailPage.tsx",
       "src/modules/strata/pages/StrataStrategyMapPage.tsx",
       "src/modules/strata/pages/StrataStrategyRoomPage.tsx",
       "src/modules/strata/pages/StrataUploadWizardPage.tsx",
@@ -7344,7 +7276,8 @@ export const usageMap: UsageMap = {
       "src/pages/admin/workflows/studio/WorkItemTypesTab.tsx",
       "src/pages/admin/workflows/studio/WorkflowEditorPage.tsx",
       "src/pages/admin/workflows/studio/WorkflowStudioPage.tsx",
-      "src/pages/project-hub/ProjectDashboardPage.tsx"
+      "src/pages/project-hub/ProjectDashboardPage.tsx",
+      "src/stories/audit-grade/23-DocintelWorkspaceOverview.stories.tsx"
     ]
   },
   "Button::@/components/ads/Button": {
@@ -7407,9 +7340,6 @@ export const usageMap: UsageMap = {
       "src/components/enterprise/EnterpriseGrid.tsx",
       "src/components/epic-backlog/EpicFiltersDialog.tsx",
       "src/components/epic-backlog/EpicForecastTab.tsx",
-      "src/components/epic-backlog/modals/FeatureStatusModal.tsx",
-      "src/components/epic-backlog/modals/MilestoneModal.tsx",
-      "src/components/epic-backlog/modals/WSJFModal.tsx",
       "src/components/epic-backlog/tabs/BenefitsTab.tsx",
       "src/components/epic-backlog/tabs/DesignTab.tsx",
       "src/components/epic-backlog/tabs/LinksTab.tsx",
@@ -7573,7 +7503,6 @@ export const usageMap: UsageMap = {
       "src/components/skills-inventory/SkillsFiltersDialog.tsx",
       "src/components/stories/AcceptanceCriteriaEditor.tsx",
       "src/components/stories/CreateEditStoryPanel.tsx",
-      "src/components/stories/CreateStoryModal.tsx",
       "src/components/stories/PullRankDialog.tsx",
       "src/components/stories/StoriesColumnConfig.tsx",
       "src/components/stories/StoriesFiltersDialog.tsx",
@@ -7612,16 +7541,10 @@ export const usageMap: UsageMap = {
       "src/components/workload/WorkloadAlerts.tsx",
       "src/components/workload/WorkloadHeader.tsx",
       "src/components/workload/WorkloadHealthIndicator.tsx",
-      "src/features/all-releases/components/AIInsightsBar.tsx",
-      "src/features/all-releases/components/AIInsightsDrawer.tsx",
-      "src/features/all-releases/components/FilterBar.tsx",
-      "src/features/all-releases/components/Toolbar.tsx",
       "src/features/my-test-scope/components/IncidentsPanel.tsx",
       "src/features/my-test-scope/components/ScopeFilterBar.tsx",
       "src/features/my-test-scope/components/TestsTable.tsx",
       "src/features/my-test-scope/components/TraceabilityPanel.tsx",
-      "src/features/release-calendar/components/CalendarAIInsights.tsx",
-      "src/features/release-calendar/components/CalendarHeader.tsx",
       "src/features/release-compare/components/CompareHeader.tsx",
       "src/features/release-compare/components/ReleaseSelector.tsx",
       "src/features/release-compare/components/SaveComparisonViewDialog.tsx",
@@ -7735,7 +7658,6 @@ export const usageMap: UsageMap = {
       "src/modules/tasks/components/shared/PlannerViewHeader.tsx",
       "src/modules/tasks/components/task-list/InlineDatePicker.tsx",
       "src/modules/tasks/components/workstreams/WorkstreamQuickEditDialog.tsx",
-      "src/modules/work-hub/WorkHubLayout.tsx",
       "src/modules/work-hub/components/CreateVersionDialog.tsx",
       "src/modules/work-hub/components/GroupByMenu.tsx",
       "src/modules/work-hub/views/AllWorkView.tsx",
@@ -7766,7 +7688,6 @@ export const usageMap: UsageMap = {
       "src/pages/Sprints.tsx",
       "src/pages/Stories.tsx",
       "src/pages/Subtasks.tsx",
-      "src/pages/TeamRoom.tsx",
       "src/pages/Themes.tsx",
       "src/pages/UnauthorizedPage.tsx",
       "src/pages/WorkManager.tsx",
@@ -7816,13 +7737,6 @@ export const usageMap: UsageMap = {
       "src/pages/projects/ProjectComingSoonPage.tsx",
       "src/pages/projects/ProjectSummaryPage.tsx",
       "src/pages/projects/views/ListView.tsx",
-      "src/pages/releases/CommandCenter.tsx",
-      "src/pages/releases/CommandCenterPage.tsx",
-      "src/pages/releases/CoverageReportsPage.tsx",
-      "src/pages/releases/DefectDetailPage.tsx",
-      "src/pages/releases/DefectsPage.tsx",
-      "src/pages/releases/QualityGatesPage.tsx",
-      "src/pages/releases/ReleaseDashboardPage.tsx",
       "src/pages/risks/RiskRoamReportPage.tsx",
       "src/pages/work-tree/WorkTreePage.tsx",
       "src/pages/work/Dependencies.tsx",
@@ -7855,7 +7769,6 @@ export const usageMap: UsageMap = {
       "src/modules/project-work-hub/components/dialogs/LogDefectDialog.tsx",
       "src/modules/project-work-hub/components/dialogs/LogIncidentDialog.tsx",
       "src/modules/project-work-hub/pages/BacklogPage.atlaskit.tsx",
-      "src/pages/admin/AdminStorybookPage.tsx",
       "src/pages/releasehub/ChangeExecutionBoard.tsx",
       "src/pages/releasehub/ReleaseCalendarPage.tsx"
     ],
@@ -7919,10 +7832,13 @@ export const usageMap: UsageMap = {
       "src/components/chat/dock/NewChannelModal.tsx",
       "src/components/chat/dock/NewGroupDmModal.tsx",
       "src/components/chat/main/AddPeopleModal.tsx",
+      "src/components/chat/main/ComposerTranslateBanner.tsx",
       "src/components/chat/main/ConversationEmptyState.tsx",
       "src/components/chat/main/MessageStream.tsx",
+      "src/components/chat/main/MessageTranslation.tsx",
       "src/components/chat/main/RosterPanel.tsx",
       "src/components/chat/main/ScheduleSendDropdown.tsx",
+      "src/components/chat/main/TranslatePreviewDialog.tsx",
       "src/components/epic-backlog/EpicContextMenu.tsx",
       "src/components/features/FeatureContextMenu.tsx",
       "src/components/filters/BasicFilterBar.tsx",
@@ -7950,6 +7866,7 @@ export const usageMap: UsageMap = {
       "src/components/releasehub/CreateFreezeWindowModal.tsx",
       "src/components/releasehub/CreateReleaseModal.tsx",
       "src/components/releasehub/CreateSopTemplateModal.tsx",
+      "src/components/releasehub/foryou/ReleaseChangeAnnouncementBanner.tsx",
       "src/components/releases/ActionsMenu.tsx",
       "src/components/releases/ReleaseArchiveDialog.tsx",
       "src/components/releases/ReleaseConfirmationModal.tsx",
@@ -7990,8 +7907,16 @@ export const usageMap: UsageMap = {
       "src/features/kanban-board/KanbanPage.tsx",
       "src/features/kanban-board/components/AddLabelsModal.tsx",
       "src/features/kanban-board/components/LinkWorkItemModal.tsx",
+      "src/features/voice-flow/VoiceMicButton.tsx",
+      "src/features/voice-flow/VoiceSettingsTab.tsx",
       "src/features/whatsapp-summary/WhatsAppSummaryModal.tsx",
       "src/modules/docintel/components/PromoteArtifactModal.tsx",
+      "src/modules/ideation/components/CreateIdeaModal.tsx",
+      "src/modules/ideation/components/WatchControl.tsx",
+      "src/modules/ideation/pages/DetailPage.tsx",
+      "src/modules/ideation/pages/ExplorePage.tsx",
+      "src/modules/ideation/pages/InboxPage.tsx",
+      "src/modules/ideation/pages/PortfolioPage.tsx",
       "src/modules/project-work-hub/components/SubtasksPanel/index.tsx",
       "src/modules/project-work-hub/components/WorkItemDetailsDrawer.tsx",
       "src/modules/project-work-hub/components/dependencies/DependencyToolbar.tsx",
@@ -8009,17 +7934,13 @@ export const usageMap: UsageMap = {
       "src/pages/UserNotificationSettingsPage.tsx",
       "src/pages/UserProfile.tsx",
       "src/pages/admin/AdminAccessPage.tsx",
-      "src/pages/admin/BusinessOwners.tsx",
       "src/pages/admin/CapacityDepartments.tsx",
       "src/pages/admin/Departments.tsx",
       "src/pages/admin/FieldRegistryPage.tsx",
-      "src/pages/admin/NotificationTriggers.tsx",
-      "src/pages/admin/QuartersAdminPage.tsx",
       "src/pages/admin/ReleaseOpsAdminPage.tsx",
       "src/pages/admin/ResourceAssignments.tsx",
       "src/pages/admin/RolesAdminPage.tsx",
       "src/pages/admin/RoutingTaxonomyPage.tsx",
-      "src/pages/admin/UserAccessPage.tsx",
       "src/pages/admin/avatars/AdminAvatarsPage.tsx",
       "src/pages/admin/components/CascadeImpactPanel.tsx",
       "src/pages/admin/components/ComponentLivePreview.tsx",
@@ -8120,7 +8041,6 @@ export const usageMap: UsageMap = {
     "origin": "internal",
     "consumers": [
       "src/components/dependencies/CreateDependencyDialog.tsx",
-      "src/components/epic-backlog/modals/MilestoneModal.tsx",
       "src/components/items/features/FeatureRightRail.tsx",
       "src/components/kanban/AdvancedFilterPanel.tsx",
       "src/components/project-hub/work-items/inline/InlineEditors.tsx",
@@ -8170,7 +8090,6 @@ export const usageMap: UsageMap = {
       "src/components/layout/ItemsDropdown.tsx",
       "src/components/layout/ReleaseHubSidebar.tsx",
       "src/components/layout/ReleasesManagementSidebar.tsx",
-      "src/components/layout/TeamRoomSidebar.tsx",
       "src/components/layout/UnifiedSidebar.tsx",
       "src/components/layout/dropdowns/ItemsDropdown.tsx",
       "src/components/objective-roadmap/EnterpriseRoadmapFiltersDialog.tsx",
@@ -8186,6 +8105,7 @@ export const usageMap: UsageMap = {
       "src/components/project-hub/work-items/WorkItemTableRow.tsx",
       "src/components/project-hub/work-items/WorkItemsTable.tsx",
       "src/components/project/ViewSelector.tsx",
+      "src/components/releasehub/foryou/ReleaseChangeAnnouncementBanner.tsx",
       "src/components/releases/quality-gates/GateHistoryPanel.tsx",
       "src/components/reports/ReportFilters.tsx",
       "src/components/reports/SavedReportsList.tsx",
@@ -8269,11 +8189,7 @@ export const usageMap: UsageMap = {
       "src/pages/project/TimelineView.tsx",
       "src/pages/project/feature-detail/FeatureRightRail.tsx",
       "src/pages/projects/ProjectSummaryPage.tsx",
-      "src/pages/r360-member/WeekStripCollapsible.tsx",
-      "src/pages/releases/AllReleasesPage.tsx",
-      "src/pages/releases/CommandCenterPage.tsx",
-      "src/pages/releases/CoverageReportsPage.tsx",
-      "src/pages/releases/QualityGatesPage.tsx"
+      "src/pages/r360-member/WeekStripCollapsible.tsx"
     ]
   },
   "Calendar::@atlaskit/calendar": {
@@ -8284,14 +8200,6 @@ export const usageMap: UsageMap = {
       "src/components/kanban/InlineCreateCard.tsx"
     ],
     "package": "@atlaskit/calendar"
-  },
-  "CalendarAIInsights::./CalendarAIInsights": {
-    "name": "CalendarAIInsights",
-    "source": "./CalendarAIInsights",
-    "origin": "internal",
-    "consumers": [
-      "src/features/release-calendar/components/ReleaseCalendar.tsx"
-    ]
   },
   "CalendarCell::./calendar": {
     "name": "CalendarCell",
@@ -8361,8 +8269,7 @@ export const usageMap: UsageMap = {
     "origin": "internal",
     "consumers": [
       "src/components/workhub/calendar/CalendarReleaseView.tsx",
-      "src/components/workhub/calendar/CalendarResourceView.tsx",
-      "src/features/release-calendar/components/ReleaseCalendar.tsx"
+      "src/components/workhub/calendar/CalendarResourceView.tsx"
     ]
   },
   "CalendarGrid::@/components/workhub/calendar/CalendarGrid": {
@@ -8380,14 +8287,6 @@ export const usageMap: UsageMap = {
     "consumers": [
       "src/components/workhub/calendar/CalendarReleaseView.tsx",
       "src/components/workhub/calendar/CalendarResourceView.tsx"
-    ]
-  },
-  "CalendarHeader::./CalendarHeader": {
-    "name": "CalendarHeader",
-    "source": "./CalendarHeader",
-    "origin": "internal",
-    "consumers": [
-      "src/features/release-calendar/components/ReleaseCalendar.tsx"
     ]
   },
   "CalendarHeader::@/modules/tasks/components/calendar/CalendarHeader": {
@@ -8439,10 +8338,7 @@ export const usageMap: UsageMap = {
       "src/components/project-hub/dashboard/widgets/DemandFulfilmentGadget.tsx",
       "src/components/shared/JiraFilterAtlaskit.tsx",
       "src/config/workItemConfig.ts",
-      "src/features/all-releases/components/ReleaseCard.tsx",
       "src/features/my-test-scope/components/WorkloadPanel.tsx",
-      "src/features/release-calendar/components/CalendarHeader.tsx",
-      "src/pages/admin/FeatureFlagsPage.tsx",
       "src/pages/admin/ResourceAssignments.tsx"
     ],
     "package": "@atlaskit/icon"
@@ -8463,16 +8359,6 @@ export const usageMap: UsageMap = {
     "origin": "internal",
     "consumers": [
       "src/components/dependencies/CreateDependencyDialog.tsx"
-    ]
-  },
-  "CalendarInsight::../types": {
-    "name": "CalendarInsight",
-    "source": "../types",
-    "origin": "internal",
-    "consumers": [
-      "src/features/release-calendar/components/CalendarAIInsights.tsx",
-      "src/features/release-calendar/components/ReleaseCalendar.tsx",
-      "src/features/release-calendar/utils/calendarUtils.ts"
     ]
   },
   "CalendarLegend::./calendar": {
@@ -8506,25 +8392,6 @@ export const usageMap: UsageMap = {
     "origin": "internal",
     "consumers": [
       "src/components/product-hub/roadmap/RoadmapDetailPanel.tsx"
-    ]
-  },
-  "CalendarRelease::../types": {
-    "name": "CalendarRelease",
-    "source": "../types",
-    "origin": "internal",
-    "consumers": [
-      "src/features/release-calendar/components/CalendarGrid.tsx",
-      "src/features/release-calendar/components/ReleaseBar.tsx",
-      "src/features/release-calendar/components/ReleaseCalendar.tsx",
-      "src/features/release-calendar/utils/calendarUtils.ts"
-    ]
-  },
-  "CalendarRelease::@/features/release-calendar": {
-    "name": "CalendarRelease",
-    "source": "@/features/release-calendar",
-    "origin": "internal",
-    "consumers": [
-      "src/pages/releases/CalendarPage.tsx"
     ]
   },
   "CalendarReleaseView::./CalendarReleaseView": {
@@ -8806,7 +8673,6 @@ export const usageMap: UsageMap = {
       "src/components/dependencies/DependencyMatrix.tsx",
       "src/components/dependencies/DependencyWheelDetailsPanel.tsx",
       "src/components/dependencies/DependencyWheelMap.tsx",
-      "src/components/epic-backlog/modals/WSJFModal.tsx",
       "src/components/evidence/reports/EvidenceStats.tsx",
       "src/components/evidence/reports/ExecutionSummary.tsx",
       "src/components/features/FeaturesKanbanView.tsx",
@@ -8891,7 +8757,6 @@ export const usageMap: UsageMap = {
       "src/pages/SlackOAuthCallback.tsx",
       "src/pages/SprintBoard.tsx",
       "src/pages/SuccessCriteria.tsx",
-      "src/pages/TeamRoom.tsx",
       "src/pages/Themes.tsx",
       "src/pages/UnauthorizedPage.tsx",
       "src/pages/ValueStreamView.tsx",
@@ -8909,11 +8774,6 @@ export const usageMap: UsageMap = {
       "src/pages/projects/ProjectSummaryPage.tsx",
       "src/pages/projects/views/KanbanView.tsx",
       "src/pages/projects/views/SummaryView.tsx",
-      "src/pages/releases/CommandCenter.tsx",
-      "src/pages/releases/CommandCenterPage.tsx",
-      "src/pages/releases/CoverageReportsPage.tsx",
-      "src/pages/releases/DefectsPage.tsx",
-      "src/pages/releases/QualityGatesPage.tsx",
       "src/pages/reports/DependencyMapsPage.tsx",
       "src/pages/work-tree/WorkTreePage.tsx",
       "src/pages/work-tree/components/WorkTreeDashboard.tsx",
@@ -8926,7 +8786,6 @@ export const usageMap: UsageMap = {
     "origin": "internal",
     "consumers": [
       "src/components/dependencies/DependencyWheelDetailsPanel.tsx",
-      "src/components/epic-backlog/modals/WSJFModal.tsx",
       "src/components/evidence/reports/EvidenceStats.tsx",
       "src/components/evidence/reports/ExecutionSummary.tsx",
       "src/components/features/FeaturesKanbanView.tsx",
@@ -8989,7 +8848,6 @@ export const usageMap: UsageMap = {
       "src/pages/ResetPassword.tsx",
       "src/pages/ShortLinkResolverPage.tsx",
       "src/pages/SlackOAuthCallback.tsx",
-      "src/pages/TeamRoom.tsx",
       "src/pages/Themes.tsx",
       "src/pages/UnauthorizedPage.tsx",
       "src/pages/ValueStreamView.tsx",
@@ -9001,10 +8859,6 @@ export const usageMap: UsageMap = {
       "src/pages/projects/ProjectSummaryPage.tsx",
       "src/pages/projects/views/KanbanView.tsx",
       "src/pages/projects/views/SummaryView.tsx",
-      "src/pages/releases/CommandCenter.tsx",
-      "src/pages/releases/CommandCenterPage.tsx",
-      "src/pages/releases/CoverageReportsPage.tsx",
-      "src/pages/releases/QualityGatesPage.tsx",
       "src/pages/work-tree/WorkTreePage.tsx",
       "src/pages/work-tree/components/WorkTreeDashboard.tsx"
     ]
@@ -9085,7 +8939,6 @@ export const usageMap: UsageMap = {
       "src/pages/ProjectSettingsPage.tsx",
       "src/pages/ResetPassword.tsx",
       "src/pages/ShortLinkResolverPage.tsx",
-      "src/pages/TeamRoom.tsx",
       "src/pages/Themes.tsx",
       "src/pages/UnauthorizedPage.tsx",
       "src/pages/ValueStreamView.tsx",
@@ -9095,9 +8948,6 @@ export const usageMap: UsageMap = {
       "src/pages/program/QuartersPage.tsx",
       "src/pages/projects/ProjectSummaryPage.tsx",
       "src/pages/projects/views/SummaryView.tsx",
-      "src/pages/releases/CommandCenterPage.tsx",
-      "src/pages/releases/CoverageReportsPage.tsx",
-      "src/pages/releases/QualityGatesPage.tsx",
       "src/pages/work-tree/WorkTreePage.tsx"
     ]
   },
@@ -9157,7 +9007,6 @@ export const usageMap: UsageMap = {
       "src/pages/ProjectSettingsPage.tsx",
       "src/pages/ResetPassword.tsx",
       "src/pages/ShortLinkResolverPage.tsx",
-      "src/pages/TeamRoom.tsx",
       "src/pages/Themes.tsx",
       "src/pages/UnauthorizedPage.tsx",
       "src/pages/ValueStreamView.tsx",
@@ -9167,9 +9016,6 @@ export const usageMap: UsageMap = {
       "src/pages/program/QuartersPage.tsx",
       "src/pages/projects/ProjectSummaryPage.tsx",
       "src/pages/projects/views/SummaryView.tsx",
-      "src/pages/releases/CommandCenterPage.tsx",
-      "src/pages/releases/CoverageReportsPage.tsx",
-      "src/pages/releases/QualityGatesPage.tsx",
       "src/pages/work-tree/WorkTreePage.tsx"
     ]
   },
@@ -9464,7 +9310,6 @@ export const usageMap: UsageMap = {
       "src/components/risks/shared/RiskFormV2.tsx",
       "src/components/sprints/SprintCreateModal.tsx",
       "src/modules/work-hub/components/InlineDatePicker.tsx",
-      "src/pages/admin/QuartersAdminPage.tsx",
       "src/pages/program/ExecutionWorkbench/WorkbenchFiltersDialog.tsx",
       "src/pages/project-hub/ConvertToSubtaskPage.tsx",
       "src/pages/project-hub/MovePage.tsx"
@@ -9539,7 +9384,10 @@ export const usageMap: UsageMap = {
     "consumers": [
       "src/modules/docintel/components/ArtifactView.tsx",
       "src/modules/docintel/components/AskPanel.tsx",
-      "src/modules/docintel/pages/DocintelDocumentsPage.tsx",
+      "src/modules/docintel/components/DocintelSourceDrawer.tsx",
+      "src/modules/docintel/pages/DocintelDeliverablesPage.tsx",
+      "src/modules/docintel/pages/DocintelHomePage.tsx",
+      "src/modules/docintel/pages/DocintelLibraryPage.tsx",
       "src/pages/admin/workflows/studio/HistoryDrawer.tsx"
     ]
   },
@@ -9734,6 +9582,7 @@ export const usageMap: UsageMap = {
       "src/components/incidents/IncidentTimeline.tsx",
       "src/components/incidents/MajorIncidentPanel.tsx",
       "src/components/incidents/WatchersPanel.tsx",
+      "src/components/releasehub/foryou/ReleaseChangeAnnouncementBanner.tsx",
       "src/components/workhub/issue-view/IssueListPanel.tsx",
       "src/modules/product-backlog/components/split-panel/RequestDetailPanel.tsx",
       "src/modules/work-hub/components/AllWorkTicketList.tsx",
@@ -9778,10 +9627,6 @@ export const usageMap: UsageMap = {
       "src/pages/project-hub/ProjectSettingsPage.tsx",
       "src/pages/project-hub/StoryDetailPage.tsx",
       "src/pages/project-hub/WorkItemsListPage.tsx",
-      "src/pages/releases/AllReleasesPage.tsx",
-      "src/pages/releases/CommandCenterPage.tsx",
-      "src/pages/releases/CoverageReportsPage.tsx",
-      "src/pages/releases/QualityGatesPage.tsx",
       "src/stories/components/SharedMolecules.stories.tsx"
     ]
   },
@@ -10428,7 +10273,12 @@ export const usageMap: UsageMap = {
     "source": "../caty-mood/CatyMoodFace",
     "origin": "internal",
     "consumers": [
-      "src/components/chat/dock/ChatDock.tsx"
+      "src/components/chat/dock/ChatDock.tsx",
+      "src/components/chat/dock/DockCatyPane.tsx",
+      "src/components/chat/dock/DockCatySheet.tsx",
+      "src/components/chat/dock/DockConvHeader.tsx",
+      "src/components/chat/dock/DockDmsTab.tsx",
+      "src/components/chat/dock/DockHomeCards.tsx"
     ]
   },
   "CatyPanel::./CatyPanel": {
@@ -10436,7 +10286,8 @@ export const usageMap: UsageMap = {
     "source": "./CatyPanel",
     "origin": "internal",
     "consumers": [
-      "src/components/chat/dock/ChatDock.tsx"
+      "src/components/chat/dock/DockCatyPane.tsx",
+      "src/components/chat/dock/DockCatySheet.tsx"
     ]
   },
   "CatyPulseIcon::@/components/ui/CatyPulseIcon": {
@@ -10454,6 +10305,7 @@ export const usageMap: UsageMap = {
       "src/components/chat/IncomingHuddleFab.tsx",
       "src/components/chat/caty-mood/CatyMoodFace.tsx",
       "src/components/chat/dock/ChatDock.tsx",
+      "src/components/chat/main/ComposerTranslateBanner.tsx",
       "src/components/for-you/atlaskit/CatyButton.tsx",
       "src/components/releasehub/CatyRiskPanel.tsx",
       "src/components/releasehub/ReleasePredictorCard.tsx",
@@ -10464,7 +10316,6 @@ export const usageMap: UsageMap = {
       "src/components/wiki-hub/GenerateStoriesFromPage.tsx",
       "src/components/wiki-hub/WikiTranslateBar.tsx",
       "src/features/health/components/HealthPanel.tsx",
-      "src/features/voice-flow/DictationCTA.tsx",
       "src/modules/project-work-hub/pages/BacklogPage.atlaskit.tsx",
       "src/pages/project-hub/filters/FilterPreviewPage.tsx",
       "src/pages/release-hub/ReleaseDetailPage.tsx",
@@ -10584,7 +10435,6 @@ export const usageMap: UsageMap = {
     "source": "@/components/common/ChangeNumberSelect",
     "origin": "internal",
     "consumers": [
-      "src/components/stories/CreateStoryModal.tsx",
       "src/stories/components/LayoutAtoms.stories.tsx"
     ]
   },
@@ -10638,8 +10488,7 @@ export const usageMap: UsageMap = {
     "source": "@atlaskit/icon/core/chart-bar",
     "origin": "atlaskit",
     "consumers": [
-      "src/modules/workhub/admin/components/SyncConfigPanel.tsx",
-      "src/pages/admin/FeatureFlagsPage.tsx"
+      "src/modules/workhub/admin/components/SyncConfigPanel.tsx"
     ],
     "package": "@atlaskit/icon"
   },
@@ -10653,15 +10502,6 @@ export const usageMap: UsageMap = {
       "src/components/workhub/analytics/StatusDistributionChart.tsx",
       "src/components/workhub/analytics/TypeDistributionChart.tsx"
     ]
-  },
-  "ChartTrendIcon::@atlaskit/icon/core/chart-trend": {
-    "name": "ChartTrendIcon",
-    "source": "@atlaskit/icon/core/chart-trend",
-    "origin": "atlaskit",
-    "consumers": [
-      "src/pages/admin/AdminOverview.tsx"
-    ],
-    "package": "@atlaskit/icon"
   },
   "ChartVisibility::@/types/risks": {
     "name": "ChartVisibility",
@@ -10937,8 +10777,7 @@ export const usageMap: UsageMap = {
       "src/pages/program/ProgramRoadmapPage.tsx",
       "src/pages/project-hub/MapStatusesPage.tsx",
       "src/pages/releasehub/ChangeDetailPage.tsx",
-      "src/pages/releasehub/ReleaseDetailPage.tsx",
-      "src/pages/releases/AllReleasesPage.tsx"
+      "src/pages/releasehub/ReleaseDetailPage.tsx"
     ]
   },
   "Checkbox::../atoms": {
@@ -10973,7 +10812,6 @@ export const usageMap: UsageMap = {
       "src/components/demand/DemandColumnsConfigModal.tsx",
       "src/components/dependencies/DependencyDetailsDrawer.tsx",
       "src/components/enterprise/EnterpriseGrid.tsx",
-      "src/components/epic-backlog/modals/WSJFModal.tsx",
       "src/components/features/FeaturesColumnsDialog.tsx",
       "src/components/features/FeaturesListView.tsx",
       "src/components/for-you/ForYouTable.tsx",
@@ -11008,7 +10846,6 @@ export const usageMap: UsageMap = {
       "src/components/shared/ResourceModal.tsx",
       "src/components/shared/dynamic-table/DynamicTable.tsx",
       "src/components/skills-inventory/SkillsFiltersDialog.tsx",
-      "src/components/stories/CreateStoryModal.tsx",
       "src/components/stories/StoriesColumnConfig.tsx",
       "src/components/stories/StoriesListView.tsx",
       "src/components/stories/SubtasksList.tsx",
@@ -11018,7 +10855,6 @@ export const usageMap: UsageMap = {
       "src/components/work-items/WorkItemsList.tsx",
       "src/components/work-manager/ManagerFollowUpNotes.tsx",
       "src/components/work-manager/TaskDrawer.tsx",
-      "src/features/all-releases/components/EnterpriseTableView.tsx",
       "src/features/release-compare/components/SaveComparisonViewDialog.tsx",
       "src/modules/backlog/components/BacklogColumnsDialog.tsx",
       "src/modules/backlog/components/BacklogKanbanView.tsx",
@@ -11083,6 +10919,7 @@ export const usageMap: UsageMap = {
       "src/components/universal-work-view/UWVRow.tsx",
       "src/components/universal-work-view/UWVToolbar.tsx",
       "src/components/workhub/create-story/CreateStoryModal.tsx",
+      "src/modules/ideation/components/CreateIdeaModal.tsx",
       "src/modules/project-work-hub/components/dialogs/CloneIssueDialog.tsx",
       "src/pages/admin/AdminAccessPage.tsx",
       "src/pages/admin/components/CascadeImpactPanel.tsx",
@@ -11093,15 +10930,6 @@ export const usageMap: UsageMap = {
       "src/stories/patterns/BulkEditPattern.stories.tsx"
     ],
     "package": "@atlaskit/checkbox"
-  },
-  "CheckboxCheckedIcon::@atlaskit/icon/core/checkbox-checked": {
-    "name": "CheckboxCheckedIcon",
-    "source": "@atlaskit/icon/core/checkbox-checked",
-    "origin": "atlaskit",
-    "consumers": [
-      "src/pages/admin/FeatureFlagsPage.tsx"
-    ],
-    "package": "@atlaskit/icon"
   },
   "CheckBoxCheckIcon::../shared/Icon": {
     "name": "CheckBoxCheckIcon",
@@ -11186,9 +11014,6 @@ export const usageMap: UsageMap = {
       "src/pages/admin/test/TestCaseTypesPage.tsx",
       "src/pages/enterprise/DemandSummaryPage.tsx",
       "src/pages/projects/ProjectSummaryPage.tsx",
-      "src/pages/releasehub/TriageQueuePage.tsx",
-      "src/pages/releases/DefectDetailPage.tsx",
-      "src/pages/releases/QualityGatesPage.tsx",
       "src/pages/testhub/cycles/CycleDetailPage.tsx"
     ]
   },
@@ -11248,8 +11073,6 @@ export const usageMap: UsageMap = {
       "src/pages/project/FeatureDetailPage.tsx",
       "src/pages/project/feature-detail/FeatureAuditTab.tsx",
       "src/pages/project/feature-detail/FeatureOverviewTab.tsx",
-      "src/pages/releases/CommandCenterPage.tsx",
-      "src/pages/releases/CoverageReportsPage.tsx",
       "src/pages/work/Dependencies.tsx"
     ]
   },
@@ -11261,15 +11084,11 @@ export const usageMap: UsageMap = {
       "src/components/admin/notifications/BulkActionsBar.tsx",
       "src/components/admin/notifications/TriggerTable.tsx",
       "src/components/project-hub/dashboard/widgets/DemandFulfilmentGadget.tsx",
-      "src/features/all-releases/components/AIInsightsBar.tsx",
-      "src/features/all-releases/components/AIInsightsDrawer.tsx",
-      "src/features/all-releases/components/SummaryCards.tsx",
       "src/features/my-test-scope/components/IncidentsPanel.tsx",
       "src/features/my-test-scope/components/TraceabilityPanel.tsx",
       "src/features/release-compare/components/CompareInsightsBar.tsx",
       "src/modules/workhub/admin/components/SyncConfigPanel.tsx",
-      "src/modules/workhub/admin/components/SyncLogs.tsx",
-      "src/pages/admin/NotificationTriggers.tsx"
+      "src/modules/workhub/admin/components/SyncLogs.tsx"
     ],
     "package": "@atlaskit/icon"
   },
@@ -11408,14 +11227,13 @@ export const usageMap: UsageMap = {
       "src/components/catalyst-detail-views/shared/sections/Description/_components/TableToolbar/TableToolbar.tsx",
       "src/components/kanban/WorkItemCard.tsx",
       "src/features/my-test-scope/components/TestsTable.tsx",
+      "src/modules/ideation/components/VoteControl.tsx",
       "src/modules/project-work-hub/components/SubtasksPanel/AiSuggestChildrenPanel.tsx",
       "src/modules/project-work-hub/components/WorkItemDetailsDrawer.tsx",
       "src/modules/project-work-hub/components/dialogs/story-detail-modules/ChildIssuesSection.tsx",
       "src/modules/project-work-hub/components/dialogs/story-detail-modules/shared-components.tsx",
       "src/modules/workhub/admin/components/TestConnectionModal.tsx",
-      "src/pages/admin/FeatureFlagsPage.tsx",
       "src/pages/admin/GovernanceSettings.tsx",
-      "src/pages/admin/UserAccessPage.tsx",
       "src/pages/admin/components/BulkEditModal.tsx",
       "src/pages/admin/components/UserDrawer.tsx"
     ],
@@ -11464,7 +11282,6 @@ export const usageMap: UsageMap = {
       "src/modules/tasks/components/dashboard/DashboardMetricCards.tsx",
       "src/modules/work-hub/views/AllWorkView.tsx",
       "src/modules/work-hub/views/SummaryView.tsx",
-      "src/pages/ForYouPage.tsx",
       "src/pages/releasehub/CommandCenterPage.tsx",
       "src/pages/work-tree/components/WorkTreeLegend.tsx"
     ]
@@ -11560,6 +11377,7 @@ export const usageMap: UsageMap = {
       "src/components/releasehub/CatyRiskPanel.tsx",
       "src/components/releasehub/FacetFilterBar.tsx",
       "src/components/releasehub/detail/SopRunbook.tsx",
+      "src/components/releasehub/foryou/ReleaseChangeAnnouncementBanner.tsx",
       "src/components/releasehub/signoff/SignoffDependencyGraph.tsx",
       "src/components/releases/dashboard/TestExecutionTable.tsx",
       "src/components/requirement-assist/CategoryTree.tsx",
@@ -11624,7 +11442,6 @@ export const usageMap: UsageMap = {
       "src/modules/project-work-hub/pages/StoryBacklogPage.atlaskit.tsx",
       "src/modules/project-work-hub/pages/StoryBacklogPage.tsx",
       "src/modules/strata/components/shared.tsx",
-      "src/modules/strata/pages/StrataKpiLibraryPage.tsx",
       "src/modules/strata/pages/StrataReviewsPage.tsx",
       "src/modules/strata/pages/StrataStrategyRoomPage.tsx",
       "src/modules/task10/components/completed/T10CompletedWeeksTable.tsx",
@@ -11693,10 +11510,6 @@ export const usageMap: UsageMap = {
       "src/pages/r360-member/ChronologyView.tsx",
       "src/pages/r360-member/WeekStripCollapsible.tsx",
       "src/pages/releasehub/ProductionEventReplayPage.tsx",
-      "src/pages/releasehub/TriageQueuePage.tsx",
-      "src/pages/releases/AllReleasesPage.tsx",
-      "src/pages/releases/CommandCenterPage.tsx",
-      "src/pages/releases/QualityGatesPage.tsx",
       "src/pages/testhub/repository/RepositoryPage.tsx",
       "src/pages/work-tree/components/WorkTreeHierarchy.tsx"
     ]
@@ -11775,6 +11588,7 @@ export const usageMap: UsageMap = {
       "src/components/kanban/InlineCreateCard.tsx",
       "src/components/layout/ContextSwitcher.tsx",
       "src/components/layout/HomeSidebar.tsx",
+      "src/components/layout/StrataSwitcher.tsx",
       "src/components/project-hub/work-items/WorkItemsToolbar.tsx",
       "src/components/releases/ReleasesTable.tsx",
       "src/components/releases/ShareFeedbackModal.tsx",
@@ -11792,12 +11606,11 @@ export const usageMap: UsageMap = {
       "src/components/shared/Timeline/TimelineView.tsx",
       "src/components/shared/WorkItemsProgressBar.tsx",
       "src/components/shared/rich-text/atlaskit/EpicDescriptionEditor.tsx",
-      "src/features/all-releases/components/AIInsightsBar.tsx",
       "src/features/kanban-board/components/PortalMenu.tsx",
       "src/features/kanban-board/components/StandupHistoryPanel.tsx",
       "src/features/kanban-board/components/SwimlaneHeader.tsx",
       "src/features/my-test-scope/components/TraceabilityPanel.tsx",
-      "src/features/release-calendar/components/CalendarAIInsights.tsx",
+      "src/modules/ideation/components/VoteControl.tsx",
       "src/modules/project-work-hub/components/dialogs/story-detail-modules/ChildIssuesSection.tsx",
       "src/modules/project-work-hub/components/dialogs/story-detail-modules/DefectsSection.tsx",
       "src/modules/project-work-hub/components/dialogs/story-detail-modules/EditableFields.tsx",
@@ -11808,8 +11621,6 @@ export const usageMap: UsageMap = {
       "src/modules/workhub/admin/components/MultiSelectDropdown.tsx",
       "src/modules/workhub/admin/components/SyncConfigPanel.tsx",
       "src/modules/workhub/admin/components/SyncLogs.tsx",
-      "src/pages/admin/FeatureFlagsPage.tsx",
-      "src/pages/admin/NotificationTriggers.tsx",
       "src/pages/admin/ResourceAssignments.tsx",
       "src/pages/admin/components/BulkEditModal.tsx",
       "src/pages/admin/components/previews/EpicDescriptionEditorPreview.tsx",
@@ -11858,7 +11669,6 @@ export const usageMap: UsageMap = {
       "src/components/incidents/IncidentListTable.tsx",
       "src/components/industry/enterprise-table/components/TablePagination.tsx",
       "src/components/ja/home/HomeContentV2.tsx",
-      "src/components/layout/TeamRoomSidebar.tsx",
       "src/components/planner/task-modal/molecules/DateDropdown.tsx",
       "src/components/project-hub/dashboard/PaginationFooter.tsx",
       "src/components/project/ProjectHeader.tsx",
@@ -11951,7 +11761,6 @@ export const usageMap: UsageMap = {
     "consumers": [
       "src/components/catalyst-detail-views/shared/sections/Description/_components/MentionSuggestionPill/MentionSuggestionPill.tsx",
       "src/features/my-test-scope/components/TestsTable.tsx",
-      "src/features/release-calendar/components/CalendarHeader.tsx",
       "src/modules/project-work-hub/components/dialogs/story-detail-modules/AttachmentPreviewModal.tsx",
       "src/pages/release-hub/ReleaseDetailPage.tsx"
     ],
@@ -11994,13 +11803,11 @@ export const usageMap: UsageMap = {
       "src/components/incidents/IncidentListTable.tsx",
       "src/components/industry/enterprise-table/components/GroupHeader.tsx",
       "src/components/industry/enterprise-table/components/TablePagination.tsx",
-      "src/components/items/epics/modals/FeatureStatusModal.tsx",
       "src/components/items/features/FeatureDetailsPanel.tsx",
       "src/components/ja/home/HomeContentV2.tsx",
       "src/components/kanban/overflow-menu/WorkItemOverflowMenu.tsx",
       "src/components/kanban/setup/SwimLanesSetupTab.tsx",
       "src/components/layout/ProductRoomSidebar.tsx",
-      "src/components/layout/TeamRoomSidebar.tsx",
       "src/components/notifications/AgeingTab.tsx",
       "src/components/planner/task-modal/molecules/DateDropdown.tsx",
       "src/components/product-hub/roadmap/RoadmapRequestList.tsx",
@@ -12065,7 +11872,7 @@ export const usageMap: UsageMap = {
       "src/modules/project-work-hub/components/tabs/KanbanBoardTab.tsx",
       "src/modules/project-work-hub/pages/FeatureBacklogPage.tsx",
       "src/modules/project-work-hub/pages/StoryBacklogPage.tsx",
-      "src/modules/strata/pages/StrataKpiLibraryPage.tsx",
+      "src/modules/strata/components/shared.tsx",
       "src/modules/strata/pages/StrataReviewsPage.tsx",
       "src/modules/strata/pages/StrataStrategyRoomPage.tsx",
       "src/modules/task10/components/completed/T10CompletedWeeksTable.tsx",
@@ -12103,9 +11910,6 @@ export const usageMap: UsageMap = {
       "src/pages/releasehub/ExecutionCalendarPage.tsx",
       "src/pages/releasehub/ProductionEventReplayPage.tsx",
       "src/pages/releasehub/ReleaseCalendarPage.tsx",
-      "src/pages/releases/CoverageReportsPage.tsx",
-      "src/pages/releases/QualityGatesPage.tsx",
-      "src/pages/releases/ReleaseDashboardPage.tsx",
       "src/pages/testhub/cycles/ExecutionPage.tsx",
       "src/pages/testhub/repository/RepositoryPage.tsx",
       "src/pages/work-tree/components/WorkTreeHierarchy.tsx"
@@ -12182,15 +11986,12 @@ export const usageMap: UsageMap = {
       "src/features/kanban-board/components/SwimlaneHeader.tsx",
       "src/features/my-test-scope/components/TestsTable.tsx",
       "src/features/my-test-scope/components/TraceabilityPanel.tsx",
-      "src/features/release-calendar/components/CalendarHeader.tsx",
       "src/modules/project-work-hub/components/dialogs/story-detail-modules/AttachmentPreviewModal.tsx",
       "src/modules/project-work-hub/components/dialogs/story-detail-modules/DefectsSection.tsx",
       "src/modules/project-work-hub/components/dialogs/story-detail-modules/IncidentsSection.tsx",
       "src/modules/project-work-hub/components/dialogs/story-detail-modules/shared-components.tsx",
       "src/modules/workhub/admin/components/SyncConfigPanel.tsx",
       "src/modules/workhub/admin/components/SyncLogs.tsx",
-      "src/pages/admin/FeatureFlagsPage.tsx",
-      "src/pages/admin/NotificationTriggers.tsx",
       "src/pages/admin/ResourceAssignments.tsx",
       "src/pages/admin/components/previews/EpicDescriptionEditorPreview.tsx",
       "src/pages/r360-member/BoardView.tsx",
@@ -12316,6 +12117,7 @@ export const usageMap: UsageMap = {
       "src/components/projecthub/AllProjectsTable.tsx",
       "src/components/release/IncidentsFiltersDialog.tsx",
       "src/components/releasehub/CatyRiskPanel.tsx",
+      "src/components/releasehub/foryou/ReleaseChangeAnnouncementBanner.tsx",
       "src/components/releases/dashboard/TestExecutionTable.tsx",
       "src/components/roadmap/RoadmapEngine.tsx",
       "src/components/roadmap/TimelineFilterPopover.tsx",
@@ -12335,8 +12137,7 @@ export const usageMap: UsageMap = {
       "src/pages/CleanupPage.tsx",
       "src/pages/ResourceListingPage.tsx",
       "src/pages/enterprise/capacity-planner/CardsView.tsx",
-      "src/pages/project/feature-detail/FeatureRightRail.tsx",
-      "src/pages/releases/AllReleasesPage.tsx"
+      "src/pages/project/feature-detail/FeatureRightRail.tsx"
     ]
   },
   "ChevronUpIcon::@atlaskit/icon/glyph/chevron-up": {
@@ -12345,8 +12146,6 @@ export const usageMap: UsageMap = {
     "origin": "atlaskit",
     "consumers": [
       "src/components/shared/Timeline/TimelineView.tsx",
-      "src/features/all-releases/components/AIInsightsBar.tsx",
-      "src/features/release-calendar/components/CalendarAIInsights.tsx",
       "src/modules/project-work-hub/components/dialogs/story-detail-modules/ChildIssuesSection.tsx"
     ],
     "package": "@atlaskit/icon"
@@ -12387,8 +12186,7 @@ export const usageMap: UsageMap = {
       "src/modules/product-backlog/components/split-panel/RequestListPanel.tsx",
       "src/modules/task10/components/completed/T10CompletedItemsList.tsx",
       "src/modules/task10/components/landing/T10CompletedDetailModal.tsx",
-      "src/pages/project/FeatureDetailPage.tsx",
-      "src/pages/releases/CoverageReportsPage.tsx"
+      "src/pages/project/FeatureDetailPage.tsx"
     ]
   },
   "CircleDashed::@/lib/atlaskit-icons": {
@@ -12454,7 +12252,7 @@ export const usageMap: UsageMap = {
     "consumers": [
       "src/components/evidence/components/ClipboardPasteButton.tsx",
       "src/components/shared/JiraBulkActionBar.tsx",
-      "src/pages/releases/AllReleasesPage.tsx"
+      "src/modules/docintel/pages/DocintelLibraryPage.tsx"
     ]
   },
   "ClipboardCopy::@/lib/atlaskit-icons": {
@@ -12474,7 +12272,8 @@ export const usageMap: UsageMap = {
       "src/components/layout/ReleasesManagementSidebar.tsx",
       "src/components/layout/TestHubSidebar.tsx",
       "src/components/workload/TeamCapacityOverview.tsx",
-      "src/modules-dormant/ideation/IdeationAnalyticsView.tsx"
+      "src/modules-dormant/ideation/IdeationAnalyticsView.tsx",
+      "src/modules/strata/pages/StrataStrategyElementDetailPage.tsx"
     ]
   },
   "ClipboardPasteButton::./components/ClipboardPasteButton": {
@@ -12593,11 +12392,6 @@ export const usageMap: UsageMap = {
       "src/pages/project/feature-detail/FeatureOverviewTab.tsx",
       "src/pages/releasehub/CommandCenterPage.tsx",
       "src/pages/releasehub/ProductionEventsPage.tsx",
-      "src/pages/releases/AllReleasesPage.tsx",
-      "src/pages/releases/CommandCenterPage.tsx",
-      "src/pages/releases/CoverageReportsPage.tsx",
-      "src/pages/releases/DefectDetailPage.tsx",
-      "src/pages/releases/QualityGatesPage.tsx",
       "src/pages/work/Dependencies.tsx"
     ]
   },
@@ -12625,10 +12419,8 @@ export const usageMap: UsageMap = {
       "src/features/my-test-scope/components/AttentionCards.tsx",
       "src/features/my-test-scope/components/TestsTable.tsx",
       "src/features/my-test-scope/components/WorkloadPanel.tsx",
-      "src/features/release-calendar/components/CalendarAIInsights.tsx",
       "src/modules/workhub/admin/components/SyncConfigPanel.tsx",
-      "src/modules/workhub/admin/components/SyncLogs.tsx",
-      "src/pages/admin/AdminOverview.tsx"
+      "src/modules/workhub/admin/components/SyncLogs.tsx"
     ],
     "package": "@atlaskit/icon"
   },
@@ -12662,10 +12454,6 @@ export const usageMap: UsageMap = {
       "src/components/kanban/WorkItemCard.tsx",
       "src/components/releases/detail/summarize/ReleaseSummaryCard.tsx",
       "src/components/shared/CatalystDetailPanel.tsx",
-      "src/features/all-releases/components/AIInsightsDrawer.tsx",
-      "src/features/all-releases/components/BulkActionBar.tsx",
-      "src/features/all-releases/components/FilterBar.tsx",
-      "src/features/all-releases/components/Toolbar.tsx",
       "src/features/my-test-scope/components/TestsTable.tsx",
       "src/features/release-compare/components/QualityGateBar.tsx",
       "src/features/release-compare/components/ReleaseSelector.tsx",
@@ -12705,15 +12493,6 @@ export const usageMap: UsageMap = {
     "consumers": [
       "src/pages/enterprise/capacity-planner/LevelingView.tsx"
     ]
-  },
-  "CloudArrowUpIcon::@atlaskit/icon/core/cloud-arrow-up": {
-    "name": "CloudArrowUpIcon",
-    "source": "@atlaskit/icon/core/cloud-arrow-up",
-    "origin": "atlaskit",
-    "consumers": [
-      "src/pages/admin/FeatureFlagsPage.tsx"
-    ],
-    "package": "@atlaskit/icon"
   },
   "Code::@/lib/atlaskit-icons": {
     "name": "Code",
@@ -12811,7 +12590,6 @@ export const usageMap: UsageMap = {
       "src/components/executive-roadmap/RoadmapFiltersDialog.tsx",
       "src/components/forecast/ForecastTab.tsx",
       "src/components/items/epics/drawer-tabs/TechnicalScoreViewTab.tsx",
-      "src/components/items/epics/modals/FeatureStatusModal.tsx",
       "src/components/releases/defects/ReportDefectModal.tsx",
       "src/components/workload/WorkloadHealthIndicator.tsx",
       "src/modules/budget/components/ResourceCostSection.tsx",
@@ -12827,7 +12605,6 @@ export const usageMap: UsageMap = {
       "src/components/executive-roadmap/RoadmapFiltersDialog.tsx",
       "src/components/forecast/ForecastTab.tsx",
       "src/components/items/epics/drawer-tabs/TechnicalScoreViewTab.tsx",
-      "src/components/items/epics/modals/FeatureStatusModal.tsx",
       "src/components/releases/defects/ReportDefectModal.tsx",
       "src/components/workload/WorkloadHealthIndicator.tsx",
       "src/modules/budget/components/ResourceCostSection.tsx",
@@ -12860,7 +12637,6 @@ export const usageMap: UsageMap = {
       "src/components/executive-roadmap/RoadmapFiltersDialog.tsx",
       "src/components/forecast/ForecastTab.tsx",
       "src/components/items/epics/drawer-tabs/TechnicalScoreViewTab.tsx",
-      "src/components/items/epics/modals/FeatureStatusModal.tsx",
       "src/components/releases/defects/ReportDefectModal.tsx",
       "src/components/workload/WorkloadHealthIndicator.tsx",
       "src/modules/budget/components/ResourceCostSection.tsx",
@@ -13002,7 +12778,6 @@ export const usageMap: UsageMap = {
     "source": "@/lib/atlaskit-icons",
     "origin": "internal",
     "consumers": [
-      "src/components/layout/IdeationSidebar.tsx",
       "src/components/shared/jira-description-editor/Toolbar.tsx",
       "src/modules/backlog/components/BacklogHeader.tsx",
       "src/modules/backlog/components/EpicTableView.tsx",
@@ -13107,14 +12882,6 @@ export const usageMap: UsageMap = {
       "src/modules/incidents/kanban/components/SetCommitteeApproversModal.tsx",
       "src/modules/program-epics/components/CreateEpicDialog.tsx",
       "src/modules/program-epics/components/EditEpicDialog.tsx"
-    ]
-  },
-  "Command::@/lib/atlaskit-icons": {
-    "name": "Command",
-    "source": "@/lib/atlaskit-icons",
-    "origin": "internal",
-    "consumers": [
-      "src/pages/releases/ReleaseDashboardPage.tsx"
     ]
   },
   "CommandCenterHeader::@/components/shared/CommandCenterHeader": {
@@ -13330,6 +13097,7 @@ export const usageMap: UsageMap = {
       "src/components/admin/notifications/BulkActionsBar.tsx",
       "src/components/admin/notifications/ChannelToggles.tsx",
       "src/components/catalyst-detail-views/improve/ImproveIssueDropdown.tsx",
+      "src/components/chat/dock/DockTabBar.tsx",
       "src/pages/testhub/cycles/CycleDetailPage.tsx"
     ],
     "package": "@atlaskit/icon"
@@ -13503,7 +13271,6 @@ export const usageMap: UsageMap = {
     "source": "@/features/release-compare",
     "origin": "internal",
     "consumers": [
-      "src/pages/releases/ComparePage.tsx",
       "src/utils/exportComparison.ts"
     ]
   },
@@ -13557,15 +13324,6 @@ export const usageMap: UsageMap = {
     "consumers": [
       "src/features/release-compare/components/ReleaseCompare.tsx"
     ]
-  },
-  "CompassIcon::@atlaskit/icon/core/compass": {
-    "name": "CompassIcon",
-    "source": "@atlaskit/icon/core/compass",
-    "origin": "atlaskit",
-    "consumers": [
-      "src/pages/admin/FeatureFlagsPage.tsx"
-    ],
-    "package": "@atlaskit/icon"
   },
   "CompletedSummaryBar::./SmallComponents": {
     "name": "CompletedSummaryBar",
@@ -13691,6 +13449,14 @@ export const usageMap: UsageMap = {
       "src/features/chat-v2/components/Composer/Composer.tsx"
     ]
   },
+  "ComposerGhostText::./ComposerGhostText": {
+    "name": "ComposerGhostText",
+    "source": "./ComposerGhostText",
+    "origin": "internal",
+    "consumers": [
+      "src/features/voice-flow/VoiceFlowProvider.tsx"
+    ]
+  },
   "ComposerScheduledBanner::../DraftsAndSent/ComposerScheduledBanner": {
     "name": "ComposerScheduledBanner",
     "source": "../DraftsAndSent/ComposerScheduledBanner",
@@ -13718,6 +13484,22 @@ export const usageMap: UsageMap = {
   "ComposerToolbar::./ComposerToolbar": {
     "name": "ComposerToolbar",
     "source": "./ComposerToolbar",
+    "origin": "internal",
+    "consumers": [
+      "src/features/chat-v2/components/Composer/Composer.tsx"
+    ]
+  },
+  "ComposerTranslateBanner::./ComposerTranslateBanner": {
+    "name": "ComposerTranslateBanner",
+    "source": "./ComposerTranslateBanner",
+    "origin": "internal",
+    "consumers": [
+      "src/components/chat/main/MessageComposer.tsx"
+    ]
+  },
+  "ComposerTranslateBanner::@/components/chat/main/ComposerTranslateBanner": {
+    "name": "ComposerTranslateBanner",
+    "source": "@/components/chat/main/ComposerTranslateBanner",
     "origin": "internal",
     "consumers": [
       "src/features/chat-v2/components/Composer/Composer.tsx"
@@ -13821,7 +13603,6 @@ export const usageMap: UsageMap = {
       "src/pages/admin/test/TestPrioritiesPage.tsx",
       "src/pages/project-hub/jira-list/components/AllWorkToolbar.tsx",
       "src/pages/releasehub/FreezeWindowsPage.tsx",
-      "src/pages/releases/DefectDetailPage.tsx",
       "src/pages/work/Dependencies.tsx",
       "src/stories/audit-grade/18-ConfirmDialogs.stories.tsx",
       "src/stories/enterprise/DetailDialogs.stories.tsx"
@@ -13843,16 +13624,6 @@ export const usageMap: UsageMap = {
     "origin": "internal",
     "consumers": [
       "src/pages/project-hub/WorkItemsListPage.tsx"
-    ]
-  },
-  "ConflictWarning::../types": {
-    "name": "ConflictWarning",
-    "source": "../types",
-    "origin": "internal",
-    "consumers": [
-      "src/features/release-calendar/components/CalendarAIInsights.tsx",
-      "src/features/release-calendar/components/ReleaseCalendar.tsx",
-      "src/features/release-calendar/utils/calendarUtils.ts"
     ]
   },
   "ConnectionComingSoon::./ConnectionComingSoon": {
@@ -14191,8 +13962,7 @@ export const usageMap: UsageMap = {
       "src/pages/enterprise/capacity-planner/AssignmentsView.tsx",
       "src/pages/program/ExecutionWorkbench/views/TableView.tsx",
       "src/pages/project-hub/ProjectListPage.tsx",
-      "src/pages/releasehub/ProductionEventReplayPage.tsx",
-      "src/pages/releases/DefectDetailPage.tsx"
+      "src/pages/releasehub/ProductionEventReplayPage.tsx"
     ]
   },
   "CopyIcon::@/lib/atlaskit-icons": {
@@ -14321,14 +14091,6 @@ export const usageMap: UsageMap = {
     "origin": "internal",
     "consumers": [
       "src/components/requirement-assist/UatView.tsx"
-    ]
-  },
-  "CoverageMatrixWidget::@/components/releases/dashboard/CoverageMatrixWidget": {
-    "name": "CoverageMatrixWidget",
-    "source": "@/components/releases/dashboard/CoverageMatrixWidget",
-    "origin": "internal",
-    "consumers": [
-      "src/pages/releases/ReleaseDashboardPage.tsx"
     ]
   },
   "CoverageMetrics::@/types/reports": {
@@ -14553,6 +14315,24 @@ export const usageMap: UsageMap = {
     "origin": "internal",
     "consumers": [
       "src/pages/releasehub/FreezeWindowsPage.tsx"
+    ]
+  },
+  "CreateIdeaForm::@/modules/ideation/components/CreateIdeaModal": {
+    "name": "CreateIdeaForm",
+    "source": "@/modules/ideation/components/CreateIdeaModal",
+    "origin": "internal",
+    "consumers": [
+      "src/modules/ideation/pages/SubmitPage.tsx"
+    ]
+  },
+  "CreateIdeaModal::@/modules/ideation/components/CreateIdeaModal": {
+    "name": "CreateIdeaModal",
+    "source": "@/modules/ideation/components/CreateIdeaModal",
+    "origin": "internal",
+    "consumers": [
+      "src/modules/ideation/pages/ExplorePage.tsx",
+      "src/modules/ideation/pages/InboxPage.tsx",
+      "src/modules/ideation/pages/PortfolioPage.tsx"
     ]
   },
   "CreateIncidentModal::@/components/incidents/CreateIncidentModal": {
@@ -14803,15 +14583,6 @@ export const usageMap: UsageMap = {
       "src/components/users/LicensesRunRateWidget.tsx"
     ]
   },
-  "CreditCardIcon::@atlaskit/icon/core/credit-card": {
-    "name": "CreditCardIcon",
-    "source": "@atlaskit/icon/core/credit-card",
-    "origin": "atlaskit",
-    "consumers": [
-      "src/pages/admin/FeatureFlagsPage.tsx"
-    ],
-    "package": "@atlaskit/icon"
-  },
   "CriticalStrip::./CriticalStrip": {
     "name": "CriticalStrip",
     "source": "./CriticalStrip",
@@ -14835,9 +14606,7 @@ export const usageMap: UsageMap = {
     "consumers": [
       "src/components/admin/notifications/BulkActionsBar.tsx",
       "src/components/filters/BasicFilterBar.tsx",
-      "src/modules/workhub/admin/components/SyncLogs.tsx",
-      "src/pages/admin/FeatureFlagsPage.tsx",
-      "src/pages/admin/NotificationTriggers.tsx"
+      "src/modules/workhub/admin/components/SyncLogs.tsx"
     ],
     "package": "@atlaskit/icon"
   },
@@ -14914,6 +14683,8 @@ export const usageMap: UsageMap = {
       "src/features/kanban-board/components/StandupHistoryPanel.tsx",
       "src/features/kanban-board/components/StandupPanel.tsx",
       "src/features/kanban-board/components/Toolbar.tsx",
+      "src/modules/ideation/components/CreateIdeaModal.tsx",
+      "src/modules/ideation/pages/ExplorePage.tsx",
       "src/modules/project-work-hub/components/WorkItemDetailsDrawer.tsx",
       "src/modules/project-work-hub/components/dialogs/story-detail-modules/AttachmentPreviewModal.tsx",
       "src/modules/project-work-hub/components/dialogs/story-detail-modules/DefectsSection.tsx",
@@ -14923,8 +14694,6 @@ export const usageMap: UsageMap = {
       "src/modules/project-work-hub/components/dialogs/story-detail-modules/shared-components.tsx",
       "src/modules/tasks/components/TaskLinkedItemsSection.tsx",
       "src/modules/workhub/admin/components/MultiSelectDropdown.tsx",
-      "src/pages/admin/FeatureFlagsPage.tsx",
-      "src/pages/admin/UserAccessPage.tsx",
       "src/pages/admin/components/BulkEditModal.tsx",
       "src/pages/admin/components/UserDrawer.tsx",
       "src/pages/release-hub/ReleaseDetailPage.tsx",
@@ -15008,14 +14777,6 @@ export const usageMap: UsageMap = {
       "src/components/admin/notifications/TriggerSearch.tsx"
     ],
     "package": "@atlaskit/icon"
-  },
-  "CycleCard::@/components/dashboard": {
-    "name": "CycleCard",
-    "source": "@/components/dashboard",
-    "origin": "internal",
-    "consumers": [
-      "src/pages/releases/CommandCenter.tsx"
-    ]
   },
   "CycleDistributionChart::@/components/workload": {
     "name": "CycleDistributionChart",
@@ -15319,8 +15080,7 @@ export const usageMap: UsageMap = {
     "source": "@atlaskit/icon/core/database",
     "origin": "atlaskit",
     "consumers": [
-      "src/components/admin/lookup-management/LookupManagementPanel.tsx",
-      "src/pages/admin/AdminOverview.tsx"
+      "src/components/admin/lookup-management/LookupManagementPanel.tsx"
     ],
     "package": "@atlaskit/icon"
   },
@@ -15386,7 +15146,6 @@ export const usageMap: UsageMap = {
       "src/components/workhub/create-story/CreateStoryModal.tsx",
       "src/modules/strata/components/authoring.tsx",
       "src/modules/strata/components/vmoAuthoring.tsx",
-      "src/modules/strata/pages/StrataStrategyRoomPage.tsx",
       "src/pages/testhub/cycles/CycleDetailPage.tsx",
       "src/pages/testhub/cycles/CyclesPage.tsx"
     ],
@@ -15433,13 +15192,14 @@ export const usageMap: UsageMap = {
       "src/features/chat-v2/components/MessagePanel/MessageList.tsx"
     ]
   },
-  "DBRelease::@/types/releases": {
-    "name": "DBRelease",
-    "source": "@/types/releases",
-    "origin": "internal",
+  "DateTimePicker::@atlaskit/datetime-picker": {
+    "name": "DateTimePicker",
+    "source": "@atlaskit/datetime-picker",
+    "origin": "atlaskit",
     "consumers": [
-      "src/pages/releases/AllReleasesPage.tsx"
-    ]
+      "src/components/releasehub/foryou/ReleaseChangeAnnouncementBanner.tsx"
+    ],
+    "package": "@atlaskit/datetime-picker"
   },
   "DecisionIcon::@atlaskit/icon/glyph/editor/decision": {
     "name": "DecisionIcon",
@@ -15458,9 +15218,7 @@ export const usageMap: UsageMap = {
     "consumers": [
       "src/components/releases/defects/DefectKanbanView.tsx",
       "src/components/releases/defects/DefectTableView.tsx",
-      "src/components/releases/defects/EditDefectModal.tsx",
-      "src/pages/releases/DefectDetailPage.tsx",
-      "src/pages/releases/DefectsPage.tsx"
+      "src/components/releases/defects/EditDefectModal.tsx"
     ]
   },
   "DefectBreakdown::./DefectBreakdown": {
@@ -15477,22 +15235,6 @@ export const usageMap: UsageMap = {
     "origin": "internal",
     "consumers": [
       "src/hooks/test-management/useDefects.ts"
-    ]
-  },
-  "DefectFormData::@/components/releases/defects/ReportDefectModal": {
-    "name": "DefectFormData",
-    "source": "@/components/releases/defects/ReportDefectModal",
-    "origin": "internal",
-    "consumers": [
-      "src/pages/releases/DefectsPage.tsx"
-    ]
-  },
-  "DefectKanbanView::@/components/releases/defects/DefectKanbanView": {
-    "name": "DefectKanbanView",
-    "source": "@/components/releases/defects/DefectKanbanView",
-    "origin": "internal",
-    "consumers": [
-      "src/pages/releases/DefectsPage.tsx"
     ]
   },
   "DefectSeverity::@/types/test-management": {
@@ -15533,16 +15275,7 @@ export const usageMap: UsageMap = {
     "origin": "internal",
     "consumers": [
       "src/components/releases/defects/DefectKanbanView.tsx",
-      "src/components/releases/defects/DefectTableView.tsx",
-      "src/pages/releases/DefectDetailPage.tsx"
-    ]
-  },
-  "DefectTableView::@/components/releases/defects/DefectTableView": {
-    "name": "DefectTableView",
-    "source": "@/components/releases/defects/DefectTableView",
-    "origin": "internal",
-    "consumers": [
-      "src/pages/releases/DefectsPage.tsx"
+      "src/components/releases/defects/DefectTableView.tsx"
     ]
   },
   "DefectTrendPoint::../types": {
@@ -15617,6 +15350,8 @@ export const usageMap: UsageMap = {
       "src/components/catalyst-detail-views/test-case/TestCaseAttachments.tsx",
       "src/components/shared/rich-text/atlaskit/imageToolbar/ImageToolbar.tsx",
       "src/features/kanban-board/components/SelectCoverPanel.tsx",
+      "src/features/voice-flow/VoiceSettingsTab.tsx",
+      "src/modules/ideation/pages/DetailPage.tsx",
       "src/modules/project-work-hub/components/dialogs/story-detail-modules/AttachmentsSection.tsx",
       "src/modules/project-work-hub/components/dialogs/story-detail-modules/shared-components.tsx",
       "src/modules/project-work-hub/components/drawers/StoryActionMenu.tsx",
@@ -16274,11 +16009,9 @@ export const usageMap: UsageMap = {
       "src/components/admin/notifications/RecipientPicker.tsx",
       "src/components/admin/rbac/AssignUsersModal.tsx",
       "src/components/admin/rbac/CreateEditRoleModal.tsx",
-      "src/pages/admin/BusinessOwners.tsx",
       "src/pages/admin/CapacityDepartments.tsx",
       "src/pages/admin/Departments.tsx",
-      "src/pages/admin/ResourceAssignments.tsx",
-      "src/pages/admin/UserAccessPage.tsx"
+      "src/pages/admin/ResourceAssignments.tsx"
     ]
   },
   "Dialog::@/components/ui/dialog": {
@@ -16307,9 +16040,6 @@ export const usageMap: UsageMap = {
       "src/components/dependencies/DependencyMatrix.tsx",
       "src/components/enterprise/EnterpriseGrid.tsx",
       "src/components/epic-backlog/EpicFiltersDialog.tsx",
-      "src/components/epic-backlog/modals/FeatureStatusModal.tsx",
-      "src/components/epic-backlog/modals/MilestoneModal.tsx",
-      "src/components/epic-backlog/modals/WSJFModal.tsx",
       "src/components/evidence/defect/CreateDefectModal.tsx",
       "src/components/executive-roadmap/RoadmapFiltersDialog.tsx",
       "src/components/features/AssignModal.tsx",
@@ -16347,7 +16077,6 @@ export const usageMap: UsageMap = {
       "src/components/items/epics/dialogs/PullRankDialog.tsx",
       "src/components/items/epics/dialogs/ReportTemplatesDialog.tsx",
       "src/components/items/epics/dialogs/WSJFPrioritizationDialog.tsx",
-      "src/components/items/epics/modals/FeatureStatusModal.tsx",
       "src/components/items/features/FeatureMassMoveDialog.tsx",
       "src/components/items/features/FeatureWSJFDialog.tsx",
       "src/components/kanban/setup/ColumnsSetupTab.tsx",
@@ -16380,7 +16109,6 @@ export const usageMap: UsageMap = {
       "src/components/skills-inventory/AddTeamMemberModal.tsx",
       "src/components/skills-inventory/EditSkillModal.tsx",
       "src/components/skills-inventory/SkillsFiltersDialog.tsx",
-      "src/components/stories/CreateStoryModal.tsx",
       "src/components/stories/PullRankDialog.tsx",
       "src/components/stories/StoriesColumnConfig.tsx",
       "src/components/stories/StoriesFiltersDialog.tsx",
@@ -16441,7 +16169,6 @@ export const usageMap: UsageMap = {
       "src/pages/project/components/FeatureChildStories.tsx",
       "src/pages/project/components/LinkTypeSelectorDialog.tsx",
       "src/pages/project/components/RiskLinkDialog.tsx",
-      "src/pages/releases/QualityGatesPage.tsx",
       "src/pages/work-tree/components/WorkTreeLegend.tsx"
     ]
   },
@@ -16454,11 +16181,9 @@ export const usageMap: UsageMap = {
       "src/components/admin/notifications/RecipientPicker.tsx",
       "src/components/admin/rbac/AssignUsersModal.tsx",
       "src/components/admin/rbac/CreateEditRoleModal.tsx",
-      "src/pages/admin/BusinessOwners.tsx",
       "src/pages/admin/CapacityDepartments.tsx",
       "src/pages/admin/Departments.tsx",
-      "src/pages/admin/ResourceAssignments.tsx",
-      "src/pages/admin/UserAccessPage.tsx"
+      "src/pages/admin/ResourceAssignments.tsx"
     ]
   },
   "DialogContent::@/components/ui/dialog": {
@@ -16487,9 +16212,6 @@ export const usageMap: UsageMap = {
       "src/components/dependencies/DependencyMatrix.tsx",
       "src/components/enterprise/EnterpriseGrid.tsx",
       "src/components/epic-backlog/EpicFiltersDialog.tsx",
-      "src/components/epic-backlog/modals/FeatureStatusModal.tsx",
-      "src/components/epic-backlog/modals/MilestoneModal.tsx",
-      "src/components/epic-backlog/modals/WSJFModal.tsx",
       "src/components/evidence/defect/CreateDefectModal.tsx",
       "src/components/executive-roadmap/RoadmapFiltersDialog.tsx",
       "src/components/features/AssignModal.tsx",
@@ -16527,7 +16249,6 @@ export const usageMap: UsageMap = {
       "src/components/items/epics/dialogs/PullRankDialog.tsx",
       "src/components/items/epics/dialogs/ReportTemplatesDialog.tsx",
       "src/components/items/epics/dialogs/WSJFPrioritizationDialog.tsx",
-      "src/components/items/epics/modals/FeatureStatusModal.tsx",
       "src/components/items/features/FeatureMassMoveDialog.tsx",
       "src/components/items/features/FeatureWSJFDialog.tsx",
       "src/components/kanban/setup/ColumnsSetupTab.tsx",
@@ -16560,7 +16281,6 @@ export const usageMap: UsageMap = {
       "src/components/skills-inventory/AddTeamMemberModal.tsx",
       "src/components/skills-inventory/EditSkillModal.tsx",
       "src/components/skills-inventory/SkillsFiltersDialog.tsx",
-      "src/components/stories/CreateStoryModal.tsx",
       "src/components/stories/PullRankDialog.tsx",
       "src/components/stories/StoriesColumnConfig.tsx",
       "src/components/stories/StoriesFiltersDialog.tsx",
@@ -16621,7 +16341,6 @@ export const usageMap: UsageMap = {
       "src/pages/project/components/FeatureChildStories.tsx",
       "src/pages/project/components/LinkTypeSelectorDialog.tsx",
       "src/pages/project/components/RiskLinkDialog.tsx",
-      "src/pages/releases/QualityGatesPage.tsx",
       "src/pages/work-tree/components/WorkTreeLegend.tsx"
     ]
   },
@@ -16633,8 +16352,7 @@ export const usageMap: UsageMap = {
       "src/components/admin/notifications/CreateSchemeModal.tsx",
       "src/components/admin/notifications/RecipientPicker.tsx",
       "src/components/admin/rbac/AssignUsersModal.tsx",
-      "src/components/admin/rbac/CreateEditRoleModal.tsx",
-      "src/pages/admin/UserAccessPage.tsx"
+      "src/components/admin/rbac/CreateEditRoleModal.tsx"
     ]
   },
   "DialogDescription::@/components/ui/dialog": {
@@ -16667,7 +16385,6 @@ export const usageMap: UsageMap = {
       "src/components/items/epics/dialogs/PullRankDialog.tsx",
       "src/components/items/epics/dialogs/ReportTemplatesDialog.tsx",
       "src/components/items/epics/dialogs/WSJFPrioritizationDialog.tsx",
-      "src/components/items/epics/modals/FeatureStatusModal.tsx",
       "src/components/prioritization/ApplyWSJFToRankDialog.tsx",
       "src/components/projects/CreateProjectDialog.tsx",
       "src/components/releases/all-releases/ArchiveConfirmationDialog.tsx",
@@ -16695,8 +16412,7 @@ export const usageMap: UsageMap = {
       "src/modules/product-roadmap/components/RoadmapExportDialog.tsx",
       "src/modules/tasks/components/boards/AddColumnModal.tsx",
       "src/pages/project/components/LinkTypeSelectorDialog.tsx",
-      "src/pages/project/components/RiskLinkDialog.tsx",
-      "src/pages/releases/QualityGatesPage.tsx"
+      "src/pages/project/components/RiskLinkDialog.tsx"
     ]
   },
   "DialogFooter::@/components/admin/admin-dialog": {
@@ -16708,11 +16424,9 @@ export const usageMap: UsageMap = {
       "src/components/admin/notifications/RecipientPicker.tsx",
       "src/components/admin/rbac/AssignUsersModal.tsx",
       "src/components/admin/rbac/CreateEditRoleModal.tsx",
-      "src/pages/admin/BusinessOwners.tsx",
       "src/pages/admin/CapacityDepartments.tsx",
       "src/pages/admin/Departments.tsx",
-      "src/pages/admin/ResourceAssignments.tsx",
-      "src/pages/admin/UserAccessPage.tsx"
+      "src/pages/admin/ResourceAssignments.tsx"
     ]
   },
   "DialogFooter::@/components/ui/dialog": {
@@ -16733,7 +16447,6 @@ export const usageMap: UsageMap = {
       "src/components/demand/DemandExportModal.tsx",
       "src/components/dependencies/CreateDependencyDialog.tsx",
       "src/components/enterprise/EnterpriseGrid.tsx",
-      "src/components/epic-backlog/modals/MilestoneModal.tsx",
       "src/components/evidence/defect/CreateDefectModal.tsx",
       "src/components/forecast/ForecastColumnsDialog.tsx",
       "src/components/forecast/ForecastFiltersDialog.tsx",
@@ -16813,8 +16526,7 @@ export const usageMap: UsageMap = {
       "src/pages/incidenthub/components/NewIncidentModal.tsx",
       "src/pages/items/reports/EpicPlanningPage.tsx",
       "src/pages/program/ExecutionWorkbench/WorkbenchFiltersDialog.tsx",
-      "src/pages/project/components/FeatureChildStories.tsx",
-      "src/pages/releases/QualityGatesPage.tsx"
+      "src/pages/project/components/FeatureChildStories.tsx"
     ]
   },
   "DialogHeader::@/components/admin/admin-dialog": {
@@ -16826,11 +16538,9 @@ export const usageMap: UsageMap = {
       "src/components/admin/notifications/RecipientPicker.tsx",
       "src/components/admin/rbac/AssignUsersModal.tsx",
       "src/components/admin/rbac/CreateEditRoleModal.tsx",
-      "src/pages/admin/BusinessOwners.tsx",
       "src/pages/admin/CapacityDepartments.tsx",
       "src/pages/admin/Departments.tsx",
-      "src/pages/admin/ResourceAssignments.tsx",
-      "src/pages/admin/UserAccessPage.tsx"
+      "src/pages/admin/ResourceAssignments.tsx"
     ]
   },
   "DialogHeader::@/components/ui/dialog": {
@@ -16856,9 +16566,6 @@ export const usageMap: UsageMap = {
       "src/components/dependencies/DependencyMatrix.tsx",
       "src/components/enterprise/EnterpriseGrid.tsx",
       "src/components/epic-backlog/EpicFiltersDialog.tsx",
-      "src/components/epic-backlog/modals/FeatureStatusModal.tsx",
-      "src/components/epic-backlog/modals/MilestoneModal.tsx",
-      "src/components/epic-backlog/modals/WSJFModal.tsx",
       "src/components/evidence/defect/CreateDefectModal.tsx",
       "src/components/executive-roadmap/RoadmapFiltersDialog.tsx",
       "src/components/features/AssignModal.tsx",
@@ -16895,7 +16602,6 @@ export const usageMap: UsageMap = {
       "src/components/items/epics/dialogs/PullRankDialog.tsx",
       "src/components/items/epics/dialogs/ReportTemplatesDialog.tsx",
       "src/components/items/epics/dialogs/WSJFPrioritizationDialog.tsx",
-      "src/components/items/epics/modals/FeatureStatusModal.tsx",
       "src/components/items/features/FeatureMassMoveDialog.tsx",
       "src/components/items/features/FeatureWSJFDialog.tsx",
       "src/components/kanban/setup/ColumnsSetupTab.tsx",
@@ -16926,7 +16632,6 @@ export const usageMap: UsageMap = {
       "src/components/shared/ResourceModal.tsx",
       "src/components/skills-inventory/AddTeamMemberModal.tsx",
       "src/components/skills-inventory/EditSkillModal.tsx",
-      "src/components/stories/CreateStoryModal.tsx",
       "src/components/stories/PullRankDialog.tsx",
       "src/components/stories/StoriesColumnConfig.tsx",
       "src/components/stories/StoriesFiltersDialog.tsx",
@@ -16984,7 +16689,6 @@ export const usageMap: UsageMap = {
       "src/pages/project/components/FeatureChildStories.tsx",
       "src/pages/project/components/LinkTypeSelectorDialog.tsx",
       "src/pages/project/components/RiskLinkDialog.tsx",
-      "src/pages/releases/QualityGatesPage.tsx",
       "src/pages/work-tree/components/WorkTreeLegend.tsx"
     ]
   },
@@ -16997,11 +16701,9 @@ export const usageMap: UsageMap = {
       "src/components/admin/notifications/RecipientPicker.tsx",
       "src/components/admin/rbac/AssignUsersModal.tsx",
       "src/components/admin/rbac/CreateEditRoleModal.tsx",
-      "src/pages/admin/BusinessOwners.tsx",
       "src/pages/admin/CapacityDepartments.tsx",
       "src/pages/admin/Departments.tsx",
-      "src/pages/admin/ResourceAssignments.tsx",
-      "src/pages/admin/UserAccessPage.tsx"
+      "src/pages/admin/ResourceAssignments.tsx"
     ]
   },
   "DialogTitle::@/components/ui/dialog": {
@@ -17027,9 +16729,6 @@ export const usageMap: UsageMap = {
       "src/components/dependencies/DependencyMatrix.tsx",
       "src/components/enterprise/EnterpriseGrid.tsx",
       "src/components/epic-backlog/EpicFiltersDialog.tsx",
-      "src/components/epic-backlog/modals/FeatureStatusModal.tsx",
-      "src/components/epic-backlog/modals/MilestoneModal.tsx",
-      "src/components/epic-backlog/modals/WSJFModal.tsx",
       "src/components/evidence/defect/CreateDefectModal.tsx",
       "src/components/executive-roadmap/RoadmapFiltersDialog.tsx",
       "src/components/features/AssignModal.tsx",
@@ -17066,7 +16765,6 @@ export const usageMap: UsageMap = {
       "src/components/items/epics/dialogs/PullRankDialog.tsx",
       "src/components/items/epics/dialogs/ReportTemplatesDialog.tsx",
       "src/components/items/epics/dialogs/WSJFPrioritizationDialog.tsx",
-      "src/components/items/epics/modals/FeatureStatusModal.tsx",
       "src/components/items/features/FeatureMassMoveDialog.tsx",
       "src/components/items/features/FeatureWSJFDialog.tsx",
       "src/components/kanban/setup/ColumnsSetupTab.tsx",
@@ -17097,7 +16795,6 @@ export const usageMap: UsageMap = {
       "src/components/shared/ResourceModal.tsx",
       "src/components/skills-inventory/AddTeamMemberModal.tsx",
       "src/components/skills-inventory/EditSkillModal.tsx",
-      "src/components/stories/CreateStoryModal.tsx",
       "src/components/stories/PullRankDialog.tsx",
       "src/components/stories/StoriesColumnConfig.tsx",
       "src/components/stories/StoriesFiltersDialog.tsx",
@@ -17155,7 +16852,6 @@ export const usageMap: UsageMap = {
       "src/pages/project/components/FeatureChildStories.tsx",
       "src/pages/project/components/LinkTypeSelectorDialog.tsx",
       "src/pages/project/components/RiskLinkDialog.tsx",
-      "src/pages/releases/QualityGatesPage.tsx",
       "src/pages/work-tree/components/WorkTreeLegend.tsx"
     ]
   },
@@ -17167,14 +16863,6 @@ export const usageMap: UsageMap = {
       "src/components/incidents/IncidentFiltersDialog.tsx",
       "src/components/items/epics/EpicKanbanCustom.tsx",
       "src/components/work-items/WorkItemLinksSection.tsx"
-    ]
-  },
-  "DictationCTA::./DictationCTA": {
-    "name": "DictationCTA",
-    "source": "./DictationCTA",
-    "origin": "internal",
-    "consumers": [
-      "src/features/voice-flow/VoiceFlowProvider.tsx"
     ]
   },
   "Direction::../extensions/Direction": {
@@ -17259,7 +16947,8 @@ export const usageMap: UsageMap = {
     "consumers": [
       "src/components/catalyst-detail-views/business-request/sections/BrDescriptionSection.tsx",
       "src/components/catalyst-detail-views/idea/CatalystViewIdea.tsx",
-      "src/components/catalyst-ds/comments/CommentEditor.tsx"
+      "src/components/catalyst-ds/comments/CommentEditor.tsx",
+      "src/modules/ideation/pages/DetailPage.tsx"
     ]
   },
   "DistributeColumnsIcon::@atlaskit/icon/core/table-columns-distribute": {
@@ -17333,12 +17022,182 @@ export const usageMap: UsageMap = {
       "src/components/wiki-hub/WikiPageSurface.tsx"
     ]
   },
+  "DocintelDeliverablesPage::@/modules/docintel/pages/DocintelDeliverablesPage": {
+    "name": "DocintelDeliverablesPage",
+    "source": "@/modules/docintel/pages/DocintelDeliverablesPage",
+    "origin": "internal",
+    "consumers": [
+      "src/stories/audit-grade/25-DocintelDeliverables.stories.tsx"
+    ]
+  },
+  "DocintelFindingsPanel::../components/DocintelFindingsPanel": {
+    "name": "DocintelFindingsPanel",
+    "source": "../components/DocintelFindingsPanel",
+    "origin": "internal",
+    "consumers": [
+      "src/modules/docintel/pages/DocintelWorkspacePage.tsx"
+    ]
+  },
+  "DocintelFindingsPanel::@/modules/docintel/components/DocintelFindingsPanel": {
+    "name": "DocintelFindingsPanel",
+    "source": "@/modules/docintel/components/DocintelFindingsPanel",
+    "origin": "internal",
+    "consumers": [
+      "src/stories/audit-grade/24-DocintelFindings.stories.tsx"
+    ]
+  },
+  "DocintelIntentComposer::../components/DocintelIntentComposer": {
+    "name": "DocintelIntentComposer",
+    "source": "../components/DocintelIntentComposer",
+    "origin": "internal",
+    "consumers": [
+      "src/modules/docintel/pages/DocintelHomePage.tsx"
+    ]
+  },
+  "DocintelLibraryPage::@/modules/docintel/pages/DocintelLibraryPage": {
+    "name": "DocintelLibraryPage",
+    "source": "@/modules/docintel/pages/DocintelLibraryPage",
+    "origin": "internal",
+    "consumers": [
+      "src/stories/audit-grade/26-DocintelLibrary.stories.tsx"
+    ]
+  },
+  "DocintelNavigation::../components/DocintelNavigation": {
+    "name": "DocintelNavigation",
+    "source": "../components/DocintelNavigation",
+    "origin": "internal",
+    "consumers": [
+      "src/modules/docintel/pages/DocintelDeliverablesPage.tsx",
+      "src/modules/docintel/pages/DocintelHomePage.tsx",
+      "src/modules/docintel/pages/DocintelLibraryPage.tsx"
+    ]
+  },
+  "DocintelRecentWork::../components/DocintelRecentWork": {
+    "name": "DocintelRecentWork",
+    "source": "../components/DocintelRecentWork",
+    "origin": "internal",
+    "consumers": [
+      "src/modules/docintel/pages/DocintelHomePage.tsx"
+    ]
+  },
+  "DocintelRecentWork::@/modules/docintel/components/DocintelRecentWork": {
+    "name": "DocintelRecentWork",
+    "source": "@/modules/docintel/components/DocintelRecentWork",
+    "origin": "internal",
+    "consumers": [
+      "src/stories/audit-grade/21-DocintelForYou.stories.tsx"
+    ]
+  },
+  "DocintelReviewStartPage::@/modules/docintel/pages/DocintelReviewStartPage": {
+    "name": "DocintelReviewStartPage",
+    "source": "@/modules/docintel/pages/DocintelReviewStartPage",
+    "origin": "internal",
+    "consumers": [
+      "src/stories/audit-grade/22-DocintelReviewStart.stories.tsx"
+    ]
+  },
+  "DocintelSourceDrawer::../components/DocintelSourceDrawer": {
+    "name": "DocintelSourceDrawer",
+    "source": "../components/DocintelSourceDrawer",
+    "origin": "internal",
+    "consumers": [
+      "src/modules/docintel/pages/DocintelWorkspacePage.tsx"
+    ]
+  },
+  "DocintelSourceDrawer::@/modules/docintel/components/DocintelSourceDrawer": {
+    "name": "DocintelSourceDrawer",
+    "source": "@/modules/docintel/components/DocintelSourceDrawer",
+    "origin": "internal",
+    "consumers": [
+      "src/stories/audit-grade/23-DocintelWorkspaceOverview.stories.tsx"
+    ]
+  },
+  "DocintelSourcePicker::../components/DocintelSourcePicker": {
+    "name": "DocintelSourcePicker",
+    "source": "../components/DocintelSourcePicker",
+    "origin": "internal",
+    "consumers": [
+      "src/modules/docintel/pages/DocintelReviewStartPage.tsx"
+    ]
+  },
+  "DocintelWorkItemsPanel::../components/DocintelWorkItemsPanel": {
+    "name": "DocintelWorkItemsPanel",
+    "source": "../components/DocintelWorkItemsPanel",
+    "origin": "internal",
+    "consumers": [
+      "src/modules/docintel/pages/DocintelWorkspacePage.tsx"
+    ]
+  },
+  "DocintelWorkItemsPanel::@/modules/docintel/components/DocintelWorkItemsPanel": {
+    "name": "DocintelWorkItemsPanel",
+    "source": "@/modules/docintel/components/DocintelWorkItemsPanel",
+    "origin": "internal",
+    "consumers": [
+      "src/stories/audit-grade/24-DocintelFindings.stories.tsx"
+    ]
+  },
+  "DocintelWorkspaceOverview::../components/DocintelWorkspaceOverview": {
+    "name": "DocintelWorkspaceOverview",
+    "source": "../components/DocintelWorkspaceOverview",
+    "origin": "internal",
+    "consumers": [
+      "src/modules/docintel/pages/DocintelWorkspacePage.tsx"
+    ]
+  },
+  "DocintelWorkspaceOverview::@/modules/docintel/components/DocintelWorkspaceOverview": {
+    "name": "DocintelWorkspaceOverview",
+    "source": "@/modules/docintel/components/DocintelWorkspaceOverview",
+    "origin": "internal",
+    "consumers": [
+      "src/stories/audit-grade/23-DocintelWorkspaceOverview.stories.tsx"
+    ]
+  },
+  "DockActivityTab::./DockActivityTab": {
+    "name": "DockActivityTab",
+    "source": "./DockActivityTab",
+    "origin": "internal",
+    "consumers": [
+      "src/components/chat/dock/ChatDock.tsx"
+    ]
+  },
   "DockCallRing::./dock/DockCallRing": {
     "name": "DockCallRing",
     "source": "./dock/DockCallRing",
     "origin": "internal",
     "consumers": [
       "src/components/chat/IncomingHuddleFab.tsx"
+    ]
+  },
+  "DockCardView::./DockCardView": {
+    "name": "DockCardView",
+    "source": "./DockCardView",
+    "origin": "internal",
+    "consumers": [
+      "src/components/chat/dock/ChatDock.tsx"
+    ]
+  },
+  "DockCatyPane::./DockCatyPane": {
+    "name": "DockCatyPane",
+    "source": "./DockCatyPane",
+    "origin": "internal",
+    "consumers": [
+      "src/components/chat/dock/ChatDock.tsx"
+    ]
+  },
+  "DockCatySheet::./DockCatySheet": {
+    "name": "DockCatySheet",
+    "source": "./DockCatySheet",
+    "origin": "internal",
+    "consumers": [
+      "src/components/chat/dock/DockConversationPane.tsx"
+    ]
+  },
+  "DockComposeMenu::./DockComposeMenu": {
+    "name": "DockComposeMenu",
+    "source": "./DockComposeMenu",
+    "origin": "internal",
+    "consumers": [
+      "src/components/chat/dock/ChatDock.tsx"
     ]
   },
   "DockConversationPane::./DockConversationPane": {
@@ -17349,9 +17208,65 @@ export const usageMap: UsageMap = {
       "src/components/chat/dock/ChatDock.tsx"
     ]
   },
+  "DockConvHeader::./DockConvHeader": {
+    "name": "DockConvHeader",
+    "source": "./DockConvHeader",
+    "origin": "internal",
+    "consumers": [
+      "src/components/chat/dock/DockConversationPane.tsx"
+    ]
+  },
+  "DockCreateChannelModal::./DockCreateChannelModal": {
+    "name": "DockCreateChannelModal",
+    "source": "./DockCreateChannelModal",
+    "origin": "internal",
+    "consumers": [
+      "src/components/chat/dock/ChatDock.tsx"
+    ]
+  },
   "DockDirectory::./DockDirectory": {
     "name": "DockDirectory",
     "source": "./DockDirectory",
+    "origin": "internal",
+    "consumers": [
+      "src/components/chat/dock/ChatDock.tsx"
+    ]
+  },
+  "DockDmsTab::./DockDmsTab": {
+    "name": "DockDmsTab",
+    "source": "./DockDmsTab",
+    "origin": "internal",
+    "consumers": [
+      "src/components/chat/dock/ChatDock.tsx"
+    ]
+  },
+  "DockHomeCards::./DockHomeCards": {
+    "name": "DockHomeCards",
+    "source": "./DockHomeCards",
+    "origin": "internal",
+    "consumers": [
+      "src/components/chat/dock/ChatDock.tsx"
+    ]
+  },
+  "DockMoreTab::./DockMoreTab": {
+    "name": "DockMoreTab",
+    "source": "./DockMoreTab",
+    "origin": "internal",
+    "consumers": [
+      "src/components/chat/dock/ChatDock.tsx"
+    ]
+  },
+  "DockNewHuddleModal::./DockNewHuddleModal": {
+    "name": "DockNewHuddleModal",
+    "source": "./DockNewHuddleModal",
+    "origin": "internal",
+    "consumers": [
+      "src/components/chat/dock/ChatDock.tsx"
+    ]
+  },
+  "DockNewMessageModal::./DockNewMessageModal": {
+    "name": "DockNewMessageModal",
+    "source": "./DockNewMessageModal",
     "origin": "internal",
     "consumers": [
       "src/components/chat/dock/ChatDock.tsx"
@@ -17376,12 +17291,44 @@ export const usageMap: UsageMap = {
       "src/components/chat/main/RosterPanel.tsx"
     ]
   },
-  "DocumentLinksPanel::../components/DocumentLinksPanel": {
-    "name": "DocumentLinksPanel",
-    "source": "../components/DocumentLinksPanel",
+  "DockReminderModal::./DockReminderModal": {
+    "name": "DockReminderModal",
+    "source": "./DockReminderModal",
     "origin": "internal",
     "consumers": [
-      "src/modules/docintel/pages/DocintelWorkspacePage.tsx"
+      "src/components/chat/dock/DockCardView.tsx"
+    ]
+  },
+  "DockSearchTab::./DockSearchTab": {
+    "name": "DockSearchTab",
+    "source": "./DockSearchTab",
+    "origin": "internal",
+    "consumers": [
+      "src/components/chat/dock/ChatDock.tsx"
+    ]
+  },
+  "DockTabBar::./DockTabBar": {
+    "name": "DockTabBar",
+    "source": "./DockTabBar",
+    "origin": "internal",
+    "consumers": [
+      "src/components/chat/dock/ChatDock.tsx"
+    ]
+  },
+  "DockYouModal::./DockYouModal": {
+    "name": "DockYouModal",
+    "source": "./DockYouModal",
+    "origin": "internal",
+    "consumers": [
+      "src/components/chat/dock/ChatDock.tsx"
+    ]
+  },
+  "DocumentLinksPanel::./DocumentLinksPanel": {
+    "name": "DocumentLinksPanel",
+    "source": "./DocumentLinksPanel",
+    "origin": "internal",
+    "consumers": [
+      "src/modules/docintel/components/DocintelWorkItemsPanel.tsx"
     ]
   },
   "DocumentsIcon::@atlaskit/icon/glyph/documents": {
@@ -17476,11 +17423,6 @@ export const usageMap: UsageMap = {
       "src/pages/items/reports/EpicStatusReport.tsx",
       "src/pages/producthub/IdeationPage.tsx",
       "src/pages/project/feature-detail/FeatureOverviewTab.tsx",
-      "src/pages/releases/AllReleasesPage.tsx",
-      "src/pages/releases/CommandCenter.tsx",
-      "src/pages/releases/CommandCenterPage.tsx",
-      "src/pages/releases/CoverageReportsPage.tsx",
-      "src/pages/releases/ReleaseDashboardPage.tsx",
       "src/pages/work/Dependencies.tsx",
       "src/shared/backlog/BacklogTemplate.tsx"
     ]
@@ -17492,13 +17434,11 @@ export const usageMap: UsageMap = {
     "consumers": [
       "src/components/catalyst-detail-views/test-case/TestCaseAttachments.tsx",
       "src/features/my-test-scope/components/ScopeHeader.tsx",
-      "src/features/release-calendar/components/CalendarHeader.tsx",
       "src/features/release-compare/components/CompareHeader.tsx",
       "src/modules/project-work-hub/components/dialogs/story-detail-modules/AttachmentPreviewModal.tsx",
       "src/modules/project-work-hub/components/dialogs/story-detail-modules/AttachmentsSection.tsx",
       "src/modules/workhub/admin/components/SyncConfigPanel.tsx",
       "src/modules/workhub/admin/components/SyncLogs.tsx",
-      "src/pages/admin/NotificationTriggers.tsx",
       "src/pages/admin/ResourceAssignments.tsx"
     ],
     "package": "@atlaskit/icon"
@@ -17508,7 +17448,8 @@ export const usageMap: UsageMap = {
     "source": "@atlaskit/icon/glyph/download",
     "origin": "atlaskit",
     "consumers": [
-      "src/components/catalyst-detail-views/business-request/sections/BrAttachmentsSection.tsx"
+      "src/components/catalyst-detail-views/business-request/sections/BrAttachmentsSection.tsx",
+      "src/modules/ideation/pages/ExplorePage.tsx"
     ],
     "package": "@atlaskit/icon"
   },
@@ -17659,7 +17600,6 @@ export const usageMap: UsageMap = {
     "origin": "atlaskit",
     "consumers": [
       "src/components/admin/lookup-management/OptionValuesDrawer.tsx",
-      "src/pages/admin/BusinessOwners.tsx",
       "src/pages/admin/CapacityDepartments.tsx",
       "src/pages/admin/Departments.tsx",
       "src/pages/admin/ResourceAssignments.tsx"
@@ -17867,8 +17807,6 @@ export const usageMap: UsageMap = {
       "src/components/work-items/WorkItemCommentsSection.tsx",
       "src/components/work-manager/WorkManagerBoards.tsx",
       "src/components/work-manager/WorkManagerTeams.tsx",
-      "src/features/all-releases/components/FilterBar.tsx",
-      "src/features/all-releases/components/Toolbar.tsx",
       "src/features/release-compare/components/CompareHeader.tsx",
       "src/modules/backlog/components/BacklogToolbar.tsx",
       "src/modules/backlog/components/EpicTableView.tsx",
@@ -17916,12 +17854,6 @@ export const usageMap: UsageMap = {
       "src/pages/project/FeatureViewPage.tsx",
       "src/pages/projects/ProjectSummaryPage.tsx",
       "src/pages/projects/views/ListView.tsx",
-      "src/pages/releases/CommandCenter.tsx",
-      "src/pages/releases/CommandCenterPage.tsx",
-      "src/pages/releases/CoverageReportsPage.tsx",
-      "src/pages/releases/DefectDetailPage.tsx",
-      "src/pages/releases/DefectsPage.tsx",
-      "src/pages/releases/QualityGatesPage.tsx",
       "src/pages/risks/RisksGridPage.tsx",
       "src/pages/work/Dependencies.tsx",
       "src/shared/components/IndustryHeaderToolbarV2.tsx"
@@ -17963,8 +17895,6 @@ export const usageMap: UsageMap = {
       "src/components/product-roadmap/ProductRoadmapToolbar.tsx",
       "src/components/shared/UnifiedLinksTab.tsx",
       "src/components/shared/dynamic-table/ColumnVisibilityMenu.tsx",
-      "src/features/all-releases/components/FilterBar.tsx",
-      "src/features/all-releases/components/Toolbar.tsx",
       "src/modules/in-jira/pages/ListPage.tsx",
       "src/modules/tasks/components/PlannerSearchBar.tsx",
       "src/modules/tasks/components/TaskList/TaskListPageV3.tsx",
@@ -18021,8 +17951,6 @@ export const usageMap: UsageMap = {
       "src/components/work-items/WorkItemCommentsSection.tsx",
       "src/components/work-manager/WorkManagerBoards.tsx",
       "src/components/work-manager/WorkManagerTeams.tsx",
-      "src/features/all-releases/components/FilterBar.tsx",
-      "src/features/all-releases/components/Toolbar.tsx",
       "src/features/release-compare/components/CompareHeader.tsx",
       "src/modules/backlog/components/BacklogToolbar.tsx",
       "src/modules/backlog/components/EpicTableView.tsx",
@@ -18070,12 +17998,6 @@ export const usageMap: UsageMap = {
       "src/pages/project/FeatureViewPage.tsx",
       "src/pages/projects/ProjectSummaryPage.tsx",
       "src/pages/projects/views/ListView.tsx",
-      "src/pages/releases/CommandCenter.tsx",
-      "src/pages/releases/CommandCenterPage.tsx",
-      "src/pages/releases/CoverageReportsPage.tsx",
-      "src/pages/releases/DefectDetailPage.tsx",
-      "src/pages/releases/DefectsPage.tsx",
-      "src/pages/releases/QualityGatesPage.tsx",
       "src/pages/risks/RisksGridPage.tsx",
       "src/pages/work/Dependencies.tsx",
       "src/shared/components/IndustryHeaderToolbarV2.tsx"
@@ -18181,12 +18103,6 @@ export const usageMap: UsageMap = {
       "src/pages/project/FeatureViewPage.tsx",
       "src/pages/projects/ProjectSummaryPage.tsx",
       "src/pages/projects/views/ListView.tsx",
-      "src/pages/releases/CommandCenter.tsx",
-      "src/pages/releases/CommandCenterPage.tsx",
-      "src/pages/releases/CoverageReportsPage.tsx",
-      "src/pages/releases/DefectDetailPage.tsx",
-      "src/pages/releases/DefectsPage.tsx",
-      "src/pages/releases/QualityGatesPage.tsx",
       "src/pages/risks/RisksGridPage.tsx",
       "src/pages/work/Dependencies.tsx",
       "src/shared/components/IndustryHeaderToolbarV2.tsx"
@@ -18205,12 +18121,9 @@ export const usageMap: UsageMap = {
       "src/components/projecthub/AllProjectsTable.tsx",
       "src/components/shared/UnifiedLinksTab.tsx",
       "src/components/shared/dynamic-table/ColumnVisibilityMenu.tsx",
-      "src/features/all-releases/components/FilterBar.tsx",
-      "src/features/all-releases/components/Toolbar.tsx",
       "src/modules/backlog/components/EpicTableView.tsx",
       "src/modules/product-roadmap/components/RoadmapToolbar.tsx",
-      "src/modules/project-work-hub/components/CreateWorkItemDropdown.tsx",
-      "src/pages/releases/DefectsPage.tsx"
+      "src/modules/project-work-hub/components/CreateWorkItemDropdown.tsx"
     ]
   },
   "DropdownMenuRadioGroup::@/components/ui/dropdown-menu": {
@@ -18218,8 +18131,7 @@ export const usageMap: UsageMap = {
     "source": "@/components/ui/dropdown-menu",
     "origin": "internal",
     "consumers": [
-      "src/components/enterprise/EnterpriseGrid.tsx",
-      "src/features/all-releases/components/Toolbar.tsx"
+      "src/components/enterprise/EnterpriseGrid.tsx"
     ]
   },
   "DropdownMenuRadioItem::@/components/ui/dropdown-menu": {
@@ -18227,8 +18139,7 @@ export const usageMap: UsageMap = {
     "source": "@/components/ui/dropdown-menu",
     "origin": "internal",
     "consumers": [
-      "src/components/enterprise/EnterpriseGrid.tsx",
-      "src/features/all-releases/components/Toolbar.tsx"
+      "src/components/enterprise/EnterpriseGrid.tsx"
     ]
   },
   "DropdownMenuSeparator::@/components/ui/dropdown-menu": {
@@ -18262,8 +18173,6 @@ export const usageMap: UsageMap = {
       "src/components/templates/TemplateCard.tsx",
       "src/components/work-manager/WorkManagerBoards.tsx",
       "src/components/work-manager/WorkManagerTeams.tsx",
-      "src/features/all-releases/components/FilterBar.tsx",
-      "src/features/all-releases/components/Toolbar.tsx",
       "src/modules/backlog/components/EpicTableView.tsx",
       "src/modules/in-jira/components/TransitionControls.tsx",
       "src/modules/in-jira/components/drawer/IssueActionsMenu.tsx",
@@ -18294,10 +18203,6 @@ export const usageMap: UsageMap = {
       "src/pages/enterprise/EnterpriseEpics.tsx",
       "src/pages/items/EpicsPage.tsx",
       "src/pages/project/FeatureDetailPage.tsx",
-      "src/pages/releases/CommandCenterPage.tsx",
-      "src/pages/releases/DefectDetailPage.tsx",
-      "src/pages/releases/DefectsPage.tsx",
-      "src/pages/releases/QualityGatesPage.tsx",
       "src/shared/components/IndustryHeaderToolbarV2.tsx"
     ]
   },
@@ -18382,8 +18287,6 @@ export const usageMap: UsageMap = {
       "src/components/work-items/WorkItemCommentsSection.tsx",
       "src/components/work-manager/WorkManagerBoards.tsx",
       "src/components/work-manager/WorkManagerTeams.tsx",
-      "src/features/all-releases/components/FilterBar.tsx",
-      "src/features/all-releases/components/Toolbar.tsx",
       "src/features/release-compare/components/CompareHeader.tsx",
       "src/modules/backlog/components/BacklogToolbar.tsx",
       "src/modules/backlog/components/EpicTableView.tsx",
@@ -18431,12 +18334,6 @@ export const usageMap: UsageMap = {
       "src/pages/project/FeatureViewPage.tsx",
       "src/pages/projects/ProjectSummaryPage.tsx",
       "src/pages/projects/views/ListView.tsx",
-      "src/pages/releases/CommandCenter.tsx",
-      "src/pages/releases/CommandCenterPage.tsx",
-      "src/pages/releases/CoverageReportsPage.tsx",
-      "src/pages/releases/DefectDetailPage.tsx",
-      "src/pages/releases/DefectsPage.tsx",
-      "src/pages/releases/QualityGatesPage.tsx",
       "src/pages/risks/RisksGridPage.tsx",
       "src/pages/work/Dependencies.tsx",
       "src/shared/components/IndustryHeaderToolbarV2.tsx"
@@ -18581,9 +18478,7 @@ export const usageMap: UsageMap = {
       "src/pages/Initiatives.tsx",
       "src/pages/Themes.tsx",
       "src/pages/project-hub/filters/FilterDetailPage.tsx",
-      "src/pages/projects/ProjectSummaryPage.tsx",
-      "src/pages/releases/DefectDetailPage.tsx",
-      "src/pages/releases/QualityGatesPage.tsx"
+      "src/pages/projects/ProjectSummaryPage.tsx"
     ]
   },
   "Edit2::@/lib/atlaskit-icons": {
@@ -18738,21 +18633,21 @@ export const usageMap: UsageMap = {
       "src/components/shared/Timeline/TimelineView.tsx"
     ]
   },
-  "EditDefectModal::@/components/releases/defects/EditDefectModal": {
-    "name": "EditDefectModal",
-    "source": "@/components/releases/defects/EditDefectModal",
-    "origin": "internal",
-    "consumers": [
-      "src/pages/releases/DefectDetailPage.tsx",
-      "src/pages/releases/DefectsPage.tsx"
-    ]
-  },
   "EditDescriptionModal::../CreateChannel/EditDescriptionModal": {
     "name": "EditDescriptionModal",
     "source": "../CreateChannel/EditDescriptionModal",
     "origin": "internal",
     "consumers": [
       "src/features/chat-v2/components/MessagePanel/MessagePanel.tsx"
+    ]
+  },
+  "EditElementModal::@/modules/strata/components/authoring": {
+    "name": "EditElementModal",
+    "source": "@/modules/strata/components/authoring",
+    "origin": "internal",
+    "consumers": [
+      "src/modules/strata/pages/StrataStrategyElementDetailPage.tsx",
+      "src/modules/strata/pages/StrataStrategyRoomPage.tsx"
     ]
   },
   "EditFeatureDialog::../components/dialogs/EditFeatureDialog": {
@@ -18794,11 +18689,9 @@ export const usageMap: UsageMap = {
       "src/modules/project-work-hub/components/dialogs/story-detail-modules/shared-components.tsx",
       "src/modules/workhub/admin/components/JiraConnection.tsx",
       "src/pages/admin/AdminAccessPage.tsx",
-      "src/pages/admin/BusinessOwners.tsx",
       "src/pages/admin/CapacityDepartments.tsx",
       "src/pages/admin/Departments.tsx",
       "src/pages/admin/ResourceAssignments.tsx",
-      "src/pages/admin/UserAccessPage.tsx",
       "src/pages/admin/test/TestPrioritiesPage.tsx"
     ],
     "package": "@atlaskit/icon"
@@ -18949,8 +18842,7 @@ export const usageMap: UsageMap = {
     "consumers": [
       "src/components/admin/notifications/BulkActionsBar.tsx",
       "src/components/admin/notifications/ChannelToggles.tsx",
-      "src/modules/workhub/admin/components/JiraConnection.tsx",
-      "src/pages/admin/UserAccessPage.tsx"
+      "src/modules/workhub/admin/components/JiraConnection.tsx"
     ],
     "package": "@atlaskit/icon"
   },
@@ -19103,17 +18995,24 @@ export const usageMap: UsageMap = {
       "src/components/project-hub/dashboard/widgets/TimeInStatusWidget.tsx",
       "src/modules/docintel/components/ArtifactView.tsx",
       "src/modules/docintel/components/AskPanel.tsx",
+      "src/modules/docintel/components/DocintelFindingsPanel.tsx",
+      "src/modules/docintel/components/DocintelRecentWork.tsx",
+      "src/modules/docintel/components/DocintelSourceDrawer.tsx",
       "src/modules/docintel/components/DocumentLinksPanel.tsx",
       "src/modules/docintel/components/EvidenceViewer.tsx",
       "src/modules/docintel/components/FactsReviewPanel.tsx",
       "src/modules/docintel/components/GenerationPanel.tsx",
       "src/modules/docintel/components/TraceabilityMatrix.tsx",
       "src/modules/docintel/components/TranslatedDocumentView.tsx",
-      "src/modules/docintel/pages/DocintelDocumentsPage.tsx",
+      "src/modules/docintel/pages/DocintelDeliverablesPage.tsx",
       "src/modules/docintel/pages/DocintelHealthPage.tsx",
+      "src/modules/docintel/pages/DocintelHomePage.tsx",
+      "src/modules/docintel/pages/DocintelLibraryPage.tsx",
+      "src/modules/docintel/pages/DocintelReviewStartPage.tsx",
       "src/modules/docintel/pages/DocintelWorkspacePage.tsx",
       "src/modules/product-roadmap/components/ProductRoadmap.tsx",
       "src/modules/strata/components/ProjectCardDetailView.tsx",
+      "src/modules/strata/components/StrataNotificationBell.tsx",
       "src/modules/strata/components/vmoAuthoring.tsx",
       "src/modules/strata/pages/StrataAdminConfigPage.tsx",
       "src/modules/strata/pages/StrataCommandCenterPage.tsx",
@@ -19149,9 +19048,15 @@ export const usageMap: UsageMap = {
     "source": "@/components/ads/EmptyState",
     "origin": "internal",
     "consumers": [
+      "src/modules/ideation/admin/AdminPage.tsx",
+      "src/modules/ideation/pages/DetailPage.tsx",
+      "src/modules/ideation/pages/ExplorePage.tsx",
+      "src/modules/ideation/pages/InboxPage.tsx",
+      "src/modules/ideation/pages/PortfolioPage.tsx",
       "src/pages/MyResource360Page.tsx",
       "src/pages/MyTeamPage.tsx",
       "src/pages/TeamResourceList.tsx",
+      "src/pages/project-hub/ReleasesPage.tsx",
       "src/stories/components/EmptyState.stories.tsx"
     ]
   },
@@ -19165,7 +19070,6 @@ export const usageMap: UsageMap = {
       "src/pages/releasehub/ChangeExecutionBoard.tsx",
       "src/pages/releasehub/FreezeWindowsPage.tsx",
       "src/pages/releasehub/ProductionEventsPage.tsx",
-      "src/pages/releasehub/ReleaseComparePage.tsx",
       "src/pages/releasehub/SopTemplatesPage.tsx"
     ]
   },
@@ -19278,14 +19182,6 @@ export const usageMap: UsageMap = {
     "origin": "internal",
     "consumers": [
       "src/components/items/epics/drawer-tabs/EpicRisksViewTab.tsx"
-    ]
-  },
-  "EnvironmentComparisonWidget::@/components/releases/dashboard/EnvironmentComparisonWidget": {
-    "name": "EnvironmentComparisonWidget",
-    "source": "@/components/releases/dashboard/EnvironmentComparisonWidget",
-    "origin": "internal",
-    "consumers": [
-      "src/pages/releases/ReleaseDashboardPage.tsx"
     ]
   },
   "EnvironmentStats::@/types/release-dashboard": {
@@ -19702,10 +19598,6 @@ export const usageMap: UsageMap = {
     "consumers": [
       "src/components/layout/CatalystShell.tsx",
       "src/components/shared/JiraTable/flags.tsx",
-      "src/features/all-releases/components/AIInsightsBar.tsx",
-      "src/features/all-releases/components/AIInsightsDrawer.tsx",
-      "src/features/all-releases/components/StatStrip.tsx",
-      "src/features/release-calendar/components/CalendarAIInsights.tsx",
       "src/features/release-compare/components/CompareInsightsBar.tsx",
       "src/features/release-compare/components/ComparisonTable.tsx",
       "src/modules/project-work-hub/components/dialogs/cloneIncludeMatrix.tsx",
@@ -19733,6 +19625,7 @@ export const usageMap: UsageMap = {
       "src/components/business-requests/CreateBusinessRequestModal.tsx",
       "src/components/product/CreateReleaseModal.tsx",
       "src/components/workhub/create-story/CreateStoryModal.tsx",
+      "src/modules/ideation/components/CreateIdeaModal.tsx",
       "src/modules/project-work-hub/components/dialogs/CloneIssueDialog.tsx",
       "src/modules/project-work-hub/components/dialogs/MoveIssueDialog.tsx",
       "src/modules/tasks/components/workstreams/WorkstreamFormModal.tsx",
@@ -19817,14 +19710,6 @@ export const usageMap: UsageMap = {
     "origin": "internal",
     "consumers": [
       "src/components/evidence/EvidenceUploadZone.tsx"
-    ]
-  },
-  "EvidenceViewer::../components/EvidenceViewer": {
-    "name": "EvidenceViewer",
-    "source": "../components/EvidenceViewer",
-    "origin": "internal",
-    "consumers": [
-      "src/modules/docintel/pages/DocintelWorkspacePage.tsx"
     ]
   },
   "ExecutionMetrics::@/types/reports": {
@@ -20001,9 +19886,7 @@ export const usageMap: UsageMap = {
       "src/pages/project-hub/ProjectListPage.tsx",
       "src/pages/project/components/FeatureLinkedItems.tsx",
       "src/pages/project/feature-detail/FeatureLinksTab.tsx",
-      "src/pages/releasehub/ProductionEventReplayPage.tsx",
-      "src/pages/releases/CoverageReportsPage.tsx",
-      "src/pages/releases/DefectDetailPage.tsx"
+      "src/pages/releasehub/ProductionEventReplayPage.tsx"
     ]
   },
   "Eye::@/lib/atlaskit-icons": {
@@ -20044,7 +19927,6 @@ export const usageMap: UsageMap = {
       "src/pages/items/EpicEstimationPage.tsx",
       "src/pages/program/ExecutionWorkbench/views/TableView.tsx",
       "src/pages/project/FeatureDetailPage.tsx",
-      "src/pages/releases/DefectDetailPage.tsx",
       "src/pages/work-tree/WorkTreePage.tsx"
     ]
   },
@@ -20072,6 +19954,7 @@ export const usageMap: UsageMap = {
     "origin": "atlaskit",
     "consumers": [
       "src/components/admin/notifications/TriggerRow.tsx",
+      "src/modules/ideation/components/WatchControl.tsx",
       "src/modules/project-work-hub/components/dialogs/story-detail-modules/ChildIssuesSection.tsx",
       "src/modules/workhub/admin/components/JiraConnection.tsx"
     ],
@@ -20082,6 +19965,7 @@ export const usageMap: UsageMap = {
     "source": "@atlaskit/icon/core/eye-open-strikethrough",
     "origin": "atlaskit",
     "consumers": [
+      "src/modules/ideation/components/WatchControl.tsx",
       "src/modules/project-work-hub/components/dialogs/story-detail-modules/ChildIssuesSection.tsx",
       "src/modules/workhub/admin/components/JiraConnection.tsx"
     ],
@@ -20095,14 +19979,6 @@ export const usageMap: UsageMap = {
       "src/pages/releasehub/AllChangesPage.tsx",
       "src/pages/releasehub/AllReleasesPage.tsx",
       "src/pages/releasehub/SopTemplatesPage.tsx"
-    ]
-  },
-  "FactsReviewPanel::../components/FactsReviewPanel": {
-    "name": "FactsReviewPanel",
-    "source": "../components/FactsReviewPanel",
-    "origin": "internal",
-    "consumers": [
-      "src/modules/docintel/pages/DocintelWorkspacePage.tsx"
     ]
   },
   "Feature::@/types/backlog.types": {
@@ -20264,7 +20140,6 @@ export const usageMap: UsageMap = {
     "source": "@/components/items/features/FeatureDetailsPanel",
     "origin": "internal",
     "consumers": [
-      "src/components/items/epics/modals/FeatureStatusModal.tsx",
       "src/modules/feature-backlog/components/FeatureBacklogWorkspace.tsx",
       "src/pages/FeaturesBacklog.tsx",
       "src/pages/items/FeaturesPage.tsx",
@@ -20287,14 +20162,6 @@ export const usageMap: UsageMap = {
     "origin": "internal",
     "consumers": [
       "src/App.tsx"
-    ]
-  },
-  "FeatureFlagsContent::@/components/admin/FeatureFlagsContent": {
-    "name": "FeatureFlagsContent",
-    "source": "@/components/admin/FeatureFlagsContent",
-    "origin": "internal",
-    "consumers": [
-      "src/pages/admin/ModuleAccessAdminPage.tsx"
     ]
   },
   "FeatureKanbanBoard::./FeatureKanbanBoard": {
@@ -20490,6 +20357,7 @@ export const usageMap: UsageMap = {
       "src/components/business-requests/CreateBusinessRequestModal.tsx",
       "src/components/product/CreateReleaseModal.tsx",
       "src/components/workhub/create-story/CreateStoryModal.tsx",
+      "src/modules/ideation/components/CreateIdeaModal.tsx",
       "src/modules/project-work-hub/components/dialogs/CloneIssueDialog.tsx",
       "src/modules/project-work-hub/components/dialogs/MoveIssueDialog.tsx",
       "src/modules/tasks/components/workstreams/WorkstreamFormModal.tsx",
@@ -20594,9 +20462,7 @@ export const usageMap: UsageMap = {
     "source": "@/lib/atlaskit-icons",
     "origin": "internal",
     "consumers": [
-      "src/modules/in-jira/components/drawer/IssueActionsMenu.tsx",
-      "src/pages/releases/AllReleasesPage.tsx",
-      "src/pages/releases/CoverageReportsPage.tsx"
+      "src/modules/in-jira/components/drawer/IssueActionsMenu.tsx"
     ]
   },
   "FileGenericIcon::../shared/Icon": {
@@ -20622,7 +20488,6 @@ export const usageMap: UsageMap = {
     "origin": "atlaskit",
     "consumers": [
       "src/config/workItemConfig.ts",
-      "src/features/all-releases/components/SummaryCards.tsx",
       "src/features/my-test-scope/components/TraceabilityPanel.tsx",
       "src/features/release-compare/components/CompareHeader.tsx",
       "src/modules/project-work-hub/components/dialogs/story-detail-modules/AttachmentPreviewModal.tsx"
@@ -20689,11 +20554,7 @@ export const usageMap: UsageMap = {
       "src/modules/product-roadmap/components/RoadmapExportDialog.tsx",
       "src/modules/strata/pages/StrataUploadWizardPage.tsx",
       "src/pages/SkillsInventory.tsx",
-      "src/pages/project/feature-detail/FeatureOverviewTab.tsx",
-      "src/pages/releases/AllReleasesPage.tsx",
-      "src/pages/releases/CommandCenter.tsx",
-      "src/pages/releases/CommandCenterPage.tsx",
-      "src/pages/releases/CoverageReportsPage.tsx"
+      "src/pages/project/feature-detail/FeatureOverviewTab.tsx"
     ]
   },
   "FilesTab::./organisms": {
@@ -20762,7 +20623,6 @@ export const usageMap: UsageMap = {
       "src/components/layout/OperationsSidebar.tsx",
       "src/components/layout/ProductRoomSidebar.tsx",
       "src/components/layout/ProjectSidebar.tsx",
-      "src/components/layout/TeamRoomSidebar.tsx",
       "src/components/layout/TestHubSidebar.tsx",
       "src/components/layout/UnifiedSidebar.tsx",
       "src/components/layout/dropdowns/ItemsDropdown.tsx",
@@ -20799,6 +20659,7 @@ export const usageMap: UsageMap = {
       "src/modules/backlog/components/split-panel/EpicDetailPanel.tsx",
       "src/modules/docintel/components/DocumentLinksPanel.tsx",
       "src/modules/docintel/components/PdfThumbnails.tsx",
+      "src/modules/docintel/pages/DocintelLibraryPage.tsx",
       "src/modules/docintel/pages/DocintelUploadPage.tsx",
       "src/modules/in-jira/components/drawer/IssueActionsMenu.tsx",
       "src/modules/incidents/analytics/pages/IncidentInsightsPage.tsx",
@@ -20822,7 +20683,6 @@ export const usageMap: UsageMap = {
       "src/modules/work-hub/views/AllWorkView.tsx",
       "src/modules/work-hub/views/ReleaseDetailsView.tsx",
       "src/modules/work-hub/views/SummaryView.tsx",
-      "src/pages/ForYouPage.tsx",
       "src/pages/ReqAssistGenerate.tsx",
       "src/pages/ReqAssistLibrary.tsx",
       "src/pages/SkillsInventory.tsx",
@@ -20833,10 +20693,6 @@ export const usageMap: UsageMap = {
       "src/pages/project/feature-detail/FeatureLinksTab.tsx",
       "src/pages/project/feature-detail/FeatureOverviewTab.tsx",
       "src/pages/projects/ProjectSummaryPage.tsx",
-      "src/pages/releases/AllReleasesPage.tsx",
-      "src/pages/releases/CommandCenter.tsx",
-      "src/pages/releases/CommandCenterPage.tsx",
-      "src/pages/releases/CoverageReportsPage.tsx",
       "src/pages/work-tree/components/WorkTreeLegend.tsx"
     ]
   },
@@ -20921,7 +20777,6 @@ export const usageMap: UsageMap = {
       "src/pages/project/feature-detail/FeatureActivityTab.tsx",
       "src/pages/projects/ProjectSummaryPage.tsx",
       "src/pages/projects/views/ListView.tsx",
-      "src/pages/releases/CoverageReportsPage.tsx",
       "src/pages/reports/DependencyMapsPage.tsx",
       "src/pages/work/Dependencies.tsx",
       "src/shared/backlog/BacklogTemplate.tsx"
@@ -20933,14 +20788,6 @@ export const usageMap: UsageMap = {
     "origin": "internal",
     "consumers": [
       "src/components/contract-horizon/ContractHorizonView.tsx"
-    ]
-  },
-  "FilterBar::@/components/releases/dashboard/FilterBar": {
-    "name": "FilterBar",
-    "source": "@/components/releases/dashboard/FilterBar",
-    "origin": "internal",
-    "consumers": [
-      "src/pages/releases/ReleaseDashboardPage.tsx"
     ]
   },
   "FilterChips::./FilterDropdown": {
@@ -21030,7 +20877,6 @@ export const usageMap: UsageMap = {
       "src/components/kanban/toolbar/KanbanToolbar.tsx",
       "src/components/shared/JiraFilterAtlaskit.tsx",
       "src/modules/workhub/admin/components/SyncLogs.tsx",
-      "src/pages/admin/NotificationTriggers.tsx",
       "src/pages/risks/RisksGridPage.tsx"
     ],
     "package": "@atlaskit/icon"
@@ -21226,8 +21072,7 @@ export const usageMap: UsageMap = {
     "consumers": [
       "src/components/kanban/toolbar/KanbanToolbar.tsx",
       "src/components/workhub/issue-view/IssueViewShell.tsx",
-      "src/modules/project-work-hub/pages/StoryBacklogPage.tsx",
-      "src/pages/ForYouPage.tsx"
+      "src/modules/project-work-hub/pages/StoryBacklogPage.tsx"
     ]
   },
   "FilterUsageSparkline::@/components/filters/FilterUsageSparkline": {
@@ -21303,8 +21148,7 @@ export const usageMap: UsageMap = {
       "src/modules/tasks/components/task-list/BulkActionBar.tsx",
       "src/modules/work-hub/components/GroupByMenu.tsx",
       "src/pages/ReqAssistGenerate.tsx",
-      "src/pages/Roadmaps.tsx",
-      "src/pages/releases/CommandCenterPage.tsx"
+      "src/pages/Roadmaps.tsx"
     ]
   },
   "Flag::@atlaskit/flag": {
@@ -21362,8 +21206,7 @@ export const usageMap: UsageMap = {
     "source": "@atlaskit/icon/core/flag",
     "origin": "atlaskit",
     "consumers": [
-      "src/modules/project-work-hub/components/drawers/StoryActionMenu.tsx",
-      "src/pages/admin/FeatureFlagsPage.tsx"
+      "src/modules/project-work-hub/components/drawers/StoryActionMenu.tsx"
     ],
     "package": "@atlaskit/icon"
   },
@@ -21448,7 +21291,6 @@ export const usageMap: UsageMap = {
       "src/components/work-manager/TaskCard.tsx",
       "src/components/work-manager/TaskDrawer.tsx",
       "src/modules/in-jira/components/drawer/DetailsPanel.tsx",
-      "src/pages/ForYouPage.tsx",
       "src/pages/testhub/repository/RepositoryPage.tsx"
     ]
   },
@@ -21538,8 +21380,7 @@ export const usageMap: UsageMap = {
     "origin": "internal",
     "consumers": [
       "src/components/features/CreateFeatureModal.tsx",
-      "src/modules/in-jira/pages/AllWorkPage.tsx",
-      "src/pages/releases/CoverageReportsPage.tsx"
+      "src/modules/in-jira/pages/AllWorkPage.tsx"
     ]
   },
   "ForcePasswordReset::@/components/auth/ForcePasswordReset": {
@@ -21735,14 +21576,6 @@ export const usageMap: UsageMap = {
       "src/components/for-you/atlaskit/RecommendedPanel.tsx"
     ]
   },
-  "ForYouHeader::@/components/for-you": {
-    "name": "ForYouHeader",
-    "source": "@/components/for-you",
-    "origin": "internal",
-    "consumers": [
-      "src/pages/ForYouPage.tsx"
-    ]
-  },
   "ForYouHeader::@/components/for-you/ForYouHeader": {
     "name": "ForYouHeader",
     "source": "@/components/for-you/ForYouHeader",
@@ -21756,7 +21589,6 @@ export const usageMap: UsageMap = {
     "source": "@/components/for-you/ForYouInlineFilters",
     "origin": "internal",
     "consumers": [
-      "src/pages/ForYouPage.tsx",
       "src/stories/pages/ForYouSubComponents.stories.tsx"
     ]
   },
@@ -21765,16 +21597,7 @@ export const usageMap: UsageMap = {
     "source": "@/components/for-you/ForYouLightBulkBar",
     "origin": "internal",
     "consumers": [
-      "src/pages/ForYouPage.tsx",
       "src/stories/pages/ForYouMissing.stories.tsx"
-    ]
-  },
-  "ForYouPagination::@/components/for-you": {
-    "name": "ForYouPagination",
-    "source": "@/components/for-you",
-    "origin": "internal",
-    "consumers": [
-      "src/pages/ForYouPage.tsx"
     ]
   },
   "ForYouPagination::@/components/for-you/ForYouPagination": {
@@ -21812,14 +21635,6 @@ export const usageMap: UsageMap = {
       "src/stories/pages/ForYouDataPanels.stories.tsx"
     ]
   },
-  "ForYouSubTabs::@/components/for-you": {
-    "name": "ForYouSubTabs",
-    "source": "@/components/for-you",
-    "origin": "internal",
-    "consumers": [
-      "src/pages/ForYouPage.tsx"
-    ]
-  },
   "ForYouSubTabs::@/components/for-you/ForYouSubTabs": {
     "name": "ForYouSubTabs",
     "source": "@/components/for-you/ForYouSubTabs",
@@ -21828,28 +21643,12 @@ export const usageMap: UsageMap = {
       "src/stories/pages/ForYouSubComponents.stories.tsx"
     ]
   },
-  "ForYouTable::@/components/for-you": {
-    "name": "ForYouTable",
-    "source": "@/components/for-you",
-    "origin": "internal",
-    "consumers": [
-      "src/pages/ForYouPage.tsx"
-    ]
-  },
   "ForYouTable::@/components/for-you/ForYouTable": {
     "name": "ForYouTable",
     "source": "@/components/for-you/ForYouTable",
     "origin": "internal",
     "consumers": [
       "src/stories/pages/ForYouDataPanels.stories.tsx"
-    ]
-  },
-  "ForYouTableSkeleton::@/components/for-you": {
-    "name": "ForYouTableSkeleton",
-    "source": "@/components/for-you",
-    "origin": "internal",
-    "consumers": [
-      "src/pages/ForYouPage.tsx"
     ]
   },
   "ForYouTableSkeleton::@/components/for-you/ForYouTableSkeleton": {
@@ -21867,14 +21666,6 @@ export const usageMap: UsageMap = {
     "consumers": [
       "src/pages/ForYouPage.atlaskit.tsx",
       "src/stories/pages/ForYouMissing.stories.tsx"
-    ]
-  },
-  "ForYouToolbar::@/components/for-you": {
-    "name": "ForYouToolbar",
-    "source": "@/components/for-you",
-    "origin": "internal",
-    "consumers": [
-      "src/pages/ForYouPage.tsx"
     ]
   },
   "ForYouToolbar::@/components/for-you/ForYouToolbar": {
@@ -22011,6 +21802,14 @@ export const usageMap: UsageMap = {
       "src/modules/docintel/pages/DocintelWorkspacePage.tsx"
     ]
   },
+  "GenerationPanel::@/modules/docintel/components/GenerationPanel": {
+    "name": "GenerationPanel",
+    "source": "@/modules/docintel/components/GenerationPanel",
+    "origin": "internal",
+    "consumers": [
+      "src/stories/audit-grade/25-DocintelDeliverables.stories.tsx"
+    ]
+  },
   "Ghost::@/lib/atlaskit-icons": {
     "name": "Ghost",
     "source": "@/lib/atlaskit-icons",
@@ -22035,6 +21834,7 @@ export const usageMap: UsageMap = {
       "src/components/layout/ProjectSidebar.tsx",
       "src/components/layout/UnifiedSidebar.tsx",
       "src/components/layout/dropdowns/ItemsDropdown.tsx",
+      "src/modules/docintel/pages/DocintelLibraryPage.tsx",
       "src/modules/in-jira/components/InJiraLayout.tsx",
       "src/modules/in-jira/components/drawer/DetailsPanel.tsx",
       "src/modules/in-jira/pages/ReleaseManagementPage.tsx",
@@ -22133,7 +21933,6 @@ export const usageMap: UsageMap = {
       "src/components/workhub/issue-view/IssueContentView.tsx",
       "src/modules-dormant/ideation/IdeationDrivesView.tsx",
       "src/modules/project-work-hub/ProjectWorkHubPage.tsx",
-      "src/modules/work-hub/WorkHubLayout.tsx",
       "src/pages/admin/test/TestCaseTypesPage.tsx",
       "src/pages/enterprise/DemandSummaryPage.tsx",
       "src/pages/producthub/IdeasThemePage.tsx"
@@ -22190,7 +21989,6 @@ export const usageMap: UsageMap = {
     "consumers": [
       "src/components/dependencies/DependenciesSidebar.tsx",
       "src/components/features/FeaturesBacklogHeader.tsx",
-      "src/components/layout/TeamRoomSidebar.tsx",
       "src/components/layout/UnifiedSidebar.tsx",
       "src/components/risks/RisksSidebar.tsx",
       "src/components/stories/StoriesSidebar.tsx",
@@ -22222,9 +22020,7 @@ export const usageMap: UsageMap = {
     "source": "@atlaskit/icon/core/grid",
     "origin": "atlaskit",
     "consumers": [
-      "src/components/boards/BoardCard.tsx",
-      "src/features/all-releases/components/Toolbar.tsx",
-      "src/features/all-releases/components/ViewToggle.tsx"
+      "src/components/boards/BoardCard.tsx"
     ],
     "package": "@atlaskit/icon"
   },
@@ -22332,7 +22128,6 @@ export const usageMap: UsageMap = {
     "origin": "internal",
     "consumers": [
       "src/components/kanban/toolbar/KanbanToolbar.tsx",
-      "src/pages/ForYouPage.tsx",
       "src/pages/project-hub/jira-list/components/WorkListPanel.tsx"
     ]
   },
@@ -22354,22 +22149,12 @@ export const usageMap: UsageMap = {
       "src/components/for-you/atlaskit/RecommendedPanel.tsx"
     ]
   },
-  "GrowDiagonalIcon::@atlaskit/icon/core/grow-diagonal": {
-    "name": "GrowDiagonalIcon",
-    "source": "@atlaskit/icon/core/grow-diagonal",
-    "origin": "atlaskit",
-    "consumers": [
-      "src/components/chat/dock/ChatDock.tsx"
-    ],
-    "package": "@atlaskit/icon"
-  },
   "Hand::@/lib/atlaskit-icons": {
     "name": "Hand",
     "source": "@/lib/atlaskit-icons",
     "origin": "internal",
     "consumers": [
-      "src/components/templates/TemplateAssignmentRules.tsx",
-      "src/pages/releases/DefectDetailPage.tsx"
+      "src/components/templates/TemplateAssignmentRules.tsx"
     ]
   },
   "Hash::@/lib/atlaskit-icons": {
@@ -22428,7 +22213,14 @@ export const usageMap: UsageMap = {
       "src/components/testhub/reports/bodies/SprintTestingStatusBody.tsx",
       "src/components/testhub/reports/bodies/TeamPerformanceBody.tsx",
       "src/components/testhub/reports/bodies/TesterPerformanceBody.tsx",
+      "src/modules/docintel/components/DocintelIntentComposer.tsx",
+      "src/modules/docintel/components/DocintelRecentWork.tsx",
+      "src/modules/docintel/components/DocintelSourceDrawer.tsx",
+      "src/modules/docintel/components/DocintelWorkspaceOverview.tsx",
+      "src/modules/docintel/components/GenerationPanel.tsx",
       "src/modules/docintel/pages/DocintelHealthPage.tsx",
+      "src/modules/docintel/pages/DocintelHomePage.tsx",
+      "src/modules/docintel/pages/DocintelReviewStartPage.tsx",
       "src/modules/incidents/analytics/pages/IncidentReportPage.tsx",
       "src/modules/strata/components/shared.tsx",
       "src/modules/strata/pages/StrataReviewsPage.tsx",
@@ -22528,23 +22320,6 @@ export const usageMap: UsageMap = {
     "origin": "internal",
     "consumers": [
       "src/features/release-compare/components/ComparisonTable.tsx"
-    ]
-  },
-  "HealthLevel::../utils/healthScore": {
-    "name": "HealthLevel",
-    "source": "../utils/healthScore",
-    "origin": "internal",
-    "consumers": [
-      "src/features/all-releases/components/FilterBar.tsx",
-      "src/features/all-releases/components/Toolbar.tsx"
-    ]
-  },
-  "HealthLevel::./utils/healthScore": {
-    "name": "HealthLevel",
-    "source": "./utils/healthScore",
-    "origin": "internal",
-    "consumers": [
-      "src/features/all-releases/types.ts"
     ]
   },
   "HealthPanel::@/features/health/components/HealthPanel": {
@@ -22670,6 +22445,7 @@ export const usageMap: UsageMap = {
       "src/components/business-requests/CreateBusinessRequestModal.tsx",
       "src/components/product/CreateReleaseModal.tsx",
       "src/components/workhub/create-story/CreateStoryModal.tsx",
+      "src/modules/ideation/components/CreateIdeaModal.tsx",
       "src/spaces/components/steps/StepBasics.tsx",
       "src/spaces/components/steps/StepPermissions.tsx"
     ],
@@ -22778,8 +22554,7 @@ export const usageMap: UsageMap = {
       "src/modules/tasks/components/TaskDetailDrawer/ActivitySection.tsx",
       "src/pages/UserProfile.tsx",
       "src/pages/project-hub/WorkItemsListPage.tsx",
-      "src/pages/project/feature-detail/FeatureActivityTab.tsx",
-      "src/pages/releases/QualityGatesPage.tsx"
+      "src/pages/project/feature-detail/FeatureActivityTab.tsx"
     ]
   },
   "HistoryButton::./buttons/HistoryButton": {
@@ -22859,8 +22634,7 @@ export const usageMap: UsageMap = {
       "src/components/layout/UnifiedSidebar.tsx",
       "src/components/layout/WikiSidebar.tsx",
       "src/pages/enterprise/BudgetPlannerPage.tsx",
-      "src/pages/program/ProgramRoadmapPage.tsx",
-      "src/pages/releases/ReleaseDashboardPage.tsx"
+      "src/pages/program/ProgramRoadmapPage.tsx"
     ]
   },
   "HomeDomain::./useHomeFilters": {
@@ -22918,6 +22692,15 @@ export const usageMap: UsageMap = {
     "consumers": [
       "src/features/chat-v2/components/NavRail/ChatNavRail.tsx"
     ]
+  },
+  "HomeIcon::@atlaskit/icon/core/home": {
+    "name": "HomeIcon",
+    "source": "@atlaskit/icon/core/home",
+    "origin": "atlaskit",
+    "consumers": [
+      "src/components/chat/dock/DockTabBar.tsx"
+    ],
+    "package": "@atlaskit/icon"
   },
   "HomeIcon::@atlaskit/icon/glyph/home": {
     "name": "HomeIcon",
@@ -23096,6 +22879,12 @@ export const usageMap: UsageMap = {
     "source": "@/components/layout/HubPageHeader",
     "origin": "internal",
     "consumers": [
+      "src/modules/ideation/admin/AdminPage.tsx",
+      "src/modules/ideation/pages/DetailPage.tsx",
+      "src/modules/ideation/pages/ExplorePage.tsx",
+      "src/modules/ideation/pages/InboxPage.tsx",
+      "src/modules/ideation/pages/PortfolioPage.tsx",
+      "src/modules/ideation/pages/SubmitPage.tsx",
       "src/stories/components/LayoutShell.stories.tsx"
     ]
   },
@@ -23238,7 +23027,6 @@ export const usageMap: UsageMap = {
       "src/components/catalyst-detail-views/shared/DiscussTicketButton.tsx",
       "src/components/catalyst-detail-views/shared/WatchersChip.tsx",
       "src/components/chat/caty-mood/CatyWhyCard.tsx",
-      "src/components/chat/dock/ChatDock.tsx",
       "src/components/chat/main/ConversationHeader.tsx",
       "src/components/chat/main/MessageActionsToolbar.tsx",
       "src/components/chat/main/MessageComposer.tsx",
@@ -23251,6 +23039,7 @@ export const usageMap: UsageMap = {
       "src/components/layout/SettingsMenu.tsx",
       "src/components/project-hub/dashboard/widgets/DemandFulfilmentGadget.tsx",
       "src/components/project-hub/dashboard/widgets/TimeInStatusFullscreenModal.tsx",
+      "src/components/releasehub/foryou/ReleaseChangeAnnouncementBanner.tsx",
       "src/components/universal-work-view/UWVColumnPicker.tsx",
       "src/components/universal-work-view/UWVToolbar.tsx",
       "src/components/workhub/create-story/CreateStoryModal.tsx",
@@ -23258,6 +23047,9 @@ export const usageMap: UsageMap = {
       "src/features/chat/components/sidebar/ConversationSidebar.tsx",
       "src/features/chat/components/thread/ThreadPane.tsx",
       "src/features/kanban-board/components/Toolbar.tsx",
+      "src/features/voice-flow/VoiceMicButton.tsx",
+      "src/features/voice-flow/VoiceSettingsTab.tsx",
+      "src/modules/ideation/components/CreateIdeaModal.tsx",
       "src/modules/in-jira/components/IssueDrawer.tsx",
       "src/modules/project-work-hub/components/WorkItemDetailsDrawer.tsx",
       "src/modules/project-work-hub/pages/StoryBacklogPage.atlaskit.tsx",
@@ -23441,8 +23233,7 @@ export const usageMap: UsageMap = {
       "src/components/incidents/IncidentAttachments.tsx",
       "src/components/industry/RichTextEditor.tsx",
       "src/components/shared/jira-description-editor/Toolbar.tsx",
-      "src/modules/product-backlog/components/split-panel/AttachmentUploadModal.tsx",
-      "src/pages/releases/DefectDetailPage.tsx"
+      "src/modules/product-backlog/components/split-panel/AttachmentUploadModal.tsx"
     ]
   },
   "ImageFullscreenIcon::@atlaskit/icon/core/image-fullscreen": {
@@ -23853,6 +23644,7 @@ export const usageMap: UsageMap = {
       "src/components/for-you/atlaskit/ThemeIssueList.tsx",
       "src/components/releases/SprintLinker.tsx",
       "src/components/workhub/create-story/CreateStoryModal.tsx",
+      "src/modules/docintel/pages/DocintelHomePage.tsx",
       "src/modules/project-work-hub/pages/StoryBacklogPage.atlaskit.tsx"
     ],
     "package": "@atlaskit/primitives"
@@ -24029,14 +23821,6 @@ export const usageMap: UsageMap = {
       "src/components/project-hub/work-items/WorkItemsTable.tsx"
     ]
   },
-  "InlineTextEdit::@/components/releases/defects/InlineTextEdit": {
-    "name": "InlineTextEdit",
-    "source": "@/components/releases/defects/InlineTextEdit",
-    "origin": "internal",
-    "consumers": [
-      "src/pages/releases/DefectDetailPage.tsx"
-    ]
-  },
   "InlineUserPicker::./InlineUserPicker": {
     "name": "InlineUserPicker",
     "source": "./InlineUserPicker",
@@ -24068,8 +23852,6 @@ export const usageMap: UsageMap = {
       "src/components/enterprise/EnterpriseGrid.tsx",
       "src/components/epic-backlog/EpicFiltersDialog.tsx",
       "src/components/epic-backlog/EpicForecastTab.tsx",
-      "src/components/epic-backlog/modals/FeatureStatusModal.tsx",
-      "src/components/epic-backlog/modals/MilestoneModal.tsx",
       "src/components/epic-backlog/tabs/DesignTab.tsx",
       "src/components/epic-backlog/tabs/ForecastTab.tsx",
       "src/components/evidence/annotation/TextInputDialog.tsx",
@@ -24107,7 +23889,6 @@ export const usageMap: UsageMap = {
       "src/components/items/epics/dialogs/ReportTemplatesDialog.tsx",
       "src/components/items/epics/drawer-tabs/EpicDetailsViewTab.tsx",
       "src/components/items/epics/drawer-tabs/EpicFeaturesViewTab.tsx",
-      "src/components/items/epics/modals/FeatureStatusModal.tsx",
       "src/components/items/features/FeatureWSJFDialog.tsx",
       "src/components/items/features/tabs/FeatureLinksTab.tsx",
       "src/components/items/features/tabs/FeatureOverviewTab.tsx",
@@ -24144,7 +23925,6 @@ export const usageMap: UsageMap = {
       "src/components/skills-inventory/AddTeamMemberModal.tsx",
       "src/components/skills-inventory/EditSkillModal.tsx",
       "src/components/stories/CreateEditStoryPanel.tsx",
-      "src/components/stories/CreateStoryModal.tsx",
       "src/components/stories/StoriesFiltersDialog.tsx",
       "src/components/stories/StoryAttachments.tsx",
       "src/components/stories/StoryDetailPanel.tsx",
@@ -24168,8 +23948,6 @@ export const usageMap: UsageMap = {
       "src/components/work-manager/NewTeamDialog.tsx",
       "src/components/work-manager/TaskDrawer.tsx",
       "src/components/work-manager/WorkManagerSettings.tsx",
-      "src/features/all-releases/components/FilterBar.tsx",
-      "src/features/all-releases/components/Toolbar.tsx",
       "src/features/my-test-scope/components/ScopeFilterBar.tsx",
       "src/features/my-test-scope/components/TraceabilityPanel.tsx",
       "src/features/release-compare/components/SaveComparisonViewDialog.tsx",
@@ -24263,10 +24041,6 @@ export const usageMap: UsageMap = {
       "src/pages/project/feature-detail/FeatureDeliveryTab.tsx",
       "src/pages/projects/ProjectSummaryPage.tsx",
       "src/pages/projects/views/ListView.tsx",
-      "src/pages/releases/CoverageReportsPage.tsx",
-      "src/pages/releases/DefectsPage.tsx",
-      "src/pages/releases/QualityGatesPage.tsx",
-      "src/pages/releases/ReleaseDashboardPage.tsx",
       "src/pages/wiki/DocexSearchPage.tsx",
       "src/pages/work/Dependencies.tsx",
       "src/shared/backlog/BacklogTemplate.tsx"
@@ -24601,7 +24375,6 @@ export const usageMap: UsageMap = {
       "src/components/kanban/toolbar/KanbanToolbar.tsx",
       "src/components/workhub/issue-view/IssueViewShell.tsx",
       "src/modules/project-work-hub/pages/StoryBacklogPage.tsx",
-      "src/pages/ForYouPage.tsx",
       "src/pages/project-hub/jira-list/components/AllWorkToolbar.tsx",
       "src/stories/components/SharedOrganisms.stories.tsx"
     ]
@@ -24651,7 +24424,6 @@ export const usageMap: UsageMap = {
       "src/components/workhub/issue-view/IssueViewShell.tsx",
       "src/modules/docintel/components/DocumentLinksPanel.tsx",
       "src/pages/CleanupPage.tsx",
-      "src/pages/ForYouPage.tsx",
       "src/pages/project-hub/filters/FiltersListPage.tsx",
       "src/pages/testhub/cycles/CycleRunDetailPage.tsx"
     ]
@@ -24673,6 +24445,7 @@ export const usageMap: UsageMap = {
       "src/components/chat/dock/CatyPanel.tsx",
       "src/components/chat/dock/DmSummarizePanel.tsx",
       "src/components/chat/dock/DockDirectory.tsx",
+      "src/components/chat/dock/DockMoreTab.tsx",
       "src/components/chat/main/ConversationList.tsx",
       "src/components/chat/main/TicketKeyChip.tsx",
       "src/components/filters/CanonicalFilter.tsx",
@@ -24705,7 +24478,6 @@ export const usageMap: UsageMap = {
       "src/components/project-hub/dashboard/widgets/OverdueWidget.tsx",
       "src/components/project-hub/dashboard/widgets/ProductionIncidentsWidget.tsx",
       "src/components/project-hub/dashboard/widgets/QADefectsWidget.tsx",
-      "src/components/project-hub/dashboard/widgets/TeamMemberHoverCard 2.tsx",
       "src/components/project-hub/dashboard/widgets/TeamMemberHoverCard.tsx",
       "src/components/project-hub/dashboard/widgets/TimeInStatusFullscreenModal.tsx",
       "src/components/project-hub/dashboard/widgets/TimeInStatusHoverCard.tsx",
@@ -24863,14 +24635,22 @@ export const usageMap: UsageMap = {
       "src/components/universal-work-view/UWVTable.tsx",
       "src/components/wiki-hub/database/DatabaseSurface.tsx",
       "src/modules/backlog/components/EpicTableView.tsx",
-      "src/modules/docintel/pages/DocintelDocumentsPage.tsx",
+      "src/modules/docintel/components/DocintelFindingsPanel.tsx",
+      "src/modules/docintel/components/DocintelRecentWork.tsx",
+      "src/modules/docintel/components/GenerationPanel.tsx",
+      "src/modules/docintel/pages/DocintelDeliverablesPage.tsx",
       "src/modules/docintel/pages/DocintelHealthPage.tsx",
+      "src/modules/docintel/pages/DocintelLibraryPage.tsx",
+      "src/modules/ideation/admin/AdminPage.tsx",
+      "src/modules/ideation/pages/ExplorePage.tsx",
+      "src/modules/ideation/pages/InboxPage.tsx",
       "src/modules/incidents/analytics/pages/IncidentReportPage.tsx",
       "src/modules/program-epics/components/EpicListView.tsx",
       "src/modules/project-work-hub/components/SubtasksPanel/index.tsx",
       "src/modules/project-work-hub/components/tabs/ListTab.tsx",
       "src/modules/project-work-hub/pages/StoryBacklogPage.atlaskit.tsx",
       "src/modules/strata/components/ProjectCardDetailView.tsx",
+      "src/modules/strata/components/shared.tsx",
       "src/modules/strata/pages/StrataAdminConfigPage.tsx",
       "src/modules/strata/pages/StrataCommandCenterPage.tsx",
       "src/modules/strata/pages/StrataDataPipelinePage.tsx",
@@ -25311,7 +25091,6 @@ export const usageMap: UsageMap = {
     "source": "@/components/shared/KPIWidgetCard",
     "origin": "internal",
     "consumers": [
-      "src/pages/TeamRoom.tsx",
       "src/stories/components/SharedAtoms.stories.tsx"
     ]
   },
@@ -25382,7 +25161,6 @@ export const usageMap: UsageMap = {
       "src/components/dependencies/DependencyWheelMap.tsx",
       "src/components/epic-backlog/EpicFiltersDialog.tsx",
       "src/components/epic-backlog/EpicForecastTab.tsx",
-      "src/components/epic-backlog/modals/MilestoneModal.tsx",
       "src/components/epic-backlog/tabs/BenefitsTab.tsx",
       "src/components/epic-backlog/tabs/DesignTab.tsx",
       "src/components/evidence/defect/CreateDefectModal.tsx",
@@ -25456,7 +25234,6 @@ export const usageMap: UsageMap = {
       "src/components/skills-inventory/AddTeamMemberModal.tsx",
       "src/components/skills-inventory/EditSkillModal.tsx",
       "src/components/stories/CreateEditStoryPanel.tsx",
-      "src/components/stories/CreateStoryModal.tsx",
       "src/components/stories/StoriesColumnConfig.tsx",
       "src/components/stories/StoriesFiltersDialog.tsx",
       "src/components/templates/ApplyTemplateModal.tsx",
@@ -25515,7 +25292,6 @@ export const usageMap: UsageMap = {
       "src/pages/items/reports/EpicResponsibilityMatrix.tsx",
       "src/pages/program/ExecutionWorkbench/WorkbenchFiltersDialog.tsx",
       "src/pages/project/components/FeatureChildStories.tsx",
-      "src/pages/releases/QualityGatesPage.tsx",
       "src/pages/reports/DependencyMapsPage.tsx",
       "src/pages/risks/RiskRoamReportPage.tsx",
       "src/pages/work-tree/components/WorkTreeExtraConfigs.tsx"
@@ -25654,6 +25430,14 @@ export const usageMap: UsageMap = {
       "src/features/chat-v2/ChatV2Shell.tsx"
     ]
   },
+  "LaterPanel::@/features/chat-v2/components/Later/LaterPanel": {
+    "name": "LaterPanel",
+    "source": "@/features/chat-v2/components/Later/LaterPanel",
+    "origin": "internal",
+    "consumers": [
+      "src/components/chat/dock/DockCardView.tsx"
+    ]
+  },
   "LaterRow::./LaterRow": {
     "name": "LaterRow",
     "source": "./LaterRow",
@@ -25722,23 +25506,13 @@ export const usageMap: UsageMap = {
       "src/modules/tasks/components/kanban/SwimlaneRow.tsx",
       "src/modules/tasks/components/my-tasks/MyTasksContent.tsx",
       "src/modules/tasks/components/my-tasks/MyTasksHeader.tsx",
-      "src/modules/work-hub/WorkHubLayout.tsx",
       "src/pages/PortfolioRoadmap.tsx",
       "src/pages/WorkManager.tsx",
       "src/pages/program/ProgramRoadmapPage.tsx",
       "src/pages/project/FeatureDetailPage.tsx",
       "src/pages/project/FeatureViewPage.tsx",
       "src/pages/projects/ProjectBacklogPage.tsx",
-      "src/pages/releases/CoverageReportsPage.tsx",
       "src/pages/work/Dependencies.tsx"
-    ]
-  },
-  "Layers3::@/lib/atlaskit-icons": {
-    "name": "Layers3",
-    "source": "@/lib/atlaskit-icons",
-    "origin": "internal",
-    "consumers": [
-      "src/components/layout/TeamRoomSidebar.tsx"
     ]
   },
   "Layout::@/lib/atlaskit-icons": {
@@ -25760,7 +25534,6 @@ export const usageMap: UsageMap = {
       "src/components/layout/MobileMenuDrawer.tsx",
       "src/components/layout/ProductRoomSidebar.tsx",
       "src/components/layout/ReleasesManagementSidebar.tsx",
-      "src/components/layout/TeamRoomSidebar.tsx",
       "src/components/layout/UnifiedSidebar.tsx",
       "src/components/project-hub/shell/SidebarProjectNav.tsx",
       "src/modules/in-jira/components/InJiraLayout.tsx",
@@ -25795,18 +25568,14 @@ export const usageMap: UsageMap = {
       "src/modules/tasks/components/workstreams/WorkstreamsPage.tsx",
       "src/modules/work-hub/views/AllWorkView.tsx",
       "src/pages/CleanupPage.tsx",
-      "src/pages/ForYouPage.tsx",
       "src/pages/ProductRoomPage.tsx",
       "src/pages/ProgramDirectory.tsx",
       "src/pages/ResourceListingPage.tsx",
       "src/pages/Stories.tsx",
-      "src/pages/TeamRoom.tsx",
       "src/pages/WorkManager.tsx",
       "src/pages/enterprise/EnterpriseEpics.tsx",
       "src/pages/items/EpicEstimationPage.tsx",
       "src/pages/items/EpicsPage.tsx",
-      "src/pages/releases/AllReleasesPage.tsx",
-      "src/pages/releases/CoverageReportsPage.tsx",
       "src/shared/backlog/BacklogTemplate.tsx"
     ]
   },
@@ -25938,11 +25707,11 @@ export const usageMap: UsageMap = {
     "consumers": [
       "src/components/incidents/IncidentCommandBar.tsx",
       "src/components/kanban/adapters/ideasBoardAdapter.tsx",
-      "src/components/layout/IdeationSidebar.tsx",
       "src/components/releases/defects/ReassignModal.tsx",
       "src/components/shared/jira-description-editor/Toolbar.tsx",
       "src/modules-dormant/ideation/CreateDriveModal.tsx",
       "src/modules-dormant/ideation/IdeationDrivesView.tsx",
+      "src/modules/ideation/components/CreateIdeaModal.tsx",
       "src/pages/producthub/IdeasThemePage.tsx"
     ]
   },
@@ -25996,7 +25765,6 @@ export const usageMap: UsageMap = {
       "src/components/project-hub/work-items/WorkItemsTable.tsx",
       "src/components/releasehub/EmptyState.tsx",
       "src/components/shared/dependencies/DependenciesEmptyState.tsx",
-      "src/components/stories/CreateStoryModal.tsx",
       "src/components/timeline/TimelineBar.tsx",
       "src/components/work-items/WorkItemLinksSection.tsx",
       "src/components/work-manager/TaskCard.tsx",
@@ -26024,8 +25792,7 @@ export const usageMap: UsageMap = {
       "src/pages/project/TimelineView.tsx",
       "src/pages/project/components/FeatureChildStories.tsx",
       "src/pages/project/components/LinkTypeSelectorDialog.tsx",
-      "src/pages/project/feature-detail/FeatureLinksTab.tsx",
-      "src/pages/releases/DefectDetailPage.tsx"
+      "src/pages/project/feature-detail/FeatureLinksTab.tsx"
     ]
   },
   "LinkButton::./buttons/LinkButton": {
@@ -26189,9 +25956,9 @@ export const usageMap: UsageMap = {
       "src/components/catalyst-detail-views/shared/sections/web-links/WebLinkRow.tsx",
       "src/components/shared/CatalystDetailPanel.tsx",
       "src/components/shared/rich-text/atlaskit/imageToolbar/ImageToolbar.tsx",
+      "src/modules/ideation/pages/DetailPage.tsx",
       "src/modules/project-work-hub/components/dialogs/story-detail-modules/RichTextCommentEditor.tsx",
-      "src/modules/project-work-hub/components/dialogs/story-detail-modules/shared-components.tsx",
-      "src/pages/admin/AdminOverview.tsx"
+      "src/modules/project-work-hub/components/dialogs/story-detail-modules/shared-components.tsx"
     ],
     "package": "@atlaskit/icon"
   },
@@ -26411,7 +26178,6 @@ export const usageMap: UsageMap = {
       "src/modules/tasks/components/TaskList/TaskListPageV3.tsx",
       "src/modules/tasks/components/workstreams/WorkstreamDrawer.tsx",
       "src/modules/tasks/components/workstreams/WorkstreamsPage.tsx",
-      "src/modules/work-hub/WorkHubLayout.tsx",
       "src/modules/work-hub/components/FieldPicker.tsx",
       "src/modules/work-hub/views/AllWorkView.tsx",
       "src/pages/ProgramDirectory.tsx",
@@ -26540,7 +26306,6 @@ export const usageMap: UsageMap = {
       "src/components/for-you/atlaskit/StarredEmptyState.tsx",
       "src/components/shared/jira-description-editor/Toolbar.tsx",
       "src/components/work-manager/WorkManagerTasks.tsx",
-      "src/pages/TeamRoom.tsx",
       "src/pages/work-tree/components/WorkTreeLegend.tsx"
     ]
   },
@@ -26569,6 +26334,14 @@ export const usageMap: UsageMap = {
     "origin": "internal",
     "consumers": [
       "src/modules/project-work-hub/components/tabs/ListTab.tsx"
+    ]
+  },
+  "LivePartialsController::./livePartials": {
+    "name": "LivePartialsController",
+    "source": "./livePartials",
+    "origin": "internal",
+    "consumers": [
+      "src/features/voice-flow/VoiceFlowProvider.tsx"
     ]
   },
   "Loader2::@/lib/atlaskit-icons": {
@@ -26722,11 +26495,6 @@ export const usageMap: UsageMap = {
       "src/pages/project/components/RiskLinkDialog.tsx",
       "src/pages/project/feature-detail/FeatureOverviewTab.tsx",
       "src/pages/projects/ProjectBacklogPage.tsx",
-      "src/pages/releases/AllReleasesPage.tsx",
-      "src/pages/releases/CalendarPage.tsx",
-      "src/pages/releases/CommandCenter.tsx",
-      "src/pages/releases/ComparePage.tsx",
-      "src/pages/releases/ExecutionPage.tsx",
       "src/pages/reports/DependencyMapsPage.tsx",
       "src/pages/work-tree/components/WorkTreeDashboard.tsx"
     ]
@@ -26911,7 +26679,6 @@ export const usageMap: UsageMap = {
       "src/components/dependencies/DependencyMatrix.tsx",
       "src/components/dependencies/DependencyWheelDetailsPanel.tsx",
       "src/components/enterprise/EnterpriseGrid.tsx",
-      "src/components/epic-backlog/modals/FeatureStatusModal.tsx",
       "src/components/evidence/reports/ExecutionSummary.tsx",
       "src/components/features/AssignModal.tsx",
       "src/components/features/FeaturesKanbanView.tsx",
@@ -26937,7 +26704,6 @@ export const usageMap: UsageMap = {
       "src/components/items/epics/dialogs/WSJFPrioritizationDialog.tsx",
       "src/components/items/epics/drawer-tabs/EpicDetailsViewTab.tsx",
       "src/components/items/epics/drawer-tabs/EpicFeaturesViewTab.tsx",
-      "src/components/items/epics/modals/FeatureStatusModal.tsx",
       "src/components/items/features/FeatureTable.tsx",
       "src/components/items/stories/StoryDetailsPanel.tsx",
       "src/components/kanban/setup/ColumnsSetupTab.tsx",
@@ -26953,7 +26719,6 @@ export const usageMap: UsageMap = {
       "src/components/project-hub/dashboard/widgets/ProductionIncidentsWidget.tsx",
       "src/components/project-hub/dashboard/widgets/QADefectsWidget.tsx",
       "src/components/project-hub/dashboard/widgets/ScopeChangeWidget.tsx",
-      "src/components/project-hub/dashboard/widgets/TeamMemberHoverCard 2.tsx",
       "src/components/project-hub/dashboard/widgets/TeamMemberHoverCard.tsx",
       "src/components/project-hub/dashboard/widgets/TestCasesOverviewWidget.tsx",
       "src/components/project-hub/dashboard/widgets/TestCyclesProgressWidget.tsx",
@@ -27024,6 +26789,9 @@ export const usageMap: UsageMap = {
       "src/modules/capacity-planner/components/import/CapacityImportWizard.tsx",
       "src/modules/docintel/components/ArtifactView.tsx",
       "src/modules/docintel/components/AskPanel.tsx",
+      "src/modules/docintel/components/DocintelFindingsPanel.tsx",
+      "src/modules/docintel/components/DocintelRecentWork.tsx",
+      "src/modules/docintel/components/DocintelWorkspaceOverview.tsx",
       "src/modules/docintel/components/DocumentLinksPanel.tsx",
       "src/modules/docintel/components/EvidenceViewer.tsx",
       "src/modules/docintel/components/FactsReviewPanel.tsx",
@@ -27031,8 +26799,9 @@ export const usageMap: UsageMap = {
       "src/modules/docintel/components/ProcessingStatusBoard.tsx",
       "src/modules/docintel/components/TraceabilityMatrix.tsx",
       "src/modules/docintel/components/TranslatedDocumentView.tsx",
-      "src/modules/docintel/pages/DocintelDocumentsPage.tsx",
+      "src/modules/docintel/pages/DocintelDeliverablesPage.tsx",
       "src/modules/docintel/pages/DocintelHealthPage.tsx",
+      "src/modules/docintel/pages/DocintelLibraryPage.tsx",
       "src/modules/docintel/pages/DocintelUploadPage.tsx",
       "src/modules/docintel/pages/DocintelWorkspacePage.tsx",
       "src/modules/feature-backlog/components/FeatureBacklogTable.tsx",
@@ -27092,11 +26861,9 @@ export const usageMap: UsageMap = {
       "src/pages/SprintBoard.tsx",
       "src/pages/Sprints.tsx",
       "src/pages/Subtasks.tsx",
-      "src/pages/TeamRoom.tsx",
       "src/pages/Themes.tsx",
       "src/pages/UserProfile.tsx",
       "src/pages/ValueStreamView.tsx",
-      "src/pages/admin/NotificationTriggers.tsx",
       "src/pages/admin/ResourceAssignments.tsx",
       "src/pages/admin/workflows/studio/EditorPanels.tsx",
       "src/pages/admin/workflows/studio/GenerateWorkflowModal.tsx",
@@ -27124,8 +26891,6 @@ export const usageMap: UsageMap = {
       "src/pages/projects/ProjectSummaryPage.tsx",
       "src/pages/projects/views/ListView.tsx",
       "src/pages/releasehub/ProductionEventsPage.tsx",
-      "src/pages/releases/CommandCenterPage.tsx",
-      "src/pages/releases/QualityGatesPage.tsx",
       "src/pages/reports/DependencyMapsPage.tsx",
       "src/pages/wiki/FolioSiteMapPage.tsx",
       "src/pages/wiki/WikiHomePage.tsx",
@@ -27211,6 +26976,8 @@ export const usageMap: UsageMap = {
       "src/features/chat-v2/components/MessagePanel/HuddleEventRow.tsx",
       "src/features/kanban-board/components/Board.tsx",
       "src/features/kanban-board/components/Card.tsx",
+      "src/features/voice-flow/VoiceFloatingCapsule.tsx",
+      "src/features/voice-flow/VoiceSettingsTab.tsx",
       "src/features/whatsapp-summary/WhatsAppSummaryModal.tsx",
       "src/modules/incidents/analytics/pages/IncidentReportPage.tsx",
       "src/modules/project-work-hub/components/SubtasksPanel/popovers/StatusPopover.tsx",
@@ -27224,7 +26991,6 @@ export const usageMap: UsageMap = {
       "src/pages/admin/AdminAccessPage.tsx",
       "src/pages/admin/PermissionsAdminPage.tsx",
       "src/pages/admin/RoutingTaxonomyPage.tsx",
-      "src/pages/admin/UserAccessPage.tsx",
       "src/pages/admin/avatars/AdminAvatarsPage.tsx",
       "src/pages/admin/components/ADSViolationsPanel.tsx",
       "src/pages/admin/components/CascadeImpactPanel.tsx",
@@ -27242,7 +27008,6 @@ export const usageMap: UsageMap = {
       "src/pages/admin/icons/AdminIconsPage.tsx",
       "src/pages/admin/test-ops/TestOpsPage.tsx",
       "src/pages/admin/test/TestCaseStatusesPage.tsx",
-      "src/pages/admin/test/TestCaseWorkflowPage.tsx",
       "src/pages/admin/workflows/WorkflowVersioningPage.tsx",
       "src/pages/product-hub/AllProductsPage.tsx",
       "src/pages/project-hub/jira-list/components/AllWorkToolbar.tsx",
@@ -27350,7 +27115,6 @@ export const usageMap: UsageMap = {
     "consumers": [
       "src/components/dependencies/DependenciesSidebar.tsx",
       "src/components/layout/ProjectSidebar.tsx",
-      "src/components/layout/TeamRoomSidebar.tsx",
       "src/components/layout/UnifiedSidebar.tsx",
       "src/components/layout/dropdowns/StarredDropdown.tsx",
       "src/components/product-hub/roadmap/RoadmapDetailPanel.tsx",
@@ -27595,8 +27359,7 @@ export const usageMap: UsageMap = {
     "consumers": [
       "src/components/catalyst-roadmap/RoadmapHeader.tsx",
       "src/components/layout/CatalystShell.tsx",
-      "src/components/layout/MobileBottomNav.tsx",
-      "src/components/layout/TeamRoomSidebar.tsx"
+      "src/components/layout/MobileBottomNav.tsx"
     ]
   },
   "MenuDivider::./MenuShared": {
@@ -27900,9 +27663,7 @@ export const usageMap: UsageMap = {
       "src/modules/tasks/components/TaskCard.tsx",
       "src/modules/tasks/components/TaskDetailDrawer/ActivitySection.tsx",
       "src/pages/CleanupPage.tsx",
-      "src/pages/ForYouPage.tsx",
-      "src/pages/project/feature-detail/FeatureActivityTab.tsx",
-      "src/pages/releases/CommandCenterPage.tsx"
+      "src/pages/project/feature-detail/FeatureActivityTab.tsx"
     ]
   },
   "MessageStream::./main/MessageStream": {
@@ -27929,6 +27690,22 @@ export const usageMap: UsageMap = {
       "src/features/chat/components/feed/MessageFeed.tsx"
     ]
   },
+  "MessageTranslation::./MessageTranslation": {
+    "name": "MessageTranslation",
+    "source": "./MessageTranslation",
+    "origin": "internal",
+    "consumers": [
+      "src/components/chat/main/MessageStream.tsx"
+    ]
+  },
+  "MessageTranslation::@/components/chat/main/MessageTranslation": {
+    "name": "MessageTranslation",
+    "source": "@/components/chat/main/MessageTranslation",
+    "origin": "internal",
+    "consumers": [
+      "src/features/chat-v2/components/MessagePanel/MessageBubble.tsx"
+    ]
+  },
   "MetadataBar::./organisms": {
     "name": "MetadataBar",
     "source": "./organisms",
@@ -27943,14 +27720,6 @@ export const usageMap: UsageMap = {
     "origin": "internal",
     "consumers": [
       "src/components/planner/task-modal/organisms/MetadataBar.tsx"
-    ]
-  },
-  "MetricCard::@/components/dashboard": {
-    "name": "MetricCard",
-    "source": "@/components/dashboard",
-    "origin": "internal",
-    "consumers": [
-      "src/pages/releases/CommandCenter.tsx"
     ]
   },
   "MetricId::./components/WorkTreeDashboard": {
@@ -28007,7 +27776,7 @@ export const usageMap: UsageMap = {
     "origin": "atlaskit",
     "consumers": [
       "src/components/catalyst-detail-views/shared/sections/Description/_components/Toolbar/buttons/MicButton.tsx",
-      "src/components/chat/main/MessageComposer.tsx"
+      "src/features/voice-flow/VoiceMicButton.tsx"
     ],
     "package": "@atlaskit/icon"
   },
@@ -28118,6 +27887,7 @@ export const usageMap: UsageMap = {
       "src/components/incidents/modal/IncidentDetailModal.tsx",
       "src/components/items/epics/EpicDetailsPanel.tsx",
       "src/components/product-hub/roadmap/ProductRoadmapPage.tsx",
+      "src/components/releasehub/foryou/ReleaseChangeAnnouncementBanner.tsx",
       "src/components/roadmap/RoadmapEngine.tsx",
       "src/modules/in-jira/components/IssueDrawer.tsx",
       "src/modules/product-roadmap/components/RoadmapToolbar.tsx",
@@ -28148,9 +27918,7 @@ export const usageMap: UsageMap = {
       "src/components/shared/jira-description-editor/Toolbar.tsx",
       "src/components/workload/WorkloadTrendChart.tsx",
       "src/modules-dormant/ideation/CreateDriveModal.tsx",
-      "src/modules/incidents/analytics/pages/IncidentInsightsPage.tsx",
-      "src/pages/releases/CommandCenterPage.tsx",
-      "src/pages/releases/QualityGatesPage.tsx"
+      "src/modules/incidents/analytics/pages/IncidentInsightsPage.tsx"
     ]
   },
   "MinusCircle::@/lib/atlaskit-icons": {
@@ -28160,15 +27928,6 @@ export const usageMap: UsageMap = {
     "consumers": [
       "src/pages/project/feature-detail/FeatureAuditTab.tsx"
     ]
-  },
-  "MinusIcon::@atlaskit/icon/core/minus": {
-    "name": "MinusIcon",
-    "source": "@atlaskit/icon/core/minus",
-    "origin": "atlaskit",
-    "consumers": [
-      "src/components/chat/dock/ChatDock.tsx"
-    ],
-    "package": "@atlaskit/icon"
   },
   "MissedCallsList::./MissedCallsList": {
     "name": "MissedCallsList",
@@ -28230,6 +27989,7 @@ export const usageMap: UsageMap = {
       "src/modules/strata/components/shared.tsx",
       "src/modules/strata/components/vmoAuthoring.tsx",
       "src/modules/strata/pages/StrataAdminConfigPage.tsx",
+      "src/modules/strata/pages/StrataKpiDetailPage.tsx",
       "src/modules/strata/pages/StrataReviewsPage.tsx",
       "src/modules/strata/pages/StrataStrategyRoomPage.tsx",
       "src/pages/admin/workflows/studio/GenerateWorkflowModal.tsx",
@@ -28341,6 +28101,7 @@ export const usageMap: UsageMap = {
       "src/modules/strata/components/shared.tsx",
       "src/modules/strata/components/vmoAuthoring.tsx",
       "src/modules/strata/pages/StrataAdminConfigPage.tsx",
+      "src/modules/strata/pages/StrataKpiDetailPage.tsx",
       "src/modules/strata/pages/StrataReviewsPage.tsx",
       "src/modules/strata/pages/StrataStrategyRoomPage.tsx",
       "src/pages/admin/workflows/studio/GenerateWorkflowModal.tsx",
@@ -28368,6 +28129,7 @@ export const usageMap: UsageMap = {
     "origin": "internal",
     "consumers": [
       "src/components/business-requests/CreateBusinessRequestModal.tsx",
+      "src/modules/ideation/components/CreateIdeaModal.tsx",
       "src/modules/tasks/components/workstreams/WorkstreamFormModal.tsx"
     ]
   },
@@ -28402,6 +28164,7 @@ export const usageMap: UsageMap = {
       "src/components/chat/main/MessageStream.tsx",
       "src/components/chat/main/RosterPanel.tsx",
       "src/components/chat/main/ScheduleSendDropdown.tsx",
+      "src/components/chat/main/TranslatePreviewDialog.tsx",
       "src/components/epic-backlog/EpicContextMenu.tsx",
       "src/components/features/FeatureContextMenu.tsx",
       "src/components/filters/FilterKebabMenu.tsx",
@@ -28514,6 +28277,7 @@ export const usageMap: UsageMap = {
     "origin": "internal",
     "consumers": [
       "src/components/business-requests/CreateBusinessRequestModal.tsx",
+      "src/modules/ideation/components/CreateIdeaModal.tsx",
       "src/modules/tasks/components/workstreams/WorkstreamFormModal.tsx"
     ]
   },
@@ -28541,6 +28305,7 @@ export const usageMap: UsageMap = {
       "src/components/chat/AddPeopleModal.tsx",
       "src/components/chat/main/MessageStream.tsx",
       "src/components/chat/main/ScheduleSendDropdown.tsx",
+      "src/components/chat/main/TranslatePreviewDialog.tsx",
       "src/components/epic-backlog/EpicContextMenu.tsx",
       "src/components/features/FeatureContextMenu.tsx",
       "src/components/filters/FilterKebabMenu.tsx",
@@ -28609,6 +28374,7 @@ export const usageMap: UsageMap = {
       "src/modules/strata/components/shared.tsx",
       "src/modules/strata/components/vmoAuthoring.tsx",
       "src/modules/strata/pages/StrataAdminConfigPage.tsx",
+      "src/modules/strata/pages/StrataKpiDetailPage.tsx",
       "src/modules/strata/pages/StrataReviewsPage.tsx",
       "src/modules/strata/pages/StrataStrategyRoomPage.tsx",
       "src/pages/admin/workflows/studio/GenerateWorkflowModal.tsx",
@@ -28635,6 +28401,7 @@ export const usageMap: UsageMap = {
     "origin": "internal",
     "consumers": [
       "src/components/business-requests/CreateBusinessRequestModal.tsx",
+      "src/modules/ideation/components/CreateIdeaModal.tsx",
       "src/modules/tasks/components/workstreams/WorkstreamFormModal.tsx"
     ]
   },
@@ -28669,6 +28436,7 @@ export const usageMap: UsageMap = {
       "src/components/chat/main/MessageStream.tsx",
       "src/components/chat/main/RosterPanel.tsx",
       "src/components/chat/main/ScheduleSendDropdown.tsx",
+      "src/components/chat/main/TranslatePreviewDialog.tsx",
       "src/components/epic-backlog/EpicContextMenu.tsx",
       "src/components/features/FeatureContextMenu.tsx",
       "src/components/filters/FilterKebabMenu.tsx",
@@ -28777,6 +28545,7 @@ export const usageMap: UsageMap = {
       "src/modules/strata/components/shared.tsx",
       "src/modules/strata/components/vmoAuthoring.tsx",
       "src/modules/strata/pages/StrataAdminConfigPage.tsx",
+      "src/modules/strata/pages/StrataKpiDetailPage.tsx",
       "src/modules/strata/pages/StrataReviewsPage.tsx",
       "src/modules/strata/pages/StrataStrategyRoomPage.tsx",
       "src/pages/admin/workflows/studio/GenerateWorkflowModal.tsx",
@@ -28804,6 +28573,7 @@ export const usageMap: UsageMap = {
     "origin": "internal",
     "consumers": [
       "src/components/business-requests/CreateBusinessRequestModal.tsx",
+      "src/modules/ideation/components/CreateIdeaModal.tsx",
       "src/modules/tasks/components/workstreams/WorkstreamFormModal.tsx"
     ]
   },
@@ -28838,6 +28608,7 @@ export const usageMap: UsageMap = {
       "src/components/chat/main/MessageStream.tsx",
       "src/components/chat/main/RosterPanel.tsx",
       "src/components/chat/main/ScheduleSendDropdown.tsx",
+      "src/components/chat/main/TranslatePreviewDialog.tsx",
       "src/components/epic-backlog/EpicContextMenu.tsx",
       "src/components/features/FeatureContextMenu.tsx",
       "src/components/filters/FilterKebabMenu.tsx",
@@ -28940,6 +28711,7 @@ export const usageMap: UsageMap = {
       "src/modules/strata/components/shared.tsx",
       "src/modules/strata/components/vmoAuthoring.tsx",
       "src/modules/strata/pages/StrataAdminConfigPage.tsx",
+      "src/modules/strata/pages/StrataKpiDetailPage.tsx",
       "src/modules/strata/pages/StrataReviewsPage.tsx",
       "src/modules/strata/pages/StrataStrategyRoomPage.tsx",
       "src/pages/admin/workflows/studio/GenerateWorkflowModal.tsx",
@@ -28967,6 +28739,7 @@ export const usageMap: UsageMap = {
     "origin": "internal",
     "consumers": [
       "src/components/business-requests/CreateBusinessRequestModal.tsx",
+      "src/modules/ideation/components/CreateIdeaModal.tsx",
       "src/modules/tasks/components/workstreams/WorkstreamFormModal.tsx"
     ]
   },
@@ -29001,6 +28774,7 @@ export const usageMap: UsageMap = {
       "src/components/chat/main/MessageStream.tsx",
       "src/components/chat/main/RosterPanel.tsx",
       "src/components/chat/main/ScheduleSendDropdown.tsx",
+      "src/components/chat/main/TranslatePreviewDialog.tsx",
       "src/components/epic-backlog/EpicContextMenu.tsx",
       "src/components/features/FeatureContextMenu.tsx",
       "src/components/filters/FilterKebabMenu.tsx",
@@ -29096,6 +28870,7 @@ export const usageMap: UsageMap = {
     "origin": "internal",
     "consumers": [
       "src/components/business-requests/CreateBusinessRequestModal.tsx",
+      "src/modules/ideation/components/CreateIdeaModal.tsx",
       "src/modules/tasks/components/workstreams/WorkstreamFormModal.tsx"
     ]
   },
@@ -29113,6 +28888,7 @@ export const usageMap: UsageMap = {
       "src/components/chat/main/AddPeopleModal.tsx",
       "src/components/chat/main/MessageStream.tsx",
       "src/components/chat/main/RosterPanel.tsx",
+      "src/components/chat/main/TranslatePreviewDialog.tsx",
       "src/components/filters/FilterKebabMenu.tsx",
       "src/components/product-hub/MilestoneCreateModal.tsx",
       "src/components/project-hub/dashboard/widgets/TimeInStatusFullscreenModal.tsx",
@@ -29205,14 +28981,6 @@ export const usageMap: UsageMap = {
     "origin": "internal",
     "consumers": [
       "src/components/guards/ModuleGuard.tsx"
-    ]
-  },
-  "ModuleAccessMatrix::@/components/admin/module-access/ModuleAccessMatrix": {
-    "name": "ModuleAccessMatrix",
-    "source": "@/components/admin/module-access/ModuleAccessMatrix",
-    "origin": "internal",
-    "consumers": [
-      "src/pages/admin/ModuleAccessAdminPage.tsx"
     ]
   },
   "ModuleGate::../components/common/ModuleGate": {
@@ -29373,7 +29141,6 @@ export const usageMap: UsageMap = {
       "src/modules/tasks/components/task-list/RowActions.tsx",
       "src/modules/tasks/components/workstreams/WorkstreamCard.tsx",
       "src/modules/tasks/components/workstreams/WorkstreamsManagerPage.tsx",
-      "src/modules/work-hub/WorkHubLayout.tsx",
       "src/modules/work-hub/views/AllWorkView.tsx",
       "src/modules/work-hub/views/ListView.tsx",
       "src/modules/work-hub/views/ReleaseDetailsView.tsx",
@@ -29388,7 +29155,6 @@ export const usageMap: UsageMap = {
       "src/pages/project/FeatureViewPage.tsx",
       "src/pages/projects/ProjectSummaryPage.tsx",
       "src/pages/projects/views/ListView.tsx",
-      "src/pages/releases/DefectDetailPage.tsx",
       "src/pages/testhub/cycles/CyclesPage.tsx",
       "src/pages/testhub/executions/ExecutionsPage.tsx",
       "src/pages/testhub/plans/TestPlansPage.tsx",
@@ -29458,8 +29224,7 @@ export const usageMap: UsageMap = {
       "src/modules/task10/components/landing/T10ListCardV3.tsx",
       "src/modules/tasks/components/TaskCard.tsx",
       "src/pages/enterprise/EnterpriseEpics.tsx",
-      "src/pages/items/EpicsPage.tsx",
-      "src/pages/releases/QualityGatesPage.tsx"
+      "src/pages/items/EpicsPage.tsx"
     ]
   },
   "MousePointer::@/lib/atlaskit-icons": {
@@ -29653,14 +29418,6 @@ export const usageMap: UsageMap = {
       "src/stories/pages/TaskOther.stories.tsx"
     ]
   },
-  "MyTestScopeDashboard::@/features/my-test-scope": {
-    "name": "MyTestScopeDashboard",
-    "source": "@/features/my-test-scope",
-    "origin": "internal",
-    "consumers": [
-      "src/pages/releases/MyTestScopePage.tsx"
-    ]
-  },
   "NavBacklogIcon::@/lib/nav-icons": {
     "name": "NavBacklogIcon",
     "source": "@/lib/nav-icons",
@@ -29695,6 +29452,7 @@ export const usageMap: UsageMap = {
       "src/components/layout/IncidentHubSidebar.tsx",
       "src/components/layout/ProductHubSidebar.tsx",
       "src/components/layout/ProjectHubSidebar.tsx",
+      "src/components/layout/ReleaseHubSidebar.tsx",
       "src/components/layout/TasksSidebar.tsx",
       "src/components/layout/TestHubSidebar.tsx"
     ]
@@ -29780,12 +29538,12 @@ export const usageMap: UsageMap = {
     "consumers": [
       "src/components/layout/ProductRoomSidebar.tsx",
       "src/components/layout/ReleasesManagementSidebar.tsx",
-      "src/components/layout/TeamRoomSidebar.tsx",
       "src/components/layout/UnifiedSidebar.tsx",
       "src/components/layout/WikiSidebar.tsx",
       "src/components/project-hub/shell/SidebarProjectNav.tsx",
       "src/features/my-test-scope/components/ScopeTabs.tsx",
       "src/modules/strata/pages/StrataDataPipelinePage.tsx",
+      "src/modules/strata/pages/StrataKpiDetailPage.tsx",
       "src/modules/strata/pages/StrataStrategyElementDetailPage.tsx",
       "src/modules/strata/pages/StrataStrategyRoomPage.tsx",
       "src/pages/reports/DependencyMapsPage.tsx"
@@ -29821,6 +29579,15 @@ export const usageMap: UsageMap = {
     "origin": "internal",
     "consumers": [
       "src/modules/tasks/components/PlannerCreateModal.tsx"
+    ]
+  },
+  "NewElementModal::@/modules/strata/components/authoring": {
+    "name": "NewElementModal",
+    "source": "@/modules/strata/components/authoring",
+    "origin": "internal",
+    "consumers": [
+      "src/modules/strata/pages/StrataStrategyElementDetailPage.tsx",
+      "src/modules/strata/pages/StrataStrategyRoomPage.tsx"
     ]
   },
   "NewFeatureIcon::@atlaskit/icon-object/glyph/new-feature/16": {
@@ -29920,8 +29687,8 @@ export const usageMap: UsageMap = {
     "consumers": [
       "src/components/admin/notifications/BulkActionsBar.tsx",
       "src/components/admin/notifications/ChannelToggles.tsx",
-      "src/components/chat/main/MessageActionsToolbar.tsx",
-      "src/pages/admin/NotificationTriggers.tsx"
+      "src/components/chat/dock/DockTabBar.tsx",
+      "src/components/chat/main/MessageActionsToolbar.tsx"
     ],
     "package": "@atlaskit/icon"
   },
@@ -30044,6 +29811,15 @@ export const usageMap: UsageMap = {
     "origin": "internal",
     "consumers": [
       "src/pages/work-tree/components/WorkTreeHierarchy.tsx"
+    ]
+  },
+  "OkrRow::@/modules/strata/components/shared": {
+    "name": "OkrRow",
+    "source": "@/modules/strata/components/shared",
+    "origin": "internal",
+    "consumers": [
+      "src/modules/strata/pages/StrataKpiLibraryPage.tsx",
+      "src/modules/strata/pages/StrataStrategyElementDetailPage.tsx"
     ]
   },
   "OkrStatusPill::@/components/shared/okr-pills/OkrStatusPill": {
@@ -30206,12 +29982,9 @@ export const usageMap: UsageMap = {
       "src/modules/in-jira/pages/ReleaseManagementPage.tsx",
       "src/modules/in-jira/pages/ReleasesPage.tsx",
       "src/modules/project-work-hub/ProjectWorkHubPage.tsx",
-      "src/modules/work-hub/WorkHubLayout.tsx",
       "src/pages/releasehub/AllChangesPage.tsx",
       "src/pages/releasehub/AllReleasesPage.tsx",
-      "src/pages/releasehub/ChangeExecutionBoard.tsx",
-      "src/pages/releases/AllReleasesPage.tsx",
-      "src/pages/releases/CommandCenter.tsx"
+      "src/pages/releasehub/ChangeExecutionBoard.tsx"
     ]
   },
   "PageChrome::@/components/layout/PageChrome": {
@@ -30237,18 +30010,27 @@ export const usageMap: UsageMap = {
       "src/stories/components/SharedAtoms.stories.tsx"
     ]
   },
+  "PageHeader::@/components/ads": {
+    "name": "PageHeader",
+    "source": "@/components/ads",
+    "origin": "internal",
+    "consumers": [
+      "src/modules/docintel/pages/DocintelDeliverablesPage.tsx",
+      "src/modules/docintel/pages/DocintelHomePage.tsx",
+      "src/modules/docintel/pages/DocintelLibraryPage.tsx",
+      "src/modules/docintel/pages/DocintelReviewStartPage.tsx",
+      "src/modules/docintel/pages/DocintelWorkspacePage.tsx"
+    ]
+  },
   "PageHeader::@/components/ads/PageHeader": {
     "name": "PageHeader",
     "source": "@/components/ads/PageHeader",
     "origin": "internal",
     "consumers": [
-      "src/modules/docintel/pages/DocintelDocumentsPage.tsx",
       "src/modules/docintel/pages/DocintelHealthPage.tsx",
       "src/modules/docintel/pages/DocintelUploadPage.tsx",
-      "src/modules/docintel/pages/DocintelWorkspacePage.tsx",
       "src/pages/admin/test/TestCaseStatusesPage.tsx",
       "src/pages/admin/test/TestCaseTypesPage.tsx",
-      "src/pages/admin/test/TestCaseWorkflowPage.tsx",
       "src/pages/admin/test/TestPermissionsPage.tsx",
       "src/pages/admin/test/TestPrioritiesPage.tsx"
     ]
@@ -30465,8 +30247,7 @@ export const usageMap: UsageMap = {
       "src/modules/product-backlog/components/split-panel/RequestDetailPanel.tsx",
       "src/modules/product-backlog/components/split-panel/RequestListPanel.tsx",
       "src/modules/product-roadmap/components/RoadmapDetailPanel.tsx",
-      "src/modules/tasks/components/TaskCard.tsx",
-      "src/pages/releases/DefectDetailPage.tsx"
+      "src/modules/tasks/components/TaskCard.tsx"
     ]
   },
   "ParentEpicChip::../components/shared/ParentEpicChip": {
@@ -30592,11 +30373,8 @@ export const usageMap: UsageMap = {
       "src/components/admin/rbac/RbacRolesTable.tsx",
       "src/components/boards/BoardCard.tsx",
       "src/components/filters/FilterTemplateGallery.tsx",
-      "src/pages/admin/AdminOverview.tsx",
-      "src/pages/admin/FeatureFlagsPage.tsx",
       "src/pages/admin/ResourceAssignments.tsx",
       "src/pages/admin/RolesAdminPage.tsx",
-      "src/pages/admin/UserAccessPage.tsx",
       "src/pages/project-hub/filters/FiltersListPage.tsx"
     ],
     "package": "@atlaskit/icon"
@@ -30722,9 +30500,7 @@ export const usageMap: UsageMap = {
     "origin": "atlaskit",
     "consumers": [
       "src/components/catalyst-detail-views/shared/sections/Description/_components/MentionSuggestionPill/MentionSuggestionPill.tsx",
-      "src/pages/admin/AdminAccessPage.tsx",
-      "src/pages/admin/AdminOverview.tsx",
-      "src/pages/admin/UserAccessPage.tsx"
+      "src/pages/admin/AdminAccessPage.tsx"
     ],
     "package": "@atlaskit/icon"
   },
@@ -30743,8 +30519,7 @@ export const usageMap: UsageMap = {
     "origin": "atlaskit",
     "consumers": [
       "src/components/filters/FilterTemplateGallery.tsx",
-      "src/pages/admin/ResourceAssignments.tsx",
-      "src/pages/admin/UserAccessPage.tsx"
+      "src/pages/admin/ResourceAssignments.tsx"
     ],
     "package": "@atlaskit/icon"
   },
@@ -30755,7 +30530,6 @@ export const usageMap: UsageMap = {
     "consumers": [
       "src/components/chat/main/ChatSearchFilters.tsx",
       "src/components/global-search/GlobalSearchPanel.tsx",
-      "src/features/all-releases/components/ReleaseCard.tsx",
       "src/modules/project-work-hub/components/linked-work-items/LinkTypeGroup.tsx"
     ],
     "package": "@atlaskit/icon"
@@ -30934,22 +30708,6 @@ export const usageMap: UsageMap = {
     "origin": "internal",
     "consumers": [
       "src/components/backlog/BacklogSection.tsx"
-    ]
-  },
-  "PlanApproval::@/types/testPlans": {
-    "name": "PlanApproval",
-    "source": "@/types/testPlans",
-    "origin": "internal",
-    "consumers": [
-      "src/hooks/useTestPlansG26.ts"
-    ]
-  },
-  "PlanFilters::@/types/testPlans": {
-    "name": "PlanFilters",
-    "source": "@/types/testPlans",
-    "origin": "internal",
-    "consumers": [
-      "src/hooks/useTestPlansG26.ts"
     ]
   },
   "PlannedQuarter::@/types/product-roadmap": {
@@ -31169,30 +30927,6 @@ export const usageMap: UsageMap = {
       "src/stories/pages/TaskOther.stories.tsx"
     ]
   },
-  "PlanProgress::@/types/testPlans": {
-    "name": "PlanProgress",
-    "source": "@/types/testPlans",
-    "origin": "internal",
-    "consumers": [
-      "src/hooks/useTestPlansG26.ts"
-    ]
-  },
-  "PlanScope::@/types/testPlans": {
-    "name": "PlanScope",
-    "source": "@/types/testPlans",
-    "origin": "internal",
-    "consumers": [
-      "src/hooks/useTestPlansG26.ts"
-    ]
-  },
-  "PlanTeamMember::@/types/testPlans": {
-    "name": "PlanTeamMember",
-    "source": "@/types/testPlans",
-    "origin": "internal",
-    "consumers": [
-      "src/hooks/useTestPlansG26.ts"
-    ]
-  },
   "PlatformConfig::./types": {
     "name": "PlatformConfig",
     "source": "./types",
@@ -31218,8 +30952,6 @@ export const usageMap: UsageMap = {
       "src/modules/in-jira/pages/ScrumBoardPage.tsx",
       "src/modules/task10/components/landing/T10ListCardMinimal.tsx",
       "src/pages/enterprise/capacity-planner/LevelingView.tsx",
-      "src/pages/releases/DefectDetailPage.tsx",
-      "src/pages/releases/ReleaseDashboardPage.tsx",
       "src/pages/testhub/cycles/CycleDetailPage.tsx"
     ]
   },
@@ -31292,6 +31024,7 @@ export const usageMap: UsageMap = {
       "src/components/kanban/setup/ManageUsersTab.tsx",
       "src/components/kanban/setup/SwimLanesSetupTab.tsx",
       "src/components/knowledge-hub/KnowledgeBaseCard.tsx",
+      "src/components/layout/IdeationSidebar.tsx",
       "src/components/planner/task-modal/molecules/AddItemInput.tsx",
       "src/components/planner/task-modal/molecules/LabelsManager.tsx",
       "src/components/product-hub/roadmap/AddRequestModal.tsx",
@@ -31378,7 +31111,9 @@ export const usageMap: UsageMap = {
       "src/modules/project-work-hub/pages/FeatureBacklogPage.tsx",
       "src/modules/project-work-hub/pages/StoryBacklogPage.atlaskit.tsx",
       "src/modules/project-work-hub/pages/StoryBacklogPage.tsx",
+      "src/modules/strata/components/shared.tsx",
       "src/modules/strata/pages/StrataKpiLibraryPage.tsx",
+      "src/modules/strata/pages/StrataStrategyElementDetailPage.tsx",
       "src/modules/task10/components/landing/T10Header.tsx",
       "src/modules/task10/components/landing/T10HeaderNew.tsx",
       "src/modules/task10/components/landing/T10HeaderV3.tsx",
@@ -31420,7 +31155,6 @@ export const usageMap: UsageMap = {
       "src/modules/tasks/components/shared/PlannerViewHeader.tsx",
       "src/modules/tasks/components/workstreams/WorkstreamsManagerPage.tsx",
       "src/modules/tasks/components/workstreams/WorkstreamsPage.tsx",
-      "src/modules/work-hub/WorkHubLayout.tsx",
       "src/modules/work-hub/components/ColumnHeaderMenu.tsx",
       "src/modules/work-hub/components/FieldPicker.tsx",
       "src/modules/work-hub/views/AllWorkView.tsx",
@@ -31465,10 +31199,6 @@ export const usageMap: UsageMap = {
       "src/pages/releasehub/FreezeWindowsPage.tsx",
       "src/pages/releasehub/SignOffQueuePage.tsx",
       "src/pages/releasehub/SopTemplatesPage.tsx",
-      "src/pages/releases/AllReleasesPage.tsx",
-      "src/pages/releases/CommandCenter.tsx",
-      "src/pages/releases/CoverageReportsPage.tsx",
-      "src/pages/releases/QualityGatesPage.tsx",
       "src/pages/testhub/cycles/CycleDetailPage.tsx",
       "src/pages/testhub/cycles/CyclesPage.tsx",
       "src/pages/testhub/plans/TestPlansPage.tsx",
@@ -31539,7 +31269,6 @@ export const usageMap: UsageMap = {
       "src/components/dependencies/CreateDependencyDialog.tsx",
       "src/components/dependencies/DependencyDetailsDrawer.tsx",
       "src/components/enterprise/EnterpriseGrid.tsx",
-      "src/components/epic-backlog/modals/MilestoneModal.tsx",
       "src/components/incidents/IncidentStatusDropdown.tsx",
       "src/components/industry/RichTextEditor.tsx",
       "src/components/industry/enterprise-table/components/ColumnHeader.tsx",
@@ -31628,7 +31357,6 @@ export const usageMap: UsageMap = {
       "src/components/dependencies/CreateDependencyDialog.tsx",
       "src/components/dependencies/DependencyDetailsDrawer.tsx",
       "src/components/enterprise/EnterpriseGrid.tsx",
-      "src/components/epic-backlog/modals/MilestoneModal.tsx",
       "src/components/incidents/IncidentStatusDropdown.tsx",
       "src/components/industry/RichTextEditor.tsx",
       "src/components/industry/enterprise-table/components/ColumnHeader.tsx",
@@ -31709,7 +31437,6 @@ export const usageMap: UsageMap = {
       "src/components/dependencies/CreateDependencyDialog.tsx",
       "src/components/dependencies/DependencyDetailsDrawer.tsx",
       "src/components/enterprise/EnterpriseGrid.tsx",
-      "src/components/epic-backlog/modals/MilestoneModal.tsx",
       "src/components/incidents/IncidentStatusDropdown.tsx",
       "src/components/industry/RichTextEditor.tsx",
       "src/components/industry/enterprise-table/components/ColumnHeader.tsx",
@@ -31787,7 +31514,9 @@ export const usageMap: UsageMap = {
       "src/components/shared/JiraTable/editors.tsx",
       "src/components/universal-work-view/UWVColumnPicker.tsx",
       "src/components/universal-work-view/UWVExport.tsx",
-      "src/components/universal-work-view/UWVToolbar.tsx"
+      "src/components/universal-work-view/UWVToolbar.tsx",
+      "src/features/voice-flow/VoiceMicButton.tsx",
+      "src/modules/strata/components/StrataNotificationBell.tsx"
     ],
     "package": "@atlaskit/popup"
   },
@@ -32077,14 +31806,6 @@ export const usageMap: UsageMap = {
       "src/components/incidents/IncidentDetailsPanel.tsx"
     ]
   },
-  "PriorityBadge::@/components/releases/defects/PriorityBadge": {
-    "name": "PriorityBadge",
-    "source": "@/components/releases/defects/PriorityBadge",
-    "origin": "internal",
-    "consumers": [
-      "src/pages/releases/DefectDetailPage.tsx"
-    ]
-  },
   "PriorityBadge::@/modules/tasks/components/kanban/PriorityBadge": {
     "name": "PriorityBadge",
     "source": "@/modules/tasks/components/kanban/PriorityBadge",
@@ -32110,8 +31831,7 @@ export const usageMap: UsageMap = {
       "src/modules/project-work-hub/components/dialogs/story-detail-modules/DefectsSection.tsx",
       "src/modules/project-work-hub/components/dialogs/story-detail-modules/IncidentsSection.tsx",
       "src/modules/project-work-hub/components/linked-work-items/LinkedWorkItemRow.tsx",
-      "src/modules/project-work-hub/pages/StoryBacklogPage.tsx",
-      "src/pages/ForYouPage.tsx"
+      "src/modules/project-work-hub/pages/StoryBacklogPage.tsx"
     ]
   },
   "PriorityBlockerIcon::@atlaskit/icon/core/priority-blocker": {
@@ -32403,6 +32123,7 @@ export const usageMap: UsageMap = {
     "consumers": [
       "src/components/business-requests/CreateBusinessRequestModal.tsx",
       "src/components/layout/HomeSidebar.tsx",
+      "src/modules/ideation/components/CreateIdeaModal.tsx",
       "src/stories/audit-grade/18-ProductAvatars.stories.tsx"
     ]
   },
@@ -32647,12 +32368,10 @@ export const usageMap: UsageMap = {
       "src/components/capacity-heatmap/CellDetailPanel.tsx",
       "src/components/dashboard/CycleCard.tsx",
       "src/components/dashboard/MetricCard.tsx",
-      "src/components/epic-backlog/modals/FeatureStatusModal.tsx",
       "src/components/epic-backlog/tabs/ValueTab.tsx",
       "src/components/features/FeaturesKanbanView.tsx",
       "src/components/features/FeaturesListView.tsx",
       "src/components/incidents/detail/CommitteeCard.tsx",
-      "src/components/items/epics/modals/FeatureStatusModal.tsx",
       "src/components/items/features/FeatureTable.tsx",
       "src/components/items/features/tabs/FeatureOverviewTab.tsx",
       "src/components/releases/all-releases/ReleasesTableRow.tsx",
@@ -32672,11 +32391,8 @@ export const usageMap: UsageMap = {
       "src/pages/Features.tsx",
       "src/pages/PIObjectives.tsx",
       "src/pages/PortfolioRoadmap.tsx",
-      "src/pages/TeamRoom.tsx",
       "src/pages/ValueStreamView.tsx",
-      "src/pages/items/reports/EpicStatusReport.tsx",
-      "src/pages/releases/CoverageReportsPage.tsx",
-      "src/pages/releases/QualityGatesPage.tsx"
+      "src/pages/items/reports/EpicStatusReport.tsx"
     ]
   },
   "ProgressBar::../../atoms": {
@@ -32693,8 +32409,8 @@ export const usageMap: UsageMap = {
     "origin": "internal",
     "consumers": [
       "src/modules/strata/components/ProjectCardDetailView.tsx",
-      "src/modules/strata/pages/StrataExecutionPage.tsx",
-      "src/modules/strata/pages/StrataKpiLibraryPage.tsx"
+      "src/modules/strata/components/shared.tsx",
+      "src/modules/strata/pages/StrataExecutionPage.tsx"
     ]
   },
   "ProgressBar::@/components/ads/ProgressBar": {
@@ -32939,14 +32655,6 @@ export const usageMap: UsageMap = {
       "src/components/project-hub/shell/SidebarProjectNav.tsx"
     ]
   },
-  "ProjectEntry::./shell/ProjectSwitcher": {
-    "name": "ProjectEntry",
-    "source": "./shell/ProjectSwitcher",
-    "origin": "internal",
-    "consumers": [
-      "src/components/project-hub/ProjectHubShell.tsx"
-    ]
-  },
   "ProjectGrid::./ProjectGrid": {
     "name": "ProjectGrid",
     "source": "./ProjectGrid",
@@ -33026,6 +32734,9 @@ export const usageMap: UsageMap = {
     "consumers": [
       "src/components/chat/dock/BrowseChannelsModal.tsx",
       "src/components/chat/dock/DockDirectory.tsx",
+      "src/components/chat/dock/DockNewHuddleModal.tsx",
+      "src/components/chat/dock/DockNewMessageModal.tsx",
+      "src/components/chat/dock/DockSearchTab.tsx",
       "src/components/chat/main/ConversationHeader.tsx",
       "src/components/chat/main/ConversationList.tsx",
       "src/components/for-you/atlaskit/StarredHubList.tsx",
@@ -33367,14 +33078,6 @@ export const usageMap: UsageMap = {
     "origin": "internal",
     "consumers": [
       "src/pages/release-hub/ReleaseDetailPage.tsx"
-    ]
-  },
-  "QualityGatesWidget::@/components/releases/dashboard/QualityGatesWidget": {
-    "name": "QualityGatesWidget",
-    "source": "@/components/releases/dashboard/QualityGatesWidget",
-    "origin": "internal",
-    "consumers": [
-      "src/pages/releases/ReleaseDashboardPage.tsx"
     ]
   },
   "QualityGauge::./QualityGauge": {
@@ -33739,6 +33442,7 @@ export const usageMap: UsageMap = {
       "src/components/filters/FilterSaveModal.tsx",
       "src/components/project-hub/dashboard/widgets/DemandFulfilmentGadget.tsx",
       "src/components/sprints/SprintCreateModal.tsx",
+      "src/modules/docintel/pages/DocintelReviewStartPage.tsx",
       "src/pages/admin/icons/AdminIconsPage.tsx"
     ],
     "package": "@atlaskit/radio"
@@ -33932,19 +33636,11 @@ export const usageMap: UsageMap = {
     "consumers": [
       "src/components/releases/ReleaseConfirmationModal.tsx",
       "src/components/shared/StatusLozenge/StatusLozengeDropdown.tsx",
+      "src/modules/ideation/pages/DetailPage.tsx",
       "src/modules/project-work-hub/pages/BacklogPage.atlaskit.tsx",
       "src/modules/tasks/components/TaskList/TaskListPageV3.tsx",
       "src/modules/tasks/views/TasksBoardView.tsx",
       "src/pages/product-hub/MilestonesPage.tsx"
-    ]
-  },
-  "ReassignModal::@/components/releases/defects/ReassignModal": {
-    "name": "ReassignModal",
-    "source": "@/components/releases/defects/ReassignModal",
-    "origin": "internal",
-    "consumers": [
-      "src/pages/releases/DefectDetailPage.tsx",
-      "src/pages/releases/DefectsPage.tsx"
     ]
   },
   "RecentIcon::@atlaskit/icon/glyph/recent": {
@@ -34071,12 +33767,7 @@ export const usageMap: UsageMap = {
       "src/pages/admin/test/TestCaseTypesPage.tsx",
       "src/pages/enterprise/BudgetGovernancePage.tsx",
       "src/pages/enterprise/CapacityPlannerPage.tsx",
-      "src/pages/project-hub/HierarchyPage.tsx",
-      "src/pages/releases/AllReleasesPage.tsx",
-      "src/pages/releases/CommandCenter.tsx",
-      "src/pages/releases/CommandCenterPage.tsx",
-      "src/pages/releases/QualityGatesPage.tsx",
-      "src/pages/releases/ReleaseDashboardPage.tsx"
+      "src/pages/project-hub/HierarchyPage.tsx"
     ]
   },
   "RefreshCw::@atlaskit/icon/core/refresh": {
@@ -34097,8 +33788,7 @@ export const usageMap: UsageMap = {
       "src/components/admin/notifications/TriggerSearch.tsx",
       "src/modules/workhub/admin/components/JiraConnection.tsx",
       "src/modules/workhub/admin/components/SyncLogs.tsx",
-      "src/pages/admin/AiTranslationsAuditPage.tsx",
-      "src/pages/admin/FeatureFlagsPage.tsx"
+      "src/pages/admin/AiTranslationsAuditPage.tsx"
     ],
     "package": "@atlaskit/icon"
   },
@@ -34150,8 +33840,6 @@ export const usageMap: UsageMap = {
     "source": "../types",
     "origin": "internal",
     "consumers": [
-      "src/features/all-releases/components/CardGridView.tsx",
-      "src/features/all-releases/components/ReleaseCard.tsx",
       "src/pages/jira-clone/data/mockReleases.ts"
     ]
   },
@@ -34220,53 +33908,20 @@ export const usageMap: UsageMap = {
       "src/pages/project-hub/SprintsPage.tsx"
     ]
   },
-  "ReleaseBar::./ReleaseBar": {
-    "name": "ReleaseBar",
-    "source": "./ReleaseBar",
-    "origin": "internal",
-    "consumers": [
-      "src/features/release-calendar/components/CalendarGrid.tsx"
-    ]
-  },
-  "ReleaseCalendar::@/features/release-calendar": {
-    "name": "ReleaseCalendar",
-    "source": "@/features/release-calendar",
-    "origin": "internal",
-    "consumers": [
-      "src/pages/releases/CalendarPage.tsx"
-    ]
-  },
   "ReleaseCard::./ReleaseCard": {
     "name": "ReleaseCard",
     "source": "./ReleaseCard",
     "origin": "internal",
     "consumers": [
-      "src/components/workhub/releases/ReleasesPage.tsx",
-      "src/features/all-releases/components/CardGridView.tsx"
+      "src/components/workhub/releases/ReleasesPage.tsx"
     ]
   },
-  "ReleaseCard::@/components/dashboard": {
-    "name": "ReleaseCard",
-    "source": "@/components/dashboard",
-    "origin": "internal",
-    "consumers": [
-      "src/pages/releases/CommandCenter.tsx"
-    ]
-  },
-  "ReleaseChangeAnnouncementBanner::@/components/releasehub/foryou/ReleaseChangeAnnouncementBanner": {
-    "name": "ReleaseChangeAnnouncementBanner",
+  "ReleaseChangeStack::@/components/releasehub/foryou/ReleaseChangeAnnouncementBanner": {
+    "name": "ReleaseChangeStack",
     "source": "@/components/releasehub/foryou/ReleaseChangeAnnouncementBanner",
     "origin": "internal",
     "consumers": [
       "src/components/releasehub/foryou/ReleaseOpsForYouSection.tsx"
-    ]
-  },
-  "ReleaseCompare::@/features/release-compare": {
-    "name": "ReleaseCompare",
-    "source": "@/features/release-compare",
-    "origin": "internal",
-    "consumers": [
-      "src/pages/releases/ComparePage.tsx"
     ]
   },
   "ReleaseConfidenceWidget::./widgets/ReleaseConfidenceWidget": {
@@ -34313,14 +33968,6 @@ export const usageMap: UsageMap = {
       "src/pages/project-hub/SprintDetailPage.tsx"
     ]
   },
-  "ReleaseDialog::@/components/forms/ReleaseDialog": {
-    "name": "ReleaseDialog",
-    "source": "@/components/forms/ReleaseDialog",
-    "origin": "internal",
-    "consumers": [
-      "src/pages/releases/CommandCenter.tsx"
-    ]
-  },
   "ReleaseExportData::@/utils/exportReleases": {
     "name": "ReleaseExportData",
     "source": "@/utils/exportReleases",
@@ -34329,22 +33976,13 @@ export const usageMap: UsageMap = {
       "src/components/releases/all-releases/ExportReleasesDropdown.tsx"
     ]
   },
-  "ReleaseHeader::@/components/releases/dashboard/ReleaseHeader": {
-    "name": "ReleaseHeader",
-    "source": "@/components/releases/dashboard/ReleaseHeader",
-    "origin": "internal",
-    "consumers": [
-      "src/pages/releases/ReleaseDashboardPage.tsx"
-    ]
-  },
   "ReleaseHealth::@/types/releases": {
     "name": "ReleaseHealth",
     "source": "@/types/releases",
     "origin": "internal",
     "consumers": [
       "src/components/releases/all-releases/ReleasesToolbar.tsx",
-      "src/hooks/releases/useAllReleases.ts",
-      "src/pages/releases/AllReleasesPage.tsx"
+      "src/hooks/releases/useAllReleases.ts"
     ]
   },
   "ReleaseHealthChip::./ReleaseHealthChip": {
@@ -34422,14 +34060,6 @@ export const usageMap: UsageMap = {
       "src/features/release-compare/hooks/useCompareReleases.ts"
     ]
   },
-  "ReleaseOption::@/features/release-compare": {
-    "name": "ReleaseOption",
-    "source": "@/features/release-compare",
-    "origin": "internal",
-    "consumers": [
-      "src/pages/releases/ComparePage.tsx"
-    ]
-  },
   "ReleasePortfolio::@/components/releasehub/ReleasePortfolio": {
     "name": "ReleasePortfolio",
     "source": "@/components/releasehub/ReleasePortfolio",
@@ -34495,14 +34125,6 @@ export const usageMap: UsageMap = {
     "consumers": [
       "src/stories/enterprise/PortfolioSelector.stories.tsx",
       "src/stories/enterprise/ReleaseSelector.stories.tsx"
-    ]
-  },
-  "ReleasesFilter::../types": {
-    "name": "ReleasesFilter",
-    "source": "../types",
-    "origin": "internal",
-    "consumers": [
-      "src/features/all-releases/components/FilterBar.tsx"
     ]
   },
   "ReleasesFilter::@/types/releases": {
@@ -34572,15 +34194,6 @@ export const usageMap: UsageMap = {
       "src/components/releases/all-releases/ReleasesTable.tsx"
     ]
   },
-  "ReleaseStatus::../types": {
-    "name": "ReleaseStatus",
-    "source": "../types",
-    "origin": "internal",
-    "consumers": [
-      "src/features/all-releases/components/FilterBar.tsx",
-      "src/features/all-releases/components/Toolbar.tsx"
-    ]
-  },
   "ReleaseStatus::./types": {
     "name": "ReleaseStatus",
     "source": "./types",
@@ -34607,8 +34220,7 @@ export const usageMap: UsageMap = {
     "consumers": [
       "src/components/releases/all-releases/ReleasesTableRow.tsx",
       "src/components/releases/all-releases/ReleasesToolbar.tsx",
-      "src/hooks/releases/useAllReleases.ts",
-      "src/pages/releases/AllReleasesPage.tsx"
+      "src/hooks/releases/useAllReleases.ts"
     ]
   },
   "ReleaseStatusBadge::@/components/shared/StatusLozenge": {
@@ -34616,17 +34228,7 @@ export const usageMap: UsageMap = {
     "source": "@/components/shared/StatusLozenge",
     "origin": "internal",
     "consumers": [
-      "src/components/releases/ReleaseCard.tsx",
-      "src/pages/releasehub/ReleaseComparePage.tsx"
-    ]
-  },
-  "ReleaseSummary::../types": {
-    "name": "ReleaseSummary",
-    "source": "../types",
-    "origin": "internal",
-    "consumers": [
-      "src/features/all-releases/components/StatStrip.tsx",
-      "src/features/all-releases/components/SummaryCards.tsx"
+      "src/components/releases/ReleaseCard.tsx"
     ]
   },
   "ReleaseSummaryCard::@/components/releases/detail/summarize/ReleaseSummaryCard": {
@@ -34820,14 +34422,6 @@ export const usageMap: UsageMap = {
     "origin": "internal",
     "consumers": [
       "src/pages/testhub/reports/lab/ReportNavigator.tsx"
-    ]
-  },
-  "ReportDefectModal::@/components/releases/defects/ReportDefectModal": {
-    "name": "ReportDefectModal",
-    "source": "@/components/releases/defects/ReportDefectModal",
-    "origin": "internal",
-    "consumers": [
-      "src/pages/releases/DefectsPage.tsx"
     ]
   },
   "ReportDefinition::@/types/reports": {
@@ -35351,6 +34945,7 @@ export const usageMap: UsageMap = {
       "src/components/product-hub/CreateProductModal.tsx",
       "src/components/workhub/create-story/CreateStoryModal.tsx",
       "src/components/workhub/issue-view/IssueActionDialogs.tsx",
+      "src/modules/ideation/components/CreateIdeaModal.tsx",
       "src/modules/program-epics/components/CreateEpicDialog.tsx",
       "src/modules/program-epics/components/EditEpicDialog.tsx",
       "src/stories/enterprise/ADFRichEditor.stories.tsx"
@@ -35398,14 +34993,6 @@ export const usageMap: UsageMap = {
       "src/hooks/risks/useRisks.ts",
       "src/pages/risks/RiskRoamReportPage.tsx",
       "src/pages/risks/RisksGridPage.tsx"
-    ]
-  },
-  "RiskBadge::@/components/releasehub/RiskBadge": {
-    "name": "RiskBadge",
-    "source": "@/components/releasehub/RiskBadge",
-    "origin": "internal",
-    "consumers": [
-      "src/pages/releasehub/TriageQueuePage.tsx"
     ]
   },
   "RiskCard::./RiskCard": {
@@ -36016,7 +35603,6 @@ export const usageMap: UsageMap = {
     "origin": "internal",
     "consumers": [
       "src/components/kanban/adapters/releaseBoardAdapter.tsx",
-      "src/components/layout/IdeationSidebar.tsx",
       "src/components/project-hub/shell/SidebarProjectNav.tsx",
       "src/components/workhub/calendar/CalendarEventDrawer.tsx",
       "src/components/workhub/dashboard/DashboardKPIRow.tsx",
@@ -36027,8 +35613,7 @@ export const usageMap: UsageMap = {
       "src/modules/in-jira/components/releases/VersionCard.tsx",
       "src/modules/strata/pages/StrataAdminConfigPage.tsx",
       "src/modules/tasks/components/insights/MonthlyChronicleView.tsx",
-      "src/modules/tasks/components/insights/WeeklySummaryView.tsx",
-      "src/pages/releases/AllReleasesPage.tsx"
+      "src/modules/tasks/components/insights/WeeklySummaryView.tsx"
     ]
   },
   "RolePermission::@/hooks/useProductRoles": {
@@ -36083,7 +35668,6 @@ export const usageMap: UsageMap = {
       "src/pages/ReqAssistLibrary.tsx",
       "src/pages/items/EpicsCanceledPage.tsx",
       "src/pages/items/EpicsRecycleBinPage.tsx",
-      "src/pages/releases/DefectDetailPage.tsx",
       "src/pages/work-tree/WorkTreePage.tsx"
     ]
   },
@@ -36110,6 +35694,7 @@ export const usageMap: UsageMap = {
     "consumers": [
       "src/components/catalyst-detail-views/defect/CatalystViewTmDefect.tsx",
       "src/components/catalyst-detail-views/shared/sections/CatalystPagesSection.tsx",
+      "src/components/layout/IdeationSidebar.tsx",
       "src/components/layout/WikiSidebar.tsx",
       "src/components/releases/detail/ReleaseTestReadinessSection.tsx",
       "src/components/releases/detail/SprintTestHealthSection.tsx",
@@ -36122,10 +35707,21 @@ export const usageMap: UsageMap = {
       "src/components/wiki-hub/WikiTreeNav.tsx",
       "src/components/wiki-hub/editor/inlineSpecs.tsx",
       "src/lib/entity-hub/config.ts",
+      "src/modules/docintel/components/DocintelIntentComposer.tsx",
+      "src/modules/docintel/components/DocintelNavigation.tsx",
       "src/modules/docintel/components/DocumentLinksPanel.tsx",
+      "src/modules/docintel/pages/DocintelDeliverablesPage.tsx",
+      "src/modules/docintel/pages/DocintelHomePage.tsx",
+      "src/modules/docintel/pages/DocintelReviewStartPage.tsx",
+      "src/modules/ideation/components/CreateIdeaModal.tsx",
+      "src/modules/ideation/pages/DetailPage.tsx",
+      "src/modules/ideation/pages/ExplorePage.tsx",
+      "src/modules/ideation/pages/InboxPage.tsx",
+      "src/modules/ideation/pages/PortfolioPage.tsx",
       "src/modules/incidents/analytics/pages/IncidentReportPage.tsx",
       "src/modules/project-work-hub/adapters/defectsDataSource.ts",
       "src/modules/strata/components/ProjectCardDetailView.tsx",
+      "src/modules/strata/components/StrataNotificationBell.tsx",
       "src/modules/strata/pages/StrataAdminConfigPage.tsx",
       "src/modules/strata/pages/StrataCommandCenterPage.tsx",
       "src/modules/strata/pages/StrataDataPipelinePage.tsx",
@@ -36513,14 +36109,6 @@ export const usageMap: UsageMap = {
       "src/features/my-test-scope/components/MyTestScopeDashboard.tsx"
     ]
   },
-  "ScorecardBar::@/components/releases/dashboard/ScorecardBar": {
-    "name": "ScorecardBar",
-    "source": "@/components/releases/dashboard/ScorecardBar",
-    "origin": "internal",
-    "consumers": [
-      "src/pages/releases/ReleaseDashboardPage.tsx"
-    ]
-  },
   "ScorecardMetrics::@/types/release-dashboard": {
     "name": "ScorecardMetrics",
     "source": "@/types/release-dashboard",
@@ -36570,7 +36158,6 @@ export const usageMap: UsageMap = {
       "src/components/dependencies/DependencyAnalyticsPanel.tsx",
       "src/components/dependencies/DependencyWheelDetailsPanel.tsx",
       "src/components/enterprise/EnterpriseGrid.tsx",
-      "src/components/epic-backlog/modals/FeatureStatusModal.tsx",
       "src/components/features/AssignModal.tsx",
       "src/components/incidents/CreateIncidentModal.tsx",
       "src/components/incidents/detail/CommitteeModal.tsx",
@@ -36579,7 +36166,6 @@ export const usageMap: UsageMap = {
       "src/components/industry/enterprise-table/components/ExportModal.tsx",
       "src/components/industry/enterprise-table/components/SavedViewsPanel.tsx",
       "src/components/items/epics/drawer-tabs/EpicFeaturesViewTab.tsx",
-      "src/components/items/epics/modals/FeatureStatusModal.tsx",
       "src/components/ja/StarredDropdown.tsx",
       "src/components/layout/dropdowns/StarredDropdown.tsx",
       "src/components/releases/all-releases/ArchiveConfirmationDialog.tsx",
@@ -36626,8 +36212,7 @@ export const usageMap: UsageMap = {
       "src/pages/admin/ResourceAssignments.tsx",
       "src/pages/enterprise/capacity-planner/BookResourceModal.tsx",
       "src/pages/project/FeatureViewPage.tsx",
-      "src/pages/project/components/FeatureChildStories.tsx",
-      "src/pages/releases/QualityGatesPage.tsx"
+      "src/pages/project/components/FeatureChildStories.tsx"
     ]
   },
   "ScrollBar::@/components/ui/scroll-area": {
@@ -36668,7 +36253,6 @@ export const usageMap: UsageMap = {
       "src/components/incidents/detail/CommitteeModal.tsx",
       "src/components/incidents/detail/LinkWorkItemModal.tsx",
       "src/components/items/epics/drawer-tabs/EpicFeaturesViewTab.tsx",
-      "src/components/items/epics/modals/FeatureStatusModal.tsx",
       "src/components/ja/home/EmptyStates.tsx",
       "src/components/kanban/AdvancedFilterPanel.tsx",
       "src/components/kanban/KanbanToolbar.tsx",
@@ -36677,6 +36261,7 @@ export const usageMap: UsageMap = {
       "src/components/kanban/overflow-menu/MoveWorkItemModal.tsx",
       "src/components/kanban/overflow-menu/ParentPickerPanel.tsx",
       "src/components/kanban/overflow-menu/StatusChangePanel.tsx",
+      "src/components/layout/IdeationSidebar.tsx",
       "src/components/layout/ProductRoomSidebar.tsx",
       "src/components/layout/WikiSidebar.tsx",
       "src/components/layout/dropdowns/StarredDropdown.tsx",
@@ -36812,10 +36397,6 @@ export const usageMap: UsageMap = {
       "src/pages/releasehub/AllReleasesPage.tsx",
       "src/pages/releasehub/SignOffQueuePage.tsx",
       "src/pages/releasehub/SopTemplatesPage.tsx",
-      "src/pages/releases/AllReleasesPage.tsx",
-      "src/pages/releases/CoverageReportsPage.tsx",
-      "src/pages/releases/QualityGatesPage.tsx",
-      "src/pages/releases/ReleaseDashboardPage.tsx",
       "src/pages/testhub/cycles/CyclesPage.tsx",
       "src/pages/testhub/repository/AddToCycleSetSheet.tsx",
       "src/pages/testhub/repository/RepositoryPage.tsx",
@@ -36859,22 +36440,16 @@ export const usageMap: UsageMap = {
       "src/components/catalyst-detail-views/shared/sections/CatalystParentLinker.tsx",
       "src/components/catalyst-detail-views/shared/sections/CatalystQuickActions.tsx",
       "src/components/chat/dock/DmSummarizePanel.tsx",
+      "src/components/chat/dock/DockTabBar.tsx",
       "src/components/filters/CanonicalFilter.tsx",
       "src/components/kanban/toolbar/KanbanToolbar.tsx",
       "src/components/shared/BacklogTable/BacklogTable.tsx",
       "src/components/shared/JiraTable/JiraTable.tsx",
-      "src/features/all-releases/components/FilterBar.tsx",
-      "src/features/all-releases/components/Toolbar.tsx",
       "src/features/my-test-scope/components/TraceabilityPanel.tsx",
       "src/modules/workhub/admin/components/MultiSelectDropdown.tsx",
-      "src/pages/admin/AdminOverview.tsx",
       "src/pages/admin/AiTranslationsAuditPage.tsx",
-      "src/pages/admin/BusinessOwners.tsx",
       "src/pages/admin/Departments.tsx",
-      "src/pages/admin/FeatureFlagsPage.tsx",
-      "src/pages/admin/NotificationTriggers.tsx",
-      "src/pages/admin/PermissionsAdminPage.tsx",
-      "src/pages/admin/UserAccessPage.tsx"
+      "src/pages/admin/PermissionsAdminPage.tsx"
     ],
     "package": "@atlaskit/icon"
   },
@@ -36895,6 +36470,7 @@ export const usageMap: UsageMap = {
       "src/components/releases/detail/WorkItemsSection.tsx",
       "src/components/shared/Timeline/TimelineView.tsx",
       "src/features/kanban-board/components/Toolbar.tsx",
+      "src/modules/ideation/pages/ExplorePage.tsx",
       "src/pages/release-hub/ReleaseWorkNavigatorPage.tsx"
     ],
     "package": "@atlaskit/icon"
@@ -36930,15 +36506,6 @@ export const usageMap: UsageMap = {
       "src/components/projecthub/AllProjectsTable.tsx"
     ],
     "package": "@atlaskit/menu"
-  },
-  "Section::@atlaskit/section-message": {
-    "name": "Section",
-    "source": "@atlaskit/section-message",
-    "origin": "atlaskit",
-    "consumers": [
-      "src/pages/admin/AdminStorybookPage.tsx"
-    ],
-    "package": "@atlaskit/section-message"
   },
   "Section::@atlaskit/side-navigation": {
     "name": "Section",
@@ -36984,13 +36551,23 @@ export const usageMap: UsageMap = {
       "src/components/project-hub/dashboard/widgets/TimeInStatusFullscreenModal.tsx",
       "src/components/project-hub/settings/WorkflowTab.tsx",
       "src/modules/docintel/components/ArtifactView.tsx",
+      "src/modules/docintel/components/DocintelFindingsPanel.tsx",
+      "src/modules/docintel/components/DocintelIntentComposer.tsx",
+      "src/modules/docintel/components/DocintelRecentWork.tsx",
+      "src/modules/docintel/components/DocintelSourceDrawer.tsx",
       "src/modules/docintel/components/DocumentLinksPanel.tsx",
       "src/modules/docintel/components/EvidenceViewer.tsx",
       "src/modules/docintel/components/FactsReviewPanel.tsx",
       "src/modules/docintel/components/GenerationPanel.tsx",
       "src/modules/docintel/components/ProcessingStatusBoard.tsx",
+      "src/modules/docintel/components/PromoteArtifactModal.tsx",
       "src/modules/docintel/components/TraceabilityMatrix.tsx",
       "src/modules/docintel/components/TranslatedDocumentView.tsx",
+      "src/modules/docintel/pages/DocintelDeliverablesPage.tsx",
+      "src/modules/docintel/pages/DocintelHealthPage.tsx",
+      "src/modules/docintel/pages/DocintelHomePage.tsx",
+      "src/modules/docintel/pages/DocintelLibraryPage.tsx",
+      "src/modules/docintel/pages/DocintelReviewStartPage.tsx",
       "src/modules/docintel/pages/DocintelUploadPage.tsx",
       "src/modules/project-work-hub/pages/BacklogPage.atlaskit.tsx",
       "src/modules/strata/components/ProjectCardDetailView.tsx",
@@ -37037,6 +36614,7 @@ export const usageMap: UsageMap = {
       "src/components/releasehub/signoff/EmergencyOverrideModal.tsx",
       "src/components/releasehub/signoff/SignoffDependencyGraph.tsx",
       "src/features/kanban-board/KanbanPage.tsx",
+      "src/modules/ideation/pages/DetailPage.tsx",
       "src/pages/ProjectDirectory.tsx",
       "src/pages/ResourceListingPage.tsx",
       "src/pages/StarredPage.tsx",
@@ -37144,13 +36722,18 @@ export const usageMap: UsageMap = {
     "source": "@/components/ads",
     "origin": "internal",
     "consumers": [
+      "src/modules/docintel/components/DocintelSourcePicker.tsx",
       "src/modules/docintel/components/DocumentLinksPanel.tsx",
-      "src/modules/docintel/pages/DocintelDocumentsPage.tsx",
+      "src/modules/docintel/components/ThemeTags.tsx",
+      "src/modules/docintel/pages/DocintelDeliverablesPage.tsx",
       "src/modules/docintel/pages/DocintelHealthPage.tsx",
+      "src/modules/docintel/pages/DocintelHomePage.tsx",
+      "src/modules/docintel/pages/DocintelLibraryPage.tsx",
       "src/modules/strata/components/authoring.tsx",
       "src/modules/strata/components/vmoAuthoring.tsx",
       "src/modules/strata/pages/StrataExecutionImportPage.tsx",
       "src/modules/strata/pages/StrataExecutionPage.tsx",
+      "src/modules/strata/pages/StrataKpiDetailPage.tsx",
       "src/modules/strata/pages/StrataStrategyRoomPage.tsx",
       "src/modules/strata/pages/StrataUploadWizardPage.tsx",
       "src/pages/admin/workflows/studio/EditorPanels.tsx",
@@ -37203,8 +36786,6 @@ export const usageMap: UsageMap = {
       "src/components/enterprise/EnterpriseGrid.tsx",
       "src/components/epic-backlog/EpicFiltersDialog.tsx",
       "src/components/epic-backlog/EpicForecastTab.tsx",
-      "src/components/epic-backlog/modals/MilestoneModal.tsx",
-      "src/components/epic-backlog/modals/WSJFModal.tsx",
       "src/components/evidence/defect/CreateDefectModal.tsx",
       "src/components/executive-roadmap/RoadmapFiltersDialog.tsx",
       "src/components/features/CreateFeatureModal.tsx",
@@ -37244,7 +36825,6 @@ export const usageMap: UsageMap = {
       "src/components/items/features/tabs/FeatureOverviewTab.tsx",
       "src/components/kanban/setup/ColumnsSetupTab.tsx",
       "src/components/kanban/setup/ManageUsersTab.tsx",
-      "src/components/layout/TeamRoomSidebar.tsx",
       "src/components/objective-roadmap/EnterpriseRoadmapFiltersDialog.tsx",
       "src/components/product-hub/roadmap/RoadmapToolbar.tsx",
       "src/components/program/ProgramRoadmapFiltersDialog.tsx",
@@ -37276,7 +36856,6 @@ export const usageMap: UsageMap = {
       "src/components/skills-inventory/AddTeamMemberModal.tsx",
       "src/components/skills-inventory/SkillsFiltersDialog.tsx",
       "src/components/stories/CreateEditStoryPanel.tsx",
-      "src/components/stories/CreateStoryModal.tsx",
       "src/components/stories/StoriesFiltersDialog.tsx",
       "src/components/stories/StoryDetailPanel.tsx",
       "src/components/stories/StoryLinks.tsx",
@@ -37340,7 +36919,6 @@ export const usageMap: UsageMap = {
       "src/pages/Sprints.tsx",
       "src/pages/Stories.tsx",
       "src/pages/Subtasks.tsx",
-      "src/pages/TeamRoom.tsx",
       "src/pages/WorkManager.tsx",
       "src/pages/WorkSpendGrid.tsx",
       "src/pages/enterprise/capacity-planner/AssignmentsView.tsx",
@@ -37355,9 +36933,6 @@ export const usageMap: UsageMap = {
       "src/pages/program/QuartersPage.tsx",
       "src/pages/project-hub/AllProjectsPage.tsx",
       "src/pages/project/feature-detail/FeatureRightRail.tsx",
-      "src/pages/releases/CoverageReportsPage.tsx",
-      "src/pages/releases/DefectsPage.tsx",
-      "src/pages/releases/QualityGatesPage.tsx",
       "src/pages/reports/DependencyMapsPage.tsx",
       "src/pages/work-tree/WorkTreePage.tsx",
       "src/pages/work-tree/components/WorkTreeExtraConfigs.tsx",
@@ -37425,6 +37000,8 @@ export const usageMap: UsageMap = {
       "src/components/workhub/pickers/CreateStyleAssigneeReporter.tsx",
       "src/features/kanban-board/components/LinkWorkItemModal.tsx",
       "src/features/whatsapp-summary/WhatsAppSummaryModal.tsx",
+      "src/modules/ideation/components/CreateIdeaModal.tsx",
+      "src/modules/ideation/pages/ExplorePage.tsx",
       "src/modules/incidents/analytics/pages/IncidentReportPage.tsx",
       "src/modules/project-work-hub/components/dependencies/DependencyToolbar.tsx",
       "src/modules/project-work-hub/components/dialogs/CreateFeatureDialog.tsx",
@@ -37438,7 +37015,6 @@ export const usageMap: UsageMap = {
       "src/modules/project-work-hub/components/linked-work-items/LinkToolbar.tsx",
       "src/modules/project-work-hub/pages/BacklogPage.atlaskit.tsx",
       "src/pages/admin/AdminAccessPage.tsx",
-      "src/pages/admin/NotificationTriggers.tsx",
       "src/pages/admin/ReleaseOpsAdminPage.tsx",
       "src/pages/admin/components/CascadeImpactPanel.tsx",
       "src/pages/admin/components/HistoryTab.tsx",
@@ -37446,7 +37022,6 @@ export const usageMap: UsageMap = {
       "src/pages/admin/connections/JiraSyncPage.tsx",
       "src/pages/admin/connections/NotionConnectionPage.tsx",
       "src/pages/admin/test-ops/TestOpsPage.tsx",
-      "src/pages/admin/test/TestCaseWorkflowPage.tsx",
       "src/pages/project-hub/ConvertToSubtaskPage.tsx",
       "src/pages/project-hub/MovePage.tsx",
       "src/pages/project-hub/filters/FiltersListPage.tsx",
@@ -37505,8 +37080,6 @@ export const usageMap: UsageMap = {
       "src/components/enterprise/EnterpriseGrid.tsx",
       "src/components/epic-backlog/EpicFiltersDialog.tsx",
       "src/components/epic-backlog/EpicForecastTab.tsx",
-      "src/components/epic-backlog/modals/MilestoneModal.tsx",
-      "src/components/epic-backlog/modals/WSJFModal.tsx",
       "src/components/evidence/defect/CreateDefectModal.tsx",
       "src/components/executive-roadmap/RoadmapFiltersDialog.tsx",
       "src/components/features/CreateFeatureModal.tsx",
@@ -37546,7 +37119,6 @@ export const usageMap: UsageMap = {
       "src/components/items/features/tabs/FeatureOverviewTab.tsx",
       "src/components/kanban/setup/ColumnsSetupTab.tsx",
       "src/components/kanban/setup/ManageUsersTab.tsx",
-      "src/components/layout/TeamRoomSidebar.tsx",
       "src/components/objective-roadmap/EnterpriseRoadmapFiltersDialog.tsx",
       "src/components/product-hub/roadmap/RoadmapToolbar.tsx",
       "src/components/program/ProgramRoadmapFiltersDialog.tsx",
@@ -37578,7 +37150,6 @@ export const usageMap: UsageMap = {
       "src/components/skills-inventory/AddTeamMemberModal.tsx",
       "src/components/skills-inventory/SkillsFiltersDialog.tsx",
       "src/components/stories/CreateEditStoryPanel.tsx",
-      "src/components/stories/CreateStoryModal.tsx",
       "src/components/stories/StoriesFiltersDialog.tsx",
       "src/components/stories/StoryDetailPanel.tsx",
       "src/components/stories/StoryLinks.tsx",
@@ -37642,7 +37213,6 @@ export const usageMap: UsageMap = {
       "src/pages/Sprints.tsx",
       "src/pages/Stories.tsx",
       "src/pages/Subtasks.tsx",
-      "src/pages/TeamRoom.tsx",
       "src/pages/WorkManager.tsx",
       "src/pages/WorkSpendGrid.tsx",
       "src/pages/enterprise/capacity-planner/AssignmentsView.tsx",
@@ -37657,9 +37227,6 @@ export const usageMap: UsageMap = {
       "src/pages/program/QuartersPage.tsx",
       "src/pages/project-hub/AllProjectsPage.tsx",
       "src/pages/project/feature-detail/FeatureRightRail.tsx",
-      "src/pages/releases/CoverageReportsPage.tsx",
-      "src/pages/releases/DefectsPage.tsx",
-      "src/pages/releases/QualityGatesPage.tsx",
       "src/pages/reports/DependencyMapsPage.tsx",
       "src/pages/work-tree/WorkTreePage.tsx",
       "src/pages/work-tree/components/WorkTreeExtraConfigs.tsx",
@@ -37737,8 +37304,6 @@ export const usageMap: UsageMap = {
       "src/components/enterprise/EnterpriseGrid.tsx",
       "src/components/epic-backlog/EpicFiltersDialog.tsx",
       "src/components/epic-backlog/EpicForecastTab.tsx",
-      "src/components/epic-backlog/modals/MilestoneModal.tsx",
-      "src/components/epic-backlog/modals/WSJFModal.tsx",
       "src/components/evidence/defect/CreateDefectModal.tsx",
       "src/components/executive-roadmap/RoadmapFiltersDialog.tsx",
       "src/components/features/CreateFeatureModal.tsx",
@@ -37778,7 +37343,6 @@ export const usageMap: UsageMap = {
       "src/components/items/features/tabs/FeatureOverviewTab.tsx",
       "src/components/kanban/setup/ColumnsSetupTab.tsx",
       "src/components/kanban/setup/ManageUsersTab.tsx",
-      "src/components/layout/TeamRoomSidebar.tsx",
       "src/components/objective-roadmap/EnterpriseRoadmapFiltersDialog.tsx",
       "src/components/product-hub/roadmap/RoadmapToolbar.tsx",
       "src/components/program/ProgramRoadmapFiltersDialog.tsx",
@@ -37810,7 +37374,6 @@ export const usageMap: UsageMap = {
       "src/components/skills-inventory/AddTeamMemberModal.tsx",
       "src/components/skills-inventory/SkillsFiltersDialog.tsx",
       "src/components/stories/CreateEditStoryPanel.tsx",
-      "src/components/stories/CreateStoryModal.tsx",
       "src/components/stories/StoriesFiltersDialog.tsx",
       "src/components/stories/StoryDetailPanel.tsx",
       "src/components/stories/StoryLinks.tsx",
@@ -37874,7 +37437,6 @@ export const usageMap: UsageMap = {
       "src/pages/Sprints.tsx",
       "src/pages/Stories.tsx",
       "src/pages/Subtasks.tsx",
-      "src/pages/TeamRoom.tsx",
       "src/pages/WorkManager.tsx",
       "src/pages/WorkSpendGrid.tsx",
       "src/pages/enterprise/capacity-planner/AssignmentsView.tsx",
@@ -37889,9 +37451,6 @@ export const usageMap: UsageMap = {
       "src/pages/program/QuartersPage.tsx",
       "src/pages/project-hub/AllProjectsPage.tsx",
       "src/pages/project/feature-detail/FeatureRightRail.tsx",
-      "src/pages/releases/CoverageReportsPage.tsx",
-      "src/pages/releases/DefectsPage.tsx",
-      "src/pages/releases/QualityGatesPage.tsx",
       "src/pages/reports/DependencyMapsPage.tsx",
       "src/pages/work-tree/WorkTreePage.tsx",
       "src/pages/work-tree/components/WorkTreeExtraConfigs.tsx",
@@ -37935,8 +37494,6 @@ export const usageMap: UsageMap = {
       "src/components/enterprise/EnterpriseGrid.tsx",
       "src/components/epic-backlog/EpicFiltersDialog.tsx",
       "src/components/epic-backlog/EpicForecastTab.tsx",
-      "src/components/epic-backlog/modals/MilestoneModal.tsx",
-      "src/components/epic-backlog/modals/WSJFModal.tsx",
       "src/components/evidence/defect/CreateDefectModal.tsx",
       "src/components/executive-roadmap/RoadmapFiltersDialog.tsx",
       "src/components/features/CreateFeatureModal.tsx",
@@ -37976,7 +37533,6 @@ export const usageMap: UsageMap = {
       "src/components/items/features/tabs/FeatureOverviewTab.tsx",
       "src/components/kanban/setup/ColumnsSetupTab.tsx",
       "src/components/kanban/setup/ManageUsersTab.tsx",
-      "src/components/layout/TeamRoomSidebar.tsx",
       "src/components/objective-roadmap/EnterpriseRoadmapFiltersDialog.tsx",
       "src/components/product-hub/roadmap/RoadmapToolbar.tsx",
       "src/components/program/ProgramRoadmapFiltersDialog.tsx",
@@ -38008,7 +37564,6 @@ export const usageMap: UsageMap = {
       "src/components/skills-inventory/AddTeamMemberModal.tsx",
       "src/components/skills-inventory/SkillsFiltersDialog.tsx",
       "src/components/stories/CreateEditStoryPanel.tsx",
-      "src/components/stories/CreateStoryModal.tsx",
       "src/components/stories/StoriesFiltersDialog.tsx",
       "src/components/stories/StoryDetailPanel.tsx",
       "src/components/stories/StoryLinks.tsx",
@@ -38072,7 +37627,6 @@ export const usageMap: UsageMap = {
       "src/pages/Sprints.tsx",
       "src/pages/Stories.tsx",
       "src/pages/Subtasks.tsx",
-      "src/pages/TeamRoom.tsx",
       "src/pages/WorkManager.tsx",
       "src/pages/WorkSpendGrid.tsx",
       "src/pages/enterprise/capacity-planner/AssignmentsView.tsx",
@@ -38087,9 +37641,6 @@ export const usageMap: UsageMap = {
       "src/pages/program/QuartersPage.tsx",
       "src/pages/project-hub/AllProjectsPage.tsx",
       "src/pages/project/feature-detail/FeatureRightRail.tsx",
-      "src/pages/releases/CoverageReportsPage.tsx",
-      "src/pages/releases/DefectsPage.tsx",
-      "src/pages/releases/QualityGatesPage.tsx",
       "src/pages/reports/DependencyMapsPage.tsx",
       "src/pages/work-tree/WorkTreePage.tsx",
       "src/pages/work-tree/components/WorkTreeExtraConfigs.tsx",
@@ -38125,8 +37676,6 @@ export const usageMap: UsageMap = {
       "src/components/enterprise/EnterpriseGrid.tsx",
       "src/components/epic-backlog/EpicFiltersDialog.tsx",
       "src/components/epic-backlog/EpicForecastTab.tsx",
-      "src/components/epic-backlog/modals/MilestoneModal.tsx",
-      "src/components/epic-backlog/modals/WSJFModal.tsx",
       "src/components/evidence/defect/CreateDefectModal.tsx",
       "src/components/executive-roadmap/RoadmapFiltersDialog.tsx",
       "src/components/features/CreateFeatureModal.tsx",
@@ -38166,7 +37715,6 @@ export const usageMap: UsageMap = {
       "src/components/items/features/tabs/FeatureOverviewTab.tsx",
       "src/components/kanban/setup/ColumnsSetupTab.tsx",
       "src/components/kanban/setup/ManageUsersTab.tsx",
-      "src/components/layout/TeamRoomSidebar.tsx",
       "src/components/objective-roadmap/EnterpriseRoadmapFiltersDialog.tsx",
       "src/components/product-hub/roadmap/RoadmapToolbar.tsx",
       "src/components/program/ProgramRoadmapFiltersDialog.tsx",
@@ -38198,7 +37746,6 @@ export const usageMap: UsageMap = {
       "src/components/skills-inventory/AddTeamMemberModal.tsx",
       "src/components/skills-inventory/SkillsFiltersDialog.tsx",
       "src/components/stories/CreateEditStoryPanel.tsx",
-      "src/components/stories/CreateStoryModal.tsx",
       "src/components/stories/StoriesFiltersDialog.tsx",
       "src/components/stories/StoryDetailPanel.tsx",
       "src/components/stories/StoryLinks.tsx",
@@ -38262,7 +37809,6 @@ export const usageMap: UsageMap = {
       "src/pages/Sprints.tsx",
       "src/pages/Stories.tsx",
       "src/pages/Subtasks.tsx",
-      "src/pages/TeamRoom.tsx",
       "src/pages/WorkManager.tsx",
       "src/pages/WorkSpendGrid.tsx",
       "src/pages/enterprise/capacity-planner/AssignmentsView.tsx",
@@ -38277,9 +37823,6 @@ export const usageMap: UsageMap = {
       "src/pages/program/QuartersPage.tsx",
       "src/pages/project-hub/AllProjectsPage.tsx",
       "src/pages/project/feature-detail/FeatureRightRail.tsx",
-      "src/pages/releases/CoverageReportsPage.tsx",
-      "src/pages/releases/DefectsPage.tsx",
-      "src/pages/releases/QualityGatesPage.tsx",
       "src/pages/reports/DependencyMapsPage.tsx",
       "src/pages/work-tree/WorkTreePage.tsx",
       "src/pages/work-tree/components/WorkTreeExtraConfigs.tsx",
@@ -38306,8 +37849,7 @@ export const usageMap: UsageMap = {
       "src/modules/tasks/components/TaskDetailDrawer/LeadNotesTab.tsx",
       "src/pages/enterprise/DemandSummaryPage.tsx",
       "src/pages/project/components/FeatureActivity.tsx",
-      "src/pages/project/feature-detail/FeatureActivityTab.tsx",
-      "src/pages/releases/DefectDetailPage.tsx"
+      "src/pages/project/feature-detail/FeatureActivityTab.tsx"
     ]
   },
   "SendIcon::../shared/Icon": {
@@ -38399,6 +37941,7 @@ export const usageMap: UsageMap = {
       "src/components/ja/HomeContent.tsx",
       "src/components/ja/ReleaseDropdown.tsx",
       "src/components/layout/EnterpriseSidebar.tsx",
+      "src/components/layout/IdeationSidebar.tsx",
       "src/components/layout/MobileMenuDrawer.tsx",
       "src/components/layout/ProductHubSidebar.tsx",
       "src/components/layout/ProductRoomSidebar.tsx",
@@ -38406,7 +37949,6 @@ export const usageMap: UsageMap = {
       "src/components/layout/ProjectSidebar.tsx",
       "src/components/layout/ReleaseHubSidebar.tsx",
       "src/components/layout/TasksSidebar.tsx",
-      "src/components/layout/TeamRoomSidebar.tsx",
       "src/components/layout/UnifiedSidebar.tsx",
       "src/components/project-hub/shell/SidebarProjectNav.tsx",
       "src/components/project-hub/shell/TopNav.tsx",
@@ -38438,8 +37980,6 @@ export const usageMap: UsageMap = {
       "src/pages/project-hub/ProjectSettingsPage.tsx",
       "src/pages/project/feature-detail/FeatureRightRail.tsx",
       "src/pages/projects/ProjectSummaryPage.tsx",
-      "src/pages/releases/CommandCenterPage.tsx",
-      "src/pages/releases/ReleaseDashboardPage.tsx",
       "src/pages/work-tree/WorkTreePage.tsx"
     ]
   },
@@ -38480,9 +38020,7 @@ export const usageMap: UsageMap = {
       "src/components/layout/SettingsMenu.tsx",
       "src/components/project-hub/dashboard/widgets/DemandFulfilmentGadget.tsx",
       "src/modules/project-work-hub/components/dialogs/story-detail-modules/shared-components.tsx",
-      "src/modules/workhub/admin/components/SyncConfigPanel.tsx",
-      "src/pages/admin/AdminOverview.tsx",
-      "src/pages/admin/FeatureFlagsPage.tsx"
+      "src/modules/workhub/admin/components/SyncConfigPanel.tsx"
     ],
     "package": "@atlaskit/icon"
   },
@@ -38531,14 +38069,6 @@ export const usageMap: UsageMap = {
       "src/components/releases/defects/DefectTableView.tsx"
     ]
   },
-  "SeverityBadge::@/components/releases/defects/SeverityBadge": {
-    "name": "SeverityBadge",
-    "source": "@/components/releases/defects/SeverityBadge",
-    "origin": "internal",
-    "consumers": [
-      "src/pages/releases/DefectDetailPage.tsx"
-    ]
-  },
   "SeverityLevel::@/types/risks": {
     "name": "SeverityLevel",
     "source": "@/types/risks",
@@ -38567,8 +38097,7 @@ export const usageMap: UsageMap = {
       "src/components/workhub/issue-view/IssueContentView.tsx",
       "src/modules/in-jira/components/IssueDrawer.tsx",
       "src/pages/project/FeatureDetailPage.tsx",
-      "src/pages/project/FeatureViewPage.tsx",
-      "src/pages/releases/DefectDetailPage.tsx"
+      "src/pages/project/FeatureViewPage.tsx"
     ]
   },
   "SharedGroupByPopover::@/components/shared/GroupByPopover": {
@@ -38616,8 +38145,6 @@ export const usageMap: UsageMap = {
       "src/modules/tasks/components/kanban/TaskDetailDrawer.tsx",
       "src/pages/enterprise/CapacityPlannerPage.tsx",
       "src/pages/program/ExecutionWorkbench/WorkbenchDetailsDrawer.tsx",
-      "src/pages/releases/QualityGatesPage.tsx",
-      "src/pages/releases/ReleaseDashboardPage.tsx",
       "src/pages/work-tree/components/WorkTreeExtraConfigs.tsx"
     ]
   },
@@ -38656,8 +38183,6 @@ export const usageMap: UsageMap = {
       "src/modules/tasks/components/kanban/TaskDetailDrawer.tsx",
       "src/pages/enterprise/CapacityPlannerPage.tsx",
       "src/pages/program/ExecutionWorkbench/WorkbenchDetailsDrawer.tsx",
-      "src/pages/releases/QualityGatesPage.tsx",
-      "src/pages/releases/ReleaseDashboardPage.tsx",
       "src/pages/work-tree/components/WorkTreeExtraConfigs.tsx"
     ]
   },
@@ -38672,8 +38197,7 @@ export const usageMap: UsageMap = {
       "src/components/items/epics/EpicDetailsPanel.tsx",
       "src/components/items/stories/StoryDetailsPanel.tsx",
       "src/components/releases/quality-gates/GateHistoryPanel.tsx",
-      "src/components/req-assist/ImportJiraDrawer.tsx",
-      "src/pages/releases/QualityGatesPage.tsx"
+      "src/components/req-assist/ImportJiraDrawer.tsx"
     ]
   },
   "SheetFooter::@/components/ui/sheet": {
@@ -38706,8 +38230,6 @@ export const usageMap: UsageMap = {
       "src/modules/tasks/components/kanban/TaskDetailDrawer.tsx",
       "src/pages/enterprise/CapacityPlannerPage.tsx",
       "src/pages/program/ExecutionWorkbench/WorkbenchDetailsDrawer.tsx",
-      "src/pages/releases/QualityGatesPage.tsx",
-      "src/pages/releases/ReleaseDashboardPage.tsx",
       "src/pages/work-tree/components/WorkTreeExtraConfigs.tsx"
     ]
   },
@@ -38741,8 +38263,6 @@ export const usageMap: UsageMap = {
       "src/modules/tasks/components/kanban/TaskDetailDrawer.tsx",
       "src/pages/enterprise/CapacityPlannerPage.tsx",
       "src/pages/program/ExecutionWorkbench/WorkbenchDetailsDrawer.tsx",
-      "src/pages/releases/QualityGatesPage.tsx",
-      "src/pages/releases/ReleaseDashboardPage.tsx",
       "src/pages/work-tree/components/WorkTreeExtraConfigs.tsx"
     ]
   },
@@ -38766,9 +38286,7 @@ export const usageMap: UsageMap = {
       "src/components/releases/quality-gates/ReadinessStatusCard.tsx",
       "src/modules/in-jira/pages/SettingsPage.tsx",
       "src/pages/UserProfile.tsx",
-      "src/pages/project/feature-detail/FeatureAuditTab.tsx",
-      "src/pages/releases/CommandCenterPage.tsx",
-      "src/pages/releases/QualityGatesPage.tsx"
+      "src/pages/project/feature-detail/FeatureAuditTab.tsx"
     ]
   },
   "ShieldAlert::@/lib/atlaskit-icons": {
@@ -38779,8 +38297,7 @@ export const usageMap: UsageMap = {
       "src/components/guardrails/MockDataWarning.tsx",
       "src/components/kanban/adapters/teamProgramBoardAdapter.tsx",
       "src/components/releases/quality-gates/QualityGateEditor.tsx",
-      "src/modules/tasks/components/task-list/BulkActionBar.tsx",
-      "src/pages/releases/QualityGatesPage.tsx"
+      "src/modules/tasks/components/task-list/BulkActionBar.tsx"
     ]
   },
   "ShieldCheck::@/lib/atlaskit-icons": {
@@ -38792,8 +38309,7 @@ export const usageMap: UsageMap = {
       "src/components/releasehub/EmptyState.tsx",
       "src/components/releases/quality-gates/QualityGateEditor.tsx",
       "src/modules/strata/pages/StrataAdminConfigPage.tsx",
-      "src/modules/strata/pages/StrataPortfolioVmoPage.tsx",
-      "src/pages/releases/QualityGatesPage.tsx"
+      "src/modules/strata/pages/StrataPortfolioVmoPage.tsx"
     ]
   },
   "ShieldIcon::@atlaskit/icon/core/shield": {
@@ -38806,13 +38322,8 @@ export const usageMap: UsageMap = {
       "src/components/admin/notifications/TriggerRow.tsx",
       "src/components/admin/notifications/TriggerSearch.tsx",
       "src/components/admin/notifications/TriggerTable.tsx",
-      "src/features/all-releases/components/ReleaseCard.tsx",
       "src/modules/workhub/admin/components/ReadOnlyBanner.tsx",
-      "src/pages/admin/AdminOverview.tsx",
-      "src/pages/admin/FeatureFlagsPage.tsx",
-      "src/pages/admin/GovernanceSettings.tsx",
-      "src/pages/admin/NotificationTriggers.tsx",
-      "src/pages/admin/UserAccessPage.tsx"
+      "src/pages/admin/GovernanceSettings.tsx"
     ],
     "package": "@atlaskit/icon"
   },
@@ -38830,8 +38341,7 @@ export const usageMap: UsageMap = {
     "source": "@/lib/atlaskit-icons",
     "origin": "internal",
     "consumers": [
-      "src/pages/CleanupPage.tsx",
-      "src/pages/releases/QualityGatesPage.tsx"
+      "src/pages/CleanupPage.tsx"
     ]
   },
   "ShipIcon::@atlaskit/icon/glyph/ship": {
@@ -38872,9 +38382,9 @@ export const usageMap: UsageMap = {
       "src/components/catalyst-detail-views/shared/sections/Description/_components/CodeBlockToolbar/CodeBlockToolbar.tsx",
       "src/components/catalyst-detail-views/shared/sections/Description/_components/ImageToolbar/ImageToolbar.tsx",
       "src/components/catalyst-detail-views/shared/sections/Description/_components/TableToolbar/TableToolbar.tsx",
+      "src/components/chat/dock/DockTabBar.tsx",
       "src/components/shared/rich-text/atlaskit/imageToolbar/ImageToolbar.tsx",
-      "src/features/chat/components/feed/HoverToolbar.tsx",
-      "src/pages/admin/FeatureFlagsPage.tsx"
+      "src/features/chat/components/feed/HoverToolbar.tsx"
     ],
     "package": "@atlaskit/icon"
   },
@@ -38893,14 +38403,6 @@ export const usageMap: UsageMap = {
     "origin": "internal",
     "consumers": [
       "src/features/chat-v2/ChatV2Shell.tsx"
-    ]
-  },
-  "Sidebar::./shell/Sidebar": {
-    "name": "Sidebar",
-    "source": "./shell/Sidebar",
-    "origin": "internal",
-    "consumers": [
-      "src/components/project-hub/ProjectHubShell.tsx"
     ]
   },
   "SidebarBase::../layout/SidebarBase": {
@@ -39202,9 +38704,6 @@ export const usageMap: UsageMap = {
       "src/pages/project/FeatureViewPage.tsx",
       "src/pages/project/feature-detail/FeatureActivityTab.tsx",
       "src/pages/project/feature-detail/FeatureDeliveryTab.tsx",
-      "src/pages/releases/CommandCenter.tsx",
-      "src/pages/releases/CommandCenterPage.tsx",
-      "src/pages/releases/CoverageReportsPage.tsx",
       "src/pages/wiki/DocexDatabasePage.tsx",
       "src/pages/wiki/FolioSiteMapPage.tsx",
       "src/pages/wiki/WikiHomePage.tsx",
@@ -39229,15 +38728,6 @@ export const usageMap: UsageMap = {
       "src/modules/project-work-hub/components/dialogs/story-detail-modules/ChildIssuesSection.tsx",
       "src/modules/project-work-hub/components/dialogs/story-detail-modules/LinkedIssuesSection.tsx",
       "src/modules/project-work-hub/components/dialogs/story-detail-modules/TestHubSection.tsx"
-    ]
-  },
-  "SkeletonRows::@/components/releasehub/SkeletonRows": {
-    "name": "SkeletonRows",
-    "source": "@/components/releasehub/SkeletonRows",
-    "origin": "internal",
-    "consumers": [
-      "src/pages/releasehub/ReleaseComparePage.tsx",
-      "src/pages/releasehub/TriageQueuePage.tsx"
     ]
   },
   "SkeletonTable::@/components/project-hub/shared/SkeletonPulse": {
@@ -39446,8 +38936,7 @@ export const usageMap: UsageMap = {
     "source": "@atlaskit/icon/core/sort-ascending",
     "origin": "atlaskit",
     "consumers": [
-      "src/components/catalyst-detail-views/shared/sections/Description/_components/TableInteractions/ColumnMenu.tsx",
-      "src/pages/admin/FeatureFlagsPage.tsx"
+      "src/components/catalyst-detail-views/shared/sections/Description/_components/TableInteractions/ColumnMenu.tsx"
     ],
     "package": "@atlaskit/icon"
   },
@@ -39519,14 +39008,6 @@ export const usageMap: UsageMap = {
       "src/components/producthub/timeline/TimelineBarTooltip.tsx"
     ]
   },
-  "SourceBadge::@/components/releasehub/SourceBadge": {
-    "name": "SourceBadge",
-    "source": "@/components/releasehub/SourceBadge",
-    "origin": "internal",
-    "consumers": [
-      "src/pages/releasehub/TriageQueuePage.tsx"
-    ]
-  },
   "SourceFilterPills::@/components/project-hub/source-filter/SourceFilterPills": {
     "name": "SourceFilterPills",
     "source": "@/components/project-hub/source-filter/SourceFilterPills",
@@ -39565,7 +39046,6 @@ export const usageMap: UsageMap = {
       "src/components/evidence/defect/CreateDefectModal.tsx",
       "src/components/kanban/adapters/ideasBoardAdapter.tsx",
       "src/components/layout/EnterpriseSidebar.tsx",
-      "src/components/layout/IdeationSidebar.tsx",
       "src/components/layout/ReleasesManagementSidebar.tsx",
       "src/components/notifications/AgeingTab.tsx",
       "src/components/releasehub/CatalystAIChip.tsx",
@@ -39593,10 +39073,7 @@ export const usageMap: UsageMap = {
       "src/pages/incidenthub/IncidentInsightsPage.tsx",
       "src/pages/producthub/IdeasBacklogPage.tsx",
       "src/pages/project-hub/ProjectBoardPage.tsx",
-      "src/pages/releasehub/ReleaseDetailPage.tsx",
-      "src/pages/releasehub/TriageQueuePage.tsx",
-      "src/pages/releases/AllReleasesPage.tsx",
-      "src/pages/releases/CoverageReportsPage.tsx"
+      "src/pages/releasehub/ReleaseDetailPage.tsx"
     ]
   },
   "SparklesIcon::@atlaskit/icon/core/atlassian-intelligence": {
@@ -39606,13 +39083,17 @@ export const usageMap: UsageMap = {
     "consumers": [
       "src/components/catalyst-detail-views/improve/CommentsSummaryCard.tsx",
       "src/components/releases/detail/summarize/ReleaseSummaryCard.tsx",
-      "src/features/all-releases/components/AIInsightsBar.tsx",
-      "src/features/all-releases/components/AIInsightsDrawer.tsx",
-      "src/features/all-releases/components/StatStrip.tsx",
-      "src/features/my-test-scope/components/AIStartMyDay.tsx",
-      "src/features/release-calendar/components/CalendarAIInsights.tsx"
+      "src/features/my-test-scope/components/AIStartMyDay.tsx"
     ],
     "package": "@atlaskit/icon"
+  },
+  "SpeculativeTranslator::./speculativeTranslate": {
+    "name": "SpeculativeTranslator",
+    "source": "./speculativeTranslate",
+    "origin": "internal",
+    "consumers": [
+      "src/features/voice-flow/VoiceFlowProvider.tsx"
+    ]
   },
   "SpendDrilldown::./SpendDrilldown": {
     "name": "SpendDrilldown",
@@ -39645,10 +39126,14 @@ export const usageMap: UsageMap = {
       "src/modules/docintel/components/ProcessingStatusBoard.tsx",
       "src/modules/docintel/components/TraceabilityMatrix.tsx",
       "src/modules/docintel/components/TranslatedDocumentView.tsx",
-      "src/modules/docintel/pages/DocintelDocumentsPage.tsx",
+      "src/modules/docintel/pages/DocintelDeliverablesPage.tsx",
       "src/modules/docintel/pages/DocintelHealthPage.tsx",
+      "src/modules/docintel/pages/DocintelLibraryPage.tsx",
+      "src/modules/docintel/pages/DocintelReviewStartPage.tsx",
       "src/modules/docintel/pages/DocintelWorkspacePage.tsx",
       "src/modules/project-work-hub/components/dialogs/story-detail-modules/AiLinkSimilarPanel.tsx",
+      "src/modules/strata/components/StrataNotificationBell.tsx",
+      "src/modules/strata/components/shared.tsx",
       "src/modules/strata/components/vmoAuthoring.tsx",
       "src/modules/strata/pages/StrataAdminConfigPage.tsx",
       "src/modules/strata/pages/StrataDataPipelinePage.tsx",
@@ -39713,6 +39198,8 @@ export const usageMap: UsageMap = {
       "src/components/catalyst-detail-views/test-case/TestCaseAiCluster.tsx",
       "src/components/catalyst-detail-views/test-case/TestCaseAttachments.tsx",
       "src/components/chat/dock/CatyPanel.tsx",
+      "src/components/chat/main/MessageTranslation.tsx",
+      "src/components/chat/main/TranslatePreviewDialog.tsx",
       "src/components/filters/CanonicalFilter.tsx",
       "src/components/filters/FilterResultsPanel.tsx",
       "src/components/for-you/atlaskit/AgeingPanel.tsx",
@@ -39773,7 +39260,14 @@ export const usageMap: UsageMap = {
       "src/features/release-compare/components/CompareHeader.tsx",
       "src/features/release-compare/components/ReleaseCompare.tsx",
       "src/features/release-compare/components/SaveComparisonViewDialog.tsx",
+      "src/features/voice-flow/VoiceMicButton.tsx",
+      "src/features/voice-flow/VoiceSettingsTab.tsx",
       "src/features/whatsapp-summary/WhatsAppSummaryModal.tsx",
+      "src/modules/ideation/admin/AdminPage.tsx",
+      "src/modules/ideation/pages/DetailPage.tsx",
+      "src/modules/ideation/pages/ExplorePage.tsx",
+      "src/modules/ideation/pages/InboxPage.tsx",
+      "src/modules/ideation/pages/PortfolioPage.tsx",
       "src/modules/incidents/analytics/pages/IncidentReportPage.tsx",
       "src/modules/project-work-hub/components/WorkItemDetailsDrawer.tsx",
       "src/modules/project-work-hub/components/dialogs/story-detail-modules/AttachmentsSection.tsx",
@@ -39791,11 +39285,8 @@ export const usageMap: UsageMap = {
       "src/pages/ArchiveManagerPage.tsx",
       "src/pages/UserProfile.tsx",
       "src/pages/admin/AdminAccessPage.tsx",
-      "src/pages/admin/AdminOverview.tsx",
-      "src/pages/admin/FeatureFlagsPage.tsx",
       "src/pages/admin/GovernanceSettings.tsx",
       "src/pages/admin/PermissionsAdminPage.tsx",
-      "src/pages/admin/QuartersAdminPage.tsx",
       "src/pages/admin/ReleaseOpsAdminPage.tsx",
       "src/pages/admin/RolesAdminPage.tsx",
       "src/pages/admin/RoutingTaxonomyPage.tsx",
@@ -39807,7 +39298,6 @@ export const usageMap: UsageMap = {
       "src/pages/admin/icons/AdminIconsPage.tsx",
       "src/pages/admin/test-ops/TestOpsPage.tsx",
       "src/pages/admin/test/TestCaseTypesPage.tsx",
-      "src/pages/admin/test/TestCaseWorkflowPage.tsx",
       "src/pages/admin/test/TestPermissionsPage.tsx",
       "src/pages/admin/test/TestPrioritiesPage.tsx",
       "src/pages/admin/workflows/WorkflowAdminPage.tsx",
@@ -39979,6 +39469,9 @@ export const usageMap: UsageMap = {
       "src/components/layout/NotificationItem.tsx",
       "src/components/releases/SprintLinker.tsx",
       "src/components/workhub/create-story/CreateStoryModal.tsx",
+      "src/modules/docintel/components/DocintelIntentComposer.tsx",
+      "src/modules/docintel/pages/DocintelHomePage.tsx",
+      "src/modules/docintel/pages/DocintelReviewStartPage.tsx",
       "src/modules/project-work-hub/pages/StoryBacklogPage.atlaskit.tsx",
       "src/spaces/components/CreateSpaceWizard.tsx",
       "src/spaces/components/steps/StepBasics.tsx",
@@ -40477,7 +39970,6 @@ export const usageMap: UsageMap = {
       "src/modules/strata/pages/StrataReviewsPage.tsx",
       "src/modules/strata/pages/StrataUploadWizardPage.tsx",
       "src/modules/task10/components/landing/T10StatusBadge.tsx",
-      "src/pages/ForYouPage.tsx",
       "src/pages/project-hub/MovePage.tsx",
       "src/pages/project-hub/convert-to-subtask/IssueSelectorModal.tsx",
       "src/pages/project-hub/convert-to-subtask/IssueSelectorPopupPage.tsx",
@@ -40488,7 +39980,6 @@ export const usageMap: UsageMap = {
       "src/pages/releasehub/CommandCenterPage.tsx",
       "src/pages/releasehub/ProductionEventReplayPage.tsx",
       "src/pages/releasehub/ReleaseDetailPage.tsx",
-      "src/pages/releasehub/TriageQueuePage.tsx",
       "src/stories/components/StatusLozenge.stories.tsx"
     ]
   },
@@ -40498,9 +39989,14 @@ export const usageMap: UsageMap = {
     "origin": "internal",
     "consumers": [
       "src/components/chat/dock/DockDirectory.tsx",
+      "src/components/chat/dock/DockMoreTab.tsx",
       "src/components/filters/CanonicalFilter.tsx",
       "src/components/workhub/issue-view/ConvertToSubtaskWizard.tsx",
       "src/components/workhub/issue-view/IssueActionDialogs.tsx",
+      "src/modules/ideation/admin/AdminPage.tsx",
+      "src/modules/ideation/pages/DetailPage.tsx",
+      "src/modules/ideation/pages/ExplorePage.tsx",
+      "src/modules/ideation/pages/InboxPage.tsx",
       "src/pages/r360-member/BoardView.tsx"
     ]
   },
@@ -40637,7 +40133,6 @@ export const usageMap: UsageMap = {
     "source": "@/components/for-you/StatusSummaryBar",
     "origin": "internal",
     "consumers": [
-      "src/pages/ForYouPage.tsx",
       "src/stories/pages/ForYouDataPanels.stories.tsx"
     ]
   },
@@ -40748,6 +40243,15 @@ export const usageMap: UsageMap = {
       "src/modules/task10/components/panel/T10SidePanelNew.tsx",
       "src/modules/task10/components/week/T10WeekViewV3.tsx"
     ]
+  },
+  "StopwatchIcon::@atlaskit/icon/core/stopwatch": {
+    "name": "StopwatchIcon",
+    "source": "@atlaskit/icon/core/stopwatch",
+    "origin": "atlaskit",
+    "consumers": [
+      "src/components/releasehub/foryou/ReleaseChangeAnnouncementBanner.tsx"
+    ],
+    "package": "@atlaskit/icon"
   },
   "StoriesColumnConfig::@/components/stories/StoriesColumnConfig": {
     "name": "StoriesColumnConfig",
@@ -40905,6 +40409,14 @@ export const usageMap: UsageMap = {
       "src/pages/Stories.tsx"
     ]
   },
+  "StrataAttributionRuleModal::@/modules/strata/components/vmoAuthoring": {
+    "name": "StrataAttributionRuleModal",
+    "source": "@/modules/strata/components/vmoAuthoring",
+    "origin": "internal",
+    "consumers": [
+      "src/modules/strata/pages/StrataPortfolioVmoPage.tsx"
+    ]
+  },
   "StrataBandBar::@/modules/strata/components/shared": {
     "name": "StrataBandBar",
     "source": "@/modules/strata/components/shared",
@@ -40980,7 +40492,9 @@ export const usageMap: UsageMap = {
     "source": "@/modules/strata/components/shared",
     "origin": "internal",
     "consumers": [
-      "src/modules/strata/pages/StrataExecutionPage.tsx"
+      "src/modules/strata/pages/StrataEvidencePage.tsx",
+      "src/modules/strata/pages/StrataExecutionPage.tsx",
+      "src/modules/strata/pages/StrataStrategyElementDetailPage.tsx"
     ]
   },
   "StrataFormModal::./authoring": {
@@ -41002,6 +40516,7 @@ export const usageMap: UsageMap = {
       "src/modules/strata/pages/StrataKpiLibraryPage.tsx",
       "src/modules/strata/pages/StrataPortfolioVmoPage.tsx",
       "src/modules/strata/pages/StrataReviewsPage.tsx",
+      "src/modules/strata/pages/StrataStrategyElementDetailPage.tsx",
       "src/modules/strata/pages/StrataStrategyRoomPage.tsx"
     ]
   },
@@ -41019,6 +40534,14 @@ export const usageMap: UsageMap = {
     "origin": "internal",
     "consumers": [
       "src/modules/strata/pages/StrataScorecardDetailPage.tsx"
+    ]
+  },
+  "StrataNotificationBell::./StrataNotificationBell": {
+    "name": "StrataNotificationBell",
+    "source": "./StrataNotificationBell",
+    "origin": "internal",
+    "consumers": [
+      "src/modules/strata/components/shared.tsx"
     ]
   },
   "StrataPageShell::@/modules/strata/components/shared": {
@@ -41197,14 +40720,6 @@ export const usageMap: UsageMap = {
     "origin": "internal",
     "consumers": [
       "src/pages/Subtasks.tsx"
-    ]
-  },
-  "SubtaskInlineEditor::./SubtaskInlineEditor": {
-    "name": "SubtaskInlineEditor",
-    "source": "./SubtaskInlineEditor",
-    "origin": "internal",
-    "consumers": [
-      "src/components/stories/CreateStoryModal.tsx"
     ]
   },
   "SubtaskProposalModal::../story/SubtaskProposalModal": {
@@ -41492,7 +41007,6 @@ export const usageMap: UsageMap = {
       "src/modules/product-backlog/components/split-panel/RequestDetailPanel.tsx",
       "src/pages/ProjectSettingsPage.tsx",
       "src/pages/SprintBoard.tsx",
-      "src/pages/releases/QualityGatesPage.tsx",
       "src/pages/risks/RiskRoamReportPage.tsx",
       "src/pages/work-tree/components/WorkTreeExtraConfigs.tsx"
     ]
@@ -42003,17 +41517,20 @@ export const usageMap: UsageMap = {
       "src/components/catalyst-detail-views/defect/CatalystViewTmDefect.tsx",
       "src/components/catalyst-detail-views/test-case/CatalystViewTestCase.tsx",
       "src/components/chat/ChatRightPane.tsx",
-      "src/components/chat/dock/ChatDock.tsx",
       "src/components/project-hub/dashboard/widgets/DemandFulfilmentGadget.tsx",
       "src/components/projecthub/AllProjectsToolbar.tsx",
+      "src/components/wiki-hub/database/DatabaseSurface.tsx",
       "src/features/kanban-board/components/SelectCoverPanel.tsx",
+      "src/modules/docintel/components/DocintelIntentComposer.tsx",
+      "src/modules/docintel/components/DocintelNavigation.tsx",
+      "src/modules/docintel/components/DocintelSourceDrawer.tsx",
+      "src/modules/docintel/components/DocintelWorkItemsPanel.tsx",
       "src/modules/docintel/pages/DocintelWorkspacePage.tsx",
       "src/modules/project-work-hub/components/WorkItemDetailsDrawer.tsx",
       "src/modules/strata/components/ProjectCardDetailView.tsx",
       "src/modules/strata/pages/StrataAdminConfigPage.tsx",
       "src/pages/UserProfile.tsx",
       "src/pages/admin/AdminAccessPage.tsx",
-      "src/pages/admin/ModuleAccessAdminPage.tsx",
       "src/pages/admin/ReleaseOpsAdminPage.tsx",
       "src/pages/admin/RolesAdminPage.tsx",
       "src/pages/admin/components/ComponentsAdminPage.tsx",
@@ -42091,7 +41608,6 @@ export const usageMap: UsageMap = {
       "src/pages/project/feature-detail/FeatureAuditTab.tsx",
       "src/pages/project/feature-detail/FeatureDeliveryTab.tsx",
       "src/pages/projects/ProjectSummaryPage.tsx",
-      "src/pages/releases/CoverageReportsPage.tsx",
       "src/pages/work-tree/components/WorkTreeHierarchy.tsx",
       "src/pages/work/Dependencies.tsx"
     ]
@@ -42116,9 +41632,7 @@ export const usageMap: UsageMap = {
       "src/components/business-requests/ViewToggle.tsx",
       "src/components/capacity/CapacityPresentationShell.tsx",
       "src/components/capacity/SleekCapacityHeader.tsx",
-      "src/pages/program/ExecutionWorkbench/index.tsx",
-      "src/pages/releases/AllReleasesPage.tsx",
-      "src/pages/releases/CommandCenterPage.tsx"
+      "src/pages/program/ExecutionWorkbench/index.tsx"
     ]
   },
   "TableBody::@/components/ui/table": {
@@ -42155,7 +41669,6 @@ export const usageMap: UsageMap = {
       "src/pages/project/feature-detail/FeatureAuditTab.tsx",
       "src/pages/project/feature-detail/FeatureDeliveryTab.tsx",
       "src/pages/projects/ProjectSummaryPage.tsx",
-      "src/pages/releases/CoverageReportsPage.tsx",
       "src/pages/work-tree/components/WorkTreeHierarchy.tsx",
       "src/pages/work/Dependencies.tsx"
     ]
@@ -42196,7 +41709,6 @@ export const usageMap: UsageMap = {
       "src/pages/project/feature-detail/FeatureAuditTab.tsx",
       "src/pages/project/feature-detail/FeatureDeliveryTab.tsx",
       "src/pages/projects/ProjectSummaryPage.tsx",
-      "src/pages/releases/CoverageReportsPage.tsx",
       "src/pages/work-tree/components/WorkTreeHierarchy.tsx",
       "src/pages/work/Dependencies.tsx"
     ]
@@ -42263,7 +41775,6 @@ export const usageMap: UsageMap = {
       "src/pages/project/feature-detail/FeatureAuditTab.tsx",
       "src/pages/project/feature-detail/FeatureDeliveryTab.tsx",
       "src/pages/projects/ProjectSummaryPage.tsx",
-      "src/pages/releases/CoverageReportsPage.tsx",
       "src/pages/work-tree/components/WorkTreeHierarchy.tsx",
       "src/pages/work/Dependencies.tsx"
     ]
@@ -42309,7 +41820,6 @@ export const usageMap: UsageMap = {
       "src/pages/project/feature-detail/FeatureAuditTab.tsx",
       "src/pages/project/feature-detail/FeatureDeliveryTab.tsx",
       "src/pages/projects/ProjectSummaryPage.tsx",
-      "src/pages/releases/CoverageReportsPage.tsx",
       "src/pages/work-tree/components/WorkTreeHierarchy.tsx",
       "src/pages/work/Dependencies.tsx"
     ]
@@ -42392,7 +41902,6 @@ export const usageMap: UsageMap = {
       "src/pages/project/feature-detail/FeatureAuditTab.tsx",
       "src/pages/project/feature-detail/FeatureDeliveryTab.tsx",
       "src/pages/projects/ProjectSummaryPage.tsx",
-      "src/pages/releases/CoverageReportsPage.tsx",
       "src/pages/work-tree/components/WorkTreeHierarchy.tsx",
       "src/pages/work/Dependencies.tsx"
     ]
@@ -42462,17 +41971,20 @@ export const usageMap: UsageMap = {
       "src/components/catalyst-detail-views/defect/CatalystViewTmDefect.tsx",
       "src/components/catalyst-detail-views/test-case/CatalystViewTestCase.tsx",
       "src/components/chat/ChatRightPane.tsx",
-      "src/components/chat/dock/ChatDock.tsx",
       "src/components/project-hub/dashboard/widgets/DemandFulfilmentGadget.tsx",
       "src/components/projecthub/AllProjectsToolbar.tsx",
+      "src/components/wiki-hub/database/DatabaseSurface.tsx",
       "src/features/kanban-board/components/SelectCoverPanel.tsx",
+      "src/modules/docintel/components/DocintelIntentComposer.tsx",
+      "src/modules/docintel/components/DocintelNavigation.tsx",
+      "src/modules/docintel/components/DocintelSourceDrawer.tsx",
+      "src/modules/docintel/components/DocintelWorkItemsPanel.tsx",
       "src/modules/docintel/pages/DocintelWorkspacePage.tsx",
       "src/modules/project-work-hub/components/WorkItemDetailsDrawer.tsx",
       "src/modules/strata/components/ProjectCardDetailView.tsx",
       "src/modules/strata/pages/StrataAdminConfigPage.tsx",
       "src/pages/UserProfile.tsx",
       "src/pages/admin/AdminAccessPage.tsx",
-      "src/pages/admin/ModuleAccessAdminPage.tsx",
       "src/pages/admin/ReleaseOpsAdminPage.tsx",
       "src/pages/admin/RolesAdminPage.tsx",
       "src/pages/admin/components/ComponentsAdminPage.tsx",
@@ -42502,14 +42014,15 @@ export const usageMap: UsageMap = {
       "src/components/catalyst-detail-views/test-case/CatalystViewTestCase.tsx",
       "src/components/project-hub/dashboard/widgets/DemandFulfilmentGadget.tsx",
       "src/features/kanban-board/components/SelectCoverPanel.tsx",
+      "src/modules/docintel/components/DocintelIntentComposer.tsx",
+      "src/modules/docintel/components/DocintelSourceDrawer.tsx",
+      "src/modules/docintel/components/DocintelWorkItemsPanel.tsx",
       "src/modules/docintel/pages/DocintelWorkspacePage.tsx",
       "src/modules/project-work-hub/components/WorkItemDetailsDrawer.tsx",
       "src/modules/strata/components/ProjectCardDetailView.tsx",
       "src/modules/strata/pages/StrataAdminConfigPage.tsx",
       "src/pages/UserProfile.tsx",
       "src/pages/admin/AdminAccessPage.tsx",
-      "src/pages/admin/AdminStorybookPage.tsx",
-      "src/pages/admin/ModuleAccessAdminPage.tsx",
       "src/pages/admin/ReleaseOpsAdminPage.tsx",
       "src/pages/admin/RolesAdminPage.tsx",
       "src/pages/admin/components/ComponentsAdminPage.tsx",
@@ -42535,7 +42048,6 @@ export const usageMap: UsageMap = {
       "src/components/capacity/CapacityPlanningPage.tsx",
       "src/components/dependencies/DependencyAnalyticsPanel.tsx",
       "src/components/dependencies/DependencyDetailsDrawer.tsx",
-      "src/components/epic-backlog/modals/WSJFModal.tsx",
       "src/components/features/AssignModal.tsx",
       "src/components/incidents/detail/CommitteeModal.tsx",
       "src/components/incidents/detail/IncidentWorkArea.tsx",
@@ -42567,7 +42079,6 @@ export const usageMap: UsageMap = {
       "src/pages/items/EpicsPage.tsx",
       "src/pages/project/FeatureDetailPage.tsx",
       "src/pages/projects/ProjectSummaryPage.tsx",
-      "src/pages/releases/CoverageReportsPage.tsx",
       "src/pages/work/Dependencies.tsx"
     ]
   },
@@ -42580,18 +42091,20 @@ export const usageMap: UsageMap = {
       "src/components/catalyst-detail-views/defect/CatalystViewTmDefect.tsx",
       "src/components/catalyst-detail-views/test-case/CatalystViewTestCase.tsx",
       "src/components/chat/ChatRightPane.tsx",
-      "src/components/chat/dock/ChatDock.tsx",
       "src/components/project-hub/dashboard/widgets/DemandFulfilmentGadget.tsx",
       "src/components/projecthub/AllProjectsToolbar.tsx",
+      "src/components/wiki-hub/database/DatabaseSurface.tsx",
       "src/features/kanban-board/components/SelectCoverPanel.tsx",
+      "src/modules/docintel/components/DocintelIntentComposer.tsx",
+      "src/modules/docintel/components/DocintelNavigation.tsx",
+      "src/modules/docintel/components/DocintelSourceDrawer.tsx",
+      "src/modules/docintel/components/DocintelWorkItemsPanel.tsx",
       "src/modules/docintel/pages/DocintelWorkspacePage.tsx",
       "src/modules/project-work-hub/components/WorkItemDetailsDrawer.tsx",
       "src/modules/strata/components/ProjectCardDetailView.tsx",
       "src/modules/strata/pages/StrataAdminConfigPage.tsx",
       "src/pages/UserProfile.tsx",
       "src/pages/admin/AdminAccessPage.tsx",
-      "src/pages/admin/AdminStorybookPage.tsx",
-      "src/pages/admin/ModuleAccessAdminPage.tsx",
       "src/pages/admin/ReleaseOpsAdminPage.tsx",
       "src/pages/admin/RolesAdminPage.tsx",
       "src/pages/admin/components/ComponentsAdminPage.tsx",
@@ -42630,7 +42143,6 @@ export const usageMap: UsageMap = {
       "src/components/capacity/CapacityPlanningPage.tsx",
       "src/components/dependencies/DependencyAnalyticsPanel.tsx",
       "src/components/dependencies/DependencyDetailsDrawer.tsx",
-      "src/components/epic-backlog/modals/WSJFModal.tsx",
       "src/components/features/AssignModal.tsx",
       "src/components/incidents/detail/CommitteeModal.tsx",
       "src/components/incidents/detail/IncidentWorkArea.tsx",
@@ -42657,7 +42169,6 @@ export const usageMap: UsageMap = {
       "src/pages/Stories.tsx",
       "src/pages/project/FeatureDetailPage.tsx",
       "src/pages/projects/ProjectSummaryPage.tsx",
-      "src/pages/releases/CoverageReportsPage.tsx",
       "src/pages/work/Dependencies.tsx"
     ]
   },
@@ -42670,7 +42181,6 @@ export const usageMap: UsageMap = {
       "src/components/capacity/CapacityPlanningPage.tsx",
       "src/components/dependencies/DependencyAnalyticsPanel.tsx",
       "src/components/dependencies/DependencyDetailsDrawer.tsx",
-      "src/components/epic-backlog/modals/WSJFModal.tsx",
       "src/components/features/AssignModal.tsx",
       "src/components/incidents/detail/CommitteeModal.tsx",
       "src/components/incidents/detail/IncidentWorkArea.tsx",
@@ -42702,7 +42212,6 @@ export const usageMap: UsageMap = {
       "src/pages/items/EpicsPage.tsx",
       "src/pages/project/FeatureDetailPage.tsx",
       "src/pages/projects/ProjectSummaryPage.tsx",
-      "src/pages/releases/CoverageReportsPage.tsx",
       "src/pages/work/Dependencies.tsx"
     ]
   },
@@ -42715,7 +42224,6 @@ export const usageMap: UsageMap = {
       "src/components/capacity/CapacityPlanningPage.tsx",
       "src/components/dependencies/DependencyAnalyticsPanel.tsx",
       "src/components/dependencies/DependencyDetailsDrawer.tsx",
-      "src/components/epic-backlog/modals/WSJFModal.tsx",
       "src/components/features/AssignModal.tsx",
       "src/components/incidents/detail/CommitteeModal.tsx",
       "src/components/incidents/detail/IncidentWorkArea.tsx",
@@ -42747,7 +42255,6 @@ export const usageMap: UsageMap = {
       "src/pages/items/EpicsPage.tsx",
       "src/pages/project/FeatureDetailPage.tsx",
       "src/pages/projects/ProjectSummaryPage.tsx",
-      "src/pages/releases/CoverageReportsPage.tsx",
       "src/pages/work/Dependencies.tsx"
     ]
   },
@@ -42788,7 +42295,8 @@ export const usageMap: UsageMap = {
     "source": "@atlaskit/tag",
     "origin": "atlaskit",
     "consumers": [
-      "src/components/ads/CatalystTag.tsx"
+      "src/components/ads/CatalystTag.tsx",
+      "src/modules/docintel/components/ThemeTags.tsx"
     ],
     "package": "@atlaskit/tag"
   },
@@ -42813,7 +42321,6 @@ export const usageMap: UsageMap = {
       "src/components/knowledge-assist/KAItemDetailPanel.tsx",
       "src/components/layout/EnterpriseSidebar.tsx",
       "src/components/layout/ItemsDropdown.tsx",
-      "src/components/layout/TeamRoomSidebar.tsx",
       "src/components/layout/dropdowns/ItemsDropdown.tsx",
       "src/components/layout/dropdowns/StarredDropdown.tsx",
       "src/components/skills-inventory/SkillsInventoryReport.tsx",
@@ -42830,11 +42337,8 @@ export const usageMap: UsageMap = {
       "src/pages/PIObjectives.tsx",
       "src/pages/PortfolioRoadmap.tsx",
       "src/pages/SkillsInventory.tsx",
-      "src/pages/TeamRoom.tsx",
       "src/pages/producthub/IdeasThemePage.tsx",
       "src/pages/project/FeatureDetailPage.tsx",
-      "src/pages/releases/CommandCenterPage.tsx",
-      "src/pages/releases/CoverageReportsPage.tsx",
       "src/pages/work-tree/components/WorkTreeLegend.tsx"
     ]
   },
@@ -43395,14 +42899,6 @@ export const usageMap: UsageMap = {
       "src/pages/MyTeamPage.tsx"
     ]
   },
-  "TeamRoomSidebar::@/components/layout/TeamRoomSidebar": {
-    "name": "TeamRoomSidebar",
-    "source": "@/components/layout/TeamRoomSidebar",
-    "origin": "internal",
-    "consumers": [
-      "src/stories/components/LayoutSidebars.stories.tsx"
-    ]
-  },
   "TeamUtilizationSection::./TeamUtilizationSection": {
     "name": "TeamUtilizationSection",
     "source": "./TeamUtilizationSection",
@@ -43573,14 +43069,6 @@ export const usageMap: UsageMap = {
       "src/hooks/useReportAnalytics.ts"
     ]
   },
-  "TestExecutionTable::@/components/releases/dashboard/TestExecutionTable": {
-    "name": "TestExecutionTable",
-    "source": "@/components/releases/dashboard/TestExecutionTable",
-    "origin": "internal",
-    "consumers": [
-      "src/pages/releases/ReleaseDashboardPage.tsx"
-    ]
-  },
   "TestHubSection::@/modules/project-work-hub/components/dialogs/story-detail-modules/TestHubSection": {
     "name": "TestHubSection",
     "source": "@/modules/project-work-hub/components/dialogs/story-detail-modules/TestHubSection",
@@ -43603,14 +43091,6 @@ export const usageMap: UsageMap = {
     "origin": "internal",
     "consumers": [
       "src/stories/components/LayoutShell.stories.tsx"
-    ]
-  },
-  "TestPlan::@/types/testPlans": {
-    "name": "TestPlan",
-    "source": "@/types/testPlans",
-    "origin": "internal",
-    "consumers": [
-      "src/hooks/useTestPlansG26.ts"
     ]
   },
   "TestsTable::./TestsTable": {
@@ -43638,8 +43118,7 @@ export const usageMap: UsageMap = {
     "origin": "internal",
     "consumers": [
       "src/components/releasehub/EmptyState.tsx",
-      "src/components/releases/quality-gates/ReleaseTestSummaryPanel.tsx",
-      "src/pages/releases/CommandCenterPage.tsx"
+      "src/components/releases/quality-gates/ReleaseTestSummaryPanel.tsx"
     ]
   },
   "Text::@atlaskit/primitives": {
@@ -43666,7 +43145,6 @@ export const usageMap: UsageMap = {
       "src/components/committee/CommitteeQueueDrawer.tsx",
       "src/components/dependencies/CreateDependencyDialog.tsx",
       "src/components/dependencies/DependencyDetailsDrawer.tsx",
-      "src/components/epic-backlog/modals/MilestoneModal.tsx",
       "src/components/epic-backlog/tabs/BenefitsTab.tsx",
       "src/components/epic-backlog/tabs/DesignTab.tsx",
       "src/components/evidence/defect/CreateDefectModal.tsx",
@@ -43705,7 +43183,6 @@ export const usageMap: UsageMap = {
       "src/components/skills-inventory/EditSkillModal.tsx",
       "src/components/stories/AcceptanceCriteriaEditor.tsx",
       "src/components/stories/CreateEditStoryPanel.tsx",
-      "src/components/stories/CreateStoryModal.tsx",
       "src/components/stories/StoryDetailPanel.tsx",
       "src/components/templates/CreateTemplateModal.tsx",
       "src/components/testhub/AIGenerateTestCasesDialog.tsx",
@@ -43732,9 +43209,7 @@ export const usageMap: UsageMap = {
       "src/pages/ProjectSettingsPage.tsx",
       "src/pages/incidenthub/components/NewIncidentModal.tsx",
       "src/pages/project/components/FeatureChildStories.tsx",
-      "src/pages/project/feature-detail/FeatureActivityTab.tsx",
-      "src/pages/releases/DefectDetailPage.tsx",
-      "src/pages/releases/QualityGatesPage.tsx"
+      "src/pages/project/feature-detail/FeatureActivityTab.tsx"
     ]
   },
   "Textarea::@atlaskit/textarea": {
@@ -43816,11 +43291,13 @@ export const usageMap: UsageMap = {
       "src/components/admin/ai-assistant/AiSidePanels.tsx",
       "src/modules/docintel/components/AskPanel.tsx",
       "src/modules/docintel/components/DocumentLinksPanel.tsx",
+      "src/modules/docintel/components/ThemeTags.tsx",
       "src/modules/strata/components/authoring.tsx",
       "src/modules/strata/components/shared.tsx",
       "src/modules/strata/components/vmoAuthoring.tsx",
       "src/modules/strata/pages/StrataAdminConfigPage.tsx",
       "src/modules/strata/pages/StrataExecutionPage.tsx",
+      "src/modules/strata/pages/StrataKpiDetailPage.tsx",
       "src/modules/strata/pages/StrataKpiLibraryPage.tsx",
       "src/modules/strata/pages/StrataReviewsPage.tsx",
       "src/modules/strata/pages/StrataStrategyRoomPage.tsx",
@@ -43863,6 +43340,10 @@ export const usageMap: UsageMap = {
       "src/components/chat/UserStatusPicker.tsx",
       "src/components/chat/dock/DmSummarizePanel.tsx",
       "src/components/chat/dock/DockDirectory.tsx",
+      "src/components/chat/dock/DockNewHuddleModal.tsx",
+      "src/components/chat/dock/DockNewMessageModal.tsx",
+      "src/components/chat/dock/DockReminderModal.tsx",
+      "src/components/chat/dock/DockSearchTab.tsx",
       "src/components/chat/dock/NewChannelModal.tsx",
       "src/components/epic-backlog/EpicContextMenu.tsx",
       "src/components/features/FeatureContextMenu.tsx",
@@ -43903,6 +43384,10 @@ export const usageMap: UsageMap = {
       "src/components/testhub/reports/SaveViewModal.tsx",
       "src/components/workhub/create-story/CreateStoryModal.tsx",
       "src/features/kanban-board/components/Toolbar.tsx",
+      "src/features/voice-flow/VoiceSettingsTab.tsx",
+      "src/modules/ideation/components/CreateIdeaModal.tsx",
+      "src/modules/ideation/pages/DetailPage.tsx",
+      "src/modules/ideation/pages/ExplorePage.tsx",
       "src/modules/project-work-hub/components/AddPeopleModal.tsx",
       "src/modules/project-work-hub/components/SubtasksPanel/InlineCreateWithAI.tsx",
       "src/modules/project-work-hub/components/WorkItemDetailsDrawer.tsx",
@@ -43920,17 +43405,12 @@ export const usageMap: UsageMap = {
       "src/pages/ArchiveManagerPage.tsx",
       "src/pages/UserProfile.tsx",
       "src/pages/admin/AdminAccessPage.tsx",
-      "src/pages/admin/AdminOverview.tsx",
       "src/pages/admin/AiTranslationsAuditPage.tsx",
-      "src/pages/admin/BusinessOwners.tsx",
       "src/pages/admin/CapacityDepartments.tsx",
       "src/pages/admin/Departments.tsx",
-      "src/pages/admin/FeatureFlagsPage.tsx",
-      "src/pages/admin/NotificationTriggers.tsx",
       "src/pages/admin/PermissionsAdminPage.tsx",
       "src/pages/admin/ReleaseOpsAdminPage.tsx",
       "src/pages/admin/ResourceAssignments.tsx",
-      "src/pages/admin/UserAccessPage.tsx",
       "src/pages/admin/avatars/AdminAvatarsPage.tsx",
       "src/pages/admin/components/ComponentsAdminPage.tsx",
       "src/pages/admin/components/PublishTab.tsx",
@@ -43940,7 +43420,6 @@ export const usageMap: UsageMap = {
       "src/pages/admin/connections/VercelConnectionPage.tsx",
       "src/pages/admin/icons/AdminIconsPage.tsx",
       "src/pages/admin/test/TestCaseTypesPage.tsx",
-      "src/pages/admin/test/TestCaseWorkflowPage.tsx",
       "src/pages/admin/test/TestPrioritiesPage.tsx",
       "src/pages/product-hub/AllProductsPage.tsx",
       "src/pages/project-hub/ConvertToSubtaskPage.tsx",
@@ -44049,6 +43528,15 @@ export const usageMap: UsageMap = {
       "src/stories/pages/ForYouPanelsExpanded.stories.tsx"
     ]
   },
+  "ThemeCharterModal::@/modules/strata/components/authoring": {
+    "name": "ThemeCharterModal",
+    "source": "@/modules/strata/components/authoring",
+    "origin": "internal",
+    "consumers": [
+      "src/modules/strata/pages/StrataStrategyElementDetailPage.tsx",
+      "src/modules/strata/pages/StrataStrategyRoomPage.tsx"
+    ]
+  },
   "ThemeDialog::@/components/forms/ThemeDialog": {
     "name": "ThemeDialog",
     "source": "@/components/forms/ThemeDialog",
@@ -44137,6 +43625,14 @@ export const usageMap: UsageMap = {
     "origin": "internal",
     "consumers": [
       "src/components/backlog/CatalystThemeDrawer.tsx"
+    ]
+  },
+  "ThemeTags::../components/ThemeTags": {
+    "name": "ThemeTags",
+    "source": "../components/ThemeTags",
+    "origin": "internal",
+    "consumers": [
+      "src/modules/docintel/pages/DocintelWorkspacePage.tsx"
     ]
   },
   "ThemeToggle::@/components/ads": {
@@ -44252,6 +43748,7 @@ export const usageMap: UsageMap = {
     "consumers": [
       "src/components/catalyst-detail-views/improve/CommentsSummaryCard.tsx",
       "src/components/releases/detail/summarize/ReleaseSummaryCard.tsx",
+      "src/modules/ideation/components/VoteControl.tsx",
       "src/modules/project-work-hub/components/SubtasksPanel/AiSuggestChildrenPanel.tsx"
     ],
     "package": "@atlaskit/icon"
@@ -44583,17 +44080,6 @@ export const usageMap: UsageMap = {
       "src/modules/incidents/analytics/pages/IncidentAnalyticsPage.tsx"
     ]
   },
-  "TimeScale::../types": {
-    "name": "TimeScale",
-    "source": "../types",
-    "origin": "internal",
-    "consumers": [
-      "src/features/release-calendar/components/CalendarGrid.tsx",
-      "src/features/release-calendar/components/CalendarHeader.tsx",
-      "src/features/release-calendar/components/ReleaseCalendar.tsx",
-      "src/features/release-calendar/utils/calendarUtils.ts"
-    ]
-  },
   "TimeScale::./roadmapConstants": {
     "name": "TimeScale",
     "source": "./roadmapConstants",
@@ -44734,8 +44220,7 @@ export const usageMap: UsageMap = {
     "source": "@/types/test-management",
     "origin": "internal",
     "consumers": [
-      "src/hooks/test-management/useFolders.ts",
-      "src/hooks/test-management/useRepositoryData.ts"
+      "src/hooks/test-management/useFolders.ts"
     ]
   },
   "TMProject::@/types/test-management": {
@@ -44786,12 +44271,10 @@ export const usageMap: UsageMap = {
       "src/components/sprints/SprintCreateModal.tsx",
       "src/components/testhub/reports/SaveViewModal.tsx",
       "src/features/kanban-board/components/Toolbar.tsx",
-      "src/pages/admin/BusinessOwners.tsx",
+      "src/features/voice-flow/VoiceSettingsTab.tsx",
+      "src/modules/strata/pages/StrataAdminConfigPage.tsx",
       "src/pages/admin/Departments.tsx",
-      "src/pages/admin/FeatureFlagsPage.tsx",
       "src/pages/admin/GovernanceSettings.tsx",
-      "src/pages/admin/NotificationTriggers.tsx",
-      "src/pages/admin/QuartersAdminPage.tsx",
       "src/pages/admin/ReleaseOpsAdminPage.tsx",
       "src/pages/admin/ResourceAssignments.tsx",
       "src/pages/admin/components/PublishTab.tsx",
@@ -44957,9 +44440,7 @@ export const usageMap: UsageMap = {
       "src/components/work-items/WorkItemPresence.tsx",
       "src/components/work-items/WorkItemWatchers.tsx",
       "src/components/workload/AvailabilityCalendar.tsx",
-      "src/features/all-releases/components/TimelineView.tsx",
       "src/features/my-test-scope/components/TestsTable.tsx",
-      "src/features/release-calendar/components/ReleaseBar.tsx",
       "src/modules/backlog/components/BacklogHeader.tsx",
       "src/modules/backlog/components/split-panel/EpicListPanel.tsx",
       "src/modules/epic-balancing/components/EpicBalancingLegend.tsx",
@@ -44989,7 +44470,6 @@ export const usageMap: UsageMap = {
       "src/pages/Roadmaps.tsx",
       "src/pages/StarredPage.tsx",
       "src/pages/admin/CapacityDepartments.tsx",
-      "src/pages/admin/NotificationTriggers.tsx",
       "src/pages/admin/ResourceAssignments.tsx",
       "src/pages/enterprise/capacity-planner/TableView.tsx",
       "src/pages/program/ExecutionWorkbench/WorkbenchFiltersDialog.tsx",
@@ -45065,7 +44545,7 @@ export const usageMap: UsageMap = {
       "src/components/ui/CatyIconCTA.tsx",
       "src/features/kanban-board/components/Card.tsx",
       "src/features/kanban-board/components/SelectCoverPanel.tsx",
-      "src/features/voice-flow/DictationCTA.tsx",
+      "src/features/voice-flow/VoiceMicButton.tsx",
       "src/modules/project-work-hub/components/SubtasksPanel/AiSuggestChildrenPanel.tsx",
       "src/modules/project-work-hub/components/SubtasksPanel/index.tsx",
       "src/modules/project-work-hub/components/dialogs/story-detail-modules/AttachmentsSection.tsx",
@@ -45086,14 +44566,6 @@ export const usageMap: UsageMap = {
     ],
     "package": "@atlaskit/tooltip"
   },
-  "TopNav::./shell/TopNav": {
-    "name": "TopNav",
-    "source": "./shell/TopNav",
-    "origin": "internal",
-    "consumers": [
-      "src/components/project-hub/ProjectHubShell.tsx"
-    ]
-  },
   "TotalResourcesModal::./DataQualityDetailModals": {
     "name": "TotalResourcesModal",
     "source": "./DataQualityDetailModals",
@@ -45102,12 +44574,12 @@ export const usageMap: UsageMap = {
       "src/components/budget/BudgetDataQualityTab.tsx"
     ]
   },
-  "TraceabilityMatrix::../components/TraceabilityMatrix": {
+  "TraceabilityMatrix::./TraceabilityMatrix": {
     "name": "TraceabilityMatrix",
-    "source": "../components/TraceabilityMatrix",
+    "source": "./TraceabilityMatrix",
     "origin": "internal",
     "consumers": [
-      "src/modules/docintel/pages/DocintelWorkspacePage.tsx"
+      "src/modules/docintel/components/DocintelWorkItemsPanel.tsx"
     ]
   },
   "TraceabilityPanel::./TraceabilityPanel": {
@@ -45142,12 +44614,28 @@ export const usageMap: UsageMap = {
       "src/pages/admin/workflows/studio/WorkflowEditorPage.tsx"
     ]
   },
-  "TranslatedDocumentView::../components/TranslatedDocumentView": {
+  "TranslatedDocumentView::./TranslatedDocumentView": {
     "name": "TranslatedDocumentView",
-    "source": "../components/TranslatedDocumentView",
+    "source": "./TranslatedDocumentView",
     "origin": "internal",
     "consumers": [
-      "src/modules/docintel/pages/DocintelWorkspacePage.tsx"
+      "src/modules/docintel/components/DocintelSourceDrawer.tsx"
+    ]
+  },
+  "TranslatePreviewDialog::./TranslatePreviewDialog": {
+    "name": "TranslatePreviewDialog",
+    "source": "./TranslatePreviewDialog",
+    "origin": "internal",
+    "consumers": [
+      "src/components/chat/main/MessageComposer.tsx"
+    ]
+  },
+  "TranslatePreviewDialog::@/components/chat/main/TranslatePreviewDialog": {
+    "name": "TranslatePreviewDialog",
+    "source": "@/components/chat/main/TranslatePreviewDialog",
+    "origin": "internal",
+    "consumers": [
+      "src/features/chat-v2/components/Composer/Composer.tsx"
     ]
   },
   "TranslationView::@/components/requirement-assist/TranslationView": {
@@ -45327,8 +44815,6 @@ export const usageMap: UsageMap = {
       "src/pages/project-hub/MapStatusesPage.tsx",
       "src/pages/project/feature-detail/FeatureOverviewTab.tsx",
       "src/pages/releasehub/FreezeWindowsPage.tsx",
-      "src/pages/releases/DefectDetailPage.tsx",
-      "src/pages/releases/QualityGatesPage.tsx",
       "src/pages/testhub/reports/lab/ReportNavigator.tsx",
       "src/pages/testhub/repository/StepEditor.tsx"
     ]
@@ -45394,11 +44880,7 @@ export const usageMap: UsageMap = {
       "src/modules/strata/pages/StrataExecutionPage.tsx",
       "src/modules/tasks/components/insights/MonthlyChronicleView.tsx",
       "src/modules/tasks/components/insights/WeeklySummaryView.tsx",
-      "src/pages/SkillsInventory.tsx",
-      "src/pages/TeamRoom.tsx",
-      "src/pages/releases/CommandCenterPage.tsx",
-      "src/pages/releases/CoverageReportsPage.tsx",
-      "src/pages/releases/QualityGatesPage.tsx"
+      "src/pages/SkillsInventory.tsx"
     ]
   },
   "TrendingUp::@/lib/atlaskit-icons": {
@@ -45414,7 +44896,6 @@ export const usageMap: UsageMap = {
       "src/components/capacity/ExecutiveSummaryStrip.tsx",
       "src/components/dashboard/MetricCard.tsx",
       "src/components/features/FeaturesBacklogHeader.tsx",
-      "src/components/layout/TeamRoomSidebar.tsx",
       "src/components/releases/quality-gates/GateHistoryPanel.tsx",
       "src/components/releases/quality-gates/ReleaseTestSummaryPanel.tsx",
       "src/components/reports/KPICard.tsx",
@@ -45437,13 +44918,9 @@ export const usageMap: UsageMap = {
       "src/pages/KanbanBoardAnalytics.tsx",
       "src/pages/PortfolioRoadmap.tsx",
       "src/pages/SkillsInventory.tsx",
-      "src/pages/TeamRoom.tsx",
       "src/pages/enterprise/DemandSummaryPage.tsx",
       "src/pages/enterprise/capacity-planner/RecommendationCard.tsx",
-      "src/pages/producthub/IdeasThemePage.tsx",
-      "src/pages/releases/CommandCenterPage.tsx",
-      "src/pages/releases/CoverageReportsPage.tsx",
-      "src/pages/releases/QualityGatesPage.tsx"
+      "src/pages/producthub/IdeasThemePage.tsx"
     ]
   },
   "TriggerChevron::./PortalMenu": {
@@ -45537,14 +45014,6 @@ export const usageMap: UsageMap = {
     "origin": "internal",
     "consumers": [
       "src/pages/ProgramDirectory.tsx"
-    ]
-  },
-  "UITooltip::@/components/ads": {
-    "name": "UITooltip",
-    "source": "@/components/ads",
-    "origin": "internal",
-    "consumers": [
-      "src/pages/releases/CommandCenterPage.tsx"
     ]
   },
   "UnassignedAvatar::./UnassignedAvatar": {
@@ -45833,15 +45302,6 @@ export const usageMap: UsageMap = {
       "src/pages/project/feature-detail/FeatureOverviewTab.tsx"
     ]
   },
-  "UploadIcon::@atlaskit/icon/core/upload": {
-    "name": "UploadIcon",
-    "source": "@atlaskit/icon/core/upload",
-    "origin": "atlaskit",
-    "consumers": [
-      "src/pages/admin/NotificationTriggers.tsx"
-    ],
-    "package": "@atlaskit/icon"
-  },
   "UploadIcon::@atlaskit/icon/glyph/upload": {
     "name": "UploadIcon",
     "source": "@atlaskit/icon/glyph/upload",
@@ -45946,8 +45406,7 @@ export const usageMap: UsageMap = {
       "src/modules/work-hub/components/GroupByMenu.tsx",
       "src/pages/program/ExecutionWorkbench/WorkbenchDetailsDrawer.tsx",
       "src/pages/project/feature-detail/FeatureAuditTab.tsx",
-      "src/pages/project/feature-detail/FeatureRightRail.tsx",
-      "src/pages/releases/CommandCenterPage.tsx"
+      "src/pages/project/feature-detail/FeatureRightRail.tsx"
     ]
   },
   "UserAvatar::@/components/shared/UserAvatar": {
@@ -45959,7 +45418,6 @@ export const usageMap: UsageMap = {
       "src/components/project-hub/dashboard/widgets/OverdueWidget.tsx",
       "src/components/project-hub/dashboard/widgets/ProductionIncidentsWidget.tsx",
       "src/components/project-hub/dashboard/widgets/QADefectsWidget.tsx",
-      "src/components/project-hub/dashboard/widgets/TeamMemberHoverCard 2.tsx",
       "src/components/project-hub/dashboard/widgets/TeamMemberHoverCard.tsx",
       "src/components/project-hub/dashboard/widgets/TeamWorkloadWidget.tsx",
       "src/components/project-hub/dashboard/widgets/TimeInStatusFullscreenModal.tsx",
@@ -46078,8 +45536,7 @@ export const usageMap: UsageMap = {
       "src/modules/task10/components/panel/T10ActivityTimeline.tsx",
       "src/modules/tasks/components/workstreams/WorkstreamDrawer.tsx",
       "src/pages/SkillsInventory.tsx",
-      "src/pages/project/FeatureDetailPage.tsx",
-      "src/pages/releases/DefectDetailPage.tsx"
+      "src/pages/project/FeatureDetailPage.tsx"
     ]
   },
   "UserProfile::@/hooks/useUsers": {
@@ -46160,7 +45617,6 @@ export const usageMap: UsageMap = {
       "src/modules/tasks/components/dashboard/DashboardTeamWorkloadV2.tsx",
       "src/modules/tasks/components/workstreams/CreateWorkstreamModal.tsx",
       "src/modules/tasks/components/workstreams/WorkstreamMembersDialog.tsx",
-      "src/modules/work-hub/WorkHubLayout.tsx",
       "src/pages/SkillsInventory.tsx",
       "src/pages/WorkManager.tsx",
       "src/pages/enterprise/CapacityPlannerPage.tsx",
@@ -46168,8 +45624,7 @@ export const usageMap: UsageMap = {
       "src/pages/enterprise/capacity-planner/RecommendationCard.tsx",
       "src/pages/enterprise/capacity-planner/TableView.tsx",
       "src/pages/enterprise/capacity-planner/TimelineView.tsx",
-      "src/pages/items/reports/EpicResponsibilityMatrix.tsx",
-      "src/pages/releases/CommandCenterPage.tsx"
+      "src/pages/items/reports/EpicResponsibilityMatrix.tsx"
     ]
   },
   "Users2::@/lib/atlaskit-icons": {
@@ -46378,8 +45833,7 @@ export const usageMap: UsageMap = {
     "source": "@/lib/atlaskit-icons",
     "origin": "internal",
     "consumers": [
-      "src/components/evidence/reports/EvidenceStats.tsx",
-      "src/pages/releases/DefectDetailPage.tsx"
+      "src/components/evidence/reports/EvidenceStats.tsx"
     ]
   },
   "VideoIcon::@atlaskit/icon/core/video": {
@@ -46414,7 +45868,8 @@ export const usageMap: UsageMap = {
     "source": "@atlaskit/icon/core/video-stop",
     "origin": "atlaskit",
     "consumers": [
-      "src/components/catalyst-detail-views/shared/sections/Description/_components/MicRecordingBar/MicRecordingBar.tsx"
+      "src/components/catalyst-detail-views/shared/sections/Description/_components/MicRecordingBar/MicRecordingBar.tsx",
+      "src/features/voice-flow/VoiceMicButton.tsx"
     ],
     "package": "@atlaskit/icon"
   },
@@ -46489,15 +45944,6 @@ export const usageMap: UsageMap = {
     "consumers": [
       "src/components/backlog/BacklogHeader.tsx",
       "src/components/backlog/ViewingDropdown.tsx"
-    ]
-  },
-  "ViewMode::../types": {
-    "name": "ViewMode",
-    "source": "../types",
-    "origin": "internal",
-    "consumers": [
-      "src/features/all-releases/components/Toolbar.tsx",
-      "src/features/all-releases/components/ViewToggle.tsx"
     ]
   },
   "ViewMode::./RoadmapToolbar": {
@@ -46598,6 +46044,15 @@ export const usageMap: UsageMap = {
       "src/modules/incidents/kanban/components/KanbanSwimlane.tsx"
     ]
   },
+  "VisuallyHidden::@atlaskit/visually-hidden": {
+    "name": "VisuallyHidden",
+    "source": "@atlaskit/visually-hidden",
+    "origin": "atlaskit",
+    "consumers": [
+      "src/modules/strata/components/shared.tsx"
+    ],
+    "package": "@atlaskit/visually-hidden"
+  },
   "VoiceFloatingCapsule::./VoiceFloatingCapsule": {
     "name": "VoiceFloatingCapsule",
     "source": "./VoiceFloatingCapsule",
@@ -46612,6 +46067,31 @@ export const usageMap: UsageMap = {
     "origin": "internal",
     "consumers": [
       "src/App.tsx"
+    ]
+  },
+  "VoiceMicButton::@/features/voice-flow": {
+    "name": "VoiceMicButton",
+    "source": "@/features/voice-flow",
+    "origin": "internal",
+    "consumers": [
+      "src/components/chat/main/MessageComposer.tsx",
+      "src/features/chat-v2/components/Composer/Composer.tsx"
+    ]
+  },
+  "VoiceSettingsTab::@/features/voice-flow/VoiceSettingsTab": {
+    "name": "VoiceSettingsTab",
+    "source": "@/features/voice-flow/VoiceSettingsTab",
+    "origin": "internal",
+    "consumers": [
+      "src/pages/UserProfile.tsx"
+    ]
+  },
+  "VoteControl::@/modules/ideation/components/VoteControl": {
+    "name": "VoteControl",
+    "source": "@/modules/ideation/components/VoteControl",
+    "origin": "internal",
+    "consumers": [
+      "src/modules/ideation/pages/DetailPage.tsx"
     ]
   },
   "Wallet::@/lib/atlaskit-icons": {
@@ -46650,11 +46130,7 @@ export const usageMap: UsageMap = {
       "src/components/layout/CatalystShell.tsx",
       "src/components/shared/JiraTable/flags.tsx",
       "src/config/workItemConfig.ts",
-      "src/features/all-releases/components/AIInsightsBar.tsx",
-      "src/features/all-releases/components/AIInsightsDrawer.tsx",
-      "src/features/all-releases/components/SummaryCards.tsx",
       "src/features/my-test-scope/components/IncidentsPanel.tsx",
-      "src/features/release-calendar/components/CalendarAIInsights.tsx",
       "src/features/release-compare/components/CompareInsightsBar.tsx",
       "src/features/release-compare/components/ComparisonTable.tsx",
       "src/features/release-compare/components/QualityGateBar.tsx",
@@ -46664,7 +46140,6 @@ export const usageMap: UsageMap = {
       "src/modules/project-work-hub/components/linked-work-items/LinkedWorkItemsBody.tsx",
       "src/modules/workhub/admin/components/SyncLogs.tsx",
       "src/pages/admin/CapacityDepartments.tsx",
-      "src/pages/admin/FeatureFlagsPage.tsx",
       "src/pages/admin/GovernanceSettings.tsx",
       "src/pages/admin/ResourceAssignments.tsx"
     ],
@@ -46694,6 +46169,14 @@ export const usageMap: UsageMap = {
       "src/lib/icons/icon-registry.ts"
     ],
     "package": "@atlaskit/icon"
+  },
+  "WatchControl::@/modules/ideation/components/WatchControl": {
+    "name": "WatchControl",
+    "source": "@/modules/ideation/components/WatchControl",
+    "origin": "internal",
+    "consumers": [
+      "src/modules/ideation/pages/DetailPage.tsx"
+    ]
   },
   "WatchersChip::../shared/WatchersChip": {
     "name": "WatchersChip",
@@ -48228,6 +47711,7 @@ export const usageMap: UsageMap = {
       "src/components/releasehub/CreateSopTemplateModal.tsx",
       "src/components/releasehub/FacetFilterBar.tsx",
       "src/components/releasehub/detail/ReleaseDetailTabs.tsx",
+      "src/components/releasehub/foryou/ReleaseChangeAnnouncementBanner.tsx",
       "src/components/releases/all-releases/ReleasesBulkActionBar.tsx",
       "src/components/releases/all-releases/ReleasesToolbar.tsx",
       "src/components/releases/dashboard/FilterBar.tsx",
@@ -48253,7 +47737,6 @@ export const usageMap: UsageMap = {
       "src/components/shared/rich-text/atlaskit/atlaskitMediaOverrides.tsx",
       "src/components/skills-inventory/AddTeamMemberModal.tsx",
       "src/components/skills-inventory/SkillsFiltersDialog.tsx",
-      "src/components/stories/CreateStoryModal.tsx",
       "src/components/stories/StoryLinks.tsx",
       "src/components/stories/StoryQuickAdd.tsx",
       "src/components/teams/AddTeamMemberDialog.tsx",
@@ -48379,7 +47862,6 @@ export const usageMap: UsageMap = {
       "src/pages/project/components/FeatureChildStories.tsx",
       "src/pages/r360-member/DetailPanel.tsx",
       "src/pages/r360-member/TicketListDrawer.tsx",
-      "src/pages/releases/AllReleasesPage.tsx",
       "src/pages/testhub/cycles/CyclesPage.tsx",
       "src/pages/work-tree/components/WorkTreeDashboard.tsx",
       "src/pages/work/Dependencies.tsx"
@@ -48419,9 +47901,7 @@ export const usageMap: UsageMap = {
       "src/pages/enterprise/DemandSummaryPage.tsx",
       "src/pages/enterprise/EnterpriseEpics.tsx",
       "src/pages/items/EpicsPage.tsx",
-      "src/pages/project/feature-detail/FeatureAuditTab.tsx",
-      "src/pages/releases/DefectDetailPage.tsx",
-      "src/pages/releases/QualityGatesPage.tsx"
+      "src/pages/project/feature-detail/FeatureAuditTab.tsx"
     ]
   },
   "XIcon::../shared/Icon": {
@@ -48506,7 +47986,6 @@ export const usageMap: UsageMap = {
       "src/modules/task10/components/week/T10WeekViewV3.tsx",
       "src/modules/tasks/components/TaskChecklist.tsx",
       "src/modules/work-hub/views/AllWorkView.tsx",
-      "src/pages/ForYouPage.tsx",
       "src/pages/ReqAssistLibrary.tsx",
       "src/pages/ResourceListingPage.tsx",
       "src/pages/admin/test/TestCaseTypesPage.tsx",
@@ -48546,10 +48025,10 @@ export const usageMap: UsageMap = {
 };
 
 export const usageMapStats = {
-  total: 4039,
-  atlaskit: 670,
-  internal: 3369,
-  generatedAt: '2026-07-09T12:41:36.450Z',
+  total: 4018,
+  atlaskit: 662,
+  internal: 3356,
+  generatedAt: '2026-07-12T17:17:53.987Z',
 };
 
 /**

@@ -322,6 +322,13 @@ export default function StrataKpiDetailPage() {
   const schemesQ = useThresholdSchemes();
   const elementKpisQ = useElementKpis();
   const elementsQ = useStrategyElements(activeCycle?.id);
+  // STRATA-E2E-010: resolve the perspective a linked strategy element governs the KPI
+  // into, so the governed perspective is visible on the KPI detail (not just the element name).
+  const perspectivesQ = useQuery({
+    queryKey: ['strata', 'perspectives'],
+    queryFn: () => configApi.perspectives(),
+    staleTime: 60_000,
+  });
   const invalidate = useInvalidateStrata();
   const [showTrendData, setShowTrendData] = useState(false);
   const [showStrategyLinks, setShowStrategyLinks] = useState(false);
@@ -496,6 +503,7 @@ export default function StrataKpiDetailPage() {
 
   const elements = elementsQ.data ?? [];
   const elementById = new Map(elements.map((e) => [e.id, e]));
+  const perspectiveById = new Map((perspectivesQ.data ?? []).map((p) => [p.id, p.name]));
   const kpiElementLinks = (elementKpisQ.data ?? []).filter((l) => l.kpi_id === kpi.id);
   const actuals = detailQ.data?.actuals ?? [];
   const formulas = detailQ.data?.formulas ?? [];
@@ -558,6 +566,7 @@ export default function StrataKpiDetailPage() {
       extra={
         <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, flexWrap: 'wrap' }}>
           <StrataGovernedStatusLozenge status={kpi.status} />
+          {kpi.is_strategic ? <CatalystTag text="Strategic" /> : null}
           {kpi.unit ? <CatalystTag text={kpi.unit} /> : null}
           <CatalystTag text={DIRECTION_LABEL[kpi.direction] ?? labelize(kpi.direction)} />
           {kpi.frequency ? <CatalystTag text={labelize(kpi.frequency)} /> : null}
@@ -566,6 +575,16 @@ export default function StrataKpiDetailPage() {
     >
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+        {/* STRATA-E2E-010: a strategic KPI with no governed association can't be approved. */}
+        {kpi.is_strategic && kpi.status !== 'approved' && kpiElementLinks.length === 0 ? (
+          <SectionMessage appearance="warning" title="Strategy association required">
+            <p style={{ margin: 0 }}>
+              This Strategic KPI has no governed strategy association. Link it to a theme or
+              objective (which carries its cycle, objective and perspective) before it can be
+              submitted for approval.
+            </p>
+          </SectionMessage>
+        ) : null}
         {/* (b) hero — achievement ring + trend spark FIRST (S-147, S-150) */}
         <StrataStatStrip
           testId="strata-kpi-hero"
@@ -769,6 +788,11 @@ export default function StrataKpiDetailPage() {
                       {el?.name ?? <Dash />}
                     </span>
                     {el?.element_type ? <CatalystTag text={labelize(el.element_type)} /> : null}
+                    {/* STRATA-E2E-010: governed perspective this link rolls the KPI into.
+                        Rendered only once resolved — zero-assumption, no placeholder guess. */}
+                    {el?.perspective_id && perspectiveById.get(el.perspective_id)
+                      ? <CatalystTag text={perspectiveById.get(el.perspective_id)!} />
+                      : null}
                     <span style={{ fontSize: 'var(--ds-font-size-100)', color: T.subtle, whiteSpace: 'nowrap' }}>
                       {l.weight != null ? `Weight ${l.weight}` : '—'}
                     </span>
@@ -940,6 +964,7 @@ export default function StrataKpiDetailPage() {
             key: 'kpiTypeId', label: 'KPI type', kind: 'select',
             options: (kpiTypesQ.data ?? []).map((t) => ({ value: t.id, label: t.name })),
           },
+          { key: 'isStrategic', label: 'Strategic KPI', kind: 'checkbox', helper: 'Requires a governed strategy association (cycle/theme/objective/perspective) before approval' },
         ]}
         initial={{
           name: kpi.name, unit: kpi.unit, direction: kpi.direction, frequency: kpi.frequency,
@@ -948,7 +973,7 @@ export default function StrataKpiDetailPage() {
           reporterId: kpi.reporter_id, validatorId: kpi.validator_id,
           escalationOwnerId: kpi.escalation_owner_id,
           dataSourceId: kpi.data_source_id, thresholdSchemeId: kpi.threshold_scheme_id,
-          kpiTypeId: kpi.kpi_type_id,
+          kpiTypeId: kpi.kpi_type_id, isStrategic: kpi.is_strategic,
         }}
         submitLabel="Save KPI"
         onSubmit={async (v) => {
@@ -966,6 +991,7 @@ export default function StrataKpiDetailPage() {
             dataSourceId: v.dataSourceId ? String(v.dataSourceId) : undefined,
             thresholdSchemeId: v.thresholdSchemeId ? String(v.thresholdSchemeId) : undefined,
             kpiTypeId: v.kpiTypeId ? String(v.kpiTypeId) : undefined,
+            isStrategic: v.isStrategic != null ? Boolean(v.isStrategic) : undefined,
             // Clear affordances: the field opened with a value and the user emptied it.
             clearValidator: wasCleared(kpi.validator_id, v.validatorId),
             clearDataSource: wasCleared(kpi.data_source_id, v.dataSourceId),
@@ -1071,7 +1097,9 @@ export default function StrataKpiDetailPage() {
           kpi={kpi}
           links={kpiElementLinks}
           elements={elements}
-          canLink={kpi.status === 'approved'}
+          // Strategic KPIs may link while draft/pending (to satisfy the approval gate);
+          // operational KPIs keep the approved-only rule. Mirrors strata_link_element_kpi.
+          canLink={kpi.status === 'approved' || (kpi.is_strategic && (kpi.status === 'draft' || kpi.status === 'pending_approval'))}
           onClose={() => setShowStrategyLinks(false)}
           onChanged={invalidate}
         />

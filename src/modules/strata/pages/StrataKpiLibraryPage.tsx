@@ -533,13 +533,14 @@ export default function StrataKpiLibraryPage() {
           { key: 'direction', label: 'Direction', kind: 'select', options: DIRECTION_OPTIONS },
           { key: 'frequency', label: 'Frequency', kind: 'select', options: FREQUENCY_OPTIONS },
           { key: 'entryMethod', label: 'Entry method', kind: 'select', options: ENTRY_METHOD_OPTIONS },
+          { key: 'isStrategic', label: 'Strategic KPI', kind: 'checkbox', helper: 'Requires a governed strategy association (cycle/theme/objective/perspective) before approval (STRATA-E2E-010)' },
           { key: 'accountableOwnerId', label: 'Accountable owner', kind: 'user' },
           { key: 'dataOwnerId', label: 'Data owner', kind: 'user' },
           { key: 'reporterId', label: 'Reporter', kind: 'user' },
           { key: 'validatorId', label: 'Validator', kind: 'user', helper: 'Must differ from the submitter — enforced server-side' },
           { key: 'escalationOwnerId', label: 'Escalation owner', kind: 'user' },
         ]}
-        initial={{ direction: 'higher_better', frequency: 'quarterly', entryMethod: 'upload' }}
+        initial={{ direction: 'higher_better', frequency: 'quarterly', entryMethod: 'upload', isStrategic: false }}
         submitLabel="Create KPI"
         onSubmit={async (v) => {
           // Create at most once per modal session (see newKpiIdRef): a failed
@@ -552,6 +553,7 @@ export default function StrataKpiLibraryPage() {
               direction: v.direction ? String(v.direction) : undefined,
               frequency: v.frequency ? String(v.frequency) : undefined,
               entryMethod: v.entryMethod ? String(v.entryMethod) : undefined,
+              isStrategic: Boolean(v.isStrategic),
             });
           }
           const newKpiId = newKpiIdRef.current;
