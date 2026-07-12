@@ -556,10 +556,10 @@ export const executionApi = {
     expectedUpdatedAt?: string;
   }) =>
     run(typedRpc('strata_update_project_card', {
-      // NOTE (V6-OPEN-033): p_expected_updated_at is intentionally NOT forwarded yet.
-      // Sending a param the DB function doesn't have yet fails with PGRST202, so the
-      // concurrency guard stays dormant until migration 20260712140000 is applied.
-      // Activation post-migration = add `p_expected_updated_at: patch.expectedUpdatedAt ?? null`.
+      // V6-OPEN-033: concurrency guard active — migration 20260712140000 applied to
+      // staging, so the RPC accepts p_expected_updated_at. A stale second save is
+      // rejected with a conflict message.
+      p_expected_updated_at: patch.expectedUpdatedAt ?? null,
       p_project: projectId, p_name: patch.name ?? null, p_pm: patch.pmId ?? null,
       p_sector: patch.sector ?? null, p_budget: patch.budget ?? null,
       p_baseline_start: patch.baselineStart ?? null, p_baseline_end: patch.baselineEnd ?? null,
