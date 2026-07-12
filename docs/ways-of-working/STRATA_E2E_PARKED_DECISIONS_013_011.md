@@ -1,82 +1,96 @@
-# STRATA E2E — Parked decisions (V3-OPEN-013, V3-OPEN-011)
+# STRATA E2E — Decisions & disposition (V3-OPEN-013, V3-OPEN-011)
 
-**Status:** BLOCKED ON DECISION — no additive code fix exists. Parked per Vikram's
-decision on 2026-07-12 during the CAT-STRATA-E2E-FIXES regression batch.
-
-These two defects were investigated read-only and confirmed to be **data-model /
-product decisions**, not code bugs. They are intentionally NOT patched. Each needs an
-authoritative decision before any implementation.
+Product decisions taken by Vikram on 2026-07-12 during the CAT-STRATA-E2E-FIXES batch.
+Both items were investigated read-only against the repo AND live staging
+(`cyijbdeuehohvhnsywig`) before any decision. **Neither is closed** — see closure
+conditions per item.
 
 ---
 
-## V3-OPEN-013 — Portfolio member selector globally scoped
+## V3-OPEN-013 — Portfolio member selector scoping
 
-**Symptom:** The "Add portfolio member" Project Card selector exposes all cards
-(~43 rows) spanning unrelated populations; it is not constrained to the selected
-Portfolio's tenant/cycle.
+### Decision
+- **Cycle-filter portion: REJECTED as a non-requirement.** Canonical STRATA model:
+  Portfolios are independent of Strategic Theme and are NOT anchored to a Strategy
+  Cycle; Project Cards may legitimately span cycles within one Portfolio. A Portfolio
+  has no cycle by design, so "selector must show only the Portfolio's-cycle cards" is
+  invalid.
+- **Tenant-isolation portion: DEFERRED to a new product-wide multi-tenancy
+  initiative** (see `STRATA_MULTITENANCY_INITIATIVE.md`). It is NOT implemented in
+  STRATA in this batch.
 
-**Why there is no additive UI fix:**
-- `strata_project_cards` has **no `cycle_id` / `organization_id` / tenant column**
-  to filter against (`src/modules/strata/types.ts:377-421`). The `vmoAuthoring.tsx`
-  option builder even documents this: "Cards carry no cycle/tenant scoping column".
-- The selected `StrataPortfolio` also carries no cycle/tenant anchor
-  (`types.ts:554-563`). So neither side of the relationship holds a value to scope by.
-- Contrast: `StrataInitiative` *does* carry `cycle_id` (`types.ts:365`) — cards do not.
-- Twin/duplicate candidates (Manual/Jira) are **kept intentionally** and disambiguated
-  by `source_system`/`source_key` (`vmoAuthoring.tsx:203-217`). That is by design, not a bug.
-- "No cross-tenant" can only be enforced by **RLS** on `strata_project_cards` — not
-  observable or fixable from the frontend.
+### Evidence gathered (the RLS proof the ruling required)
+Tenant isolation is **absent across ALL of Catalyst, by explicit single-tenant design** —
+this is not a STRATA-local gap:
+- `supabase/migrations/20260705100000_strata_foundation_config_engine.sql:6` —
+  *"Single-tenant deployment (Q4): organization_id kept nullable for future use."*
+- Across **1,274 migrations, zero** RLS policies reference `organization_id` /
+  `tenant_id` / `account_id`. There is **no `organizations` table** and **no
+  `current_user_org()` helper** anywhere.
+- Live staging: `strata_portfolios.organization_id` NULL on 4/4 rows;
+  `strata_project_cards.organization_id` NULL on 46/46. Only one tenant exists, so a
+  cross-tenant leak test has no second tenant to run against.
+- Both tables' SELECT RLS = `USING (current_user_is_approved())` (approval only, no
+  org predicate); writes are role-only — identical to the rest of Catalyst.
 
-**Decision required (pick one):**
-1. Add a cycle/tenant anchor to `strata_project_cards` (a `cycle_id` column, or a
-   resolvable `theme_id → strata_strategy_elements.cycle_id` join), THEN filter
-   `buildProjectCardOptions` by it. → schema migration + backfill + selector change.
-2. Confirm/repair **RLS** on `strata_project_cards` for the cross-tenant claim only
-   (no cycle filter). → RLS review, no UI change.
-3. Accept current behavior (same-tenant seed/test data is expected) → close as not-a-defect.
+### Why not implement STRATA-only tenant RLS
+It would make STRATA the only tenant-isolated surface in the product (an illusory
+boundary), and with no org model (org_id all NULL, no orgs table, no user→org map) an
+`organization_id = current_user_org()` policy would either hide all data or enforce
+nothing. Coherent multi-tenancy must be product-wide — a net-new initiative, not a
+defect fix.
 
-**Blast radius if scoped:** `useProjectCards` also feeds `StrataExecutionPage`,
-`StrataStrategyElementDetailPage`, `StrataExecutionImportPage`, and the member-name
-resolver — any global scoping change ripples to all of them.
+### Selector eligibility (ruling items 6–8) — current state
+- Manual/Jira twins kept and disambiguated by source: **already implemented**
+  (`vmoAuthoring.tsx:203-217`).
+- Add-Member card `Select` is **already searchable** (`@atlaskit/select`).
+- Exclude "retired/deleted/ineligible" cards: **not actionable today** — there is no
+  retired/deleted/ineligible status on `strata_project_cards` (`stage` has no
+  CHECK/enum; no soft-delete column). Would require a card-lifecycle column first.
 
-> Note: the new governed Attribution selector (V4-OPEN-019, shipped in this batch)
-> reuses the same `buildProjectCardOptions` and therefore inherits the same unscoped
-> option list until this decision lands.
+### Closure condition
+Do NOT close V3-OPEN-013. Cycle portion = rejected (documented). Tenant portion moves to
+the multi-tenancy initiative and closes only with that initiative's schema/RLS + live
+cross-tenant evidence.
 
 ---
 
-## V3-OPEN-011 — Scorecard perspective model unresolved
+## V3-OPEN-011 — Scorecard perspective model — RESOLVED (migration applied to staging)
 
-**Symptom:** Implemented perspectives are Financial / Customer / Digital / People / ESG
-(weights 30/25/20/15/10 = 100). QA expected a different "supplied target model".
+### Decision
+Canonical STRATA 5-perspective model: **1 Financial, 2 Customer & Market, 3 Network &
+Infrastructure, 4 Digital & Innovation, 5 People & Capability.** ESG is NOT equivalent to
+Network & Infrastructure.
 
-**Why there is no code fix:**
-- Perspectives are **seeded config, not hardcoded**: table `strata_perspectives`
-  (`supabase/migrations/20260705100000_strata_foundation_config_engine.sql:150`,
-  DDL comment: "never hard-coded"); rows seeded in
-  `20260705100600_strata_seed_salam_demo.sql:20-25`.
-- The "supplied target model" (and the classic 4-perspective Balanced Scorecard —
-  Financial / Customer / Internal Process / Learning & Growth) **exists nowhere in the
-  repo or docs**. QA's expectation is external and must be supplied as a versioned artifact.
-- The admin UI (`StrataAdminConfigPage.tsx`) is **read-only** for perspectives (only
-  Submit/Approve/Retire lifecycle; no create/edit of name/weight/order). So even a pure
-  data change cannot be actioned from the UI today — it needs a DB seed/migration.
+### What shipped
+Migration `supabase/migrations/20260712120000_strata_canonical_perspective_model.sql`
+(applied to staging `cyijbdeuehohvhnsywig`, ledger version `20260712120000`):
 
-**Decision required:**
-1. Which perspective model is canonical — keep the shipped 5, adopt the classic 4, or a
-   formally versioned third model? (Supply as a dated authoritative artifact.)
-2. Per perspective: labels, slugs, order, default weights, and each scorecard model's
-   weights (must total 100 or the approval trigger DB-blocks it).
-3. KPI / strategy-element re-linking map (which move to which new perspective).
-4. History policy: recompute/retire prior calc results, or leave historical snapshots.
+| Current seed | → Canonical | Action |
+|---|---|---|
+| Financial (30) | Financial | kept, order 0 |
+| Customer (25) | Customer & Market | renamed in place (id + slug `customer` frozen), order 1 |
+| — | Network & Infrastructure (10) | **new** approved perspective, order 2 |
+| Digital (20) | Digital & Innovation | renamed in place (slug `digital` frozen), order 3 |
+| People (15) | People & Capability | renamed in place (slug `people` frozen), order 4 |
+| ESG (10) | — | **retired** (status=retired); NOT deleted — RESTRICT-referenced seed line (KPI 1208) preserved |
 
-**Blast radius (migration, if model changes):** everything FK'd to
-`strata_perspectives.id` — `strata_strategy_elements.perspective_id`,
-`strata_scorecard_model_perspectives` (**ON DELETE RESTRICT**),
-`strata_scorecard_lines` (**ON DELETE RESTRICT**), and the calc engine's per-perspective
-results/history. A swap must re-point every referencing row (cannot delete), retire old
-records via the governed lifecycle, and re-run calcs. Multi-table migration + data repair.
+- CEO Enterprise Scorecard weights rebalanced ESG(10) → Network & Infrastructure; model
+  totals **100** (30/25/10/20/15). B2B Sector Scorecard untouched (no ESG), totals 100.
+- Weights retained as existing seed distribution pending authoritative values (ruling
+  item 7). N&I's 10 is provisional.
+- Verified seed-only before applying: no non-seed KPIs on any perspective; ESG had 0
+  elements / 0 KPI links. Migration asserts both models total 100 (raises otherwise).
+- Historical reproducibility preserved: renames keep ids; ESG retired not deleted; its 2
+  seed scorecard lines remain resolvable.
 
-**Optional follow-up (separate slice, if self-service is wanted):** add
-`createPerspective`/`updatePerspective` + model-weight upsert to `configApi` plus admin
-forms — distinct from the model decision above.
+### Still open (ruling item 8) — Admin CRUD (next slice)
+`configApi` has no perspective write methods and `StrataAdminConfigPage` is read-only.
+To be built as a separate follow-up slice: create / order / weight / activate / retire
+perspectives + per-model weight editing with the sum-100 gate, ADS-token color only,
+respecting the draft-only write window (post-approval edits require supersede-versioning).
+
+### Closure condition
+Do NOT close V3-OPEN-011 until: (a) the canonical model is confirmed on the target and
+in the UI after refresh, and (b) the Admin CRUD capability is delivered. The data
+migration is applied to STAGING only; PROD promotion is a separate DB-targeting action.
