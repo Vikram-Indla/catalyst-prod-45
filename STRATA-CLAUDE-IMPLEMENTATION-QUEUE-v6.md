@@ -192,8 +192,40 @@ STRATA-E2E-005, 010, 011 (verify — committed 011 chain), V6-OPEN-032, Team/LBU
 
 **D-4 (logged):** STRATA-E2E-010 requires "every **Strategic** KPI" to carry Cycle/Theme/Objective/Perspective links, but the schema has no way to mark a KPI as Strategic (vs operational), and linking is intentionally post-approval. Options: (A) add an `is_strategic`/`kpi_category` marker + gate approval on ≥1 strategy link for Strategic KPIs [recommended, but a schema+design change]; (B) make linkage mandatory for ALL KPIs (risks breaking operational KPIs); (C) leave as-is (current design is deliberate). Needs Vikram.
 
-## WAVE 5 — PORTFOLIO, IMPORT, EXPORT & REMAINING P2  *(pending)*
-STRATA-E2E-015, V4-OPEN-019, V6-OPEN-025, V6-OPEN-031, V6-OPEN-037, STRATA-E2E-007, 009, 017, V6-OPEN-038.
+## WAVE 5 — PORTFOLIO, IMPORT, EXPORT & REMAINING P2  *(active)*
+STRATA-E2E-015, V4-OPEN-019, V6-OPEN-025, V6-OPEN-031, V6-OPEN-037, STRATA-E2E-007, 009, 017, V6-OPEN-038, + E2E-005.
+
+| ID | Sev | Status | Root cause / disposition |
+|---|---|---|---|
+| V6-OPEN-025 | P2 | FIXED (client) | search haystack omitted requesting-project name; now adds requesting + serving project-card names (`cardById` in scope). `StrataExecutionPage.tsx:535` |
+| V4-OPEN-019 | P1 | VERIFIED ALREADY DELIVERED (`db2d1c339`) | governed attribution form (Project Card selects + split validation, no raw JSON); `initiative_id` only in legacy read parser |
+| STRATA-E2E-015 | P1 | ALREADY FIXED (`66284dfc6`) — retest | client XLSX via Blob/anchor (proven path) + error surfacing already added; likely harness download-suppression. Live retest needed |
+| V6-OPEN-037 | P1 | FIXED (client) — verified | wired `@/utils/exports` CSV export into Execution header, respects view+filters, ungated for read roles. Full governed multi-sheet XLSX = follow-up decision |
+| V6-OPEN-031 | P2 | **BLOCKED (D-6)** | Caty FAB is a GLOBAL `src/components/chat/dock` component on every route — fix (hide on modal / z-index) needs app-wide regression, not strata-scoped |
+| V6-OPEN-038 | P2 | FIXED (client) | `maxLength` + counter on `FieldControl` text/textarea (defaults text 500, textarea 5000). Server-side length enforcement = follow-up |
+| STRATA-E2E-007 | P2 | FIXED (client) | added `placeholder` to the gate DatePicker in `vmoAuthoring.tsx` (authoring.tsx already fixed); no more 1993 fallback |
+| STRATA-E2E-009 | P2 | PARTIAL / out-of-scope | console warnings are library/env noise: `@atlaskit` legacy-context + defaultProps (lib version bump), Recharts sizing (already best-practiced), missing `component_config` (apply PR-1 migration to QA env). Not strata code bugs |
+| STRATA-E2E-017 | P2 | VERIFIED ALREADY DELIVERED | real per-card CI unique index `20260712101000` + Wave 2 `mapStrataError` friendly message |
+| STRATA-E2E-005 | P1 | PARTIAL / decision | Portfolio-on-create works; Edit-side portfolio visibility missing = feature add; Initiative absence intentional (rule 20) |
+
+**D-6 (logged):** V6-OPEN-031 (Caty FAB overlaps last dependency Edit) lives in the global `src/components/chat/dock` FAB — used on every Catalyst route. Fixing it (hide when an `aria-modal` dialog is open, or lower z-index below modal layers) is technically simple but has app-wide blast radius and needs cross-app regression, so it's out of STRATA-remediation scope. Needs a separate Feature Work ID.
+
+### WAVE 5 — DELIVERY RECORD
+
+| ID | Disposition | Change | Evidence |
+|---|---|---|---|
+| V6-OPEN-025 | FIXED — pending retest | requesting/serving project names added to dependency search haystack | code + tsc |
+| V6-OPEN-037 | FIXED — verified | CSV export in Execution header (view+filter aware) | Browser: Export CSV button present; click → no error, download fired |
+| V6-OPEN-038 | FIXED — pending retest | maxLength + counter on text/textarea fields | code + tsc |
+| STRATA-E2E-007 | FIXED — pending retest | gate DatePicker placeholder | code + tsc |
+| STRATA-E2E-017 | VERIFIED DELIVERED | unique index + Wave 2 error mapping | — |
+| V4-OPEN-019 | VERIFIED DELIVERED (`db2d1c339`) | governed attribution form | — |
+| STRATA-E2E-015 | ALREADY FIXED — retest | `66284dfc6` | live retest (harness may suppress download) |
+| V6-OPEN-031 | BLOCKED (D-6) | global FAB — out of scope | — |
+| STRATA-E2E-009 | PARTIAL / out-of-scope | library/env noise | console confirms `@atlaskit` legacy-context origin |
+| STRATA-E2E-005 | PARTIAL / decision | portfolio edit-side = feature; Initiative intentional | — |
+
+**Files changed:** `StrataExecutionPage.tsx` (025 + 037), `authoring.tsx` (038), `vmoAuthoring.tsx` (007). No migration. **Validation:** tsc 0 errors, eslint 0 errors, color gate clean. Browser: 037 export verified.
 
 ---
 

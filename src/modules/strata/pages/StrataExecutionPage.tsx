@@ -16,6 +16,7 @@
  */
 import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { exportToCsv } from '@/utils/exports';
 import {
   Button, CatalystTag, EmptyState, Lozenge, ProgressBar, SectionMessage, Select, Spinner, Textfield, Tooltip,
 } from '@/components/ads';
@@ -532,7 +533,12 @@ export default function StrataExecutionPage() {
     if (dependencyStatusFilter && d.status !== dependencyStatusFilter) return false;
     if (blockerOnly && !isOpenBlocker(d)) return false;
     if (search) {
-      const haystack = `${d.name ?? ''} ${d.description ?? ''} ${d.serving_label ?? ''}`.toLowerCase();
+      // Search the visible identifiers, including the Requesting Project and (when the
+      // serving party is a project card) the Serving project name — these are shown in
+      // each row but were previously unsearchable (V6-OPEN-025). cardById is in scope.
+      const requestingName = d.requesting_type === 'project_card' ? cardById.get(d.requesting_id)?.name ?? '' : '';
+      const servingName = d.serving_type === 'project_card' && d.serving_id ? cardById.get(d.serving_id)?.name ?? '' : '';
+      const haystack = `${d.name ?? ''} ${d.description ?? ''} ${d.serving_label ?? ''} ${requestingName} ${servingName}`.toLowerCase();
       if (!haystack.includes(search)) return false;
     }
     // Cycle isolation (V3-OPEN-001): a dependency belongs to this cycle only if
@@ -704,21 +710,76 @@ export default function StrataExecutionPage() {
   const submitAndRefresh = (fn: (v: StrataFormValues) => Promise<unknown>) =>
     async (v: StrataFormValues) => { await fn(v); invalidate(); };
 
+  // Export the current view's filtered rows to CSV (V6-OPEN-037). Respects every
+  // active filter/view via filteredCards/filteredDependencies. Available to all
+  // roles (read included), unlike Import/New which are write-gated.
+  const pctForExport = (v: number | null) => (v == null ? '' : `${Math.round(v > 1 ? v : v * 100)}%`);
+  const exportExecutionCsv = () => {
+    if (view === 'dependency') {
+      const rows = filteredDependencies.map((d) => ({
+        dependency: d.name ?? '',
+        status: d.status,
+        blocker: d.is_blocker ? 'Yes' : 'No',
+        requesting_project: d.requesting_type === 'project_card' ? cardById.get(d.requesting_id)?.name ?? '' : (d.requesting_id ?? ''),
+        serving: d.serving_type === 'project_card' && d.serving_id ? cardById.get(d.serving_id)?.name ?? '' : (d.serving_label ?? ''),
+        type: d.dependency_type ?? '',
+      }));
+      if (rows.length === 0) return;
+      exportToCsv(rows, [
+        { key: 'dependency', header: 'Dependency' },
+        { key: 'status', header: 'Status' },
+        { key: 'blocker', header: 'Blocker' },
+        { key: 'requesting_project', header: 'Requesting Project / Team' },
+        { key: 'serving', header: 'Serving Department / Team' },
+        { key: 'type', header: 'Type' },
+      ], { filename: 'strata-execution-dependencies' });
+      return;
+    }
+    const rows = filteredCards.map((c) => ({
+      reference: c.reference_id ?? '',
+      name: c.name,
+      strategic_theme: c.theme_id ? themeById.get(c.theme_id)?.name ?? '' : '',
+      lead_business_unit: c.lead_business_unit ?? '',
+      delivery_team: c.delivery_team ?? '',
+      project_manager: profileName(c.pm_id) ?? '',
+      delivery_status: c.stage,
+      actual_progress: pctForExport(c.actual_progress),
+      delivery_health: c.calculated_health ?? '',
+    }));
+    if (rows.length === 0) return;
+    exportToCsv(rows, [
+      { key: 'reference', header: 'Reference' },
+      { key: 'name', header: 'Project Name' },
+      { key: 'strategic_theme', header: 'Strategic Theme' },
+      { key: 'lead_business_unit', header: 'Lead Business Unit' },
+      { key: 'delivery_team', header: 'Delivery Team' },
+      { key: 'project_manager', header: 'Project Manager' },
+      { key: 'delivery_status', header: 'Delivery Status' },
+      { key: 'actual_progress', header: 'Actual Progress' },
+      { key: 'delivery_health', header: 'Delivery Health' },
+    ], { filename: `strata-execution-${view}` });
+  };
+
   return (
     <StrataPageShell
       trail={detailCard ? [{ text: 'Execution', href: Routes.strata.execution() }, { text: detailCard.name }] : undefined}
       hideTitle={!!detailCard}
       docTitle={detailCard ? detailCard.name : undefined}
-      headerActions={canWrite ? (
+      headerActions={!detailCard ? (
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          {!detailCard ? (
-            <Button spacing="compact" onClick={() => navigate(Routes.strata.executionImport())} testId="strata-execution-import">
-              Execution import
-            </Button>
-          ) : null}
-          <Button spacing="compact" appearance="primary" onClick={() => setPageForm('new-project')} testId="strata-new-project-card">
-            New project card
+          <Button spacing="compact" onClick={exportExecutionCsv} testId="strata-execution-export">
+            Export CSV
           </Button>
+          {canWrite ? (
+            <>
+              <Button spacing="compact" onClick={() => navigate(Routes.strata.executionImport())} testId="strata-execution-import">
+                Execution import
+              </Button>
+              <Button spacing="compact" appearance="primary" onClick={() => setPageForm('new-project')} testId="strata-new-project-card">
+                New project card
+              </Button>
+            </>
+          ) : null}
         </div>
       ) : undefined}
       testId="strata-execution-chrome"

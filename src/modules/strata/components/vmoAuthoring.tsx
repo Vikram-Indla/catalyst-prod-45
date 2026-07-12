@@ -154,6 +154,9 @@ export function StrataScheduleGateModal({
               shouldShowCalendarButton
               clearControlLabel="Clear scheduled date"
               label="Scheduled for"
+              // Supply a placeholder so an empty date never shows @atlaskit's
+              // built-in 1993 fallback (STRATA-E2E-007).
+              placeholder="Select date"
             />
           </FieldBlock>
         </div>
