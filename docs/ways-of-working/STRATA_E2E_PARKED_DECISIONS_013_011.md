@@ -84,11 +84,16 @@ Migration `supabase/migrations/20260712120000_strata_canonical_perspective_model
 - Historical reproducibility preserved: renames keep ids; ESG retired not deleted; its 2
   seed scorecard lines remain resolvable.
 
-### Still open (ruling item 8) — Admin CRUD (next slice)
-`configApi` has no perspective write methods and `StrataAdminConfigPage` is read-only.
-To be built as a separate follow-up slice: create / order / weight / activate / retire
-perspectives + per-model weight editing with the sum-100 gate, ADS-token color only,
-respecting the draft-only write window (post-approval edits require supersede-versioning).
+### Admin CRUD (ruling item 8) — DELIVERED
+`configApi.createPerspective` / `updatePerspective` (draft-only per RLS) and
+`setModelPerspectiveWeights` added, with admin UI in `StrataAdminConfigPage`:
+New-perspective + Edit (drafts only) in `PerspectivesSection`, and a per-model weight
+editor gated to `strategy_office` that blocks save unless weights total 100.
+Activation/retirement continue through the existing Submit/Approve/Retire lifecycle.
+Governance honored: approved perspectives are not editable via UPDATE (edits after
+approval require supersede-versioning); global reorder of approved perspectives is
+therefore not a client action. ADS tokens only; `color_token` left optional/omitted
+(no curated ADS-accent list in-repo to source valid names).
 
 ### Closure condition
 Do NOT close V3-OPEN-011 until: (a) the canonical model is confirmed on the target and
