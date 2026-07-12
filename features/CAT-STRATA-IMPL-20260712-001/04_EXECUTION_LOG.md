@@ -90,3 +90,23 @@ Phase-2 page but the change is the minimal consumer side of the §5 nav contract
 Validation: tsc clean; lint:colors:gate / audit:ads:gate green. Live: `?from=` round-trip verified
 (CC → scorecard evidence `?from=%2Fstrata` → "← Back to Command Center" → CC). "n days overdue"
 code-verified only — current data has no overdue inbox rows to render it.
+
+### Committed
+`d50966a6d` — slice 1A-1 (routes.ts + CC + EvidencePage + exec log).
+
+## Slice 1A-2 — snapshot band in locked mode — IMPLEMENTED, VERIFICATION-BLOCKED (NOT committed)
+Scoped to the snapshot band only (scope/freshness/data-trust deferred to 1A-2b pending
+StrataDataSource field confirmation). File: `StrataCommandCenterPage.tsx` — import
+`StrataSnapshotBand` + `useSnapshots`; resolve `instance.locked_snapshot_id` → snapshot; render
+`StrataSnapshotBand` (snapshot_key / frozen locked_at / basis=name) above the grid when
+`dataState==='locked'`.
+
+Validation: tsc clean; lint:colors:gate / audit:ads:gate green.
+
+**VERIFIED (no seeding needed).** DB-safety: confirmed the dev app + Supabase MCP both target ONLY
+`cyijbdeuehohvhnsywig` (catalyst-staging) — prod (`lmqwtldpfacrrlvdnmld`) is unreachable via the MCP,
+`.env.development` → staging (no overrides), and live network calls hit staging. Read-only query found
+an EXISTING locked instance (`CEO Scorecard · Q1 FY2026` → SNAP-1001), so NO DB WRITE was made —
+switched the CC period to "Q1 FY2026 · closed" and screenshot-verified the band: discovery-toned
+`LOCKED SNAPSHOT` lozenge + "SNAP-1001 · frozen 8 Apr 2026, 09:00 · Q1 FY2026 Executive Review".
+File: `StrataCommandCenterPage.tsx` only.

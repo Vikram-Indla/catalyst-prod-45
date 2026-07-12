@@ -40,6 +40,7 @@ import {
   useDependencies,
   useKpis,
   useNeedsAttention,
+  useSnapshots,
   useStrataUserId,
   useEnterpriseScoreTrend,
   useAiOutputs,
@@ -49,6 +50,7 @@ import {
 import {
   T,
   StrataPageShell,
+  StrataSnapshotBand,
   StrataPanel,
   StrataStatStrip,
   StrataBandBar,
@@ -273,6 +275,8 @@ export default function StrataCommandCenterPage() {
   const kpisQ = useKpis();
   // Server-side rule engine feed — replaces the former client-composed inbox.
   const needsAttentionQ = useNeedsAttention(activePeriod?.id);
+  // Locked-mode snapshot basis (resolves instance.locked_snapshot_id → snapshot).
+  const snapshotsQ = useSnapshots();
 
   // ── AI advisory (generate + human review) ──────────────────────────────────
   const aiOutputsQ = useAiOutputs();
@@ -460,6 +464,11 @@ export default function StrataCommandCenterPage() {
   // ── Page states ─────────────────────────────────────────────────────────────
   const isLoading = ctxLoading || instancesQ.isLoading || (!!instance && calcQ.isLoading);
   const dataState = instance ? (instance.status === 'locked' ? 'locked' : 'live') : null;
+  // Resolve the locked snapshot behind a locked instance (chrome-level band basis).
+  const lockedSnapshot = useMemo(
+    () => (snapshotsQ.data ?? []).find((s) => s.id === instance?.locked_snapshot_id) ?? null,
+    [snapshotsQ.data, instance],
+  );
 
   // ── Executive stat strip (hero: enterprise score ring) ─────────────────────
   const stats: StrataStat[] = [
@@ -537,6 +546,16 @@ export default function StrataCommandCenterPage() {
       state={dataState}
       testId="strata-cc-chrome"
     >
+      {dataState === 'locked' && lockedSnapshot ? (
+        <div style={{ marginBottom: 16 }}>
+          <StrataSnapshotBand
+            snapshotKey={lockedSnapshot.snapshot_key}
+            frozenAt={fmtDateTime(lockedSnapshot.locked_at)}
+            basis={lockedSnapshot.name}
+            testId="strata-cc-snapshot-band"
+          />
+        </div>
+      ) : null}
       {isLoading ? (
         <LoadingSkeleton />
       ) : !activeCycle ? (
