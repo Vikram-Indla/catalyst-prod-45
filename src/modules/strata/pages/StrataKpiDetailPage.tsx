@@ -9,21 +9,24 @@ import React, { useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import {
-  Avatar, Button, CatalystTag, EmptyState, Lozenge, SectionMessage, Spinner,
+  Avatar, Button, CatalystTag, EmptyState, Lozenge,
+  Modal, ModalBody, ModalFooter, ModalHeader, ModalTitle,
+  SectionMessage, Select, Spinner, Textfield,
 } from '@/components/ads';
+import type { SelectOption } from '@/components/ads';
 import {
   CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip as RechartsTooltip, XAxis, YAxis,
 } from 'recharts';
 import {
-  Activity, Database, GitBranch, Info, Users,
+  Activity, Database, GitBranch, Info, Network, Users,
 } from '@/lib/atlaskit-icons';
 import { JiraTable } from '@/components/shared/JiraTable';
 import type { Column } from '@/components/shared/JiraTable';
 import { Routes } from '@/lib/routes';
-import { kpiApi } from '@/modules/strata/domain';
+import { kpiApi, strategyApi } from '@/modules/strata/domain';
 import {
-  useDataSources, useInvalidateStrata, useKpiAchievement, useKpiBySlug, useKpiDetail, useKpiTypes,
-  useProfileNames, useStrataContext, useStrataRoles, useThresholdSchemes, useUploadRuns,
+  useDataSources, useElementKpis, useInvalidateStrata, useKpiAchievement, useKpiBySlug, useKpiDetail, useKpiTypes,
+  useProfileNames, useStrataContext, useStrataRoles, useStrategyElements, useThresholdSchemes, useUploadRuns,
 } from '@/modules/strata/hooks/useStrata';
 import type { StrataProfileRef } from '@/modules/strata/hooks/useStrata';
 import {
@@ -33,7 +36,7 @@ import { StrataFormModal } from '@/modules/strata/components/authoring';
 import { fmtDate, fmtDateTime, fmtPct, fmtRatioPct, fmtUnit, labelize } from '@/modules/strata/components/format';
 import { StrataGovernedStatusLozenge } from '@/modules/strata/pages/StrataKpiLibraryPage';
 import type {
-  StrataKpi, StrataKpiActual, StrataKpiTarget, ValidationStatus,
+  StrataKpi, StrataKpiActual, StrataKpiTarget, StrataStrategyElement, ValidationStatus,
 } from '@/modules/strata/types';
 
 const STALE = 30_000;
@@ -110,6 +113,159 @@ function ValidationLozenge({ status }: { status: ValidationStatus | string | nul
 
 const Dash = () => <span style={{ color: T.subtlest }}>—</span>;
 
+const FieldLabel = ({ children }: { children: React.ReactNode }) => (
+  <div style={{ marginBottom: 4, fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: T.subtle }}>{children}</div>
+);
+
+/**
+ * KPI-first strategy linking — link THIS KPI to strategy elements (themes/objectives).
+ * Inverse of the Strategy Room's per-element KpiLinksModal (element↔KPI is a
+ * strata_element_kpis join row). Linking is gated to approved KPIs (server rejects
+ * otherwise); unlink of existing links stays available regardless of status.
+ */
+function KpiStrategyLinksModal({
+  kpi, links, elements, canLink, onClose, onChanged,
+}: {
+  kpi: StrataKpi;
+  links: Array<{ element_id: string; kpi_id: string; weight: number | null }>;
+  elements: StrataStrategyElement[];
+  canLink: boolean;
+  onClose: () => void;
+  onChanged: () => void;
+}) {
+  const [elementId, setElementId] = useState<string | null>(null);
+  const [weight, setWeight] = useState('');
+  const [contribution, setContribution] = useState<'direct' | 'supporting'>('direct');
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const elementById = useMemo(() => new Map(elements.map((e) => [e.id, e])), [elements]);
+  const linkedIds = new Set(links.map((l) => l.element_id));
+  // Strategy hierarchy = theme-context elements; project-context elements belong to Project Cards.
+  const elementOptions: SelectOption<string>[] = elements
+    .filter((e) => e.context === 'theme' && !linkedIds.has(e.id))
+    .map((e) => ({ value: e.id, label: e.name }));
+  const contributionOptions: SelectOption<string>[] = [
+    { value: 'direct', label: 'Direct' },
+    { value: 'supporting', label: 'Supporting' },
+  ];
+
+  const run = async (fn: () => Promise<unknown>) => {
+    setBusy(true);
+    setError(null);
+    try {
+      await fn();
+      onChanged();
+      return true;
+    } catch (e) {
+      setError(e instanceof Error ? e.message : String(e));
+      return false;
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const link = async () => {
+    if (!elementId) { setError('Required: strategy element'); return; }
+    const w = weight === '' ? null : Number(weight);
+    if (w != null && (Number.isNaN(w) || w < 0 || w > 100)) {
+      setError('Weight must be between 0 and 100.');
+      return;
+    }
+    const ok = await run(() => strategyApi.linkElementKpi(elementId, kpi.id, w ?? undefined, contribution));
+    if (ok) { setElementId(null); setWeight(''); }
+  };
+
+  return (
+    <Modal isOpen onClose={busy ? () => {} : onClose} width="medium" testId="strata-kpi-strategy-links-modal">
+      <ModalHeader><ModalTitle>Strategy links — {kpi.name}</ModalTitle></ModalHeader>
+      <ModalBody>
+        {links.length === 0 ? (
+          <p style={{ margin: '0 0 12px', fontSize: 'var(--ds-font-size-200)', color: T.subtle }}>
+            This KPI is not linked to any strategy element yet.
+          </p>
+        ) : (
+          <div style={{ marginBottom: 12 }}>
+            {links.map((l) => (
+              <div
+                key={l.element_id}
+                style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 0', borderBottom: `1px solid ${T.border}` }}
+              >
+                <span style={{ flex: 1, fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: T.text }}>
+                  {elementById.get(l.element_id)?.name ?? '—'}
+                </span>
+                <span style={{ fontSize: 'var(--ds-font-size-100)', color: T.subtle, whiteSpace: 'nowrap' }}>
+                  {l.weight != null ? `Weight ${l.weight}` : '—'}
+                </span>
+                <Button
+                  spacing="compact"
+                  appearance="subtle"
+                  isDisabled={busy}
+                  onClick={() => run(() => strategyApi.unlinkElementKpi(l.element_id, kpi.id))}
+                >
+                  Unlink
+                </Button>
+              </div>
+            ))}
+          </div>
+        )}
+        {canLink ? (
+          <div style={{ display: 'grid', gap: 12 }}>
+            <div>
+              <FieldLabel>Strategy element</FieldLabel>
+              <Select
+                options={elementOptions}
+                value={elementOptions.find((o) => o.value === elementId) ?? null}
+                onChange={(next) => setElementId(next?.value ?? null)}
+                placeholder="Select strategy element…"
+                isSearchable
+                usePortal
+                aria-label="Strategy element"
+              />
+            </div>
+            <div>
+              <FieldLabel>Weight (0–100)</FieldLabel>
+              <Textfield
+                type="number"
+                value={weight}
+                onChange={(e) => setWeight((e.target as HTMLInputElement).value)}
+                aria-label="Weight"
+              />
+            </div>
+            <div>
+              <FieldLabel>Contribution</FieldLabel>
+              <Select
+                options={contributionOptions}
+                value={contributionOptions.find((o) => o.value === contribution) ?? null}
+                onChange={(next) => setContribution((next?.value as 'direct' | 'supporting') ?? 'direct')}
+                usePortal
+                aria-label="Contribution"
+              />
+            </div>
+          </div>
+        ) : (
+          <SectionMessage appearance="information" title="Approval required">
+            <p>Approve this KPI to link it to the strategy hierarchy. You can still remove existing links.</p>
+          </SectionMessage>
+        )}
+        {error ? (
+          <div style={{ marginTop: 12 }}>
+            <SectionMessage appearance="error" title="Action rejected">
+              <p style={{ whiteSpace: 'pre-wrap' }}>{error}</p>
+            </SectionMessage>
+          </div>
+        ) : null}
+      </ModalBody>
+      <ModalFooter>
+        <Button appearance="subtle" onClick={onClose} isDisabled={busy}>Close</Button>
+        <Button appearance="primary" onClick={link} isDisabled={busy || !canLink}>
+          {busy ? 'Working…' : 'Link element'}
+        </Button>
+      </ModalFooter>
+    </Modal>
+  );
+}
+
 /** Clear-flag detection: the modal opened with a value and the user cleared the field. */
 const wasCleared = (initial: string | null | undefined, submitted: unknown): boolean =>
   initial != null && (submitted == null || (typeof submitted === 'string' && submitted.trim() === ''));
@@ -152,7 +308,7 @@ interface TrendRow {
 export default function StrataKpiDetailPage() {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
-  const { periods, activePeriod } = useStrataContext();
+  const { periods, activePeriod, activeCycle } = useStrataContext();
 
   const kpiQ = useKpiBySlug(slug);
   const kpi = kpiQ.data ?? null;
@@ -164,8 +320,11 @@ export default function StrataKpiDetailPage() {
   const dataSourcesQ = useDataSources();
   const kpiTypesQ = useKpiTypes();
   const schemesQ = useThresholdSchemes();
+  const elementKpisQ = useElementKpis();
+  const elementsQ = useStrategyElements(activeCycle?.id);
   const invalidate = useInvalidateStrata();
   const [showTrendData, setShowTrendData] = useState(false);
+  const [showStrategyLinks, setShowStrategyLinks] = useState(false);
   /** Governance verdict modal — one at a time (approve KPI / approve formula / attest actual). */
   const [decision, setDecision] = useState<
     | { kind: 'approve-kpi' }
@@ -334,6 +493,9 @@ export default function StrataKpiDetailPage() {
     );
   }
 
+  const elements = elementsQ.data ?? [];
+  const elementById = new Map(elements.map((e) => [e.id, e]));
+  const kpiElementLinks = (elementKpisQ.data ?? []).filter((l) => l.kpi_id === kpi.id);
   const actuals = detailQ.data?.actuals ?? [];
   const formulas = detailQ.data?.formulas ?? [];
   const lineageActuals = actuals.filter((a) => a.upload_run_id);
@@ -562,6 +724,47 @@ export default function StrataKpiDetailPage() {
               <p style={{ fontSize: 'var(--ds-font-size-100)', color: T.subtlest, margin: 0 }}>
                 Every formula change creates a new approved version.
               </p>
+            </div>
+          )}
+        </StrataPanel>
+
+        {/* (e2) Strategy links — element↔KPI join rows (strata_element_kpis), approved-gated */}
+        <StrataPanel
+          title="Strategy links"
+          icon={<Network size={16} />}
+          count={kpiElementLinks.length || null}
+          testId="strata-kpi-strategy-links"
+          actions={canAuthor ? (
+            <Button
+              appearance="default"
+              spacing="compact"
+              onClick={() => setShowStrategyLinks(true)}
+              testId="strata-kpi-manage-strategy-links"
+            >
+              Manage links
+            </Button>
+          ) : undefined}
+        >
+          {elementsQ.isLoading || elementKpisQ.isLoading ? (
+            <Spinner size="medium" aria-label="Loading strategy links" />
+          ) : kpiElementLinks.length === 0 ? (
+            <EmptyState size="compact" header="No strategy links" description="Link this KPI to a strategy theme or objective to roll it into the hierarchy." />
+          ) : (
+            <div>
+              {kpiElementLinks.map((l) => {
+                const el = elementById.get(l.element_id);
+                return (
+                  <div key={l.element_id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '8px 0', borderBottom: `1px solid ${T.border}` }}>
+                    <span style={{ flex: 1, minWidth: 0, fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: T.text, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      {el?.name ?? <Dash />}
+                    </span>
+                    {el?.element_type ? <CatalystTag text={labelize(el.element_type)} /> : null}
+                    <span style={{ fontSize: 'var(--ds-font-size-100)', color: T.subtle, whiteSpace: 'nowrap' }}>
+                      {l.weight != null ? `Weight ${l.weight}` : '—'}
+                    </span>
+                  </div>
+                );
+              })}
             </div>
           )}
         </StrataPanel>
@@ -838,6 +1041,18 @@ export default function StrataKpiDetailPage() {
         }}
         testId="strata-kpi-submit-actual-modal"
       />
+
+      {/* Strategy links — KPI-first element linking; server enforces the approved gate + SoD */}
+      {showStrategyLinks ? (
+        <KpiStrategyLinksModal
+          kpi={kpi}
+          links={kpiElementLinks}
+          elements={elements}
+          canLink={kpi.status === 'approved'}
+          onClose={() => setShowStrategyLinks(false)}
+          onChanged={invalidate}
+        />
+      ) : null}
     </StrataPageShell>
   );
 }
