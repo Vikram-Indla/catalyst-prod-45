@@ -21,9 +21,29 @@ import type {
   StrataWorkflowConfig,
 } from '../types';
 
-async function run<T>(q: PromiseLike<{ data: T | null; error: { message: string } | null }>): Promise<T> {
+/** Maps known Postgres/RPC errors to business-facing copy so schema, table and
+ * constraint identifiers never reach the UI (V6-OPEN-024). Every domain call
+ * funnels through run(), so this one map covers the whole STRATA module. Unknown
+ * errors pass their original message through unchanged. */
+function mapStrataError(error: { message: string; code?: string }): string {
+  const msg = error.message ?? '';
+  if (error.code === '23505') {
+    // unique_violation — map the STRATA constraints we own by name.
+    if (msg.includes('strata_benefit_values_benefit_id_period_id_value_kind')) {
+      return 'A value already exists for this Benefit, Period and value kind. Refresh and edit the existing entry instead.';
+    }
+    if (msg.includes('uq_strata_milestones_card_name')) {
+      return 'A milestone with this name already exists on this project card.';
+    }
+    // Generic fallback — never expose the raw constraint identifier.
+    return 'That value conflicts with an existing record. Refresh and try again.';
+  }
+  return msg;
+}
+
+async function run<T>(q: PromiseLike<{ data: T | null; error: { message: string; code?: string } | null }>): Promise<T> {
   const { data, error } = await q;
-  if (error) throw new Error(error.message);
+  if (error) throw new Error(mapStrataError(error));
   return data as T;
 }
 
@@ -531,8 +551,15 @@ export const executionApi = {
     sponsorId?: string; businessCase?: string; valueHypothesis?: string;
     optionalFields?: Record<string, unknown>;
     clearTheme?: boolean; clearSponsor?: boolean; clearBusinessOwner?: boolean;
+    /** Optimistic-concurrency token: the updated_at captured when the edit form
+     * opened. When present, the RPC rejects the write if the row moved on (V6-OPEN-033). */
+    expectedUpdatedAt?: string;
   }) =>
     run(typedRpc('strata_update_project_card', {
+      // V6-OPEN-033: concurrency guard active — migration 20260712140000 applied to
+      // staging, so the RPC accepts p_expected_updated_at. A stale second save is
+      // rejected with a conflict message.
+      p_expected_updated_at: patch.expectedUpdatedAt ?? null,
       p_project: projectId, p_name: patch.name ?? null, p_pm: patch.pmId ?? null,
       p_sector: patch.sector ?? null, p_budget: patch.budget ?? null,
       p_baseline_start: patch.baselineStart ?? null, p_baseline_end: patch.baselineEnd ?? null,

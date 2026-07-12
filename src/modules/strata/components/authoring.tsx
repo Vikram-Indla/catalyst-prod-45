@@ -43,6 +43,9 @@ export interface StrataFieldSpec {
   max?: number;
   step?: number;
   isDisabled?: boolean;
+  /** For kind 'text'/'textarea' — max character length. Enforced by the input and
+   * shown as a counter (V6-OPEN-038). Defaults: text 500, textarea 5000. */
+  maxLength?: number;
 }
 
 export type StrataFormValues = Record<string, string | number | boolean | null>;
@@ -70,17 +73,26 @@ function FieldControl({
   userOptions: SelectOption<string>[];
 }) {
   switch (field.kind) {
-    case 'textarea':
+    case 'textarea': {
+      const max = field.maxLength ?? 5000;
+      const len = ((value as string) ?? '').length;
       return (
-        <TextArea
-          value={(value as string) ?? ''}
-          placeholder={field.placeholder}
-          minimumRows={3}
-          isDisabled={field.isDisabled}
-          onChange={(e) => onChange((e.target as HTMLTextAreaElement).value)}
-          aria-label={field.label}
-        />
+        <>
+          <TextArea
+            value={(value as string) ?? ''}
+            placeholder={field.placeholder}
+            minimumRows={3}
+            maxLength={max}
+            isDisabled={field.isDisabled}
+            onChange={(e) => onChange((e.target as HTMLTextAreaElement).value)}
+            aria-label={field.label}
+          />
+          <div style={{ marginTop: 4, textAlign: 'right', fontSize: 'var(--ds-font-size-100)', color: len >= max ? 'var(--ds-text-danger)' : T.subtlest }}>
+            {len}/{max}
+          </div>
+        </>
       );
+    }
     case 'number':
       return (
         <Textfield
@@ -154,16 +166,27 @@ function FieldControl({
         />
       );
     case 'text':
-    default:
+    default: {
+      const max = field.maxLength ?? 500;
+      const len = ((value as string) ?? '').length;
       return (
-        <Textfield
-          value={(value as string) ?? ''}
-          placeholder={field.placeholder}
-          isDisabled={field.isDisabled}
-          onChange={(e) => onChange((e.target as HTMLInputElement).value)}
-          aria-label={field.label}
-        />
+        <>
+          <Textfield
+            value={(value as string) ?? ''}
+            placeholder={field.placeholder}
+            maxLength={max}
+            isDisabled={field.isDisabled}
+            onChange={(e) => onChange((e.target as HTMLInputElement).value)}
+            aria-label={field.label}
+          />
+          {len > max * 0.8 ? (
+            <div style={{ marginTop: 4, textAlign: 'right', fontSize: 'var(--ds-font-size-100)', color: len >= max ? 'var(--ds-text-danger)' : T.subtlest }}>
+              {len}/{max}
+            </div>
+          ) : null}
+        </>
       );
+    }
   }
 }
 
@@ -209,7 +232,11 @@ export function StrataFormModal({
   ).some((k) => normalize(values[k]) !== normalize(initialValues[k]));
 
   // Native "Leave site?" prompt on refresh / tab-close / hard-nav while dirty.
-  // (SPA sidebar/breadcrumb nav is out of scope — BrowserRouter has no blocker.)
+  // (SPA browser Back/Forward is NOT intercepted here — the app is on BrowserRouter,
+  // where react-router's useBlocker is unavailable. A history-sentinel workaround was
+  // trialled and rejected as too fragile (V5-OPEN-022 / D-3); the correct fix is a
+  // data-router migration, tracked separately. Sidebar/in-app link nav is guarded via
+  // handleRequestClose below; refresh/close via useBeforeUnload.)
   useBeforeUnload(open && isDirty && !busy);
 
   // User-initiated close (Modal onClose / backdrop / Cancel). Confirms discard

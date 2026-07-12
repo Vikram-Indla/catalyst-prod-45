@@ -29,8 +29,10 @@ interface StrataContextValue {
 
 const StrataContext = createContext<StrataContextValue | null>(null);
 
-/** URL-safe context token ("Q2 FY2026" → "q2-fy2026") — bookmarkable cycle/period. */
-const ctxToken = (name: string) => name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+/** URL-safe context token ("Q2 FY2026" → "q2-fy2026") — bookmarkable cycle/period.
+ * Exported so detail-route navigations can carry the owning cycle/period forward
+ * (E2E-001: refresh/copied-URL/new-tab must restore the same context). */
+export const ctxToken = (name: string) => name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 
 export function StrataProvider({ children }: { children: React.ReactNode }) {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -380,6 +382,17 @@ export const usePortfolioBySlug = (slug?: string) =>
   useQuery({
     queryKey: ['strata', 'portfolio', slug],
     queryFn: () => valueApi.portfolioBySlug(slug!),
+    enabled: !!slug,
+    staleTime: STALE,
+  });
+
+/** Resolve a benefit (incl. its owning portfolio_id) directly from its slug so a
+ * benefit deep link can restore the correct Portfolio atomically instead of
+ * inheriting ?portfolio=/the first portfolio (STRATA-E2E-018). */
+export const useBenefitBySlug = (slug?: string) =>
+  useQuery({
+    queryKey: ['strata', 'benefit', slug],
+    queryFn: () => valueApi.benefitBySlug(slug!),
     enabled: !!slug,
     staleTime: STALE,
   });

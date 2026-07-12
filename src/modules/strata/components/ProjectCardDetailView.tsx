@@ -295,9 +295,9 @@ export function ProjectCardDetailView({ card, theme }: {
 
       <StrataStatStrip
         items={[
-          { key: 'progress', label: 'Actual progress', value: derivedProgress == null ? '—' : `${Math.round(derivedProgress * 100)}%` },
-          { key: 'baseline_progress', label: 'Baseline progress', value: card.baseline_progress_pct == null ? '—' : `${Math.round(card.baseline_progress_pct)}%` },
-          { key: 'variance', label: 'Variance', value: card.variance_pct == null ? '—' : `${card.variance_pct > 0 ? '+' : ''}${Math.round(card.variance_pct)}%` },
+          { key: 'progress', label: 'Actual progress', helpText: "Milestone progress weighted by each milestone's baseline duration in days (elapsed days, not inclusive). Falls back to a weight-weighted average when no milestone has both baseline dates. Rounded to the nearest whole percent.", value: derivedProgress == null ? '—' : `${Math.round(derivedProgress * 100)}%` },
+          { key: 'baseline_progress', label: 'Baseline progress', helpText: 'Planned percent-complete today over the milestone-derived baseline window (elapsed days from the earliest baseline start to the latest baseline end). 0% before the window opens, 100% after it closes. Rounded to the nearest whole percent.', value: card.baseline_progress_pct == null ? '—' : `${Math.round(card.baseline_progress_pct)}%` },
+          { key: 'variance', label: 'Variance', helpText: 'Baseline progress minus Actual progress. Positive = behind schedule: ≥10% is Minor Delay, ≥20% is Major Delay (a forecast >30 days past baseline end also forces Major Delay). Rounded to the nearest whole percent.', value: card.variance_pct == null ? '—' : `${card.variance_pct > 0 ? '+' : ''}${Math.round(card.variance_pct)}%` },
           { key: 'milestones', label: 'Milestones', value: milestones.length },
           { key: 'dependencies', label: 'Dependencies', value: projectDependencies.length },
           { key: 'blockers', label: 'Blockers', value: blockers.length },
@@ -506,7 +506,11 @@ export function ProjectCardDetailView({ card, theme }: {
         submitLabel="Save"
         fields={[
           { key: 'name', label: 'Project Name', kind: 'text', required: true },
-          { key: 'themeId', label: 'Strategic Theme', kind: 'select', options: themeElements.map((t) => ({ value: t.id, label: t.name })) },
+          // Strategic Theme is mandatory on Edit exactly as on Create — a card must
+          // always belong to a Theme. required:true makes the select non-clearable in
+          // StrataFormModal and blocks submit if emptied (V6-OPEN-027). Server also
+          // rejects a null result (see strata_update_project_card guard migration).
+          { key: 'themeId', label: 'Strategic Theme', kind: 'select', required: true, options: themeElements.map((t) => ({ value: t.id, label: t.name })) },
           { key: 'businessOwnerId', label: 'Business Owner', kind: 'user' },
           { key: 'pmId', label: 'Project Manager', kind: 'user' },
           { key: 'leadBusinessUnit', label: 'Lead Business Unit', kind: 'select', options: (lobPicklistQ.data ?? []).map((p) => ({ value: p.value, label: p.label })) },
@@ -539,6 +543,9 @@ export function ProjectCardDetailView({ card, theme }: {
           budget: fvNum(v.budget), sponsorId: fvStr(v.sponsorId), businessCase: fvStr(v.businessCase), valueHypothesis: fvStr(v.valueHypothesis),
           clearPm: wasCleared(card.pm_id, v.pmId), clearBusinessOwner: wasCleared(card.business_owner_id, v.businessOwnerId),
           clearSponsor: wasCleared(card.sponsor_id, v.sponsorId), clearTheme: wasCleared(card.theme_id, v.themeId),
+          // Optimistic-concurrency token captured when the modal opened — a stale
+          // second save is rejected with a conflict message (V6-OPEN-033).
+          expectedUpdatedAt: card.updated_at,
         }))}
         testId="strata-project-edit-modal"
       />

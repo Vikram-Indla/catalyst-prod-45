@@ -16,6 +16,7 @@
  */
 import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { exportToCsv } from '@/utils/exports';
 import {
   Button, CatalystTag, EmptyState, Lozenge, ProgressBar, SectionMessage, Select, Spinner, Textfield, Tooltip,
 } from '@/components/ads';
@@ -36,7 +37,7 @@ import { executionApi, valueApi } from '@/modules/strata/domain';
 import { fmtDate, fmtPct, fmtRatioPct, labelize } from '@/modules/strata/components/format';
 import {
   useDependencies, useInvalidateStrata, useMilestones, usePortfolios, useProfileNames, useProjectCardBySlug,
-  useProjectCardPicklists, useProjectCards, useStrataContext, useStrataRoles, useStrategyElements,
+  ctxToken, useProjectCardPicklists, useProjectCards, useStrataContext, useStrataRoles, useStrategyElements,
 } from '@/modules/strata/hooks/useStrata';
 import type {
   StrataDependency, StrataMilestone, StrataProjectCard, StrataRole, StrataStrategyElement,
@@ -369,10 +370,26 @@ function GroupedCardsSection({ groups, dependencies, isNarrow, onOpenDetail, emp
 export default function StrataExecutionPage() {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
-  const { activeCycle } = useStrataContext();
+  const { activeCycle, activePeriod } = useStrataContext();
   const isNarrow = useIsNarrow();
 
   const [searchParams, setSearchParams] = useSearchParams();
+
+  // Detail routes must carry the owning cycle/period so refresh, copied URLs and new
+  // tabs restore the same context — and therefore the same Strategic Theme — instead
+  // of falling back to the DB-active cycle (E2E-001). Derived from the live context
+  // (not just the current query string) so it works even before the user touches the
+  // cycle switcher. Every navigation to a Project Card detail goes through openCard.
+  const detailCtxSuffix = (() => {
+    const p = new URLSearchParams();
+    if (activeCycle) p.set('cycle', ctxToken(activeCycle.name));
+    if (activePeriod) p.set('period', ctxToken(activePeriod.name));
+    const s = p.toString();
+    return s ? `?${s}` : '';
+  })();
+  const openCard = (card: StrataProjectCard) => {
+    if (card.slug) navigate(`${Routes.strata.projectCard(card.slug)}${detailCtxSuffix}`);
+  };
 
   const projectCardsQ = useProjectCards();
   const detailCardQ = useProjectCardBySlug(slug);
@@ -435,7 +452,12 @@ export default function StrataExecutionPage() {
   const allMilestones = allMilestonesQ.data ?? [];
   const themes = elements.filter((e) => e.element_type === 'theme');
 
-  const isLoading = projectCardsQ.isLoading;
+  // Hold the whole list in loading until the active cycle's strategy elements have
+  // resolved. Otherwise, in the window where activeCycle is known but elementsQ is
+  // still first-fetching, the cycle predicate below is skipped and every card (all
+  // cycles) flashes unfiltered (E2E-001 "Total 44 cards"). On a cycle switch the
+  // element query re-pends, so this also prevents a cross-cycle flash mid-switch.
+  const isLoading = projectCardsQ.isLoading || (!!activeCycle?.id && elementsQ.isLoading);
   const isError = projectCardsQ.isError;
   const errorMessage = (projectCardsQ.error as Error | null)?.message ?? 'Unknown error';
 
@@ -461,8 +483,11 @@ export default function StrataExecutionPage() {
   // (null theme_id = unattached to any cycle), does not belong here and is
   // excluded — otherwise it contaminates the cycle's population and roll-ups
   // (CAT-STRATA-E2E-FIXES-20260711-001: cross-cycle leak, incl. Unassigned cards).
-  // Gated on elements having loaded so cards don't flash empty on first paint.
-  const elementsReady = !elementsQ.isLoading;
+  // "Ready" = the element query has actually settled with data for the active cycle
+  // (isSuccess), not merely "not isLoading" (which is also false while the query is
+  // disabled or re-pending between cycles). Combined with the isLoading gate above,
+  // cards never render with a half-applied cycle filter (E2E-001).
+  const elementsReady = elementsQ.isSuccess;
   const search = railFilter.trim().toLowerCase();
 
   // Cards belonging to the active cycle (theme resolves within this cycle).
@@ -482,6 +507,10 @@ export default function StrataExecutionPage() {
   }
 
   const filteredCards = projectCards.filter((c) => {
+    // Archived cards are excluded from active/default Execution — and therefore from
+    // every roll-up/group derived from filteredCards — unless the user explicitly
+    // asks for Delivery Status = Archived (history view). V6-OPEN-030.
+    if (c.stage === 'archived' && deliveryStatusFilter !== 'archived') return false;
     if (elementsReady && (!c.theme_id || !themeById.has(c.theme_id))) return false;
     if (blockerOnly && !blockedCardIds.has(c.id)) return false;
     if (search && !c.name.toLowerCase().includes(search) && !(c.reference_id ?? '').toLowerCase().includes(search)) return false;
@@ -504,7 +533,12 @@ export default function StrataExecutionPage() {
     if (dependencyStatusFilter && d.status !== dependencyStatusFilter) return false;
     if (blockerOnly && !isOpenBlocker(d)) return false;
     if (search) {
-      const haystack = `${d.name ?? ''} ${d.description ?? ''} ${d.serving_label ?? ''}`.toLowerCase();
+      // Search the visible identifiers, including the Requesting Project and (when the
+      // serving party is a project card) the Serving project name — these are shown in
+      // each row but were previously unsearchable (V6-OPEN-025). cardById is in scope.
+      const requestingName = d.requesting_type === 'project_card' ? cardById.get(d.requesting_id)?.name ?? '' : '';
+      const servingName = d.serving_type === 'project_card' && d.serving_id ? cardById.get(d.serving_id)?.name ?? '' : '';
+      const haystack = `${d.name ?? ''} ${d.description ?? ''} ${d.serving_label ?? ''} ${requestingName} ${servingName}`.toLowerCase();
       if (!haystack.includes(search)) return false;
     }
     // Cycle isolation (V3-OPEN-001): a dependency belongs to this cycle only if
@@ -554,6 +588,11 @@ export default function StrataExecutionPage() {
   const businessUnitGroups = groupCards(
     filteredCards, (c) => c.lead_business_unit, (k) => k, 'Unassigned',
   );
+  // The "Unassigned Projects" headline must reconcile with the "By Leading Business
+  // Unit" panel — both mean "no Lead Business Unit". Derive it from the same grouping
+  // (same field, same cycle-filtered/archived-excluded population) rather than the
+  // theme-based unassignedCards, which counts a different field (V6-OPEN-026).
+  const unassignedLbuCount = businessUnitGroups.find((g) => g.key === '__unassigned__')?.cards.length ?? 0;
   const pmGroups = groupCards(
     filteredCards, (c) => c.pm_id, (id) => profileName(id) ?? 'Unknown owner', 'Unassigned PM',
   );
@@ -591,7 +630,7 @@ export default function StrataExecutionPage() {
     if (!name) return <Dash />;
     if (card?.slug) {
       return (
-        <Button appearance="subtle" spacing="compact" onClick={() => navigate(Routes.strata.projectCard(card.slug!))}>
+        <Button appearance="subtle" spacing="compact" onClick={() => openCard(card)}>
           {name}
         </Button>
       );
@@ -671,21 +710,76 @@ export default function StrataExecutionPage() {
   const submitAndRefresh = (fn: (v: StrataFormValues) => Promise<unknown>) =>
     async (v: StrataFormValues) => { await fn(v); invalidate(); };
 
+  // Export the current view's filtered rows to CSV (V6-OPEN-037). Respects every
+  // active filter/view via filteredCards/filteredDependencies. Available to all
+  // roles (read included), unlike Import/New which are write-gated.
+  const pctForExport = (v: number | null) => (v == null ? '' : `${Math.round(v > 1 ? v : v * 100)}%`);
+  const exportExecutionCsv = () => {
+    if (view === 'dependency') {
+      const rows = filteredDependencies.map((d) => ({
+        dependency: d.name ?? '',
+        status: d.status,
+        blocker: d.is_blocker ? 'Yes' : 'No',
+        requesting_project: d.requesting_type === 'project_card' ? cardById.get(d.requesting_id)?.name ?? '' : (d.requesting_id ?? ''),
+        serving: d.serving_type === 'project_card' && d.serving_id ? cardById.get(d.serving_id)?.name ?? '' : (d.serving_label ?? ''),
+        type: d.dependency_type ?? '',
+      }));
+      if (rows.length === 0) return;
+      exportToCsv(rows, [
+        { key: 'dependency', header: 'Dependency' },
+        { key: 'status', header: 'Status' },
+        { key: 'blocker', header: 'Blocker' },
+        { key: 'requesting_project', header: 'Requesting Project / Team' },
+        { key: 'serving', header: 'Serving Department / Team' },
+        { key: 'type', header: 'Type' },
+      ], { filename: 'strata-execution-dependencies' });
+      return;
+    }
+    const rows = filteredCards.map((c) => ({
+      reference: c.reference_id ?? '',
+      name: c.name,
+      strategic_theme: c.theme_id ? themeById.get(c.theme_id)?.name ?? '' : '',
+      lead_business_unit: c.lead_business_unit ?? '',
+      delivery_team: c.delivery_team ?? '',
+      project_manager: profileName(c.pm_id) ?? '',
+      delivery_status: c.stage,
+      actual_progress: pctForExport(c.actual_progress),
+      delivery_health: c.calculated_health ?? '',
+    }));
+    if (rows.length === 0) return;
+    exportToCsv(rows, [
+      { key: 'reference', header: 'Reference' },
+      { key: 'name', header: 'Project Name' },
+      { key: 'strategic_theme', header: 'Strategic Theme' },
+      { key: 'lead_business_unit', header: 'Lead Business Unit' },
+      { key: 'delivery_team', header: 'Delivery Team' },
+      { key: 'project_manager', header: 'Project Manager' },
+      { key: 'delivery_status', header: 'Delivery Status' },
+      { key: 'actual_progress', header: 'Actual Progress' },
+      { key: 'delivery_health', header: 'Delivery Health' },
+    ], { filename: `strata-execution-${view}` });
+  };
+
   return (
     <StrataPageShell
       trail={detailCard ? [{ text: 'Execution', href: Routes.strata.execution() }, { text: detailCard.name }] : undefined}
       hideTitle={!!detailCard}
       docTitle={detailCard ? detailCard.name : undefined}
-      headerActions={canWrite ? (
+      headerActions={!detailCard ? (
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          {!detailCard ? (
-            <Button spacing="compact" onClick={() => navigate(Routes.strata.executionImport())} testId="strata-execution-import">
-              Execution import
-            </Button>
-          ) : null}
-          <Button spacing="compact" appearance="primary" onClick={() => setPageForm('new-project')} testId="strata-new-project-card">
-            New project card
+          <Button spacing="compact" onClick={exportExecutionCsv} testId="strata-execution-export">
+            Export CSV
           </Button>
+          {canWrite ? (
+            <>
+              <Button spacing="compact" onClick={() => navigate(Routes.strata.executionImport())} testId="strata-execution-import">
+                Execution import
+              </Button>
+              <Button spacing="compact" appearance="primary" onClick={() => setPageForm('new-project')} testId="strata-new-project-card">
+                New project card
+              </Button>
+            </>
+          ) : null}
         </div>
       ) : undefined}
       testId="strata-execution-chrome"
@@ -831,9 +925,9 @@ export default function StrataExecutionPage() {
               <StrataStatStrip
                 testId="strata-enterprise-stats-3"
                 items={[
-                  { key: 'avg_progress', label: 'Average Progress', value: enterpriseRollup.avgProgress == null ? '—' : `${Math.round(enterpriseRollup.avgProgress * 100)}%` },
-                  { key: 'milestone_completion', label: 'Milestone Completion', value: enterpriseMilestoneCompletion == null ? '—' : `${Math.round(enterpriseMilestoneCompletion * 100)}%` },
-                  { key: 'unassigned', label: 'Unassigned Projects', value: unassignedCards.length },
+                  { key: 'avg_progress', label: 'Average Progress', helpText: 'Arithmetic mean of the in-scope project cards’ actual progress. Excludes On Hold and archived cards.', value: enterpriseRollup.avgProgress == null ? '—' : `${Math.round(enterpriseRollup.avgProgress * 100)}%` },
+                  { key: 'milestone_completion', label: 'Milestone Completion', helpText: 'Share of in-scope milestones with status Done. A simple count ratio — not weighted by duration or progress.', value: enterpriseMilestoneCompletion == null ? '—' : `${Math.round(enterpriseMilestoneCompletion * 100)}%` },
+                  { key: 'unassigned', label: 'Unassigned Projects', value: unassignedLbuCount },
                 ]}
               />
 
@@ -874,7 +968,7 @@ export default function StrataExecutionPage() {
                 groups={themeGroups}
                 dependencies={filteredDependencies}
                   isNarrow={isNarrow}
-                onOpenDetail={(card) => { if (card.slug) navigate(Routes.strata.projectCard(card.slug)); }}
+                onOpenDetail={openCard}
                 emptyDescription="Adjust or clear filters to see project cards."
                 testId="strata-execution-theme-groups"
               />
@@ -884,7 +978,7 @@ export default function StrataExecutionPage() {
               groups={businessUnitGroups}
               dependencies={filteredDependencies}
               isNarrow={isNarrow}
-              onOpenDetail={(card) => { if (card.slug) navigate(Routes.strata.projectCard(card.slug)); }}
+              onOpenDetail={openCard}
               emptyDescription="Adjust or clear filters to see project cards."
               testId="strata-execution-lob-groups"
             />
@@ -893,7 +987,7 @@ export default function StrataExecutionPage() {
               groups={themeGroups}
               dependencies={filteredDependencies}
               isNarrow={isNarrow}
-              onOpenDetail={(card) => { if (card.slug) navigate(Routes.strata.projectCard(card.slug)); }}
+              onOpenDetail={openCard}
               emptyDescription="Adjust or clear filters to see project cards."
               testId="strata-execution-theme-groups"
             />
@@ -902,7 +996,7 @@ export default function StrataExecutionPage() {
               groups={pmGroups}
               dependencies={filteredDependencies}
               isNarrow={isNarrow}
-              onOpenDetail={(card) => { if (card.slug) navigate(Routes.strata.projectCard(card.slug)); }}
+              onOpenDetail={openCard}
               emptyDescription="Adjust or clear filters to see project cards."
               testId="strata-execution-pm-groups"
             />
@@ -911,7 +1005,7 @@ export default function StrataExecutionPage() {
               groups={deliveryTeamGroups}
               dependencies={filteredDependencies}
               isNarrow={isNarrow}
-              onOpenDetail={(card) => { if (card.slug) navigate(Routes.strata.projectCard(card.slug)); }}
+              onOpenDetail={openCard}
               emptyDescription="Adjust or clear filters to see project cards."
               testId="strata-execution-team-groups"
             />

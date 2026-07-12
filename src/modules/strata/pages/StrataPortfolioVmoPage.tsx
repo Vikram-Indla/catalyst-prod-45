@@ -35,7 +35,7 @@ import {
   fmtDate, fmtPct, fmtRatioPct, fmtSarCompact, fmtUnit, labelize,
 } from '@/modules/strata/components/format';
 import {
-  useAssumptions, useBenefitRealization, useBenefits, useBenefitValues, useCalcValues,
+  useAssumptions, useBenefitBySlug, useBenefitRealization, useBenefits, useBenefitValues, useCalcValues,
   useGateInstances, useGateModels, useInvalidateStrata, usePortfolios, useProfileNames,
   useProjectCards, useStrataContext, useStrataRoles, useValueAtRisk, useValueCategories,
 } from '@/modules/strata/hooks/useStrata';
@@ -747,8 +747,16 @@ export default function StrataPortfolioVmoPage() {
   // rare null-slug row. Cycle/Period already persist via ?cycle=/?period=.
   const portfolioToken = (p: StrataPortfolio) => p.slug ?? p.id;
   const portfolioParam = searchParams.get('portfolio');
+  // A benefit deep link (/strata/portfolio/benefits/:slug) resolves its OWNING
+  // Portfolio atomically from the benefit itself — never from ?portfolio= or the first
+  // portfolio, which rendered a different Portfolio's members/benefit (STRATA-E2E-018).
+  // ?portfolio= still governs the plain /strata/portfolio index route.
+  const benefitDeepLinkQ = useBenefitBySlug(slug);
+  const deepLinkedPortfolioId = slug ? benefitDeepLinkQ.data?.portfolio_id ?? null : null;
   const portfolio =
-    portfolios.find((p) => portfolioToken(p) === portfolioParam) ?? portfolios[0] ?? null;
+    (deepLinkedPortfolioId ? portfolios.find((p) => p.id === deepLinkedPortfolioId) : undefined)
+    ?? portfolios.find((p) => portfolioToken(p) === portfolioParam)
+    ?? portfolios[0] ?? null;
   const selectPortfolio = (p: StrataPortfolio) => {
     setSearchParams((prev) => {
       const next = new URLSearchParams(prev);
