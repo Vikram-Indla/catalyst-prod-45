@@ -47,7 +47,7 @@ import { Briefcase, ClipboardList, GitBranch, Network, Plus, Target } from '@/li
 import { Routes } from '@/lib/routes';
 import {
   useActions, useDecisions, useElementKpis, useGateModels, useInvalidateStrata, useKpis, useMapEdges, useOkrs,
-  usePerspectives, useProjectCards, useThemeCharters, useProfileNames, useStrataAudit, useStrataContext,
+  ctxToken, usePerspectives, useProjectCards, useThemeCharters, useProfileNames, useStrataAudit, useStrataContext,
   useStrataRoles, useStrategyElementBySlug, useStrategyElements,
 } from '@/modules/strata/hooks/useStrata';
 import {
@@ -183,9 +183,14 @@ export default function StrataStrategyElementDetailPage() {
   );
   const themeOkrs = okrs.filter((o) => o.objective_element_id && relevantObjectiveIds.has(o.objective_element_id));
   const elementCycle = cycles.find((c) => c.id === element.cycle_id);
+  // Carry the Theme's owning cycle to the Project Card detail route so refresh/copied
+  // URL restores the correct cycle and Theme rather than the DB-active cycle (E2E-001).
+  const cardCtxSuffix = elementCycle ? `?cycle=${ctxToken(elementCycle.name)}` : '';
 
-  // Linked Project Cards + Execution Summary (Theme-equivalent only).
-  const themeCards = (projectCardsQ.data ?? []).filter((c) => c.theme_id === element.id);
+  // Linked Project Cards + Execution Summary (Theme-equivalent only). Archived cards
+  // are excluded from the Theme roll-up so they don't inflate active counts/averages
+  // (V6-OPEN-030 — same rule as the Execution surface).
+  const themeCards = (projectCardsQ.data ?? []).filter((c) => c.theme_id === element.id && c.stage !== 'archived');
   const cardRollup = computeCardRollup(themeCards, []);
 
   // Governance — Theme-scoped decisions (element_id) + their actions (decision_id).
@@ -395,7 +400,7 @@ export default function StrataStrategyElementDetailPage() {
                     <button
                       key={card.id}
                       type="button"
-                      onClick={() => card.slug && navigate(Routes.strata.projectCard(card.slug))}
+                      onClick={() => card.slug && navigate(`${Routes.strata.projectCard(card.slug)}${cardCtxSuffix}`)}
                       style={{
                         display: 'grid', gap: 2, width: '100%', minWidth: 0,
                         background: 'none', border: 'none', padding: '6px 0', textAlign: 'left',

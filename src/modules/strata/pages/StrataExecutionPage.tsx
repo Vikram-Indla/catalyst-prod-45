@@ -36,7 +36,7 @@ import { executionApi, valueApi } from '@/modules/strata/domain';
 import { fmtDate, fmtPct, fmtRatioPct, labelize } from '@/modules/strata/components/format';
 import {
   useDependencies, useInvalidateStrata, useMilestones, usePortfolios, useProfileNames, useProjectCardBySlug,
-  useProjectCardPicklists, useProjectCards, useStrataContext, useStrataRoles, useStrategyElements,
+  ctxToken, useProjectCardPicklists, useProjectCards, useStrataContext, useStrataRoles, useStrategyElements,
 } from '@/modules/strata/hooks/useStrata';
 import type {
   StrataDependency, StrataMilestone, StrataProjectCard, StrataRole, StrataStrategyElement,
@@ -369,10 +369,26 @@ function GroupedCardsSection({ groups, dependencies, isNarrow, onOpenDetail, emp
 export default function StrataExecutionPage() {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
-  const { activeCycle } = useStrataContext();
+  const { activeCycle, activePeriod } = useStrataContext();
   const isNarrow = useIsNarrow();
 
   const [searchParams, setSearchParams] = useSearchParams();
+
+  // Detail routes must carry the owning cycle/period so refresh, copied URLs and new
+  // tabs restore the same context — and therefore the same Strategic Theme — instead
+  // of falling back to the DB-active cycle (E2E-001). Derived from the live context
+  // (not just the current query string) so it works even before the user touches the
+  // cycle switcher. Every navigation to a Project Card detail goes through openCard.
+  const detailCtxSuffix = (() => {
+    const p = new URLSearchParams();
+    if (activeCycle) p.set('cycle', ctxToken(activeCycle.name));
+    if (activePeriod) p.set('period', ctxToken(activePeriod.name));
+    const s = p.toString();
+    return s ? `?${s}` : '';
+  })();
+  const openCard = (card: StrataProjectCard) => {
+    if (card.slug) navigate(`${Routes.strata.projectCard(card.slug)}${detailCtxSuffix}`);
+  };
 
   const projectCardsQ = useProjectCards();
   const detailCardQ = useProjectCardBySlug(slug);
@@ -435,7 +451,12 @@ export default function StrataExecutionPage() {
   const allMilestones = allMilestonesQ.data ?? [];
   const themes = elements.filter((e) => e.element_type === 'theme');
 
-  const isLoading = projectCardsQ.isLoading;
+  // Hold the whole list in loading until the active cycle's strategy elements have
+  // resolved. Otherwise, in the window where activeCycle is known but elementsQ is
+  // still first-fetching, the cycle predicate below is skipped and every card (all
+  // cycles) flashes unfiltered (E2E-001 "Total 44 cards"). On a cycle switch the
+  // element query re-pends, so this also prevents a cross-cycle flash mid-switch.
+  const isLoading = projectCardsQ.isLoading || (!!activeCycle?.id && elementsQ.isLoading);
   const isError = projectCardsQ.isError;
   const errorMessage = (projectCardsQ.error as Error | null)?.message ?? 'Unknown error';
 
@@ -461,8 +482,11 @@ export default function StrataExecutionPage() {
   // (null theme_id = unattached to any cycle), does not belong here and is
   // excluded — otherwise it contaminates the cycle's population and roll-ups
   // (CAT-STRATA-E2E-FIXES-20260711-001: cross-cycle leak, incl. Unassigned cards).
-  // Gated on elements having loaded so cards don't flash empty on first paint.
-  const elementsReady = !elementsQ.isLoading;
+  // "Ready" = the element query has actually settled with data for the active cycle
+  // (isSuccess), not merely "not isLoading" (which is also false while the query is
+  // disabled or re-pending between cycles). Combined with the isLoading gate above,
+  // cards never render with a half-applied cycle filter (E2E-001).
+  const elementsReady = elementsQ.isSuccess;
   const search = railFilter.trim().toLowerCase();
 
   // Cards belonging to the active cycle (theme resolves within this cycle).
@@ -482,6 +506,10 @@ export default function StrataExecutionPage() {
   }
 
   const filteredCards = projectCards.filter((c) => {
+    // Archived cards are excluded from active/default Execution — and therefore from
+    // every roll-up/group derived from filteredCards — unless the user explicitly
+    // asks for Delivery Status = Archived (history view). V6-OPEN-030.
+    if (c.stage === 'archived' && deliveryStatusFilter !== 'archived') return false;
     if (elementsReady && (!c.theme_id || !themeById.has(c.theme_id))) return false;
     if (blockerOnly && !blockedCardIds.has(c.id)) return false;
     if (search && !c.name.toLowerCase().includes(search) && !(c.reference_id ?? '').toLowerCase().includes(search)) return false;
@@ -591,7 +619,7 @@ export default function StrataExecutionPage() {
     if (!name) return <Dash />;
     if (card?.slug) {
       return (
-        <Button appearance="subtle" spacing="compact" onClick={() => navigate(Routes.strata.projectCard(card.slug!))}>
+        <Button appearance="subtle" spacing="compact" onClick={() => openCard(card)}>
           {name}
         </Button>
       );
@@ -874,7 +902,7 @@ export default function StrataExecutionPage() {
                 groups={themeGroups}
                 dependencies={filteredDependencies}
                   isNarrow={isNarrow}
-                onOpenDetail={(card) => { if (card.slug) navigate(Routes.strata.projectCard(card.slug)); }}
+                onOpenDetail={openCard}
                 emptyDescription="Adjust or clear filters to see project cards."
                 testId="strata-execution-theme-groups"
               />
