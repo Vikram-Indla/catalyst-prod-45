@@ -39,6 +39,18 @@ const promoteModalSrc = readFileSync(
   resolve(HERE, "../../modules/docintel/components/PromoteArtifactModal.tsx"),
   "utf8",
 );
+const promotionDomainSrc = readFileSync(
+  resolve(HERE, "../../modules/docintel/domain/index.ts"),
+  "utf8",
+);
+const promotionTypesSrc = readFileSync(
+  resolve(HERE, "../../modules/docintel/types.ts"),
+  "utf8",
+);
+const promotionRecoveryMigrationSrc = readFileSync(
+  resolve(HERE, "../../../supabase/migrations/20260712000726_docintel_promotion_recovery.sql"),
+  "utf8",
+);
 
 // Frontend marker regex sources — must stay in lockstep with the edge contract.
 import { CITATION_RE as ARTIFACT_RE } from "@/modules/docintel/components/ArtifactView";
@@ -150,7 +162,12 @@ describe("artifact promotion governance and provenance recovery", () => {
     expect(artifactViewSrc).toContain(
       'const canPromote = isPromotable && status === "approved";',
     );
-    expect(artifactViewSrc).toContain("{canPromote && (");
+    // A pre-existing partial ledger is the sole exception: it reopens the
+    // recovery flow for already-created work, not a fresh promotion path.
+    expect(artifactViewSrc).toContain("{partialRecovery ? (");
+    expect(artifactViewSrc).toContain(
+      "{(canPromote || partialRecovery) && (",
+    );
     expect(artifactViewSrc).not.toContain(
       'status === "verified" && isPromotable',
     );
@@ -191,5 +208,54 @@ describe("artifact promotion governance and provenance recovery", () => {
     expect(retryBody).not.toContain("deleteWorkItem");
     expect(retryBody).not.toContain(".delete(");
     expect(promoteModalSrc).not.toContain("deleteWorkItem");
+  });
+
+  it("uses the typed, project-scoped ledger contract for durable recovery", () => {
+    expect(promotionTypesSrc).toContain("interface DocintelPromotionCreatedWork");
+    expect(promotionTypesSrc).toContain("interface DocintelPromotionPendingLink");
+    expect(promotionTypesSrc).toContain("interface DocintelPromotionRecovery");
+    expect(promotionTypesSrc).toContain('state: DocintelPromotionRecoveryState;');
+    expect(promotionTypesSrc).toContain('"partial" | "complete"');
+    expect(promotionTypesSrc).toContain("created_work_items:");
+    expect(promotionTypesSrc).toContain("create_failures:");
+    expect(promotionTypesSrc).toContain("pending_links:");
+    expect(promotionTypesSrc).toContain("artifact_status_pending:");
+
+    expect(promotionDomainSrc).toContain(
+      "listPromotionRecoveries: async (\n    projectId: string,",
+    );
+    expect(promotionDomainSrc).toContain(".eq(\"project_id\", projectId)");
+    expect(promotionDomainSrc).toContain("upsertPromotionRecovery: async (");
+    expect(promotionDomainSrc).toContain("created_work_items: input.createdWorkItems");
+    expect(promotionDomainSrc).toContain("create_failures: input.createFailures");
+    expect(promotionDomainSrc).toContain("pending_links: input.pendingLinks");
+    expect(promotionDomainSrc).toContain(
+      "artifact_status_pending: input.artifactStatusPending",
+    );
+    expect(promotionDomainSrc).toContain('state: "partial"');
+    expect(promotionDomainSrc).toContain("completePromotionRecovery: async ({");
+  });
+
+  it("can complete a persisted recovery only after all pending provenance is cleared", () => {
+    const completeStart = promotionDomainSrc.indexOf("completePromotionRecovery: async");
+    const completeEnd = promotionDomainSrc.indexOf("// ── Requirement facts", completeStart);
+    expect(completeStart).toBeGreaterThan(-1);
+    expect(completeEnd).toBeGreaterThan(completeStart);
+
+    const completeBody = promotionDomainSrc.slice(completeStart, completeEnd);
+    expect(completeBody).toContain('artifact_status_pending: false');
+    expect(completeBody).toContain("pending_links: []");
+    expect(completeBody).toContain('state: "complete"');
+    expect(completeBody).toContain('.eq("project_id", projectId)');
+    expect(completeBody).toContain('.eq("artifact_id", artifactId)');
+    expect(completeBody).not.toContain("createWorkItem(");
+    expect(completeBody).not.toContain("deleteWorkItem");
+    expect(completeBody).not.toContain(".delete(");
+
+    expect(promotionRecoveryMigrationSrc).toContain(
+      "ai_promotion_recoveries_complete_has_no_pending_work",
+    );
+    expect(promotionRecoveryMigrationSrc).toContain("artifact_status_pending = false");
+    expect(promotionRecoveryMigrationSrc).toContain("jsonb_array_length(pending_links) = 0");
   });
 });

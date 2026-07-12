@@ -1,5 +1,42 @@
 # Handover — CAT-DOCINTEL-V2-20260709-001
 
+## Active handover — Session 016, Slice 8A complete (2026-07-12)
+
+Slice 8A is complete. Library maps the actual `source_type` field through canonical icons and
+labels, filters persisted source types, uses universal Updated state and preserves existing project,
+theme and slug navigation. Signed-in staging showed 4 uploaded documents, 25 Jira issues and 2 Git
+files; Jira filtering returned exactly 25 rows and navigation opened the existing source workspace.
+It intentionally does not claim any Jira URL, Git repository/ref/line anchor, source id, review
+count or deliverable count. Tests/gates/screenshots pass.
+
+Next exact action: Plan Lock Slice 8B. Return only source type/title/slug/update plus the actually
+persisted source anchor; document pages remain exact pages, while Jira/Git must show only available
+anchor data or nothing.
+
+## Active handover — Session 015, Slice 8A implementation awaiting visual acceptance (2026-07-12)
+
+The local Slice 8A implementation is ready: Library now maps the persisted `source_type` field,
+shows Uploaded document / Jira issue / Git file distinctly through canonical icons, uses a source
+type filter and universal Updated column, and retains the project/theme filters plus slug navigation.
+It deliberately omits Jira URLs, repository/ref/line anchors, review/deliverable counts and sync
+claims because staging does not persist them. Three discovery roles completed, and 27 combined tests,
+TypeScript, ADS/color gates, pre-commit and whitespace checks pass. The remaining gate is the
+signed-in staging screenshot/state check for the mixed document/Jira/git Library.
+
+## Active handover — Session 015, Slice 7 complete (2026-07-12)
+
+Slice 7 is complete. Staging now holds migration `20260712000726_docintel_promotion_recovery`.
+The additive ledger stores already-created work plus only unfinished status/link work.
+Project-member RLS is explicit; anonymous reads and authenticated deletes are denied; and the
+artifact/project scope, timestamp and audit triggers were verified. The UI blocks fresh promotion
+unless the artifact is approved. A saved partial state reopens as Recover promotion after reload,
+and retry never creates or deletes work. The 24-test functional suite, TypeScript, color/ADS
+ratchets, pre-commit and signed-in staging visual proof all pass. The temporary visual fixture was
+deleted and confirmed absent.
+
+Next exact action: begin Plan Lock Slice 8A — Library and source identity. Keep its scope additive:
+map only proven `source_type` and anchors; do not invent review, freshness or source metadata.
+
 ## Active handover — Session 014, Slice 7 persistence gate (2026-07-12)
 
 Approved-only promotion and honest in-dialog retry are implemented and green. They are not enough

@@ -13,10 +13,13 @@
       focus return; populated exact-evidence states covered in Story 23.
 - [x] Deliverables: source empty, all component states, project populated/empty/error/loading and
       opened cited artifact drawer.
+- [x] Library: signed-in mixed document/Jira/Git source identities, source-type filter, canonical
+      table and slug-safe row navigation (2026-07-12).
 - [ ] Ask with citation drawer, Escape close/focus return, and Arabic RTL evidence.
 - [ ] Linked work empty/populated and unlink confirmation. (Empty and Traceability populated are
       complete in Slice 5B; populated/unlink confirmation remain for the later end-to-end pass.)
-- [ ] Promotion approved, blocked, partial-link-failure and retry.
+- [x] Promotion approved, blocked, partial-link-failure and retry. (Signed-in fixture, 2026-07-12;
+      recovery row removed after capture.)
 - [ ] Admin authorized view and ordinary-member denial.
 - [ ] No new console errors, horizontal page scroll, clipped actions or token violations.
 - [x] Slice 1: Home `/doc-intelligence` and Library `/doc-intelligence/views/library` at 1440×900

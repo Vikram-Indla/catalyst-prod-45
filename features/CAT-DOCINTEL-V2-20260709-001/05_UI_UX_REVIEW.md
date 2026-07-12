@@ -88,3 +88,21 @@ against post-fix:
 - No console errors specific to DocIntel observed at baseline (two pre-existing app-wide warnings
   unrelated to this feature: `@atlaskit/select` legacy-context warning, `component_config` missing
   table warning).
+# UI Slice 7 critique — Governed promotion and durable recovery (2026-07-12)
+
+- Understanding: the customer sees an accepted deliverable turn into work, with a visible recovery
+  path if the final status or source linkage is incomplete.
+- Violations: 0 P0, 0 P1, 0 P2 in the signed-in recovery state. The modal keeps the existing
+  artifact detail readable and makes the no-duplicate/no-delete guarantee explicit beside Retry.
+- Score: 30/30 · SHIP for Slice 7.
+- Closure: a temporary staging fixture reloaded into Recover promotion, displayed the existing
+  work item and showed only retryable status/link work. It was removed immediately after capture.
+# UI Slice 8A critique — Library source identity (2026-07-12)
+
+- Understanding: users can now distinguish their uploaded BRD sources, Jira knowledge and Git
+  knowledge before opening a source, rather than interpreting one anonymous document inventory.
+- Violations: 0 P0, 0 P1, 1 P2 — the canonical table can scroll horizontally on compact widths;
+  column labels and source values remain visible/reachable.
+- Score: 29/30 · SHIP for Slice 8A.
+- Closure: signed-in staging rendered all three source types, a Jira-only filter returned 25 rows,
+  and a row retained the existing slug-safe workspace navigation.

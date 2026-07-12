@@ -39,11 +39,24 @@ export type DocintelLatency = Record<string, number> & {
   total_ms?: number;
 };
 
+/**
+ * Persisted source identity. Known adapters are listed for presentation, but
+ * the database deliberately permits future source types; callers must render
+ * an unknown returned value rather than silently calling it a document.
+ */
+export type DocintelSourceType =
+  | "document"
+  | "jira"
+  | "git"
+  | "markdown"
+  | (string & {});
+
 export interface DocintelDocument {
   id: string;
   project_id: string;
   slug: string | null;
   title: string;
+  source_type?: DocintelSourceType | null;
   original_file_name: string;
   mime_type: string;
   storage_path: string;
@@ -291,6 +304,55 @@ export interface DocintelCitation {
 export interface DocintelArtifactWithCitations {
   artifact: DocintelArtifact;
   citations: DocintelCitation[];
+}
+
+// ---------------------------------------------------------------------------
+// Promotion recovery: persisted only when existing work needs a follow-up
+// ---------------------------------------------------------------------------
+
+/** A work item already created during a promotion; recovery never recreates it. */
+export interface DocintelPromotionCreatedWork {
+  id: string;
+  item_key: string;
+  title: string;
+  kind: "epic" | "story";
+}
+
+/** One remaining document → existing-work provenance link. */
+export interface DocintelPromotionPendingLink {
+  document_id: string;
+  work_item_id: string;
+  work_kind: "epic" | "story";
+}
+
+export type DocintelPromotionRecoveryState = "partial" | "complete";
+
+/**
+ * Project-scoped recovery row for a promotion that created work but did not
+ * finish marking the artifact and/or linking all source evidence.
+ */
+export interface DocintelPromotionRecovery {
+  id: string;
+  project_id: string;
+  artifact_id: string;
+  created_work_items: DocintelPromotionCreatedWork[];
+  create_failures: string[];
+  pending_links: DocintelPromotionPendingLink[];
+  artifact_status_pending: boolean;
+  state: DocintelPromotionRecoveryState;
+  created_by: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+/** Input for the partial-state upsert; completion has its own explicit API. */
+export interface DocintelPromotionRecoveryUpsert {
+  projectId: string;
+  artifactId: string;
+  createdWorkItems: DocintelPromotionCreatedWork[];
+  createFailures: string[];
+  pendingLinks: DocintelPromotionPendingLink[];
+  artifactStatusPending: boolean;
 }
 
 /** docintel-generate (non-streaming) response. */

@@ -127,3 +127,23 @@
 - LIVE-VERIFIED end-to-end: live Ask seeded `docintel.ask.answer` v1 (id 31483425…) + stamped prompt_id
   on the run; prior runs NULL. Answer quality unchanged. Fine-tuning enabler live.
 - Started local dev server (was down) for verification; left running.
+## 2026-07-12 — Session 015 — UI Slice 7 COMPLETE
+
+- Added a CLI-generated, additive `ai_promotion_recoveries` ledger and applied it to staging
+  `cyijbdeuehohvhnsywig` as migration `20260712000726`.
+- Enforced project-member read/insert/update access through RLS; anonymous reads and authenticated
+  deletes are denied. The artifact/project scope, timestamp and audit triggers are active.
+- Promoted work is now recoverable after reload: retry persists/reuses only artifact-status and
+  provenance-link operations. It never recreates or deletes work.
+- A signed-in staging fixture proved the Recover promotion modal and retry-only messaging. The
+  fixture was deleted afterwards; verification confirmed zero temporary recovery rows remaining.
+- 24 targeted tests, TypeScript, color/ADS ratchets, full pre-commit and diff checks passed.
+## 2026-07-12 — Session 016 — UI Slice 8A COMPLETE
+
+- Mapped the proven `ai_documents.source_type` contract into the canonical Library JiraTable.
+- Added honest Uploaded document / Jira issue / Git file presentation, source-type filtering and
+  universal Updated state while retaining project/theme filters and slug navigation.
+- Staging proved 4 uploaded documents, 25 Jira issues and 2 Git files; a Jira-only filter rendered
+  25 rows and a row opened its existing source workspace.
+- Explicitly omitted unpersisted Jira URLs, repository/ref/line anchors, source IDs and counts.
+- 27 combined tests, TypeScript, ADS/color gates, full pre-commit and signed-in screenshots passed.

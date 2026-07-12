@@ -19,6 +19,7 @@ import {
   Spinner,
   EmptyState,
   CatalystDrawer,
+  SectionMessage,
 } from "@/components/ads";
 import type { LozengeAppearance } from "@/components/ads";
 import { JiraTable } from "@/components/shared/JiraTable";
@@ -34,7 +35,8 @@ import {
 import { useActiveDocintelProject } from "../hooks/useActiveDocintelProject";
 import { AskPanel } from "../components/AskPanel";
 import { DocintelNavigation } from "../components/DocintelNavigation";
-import type { DocintelDocument, DocintelStatus } from "../types";
+import { Clipboard, FileText, GitBranch } from "@/lib/atlaskit-icons";
+import type { DocintelDocument, DocintelSourceType, DocintelStatus } from "../types";
 
 const DASH = "—";
 
@@ -57,18 +59,40 @@ function statusAppearance(status: DocintelStatus): LozengeAppearance {
 }
 
 function statusLabel(status: DocintelStatus): string {
-  return status.replace(/_/g, " ");
+  switch (status) {
+    case "ready":
+      return "Ready";
+    case "needs_review":
+      return "Needs review";
+    case "failed":
+      return "Failed";
+    default:
+      return "Processing";
+  }
 }
 
-/** Format latency_ms.total_ms as e.g. "42s" / "1m 05s"; DASH when absent. */
-function formatDuration(doc: DocintelDocument): string {
-  const total = doc.latency_ms?.total_ms;
-  if (typeof total !== "number" || total <= 0) return DASH;
-  const secs = Math.round(total / 1000);
-  if (secs < 60) return `${secs}s`;
-  const m = Math.floor(secs / 60);
-  const s = secs % 60;
-  return `${m}m ${String(s).padStart(2, "0")}s`;
+type SourceTypePresentation = {
+  label: string;
+  Icon: typeof FileText;
+};
+
+function sourceTypePresentation(
+  sourceType: DocintelSourceType | null | undefined,
+): SourceTypePresentation | null {
+  const value = sourceType?.trim();
+  if (!value) return null;
+  switch (value) {
+    case "document":
+      return { label: "Uploaded document", Icon: FileText };
+    case "jira":
+      return { label: "Jira issue", Icon: Clipboard };
+    case "git":
+      return { label: "Git file", Icon: GitBranch };
+    case "markdown":
+      return { label: "Markdown file", Icon: FileText };
+    default:
+      return { label: value, Icon: FileText };
+  }
 }
 
 export default function DocintelLibraryPage() {
@@ -83,19 +107,36 @@ export default function DocintelLibraryPage() {
   const { activeProject, setActiveProjectKey } = useActiveDocintelProject(projects);
 
   const documentsQuery = useDocintelDocuments(activeProject?.id);
-  const documents = documentsQuery.data ?? [];
+  const documents = useMemo(() => documentsQuery.data ?? [], [documentsQuery.data]);
 
   // Theme filter (Slice 5): narrow the visible list to documents tagged with a theme.
   const [selectedThemeId, setSelectedThemeId] = useState<string | null>(null);
+  const [selectedSourceType, setSelectedSourceType] = useState<string>("");
   const themesQuery = useDocintelThemes(activeProject?.id);
   const themes = themesQuery.data ?? [];
   const themeDocIdsQuery = useThemeDocumentIds(selectedThemeId ?? undefined);
   const themeDocIds = themeDocIdsQuery.data;
+  const sourceTypeOptions = useMemo(() => {
+    const values = new Set(
+      documents
+        .map((document) => document.source_type?.trim())
+        .filter((value): value is string => Boolean(value)),
+    );
+    return [
+      { value: "", label: "All sources" },
+      ...[...values].sort().map((value) => ({
+        value,
+        label: sourceTypePresentation(value)?.label ?? value,
+      })),
+    ];
+  }, [documents]);
   const visibleDocuments = useMemo(() => {
-    if (!selectedThemeId || !themeDocIds) return documents;
-    const idSet = new Set(themeDocIds);
-    return documents.filter((d) => idSet.has(d.id));
-  }, [documents, selectedThemeId, themeDocIds]);
+    const themeIds = selectedThemeId && themeDocIds ? new Set(themeDocIds) : null;
+    return documents.filter((document) =>
+      (!themeIds || themeIds.has(document.id)) &&
+      (!selectedSourceType || document.source_type === selectedSourceType),
+    );
+  }, [documents, selectedSourceType, selectedThemeId, themeDocIds]);
 
   const columns = useMemo<Column<DocintelDocument>[]>(
     () => [
@@ -119,9 +160,25 @@ export default function DocintelLibraryPage() {
         ),
       },
       {
-        id: "status",
-        label: "Status",
+        id: "source",
+        label: "Source",
         width: 16,
+        cell: ({ row }) => {
+          const source = sourceTypePresentation(row.source_type);
+          if (!source) return <span>{DASH}</span>;
+          const { Icon } = source;
+          return (
+            <span style={{ display: "inline-flex", alignItems: "center", gap: 4 }}>
+              <Icon size={16} />
+              {source.label}
+            </span>
+          );
+        },
+      },
+      {
+        id: "status",
+        label: "State",
+        width: 14,
         cell: ({ row }) => (
           <Lozenge appearance={statusAppearance(row.status)}>
             {statusLabel(row.status)}
@@ -136,14 +193,8 @@ export default function DocintelLibraryPage() {
         cell: ({ row }) => <span>{row.page_count ?? DASH}</span>,
       },
       {
-        id: "language",
-        label: "Language",
-        width: 12,
-        cell: ({ row }) => <span>{row.source_language ?? DASH}</span>,
-      },
-      {
-        id: "uploaded",
-        label: "Uploaded",
+        id: "updated",
+        label: "Updated",
         width: 14,
         cell: ({ row }) => (
           <span style={{ color: "var(--ds-text-subtle)" }}>
@@ -151,15 +202,6 @@ export default function DocintelLibraryPage() {
               ? formatDistanceToNow(new Date(row.created_at), { addSuffix: true })
               : DASH}
           </span>
-        ),
-      },
-      {
-        id: "duration",
-        label: "Duration",
-        width: 10,
-        align: "end",
-        cell: ({ row }) => (
-          <span style={{ color: "var(--ds-text-subtle)" }}>{formatDuration(row)}</span>
         ),
       },
     ],
@@ -223,7 +265,7 @@ export default function DocintelLibraryPage() {
         }
       />
 
-      {(projects.length > 1 || themes.length > 0) && (
+      {(projects.length > 1 || themes.length > 0 || sourceTypeOptions.length > 1) && (
         <div
           style={{
             display: "flex",
@@ -270,6 +312,17 @@ export default function DocintelLibraryPage() {
               />
             </div>
           )}
+          {sourceTypeOptions.length > 1 && (
+            <div style={{ maxWidth: 280, minWidth: 200, flex: 1 }}>
+              <Select
+                options={sourceTypeOptions}
+                value={sourceTypeOptions.find((option) => option.value === selectedSourceType)}
+                onChange={(next) => setSelectedSourceType(next ? String(next.value) : "")}
+                aria-label="Source type"
+                isSearchable
+              />
+            </div>
+          )}
         </div>
       )}
 
@@ -277,11 +330,23 @@ export default function DocintelLibraryPage() {
         <div style={{ padding: 48, display: "flex", justifyContent: "center" }}>
           <Spinner size="large" />
         </div>
+      ) : projectsQuery.isError ? (
+        <SectionMessage appearance="error" title="Could not load projects">
+          {projectsQuery.error instanceof Error
+            ? projectsQuery.error.message
+            : "Reload and try again."}
+        </SectionMessage>
       ) : !activeProject ? (
         <EmptyState
           header="No projects"
           description="You are not a member of any project yet. Documents are scoped to a project."
         />
+      ) : documentsQuery.isError ? (
+        <SectionMessage appearance="error" title="Could not load sources">
+          {documentsQuery.error instanceof Error
+            ? documentsQuery.error.message
+            : "Reload and try again."}
+        </SectionMessage>
       ) : documents.length === 0 ? (
         <EmptyState
           header="No documents yet"

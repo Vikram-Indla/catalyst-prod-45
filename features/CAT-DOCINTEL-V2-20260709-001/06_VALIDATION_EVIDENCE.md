@@ -208,3 +208,28 @@ version=version+1` (+ deactivate old / activate new) — no edge-function redepl
 
 Pattern proven. Next: propagate to `docintel-analyze` (2 prompts) and `docintel-generate`
 (per-type base + facts; NUL-safe via CLI/git deploy).
+## UI Slice 7 — governed promotion and durable recovery (2026-07-12) ✅ COMPLETE
+
+- Migration `20260712000726_docintel_promotion_recovery` is recorded on staging `cyij`.
+- Direct catalog checks proved `ai_promotion_recoveries` has RLS enabled; `authenticated` has only
+  SELECT/INSERT/UPDATE; `anon` lacks SELECT; the table has SELECT/INSERT/UPDATE project-member
+  policies plus scope, touch and audit triggers.
+- Component proof: 24 targeted tests passed, including remount/reload recovery, zero work
+  recreation, retry of only pending links/status, and completion only after every operation
+  succeeds.
+- Signed-in visual proof: a short-lived fixture opened the real ArtifactView → Recover promotion →
+  saved recovery modal. It identified the already-created work, offered only Retry provenance, and
+  stated that neither work creation nor deletion would occur. The fixture was deleted; a final
+  staging query returned `temporary_fixture_rows_remaining = 0`.
+- `npx tsc --noEmit`, `npm run lint:colors:gate`, `npm run audit:ads:gate`, `.husky/pre-commit`
+  and `git diff --check` all passed.
+## UI Slice 8A — Library source identity (2026-07-12) ✅ COMPLETE
+
+- Staging `cyij` records 4 `document`, 25 `jira` and 2 `git` `ai_documents` rows in Senaei BAU.
+- The signed-in Library rendered each source class distinctly with a canonical icon and label,
+  used `updated_at` for every source class and showed a dash where source-specific page metadata
+  is absent.
+- Source filter options were limited to persisted types; Jira-only selection rendered 25 Jira rows.
+- A Jira row opened the existing `/doc-intelligence/source/:slug` workspace. No external deep link,
+  issue URL, Git repository/ref/line range, source id, review count or deliverable count was shown.
+- 27 targeted tests, TypeScript, ADS/color gates, pre-commit and `git diff --check` passed.

@@ -16,7 +16,7 @@
  * ADS tokens only. Canonical components only.
  * CAT-DOCINTEL-ARABIC-RAG-20260706-001
  */
-import { useMemo, useState, useCallback } from "react";
+import { useEffect, useMemo, useState, useCallback } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import ModalDialog, {
   ModalBody,
@@ -40,6 +40,7 @@ import { docintelApi } from "../domain";
 import type {
   DocintelArtifact,
   DocintelArtifactItem,
+  DocintelPromotionRecovery,
 } from "../types";
 
 interface WorkTypeOption {
@@ -71,12 +72,39 @@ interface PromotionResult {
   artifactStatusFailed: boolean;
   linkFailures: ProvenanceLinkFailure[];
   provenanceRecovered: boolean;
+  /** A durable partial ledger row, or null only while saving it failed. */
+  recovery: DocintelPromotionRecovery | null;
+  recoverySaveError: string | null;
+}
+
+function promotionResultFromRecovery(
+  recovery: DocintelPromotionRecovery,
+): PromotionResult {
+  return {
+    created: recovery.created_work_items,
+    createFailures: recovery.create_failures,
+    artifactStatusFailed: recovery.artifact_status_pending,
+    linkFailures: recovery.pending_links.map((link) => ({
+      documentId: link.document_id,
+      work: {
+        id: link.work_item_id,
+        item_key: "",
+        title: link.work_item_id,
+        kind: link.work_kind,
+      },
+    })),
+    provenanceRecovered: false,
+    recovery,
+    recoverySaveError: null,
+  };
 }
 
 export interface PromoteArtifactModalProps {
   artifact: DocintelArtifact;
   projectId: string;
   isOpen: boolean;
+  /** Existing durable partial attempt, supplied by ArtifactView after reload. */
+  initialRecovery?: DocintelPromotionRecovery | null;
   onClose: () => void;
   /** Called after ≥1 item is promoted so callers can invalidate the artifact. */
   onPromoted: () => void;
@@ -106,6 +134,7 @@ export function PromoteArtifactModal({
   artifact,
   projectId,
   isOpen,
+  initialRecovery = null,
   onClose,
   onPromoted,
 }: PromoteArtifactModalProps) {
@@ -154,7 +183,16 @@ export function PromoteArtifactModal({
   const [assignees, setAssignees] = useState<Record<number, AssigneeChoice | null>>({});
   const [promoting, setPromoting] = useState(false);
   const [retryingProvenance, setRetryingProvenance] = useState(false);
-  const [promotionResult, setPromotionResult] = useState<PromotionResult | null>(null);
+  const [promotionResult, setPromotionResult] = useState<PromotionResult | null>(
+    () => initialRecovery?.state === "partial"
+      ? promotionResultFromRecovery(initialRecovery)
+      : null,
+  );
+
+  useEffect(() => {
+    if (!initialRecovery || initialRecovery.state !== "partial") return;
+    setPromotionResult(promotionResultFromRecovery(initialRecovery));
+  }, [initialRecovery]);
 
   const handleAssigneeChange = useCallback((rowId: string, assignee: AssigneeChoice | null) => {
     setAssignees((prev) => ({ ...prev, [Number(rowId)]: assignee }));
@@ -291,21 +329,47 @@ export function PromoteArtifactModal({
 
       setPromoting(false);
       const keys = created.map((c) => c.item_key).filter(Boolean).join(", ");
-      const needsFollowUp =
-        failed.length > 0 || artifactStatusFailed || linkFailures.length > 0;
+      const needsRecovery = artifactStatusFailed || linkFailures.length > 0;
+      const needsFollowUp = failed.length > 0 || needsRecovery;
 
       if (needsFollowUp) {
+        let recovery: DocintelPromotionRecovery | null = null;
+        let recoverySaveError: string | null = null;
+        if (needsRecovery) {
+          try {
+            recovery = await docintelApi.upsertPromotionRecovery({
+              projectId,
+              artifactId: artifact.id,
+              createdWorkItems: created,
+              createFailures: failed,
+              pendingLinks: linkFailures.map((failure) => ({
+                document_id: failure.documentId,
+                work_item_id: failure.work.id,
+                work_kind: failure.work.kind,
+              })),
+              artifactStatusPending: artifactStatusFailed,
+            });
+          } catch (error) {
+            recoverySaveError = error instanceof Error
+              ? error.message
+              : "The recovery record could not be saved.";
+          }
+        }
         setPromotionResult({
           created,
           createFailures: failed,
           artifactStatusFailed,
           linkFailures,
           provenanceRecovered: false,
+          recovery,
+          recoverySaveError,
         });
         catalystToast.warning(
           "Work created; follow-up required",
-          artifactStatusFailed || linkFailures.length > 0
-            ? "The created work is safe, but its provenance is incomplete. Retry from this dialog."
+          needsRecovery
+            ? recoverySaveError
+              ? "The created work is safe, but its recovery record could not be saved yet. Keep this dialog open and retry saving it."
+              : "The created work is safe, but its provenance is incomplete. Recovery is saved and can be resumed after reload."
             : `Created ${created.length} of ${selectedCount}.`,
         );
       } else {
@@ -341,9 +405,43 @@ export function PromoteArtifactModal({
 
   const handleRetryProvenance = useCallback(async () => {
     if (!promotionResult || retryingProvenance) return;
-    if (!promotionResult.artifactStatusFailed && promotionResult.linkFailures.length === 0) return;
 
     setRetryingProvenance(true);
+    let recovery = promotionResult.recovery;
+
+    // Never retry work creation. If the original ledger write failed, persist
+    // the exact existing work and pending operations before touching either
+    // idempotent provenance action.
+    if (!recovery) {
+      try {
+        recovery = await docintelApi.upsertPromotionRecovery({
+          projectId,
+          artifactId: artifact.id,
+          createdWorkItems: promotionResult.created,
+          createFailures: promotionResult.createFailures,
+          pendingLinks: promotionResult.linkFailures.map((failure) => ({
+            document_id: failure.documentId,
+            work_item_id: failure.work.id,
+            work_kind: failure.work.kind,
+          })),
+          artifactStatusPending: promotionResult.artifactStatusFailed,
+        });
+      } catch (error) {
+        setPromotionResult({
+          ...promotionResult,
+          recoverySaveError: error instanceof Error
+            ? error.message
+            : "The recovery record could not be saved.",
+        });
+        setRetryingProvenance(false);
+        catalystToast.warning(
+          "Recovery record not saved",
+          "Existing work was not recreated. Keep this dialog open and try saving the recovery record again.",
+        );
+        return;
+      }
+    }
+
     let artifactStatusFailed = promotionResult.artifactStatusFailed;
     if (artifactStatusFailed && promotionResult.created[0]) {
       try {
@@ -375,11 +473,73 @@ export function PromoteArtifactModal({
     }
 
     const provenanceRecovered = !artifactStatusFailed && linkFailures.length === 0;
+    if (provenanceRecovered) {
+      try {
+        recovery = await docintelApi.completePromotionRecovery({
+          projectId,
+          artifactId: artifact.id,
+        });
+      } catch (error) {
+        setPromotionResult({
+          ...promotionResult,
+          artifactStatusFailed,
+          linkFailures,
+          provenanceRecovered: false,
+          recovery,
+          recoverySaveError: error instanceof Error
+            ? error.message
+            : "The recovery record could not be completed.",
+        });
+        setRetryingProvenance(false);
+        onPromoted();
+        catalystToast.warning(
+          "Recovery completion not saved",
+          "The existing work and provenance are safe. Retry to complete the recovery record.",
+        );
+        return;
+      }
+    } else {
+      try {
+        recovery = await docintelApi.upsertPromotionRecovery({
+          projectId,
+          artifactId: artifact.id,
+          createdWorkItems: promotionResult.created,
+          createFailures: promotionResult.createFailures,
+          pendingLinks: linkFailures.map((failure) => ({
+            document_id: failure.documentId,
+            work_item_id: failure.work.id,
+            work_kind: failure.work.kind,
+          })),
+          artifactStatusPending: artifactStatusFailed,
+        });
+      } catch (error) {
+        setPromotionResult({
+          ...promotionResult,
+          artifactStatusFailed,
+          linkFailures,
+          provenanceRecovered: false,
+          recovery,
+          recoverySaveError: error instanceof Error
+            ? error.message
+            : "The remaining recovery work could not be saved.",
+        });
+        setRetryingProvenance(false);
+        onPromoted();
+        catalystToast.warning(
+          "Recovery update not saved",
+          "Existing work was not recreated. Keep this dialog open and retry the recovery record.",
+        );
+        return;
+      }
+    }
+
     setPromotionResult({
       ...promotionResult,
       artifactStatusFailed,
       linkFailures,
       provenanceRecovered,
+      recovery,
+      recoverySaveError: null,
     });
     setRetryingProvenance(false);
     onPromoted();
@@ -392,15 +552,30 @@ export function PromoteArtifactModal({
     } else {
       catalystToast.warning(
         "Provenance is still incomplete",
-        "The created work remains safe. Retry again while this dialog remains open.",
+        "The created work remains safe. The remaining actions are saved for another retry.",
       );
     }
-  }, [artifact.id, onPromoted, promotionResult, qc, retryingProvenance]);
+  }, [artifact.id, onPromoted, projectId, promotionResult, qc, retryingProvenance]);
+
+  const handleClose = useCallback(() => {
+    // If the initial ledger write failed there is no durable retry path after
+    // reload. Do not let a close discard the only exact record of existing
+    // work; once a row exists, its idempotent pending actions are safe to
+    // resume later even if this session could not update it.
+    if (promotionResult?.recoverySaveError && !promotionResult.recovery) {
+      catalystToast.warning(
+        "Save recovery before closing",
+        "Existing work will not be recreated. Save its recovery record so the remaining provenance can be resumed after reload.",
+      );
+      return;
+    }
+    onClose();
+  }, [onClose, promotionResult]);
 
   if (!isOpen) return null;
 
   return (
-    <ModalDialog onClose={onClose} width="x-large">
+    <ModalDialog onClose={handleClose} width="x-large">
       <ModalHeader>
         <ModalTitle>Promote to work items</ModalTitle>
       </ModalHeader>
@@ -442,7 +617,9 @@ export function PromoteArtifactModal({
                 : "warning"
             }
             title={
-              promotionResult.artifactStatusFailed || promotionResult.linkFailures.length > 0
+              promotionResult.recoverySaveError
+                ? "Work created; recovery record needs attention"
+                : promotionResult.artifactStatusFailed || promotionResult.linkFailures.length > 0
                 ? "Work created; provenance incomplete"
                 : promotionResult.createFailures.length > 0
                   ? "Some work items were created"
@@ -457,12 +634,23 @@ export function PromoteArtifactModal({
                 <li key={work.id}>{work.item_key || work.title}</li>
               ))}
             </ul>
+            {promotionResult.recovery ? (
+              <p>
+                This recovery is saved. You can reload and resume only the remaining
+                status and source-link actions; the work above will not be created again.
+              </p>
+            ) : null}
+            {promotionResult.recoverySaveError ? (
+              <p>
+                The recovery record has not been saved: {promotionResult.recoverySaveError}
+              </p>
+            ) : null}
             {promotionResult.artifactStatusFailed || promotionResult.linkFailures.length > 0 ? (
               <p>
                 The artifact status or {promotionResult.linkFailures.length} source link
                 {promotionResult.linkFailures.length === 1 ? "" : "s"} could not be recorded.
-                Retry provenance while this dialog is open to link the existing work without
-                creating duplicates.
+                Retry only these existing provenance actions; no work item will be created
+                or deleted.
               </p>
             ) : null}
             {promotionResult.createFailures.length > 0 ? (
@@ -486,17 +674,32 @@ export function PromoteArtifactModal({
       <ModalFooter>
         {promotionResult ? (
           <>
-            <Button appearance="subtle" onClick={onClose} isDisabled={retryingProvenance}>
+            <Button
+              appearance="subtle"
+              onClick={handleClose}
+              isDisabled={
+                retryingProvenance ||
+                Boolean(promotionResult.recoverySaveError && !promotionResult.recovery)
+              }
+            >
               Done
             </Button>
-            {promotionResult.artifactStatusFailed || promotionResult.linkFailures.length > 0 ? (
+            {promotionResult.recoverySaveError ||
+            promotionResult.artifactStatusFailed ||
+            promotionResult.linkFailures.length > 0 ? (
               <Button
                 appearance="primary"
                 onClick={handleRetryProvenance}
                 isDisabled={retryingProvenance}
                 isLoading={retryingProvenance}
               >
-                {retryingProvenance ? "Retrying…" : "Retry provenance"}
+                {retryingProvenance
+                  ? "Retrying…"
+                  : !promotionResult.recovery
+                    ? "Save recovery"
+                    : promotionResult.artifactStatusFailed || promotionResult.linkFailures.length > 0
+                      ? "Retry provenance"
+                      : "Complete recovery"}
               </Button>
             ) : null}
           </>

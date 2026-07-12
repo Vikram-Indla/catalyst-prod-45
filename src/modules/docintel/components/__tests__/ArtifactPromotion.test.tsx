@@ -2,15 +2,22 @@ import type { ReactNode } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import type { DocintelArtifact, DocintelArtifactStatus } from "../../types";
+import type {
+  DocintelArtifact,
+  DocintelArtifactStatus,
+  DocintelPromotionRecovery,
+} from "../../types";
 import { ArtifactView } from "../ArtifactView";
 import { PromoteArtifactModal } from "../PromoteArtifactModal";
 
 const mocks = vi.hoisted(() => ({
   createWorkItem: vi.fn(),
+  completePromotionRecovery: vi.fn(),
   getUser: vi.fn(),
+  listPromotionRecoveries: vi.fn(),
   linkDocument: vi.fn(),
   markArtifactPromoted: vi.fn(),
+  upsertPromotionRecovery: vi.fn(),
   useArtifact: vi.fn(),
   approve: vi.fn(),
   reject: vi.fn(),
@@ -34,6 +41,9 @@ vi.mock("../../domain", () => ({
   docintelApi: {
     linkDocument: mocks.linkDocument,
     markArtifactPromoted: mocks.markArtifactPromoted,
+    listPromotionRecoveries: mocks.listPromotionRecoveries,
+    upsertPromotionRecovery: mocks.upsertPromotionRecovery,
+    completePromotionRecovery: mocks.completePromotionRecovery,
   },
 }));
 
@@ -89,6 +99,38 @@ function artifact(
   };
 }
 
+function recovery(
+  overrides: Partial<DocintelPromotionRecovery> = {},
+): DocintelPromotionRecovery {
+  return {
+    id: "recovery-1",
+    project_id: "project-1",
+    artifact_id: "artifact-epic",
+    created_work_items: [
+      {
+        id: "work-1",
+        item_key: "BAU-7001",
+        title: "Revenue Target Epic",
+        kind: "epic",
+      },
+    ],
+    create_failures: [],
+    pending_links: [
+      {
+        document_id: "audio-test-revenue-target",
+        work_item_id: "work-1",
+        work_kind: "epic",
+      },
+    ],
+    artifact_status_pending: true,
+    state: "partial",
+    created_by: "reviewer-1",
+    created_at: "2026-07-12T00:00:00.000Z",
+    updated_at: "2026-07-12T00:00:00.000Z",
+    ...overrides,
+  };
+}
+
 function createClient(): QueryClient {
   const client = new QueryClient({
     defaultOptions: {
@@ -126,6 +168,7 @@ function renderArtifactView(status: DocintelArtifactStatus) {
 describe("ArtifactView promotion governance", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mocks.listPromotionRecoveries.mockResolvedValue([]);
   });
 
   it.each(["draft", "verified", "rejected", "promoted"] as const)(
@@ -138,14 +181,31 @@ describe("ArtifactView promotion governance", () => {
     },
   );
 
-  it("approved artifacts can open promotion", () => {
+  it("approved artifacts can open promotion", async () => {
     renderArtifactView("approved");
     const promote = screen.getByRole("button", { name: "Promote to work items" });
-    expect(promote).toBeEnabled();
+    await waitFor(() => expect(promote).toBeEnabled());
     fireEvent.click(promote);
     expect(
       screen.getByRole("dialog", { name: "Promote to work items" }),
     ).toBeInTheDocument();
+  });
+
+  it("reopens a persisted partial recovery from the artifact after reload", async () => {
+    mocks.listPromotionRecoveries.mockResolvedValue([recovery()]);
+    renderArtifactView("promoted");
+
+    const recover = await screen.findByRole("button", { name: "Recover promotion" });
+    expect(recover).toBeEnabled();
+    fireEvent.click(recover);
+
+    expect(
+      await screen.findByRole("dialog", { name: "Promote to work items" }),
+    ).toBeInTheDocument();
+    expect(screen.getByText("Work created; provenance incomplete")).toBeInTheDocument();
+    expect(screen.getByText("BAU-7001")).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Promote 1 item" })).not.toBeInTheDocument();
+    expect(mocks.createWorkItem).not.toHaveBeenCalled();
   });
 });
 
@@ -163,14 +223,27 @@ describe("PromoteArtifactModal provenance recovery", () => {
     });
     mocks.markArtifactPromoted.mockResolvedValue(undefined);
     mocks.linkDocument.mockResolvedValue(undefined);
+    mocks.upsertPromotionRecovery.mockImplementation(async (input) => recovery({
+      created_work_items: input.createdWorkItems,
+      create_failures: input.createFailures,
+      pending_links: input.pendingLinks,
+      artifact_status_pending: input.artifactStatusPending,
+      state: "partial",
+    }));
+    mocks.completePromotionRecovery.mockResolvedValue(recovery({
+      artifact_status_pending: false,
+      pending_links: [],
+      state: "complete",
+    }));
   });
 
-  function renderModal() {
+  function renderModal(initialRecovery?: DocintelPromotionRecovery | null) {
     return render(
       <PromoteArtifactModal
         artifact={artifact("approved")}
         projectId="project-1"
         isOpen
+        initialRecovery={initialRecovery}
         onClose={onClose}
         onPromoted={onPromoted}
       />,
@@ -207,6 +280,10 @@ describe("PromoteArtifactModal provenance recovery", () => {
     expect(mocks.createWorkItem).toHaveBeenCalledTimes(1);
     expect(mocks.markArtifactPromoted).toHaveBeenCalledTimes(1);
     expect(mocks.linkDocument).toHaveBeenCalledTimes(2);
+    expect(mocks.completePromotionRecovery).toHaveBeenCalledWith({
+      projectId: "project-1",
+      artifactId: "artifact-epic",
+    });
     expect(onClose).not.toHaveBeenCalled();
 
     fireEvent.click(screen.getByRole("button", { name: "Done" }));
@@ -231,5 +308,90 @@ describe("PromoteArtifactModal provenance recovery", () => {
     expect(
       screen.queryByText("Work created; provenance incomplete"),
     ).not.toBeInTheDocument();
+  });
+
+  it("restores a persisted partial recovery after remount and never recreates work", async () => {
+    const persisted = recovery();
+    const firstMount = renderModal(persisted);
+
+    expect(await screen.findByText("Work created; provenance incomplete")).toBeInTheDocument();
+    expect(screen.getByText("BAU-7001")).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Promote 1 item" })).not.toBeInTheDocument();
+    expect(mocks.createWorkItem).not.toHaveBeenCalled();
+    expect(mocks.markArtifactPromoted).not.toHaveBeenCalled();
+    expect(mocks.linkDocument).not.toHaveBeenCalled();
+
+    firstMount.unmount();
+    renderModal(persisted);
+
+    expect(await screen.findByText("Work created; provenance incomplete")).toBeInTheDocument();
+    expect(screen.getByText("BAU-7001")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Retry provenance" }));
+
+    expect(await screen.findByText("Promotion recovered")).toBeInTheDocument();
+    expect(mocks.createWorkItem).not.toHaveBeenCalled();
+    expect(mocks.markArtifactPromoted).toHaveBeenCalledWith("artifact-epic", "work-1");
+    expect(mocks.linkDocument).toHaveBeenCalledWith(
+      "audio-test-revenue-target",
+      "epic",
+      "work-1",
+      "promotion",
+    );
+    expect(mocks.upsertPromotionRecovery).not.toHaveBeenCalled();
+    expect(mocks.completePromotionRecovery).toHaveBeenCalledWith({
+      projectId: "project-1",
+      artifactId: "artifact-epic",
+    });
+  });
+
+  it("completes durable recovery only after the mark and every pending link persist", async () => {
+    const persisted = recovery({
+      pending_links: [
+        {
+          document_id: "audio-test-revenue-target",
+          work_item_id: "work-1",
+          work_kind: "epic",
+        },
+        {
+          document_id: "second-source",
+          work_item_id: "work-1",
+          work_kind: "epic",
+        },
+      ],
+    });
+    mocks.linkDocument
+      .mockRejectedValueOnce(new Error("First source unavailable"))
+      .mockResolvedValueOnce(undefined);
+    renderModal(persisted);
+
+    fireEvent.click(await screen.findByRole("button", { name: "Retry provenance" }));
+
+    await waitFor(() => expect(mocks.upsertPromotionRecovery).toHaveBeenCalledTimes(1));
+    expect(mocks.completePromotionRecovery).not.toHaveBeenCalled();
+    expect(mocks.upsertPromotionRecovery).toHaveBeenCalledWith({
+      projectId: "project-1",
+      artifactId: "artifact-epic",
+      createdWorkItems: persisted.created_work_items,
+      createFailures: [],
+      pendingLinks: [
+        {
+          document_id: "audio-test-revenue-target",
+          work_item_id: "work-1",
+          work_kind: "epic",
+        },
+      ],
+      artifactStatusPending: false,
+    });
+    expect(mocks.createWorkItem).not.toHaveBeenCalled();
+
+    mocks.linkDocument.mockResolvedValue(undefined);
+    fireEvent.click(screen.getByRole("button", { name: "Retry provenance" }));
+
+    await waitFor(() => expect(mocks.completePromotionRecovery).toHaveBeenCalledTimes(1));
+    expect(mocks.completePromotionRecovery).toHaveBeenCalledWith({
+      projectId: "project-1",
+      artifactId: "artifact-epic",
+    });
+    expect(mocks.createWorkItem).not.toHaveBeenCalled();
   });
 });

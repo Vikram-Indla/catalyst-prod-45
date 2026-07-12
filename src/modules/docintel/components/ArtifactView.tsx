@@ -16,7 +16,7 @@
  */
 import { useMemo, useState, type ReactNode } from "react";
 import ReactMarkdown from "react-markdown";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   Button,
   Lozenge,
@@ -41,6 +41,7 @@ import type { DocintelCitation } from "../types";
 import { groundingAppearance, pctLabel } from "./confidence";
 import { ARTIFACT_TYPE_LABELS, isArabicArtifact } from "./artifactTypes";
 import { PromoteArtifactModal } from "./PromoteArtifactModal";
+import { docintelApi } from "../domain";
 
 /** Artifact types whose content can be promoted into Catalyst work items. */
 const PROMOTABLE_TYPES = new Set(["epic", "story"]);
@@ -163,6 +164,15 @@ export function ArtifactView({ artifactId }: ArtifactViewProps) {
 
   const artifact = data?.artifact ?? null;
   const citations = useMemo(() => data?.citations ?? [], [data?.citations]);
+  const {
+    data: promotionRecoveries = [],
+    isLoading: arePromotionRecoveriesLoading,
+    isError: promotionRecoveriesError,
+  } = useQuery({
+    queryKey: ["docintel", "promotion-recoveries", artifact?.project_id],
+    queryFn: () => docintelApi.listPromotionRecoveries(artifact!.project_id),
+    enabled: Boolean(artifact?.project_id && PROMOTABLE_TYPES.has(String(artifact.artifact_type))),
+  });
 
   const arabic = artifact ? isArabicArtifact(artifact.artifact_type) : false;
   const contentMd = artifact?.content_md?.trim() ?? "";
@@ -195,6 +205,9 @@ export function ArtifactView({ artifactId }: ArtifactViewProps) {
   const isPromotable = PROMOTABLE_TYPES.has(String(artifact.artifact_type));
   const canPromote = isPromotable && status === "approved";
   const isPromoted = status === "promoted";
+  const partialRecovery = promotionRecoveries.find(
+    (recovery) => recovery.artifact_id === artifact.id && recovery.state === "partial",
+  ) ?? null;
   const isRejected = status === "rejected";
   /** Approval workflow (S8): only draft/verified can be approved or rejected. */
   const isReviewable = status === "draft" || status === "verified";
@@ -293,28 +306,48 @@ export function ArtifactView({ artifactId }: ArtifactViewProps) {
               </Button>
             </>
           )}
-          {isPromotable && isPromoted ? (
+          {partialRecovery ? (
+            <Button appearance="primary" onClick={() => setPromoteOpen(true)}>
+              Recover promotion
+            </Button>
+          ) : isPromotable && isPromoted ? (
             <Lozenge appearance="success">Promoted</Lozenge>
           ) : canPromote ? (
-            <Button appearance="primary" onClick={() => setPromoteOpen(true)}>
+            <Button
+              appearance="primary"
+              onClick={() => setPromoteOpen(true)}
+              isDisabled={arePromotionRecoveriesLoading || promotionRecoveriesError}
+            >
               Promote to work items
             </Button>
           ) : null}
         </span>
       </div>
 
-      {canPromote && (
+      {(canPromote || partialRecovery) && (
         <PromoteArtifactModal
           artifact={artifact}
           projectId={artifact.project_id}
           isOpen={promoteOpen}
+          initialRecovery={partialRecovery}
           onClose={() => setPromoteOpen(false)}
           onPromoted={() => {
             queryClient.invalidateQueries({ queryKey: ["docintel", "artifact", artifactId] });
             queryClient.invalidateQueries({ queryKey: ["docintel", "artifacts"] });
+            queryClient.invalidateQueries({
+              queryKey: ["docintel", "promotion-recoveries", artifact.project_id],
+            });
           }}
         />
       )}
+
+      {canPromote && promotionRecoveriesError ? (
+        <div style={{ marginBottom: 12 }}>
+          <SectionMessage appearance="error" title="Could not check promotion recovery">
+            Promotion is unavailable until existing recovery work can be checked. Reload and try again.
+          </SectionMessage>
+        </div>
+      ) : null}
 
       {/* Rejection outcome — reason shown only when the reviewer entered one */}
       {isRejected && (

@@ -21,6 +21,8 @@ import type {
   DocintelDocumentVersion,
   DocintelLinkEntityType,
   DocintelLinkOrigin,
+  DocintelPromotionRecovery,
+  DocintelPromotionRecoveryUpsert,
   DocintelResolvedLink,
   DocintelElementKind,
   DocintelExtractFactsResult,
@@ -75,6 +77,7 @@ function normaliseKind(raw: string | null | undefined): {
 }
 
 const BUCKET = "docintel-documents";
+const PROMOTION_RECOVERY_TABLE = "ai_promotion_recoveries";
 
 export interface DocintelArtifactSource {
   id: string;
@@ -788,6 +791,77 @@ export const docintelApi = {
       .update({ status: "promoted", promoted_work_item_id: workItemId })
       .eq("id", artifactId);
     if (error) throw new Error(error.message);
+  },
+
+  /**
+   * List project-scoped promotion recoveries, newest first. RLS and the
+   * database's artifact/project invariant are authoritative for visibility.
+   */
+  listPromotionRecoveries: async (
+    projectId: string,
+  ): Promise<DocintelPromotionRecovery[]> => {
+    const { data, error } = await db
+      .from(PROMOTION_RECOVERY_TABLE)
+      .select("*")
+      .eq("project_id", projectId)
+      .order("updated_at", { ascending: false });
+    if (error) throw new Error(error.message);
+    return (data ?? []) as DocintelPromotionRecovery[];
+  },
+
+  /**
+   * Persist the exact recovery state after work creation. This API always
+   * writes `partial`: only `completePromotionRecovery` may close a ledger
+   * entry after the remaining idempotent status/link operations succeed.
+   */
+  upsertPromotionRecovery: async (
+    input: DocintelPromotionRecoveryUpsert,
+  ): Promise<DocintelPromotionRecovery> => {
+    const { data, error } = await db
+      .from(PROMOTION_RECOVERY_TABLE)
+      .upsert(
+        {
+          project_id: input.projectId,
+          artifact_id: input.artifactId,
+          created_work_items: input.createdWorkItems,
+          create_failures: input.createFailures,
+          pending_links: input.pendingLinks,
+          artifact_status_pending: input.artifactStatusPending,
+          state: "partial",
+        },
+        { onConflict: "artifact_id" },
+      )
+      .select("*")
+      .single();
+    if (error) throw new Error(error.message);
+    return data as DocintelPromotionRecovery;
+  },
+
+  /**
+   * Close an existing ledger row only after its pending artifact status and
+   * provenance links are durable. Created-work and creation-failure evidence
+   * stays retained for an honest audit trail.
+   */
+  completePromotionRecovery: async ({
+    projectId,
+    artifactId,
+  }: {
+    projectId: string;
+    artifactId: string;
+  }): Promise<DocintelPromotionRecovery> => {
+    const { data, error } = await db
+      .from(PROMOTION_RECOVERY_TABLE)
+      .update({
+        artifact_status_pending: false,
+        pending_links: [],
+        state: "complete",
+      })
+      .eq("project_id", projectId)
+      .eq("artifact_id", artifactId)
+      .select("*")
+      .single();
+    if (error) throw new Error(error.message);
+    return data as DocintelPromotionRecovery;
   },
 
   // ── Requirement facts ─────────────────────────────────────────────────────

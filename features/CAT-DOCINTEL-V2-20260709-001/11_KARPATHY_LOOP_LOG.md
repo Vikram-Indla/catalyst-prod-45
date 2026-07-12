@@ -237,3 +237,31 @@ is an overclaim. This became Decision 2 in `09_DECISIONS.md` and drives this fea
 
 **Hypothesis:** Not yet formed — requires reading `docintel-analyze/index.ts` and
 `embed_stage.ts` fact-extraction path first. This is the first task of Slice 1 execution.
+## Loop 14 — 2026-07-12 — “Can recovery be proven through the real signed-in UI without changing real work?”
+
+**Hypothesis:** A short-lived recovery row for the existing verification fixture will prove the
+actual RLS-backed reload path without creating, deleting or altering a real work item.
+
+**Experiment:** Inserted one project-scoped partial ledger row for the existing Loop Verification
+Fixture artifact, reloaded the signed-in project Deliverables surface, opened the artifact and
+captured Recover promotion plus its persisted retry-only modal. Deleted only that recovery row.
+
+**Measure:** The UI read the row through the normal authenticated query and rendered Recover
+promotion. The modal named the already-created test work, presented only Retry provenance and made
+the no-recreate/no-delete boundary explicit. Final DB query returned zero fixture rows.
+
+**Keep/Discard:** **Keep.** The ledger is observable in the customer surface and its test fixture
+does not contaminate real work data.
+## Loop 15 — 2026-07-12 — “Can one Library show heterogeneous knowledge without inventing metadata?”
+
+**Hypothesis:** Persisted `source_type` plus title, page presence and `updated_at` are enough to
+give users a useful source identity without pretending Jira/Git has external URLs or anchors.
+
+**Experiment:** Mapped `document`, `jira` and `git` to canonical icon/label pairs; filtered the
+signed-in staging Library by Jira; navigated one Jira row into its existing source workspace.
+
+**Measure:** The mixed Library visibly separated the three classes. Jira filter returned its 25
+real rows only; Git/Jira showed no page count; `/source/:slug` remained the destination.
+
+**Keep/Discard:** **Keep.** Source type is a sufficient 8A customer signal. Deep anchors remain
+deferred to the persisted citation contract in Slice 8B.

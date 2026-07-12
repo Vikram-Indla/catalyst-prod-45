@@ -1,12 +1,12 @@
 # CAT-DOCINTEL-V2-20260709-001 — READ ME FIRST
 
-**Status:** Plan v2.1 APPROVED; UI Slices 1–6B complete; Slice 7 active
+**Status:** Plan v2.1 APPROVED; UI Slices 1–8A complete; Slice 8B next
 **Slice 1 result:** 3 correctness bugs already fixed+deployed 2026-07-07; verified live (no code). Residual: 78 stale citation rows on 2 pre-fix demo artifacts (accepted historical, Decision 11).
 **Slice 4a result (2026-07-11):** prompt registry live for `docintel-ask` — self-seeds byte-faithfully, stamps truthful `prompt_id`; proven end-to-end (seeded row 31483425… stamped on a live Ask run). Fine-tuning enabler live (tune = UPDATE + version bump, no redeploy). Deployed via local CLI token (CI deploy still broken — expired GitHub secret, Drift Event 2).
 **Deploy note:** repo-wide CI edge-fn deploy is DOWN (expired `SUPABASE_ACCESS_TOKEN` GitHub secret). Deploy via local `~/.config/supabase/access-token` + `supabase functions deploy` until rotated.
-**Last updated:** 2026-07-11
+**Last updated:** 2026-07-12
 **Active Plan Lock:** 03_PLAN_LOCK.md (v2.1 complete BRD Review Workbench journey, 15 work units, APPROVED 2026-07-11)
-**Last session:** sessions/014_ui_slice7_promotion_recovery_gate.md
+**Last session:** sessions/016_continue_feature.md
 
 ## UI journey rebaseline — 2026-07-11
 
@@ -42,10 +42,14 @@ spike (mandatory — Vikram: "you must try").
 
 ## Next action
 
-Execute Slice 7 — enforce approved-only promotion and make provenance-link failure visible and
-recoverable. The approved Admin boundary remains legacy `admin` OR product `super_admin`.
+Execute Slice 8B — truthful citation source identity. The approved Admin boundary remains legacy
+`admin` OR product `super_admin`.
 
-**Active Slice 7 gate:** approved-only and honest in-dialog retry are implemented/tested. Durable
-reload recovery is rebaselined in Drift Event 8. The next command is
-`supabase migration new docintel_promotion_recovery`, but the required escalated CLI execution was
-rejected by the Codex tool-usage limit until 02:43; do not hand-create the migration filename.
+**Slice 8A result:** the signed-in Library now distinguishes 4 uploaded documents, 25 Jira issues
+and 2 Git files from staging `cyij`; source filtering and slug navigation passed. No Jira URL,
+repository/ref/line anchor, source id, review count or deliverable count was invented.
+
+**Slice 7 result:** approved-only creation and a durable, project-scoped recovery ledger are live
+on staging. Migration `20260712000726_docintel_promotion_recovery.sql` is recorded remotely. A
+signed-in fixture validated reload → Recover promotion → retry-only UI; the fixture was deleted and
+no real artifact or work item was changed.
