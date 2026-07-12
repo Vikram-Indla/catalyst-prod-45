@@ -162,8 +162,35 @@ V5-OPEN-023 (verify — committed `01d474669`), V6-OPEN-026, V6-OPEN-034, V6-OPE
 **Files changed (client):** `shared.tsx` (`StrataStat.helpText` + `Tooltip` wrap), `StrataExecutionPage.tsx` (026 headline + 036 helpText), `ProjectCardDetailView.tsx` (036 helpText). **Migration (unapplied):** `20260712150000_strata_health_milestone_forecast_override.sql`. Rollback = re-apply `20260712110000`.
 **Validation:** tsc 0 errors, eslint 0 errors, color gate clean. Browser: 026 reconcile + 036 tooltip verified live.
 
-## WAVE 4 — STRATEGY, KPI, SCORECARD & GOVERNANCE  *(pending)*
+## WAVE 4 — STRATEGY, KPI, SCORECARD & GOVERNANCE  *(active)*
 STRATA-E2E-005, 010, 011 (verify — committed 011 chain), V6-OPEN-032, Team/LBU/Dept/Sector blockers, KPI approval + FY27 Scorecard-instance blockers.
+
+| ID | Sev | Status | Root cause / disposition |
+|---|---|---|---|
+| STRATA-E2E-011 | P1 | VERIFIED DELIVERED | `20260712120000` = exactly the 5 canonical perspectives, weights=100 (self-asserted), ESG retired, admin CRUD works. No gap |
+| STRATA-E2E-010 | P0 | BLOCKED (D-4) | KPI can be created/approved with zero strategy/perspective links; product intentionally links post-approval. **No `is_strategic` marker** to scope the requirement — forcing linkage on all KPIs would break operational KPIs. Needs decision |
+| V6-OPEN-032 | P1 | FIXED (server) — pending retest | Two causes: (1) `strata_promote_element` never checked ancestors → Active child under Draft parents; (2) it still required a gate schedule for Themes, but `20260710170000` descoped element gates → Theme promotion permanently failed. Migration `20260712160000` adds a recursive ancestor-Active guard + removes the stale gate requirement. Client already surfaces the error (no swallow) |
+| STRATA-E2E-005 | P1 | CARRY-FORWARD | project org/Portfolio links — not investigated this wave; fold into Wave 5 or a light check |
+| Team/LBU authoring | — | FIXED (client) | Generic picklist CRUD already includes `lead_business_unit`; only the filter dropdown hid 0-row keys. Now sources from fixed `GOVERNED_PICKLIST_KEYS` so LBU is always selectable. `StrataAdminConfigPage.tsx` |
+| KPI approval | — | FIXED (client) — verified | `strata_submit_record` + `strata_approve_kpi` both existed; wired a "Submit for approval" button (draft→pending) on `StrataKpiDetailPage`. Browser-verified button renders on the draft ZZTEST KPI |
+| Scorecard instance create | — | **BLOCKED (D-5)** | No create RPC at any layer — genuine from-scratch build |
+
+**D-5 (logged):** FY27 Scorecard instance creation has no RPC/API/UI at any layer. A build needs decisions: (1) does instance-create auto-seed `strata_scorecard_lines` from the model's perspective structure, or leave as a separate step; (2) RPC (recommended, validation parity) vs direct insert; (3) role scope (RLS already limits to strategy_office). Out of Wave 4 wire-up scope. Needs Vikram.
+
+### WAVE 4 — DELIVERY RECORD
+
+| ID | Disposition | Change | Evidence |
+|---|---|---|---|
+| STRATA-E2E-011 | VERIFIED DELIVERED (live) | — | Browser: admin shows exactly 5 perspectives, weights 30/25/10/20/15=100 |
+| V6-OPEN-032 | FIXED (server) — pending retest | migration `20260712160000` ancestor guard + gate-requirement removal | unapplied (D-1); retest: promote objective under Draft theme → rejected naming ancestors; promote theme w/ complete charter+KPI → succeeds |
+| Team/LBU authoring | FIXED (client) | `GOVERNED_PICKLIST_KEYS` drives the filter so LBU is selectable at 0 rows | code + tsc |
+| KPI approval | FIXED (client) — verified | "Submit for approval" button (draft) → `submitRecord`; existing Approve button then applies | Browser: button renders on draft KPI |
+| STRATA-E2E-010 | BLOCKED (D-4) | — | needs `is_strategic` marker decision |
+| Scorecard instance | BLOCKED (D-5) | — | from-scratch build |
+
+**Files changed:** `StrataAdminConfigPage.tsx`, `StrataKpiDetailPage.tsx` + migration `20260712160000_strata_promote_element_ancestor_gate.sql`. **Validation:** tsc 0 errors, eslint 0 errors, color gate clean. Browser: 011 live, KPI submit button verified.
+
+**D-4 (logged):** STRATA-E2E-010 requires "every **Strategic** KPI" to carry Cycle/Theme/Objective/Perspective links, but the schema has no way to mark a KPI as Strategic (vs operational), and linking is intentionally post-approval. Options: (A) add an `is_strategic`/`kpi_category` marker + gate approval on ≥1 strategy link for Strategic KPIs [recommended, but a schema+design change]; (B) make linkage mandatory for ALL KPIs (risks breaking operational KPIs); (C) leave as-is (current design is deliberate). Needs Vikram.
 
 ## WAVE 5 — PORTFOLIO, IMPORT, EXPORT & REMAINING P2  *(pending)*
 STRATA-E2E-015, V4-OPEN-019, V6-OPEN-025, V6-OPEN-031, V6-OPEN-037, STRATA-E2E-007, 009, 017, V6-OPEN-038.

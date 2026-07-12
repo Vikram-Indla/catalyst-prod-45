@@ -23,7 +23,7 @@ import {
 import { JiraTable } from '@/components/shared/JiraTable';
 import type { Column } from '@/components/shared/JiraTable';
 import { Routes } from '@/lib/routes';
-import { kpiApi, strategyApi } from '@/modules/strata/domain';
+import { configApi, kpiApi, strategyApi } from '@/modules/strata/domain';
 import {
   useDataSources, useElementKpis, useInvalidateStrata, useKpiAchievement, useKpiBySlug, useKpiDetail, useKpiTypes,
   useProfileNames, useStrataContext, useStrataRoles, useStrategyElements, useThresholdSchemes, useUploadRuns,
@@ -327,6 +327,7 @@ export default function StrataKpiDetailPage() {
   const [showStrategyLinks, setShowStrategyLinks] = useState(false);
   /** Governance verdict modal — one at a time (approve KPI / approve formula / attest actual). */
   const [decision, setDecision] = useState<
+    | { kind: 'submit-kpi' }
     | { kind: 'approve-kpi' }
     | { kind: 'approve-formula'; id: string; label: string }
     | { kind: 'attest'; id: string; periodId: string; label: string }
@@ -532,6 +533,15 @@ export default function StrataKpiDetailPage() {
               testId="strata-kpi-edit"
             >
               Edit KPI
+            </Button>
+          ) : null}
+          {canAuthor && kpi.status === 'draft' ? (
+            <Button
+              appearance="primary"
+              onClick={() => setDecision({ kind: 'submit-kpi' })}
+              testId="strata-kpi-submit"
+            >
+              Submit for approval
             </Button>
           ) : null}
           {kpi.status === 'pending_approval' ? (
@@ -838,6 +848,19 @@ export default function StrataKpiDetailPage() {
       </div>
 
       {/* Governance verdict modals — RPC-enforced SoD; errors render in-modal */}
+      <StrataDecisionModal
+        open={decision?.kind === 'submit-kpi'}
+        onClose={() => setDecision(null)}
+        title="Submit KPI for approval"
+        description={`Submit “${kpi.name}” for governed approval. It moves to Pending Approval; a separate approver then approves it (segregation of duties is enforced by the server).`}
+        options={[{ value: 'submitted', label: 'Submit' }]}
+        confirmLabel="Submit"
+        onConfirm={async () => {
+          await configApi.submitRecord('strata_kpis', kpi.id);
+          invalidate();
+        }}
+        testId="strata-kpi-submit-modal"
+      />
       <StrataDecisionModal
         open={decision?.kind === 'approve-kpi'}
         onClose={() => setDecision(null)}

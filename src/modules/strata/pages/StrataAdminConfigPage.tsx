@@ -1025,12 +1025,19 @@ function ProjectCardConfigSection({ onError }: { onError: OnError }) {
   const tabs = tabsQ.data ?? [];
   const sections = sectionsQ.data ?? [];
   const fields = fieldsQ.data ?? [];
-  const picklistKeys = Array.from(new Set((picklistsQ.data ?? []).map((p) => p.picklist_key))).sort();
-  // Fall back to the first key that actually has rows — avoids a dropdown
-  // whose selected value silently has zero matching picklist values.
-  const effectivePicklistKey = picklistKeyFilter && picklistKeys.includes(picklistKeyFilter)
+  // Canonical governed picklist keys. The filter lists ALL of them — including
+  // lead_business_unit — even when a key has zero values yet, so a strata_admin can
+  // select it and add the first value. Previously the filter only listed keys that
+  // already had rows, which hid Lead Business Unit entirely and made Team/LBU value
+  // maintenance look absent (STRATA-E2E Team/LBU blocker).
+  const GOVERNED_PICKLIST_KEYS: string[] = [
+    'lead_business_unit', 'delivery_team', 'serving_department', 'delivery_status',
+    'strategic_impact', 'aop_mapping', 'benefit_category', 'enabling_team',
+    'support_function', 'dependency_status', 'milestone_status',
+  ];
+  const effectivePicklistKey = picklistKeyFilter && GOVERNED_PICKLIST_KEYS.includes(picklistKeyFilter)
     ? picklistKeyFilter
-    : picklistKeys[0] ?? '';
+    : GOVERNED_PICKLIST_KEYS[0];
   const picklists = (picklistsQ.data ?? []).filter((p) => p.picklist_key === effectivePicklistKey);
 
   const toggleFieldVisible = async (f: StrataProjectCardFieldConfig) => {
@@ -1142,7 +1149,7 @@ function ProjectCardConfigSection({ onError }: { onError: OnError }) {
               aria-label="Picklist"
               style={{ padding: '4px 8px', borderRadius: 4, border: `1px solid ${T.border}`, background: T.raised, color: T.text }}
             >
-              {picklistKeys.map((k) => <option key={k} value={k}>{labelize(k)}</option>)}
+              {GOVERNED_PICKLIST_KEYS.map((k) => <option key={k} value={k}>{labelize(k)}</option>)}
             </select>
             <Button spacing="compact" onClick={() => setForm('new-picklist')} testId="strata-pc-new-picklist-value">New value</Button>
           </div>
@@ -1201,11 +1208,7 @@ function ProjectCardConfigSection({ onError }: { onError: OnError }) {
         fields={[
           {
             key: 'picklistKey', label: 'Picklist', kind: 'select', required: true,
-            options: [
-              'lead_business_unit', 'delivery_team', 'serving_department', 'delivery_status',
-              'strategic_impact', 'aop_mapping', 'benefit_category', 'enabling_team',
-              'support_function', 'dependency_status', 'milestone_status',
-            ].map((k) => ({ value: k, label: labelize(k) })),
+            options: GOVERNED_PICKLIST_KEYS.map((k) => ({ value: k, label: labelize(k) })),
           },
           { key: 'value', label: 'Value (stored)', kind: 'text', required: true },
           { key: 'label', label: 'Label (displayed)', kind: 'text', required: true },
