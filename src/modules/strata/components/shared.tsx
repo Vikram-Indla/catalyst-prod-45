@@ -329,8 +329,8 @@ export function StrataChipMenu({
 // ── Page chrome: icon + title + actions, then governed context toolbar ──────
 
 function StrataContextToolbar({
-  modelLabel, extra, state,
-}: { modelLabel?: string | null; extra?: React.ReactNode; state?: DataState | string | null }) {
+  modelLabel, extra, state, scope, freshness,
+}: { modelLabel?: string | null; extra?: React.ReactNode; state?: DataState | string | null; scope?: React.ReactNode; freshness?: React.ReactNode }) {
   const { cycles, periods, activeCycle, activePeriod, setActiveCycleId, setActivePeriodId } = useStrataContext();
   return (
     <div
@@ -359,6 +359,7 @@ function StrataContextToolbar({
           onClick: () => setActivePeriodId(p.id),
         }))}
       />
+      {scope}
       {modelLabel ? (
         <span style={{
           display: 'inline-flex', alignItems: 'center', gap: 8, height: 28, padding: '0 12px',
@@ -369,7 +370,10 @@ function StrataContextToolbar({
         </span>
       ) : null}
       {extra}
-      <span style={{ marginLeft: 'auto' }}><StrataDataStateLozenge state={state ?? null} /></span>
+      <span style={{ marginLeft: 'auto', display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+        {freshness}
+        <StrataDataStateLozenge state={state ?? null} />
+      </span>
     </div>
   );
 }
@@ -417,7 +421,7 @@ export function StrataPageChrome({
  * Pages render inside the full panel width — no PageContainer, no max-width.
  */
 export function StrataPageShell({
-  trail, title, hideTitle, headerActions, modelLabel, state, extra, toolbarActions, docTitle, children, testId,
+  trail, title, hideTitle, headerActions, modelLabel, state, extra, scope, freshness, toolbarActions, docTitle, children, testId,
 }: {
   /** Detail-page crumb trail after "Home / STRATA"; index pages omit it. */
   trail?: { text: string; href?: string; onClick?: () => void }[];
@@ -428,6 +432,10 @@ export function StrataPageShell({
   modelLabel?: string | null;
   state?: DataState | string | null;
   extra?: React.ReactNode;
+  /** Governed scope slot on the context spine (e.g. sector / role chip). */
+  scope?: React.ReactNode;
+  /** "As of" freshness slot rendered next to the data-state lozenge. */
+  freshness?: React.ReactNode;
   toolbarActions?: React.ReactNode;
   /** Browser-tab title (entity name — fixes slug-cased document titles). */
   docTitle?: string;
@@ -457,7 +465,7 @@ export function StrataPageShell({
         />
       </div>
       <div style={{ margin: '8px 0 16px' }}>
-        <StrataContextToolbar modelLabel={modelLabel} extra={
+        <StrataContextToolbar modelLabel={modelLabel} scope={scope} freshness={freshness} extra={
           <>
             {extra}
             {toolbarActions ? <span style={{ display: 'inline-flex', gap: 8, marginLeft: 8 }}>{toolbarActions}</span> : null}

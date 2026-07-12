@@ -143,6 +143,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
     onFocusedRowChange,
     onEscape,
     density = 'compact',
+    overflowX,
     isLoading,
     emptyView,
     ariaLabel = 'Work items',
@@ -1951,6 +1952,10 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
         // match — minor token drift, single-line change.
         borderRadius: 8,
         overflow: 'hidden',
+        // Opt-in horizontal scroll (overflowX prop). Undefined → keeps the
+        // overflow:hidden clip above; 'auto' overrides only the x-axis so wide
+        // tables scroll instead of clipping trailing columns.
+        ...(overflowX ? { overflowX } : {}),
         display: 'flex',
         flexDirection: 'column',
         minHeight: 120,

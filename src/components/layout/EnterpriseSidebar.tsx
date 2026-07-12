@@ -26,8 +26,10 @@ interface EnterpriseSidebarProps {
 export const strataSidebarConfig: SidebarConfig = {
   badge: 'ST',
   label: 'STRATA',
-  // Four canonical areas under the Strategy Cycle (locked STRATA hierarchy,
-  // CAT-STRATA-FOUNDATION-20260709-001 REQ-004). Routes unchanged.
+  // Task-sequence IA (STRATA design pack anchor 11, CAT-STRATA-IMPL-20260712-001):
+  // Direction · Measurement · Delivery · Value · Governance. Labels/grouping only —
+  // routes unchanged and no restyle (sidebar is visual-frozen). The My Work item is
+  // added together with its route in slice 1B, so no nav link points at an unmounted route.
   sections: [
     {
       title: '',
@@ -36,23 +38,28 @@ export const strataSidebarConfig: SidebarConfig = {
       ],
     },
     {
-      title: 'Strategy Execution',
+      title: 'Direction',
       items: [
         { id: 'strategy-room', title: 'Strategy Room', path: '/strata/strategy', icon: Layers, exact: true, activeMatchPaths: ['/strata/strategy/map'] },
+      ],
+    },
+    {
+      title: 'Measurement',
+      items: [
+        { id: 'scorecards', title: 'Scorecards', path: '/strata/scorecards', icon: PieChart, exact: false },
+        { id: 'kpis', title: 'KPIs & OKRs', path: '/strata/kpis', icon: Target, exact: false },
+      ],
+    },
+    {
+      title: 'Delivery',
+      items: [
         { id: 'execution', title: 'Project Cards', path: '/strata/execution', icon: Users, exact: false },
       ],
     },
     {
-      title: 'Balanced Scorecard',
+      title: 'Value',
       items: [
-        { id: 'scorecards', title: 'Scorecards', path: '/strata/scorecards', icon: PieChart, exact: false },
-        { id: 'kpis', title: 'KPI & OKR Library', path: '/strata/kpis', icon: Target, exact: false },
-      ],
-    },
-    {
-      title: 'Value Management Office',
-      items: [
-        { id: 'portfolio', title: 'Portfolio & Value', path: '/strata/portfolio', icon: Sparkles, exact: false },
+        { id: 'portfolio', title: 'Portfolio & Benefits', path: '/strata/portfolio', icon: Sparkles, exact: false },
       ],
     },
     {
