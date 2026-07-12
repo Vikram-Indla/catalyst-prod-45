@@ -13,7 +13,7 @@ const DOT_COLORS: Record<string, string> = {
   Uncommitted:    token('color.icon.disabled',     'var(--ds-text-disabled)'),
   Committed:      token('color.icon.information',  'var(--ds-link)'),
   'On Track':     token('color.icon.success',      'var(--ds-background-success-bold)'),
-  Delayed:        token('color.icon.warning',      '#CF9F02'),
+  Delayed:        token('color.icon.warning',      'var(--ds-background-warning-bold)'),
   'At Risk':      token('color.icon.danger',       'var(--ds-background-danger-bold)'),
   Blocked:        token('color.icon.danger',       'var(--ds-background-danger-bold)'),
   Delivered:      token('color.icon.success',      'var(--ds-background-success-bold)'),
