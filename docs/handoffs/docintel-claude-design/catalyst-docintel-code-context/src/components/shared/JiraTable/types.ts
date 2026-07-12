@@ -1,0 +1,356 @@
+/**
+ * JiraTable -- canonical column / cell / editor types.
+ *
+ * Designed to be reused across ProjectHub, ReleaseHub, TestHub, IncidentHub
+ * and any other surface that needs a Jira-style work-item list.
+ */
+import type { ReactNode } from 'react';
+
+/** Sort direction in @atlaskit/dynamic-table's vocabulary. */
+export type SortOrder = 'ASC' | 'DESC';
+
+/** Density preset. "comfortable" is Catalyst's "one notch up from Jira". */
+export type Density = 'comfortable' | 'compact';
+
+/**
+ * Props handed to a column's `cell` renderer for ONE row.
+ * `value` is whatever the column extracts via its `accessor` function.
+ */
+export interface CellProps<TRow, TValue = unknown> {
+  row: TRow;
+  value: TValue;
+  /** True when the row is currently focused (keyboard nav). */
+  isFocused?: boolean;
+  /** True when the row is currently selected (checkbox). */
+  isSelected?: boolean;
+  /** Submit a new value for this cell — calls onCellEdit on the parent. */
+  commit: (next: TValue) => void;
+}
+
+/**
+ * One column in a JiraTable.
+ * `width` is fractional (Atlaskit DynamicTable convention), out of 100.
+ */
+export interface Column<TRow> {
+  /** Stable key — also used as the cell key + sort key. */
+  id: string;
+  /** Header label. Empty string for icon-only columns (checkbox, type). */
+  label: string;
+  /** Width as a fraction (out of 100) — resolved to pixels by naturalWidthFor(). */
+  width?: number;
+  /**
+   * When true this column acts as the flexible "flex-grow" column — it
+   * receives all remaining space after every other column has taken its
+   * fixed pixel width. Implemented via `width: 1%` + `table-layout: auto`
+   * (the classic "flexible-column" table trick). Only one column per table
+   * should set flex:true; Summary is the canonical target.
+   */
+  flex?: boolean;
+  /** Whether the column header is sortable. */
+  sortable?: boolean;
+  /** Cell content alignment. */
+  align?: 'start' | 'center' | 'end';
+  /** Always shown (cannot be hidden via column picker). */
+  alwaysVisible?: boolean;
+  /** When true the column is completely excluded from rendering (e.g. drag handle when sort is active). */
+  hidden?: boolean;
+  /** Default visibility (column picker uses this to seed state). */
+  defaultVisible?: boolean;
+  /** Extract the sort/edit value from the row. Defaults to row[id]. */
+  accessor?: (row: TRow) => unknown;
+  /** Cell renderer — return any ReactNode. */
+  cell: (props: CellProps<TRow>) => ReactNode;
+  /**
+   * 2026-05-10 Jira-parity: when true, header shows a hover-revealed
+   * filter chevron (▾) that opens a portal popup. Consumer provides
+   * `renderFilterMenu(close)` returning the popup body (typically
+   * checkboxes wired to a parent filter state).
+   */
+  filterable?: boolean;
+  /** Renders the per-column filter popup body. `close` dismisses it. */
+  renderFilterMenu?: (close: () => void) => ReactNode;
+  /** When true, the chevron is always visible (filter active indicator). */
+  hasActiveFilter?: boolean;
+  /** Optional row-level visibility gate — if present and returns false, the column is hidden for that row. */
+  include?: (row: TRow) => boolean;
+  /** Optional custom styles applied to the header <th> element. */
+  headerStyle?: React.CSSProperties;
+  /**
+   * 2026-06-22 — locks this column's position. Excluded from drag-reorder
+   * source AND target. Used for Work column in SubtasksPanel (Jira parity:
+   * "Work" is always first and cannot be moved or replaced).
+   */
+  lockedPosition?: boolean;
+  /**
+   * 2026-06-23 — composite-column sub-sort options. When set, the column's
+   * three-dot header menu renders a "Sort by columns" group whose entries are
+   * each a submenu of direction options. Used by the Work column (which
+   * packs Type icon + Key + Summary into one cell) so Jira's three-level
+   * sort menu is reproducible: Sort by columns ▸ Type ▸ A→Z / Z→A.
+   * `kind` controls direction labels — 'alpha' → A to Z / Z to A;
+   *                                    'numeric' → lowest to highest / highest to lowest.
+   */
+  subSorts?: Array<{ id: string; label: string; kind: 'alpha' | 'numeric' }>;
+}
+
+/** Group definition for grouped rows. */
+export interface RowGroup<TRow> {
+  id: string;
+  label: string;
+  rows: TRow[];
+  isCollapsed?: boolean;
+  /**
+   * Optional badge/metadata text shown next to the count in the group header
+   * (e.g. a status lozenge or the assignee's name). Rendered as plain text.
+   */
+  meta?: string;
+  /**
+   * Apr 27, 2026 (audit pass 10, spec parity): optional rich-content
+   * label rendered in place of the plain `label` string when present.
+   * Use this to put a Lozenge for status, an Avatar for assignee, or a
+   * priority-bars glyph for priority groups — matching the Atlaskit
+   * "Group: …" reference (Lozenge / Avatar / Tooltip wrappers per the
+   * groupBy field). The chevron + count are still rendered by JiraTable;
+   * `labelNode` only replaces the middle label slot.
+   */
+  labelNode?: ReactNode;
+}
+
+/** Public props for the canonical JiraTable. */
+export interface JiraTableProps<TRow> {
+  /** Schema. */
+  columns: Column<TRow>[];
+  /** Row data — when groups are not provided. */
+  data?: TRow[];
+  /** Grouped row data — takes precedence over `data` when present. */
+  groups?: RowGroup<TRow>[];
+  /** Stable id for each row. */
+  getRowId: (row: TRow) => string;
+  /** Click anywhere on a row that isn't an editor → opens detail. */
+  onRowClick?: (row: TRow) => void;
+  /**
+   * Indent depth for hierarchy rendering. Returns the depth (0 = top-level,
+   * 1 = first child, etc.). The first visible cell gets `depth * 16px` of
+   * left padding so child rows visually nest under their parent — matches
+   * Jira's hierarchy indent in the All Work / Backlog list view.
+   */
+  getRowDepth?: (row: TRow) => number;
+  /** Called when a cell editor commits a new value. */
+  onCellEdit?: (row: TRow, columnId: string, next: unknown) => void;
+  /** Show selection checkboxes. */
+  selectable?: boolean;
+  selection?: ReadonlySet<string>;
+  onSelectionChange?: (next: Set<string>) => void;
+  /** Sort state (controlled). */
+  sortKey?: string;
+  sortOrder?: SortOrder;
+  onSortChange?: (key: string, order: SortOrder) => void;
+  /** Pagination. */
+  rowsPerPage?: number;
+  page?: number;
+  onPageChange?: (next: number) => void;
+  /**
+   * Row-count footer (2026-05-17 jira-compare): when data.length > 0 and
+   * not grouping, renders a small "{N} of {Total} items" indicator at the
+   * bottom of the table. Mirrors Jira's "50 of 1000+" list footer.
+   * - `showRowCount` defaults to `true`.
+   * - `totalRowCount` is the un-filtered total. When omitted, falls back
+   *   to data.length so the indicator reads "{N} items".
+   */
+  showRowCount?: boolean;
+  totalRowCount?: number;
+  /**
+   * Row-level drag handle (2026-05-17 jira-compare cycle 2): when set, the
+   * canonical renders the returned node as an absolute-positioned overlay
+   * anchored to the row's left edge — outside the column flow — matching
+   * Jira's grip-on-row-hover pattern. Avoids the wasted-column-width cost
+   * of a dedicated __drag column.
+   * - `renderRowDragHandle(row)` returns the handle JSX. Caller wires
+   *   dnd-kit (or equivalent) inside the returned node.
+   * - `rowDragHandleHidden` mirrors the Jira behavior of hiding the
+   *   handle when a non-default sort or grouping is active.
+   */
+  renderRowDragHandle?: (row: TRow) => ReactNode;
+  rowDragHandleHidden?: boolean;
+  /** Currently-focused row key (keyboard nav). */
+  focusedRowId?: string;
+  /** Called when keyboard nav moves focus. Parent may persist or scroll. */
+  onFocusedRowChange?: (rowId: string | null) => void;
+  /** Esc inside the table fires this. Use it to close the side panel. */
+  onEscape?: () => void;
+  /** Density preset — "comfortable" is the Catalyst default. */
+  density?: Density;
+  /** Loading + empty UI. */
+  isLoading?: boolean;
+  emptyView?: ReactNode;
+  /** ARIA label for the table region. */
+  ariaLabel?: string;
+  /**
+   * Apr 27, 2026 (L70): bottom slot rendered INSIDE `.jira-table-viewport`
+   * after the table body — eliminates the visual gap between the table's
+   * last row and a "+ Create" row pinned underneath. Pass the inline
+   * BottomCreateRow JSX here. Horizontal scrollbar (if any) appears
+   * BELOW this slot, not between the table and the slot.
+   */
+  bottomSlot?: ReactNode;
+
+  /**
+   * Column visibility state. When provided alongside `onColumnVisibilityChange`,
+   * JiraTable renders a trailing `+` header button that opens a column picker.
+   * Columns flagged `alwaysVisible: true` in the schema are locked and cannot
+   * be toggled off — required structural columns (checkbox, key, summary).
+   * When either prop is omitted, the `+` button is hidden and all schema
+   * columns render.
+   */
+  columnVisibility?: ReadonlySet<string>;
+  onColumnVisibilityChange?: (next: Set<string>) => void;
+
+  /**
+   * Group collapse state. When provided, the group-header cell renders a
+   * chevron (aria-expanded) that toggles via `onToggleGroup`. Collapsed
+   * group ids in this Set hide their rows; the header row stays visible.
+   */
+  collapsedGroups?: ReadonlySet<string>;
+  onToggleGroup?: (groupId: string) => void;
+
+  /**
+   * Apr 27 2026 (jira-compare regression F-NEW-2): when provided, each
+   * group header row renders a 24×24 "+" IconButton AFTER the chevron and
+   * BEFORE the label, mirroring Jira's
+   * `business-list.common.ui.create-issue-plus-button.child-create-button-wrapper`
+   * at probed (203, 328). Click bubbles via this callback with the
+   * group's id — consumer wires to its own create flow (modal, inline
+   * row, etc.). When omitted, the button is not rendered.
+   */
+  onAddToGroup?: (groupId: string) => void;
+
+  /**
+   * Apr 27 2026 (jira-compare regression F-NEW-2 functional fill): when
+   * provided AND returns non-null for a given groupId, the table renders
+   * an EXTRA row inside that group, immediately after the group header
+   * and before the first data row. The returned node fills the full
+   * width of the table (colSpan over all columns). Use to render an
+   * inline create form when the user clicks the per-group "+" button.
+   * Returning null hides the row — typically the consumer keys the
+   * "active inline-create group" in state and returns the form only
+   * for that one id.
+   */
+  renderGroupInlineRow?: (groupId: string) => ReactNode | null;
+
+  /**
+   * Apr 27 2026 (jira-compare regression F-NEW-3 functional fill): when
+   * provided AND returns true for a row, the chevron slot in that row's
+   * first data column renders an interactive ChevronRight/Down icon.
+   * Click toggles row expansion via `onToggleRowExpanded`. Rows where
+   * this returns false render an empty 24×24 placeholder slot — the
+   * geometry stays uniform so column alignment is preserved.
+   */
+  getRowHasChildren?: (row: TRow) => boolean;
+  /**
+   * Apr 27 2026 (jira-compare regression F-NEW-3 functional fill): set
+   * of row ids that are currently expanded. Drives the chevron icon's
+   * orientation (ChevronDown when expanded, ChevronRight when collapsed).
+   */
+  expandedRowIds?: ReadonlySet<string>;
+  /**
+   * Apr 27 2026 (jira-compare regression F-NEW-3 functional fill):
+   * called when a row's chevron is clicked. Consumer manages
+   * expandedRowIds state and is responsible for actually rendering
+   * children rows.
+   */
+  onToggleRowExpanded?: (rowId: string) => void;
+
+  /**
+   * Optional right-click context-menu actions. When provided, a right-click
+   * on ANY data row opens a portal menu at the cursor with these items.
+   * Pass the same action list the consumer uses for `makeRowActionsCell` so
+   * behaviour is identical between the ⋯ hover menu and the context menu.
+   */
+  contextMenuActions?: Array<{
+    id: string;
+    label: string;
+    icon?: ReactNode;
+    danger?: boolean;
+    hidden?: (row: TRow) => boolean;
+    disabled?: (row: TRow) => boolean;
+    onClick: (row: TRow) => void;
+  }>;
+
+  /**
+   * Seed JiraTable's internal column-width state on mount. Keys are column ids,
+   * values are pixel widths. Merged with natural widths — user override wins.
+   * Use with `onColumnWidthsChange` for localStorage persistence.
+   */
+  initialColumnWidths?: Record<string, number>;
+  /**
+   * Called whenever the user finishes resizing a column (on mouseup).
+   * Receives the full map of all user-overridden column widths.
+   * Use this to persist to localStorage or URL params.
+   */
+  onColumnWidthsChange?: (widths: Record<string, number>) => void;
+
+  /**
+   * Enable column reorder via drag-and-drop on header cells. When `true`,
+   * non-structural columns (id NOT starting with `__`) gain a grab cursor on
+   * their header and can be dragged to a new position. Order is held in
+   * internal state by default; pass `columnOrder` + `onColumnOrderChange` for
+   * controlled use (e.g. URL or workspace persistence).
+   *
+   * Default: false. Existing consumers see no behaviour change.
+   */
+  enableColumnReorder?: boolean;
+  /** Controlled column order (array of column ids in render order). */
+  columnOrder?: ReadonlyArray<string>;
+  onColumnOrderChange?: (next: string[]) => void;
+
+  /**
+   * Enable row virtualization via @tanstack/react-virtual. Recommended for
+   * data sets ≥500 rows. Auto-disabled when `groups` are provided (group
+   * headers have variable heights that don't fit a single rowHeight).
+   *
+   * Default: false. Existing consumers render every row as before.
+   */
+  enableVirtualization?: boolean;
+
+  /**
+   * Feature flag: when true, the group header '+' button is rendered and
+   * `onAddToGroup` callback is invoked on click. When false (default), the
+   * group header '+' button is completely hidden regardless of whether
+   * `onAddToGroup` is passed.
+   *
+   * Default: false. Existing consumers see no change.
+   */
+  enableGroupCreateButton?: boolean;
+
+  /**
+   * Feature flag: when true, renders the sticky inline-create footer row
+   * pinned to the viewport bottom. When false (default), the footer is
+   * completely hidden regardless of whether `stickyCreateFooter` is passed.
+   *
+   * Default: false. Existing consumers see no change.
+   */
+  enableStickyCreateFooter?: boolean;
+
+  /**
+   * Jira-parity: sticky inline-create footer row always visible at the
+   * bottom of the table. When provided, renders a <tfoot> row pinned to
+   * the viewport bottom. `placeholder` is shown in idle state; `active`
+   * replaces it when the consumer has opened the create form.
+   *
+   * Only rendered when `enableStickyCreateFooter` is true.
+   */
+  stickyCreateFooter?: {
+    /** Placeholder text shown in idle state. Default: '+ What needs to be done?' */
+    placeholder?: string;
+    /** Called when the user clicks the idle placeholder row. */
+    onActivate: () => void;
+    /** When non-null, replaces the placeholder with the actual create form. */
+    active: ReactNode | null;
+    /**
+     * Optional refresh callback. When provided, a refresh icon is rendered
+     * in the center of the create row alongside the row count (Jira parity).
+     * Click invokes this callback (typically refetches table data).
+     */
+    onRefresh?: () => void | Promise<void>;
+  };
+}
