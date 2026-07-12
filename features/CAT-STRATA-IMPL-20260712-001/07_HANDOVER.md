@@ -4,15 +4,26 @@
 > Read order for continuation: `00_READ_ME_FIRST` → `01_OBJECTIVE` → `03_PLAN_LOCK` →
 > this file → `08_DRIFT_LOG` → `09_DECISIONS` → `discovery/00_anchor_specs` → latest `sessions/`.
 
-## State (as of session 001)
+## State (as of session 002)
 - **Branch:** `strata/impl-phase01` (off `main`). NOT pushed, NOT merged.
-- **Committed (4 slices):**
+- **Committed:**
   - `d4367b163` 0A — sidebar IA rename + context-spine scope/freshness slots + JiraTable `overflowX` prop.
   - `d479cce5d` 0B — `StrataSnapshotBand` (new canonical component).
   - `d50966a6d` 1A-1 — evidence `?from=` origin preservation + "n days overdue".
   - `8c921433c` 1A-2 — Command Center locked-mode snapshot band (live-verified).
-- **Phase 0 COMPLETE.** Phase 1 IN PROGRESS (1A split into sub-slices; 1A-1 + 1A-2 done).
-- Working tree clean at handover.
+  - `686f2e74b` session 001 handover.
+  - `20eb0db1c` **"commit" (FOREIGN — GitHub Desktop auto-commit)** — contains the bulk of slice 1A-3
+    (judgment band in `StrataCommandCenterPage.tsx`) + docs, swept from my working tree. See below.
+  - `58cb2af90` 1A-3 (the D-8 tweak; bulk is in the foreign commit above) — judgment band, live-verified.
+  - `c3de22709` untrack + gitignore the stray `Design attachments archive.zip` (swept in by `20eb0db1c`).
+- **Phase 0 COMPLETE.** Phase 1 IN PROGRESS: 1A-1, 1A-2, 1A-3 done. Working tree clean.
+
+## ⚠️ GIT HAZARD — active GitHub Desktop auto-committer ([[github-desktop-autocommit-hazard]])
+A GitHub Desktop process (user `Vikram-Indla`) auto-commits the working tree as commits titled
+"commit", sweeping in my in-progress edits + stray files. It split slice 1A-3 and pulled in a 3.7MB
+zip. **Before the next slice, ask Vikram to pause GitHub Desktop's auto-commit.** After every commit,
+`git log --oneline -3` and check for a foreign "commit"; `git diff --cached --name-status` before
+committing. Do not rewrite history while it is live.
 
 ## Design authority (PARENT-ONLY access)
 - claude.ai design project `e8a6bad6-1868-4b84-96bf-d6d49474b58a` ("Strata design brief").
