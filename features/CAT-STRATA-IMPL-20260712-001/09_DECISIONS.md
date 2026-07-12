@@ -42,8 +42,8 @@ Format: ID · statement · status (PROPOSED / CONFIRMED / REJECTED) · rationale
 
 - **D-8 · CC keeps the enterprise-score trend chart + AI-advisory panel** (anchor 01 shows neither).
   The AI advisory is a governed feature (F-GOV-009, reviewer≠author enforced); removing it silently
-  = regression. Trend chart is a working panel. → **PROPOSED: keep both** (recommend), pending a
-  Vikram decision to keep or remove-to-match-anchor. See DRIFT-2 in `08_DRIFT_LOG.md`.
+  = regression. Trend chart is a working panel. → **CONFIRMED by Vikram 2026-07-13: keep both.**
+  See DRIFT-2 in `08_DRIFT_LOG.md`.
 
 ## Status update (D-1…D-6)
 D-1…D-6 CONFIRMED by Vikram 2026-07-12 ("proceed with all recommended decisions"). D-7 applied.
