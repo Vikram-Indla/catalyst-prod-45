@@ -110,3 +110,22 @@ an EXISTING locked instance (`CEO Scorecard · Q1 FY2026` → SNAP-1001), so NO 
 switched the CC period to "Q1 FY2026 · closed" and screenshot-verified the band: discovery-toned
 `LOCKED SNAPSHOT` lozenge + "SNAP-1001 · frozen 8 Apr 2026, 09:00 · Q1 FY2026 Executive Review".
 File: `StrataCommandCenterPage.tsx` only.
+
+### Committed
+`8c921433c` — 1A-2. `686f2e74b` — session 001 handover.
+
+## Slice 1A-3 — Command Center judgment band — IMPLEMENTED + VERIFIED (not committed)
+Replaced the 6-tile `StrataStatStrip` (Row 1) with the anchor-01 judgment band: StrataScoreRing
+(88px) + eyebrow (ENTERPRISE SCORE · period + verdict Lozenge + Δ vs prior period) + composed
+executive sentence (worst-perspective drags · value-at-risk · decisions-waiting, zero-assumption
+clauses, inline token-pure links) + provenance footer (Server-calculated · model · View evidence
+with `?from=`). Added `InlineLink` helper; removed the now-dead stat-strip feeders (`stats`,
+`realizationQ`/`topBenefit`, `blockedDeps`/`dependenciesQ`, `pendingAttestations`) + their hook
+imports; added `worstPerspective`/`scoreDelta` memos. Imported `StrataScoreRing`; dropped
+`StrataStatStrip`/`StrataStat`.
+- ADS note: `padding: 20` tripped the token/HARDCODED_PX ratchet → used `var(--ds-space-250)`
+  (canonical, already used in StrataNotificationBell). Off-grid `6`/`10` → `8`/`12`.
+- Deviations logged: DRIFT-1 (perspective health stays Row 2), DRIFT-2 / D-8 (kept trend + AI advisory).
+- Validation: tsc / lint:colors:gate / audit:ads:gate green. Live-verified on staging (Q2 FY2026):
+  ring 100 · ON TRACK · ▲12.5 vs Q1 · "Financial (100) drags…, SAR 375K…, 1 decision is waiting."
+  + View evidence. File: `StrataCommandCenterPage.tsx`.

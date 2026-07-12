@@ -35,9 +35,7 @@ import {
   usePortfolios,
   useValueAtRisk,
   useBenefits,
-  useBenefitRealization,
   useDecisions,
-  useDependencies,
   useKpis,
   useNeedsAttention,
   useSnapshots,
@@ -52,11 +50,10 @@ import {
   StrataPageShell,
   StrataSnapshotBand,
   StrataPanel,
-  StrataStatStrip,
+  StrataScoreRing,
   StrataBandBar,
   StrataBandLozenge,
   useBandTone,
-  type StrataStat,
 } from '@/modules/strata/components/shared';
 import {
   fmtDate, fmtDateTime, fmtPct, fmtRatioPct, fmtSarCompact, fmtScore, labelize,
@@ -126,6 +123,23 @@ function PanelError({ error }: { error: unknown }) {
     <SectionMessage appearance="error" title="Could not load this panel">
       <p>{(error as Error)?.message ?? 'Unknown error.'}</p>
     </SectionMessage>
+  );
+}
+
+/** Inline text link used inside the judgment-band sentence — token-pure, keyboard
+ *  accessible (real button), navigates on click. Inherits the sentence's font. */
+function InlineLink({ onClick, children }: { onClick: () => void; children: React.ReactNode }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      style={{
+        background: 'none', border: 'none', padding: 0, margin: 0, font: 'inherit',
+        color: 'var(--ds-link)', cursor: 'pointer', textDecoration: 'underline',
+      }}
+    >
+      {children}
+    </button>
   );
 }
 
@@ -264,14 +278,11 @@ export default function StrataCommandCenterPage() {
   const portfolio = portfoliosQ.data?.[0] ?? null;
   const varQ = useValueAtRisk(portfolio?.id);
 
-  // ── Benefits realization (top benefit) ─────────────────────────────────────
+  // ── Benefits (entity-name resolution for the attention inbox) ──────────────
   const benefitsQ = useBenefits();
-  const topBenefit = benefitsQ.data?.[0] ?? null;
-  const realizationQ = useBenefitRealization(topBenefit?.id);
 
   // ── Governance / execution counts ──────────────────────────────────────────
   const decisionsQ = useDecisions();
-  const dependenciesQ = useDependencies();
   const kpisQ = useKpis();
   // Server-side rule engine feed — replaces the former client-composed inbox.
   const needsAttentionQ = useNeedsAttention(activePeriod?.id);
@@ -305,19 +316,6 @@ export default function StrataCommandCenterPage() {
     () => (decisionsQ.data ?? []).filter((d) => d.status === 'open'),
     [decisionsQ.data],
   );
-  // Live blocked-dependency rows (same rule as the engine's blocked_dependency).
-  const blockedDeps = useMemo(
-    () => (dependenciesQ.data ?? []).filter(
-      (d) => (d.is_blocker || d.status === 'blocked') && !['resolved', 'cancelled'].includes(d.status),
-    ),
-    [dependenciesQ.data],
-  );
-  // Pending attestations for the active period — from the rule-engine feed.
-  const pendingAttestations = useMemo(
-    () => (needsAttentionQ.data ?? []).filter((r) => r.item_type === 'pending_attestation'),
-    [needsAttentionQ.data],
-  );
-
   const kpiById = useMemo(
     () => new Map((kpisQ.data ?? []).map((k) => [k.id, k])),
     [kpisQ.data],
@@ -470,74 +468,66 @@ export default function StrataCommandCenterPage() {
     [snapshotsQ.data, instance],
   );
 
-  // ── Executive stat strip (hero: enterprise score ring) ─────────────────────
-  const stats: StrataStat[] = [
-    calcQ.isError
-      ? {
-          key: 'enterprise', label: 'Enterprise score', value: '—',
-          caption: 'Could not load score', captionTone: 'danger',
-          testId: 'strata-cc-enterprise-score',
-        }
-      : {
-          key: 'enterprise',
-          label: 'Enterprise score',
-          value: scoreText(calc?.score, calc?.has_data),
-          ring: { score: calc?.has_data ? calc.score : null, bandKey: calc?.status_key },
-          bandKey: calc?.has_data ? calc?.status_key : null,
-          caption: instance
-            ? (instance.slug ? 'View evidence' : 'Evidence route needs a slug')
-            : 'No scorecard for this period',
-          onClick: instance?.slug ? () => navigate(Routes.strata.scorecardEvidence(instance.slug!, Routes.strata.root())) : undefined,
-          testId: 'strata-cc-enterprise-score',
-        },
-    {
-      key: 'var',
-      label: 'Value at risk',
-      value: varQ.isError ? '—' : fmtSarCompact(varQ.data?.value),
-      bandKey: varQ.data?.status_key,
-      caption: varQ.isError ? 'Could not load' : portfolio ? (portfolio.slug ? 'View evidence' : 'Evidence route needs a slug') : 'No portfolio',
-      captionTone: varQ.isError ? 'danger' : 'neutral',
-      onClick: portfolio?.slug ? () => navigate(Routes.strata.portfolioEvidence(portfolio.slug!, Routes.strata.root())) : undefined,
-      testId: 'strata-cc-var',
-    },
-    {
-      key: 'benefits',
-      label: 'Benefits realization',
-      value: realizationQ.isError ? '—' : fmtRatioPct(realizationQ.data?.value),
-      ring: realizationQ.data?.value != null
-        ? { score: realizationQ.data.value * 100, bandKey: realizationQ.data.status_key }
-        : undefined,
-      caption: topBenefit ? `Realized vs planned — ${topBenefit.name}` : 'No benefits registered',
-      testId: 'strata-cc-benefits',
-    },
-    {
-      key: 'decisions',
-      label: 'Open decisions',
-      value: decisionsQ.data ? openDecisions.length : '—',
-      caption: 'Awaiting a decision forum',
-      captionTone: openDecisions.length > 0 ? 'warning' : 'neutral',
-      onClick: () => navigate(Routes.strata.reviews()),
-      testId: 'strata-cc-open-decisions',
-    },
-    {
-      key: 'deps',
-      label: 'Blocked dependencies',
-      value: dependenciesQ.data ? blockedDeps.length : '—',
-      caption: 'Cross-initiative blockers',
-      captionTone: blockedDeps.length > 0 ? 'danger' : 'neutral',
-      onClick: () => navigate(Routes.strata.execution()),
-      testId: 'strata-cc-blocked-deps',
-    },
-    {
-      key: 'attestations',
-      label: 'Pending attestations',
-      value: needsAttentionQ.data ? pendingAttestations.length : '—',
-      caption: activePeriod ? `KPI actuals in ${activePeriod.name}` : 'No active period',
-      captionTone: pendingAttestations.length > 0 ? 'warning' : 'neutral',
-      onClick: () => navigate(Routes.strata.data()),
-      testId: 'strata-cc-pending-attestations',
-    },
-  ];
+  // ── Judgment band inputs (anchor 01: one composed executive argument) ───────
+  // Worst-scoring perspective — the one that drags the enterprise score.
+  const worstPerspective = useMemo(() => {
+    const scored = (calc?.perspectives ?? []).filter((p) => p.has_data && p.score != null);
+    if (scored.length === 0) return null;
+    return scored.reduce((lo, p) => (p.score < lo.score ? p : lo));
+  }, [calc]);
+  // Δ vs the prior period on the enterprise-score trend.
+  const scoreDelta = useMemo((): { delta: number; priorLabel: string } | null => {
+    if (trendPoints.length < 2) return null;
+    const curIdx = activePeriod ? trendPoints.findIndex((p) => p.label === activePeriod.name) : trendPoints.length - 1;
+    const cur = curIdx >= 0 ? trendPoints[curIdx] : trendPoints[trendPoints.length - 1];
+    const prior = curIdx > 0 ? trendPoints[curIdx - 1] : null;
+    if (!cur || !prior) return null;
+    return { delta: cur.score - prior.score, priorLabel: prior.label };
+  }, [trendPoints, activePeriod]);
+  // Composed exception clauses — zero-assumption: only data-bearing clauses appear.
+  const judgmentClauses: React.ReactNode[] = [];
+  if (worstPerspective) {
+    judgmentClauses.push(
+      <React.Fragment key="persp">
+        <InlineLink onClick={() => { if (instance?.slug) navigate(Routes.strata.scorecard(instance.slug)); }}>
+          {`${worstPerspective.name} (${fmtScore(worstPerspective.score)})`}
+        </InlineLink>
+        {' drags the enterprise score'}
+      </React.Fragment>,
+    );
+  }
+  if (!varQ.isError && varQ.data?.value != null && portfolio?.slug) {
+    judgmentClauses.push(
+      <React.Fragment key="var">
+        <InlineLink onClick={() => navigate(Routes.strata.portfolioEvidence(portfolio.slug!, Routes.strata.root()))}>
+          {fmtSarCompact(varQ.data.value)}
+        </InlineLink>
+        {' of portfolio value is at risk against plan'}
+      </React.Fragment>,
+    );
+  }
+  if (openDecisions.length > 0) {
+    judgmentClauses.push(
+      <React.Fragment key="dec">
+        <InlineLink onClick={() => navigate(Routes.strata.reviews())}>
+          {`${openDecisions.length} ${openDecisions.length === 1 ? 'decision is' : 'decisions are'} waiting`}
+        </InlineLink>
+      </React.Fragment>,
+    );
+  }
+  const judgmentSentence: React.ReactNode = judgmentClauses.length > 0
+    ? (
+      <>
+        {judgmentClauses.map((c, i) => (
+          <React.Fragment key={i}>
+            {i > 0 ? (i === judgmentClauses.length - 1 ? ', and ' : ', ') : ''}
+            {c}
+          </React.Fragment>
+        ))}
+        {'.'}
+      </>
+    )
+    : 'All perspectives are within plan and no decisions are waiting.';
 
   return (
     <StrataPageShell
@@ -567,9 +557,60 @@ export default function StrataCommandCenterPage() {
         />
       ) : (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(12, minmax(0, 1fr))', gap: 16 }}>
-          {/* ── Row 1: executive stat strip ─────────────────────────────────── */}
+          {/* ── Row 1: judgment band — one composed executive argument ──────── */}
           <div style={{ gridColumn: 'span 12', minWidth: 0 }}>
-            <StrataStatStrip items={stats} testId="strata-cc-hero" />
+            <section
+              data-testid="strata-cc-judgment"
+              style={{
+                border: `1px solid ${T.border}`, borderRadius: 8, background: T.raised,
+                boxShadow: 'var(--ds-shadow-raised)', padding: 'var(--ds-space-250)',
+                display: 'flex', gap: 'var(--ds-space-250)', alignItems: 'center', minWidth: 0,
+              }}
+            >
+              <StrataScoreRing
+                score={calc?.has_data ? calc.score : null}
+                bandKey={calc?.status_key}
+                size={88}
+                strokeWidth={8}
+                testId="strata-cc-judgment-ring"
+              />
+              <div style={{ minWidth: 0, flex: 1 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8, flexWrap: 'wrap' }}>
+                  <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, letterSpacing: '0.04em', color: T.subtlest }}>
+                    {`ENTERPRISE SCORE${activePeriod ? ` · ${activePeriod.name}` : ''}`}
+                  </span>
+                  <StrataBandLozenge bandKey={calc?.has_data ? calc?.status_key : null} />
+                  {scoreDelta ? (
+                    <span style={{
+                      fontSize: 'var(--ds-font-size-100)', fontWeight: 600, fontVariantNumeric: 'tabular-nums',
+                      color: scoreDelta.delta >= 0 ? 'var(--ds-text-success)' : 'var(--ds-text-danger)',
+                    }}>
+                      {`${scoreDelta.delta >= 0 ? '▲' : '▼'} ${fmtScore(Math.abs(scoreDelta.delta))} vs ${scoreDelta.priorLabel}`}
+                    </span>
+                  ) : null}
+                </div>
+                {calcQ.isError ? (
+                  <p style={{ margin: 0, fontSize: 'var(--ds-font-size-300)', color: T.subtle }}>
+                    The enterprise score could not be loaded for this period.
+                  </p>
+                ) : (
+                  <p style={{ margin: 0, fontSize: 'var(--ds-font-size-400)', lineHeight: 'var(--ds-line-height-body)', color: T.text, textWrap: 'pretty' }}>
+                    {judgmentSentence}
+                  </p>
+                )}
+                <div style={{ marginTop: 12, fontSize: 'var(--ds-font-size-100)', color: T.subtlest }}>
+                  {`Server-calculated${instance?.name ? ` · ${instance.name}` : ''}`}
+                  {instance?.slug ? (
+                    <>
+                      {' · '}
+                      <InlineLink onClick={() => navigate(Routes.strata.scorecardEvidence(instance.slug!, Routes.strata.root()))}>
+                        View evidence
+                      </InlineLink>
+                    </>
+                  ) : null}
+                </div>
+              </div>
+            </section>
           </div>
 
           {/* ── Row 2: enterprise score trend + perspective health ─────────── */}
