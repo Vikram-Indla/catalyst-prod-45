@@ -103,7 +103,7 @@ export function BRStatusEducationalPopover({ status }: BRStatusEducationalPopove
           marginTop: '4px',
           backgroundColor: 'var(--ds-surface)',
           borderRadius: '4px',
-          boxShadow: 'var(--ds-shadow-overlay, 0 4px 8px rgba(9,30,66,0.25))',
+          boxShadow: 'var(--ds-shadow-overlay)',
           padding: '16px',
           width: '320px',
           maxWidth: 'calc(100vw - 32px)',

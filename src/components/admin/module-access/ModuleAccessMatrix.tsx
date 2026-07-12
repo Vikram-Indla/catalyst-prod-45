@@ -293,7 +293,7 @@ export function ModuleAccessMatrix() {
         <div
           role="menu"
           onClick={(e) => e.stopPropagation()}
-          style={{ position: 'fixed', top: menu.y, left: menu.x, zIndex: 9999, background: 'var(--ds-surface-overlay)', border: '1px solid var(--ds-border)', borderRadius: 6, boxShadow: 'var(--ds-shadow-overlay, 0 8px 28px rgba(9,30,66,0.25))', padding: '4px 0', minWidth: 180 }}
+          style={{ position: 'fixed', top: menu.y, left: menu.x, zIndex: 9999, background: 'var(--ds-surface-overlay)', border: '1px solid var(--ds-border)', borderRadius: 6, boxShadow: 'var(--ds-shadow-overlay)', padding: '4px 0', minWidth: 180 }}
         >
           {!menu.module_key && (
             <div style={{ padding: '8px 12px', fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--ds-text-subtlest)', borderBottom: '1px solid var(--ds-border)' }}>

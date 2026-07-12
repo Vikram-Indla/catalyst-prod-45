@@ -74,7 +74,7 @@ export default function CreateBoardModal({ projectId, basePath, onClose, onCreat
           width: '100%', maxWidth: 680,
           background: 'var(--ds-surface)',
           borderRadius: 8,
-          boxShadow: 'var(--ds-shadow-overlay, 0 8px 32px rgba(9,30,66,0.25))',
+          boxShadow: 'var(--ds-shadow-overlay)',
           display: 'flex', flexDirection: 'column',
           border: '1px solid var(--ds-border)',
         }}

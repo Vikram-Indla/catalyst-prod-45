@@ -705,7 +705,7 @@ function AddStatusPicker({
         background: 'var(--ds-surface-overlay)',
         border: '1px solid var(--ds-border)',
         borderRadius: 4,
-        boxShadow: 'var(--ds-shadow-overlay, 0 8px 28px rgba(9,30,66,0.25))',
+        boxShadow: 'var(--ds-shadow-overlay)',
         padding: 8,
         minWidth: 240,
         maxHeight: 320,

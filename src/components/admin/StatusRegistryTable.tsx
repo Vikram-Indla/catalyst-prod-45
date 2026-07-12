@@ -80,7 +80,7 @@ function ConsumersCell({ consumers }: ConsumersCellProps) {
             background: 'var(--ds-surface-overlay)',
             border: '1px solid var(--ds-border)',
             borderRadius: 4,
-            boxShadow: 'var(--ds-shadow-overlay, 0 8px 28px rgba(9,30,66,0.25))',
+            boxShadow: 'var(--ds-shadow-overlay)',
             padding: '8px 12px',
             fontSize: 'var(--ds-font-size-200)',
             lineHeight: 1.6,

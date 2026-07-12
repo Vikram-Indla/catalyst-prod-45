@@ -188,6 +188,14 @@ class ADSTokenScanner {
     let inBlockComment = false;
 
     lines.forEach((line, index) => {
+      // Skip lines carrying an inline `// ads-scanner:ignore-line` marker.
+      // Mirrors scripts/no-hardcoded-colors.cjs, which honors BOTH the
+      // same-line and next-line markers. Without this the audit re-reported
+      // intentional exemptions the color gate treats as clean — the exact
+      // audit/gate discrepancy this closes.
+      if (line.includes('ads-scanner:ignore-line')) {
+        return;
+      }
       // Skip lines flagged by the preceding `// ads-scanner:ignore-next-line`
       // marker. The marker must be the immediately preceding line.
       if (index > 0 && lines[index - 1].includes('ads-scanner:ignore-next-line')) {
