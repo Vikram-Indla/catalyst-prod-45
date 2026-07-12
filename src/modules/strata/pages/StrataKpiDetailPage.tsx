@@ -322,6 +322,13 @@ export default function StrataKpiDetailPage() {
   const schemesQ = useThresholdSchemes();
   const elementKpisQ = useElementKpis();
   const elementsQ = useStrategyElements(activeCycle?.id);
+  // STRATA-E2E-010: resolve the perspective a linked strategy element governs the KPI
+  // into, so the governed perspective is visible on the KPI detail (not just the element name).
+  const perspectivesQ = useQuery({
+    queryKey: ['strata', 'perspectives'],
+    queryFn: () => configApi.perspectives(),
+    staleTime: 60_000,
+  });
   const invalidate = useInvalidateStrata();
   const [showTrendData, setShowTrendData] = useState(false);
   const [showStrategyLinks, setShowStrategyLinks] = useState(false);
@@ -496,6 +503,7 @@ export default function StrataKpiDetailPage() {
 
   const elements = elementsQ.data ?? [];
   const elementById = new Map(elements.map((e) => [e.id, e]));
+  const perspectiveById = new Map((perspectivesQ.data ?? []).map((p) => [p.id, p.name]));
   const kpiElementLinks = (elementKpisQ.data ?? []).filter((l) => l.kpi_id === kpi.id);
   const actuals = detailQ.data?.actuals ?? [];
   const formulas = detailQ.data?.formulas ?? [];
@@ -780,6 +788,11 @@ export default function StrataKpiDetailPage() {
                       {el?.name ?? <Dash />}
                     </span>
                     {el?.element_type ? <CatalystTag text={labelize(el.element_type)} /> : null}
+                    {/* STRATA-E2E-010: governed perspective this link rolls the KPI into.
+                        Rendered only once resolved — zero-assumption, no placeholder guess. */}
+                    {el?.perspective_id && perspectiveById.get(el.perspective_id)
+                      ? <CatalystTag text={perspectiveById.get(el.perspective_id)!} />
+                      : null}
                     <span style={{ fontSize: 'var(--ds-font-size-100)', color: T.subtle, whiteSpace: 'nowrap' }}>
                       {l.weight != null ? `Weight ${l.weight}` : '—'}
                     </span>
