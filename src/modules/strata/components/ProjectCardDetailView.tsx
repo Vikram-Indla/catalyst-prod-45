@@ -24,7 +24,7 @@ import type { Column } from '@/components/shared/JiraTable';
 import { Routes } from '@/lib/routes';
 import { executionApi } from '../domain';
 import {
-  useDependencies, useMilestones, useProfileNames, useProjectCardFieldConfigs,
+  useDependencies, useExecutionLinks, useMilestones, useProfileNames, useProjectCardFieldConfigs,
   useProjectCardPicklists, useProjectCardSectionConfigs, useProjectKpis,
   useProjectObjectives, useInvalidateStrata, useKpis, useRisks, useStrataContext, useStrataRoles,
   useStrategyElements,
@@ -138,11 +138,13 @@ export function ProjectCardDetailView({ card, theme }: {
   const projectKpisQ = useProjectKpis(card.id);
   const allKpisQ = useKpis();
   const elementsQ = useStrategyElements(activeCycle?.id);
+  const executionLinksQ = useExecutionLinks();
   const profilesQ = useProfileNames();
   const fieldConfigsQ = useProjectCardFieldConfigs(card.card_type);
   const sectionConfigsQ = useProjectCardSectionConfigs(card.card_type);
   const lobPicklistQ = useProjectCardPicklists('lead_business_unit');
   const teamPicklistQ = useProjectCardPicklists('delivery_team');
+  const sectorPicklistQ = useProjectCardPicklists('sector');
   const deliveryStatusPicklistQ = useProjectCardPicklists('delivery_status');
 
   const [form, setForm] = useState<FormKey>(null);
@@ -158,8 +160,23 @@ export function ProjectCardDetailView({ card, theme }: {
   const allKpis = allKpisQ.data ?? [];
   const elements = elementsQ.data ?? [];
 
+  const themeElements = elements.filter((e) => e.element_type === 'theme');
   const themeObjectives = elements.filter((e) => e.context === 'theme' && e.element_type === 'objective');
   const themeKpis = allKpis; // scoping to strictly theme-linked KPIs is a future refinement; all KPIs are valid roll-up targets today
+
+  // Resolved upward roll-up target per Project KPI. The parent Theme KPI is a
+  // 'rolls_up_to' execution link (strata_execution_links), not a column — resolve
+  // its NAME against themeKpis. Zero-assumption: unresolved → nothing rendered.
+  const themeKpiNameById = useMemo(() => new Map(themeKpis.map((k) => [k.id, k.name])), [themeKpis]);
+  const parentThemeKpiIdByProjectKpi = useMemo(() => {
+    const m = new Map<string, string>();
+    (executionLinksQ.data ?? []).forEach((lk) => {
+      if (lk.from_type === 'kpi' && lk.to_type === 'kpi' && lk.relationship_type === 'rolls_up_to') {
+        m.set(lk.from_id, lk.to_id);
+      }
+    });
+    return m;
+  }, [executionLinksQ.data]);
 
   const projectDependencies = (dependenciesQ.data ?? []).filter(
     (d) => (d.requesting_type === 'project_card' && d.requesting_id === card.id)
@@ -388,9 +405,19 @@ export function ProjectCardDetailView({ card, theme }: {
               >
                 {projectKpis.length === 0 ? (
                   <EmptyState size="compact" header="No project KPIs" description="Project KPIs / Measures use the same framework as Theme KPIs and may roll up to one." />
-                ) : projectKpis.map((k) => (
-                  <LinkedRow key={k.id} primary={k.name} meta={`${labelize(k.direction)} · ${labelize(k.frequency)}${k.unit ? ` · ${k.unit}` : ''}`} canAct={false} />
-                ))}
+                ) : projectKpis.map((k) => {
+                  const parentId = parentThemeKpiIdByProjectKpi.get(k.id);
+                  const parentName = parentId ? themeKpiNameById.get(parentId) ?? null : null;
+                  const baseMeta = `${labelize(k.direction)} · ${labelize(k.frequency)}${k.unit ? ` · ${k.unit}` : ''}`;
+                  return (
+                    <LinkedRow
+                      key={k.id}
+                      primary={k.name}
+                      meta={parentName ? `${baseMeta} · Rolls up to ${parentName}` : baseMeta}
+                      canAct={false}
+                    />
+                  );
+                })}
               </TabSection>
             ) : null}
 
@@ -479,11 +506,16 @@ export function ProjectCardDetailView({ card, theme }: {
         submitLabel="Save"
         fields={[
           { key: 'name', label: 'Project Name', kind: 'text', required: true },
+          { key: 'themeId', label: 'Strategic Theme', kind: 'select', options: themeElements.map((t) => ({ value: t.id, label: t.name })) },
           { key: 'businessOwnerId', label: 'Business Owner', kind: 'user' },
           { key: 'pmId', label: 'Project Manager', kind: 'user' },
           { key: 'leadBusinessUnit', label: 'Lead Business Unit', kind: 'select', options: (lobPicklistQ.data ?? []).map((p) => ({ value: p.value, label: p.label })) },
           { key: 'deliveryTeam', label: 'Delivery Team', kind: 'select', options: (teamPicklistQ.data ?? []).map((p) => ({ value: p.value, label: p.label })) },
+          { key: 'sector', label: 'Department / Sector', kind: 'select', options: (sectorPicklistQ.data ?? []).map((p) => ({ value: p.value, label: p.label })) },
           { key: 'stage', label: 'Delivery Status', kind: 'select', options: (deliveryStatusPicklistQ.data ?? []).map((p) => ({ value: p.value, label: p.label })) },
+          { key: 'baselineStart', label: 'Baseline start', kind: 'date' },
+          { key: 'baselineEnd', label: 'Baseline end', kind: 'date' },
+          { key: 'forecastEnd', label: 'Forecast end', kind: 'date' },
           { key: 'scopeDescription', label: 'Scope Description', kind: 'textarea' },
           { key: 'targetOutcomes', label: 'Target Outcomes', kind: 'textarea' },
           { key: 'successCriteria', label: 'Success Criteria', kind: 'textarea' },
@@ -493,18 +525,20 @@ export function ProjectCardDetailView({ card, theme }: {
           { key: 'valueHypothesis', label: 'Value Hypothesis (optional)', kind: 'textarea' },
         ]}
         initial={{
-          name: card.name, businessOwnerId: card.business_owner_id, pmId: card.pm_id,
-          leadBusinessUnit: card.lead_business_unit, deliveryTeam: card.delivery_team, stage: card.stage,
+          name: card.name, themeId: card.theme_id, businessOwnerId: card.business_owner_id, pmId: card.pm_id,
+          leadBusinessUnit: card.lead_business_unit, deliveryTeam: card.delivery_team, sector: card.sector, stage: card.stage,
+          baselineStart: card.baseline_start, baselineEnd: card.baseline_end, forecastEnd: card.forecast_end,
           scopeDescription: card.scope_description, targetOutcomes: card.target_outcomes, successCriteria: card.success_criteria,
           budget: card.budget, sponsorId: card.sponsor_id, businessCase: card.business_case, valueHypothesis: card.value_hypothesis,
         }}
         onSubmit={submitAndRefresh((v) => executionApi.updateProjectCard(card.id, {
-          name: fvStr(v.name), businessOwnerId: fvStr(v.businessOwnerId), pmId: fvStr(v.pmId),
-          leadBusinessUnit: fvStr(v.leadBusinessUnit), deliveryTeam: fvStr(v.deliveryTeam), stage: fvStr(v.stage),
+          name: fvStr(v.name), themeId: fvStr(v.themeId), businessOwnerId: fvStr(v.businessOwnerId), pmId: fvStr(v.pmId),
+          leadBusinessUnit: fvStr(v.leadBusinessUnit), deliveryTeam: fvStr(v.deliveryTeam), sector: fvStr(v.sector), stage: fvStr(v.stage),
+          baselineStart: fvStr(v.baselineStart), baselineEnd: fvStr(v.baselineEnd), forecastEnd: fvStr(v.forecastEnd),
           scopeDescription: fvStr(v.scopeDescription), targetOutcomes: fvStr(v.targetOutcomes), successCriteria: fvStr(v.successCriteria),
           budget: fvNum(v.budget), sponsorId: fvStr(v.sponsorId), businessCase: fvStr(v.businessCase), valueHypothesis: fvStr(v.valueHypothesis),
           clearPm: wasCleared(card.pm_id, v.pmId), clearBusinessOwner: wasCleared(card.business_owner_id, v.businessOwnerId),
-          clearSponsor: wasCleared(card.sponsor_id, v.sponsorId),
+          clearSponsor: wasCleared(card.sponsor_id, v.sponsorId), clearTheme: wasCleared(card.theme_id, v.themeId),
         }))}
         testId="strata-project-edit-modal"
       />
