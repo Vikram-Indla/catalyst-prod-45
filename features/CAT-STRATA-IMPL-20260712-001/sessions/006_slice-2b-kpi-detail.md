@@ -27,3 +27,11 @@ trust strip. 2B-2: actuals/validation table (commentary column) + role-gated Sub
 - 2B-1 `78f1d9efd`→merge `a2cd658cd`; 2B-2 `98ba2b2d4`→merge `57dbb1a2e`; 2C-1 pending commit.
 - 2C-1: verdict-first KPI columns (anchor 16) via per-row achievement + deduped actuals-lite; OKR
   accordion kept. NEXT = 2C-2 (BulkFooterBar + saved-views migration), then 2D Strategy Room.
+
+## Checkpoint at 2C-1 → resume at 2C-2 (session 006 end)
+Anchor 16 read in FULL: richer than Plan Lock line. 2C-2 = governed bulk RPC (Vikram approved to build
+— no strata bulk-write RPC exists) + BulkFooterBar (Change owner/Assign scheme/Export) + saved views
+(strata_saved_views migration) + filter enrichment/summary/worst-first sort + column refinements
+(objective ancestry sub-line, Δ column, freshness staleness glyph). See ⭐PHASE 2 NEXT in 07_HANDOVER.md.
+Checkpointed for context-health (Vikram chose "do 2C-2 fresh"). Commits this session: 2A 84fcb57ff,
+2B-1 78f1d9efd, 2B-2 98ba2b2d4, 2C-1 91c0f868e (all merged; origin/main 43ecfe3c9).
