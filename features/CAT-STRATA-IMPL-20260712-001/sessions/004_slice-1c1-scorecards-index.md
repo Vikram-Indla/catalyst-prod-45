@@ -21,3 +21,11 @@ staging + `git log` check after commit.
 "Where attention pays" JiraTable panel below the cards — worst-score-first + Δ-vs-prior + weakest-
 perspective driver (D-10; variance-to-plan deferred to backend task_e44f1ba9). Gates green, live-verified
 both themes. See 04_EXECUTION_LOG.md Slice 1C-2. Anchor 12 (D-9) now COMPLETE. Next: 1D (read anchor 13).
+
+## 1D done (same session): Scorecard Detail close-out
+Anchor 13 read in full — no structural drift (page already verdict→decomposition shaped); Plan-Lock
+items implemented: ?from= threading (Evidence + line ⓘ + fallback, EvidencePage prefix resolver),
+role-gated Recalculate, layout-matched skeletons, whole-page restricted, partial-data label, D-6
+dual-mode slug|UUID + canonical redirect. Live-verified: both evidence paths show "← Back to
+Scorecard"; UUID URL canonicalizes; gates green; both themes. Anchor-13 extras (composed verdict
+sentence, contribution column, roll-up footer) = optional polish, offered to Vikram, NOT built.

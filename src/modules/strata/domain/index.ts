@@ -269,8 +269,17 @@ export const scorecardApi = {
     if (cycleId) q = q.eq('cycle_id', cycleId);
     return run(q);
   },
-  instanceBySlug: async (slug: string): Promise<StrataScorecardInstance | null> =>
-    run(typedQuery('strata_scorecard_instances').select('*').eq('slug', slug).maybeSingle()),
+  /** Dual-mode resolver (D-6, CRE Grid F4): accepts the canonical slug OR a
+   *  legacy UUID id, so pre-slug links keep resolving. Callers should replace
+   *  a UUID URL with the canonical slug once resolved. */
+  instanceBySlug: async (slugOrId: string): Promise<StrataScorecardInstance | null> => {
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(slugOrId);
+    return run(
+      typedQuery('strata_scorecard_instances').select('*')
+        .eq(isUuid ? 'id' : 'slug', slugOrId)
+        .maybeSingle(),
+    );
+  },
   lines: (instanceId: string): Promise<StrataScorecardLine[]> =>
     run(typedQuery('strata_scorecard_lines').select('*').eq('instance_id', instanceId).order('order_index')),
   /**

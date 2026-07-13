@@ -133,6 +133,15 @@ const STRATA_ORIGIN_LABELS: Record<string, string> = {
   '/strata/portfolio': 'Portfolio & Benefits',
 };
 
+/** Detail-page origins carry a dynamic slug — resolve by prefix after the
+ *  exact-path table misses (slice 1D: scorecard detail threads ?from=). */
+function strataOriginLabel(fromPath: string): string | null {
+  const exact = STRATA_ORIGIN_LABELS[fromPath];
+  if (exact) return exact;
+  if (/^\/strata\/scorecards\/[^/]+$/.test(fromPath)) return 'Scorecard';
+  return null;
+}
+
 export default function StrataEvidencePage() {
   const { slug } = useParams<{ slug: string }>();
   const { pathname } = useLocation();
@@ -142,7 +151,7 @@ export default function StrataEvidencePage() {
   // Evidence-route origin preservation (nav contract §5): `?from=<path>` renders
   // a "Back to [origin]" link that returns to the drill origin.
   const fromParam = searchParams.get('from');
-  const originLabel = fromParam ? (STRATA_ORIGIN_LABELS[fromParam] ?? null) : null;
+  const originLabel = fromParam ? strataOriginLabel(fromParam) : null;
 
   const kind: EvidenceKind = pathname.startsWith('/strata/kpis/')
     ? 'kpi'
