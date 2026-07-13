@@ -6,6 +6,7 @@
  */
 import React, { useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
 import {
   Avatar, Button, CatalystTag,
   EmptyState, Lozenge, SectionMessage, Spinner, Textfield, Tooltip,
@@ -20,10 +21,10 @@ import { kpiApi } from '@/modules/strata/domain';
 import {
   useDataSources, useInvalidateStrata, useKpiAchievement, useKpis, useOkrs, useProfileNames, useStrataContext, useStrataRoles, useStrategyElements,
 } from '@/modules/strata/hooks/useStrata';
-import { OkrRow, StrataBandBar, StrataBandLozenge, StrataChipMenu, StrataPageShell, StrataPanel, T } from '@/modules/strata/components/shared';
+import { OkrRow, StrataBandBar, StrataBandLozenge, StrataChipMenu, StrataPageShell, StrataPanel, StrataTrendSpark, T } from '@/modules/strata/components/shared';
 import { StrataFormModal } from '@/modules/strata/components/authoring';
-import { fmtPct, labelize } from '@/modules/strata/components/format';
-import type { GovernedStatus, StrataKpi, StrataOkr } from '@/modules/strata/types';
+import { fmtDate, fmtPct, fmtUnit, labelize } from '@/modules/strata/components/format';
+import type { GovernedStatus, StrataKpi, StrataKpiActual, StrataOkr } from '@/modules/strata/types';
 import type { StrataProfileRef } from '@/modules/strata/hooks/useStrata';
 
 /** UI affordance gating only — server RPCs enforce the real role rules (SoD etc.). */
@@ -85,20 +86,6 @@ const DIRECTION_LABEL: Record<StrataKpi['direction'], string> = {
 const Dash = () => <span style={{ color: T.subtlest }}>—</span>;
 
 /** Direction cell — icon + label (S-130). */
-function DirectionCell({ direction }: { direction: StrataKpi['direction'] }) {
-  const icon =
-    direction === 'higher_better' ? <ArrowUp size={14} color="var(--ds-icon-subtle)" />
-    : direction === 'lower_better' ? <ArrowDown size={14} color="var(--ds-icon-subtle)" />
-    : direction === 'band' ? <Scale size={14} color="var(--ds-icon-subtle)" />
-    : null;
-  return (
-    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, color: T.subtle, fontSize: 'var(--ds-font-size-100)' }}>
-      {icon}
-      {DIRECTION_LABEL[direction] ?? labelize(direction)}
-    </span>
-  );
-}
-
 /** Subtle skeleton bar shown while a per-row achievement RPC resolves (S-123). */
 function CellSkeleton() {
   return <span aria-hidden style={{ display: 'inline-block', width: 64, height: 8, borderRadius: 4, background: T.neutral }} />;
@@ -153,27 +140,80 @@ function KpiAchievementCell({ kpiId }: { kpiId: string }) {
   );
 }
 
-/** Validator cell — resolved name, or attestation icon; never the literal "Set" (S-120). */
-function ValidatorCell({ validatorId, profiles }: { validatorId: string | null; profiles?: Map<string, StrataProfileRef> }) {
-  if (!validatorId) return <Dash />;
-  const p = profiles?.get(validatorId);
-  if (p?.name) {
-    return (
-      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, minWidth: 0 }}>
-        <Avatar size="xsmall" name={p.name} src={p.avatarUrl ?? undefined} />
-        <span style={{ color: T.subtle, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.name}</span>
-      </span>
-    );
-  }
+/** Per-actual validation state (validated/pending/rejected/quarantined). */
+const VALIDATION_APPEARANCE: Record<string, React.ComponentProps<typeof Lozenge>['appearance']> = {
+  validated: 'success', pending: 'moved', rejected: 'removed', quarantined: 'moved',
+};
+function ValidationLozenge({ status }: { status?: string | null }) {
+  if (!status) return <Dash />;
+  return <Lozenge appearance={VALIDATION_APPEARANCE[status] ?? 'default'}>{labelize(status)}</Lozenge>;
+}
+
+/** Per-row actuals — same queryKey across cells of a row so React Query dedupes
+ *  to one fetch (feeds Trend spark + Validation + Freshness). */
+function useKpiActualsLite(kpiId: string) {
+  return useQuery({ queryKey: ['strata', 'kpi-actuals', kpiId], queryFn: () => kpiApi.actuals(kpiId), staleTime: 30_000 });
+}
+
+/** Actual / Target for the active period (verdict-first column, anchor 16). */
+function KpiActualTargetCell({ kpiId, unit }: { kpiId: string; unit: string | null }) {
+  const { activePeriod } = useStrataContext();
+  const q = useKpiAchievement(kpiId, activePeriod?.id);
+  if (!activePeriod) return <Dash />;
+  if (q.isLoading) return <CellSkeleton />;
+  const a = (q.data ?? null) as KpiAchievementPayload | null;
+  if (!a || (a.actual == null && a.target == null)) return <Dash />;
   return (
-    <Tooltip content="Validator assigned">
-      <span style={{ display: 'inline-flex' }} aria-label="Validator assigned">
-        <CheckCircle2 size={16} color="var(--ds-icon-success)" />
-      </span>
-    </Tooltip>
+    <span style={{ fontVariantNumeric: 'tabular-nums', color: T.subtle, fontSize: 'var(--ds-font-size-100)', whiteSpace: 'nowrap' }}>
+      <strong style={{ color: T.text, fontWeight: 600 }}>{a.actual != null ? fmtUnit(a.actual, unit) : '—'}</strong>
+      {' / '}{a.target != null ? fmtUnit(a.target, unit) : '—'}
+    </span>
   );
 }
 
+/** Trend spark from the KPI's actuals (ascending by submission). */
+function KpiTrendCell({ kpiId, direction }: { kpiId: string; direction: string }) {
+  const q = useKpiActualsLite(kpiId);
+  if (q.isLoading) return <CellSkeleton />;
+  const acts = (q.data ?? []) as StrataKpiActual[];
+  const points = [...acts].sort((a, b) => (a.submitted_at < b.submitted_at ? -1 : 1)).map((a) => a.value);
+  if (points.filter((v) => v != null).length < 2) return <Dash />;
+  return <StrataTrendSpark points={points} higherIsBetter={direction !== 'lower_better'} />;
+}
+
+/** Latest validation state for the active period (else most recent actual). */
+function KpiValidationCell({ kpiId }: { kpiId: string }) {
+  const { activePeriod } = useStrataContext();
+  const q = useKpiActualsLite(kpiId);
+  if (q.isLoading) return <CellSkeleton />;
+  const acts = (q.data ?? []) as StrataKpiActual[];
+  const cur = acts.find((a) => a.period_id === activePeriod?.id) ?? acts[0] ?? null;
+  return cur ? <ValidationLozenge status={cur.validation_status} /> : <Dash />;
+}
+
+/** Freshness — most recent actual submission date. */
+function KpiFreshnessCell({ kpiId }: { kpiId: string }) {
+  const q = useKpiActualsLite(kpiId);
+  if (q.isLoading) return <CellSkeleton />;
+  const acts = (q.data ?? []) as StrataKpiActual[];
+  if (acts.length === 0) return <Dash />;
+  const latest = acts.reduce((mx, a) => (a.submitted_at > mx ? a.submitted_at : mx), acts[0].submitted_at);
+  return <span style={{ color: T.subtlest, fontSize: 'var(--ds-font-size-100)', whiteSpace: 'nowrap' }}>{fmtDate(latest)}</span>;
+}
+
+/** Owner (accountable owner) — resolved name + avatar. */
+function KpiOwnerCell({ ownerId, profiles }: { ownerId: string | null; profiles?: Map<string, StrataProfileRef> }) {
+  if (!ownerId) return <Dash />;
+  const p = profiles?.get(ownerId);
+  return p?.name ? (
+    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, minWidth: 0 }}>
+      <Avatar size="xsmall" name={p.name} src={p.avatarUrl ?? undefined} />
+      <span style={{ color: T.subtle, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.name}</span>
+    </span>
+  ) : <Dash />;
+}
+
+/** Validator cell — resolved name, or attestation icon; never the literal "Set" (S-120). */
 // ── OKR panel — OkrRow/KeyResultsList/krProgressFraction/OKR_STATUS_LOZENGE ──
 //    now live in components/shared.tsx (canonical, shared with Theme/Objective
 //    detail's OKR Performance panel — CAT-STRATA-THEME-DETAIL-20260710-001
@@ -345,12 +385,6 @@ export default function StrataKpiLibraryPage() {
 
   const canAuthor = (rolesQ.data ?? []).some((r) => (CREATE_ROLES as readonly string[]).includes(r));
 
-  const dataSourceNameById = useMemo(() => {
-    const m = new Map<string, string>();
-    (dataSourcesQ.data ?? []).forEach((d) => m.set(d.id, d.name));
-    return m;
-  }, [dataSourcesQ.data]);
-
   const filtered = useMemo(() => {
     const term = search.trim().toLowerCase();
     let rows = (kpisQ.data ?? []).filter((k) =>
@@ -367,79 +401,62 @@ export default function StrataKpiLibraryPage() {
     return rows;
   }, [kpisQ.data, search, statusFilter, sortKey, sortOrder]);
 
+  // Verdict-first columns (anchor 16): KPI · Achievement · Actual/Target · Trend ·
+  // Validation · Owner · Freshness — replacing the field-dump rows. Achievement +
+  // Actual/Target come from the per-row achievement RPC; Trend/Validation/Freshness
+  // from a per-row actuals fetch (deduped by React Query).
   const columns = useMemo<Column<StrataKpi>[]>(() => [
     {
       id: 'name',
       label: 'KPI',
-      /* Fixed 32 units (384px) instead of flex: JiraTable reserves a hard 640px
-       * floor for flex columns, which forces horizontal scroll and visually
-       * "chops" the trailing columns on a 9-column dictionary. table-layout
-       * fixed still distributes any spare width across all columns. */
-      width: 32,
+      width: 26,
       sortable: true,
       alwaysVisible: true,
       cell: ({ row }) => (
-        <KpiNameLink row={row} onOpen={() => { if (row.slug) navigate(Routes.strata.kpi(row.slug)); }} />
+        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
+          <KpiNameLink row={row} onOpen={() => { if (row.slug) navigate(Routes.strata.kpi(row.slug)); }} />
+          <StrataGovernedStatusLozenge status={row.status} />
+        </span>
       ),
-    },
-    {
-      id: 'unit',
-      label: 'Unit',
-      width: 5,
-      cell: ({ row }) => (row.unit ? <span style={{ color: T.subtle }}>{row.unit}</span> : <Dash />),
-    },
-    {
-      id: 'direction',
-      label: 'Direction',
-      width: 10,
-      cell: ({ row }) => (row.direction ? <DirectionCell direction={row.direction} /> : <Dash />),
-    },
-    {
-      id: 'frequency',
-      label: 'Frequency',
-      width: 8,
-      sortable: true,
-      cell: ({ row }) => (row.frequency ? <span style={{ color: T.subtle }}>{labelize(row.frequency)}</span> : <Dash />),
-    },
-    {
-      id: 'entry_method',
-      label: 'Entry',
-      width: 8,
-      cell: ({ row }) => (row.entry_method ? <CatalystTag text={labelize(row.entry_method)} /> : <Dash />),
-    },
-    {
-      id: 'status',
-      label: 'Status',
-      width: 9,
-      sortable: true,
-      cell: ({ row }) => <StrataGovernedStatusLozenge status={row.status} />,
     },
     {
       id: 'achievement',
       label: 'Achievement',
-      width: 13,
+      width: 14,
       cell: ({ row }) => <KpiAchievementCell kpiId={row.id} />,
     },
     {
-      id: 'validator',
-      label: 'Validator',
-      width: 9,
-      cell: ({ row }) => <ValidatorCell validatorId={row.validator_id} profiles={profilesQ.data} />,
+      id: 'actual_target',
+      label: 'Actual / Target',
+      width: 14,
+      cell: ({ row }) => <KpiActualTargetCell kpiId={row.id} unit={row.unit} />,
     },
     {
-      id: 'data_source',
-      label: 'Data source',
-      width: 9,
-      cell: ({ row }) =>
-        row.data_source_id
-          ? (
-            <span style={{ color: T.subtle, display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-              {dataSourceNameById.get(row.data_source_id) ?? '—'}
-            </span>
-          )
-          : <Dash />,
+      id: 'trend',
+      label: 'Trend',
+      width: 10,
+      cell: ({ row }) => <KpiTrendCell kpiId={row.id} direction={row.direction} />,
     },
-  ], [navigate, dataSourceNameById, profilesQ.data]);
+    {
+      id: 'validation',
+      label: 'Validation',
+      width: 11,
+      cell: ({ row }) => <KpiValidationCell kpiId={row.id} />,
+    },
+    {
+      id: 'owner',
+      label: 'Owner',
+      width: 14,
+      cell: ({ row }) => <KpiOwnerCell ownerId={row.accountable_owner_id} profiles={profilesQ.data} />,
+    },
+    {
+      id: 'freshness',
+      label: 'Freshness',
+      width: 10,
+      sortable: false,
+      cell: ({ row }) => <KpiFreshnessCell kpiId={row.id} />,
+    },
+  ], [navigate, profilesQ.data]);
 
   const statusLabel = STATUS_FILTER_OPTIONS.find((o) => o.value === statusFilter)?.label ?? 'All statuses';
 

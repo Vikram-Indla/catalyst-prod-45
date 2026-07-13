@@ -22,3 +22,8 @@
 trust strip. 2B-2: actuals/validation table (commentary column) + role-gated Submit/Validate.
 
 ## Status: building 2B-1.
+
+## Also this session: 2B-2 (KPI Detail actuals table) + 2C-1 (Library verdict-first columns) DONE + merged
+- 2B-1 `78f1d9efd`→merge `a2cd658cd`; 2B-2 `98ba2b2d4`→merge `57dbb1a2e`; 2C-1 pending commit.
+- 2C-1: verdict-first KPI columns (anchor 16) via per-row achievement + deduped actuals-lite; OKR
+  accordion kept. NEXT = 2C-2 (BulkFooterBar + saved-views migration), then 2D Strategy Room.
