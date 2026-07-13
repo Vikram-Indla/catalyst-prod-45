@@ -4,46 +4,62 @@
 > Read order for continuation: `00_READ_ME_FIRST` → `01_OBJECTIVE` → `03_PLAN_LOCK` →
 > this file → `08_DRIFT_LOG` → `09_DECISIONS` → `discovery/00_anchor_specs` → latest `sessions/`.
 
-## State (as of session 005, 2026-07-13)
-- **Branch:** `strata/impl-phase01`. **Everything through `84fcb57ff` is MERGED TO MAIN AND PUSHED**
-  (`origin/main` = `184e720a8`). Working tree clean.
-- **Phase 0 + Phase 1 COMPLETE** (1B skipped; anchor-13 polish done). **PHASE 2 STARTED:** Plan Lock
-  approved (`03_PLAN_LOCK_PHASE2.md`, full build — nothing deferred), **slice 2A (StrataChainStrip) done
-  + merged** (`84fcb57ff` → `184e720a8`). **NEXT = slice 2B-1 (KPI Detail) — see PHASE 2 NEXT below.**
-- Session 005 checkpointed here deliberately (context-health): 2B is the largest Phase-2 surface and
-  deserves fresh context. Resume with `continue feature CAT-STRATA-IMPL-20260712-001`.
+## State (as of session 006, 2026-07-13)
+- **Branch:** `strata/impl-phase01`. **Everything through `91c0f868e` is MERGED TO MAIN AND PUSHED**
+  (`origin/main` = `43ecfe3c9`). Working tree clean.
+- **Phase 0 + Phase 1 COMPLETE** (1B skipped; anchor-13 polish done). **PHASE 2 IN PROGRESS:**
+  **2A (StrataChainStrip), 2B-1 + 2B-2 (KPI Detail anchor 06 COMPLETE), 2C-1 (KPI Library verdict-first
+  columns) all DONE + merged.** **NEXT = slice 2C-2 (Library bulk + saved views + anchor-16 richness).**
+- Session 006 checkpointed here deliberately (context-health + scope): 2C-2 is genuinely 2–3 slices
+  incl. a governed bulk-write backend RPC. Resume with `continue feature CAT-STRATA-IMPL-20260712-001`.
 
 ## ⭐ PHASE 2 — NEXT (START HERE). Plan Lock: `03_PLAN_LOCK_PHASE2.md` (APPROVED, full build)
-Phase 2 = measure & direction, 5 REDESIGNS of existing pages. Slice order: **2A done** →
-**2B (KPI Detail, SPLIT — DO NEXT)** → 2C Library → 2D Strategy Room (SPLIT) → 2E Element Detail →
-2F Evidence. All backed by existing tables/RPCs — **no migrations expected** except a
-`strata_saved_views` table at 2C (P2-D2 BUILD). Map protection is structural: `/strata/strategy` is
-NOT the map (it's `StrataStrategyRoomPage`); the map is a standalone route; nothing imports the map
-component — so the Structure view (2D) is a Room-page redesign + a toggle whose "Map" navigates out.
+Phase 2 = measure & direction, 5 REDESIGNS of existing pages. Slice order: **2A ✓ · 2B ✓ · 2C-1 ✓** →
+**2C-2 (DO NEXT)** → 2D Strategy Room (SPLIT) → 2E Element Detail → 2F Evidence. Map protection is
+structural: `/strata/strategy` is NOT the map (it's `StrataStrategyRoomPage`); the map is a standalone
+route; nothing imports the map component — so the Structure view (2D) is a Room-page redesign + a toggle
+whose "Map" navigates out.
 
-### 2A DONE — `StrataChainStrip` (`shared.tsx`, commit `84fcb57ff`)
-Canonical compact "IN THE CHAIN" strip (anchors 06/14/02). API: `StrataChainStrip({ segments, heading?,
-testId })`; `segments: [{ icon?, label, items: StrataChainLink[], emptyText? }]`;
-`StrataChainLink: { name, onNav?, meta?, tone?:'default'|'danger' }`. Zero-assumption empties; danger
-tone = blocked link (color+weight). NOT yet mounted anywhere → **first live mount is 2B-1** (this
-verifies 2A, same as 0B StrataSnapshotBand → 1A-2). Scope refinement logged: EvidencePage's richer
-lineage chain (EvidenceRow-based) is NOT refactored into the compact strip (would regress detail).
+### DONE + merged (Phase 2)
+- **2A** `84fcb57ff` — `StrataChainStrip` in `shared.tsx`. API: `StrataChainStrip({ segments, heading?,
+  testId })`; `segments:[{ icon?, label, items:StrataChainLink[], emptyText? }]`;
+  `StrataChainLink:{ name, onNav?, meta?, tone?:'default'|'danger' }`. Now mounted on KPI Detail.
+- **2B-1** `78f1d9efd` — KPI Detail verdict band + Trend + StrataChainStrip + trust strip. Chain/trust
+  sourced from **`useKpiEvidenceChain(kpi.id, activePeriod.id)`** (RPC keys: elements/projects/benefits/
+  formula_version/lineage/actual). Scorecards chain segment OMITTED (not in RPC — zero-assumption).
+- **2B-2** `98ba2b2d4` — unified "Actuals & validation" table (Period·Actual·Target·Band·Validation·
+  Commentary·Lineage; commentary = period-scoped column; orphaned Commentary panel removed); role-gated
+  Validate (`VALIDATE_ROLES`, `kpiApi.attestActual`). Anchor-06 COMPLETE.
+- **2C-1** `91c0f868e` — KPI Library verdict-first columns (KPI+status · Achievement · Actual/Target ·
+  Trend spark · Validation · Owner · Freshness) via per-row achievement + deduped `useKpiActualsLite`
+  (`kpiApi.actuals`). Removed dead DirectionCell/ValidatorCell/dataSourceNameById. OKR accordion kept.
 
-### 2B — KPI Detail (`StrataKpiDetailPage.tsx`, 1109 LOC, anchor 06). Read anchor 06 in full at start.
-Anchor-06 order = **verdict → trust → definition**. SPLIT:
-- **2B-1 (DO FIRST):** (1) **Verdict band (5fr) + Trend (7fr)** row. Verdict band replaces the plain
-  `StrataStatStrip` hero: "MONTH VERDICT" eyebrow + band lozenge (BELOW TARGET) + PENDING-VALIDATION
-  lozenge; big actual value + "vs target X" + "▲ n vs {prev period}"; achievement bar (StrataBandBar)
-  with target marker; "Achievement N (governed formula …)" + threshold; composed prose sentence. Trend
-  = existing recharts LineChart, add band-toned dots + "every point drills to evidence →" (`?from=`).
-  (2) **Chain strip (StrataChainStrip, 7fr) + Trust strip (5fr)** row. Chain segments: ↑ Objective ·
-  ◔ Scorecards · ▦ Delivery · ◇ Value. Trust: Source · Last run · Formula · Validation.
-- **2B-2:** Actuals & validation JiraTable — columns Period·Actual·Target·Band·Validation·**Commentary**
-  ·Lineage (commentary as a COLUMN, NOT the orphaned "Commentary" panel — remove that panel);
-  progressive-reveal Definition/Formula/Audit; role-gated Submit actual (owner) / Validate (validator →
-  attestation modal; `kpiApi.attestActual`; submitter≠validator server-enforced, explained); Viewer no
-  ghosts.
-- **Current page wiring to PRESERVE** (discovery): hooks `useKpiBySlug`→`kpi`, `useKpiDetail(kpi.id)`→
+### 2C-2 — KPI Library: bulk + saved views + anchor-16 richness (`StrataKpiLibraryPage.tsx`). RE-READ anchor 16 in full at start.
+Anchor 16 is RICHER than 2C-1 shipped. Remaining anchor-16 work (Vikram: build everything, nothing deferred):
+1. **Governed bulk RPC (backend sub-slice FIRST — Vikram-approved to build):** NO strata bulk-write RPC
+   exists (confirmed — only ph_/tm_/roles bulk RPCs). Build a governed bulk owner-change / threshold-scheme-
+   assign RPC that **routes through approval** (anchor: "bulk changes are governed — owner changes route
+   through approval"). Migration (staging-applied; prod parked w/ 20260713100000). Mirror the plan-variance
+   pattern (session-004): raise design, verify shapes, apply via execute_sql + explicit ledger INSERT.
+2. **BulkFooterBar** (reuse `src/components/shared/JiraTable/BulkFooterBar.tsx`): JiraTable `selectable`/
+   `selection`/`onSelectionChange` + footer verbs **Change owner… · Assign threshold scheme… · Export**.
+   Export = client-side CSV of selected (safe). Owner/scheme = the new governed RPC + "routes through
+   approval" note. Anchor row has a leading 28px checkbox column.
+3. **Saved views (P2-D2):** `strata_saved_views` migration (per-user named filter/column config, entity
+   'kpi', jsonb). "Saved views ▾" selector + save/select/delete. Default view "My exceptions" = filtered to
+   below-threshold bands. Anchor annotation: "Saved views per user via canonical BasicFilterBar."
+4. **Filter enrichment + summary bar + sort:** filter chips **Band (Below+Critical) · Perspective · Owner ·
+   Validation** (current page has only search + status). Filter summary bar: "Showing N of M — filtered to
+   … · Clear filters · Sorted by achievement, worst first". Default sort = achievement ASC (worst first).
+5. **Column refinements (anchor 16):** KPI name cell gets an **objective-ancestry sub-line** ("↑ {objective}"
+   — from element_kpis→elements); add a **Δ column** (vs prior period, from actuals); Freshness → **staleness
+   glyph** ● (fresh) / ◐ (aging) / ○ (stale >5d, danger) + relative time, not the plain date 2C-1 shipped.
+   NO OWNER renders "— no owner" (value, never blank).
+6. States: loading skeleton rows; empty → model builder; no-results → summary + clear; <1280 Owner+Freshness
+   merge under name; <900 stacked verdict cards.
+
+### 2B — KPI Detail — DONE (kept for reference: current-page wiring)
+- Hooks `useKpiBySlug`→`kpi`, `useKpiDetail(kpi.id)`→
   `{formulas,targets,actuals,lineage,calc}`, `useKpiAchievement(kpi.id, activePeriod.id)`→`achievement`
   (`{achievement, score, status_key, actual, target, confidence}`), `commentaryQ` (`kpiApi.commentary`),
   `elementKpisQ`+`elementsQ` (chain: linked objective/theme), `uploadRunsQ` (trust/last-run), `rolesQ`.
