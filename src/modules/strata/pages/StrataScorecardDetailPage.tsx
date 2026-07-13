@@ -21,9 +21,9 @@ import { Routes } from '@/lib/routes';
 import { Info, Layers } from '@/lib/atlaskit-icons';
 import { kpiApi, scorecardApi } from '@/modules/strata/domain';
 import {
-  useBenefits, useInvalidateStrata, useKpis, usePerspectives,
-  useProfileNames, useScorecardCalc, useScorecardInstanceBySlug, useScorecardLines,
-  useScorecardModels, useStrataContext, useStrataRoles, useStrategyElements,
+  useBandResolver, useBenefits, useInvalidateStrata, useKpis, usePerspectives,
+  useProfileNames, useScorecardCalc, useScorecardInstanceBySlug, useScorecardInstances,
+  useScorecardLines, useScorecardModels, useStrataContext, useStrataRoles, useStrategyElements,
 } from '@/modules/strata/hooks/useStrata';
 import {
   T, StrataBandBar, StrataBandLozenge, StrataMetricStat, StrataPageShell,
@@ -98,15 +98,34 @@ function LinesSkeleton() {
   );
 }
 
+/** Inline link inside the verdict sentence — token-pure, keyboard-accessible,
+ *  inherits the sentence font (mirror of the Command Center judgment band). */
+function VerdictLink({ onClick, children }: { onClick: () => void; children: React.ReactNode }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      style={{
+        background: 'none', border: 'none', padding: 0, margin: 0, font: 'inherit',
+        color: 'var(--ds-link)', cursor: 'pointer', textDecoration: 'underline',
+      }}
+    >
+      {children}
+    </button>
+  );
+}
+
 // ── Page ─────────────────────────────────────────────────────────────────────
 export default function StrataScorecardDetailPage() {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
-  const { activeCycle } = useStrataContext();
+  const { activeCycle, periods } = useStrataContext();
+  const resolveBand = useBandResolver();
 
   const instanceQ = useScorecardInstanceBySlug(slug);
   const instance = instanceQ.data ?? null;
   const modelsQ = useScorecardModels();
+  const cycleInstancesQ = useScorecardInstances(activeCycle?.id);
   const model = useMemo(
     () => (modelsQ.data ?? []).find((m) => m.id === instance?.model_id) ?? null,
     [modelsQ.data, instance?.model_id],
@@ -160,6 +179,73 @@ export default function StrataScorecardDetailPage() {
     (calc?.perspectives ?? []).forEach((p) => m.set(p.perspective_id, p.name));
     return m;
   }, [perspectivesQ.data, calc?.perspectives]);
+  const periodById = useMemo(() => new Map(periods.map((p) => [p.id, p])), [periods]);
+
+  const refNameFor = (line: StrataScorecardLine): string | null => {
+    if (line.ref_type === 'kpi') return line.kpi_id ? kpiById.get(line.kpi_id)?.name ?? null : null;
+    if (line.ref_type === 'objective') return line.element_id ? elementById.get(line.element_id)?.name ?? null : null;
+    if (line.ref_type === 'benefit') return line.benefit_id ? benefitById.get(line.benefit_id)?.name ?? null : null;
+    return null;
+  };
+
+  // ── Prior-period basis for the verdict Δ (same model, prior period) ────────
+  const priorInstance = useMemo(() => {
+    if (!instance) return null;
+    const curStart = instance.period_id ? periodById.get(instance.period_id)?.starts_on ?? null : null;
+    if (!curStart) return null;
+    return (cycleInstancesQ.data ?? [])
+      .filter((o) => o.model_id === instance.model_id && o.id !== instance.id)
+      .map((o) => ({ o, start: periodById.get(o.period_id ?? '')?.starts_on ?? '' }))
+      .filter((x) => x.start && x.start < curStart)
+      .sort((a, b) => (a.start < b.start ? 1 : -1))[0]?.o ?? null;
+  }, [instance, periodById, cycleInstancesQ.data]);
+  const priorCalcQ = useScorecardCalc(priorInstance);
+  const totalDelta = useMemo(() => {
+    const pc = priorCalcQ.data;
+    if (!calc?.has_data || !pc?.has_data) return null;
+    const priorLabel = priorInstance?.period_id ? periodById.get(priorInstance.period_id)?.name ?? null : null;
+    return { delta: calc.score - pc.score, priorLabel };
+  }, [calc, priorCalcQ.data, priorInstance, periodById]);
+
+  // ── Verdict inputs (anchor 13: headline IS the finding) ────────────────────
+  const worstPerspective = useMemo(() => {
+    const scored = (calc?.perspectives ?? []).filter((p) => p.has_data && p.score != null);
+    return scored.length ? scored.reduce((lo, p) => (p.score < lo.score ? p : lo)) : null;
+  }, [calc?.perspectives]);
+  /** Below-target measures within the weakest perspective — the "why". */
+  const failingMeasures = useMemo(() => {
+    if (!worstPerspective) return [] as Array<{ id: string; name: string; kpiSlug: string | null }>;
+    const lineCfgById = new Map(lines.map((l) => [l.id, l]));
+    return (calc?.lines ?? [])
+      .filter((l) => l.perspective_id === worstPerspective.perspective_id && l.has_data
+        && ['moved', 'removed'].includes(resolveBand(l.status_key)?.appearance ?? ''))
+      .map((l) => {
+        const cfg = lineCfgById.get(l.line_id) ?? null;
+        const kpiSlug = cfg?.ref_type === 'kpi' && cfg.kpi_id ? kpiById.get(cfg.kpi_id)?.slug ?? null : null;
+        return { id: l.line_id, name: cfg ? refNameFor(cfg) : null, kpiSlug };
+      })
+      .filter((m): m is { id: string; name: string; kpiSlug: string | null } => !!m.name)
+      .slice(0, 3);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [worstPerspective, calc?.lines, lines, kpiById, resolveBand]);
+
+  /** Each line's contribution to the total score = perspective weight-share ×
+   *  line weight-share × line score (points of the total; Σ ≈ total). */
+  const contributionByLineId = useMemo(() => {
+    const m = new Map<string, number>();
+    if (!calc) return m;
+    const perspWithData = calc.perspectives.filter((p) => p.has_data);
+    const totalPerspWeight = perspWithData.reduce((s, p) => s + p.weight, 0);
+    if (totalPerspWeight <= 0) return m;
+    perspWithData.forEach((p) => {
+      const plines = calc.lines.filter((l) => l.perspective_id === p.perspective_id && l.has_data);
+      const lineWeightSum = plines.reduce((s, l) => s + l.weight, 0);
+      if (lineWeightSum <= 0) return;
+      const perspShare = p.weight / totalPerspWeight;
+      plines.forEach((l) => m.set(l.line_id, perspShare * (l.weight / lineWeightSum) * l.score));
+    });
+    return m;
+  }, [calc]);
 
   const linesByPerspective = useMemo(() => {
     const groups = new Map<string, StrataScorecardLine[]>();
@@ -179,13 +265,6 @@ export default function StrataScorecardDetailPage() {
     groups.forEach((ls, pid) => ordered.push({ perspectiveId: pid, lines: ls }));
     return ordered;
   }, [lines, calc?.perspectives]);
-
-  const refNameFor = (line: StrataScorecardLine): string | null => {
-    if (line.ref_type === 'kpi') return line.kpi_id ? kpiById.get(line.kpi_id)?.name ?? null : null;
-    if (line.ref_type === 'objective') return line.element_id ? elementById.get(line.element_id)?.name ?? null : null;
-    if (line.ref_type === 'benefit') return line.benefit_id ? benefitById.get(line.benefit_id)?.name ?? null : null;
-    return null;
-  };
 
   /** Line ⓘ → evidence. KPI lines open the KPI evidence page (full chain);
    *  other line types fall back to the scorecard evidence dossier. Both carry
@@ -316,6 +395,22 @@ export default function StrataScorecardDetailPage() {
       cell: ({ row }) => <StrataBandLozenge bandKey={calcLineById.get(row.id)?.status_key} />,
     },
     {
+      id: 'contribution',
+      label: 'Contribution',
+      width: 13,
+      align: 'end',
+      cell: ({ row }) => {
+        const c = contributionByLineId.get(row.id);
+        return c == null ? (
+          <span style={{ color: T.subtlest }}>—</span>
+        ) : (
+          <span style={{ fontSize: 'var(--ds-font-size-100)', color: T.subtle, fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap' }}>
+            {`${fmtScore(c)} pts`}
+          </span>
+        );
+      },
+    },
+    {
       id: 'evidence',
       label: '',
       width: 6,
@@ -336,7 +431,7 @@ export default function StrataScorecardDetailPage() {
       ) : null),
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  ], [calcLineById, kpiById, elementById, benefitById, instance?.slug]);
+  ], [calcLineById, contributionByLineId, kpiById, elementById, benefitById, instance?.slug]);
 
   const lineGroups: RowGroup<StrataScorecardLine>[] = useMemo(
     () => linesByPerspective.map(({ perspectiveId, lines: groupLines }) => {
@@ -489,14 +584,20 @@ export default function StrataScorecardDetailPage() {
               testId="strata-scorecard-total-ring"
             />
           )}
-          <div style={{ minWidth: 0, display: 'flex', flexDirection: 'column', gap: 4 }}>
-            <span style={{
-              fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: T.subtlest, letterSpacing: '0.04em',
-            }}>
-              Total score
-            </span>
+          <div style={{ minWidth: 0, flex: 1, display: 'flex', flexDirection: 'column', gap: 4 }}>
             <span style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+              <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: T.subtlest, letterSpacing: '0.04em' }}>
+                TOTAL SCORE
+              </span>
               <StrataBandLozenge bandKey={calc?.has_data ? calc.status_key : null} />
+              {totalDelta ? (
+                <span style={{
+                  fontSize: 'var(--ds-font-size-100)', fontWeight: 600, fontVariantNumeric: 'tabular-nums',
+                  color: totalDelta.delta >= 0 ? 'var(--ds-text-success)' : 'var(--ds-text-danger)',
+                }}>
+                  {`${totalDelta.delta >= 0 ? '▲' : '▼'} ${fmtScore(Math.abs(totalDelta.delta))}${totalDelta.priorLabel ? ` vs ${totalDelta.priorLabel}` : ''}`}
+                </span>
+              ) : null}
               {calc && !calc.has_data ? (
                 <span style={{ fontSize: 'var(--ds-font-size-100)', color: T.subtlest }}>No data</span>
               ) : null}
@@ -511,10 +612,42 @@ export default function StrataScorecardDetailPage() {
                 </span>
               ) : null}
             </span>
+            {/* Composed verdict — the headline IS the finding (anchor 13). */}
+            {calc?.has_data ? (
+              <p
+                data-testid="strata-scorecard-verdict"
+                style={{ margin: 0, fontSize: 'var(--ds-font-size-300)', lineHeight: 'var(--ds-line-height-body)', color: T.text, textWrap: 'pretty' }}
+              >
+                {worstPerspective ? (
+                  <>
+                    <strong style={{ fontWeight: 653 }}>{`${worstPerspective.name} (${fmtScore(worstPerspective.score)})`}</strong>
+                    {' is the weakest perspective'}
+                    {failingMeasures.length > 0 ? (
+                      <>
+                        {' — '}
+                        {failingMeasures.map((m, i) => (
+                          <React.Fragment key={m.id}>
+                            {i > 0 ? (i === failingMeasures.length - 1 ? ' and ' : ', ') : ''}
+                            {m.kpiSlug ? (
+                              <VerdictLink onClick={() => navigate(Routes.strata.kpiEvidence(m.kpiSlug!, originPath))}>{m.name}</VerdictLink>
+                            ) : m.name}
+                          </React.Fragment>
+                        ))}
+                        {failingMeasures.length === 1 ? ' is below target' : ' are below target'}
+                      </>
+                    ) : ' — all its measures are on or above target'}
+                    {'.'}
+                  </>
+                ) : 'All perspectives are on or above target.'}
+              </p>
+            ) : null}
             <span style={{ fontSize: 'var(--ds-font-size-100)', color: T.subtlest }}>
               {calcQ.isLoading
                 ? 'Calculating…'
-                : calc?.calculated_at ? `Calculated ${fmtDateTime(calc.calculated_at)}` : '—'}
+                : [
+                  calc?.calculated_at ? `Calculated ${fmtDateTime(calc.calculated_at)}` : null,
+                  calc?.has_data ? `${calc.lines.length} ${calc.lines.length === 1 ? 'line' : 'lines'}, ${calc.lines.filter((l) => l.has_data).length} with data` : null,
+                ].filter(Boolean).join(' · ') || '—'}
             </span>
           </div>
         </div>
@@ -548,11 +681,16 @@ export default function StrataScorecardDetailPage() {
 
         {/* Lines */}
         <StrataPanel
-          title="Lines"
+          title="Measures by perspective"
           icon={<Layers size={16} />}
           count={linesQ.isLoading ? null : lines.length}
           noPadding={!linesQ.isLoading && lines.length > 0}
           testId="strata-scorecard-lines-panel"
+          actions={!linesQ.isLoading && lines.length > 0 ? (
+            <span style={{ fontSize: 'var(--ds-font-size-100)', color: T.subtlest }}>
+              Contribution = share of the total score
+            </span>
+          ) : undefined}
         >
           {linesQ.isLoading ? (
             <LinesSkeleton />
@@ -577,6 +715,26 @@ export default function StrataScorecardDetailPage() {
             />
           )}
         </StrataPanel>
+
+        {/* Roll-up mechanics — one reveal away, never competing with the verdict (anchor 13). */}
+        {calc?.has_data ? (
+          <div
+            data-testid="strata-scorecard-rollup"
+            style={{
+              display: 'flex', alignItems: 'center', gap: 'var(--ds-space-200)', flexWrap: 'wrap',
+              padding: 'var(--ds-space-150) var(--ds-space-200)', borderRadius: 8,
+              border: `1px solid ${T.border}`, background: T.sunken,
+              fontSize: 'var(--ds-font-size-100)', color: T.subtle,
+            }}
+          >
+            <span style={{ fontWeight: 600, letterSpacing: '0.04em', color: T.subtlest, fontSize: 'var(--ds-font-size-050)' }}>ROLL-UP</span>
+            <span style={{ minWidth: 0 }}>
+              Total = Σ perspective weight × perspective score; perspective score = Σ measure weight × measure score.
+              {model ? ` ${model.name} v${instance.model_version}` : ''}
+              {rollup ? ` · ${labelize(rollup)} rollup` : ''}
+            </span>
+          </div>
+        ) : null}
 
         {/* Commentary */}
         <StrataPanel title="Commentary" testId="strata-scorecard-commentary-panel">

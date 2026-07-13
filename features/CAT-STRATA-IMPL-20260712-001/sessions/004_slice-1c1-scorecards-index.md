@@ -35,3 +35,9 @@ Task's naive plan-rollup proven degenerate (constant 100) → raised, Vikram app
 achievement design. Migration 20260713100000 applied to staging (ledger 1:1), RPC verified
 (CEO +0.18, B2B +6.42, locked → null), ranked panel re-based to true vs-plan. D-10 interim
 basis superseded by D-11.
+
+## Anchor-13 polish done (same session)
+Scorecard Detail: composed verdict sentence (worst perspective + below-target measures linked to
+evidence + Δ-vs-prior), Contribution column (Σ = total score, verified 96.5), roll-up mechanics
+footer. TDZ bug (refNameFor before init) caught in live verify + fixed by hoisting. Gates green,
+both themes. All in StrataScorecardDetailPage.tsx.
