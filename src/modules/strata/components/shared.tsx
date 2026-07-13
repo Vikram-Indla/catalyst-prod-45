@@ -522,6 +522,85 @@ export function StrataSnapshotBand({
   );
 }
 
+// ── Chain strip (relationship lineage — "what sits above and below") ──────────
+// Canonical "IN THE CHAIN" strip (anchors 06/14/02). Compact, token-pure, param'd
+// by segments; zero-assumption — an empty segment shows emptyText, never invented
+// links. (Extracted per D-7; distinct from the richer EvidencePage lineage panel.)
+export interface StrataChainLink {
+  name: string;
+  /** Present → renders a keyboard link; absent → plain text (unresolved/unlinked). */
+  onNav?: () => void;
+  /** Trailing meta after the name (owner, weight, "1 blocked", SAR planned). */
+  meta?: React.ReactNode;
+  /** 'danger' emphasises a broken/blocked link (color + weight; never color alone). */
+  tone?: 'default' | 'danger';
+}
+export interface StrataChainSegment {
+  /** Leading glyph/icon (↑ ◎ ▦ ◇ ⚖) — decorative. */
+  icon?: React.ReactNode;
+  label: string;
+  items: StrataChainLink[];
+  /** Shown when items is empty (zero-assumption). */
+  emptyText?: string;
+}
+export function StrataChainStrip({
+  segments, heading = 'IN THE CHAIN', testId,
+}: { segments: StrataChainSegment[]; heading?: string; testId?: string }) {
+  return (
+    <div
+      data-testid={testId}
+      style={{
+        border: `1px solid ${T.border}`, borderRadius: 8, background: T.sunken,
+        padding: 'var(--ds-space-150) var(--ds-space-200)', minWidth: 0,
+      }}
+    >
+      <div style={{
+        fontSize: 'var(--ds-font-size-050)', fontWeight: 700, letterSpacing: '0.06em',
+        color: T.subtlest, marginBottom: 'var(--ds-space-075)',
+      }}>
+        {heading}
+      </div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--ds-space-050)' }}>
+        {segments.map((seg, i) => (
+          <div key={i} style={{ display: 'flex', alignItems: 'baseline', gap: 8, minWidth: 0, flexWrap: 'wrap', fontSize: 'var(--ds-font-size-100)' }}>
+            {seg.icon != null ? <span aria-hidden style={{ color: T.subtle }}>{seg.icon}</span> : null}
+            <span style={{ color: T.subtlest, whiteSpace: 'nowrap' }}>{seg.label}</span>
+            <span aria-hidden style={{ color: T.subtlest }}>·</span>
+            {seg.items.length === 0 ? (
+              <span style={{ color: T.subtlest }}>{seg.emptyText ?? '—'}</span>
+            ) : (
+              seg.items.map((it, j) => (
+                <React.Fragment key={j}>
+                  {j > 0 ? <span aria-hidden style={{ color: T.subtlest }}>,</span> : null}
+                  {it.onNav ? (
+                    <button
+                      type="button"
+                      onClick={it.onNav}
+                      style={{
+                        background: 'none', border: 'none', padding: 0, margin: 0, font: 'inherit',
+                        color: it.tone === 'danger' ? 'var(--ds-text-danger)' : 'var(--ds-link)',
+                        cursor: 'pointer', textDecoration: 'underline',
+                        fontWeight: it.tone === 'danger' ? 600 : 400,
+                      }}
+                    >
+                      {it.name}
+                    </button>
+                  ) : (
+                    <span style={{ color: it.tone === 'danger' ? 'var(--ds-text-danger)' : T.text, fontWeight: it.tone === 'danger' ? 600 : 400 }}>
+                      {it.name}
+                    </span>
+                  )}
+                  {it.meta != null ? <span style={{ color: T.subtlest, whiteSpace: 'nowrap' }}>{it.meta}</span> : null}
+                </React.Fragment>
+              ))
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 // ── Decision modal (governance verdicts — SoD errors surface HERE, never silent) ──
 export interface StrataDecisionOption {
   value: string;

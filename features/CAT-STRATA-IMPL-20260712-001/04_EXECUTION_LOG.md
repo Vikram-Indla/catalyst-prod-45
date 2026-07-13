@@ -342,3 +342,21 @@ column, roll-up footer) — Vikram "do the anchor-13 polish". Single file: `Stra
   data"; Network Availability is a link. Contribution column DOM-probed — **Σ contributions = 96.5 =
   total score** (B2B Revenue Growth 20 · Cost to Serve 13.1 · Churn 15.3 · NPS 12.5 · Digital Rev 13.3
   · Network Avail 5.9 · Employee Eng 16.4 · CO2 —). Roll-up footer present. Both themes clean.
+
+## PHASE 2 · Slice 2A — StrataChainStrip (new canonical component) — IMPLEMENTED (gates green; live-verify at 2B)
+Branch: `strata/impl-phase01`. Plan Lock: `03_PLAN_LOCK_PHASE2.md` (APPROVED — "implement full Phase 2").
+
+### File changed (1 source)
+- `src/modules/strata/components/shared.tsx` — NEW `StrataChainStrip` (+ `StrataChainSegment`/`StrataChainLink`
+  types). Canonical compact "IN THE CHAIN" strip (anchors 06/14/02): sunken box + heading + per-segment
+  lines (icon glyph + label + linked items). Zero-assumption: empty segment → `emptyText`, never invented.
+  `tone:'danger'` = broken/blocked link (color + weight, never color alone). Token-pure; `var(--ds-space-*)`.
+  Resolves D-7. Distinct from the richer EvidencePage lineage panel (EvidenceRow-based) — that is NOT
+  refactored (behavior-preserving: forcing it into the compact strip would regress its detail). D-7 note
+  "refactor EvidencePage to consume it" reinterpreted: EvidencePage keeps its rich chain; StrataChainStrip
+  is the detail-page strip. Logged as a scope refinement, not a drift.
+
+### Verification
+- Gates GREEN: tsc / colors 0=baseline / audit no-increase / CRE. No map/sidebar/shared-consumer touch.
+- Live verification DEFERRED to 2B first mount (KPI Detail chain strip) — same pattern as 0B
+  StrataSnapshotBand → 1A-2. Pure presentational component, deterministic.
