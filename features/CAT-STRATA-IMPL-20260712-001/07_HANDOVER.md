@@ -5,9 +5,9 @@
 > this file → `08_DRIFT_LOG` → `09_DECISIONS` → `discovery/00_anchor_specs` → latest `sessions/`.
 
 ## State (as of session 004, 2026-07-13)
-- **Branch:** `strata/impl-phase01`. **Everything through `b5e99ea6c` is MERGED TO MAIN AND PUSHED**
-  (`origin/main` = `0b3ab232f`). Working tree clean.
-- **Phase 0 COMPLETE. Phase 1 COMPLETE except 1B (skipped, see NEXT).**
+- **Branch:** `strata/impl-phase01`. **Everything through `926cece43` is MERGED TO MAIN AND PUSHED**
+  (`origin/main` = `062bfa741`). Working tree clean.
+- **Phase 0 COMPLETE. Phase 1 COMPLETE except 1B (skipped, see NEXT). Anchor-13 polish also DONE.**
 
 ### Shipped + merged (sessions 003–004, all live-verified, gates green)
 - `16d41e844` **1A-4** CC close-out — whole-page restricted (§17), "Mine" one-click Clear,
@@ -27,6 +27,12 @@
   `strata_kpi_plan_achievement` + `strata_calc_scorecard_plan_variance` (read-only, uncapped
   achievement rollup; 100 = on plan; locked → 'locked_snapshot' null; no provenance writes).
   Ranked panel re-based to true "Vs plan" (supersedes D-10 interim). Merge `0b3ab232f`.
+- `9a83af9ba` handover refresh (merge `c643fe182`).
+- `926cece43` **Scorecard Detail anchor-13 polish** — composed verdict sentence (worst perspective +
+  below-target measures linked to KPI evidence w/ ?from=, + Δ-vs-prior), **Contribution column**
+  (per-line share of total; Σ = total score, verified 96.5), roll-up mechanics footer; panel
+  retitled "Measures by perspective". Fixed a const-TDZ (`refNameFor` used before init) caught in
+  live verify (gates were green — screenshots catch what tsc can't). Merge `062bfa741`.
 - Earlier (sessions 001–002, on main via `ab93cddd2`): 0A sidebar IA + spine slots + JiraTable
   overflowX · 0B StrataSnapshotBand · 1A-1 ?from= + "n days overdue" · 1A-2 locked snapshot band ·
   1A-3 judgment band · 1A-2b spine scope/freshness + data-trust strip.
@@ -73,8 +79,9 @@ DRIFT-4 (anchor-12 vs Plan Lock, resolved via D-9).
    catch-all + `strataRoutes.myWork()` + routeRegistry + sidebar item; `useMyWork` aggregator;
    verb groups Validate/Submit/Resolve/Act(+Approve); JiraTable compact + group headers;
    consequence column; Mine/Team; NO CRE chokepoint (D-5). Ask before starting.
-2. **Anchor-13 polish** (optional, offered not approved): composed verdict sentence in the detail
-   hero, Contribution column, roll-up mechanics footer. Page already matches anchor structure.
+2. **Anchor-13 polish — DONE** (`926cece43`). Remaining anchor-13 nice-to-haves NOT built: per-line
+   Actual/Target split columns + per-line Δ-vs-Q1 column (needs prior per-line calc matching);
+   composition popover per score cell; row-drawer (CatalystViewBase panel mode — D-2 deferred).
 3. **Apply migration 20260713100000 to prod** (see OPERATIONAL above).
 4. Spun-off background task `task_70e821ad` — data-source freshness/staleness column (schema gap;
    data-trust strip "N stale").
@@ -90,8 +97,13 @@ DRIFT-4 (anchor-12 vs Plan Lock, resolved via D-9).
   first, then worst score; cards are presentational — calc via `useScorecardCalcs`) → "Where
   attention pays" JiraTable ranked by vs-plan variance asc (`useScorecardPlanVariances`),
   coverage sub-note, Δ-vs-prior retained.
-- **Scorecard Detail:** ?from= via `originPath`; RECALC_ROLES gate; DetailSkeleton/LinesSkeleton;
-  partial label keyed on `calc.lines` has_data; UUID param → replace-redirect to slug.
+- **Scorecard Detail:** hero composed verdict (worst perspective + below-target measures as
+  `VerdictLink`s to KPI evidence + Δ-vs-prior via prior-period instance calc); "Measures by
+  perspective" table with a Contribution column (`contributionByLineId` = persp weight-share × line
+  weight-share × line score, Σ = total); roll-up mechanics footer. ?from= via `originPath`;
+  RECALC_ROLES gate; DetailSkeleton/LinesSkeleton; partial label keyed on `calc.lines` has_data;
+  UUID param → replace-redirect to slug. NB: `refNameFor` MUST stay declared above the verdict
+  memos (const TDZ).
 - **Conventions learned:** ADS font weight 653 (not 650 — audit gate rejects); `var(--ds-space-*)`
   for new spacing (6px → var(--ds-space-075)); restricted = full-size EmptyState, never bare 403.
 
