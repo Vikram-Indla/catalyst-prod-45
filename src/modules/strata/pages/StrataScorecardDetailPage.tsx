@@ -9,11 +9,11 @@
  * tiles, canonical JiraTable with perspective group headers, named
  * commentary authors.
  */
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import {
-  Button, CatalystTag, EmptyState, IconButton, SectionMessage, Spinner, Tooltip,
+  Button, CatalystTag, EmptyState, IconButton, SectionMessage, Tooltip,
 } from '@/components/ads';
 import { JiraTable } from '@/components/shared/JiraTable';
 import type { Column, RowGroup } from '@/components/shared/JiraTable';
@@ -23,7 +23,7 @@ import { kpiApi, scorecardApi } from '@/modules/strata/domain';
 import {
   useBenefits, useInvalidateStrata, useKpis, usePerspectives,
   useProfileNames, useScorecardCalc, useScorecardInstanceBySlug, useScorecardLines,
-  useScorecardModels, useStrataContext, useStrategyElements,
+  useScorecardModels, useStrataContext, useStrataRoles, useStrategyElements,
 } from '@/modules/strata/hooks/useStrata';
 import {
   T, StrataBandBar, StrataBandLozenge, StrataMetricStat, StrataPageShell,
@@ -53,6 +53,51 @@ function weightPct(w: number | null | undefined): number | null {
   return w <= 1 ? w * 100 : w;
 }
 
+/** UI affordance gating only — the calc RPC persists provenance, so Recalculate
+ *  is a write; executive_viewer is consume-only (same convention as the CC
+ *  advisory gating, W2 20260710140000). The DB enforces the real rules. */
+const RECALC_ROLES: readonly string[] = ['strategy_office', 'vmo_validator', 'strata_admin'];
+
+/** Legacy UUID detector for the D-6 dual-mode route param. */
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+/** Layout-matched page skeleton: hero ring row + perspective tiles + lines panel
+ *  (anchor 13 "verdict skeleton + grouped-row skeletons"). */
+function DetailSkeleton() {
+  return (
+    <div aria-hidden data-testid="strata-scorecard-loading" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+      <div style={{
+        display: 'flex', alignItems: 'center', gap: 16, padding: 16,
+        border: `1px solid ${T.border}`, borderRadius: 8, background: T.raised,
+      }}>
+        <div style={{ width: 72, height: 72, borderRadius: '50%', background: T.neutral, flexShrink: 0 }} />
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--ds-space-100)', flex: 1 }}>
+          <div style={{ height: 12, width: '20%', borderRadius: 4, background: T.neutral }} />
+          <div style={{ height: 16, width: '45%', borderRadius: 4, background: T.neutral }} />
+        </div>
+      </div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: 12 }}>
+        {[0, 1, 2, 3].map((k) => <div key={k} style={{ height: 96, borderRadius: 8, background: T.neutral }} />)}
+      </div>
+      <div style={{ height: 280, borderRadius: 8, background: T.neutral }} />
+    </div>
+  );
+}
+
+/** Grouped-row skeleton for the lines table (group header + rows, twice). */
+function LinesSkeleton() {
+  return (
+    <div aria-hidden style={{ display: 'flex', flexDirection: 'column', gap: 'var(--ds-space-100)', padding: 16 }}>
+      {[0, 1].map((g) => (
+        <React.Fragment key={g}>
+          <div style={{ height: 20, width: '30%', borderRadius: 4, background: T.neutral }} />
+          {[0, 1, 2].map((r) => <div key={r} style={{ height: 32, borderRadius: 4, background: T.neutral }} />)}
+        </React.Fragment>
+      ))}
+    </div>
+  );
+}
+
 // ── Page ─────────────────────────────────────────────────────────────────────
 export default function StrataScorecardDetailPage() {
   const { slug } = useParams<{ slug: string }>();
@@ -75,9 +120,23 @@ export default function StrataScorecardDetailPage() {
   const benefitsQ = useBenefits();
   const perspectivesQ = usePerspectives();
   const profilesQ = useProfileNames();
+  const rolesQ = useStrataRoles();
   const invalidate = useInvalidateStrata();
   const [recalculating, setRecalculating] = useState(false);
   const [recalcError, setRecalcError] = useState<string | null>(null);
+
+  // Role-aware gating (§17): no STRATA role → explained restricted page;
+  // Recalculate (a persisted write) hides for consume-only viewers.
+  const noStrataRole = !rolesQ.isLoading && (rolesQ.data ?? []).length === 0;
+  const canRecalculate = (rolesQ.data ?? []).some((r) => RECALC_ROLES.includes(r));
+
+  // D-6 dual-mode: a legacy UUID param resolves (domain queries by id) and is
+  // then replaced with the canonical slug URL — one-way, history-preserving.
+  useEffect(() => {
+    if (slug && UUID_RE.test(slug) && instance?.slug) {
+      navigate(Routes.strata.scorecard(instance.slug), { replace: true });
+    }
+  }, [slug, instance?.slug, navigate]);
 
   const commentaryQ = useQuery({
     queryKey: ['strata', 'commentary', 'scorecard_instance', instance?.id],
@@ -129,14 +188,16 @@ export default function StrataScorecardDetailPage() {
   };
 
   /** Line ⓘ → evidence. KPI lines open the KPI evidence page (full chain);
-   *  other line types fall back to the scorecard evidence dossier. */
+   *  other line types fall back to the scorecard evidence dossier. Both carry
+   *  ?from=<this detail page> so Evidence renders "Back to Scorecard" (§5). */
+  const originPath = instance?.slug ? Routes.strata.scorecard(instance.slug) : undefined;
   const openLineEvidence = (line: StrataScorecardLine) => {
     const kpiSlug = line.ref_type === 'kpi' && line.kpi_id ? kpiById.get(line.kpi_id)?.slug ?? null : null;
     if (kpiSlug) {
-      navigate(Routes.strata.kpiEvidence(kpiSlug));
+      navigate(Routes.strata.kpiEvidence(kpiSlug, originPath));
       return;
     }
-    if (instance?.slug) navigate(Routes.strata.scorecardEvidence(instance.slug));
+    if (instance?.slug) navigate(Routes.strata.scorecardEvidence(instance.slug, originPath));
   };
 
   const recalculate = async () => {
@@ -304,12 +365,24 @@ export default function StrataScorecardDetailPage() {
     [linesByPerspective, calcPerspectiveById, perspectiveNameById],
   );
 
-  // ── Loading / error / not-found states ────────────────────────────────────
+  // ── Restricted / loading / error / not-found states ───────────────────────
   const stateTrail = [{ text: 'Scorecards', href: Routes.strata.scorecards() }];
-  if (instanceQ.isLoading) {
+  if (instanceQ.isLoading || rolesQ.isLoading) {
     return (
       <StrataPageShell trail={stateTrail} testId="strata-scorecard-chrome">
-        <div style={{ display: 'flex', justifyContent: 'center', padding: 48 }}><Spinner size="large" /></div>
+        <DetailSkeleton />
+      </StrataPageShell>
+    );
+  }
+  if (noStrataRole) {
+    return (
+      <StrataPageShell trail={stateTrail} testId="strata-scorecard-chrome">
+        <EmptyState
+          size="default"
+          header="You don't have access to this scorecard"
+          description="Your account has no STRATA role, so scorecard data is restricted. Ask a STRATA administrator or the strategy office to grant a role, then reload this page."
+          testId="strata-scorecard-restricted"
+        />
       </StrataPageShell>
     );
   }
@@ -353,14 +426,14 @@ export default function StrataScorecardDetailPage() {
             <Button
               appearance="subtle"
               iconBefore={<Info size={16} />}
-              onClick={() => navigate(Routes.strata.scorecardEvidence(instance.slug!))}
+              onClick={() => navigate(Routes.strata.scorecardEvidence(instance.slug!, originPath))}
               testId="strata-scorecard-evidence"
             >
               Evidence
             </Button>
           ) : null}
-          {!isLocked ? (
-            <Button appearance="default" isDisabled={recalculating} onClick={recalculate}>
+          {!isLocked && canRecalculate ? (
+            <Button appearance="default" isDisabled={recalculating} onClick={recalculate} testId="strata-scorecard-recalculate">
               {recalculating ? 'Recalculating…' : 'Recalculate'}
             </Button>
           ) : null}
@@ -422,10 +495,20 @@ export default function StrataScorecardDetailPage() {
             }}>
               Total score
             </span>
-            <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <span style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
               <StrataBandLozenge bandKey={calc?.has_data ? calc.status_key : null} />
               {calc && !calc.has_data ? (
                 <span style={{ fontSize: 'var(--ds-font-size-100)', color: T.subtlest }}>No data</span>
+              ) : null}
+              {/* Explicit partial label (anchor 13 P2): never present a partial
+                * rollup as complete — name how many lines actually carry data. */}
+              {calc?.has_data && calc.lines.length > 0 && calc.lines.some((l) => !l.has_data) ? (
+                <span
+                  data-testid="strata-scorecard-partial"
+                  style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--ds-text-warning)' }}
+                >
+                  {`Partial — ${calc.lines.filter((l) => l.has_data).length} of ${calc.lines.length} lines have data`}
+                </span>
               ) : null}
             </span>
             <span style={{ fontSize: 'var(--ds-font-size-100)', color: T.subtlest }}>
@@ -472,7 +555,7 @@ export default function StrataScorecardDetailPage() {
           testId="strata-scorecard-lines-panel"
         >
           {linesQ.isLoading ? (
-            <div style={{ display: 'flex', justifyContent: 'center', padding: 24 }}><Spinner size="medium" /></div>
+            <LinesSkeleton />
           ) : lines.length === 0 ? (
             <EmptyState
               size="compact"
@@ -498,7 +581,9 @@ export default function StrataScorecardDetailPage() {
         {/* Commentary */}
         <StrataPanel title="Commentary" testId="strata-scorecard-commentary-panel">
           {commentaryQ.isLoading ? (
-            <div style={{ display: 'flex', justifyContent: 'center', padding: 24 }}><Spinner size="medium" /></div>
+            <div aria-hidden style={{ display: 'flex', flexDirection: 'column', gap: 'var(--ds-space-100)' }}>
+              {[0, 1].map((k) => <div key={k} style={{ height: 40, borderRadius: 4, background: T.neutral }} />)}
+            </div>
           ) : commentaryQ.isError ? (
             <SectionMessage appearance="error" title="Could not load commentary">
               <p>{(commentaryQ.error as Error)?.message ?? 'Unknown error.'}</p>

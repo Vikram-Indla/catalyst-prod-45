@@ -238,3 +238,41 @@ Branch: `strata/impl-phase01`. Completes anchor-12 (D-9); ranked basis per D-10.
   Q1 FY2026 · "Digital & Innovation 86.7 — weakest perspective"; B2B Sector 100 ON TRACK · "—" (no prior,
   zero-assumption) · "Financial 100 — weakest perspective". DOM: JiraTable, 2 rows, brand-link names,
   row-click wired. Both themes clean.
+
+## Slice 1D — Scorecard Detail close-out — IMPLEMENTED + VERIFIED (not committed at write time)
+Branch: `strata/impl-phase01`. Anchor 13 read in full at slice start: the page already matches its
+structure (verdict hero → grouped decomposition → commentary), so Plan-Lock 1D items are genuine
+incremental gaps, NOT a structural drift. Anchor extras (composed verdict sentence, contribution
+column, roll-up footer) noted as optional polish — not silently absorbed, offered as follow-up.
+
+### Files changed (3 source)
+- `src/modules/strata/domain/index.ts` — `scorecardApi.instanceBySlug` → **dual-mode (D-6, CRE F4)**:
+  a UUID-shaped param queries `id`, else `slug`. EvidencePage benefits automatically.
+- `src/modules/strata/pages/StrataEvidencePage.tsx` — `strataOriginLabel()` prefix resolver: after the
+  exact-path table misses, `/strata/scorecards/<slug>` → "Scorecard" (detail-page origins carry a slug).
+- `src/modules/strata/pages/StrataScorecardDetailPage.tsx` —
+  - **?from= (P0):** `originPath` = this detail page; threaded through the Evidence header button,
+    line-ⓘ KPI evidence, and the scorecard-evidence fallback.
+  - **Role-gated Recalculate (P1, §17):** hidden unless viewer holds RECALC_ROLES
+    (strategy_office/vmo_validator/strata_admin — same convention as CC advisory); the calc RPC
+    persists provenance, so it is a write. DB remains the real gate.
+  - **Layout-matched skeletons (P1):** DetailSkeleton (hero ring + tiles + table block) replaces the
+    page Spinner; LinesSkeleton (grouped rows) + commentary line skeletons replace panel Spinners.
+    Spinner import dropped.
+  - **Restricted (P1):** whole-page explained EmptyState when roles resolve to zero (matches 1A-4/1C-1).
+  - **Partial label (P2):** "Partial — N of M lines have data" (warning token) beside the band lozenge
+    when the calc is data-bearing but incomplete; zero-assumption (absent when complete/no data).
+  - **D-6 canonical redirect:** UUID param + resolved instance → `navigate(slug, {replace:true})`.
+
+### Verification
+- Gates GREEN: tsc clean; colors 0=baseline; audit no-increase; CRE passed.
+- LIVE (localhost:8080, staging):
+  - Evidence button → `/strata/scorecards/ceo-scorecard-q2-fy2026/evidence?from=%2Fstrata%2Fscorecards%2F…`
+    and the page renders "← Back to Scorecard".
+  - Line ⓘ (B2B Revenue Growth) → `/strata/kpis/b2b-revenue-growth/evidence?from=…` + "← Back to Scorecard".
+  - **D-6:** `/strata/scorecards/a5a1a000-0000-4000-8000-000000001512` resolved + URL replaced with the
+    canonical slug.
+  - Recalculate visible for this admin viewer (canRecalculate=true); hidden-branch is deterministic JSX.
+  - Detail renders hero 96.5 ON TRACK, honest "—/No data" Network & Infrastructure tile. Both themes clean.
+- **Code-verified only:** restricted page (no role-less session), partial label (CEO Q2 = 8/8 lines with
+  data → not present, correct), skeletons (flash too fast to screenshot; deterministic JSX).
