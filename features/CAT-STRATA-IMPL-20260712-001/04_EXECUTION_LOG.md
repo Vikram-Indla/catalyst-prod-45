@@ -186,3 +186,36 @@ Branch: `strata/impl-phase01`. Single source file: `src/modules/strata/pages/Str
 - **Code-verified only** (unreachable in current staging data/session): the "Mine" Clear button
   (this viewer owns 8 items → mine-empty not reachable) and the restricted state (no role-less session
   available). Both are deterministic JSX branches validated by tsc — precedent: overdue-row states in 1A-1/1A-2b.
+
+## Slice 1C-1 — Scorecards Index → anchor-12 card scope-chooser — IMPLEMENTED + VERIFIED (not committed at write time)
+Branch: `strata/impl-phase01`. Resolves DRIFT-4 / D-9 (full anchor-12 redesign, split; 1C-2 = ranked panel).
+
+### Files changed (2 source)
+- `src/modules/strata/hooks/useStrata.tsx` — NEW `useScorecardCalcs(instances)` aggregator via
+  `useQueries`, identical queryKey/queryFn/staleTime to `useScorecardCalc` (dedupes). Lets an index
+  view read calc for a DYNAMIC set of instances without breaking rules-of-hooks. Additive; imports
+  `useQueries` + `ScorecardCalcResult`.
+- `src/modules/strata/pages/StrataScorecardsPage.tsx` — full rewrite from Models-grid + Instances-table
+  to the anchor-12 **card scope-chooser**:
+  - Judgment one-liner (worst-scoring instance + on-track count, zero-assumption; hidden if no data).
+  - One `InstanceCard` per ACTIVE-period instance: 64px StrataScoreRing + StrataBandLozenge + scope
+    (SCOPE_LABEL) + Δ-vs-prior (same-model prior period, shown only when both calcs have data — else
+    nothing) + coverage footnote ("N inputs · M with data" from calc.lines). Enterprise (CEO) card gets
+    the 2px discovery-bold accent border and sorts first; then worst-score-first. Click→detail (slug).
+  - Cards are presentational (calc passed in from page-level `useScorecardCalcs`) → no per-card hooks.
+  - States: whole-page restricted (noStrataRole, §17); layout-matched CARD skeletons; per-section
+    SectionMessage error; no-active-cycle empty; role-aware empty (admin → "Open STRATA admin" CTA);
+    calc-error warning banner. `docTitle="Scorecards"`. **Models grid dropped** (Model Builder owns it).
+
+### Verification
+- Gates GREEN: tsc clean; `lint:colors:gate` 0=baseline; `audit:ads:gate` no increase (caught
+  `fontWeight: 650` → not an allowed ADS weight; fixed to 653, the canonical Jira semibold-emphasis);
+  `lint:cre` passed. Guard test `cyclecontext.guard.test.ts` still satisfied (`<StrataPageShell` present).
+- LIVE (localhost:8080, staging), Q2 FY2026: 2 cards — CEO Scorecard 96.5 ON TRACK, "▲ 9 vs Q1 FY2026",
+  "8 inputs · 8 with data", accent border, sorted first; B2B Sector 100 ON TRACK, no delta (no prior Q1
+  → correctly omitted), "4 inputs · 4 with data", regular border. Judgment: "CEO Scorecard · Q2 FY2026
+  is the lowest at 96.5. 2 of 2 scorecards are on track — …directly comparable." DOM: both cards
+  role=button/tabindex=0; CEO border ~2px vs B2B ~1px. Click CEO → /strata/scorecards/ceo-scorecard-q2-fy2026.
+  Both themes clean. docTitle "Scorecards" (+ detail "CEO Scorecard · Q2 FY2026") confirmed in tab title.
+- Data-gap: "variance to plan" not client-derivable → backend task filed (task_e44f1ba9); ranked panel
+  (1C-2) will use worst-first + Δ-vs-prior per D-10.

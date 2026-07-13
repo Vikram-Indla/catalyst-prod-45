@@ -47,3 +47,13 @@ Format: ID · statement · status (PROPOSED / CONFIRMED / REJECTED) · rationale
 
 ## Status update (D-1…D-6)
 D-1…D-6 CONFIRMED by Vikram 2026-07-12 ("proceed with all recommended decisions"). D-7 applied.
+
+## CONFIRMED (session 004 — 1C, Vikram)
+- **D-9 · Scorecards Index = full anchor-12 card scope-chooser, split into 1C-1 + 1C-2.** 1C-1 = instance
+  cards (StrataScoreRing 64px + band + scope + Δ-vs-prior + coverage footnote, CEO accent border,
+  enterprise-first order, click→detail) + judgment one-liner + skeleton/role-aware-empty/restricted/docTitle;
+  drop the Models grid (models live in Model Builder, anchor 05). 1C-2 = ranked-variance panel. Each ≤2h,
+  one commit each. Resolves DRIFT-4. (Vikram, 2026-07-13.)
+- **D-10 · Ranked panel basis = worst-first by server score + band + Δ-vs-prior where a prior period
+  exists (else nothing).** "Variance to plan" is NOT client-derivable (no instance-level plan/target;
+  would need a rollup RPC) → raised as a backend data-gap ticket, not faked. (Vikram, 2026-07-13.)

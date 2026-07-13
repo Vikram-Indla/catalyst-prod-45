@@ -1,43 +1,29 @@
 /**
- * STRATA — Scorecard index (/strata/scorecards).
- * Models grid (governed config records) + instances list for the active cycle.
- * Every score/band shown here comes from useScorecardCalc (server RPC /
- * frozen snapshot) — the UI never computes rollups.
+ * STRATA — Scorecards Index (/strata/scorecards) — anchor 12.
  *
- * D-012 executive lift (2026-07-05): page chrome, summary stat strip,
- * canonical JiraTable for instances, icon-anchored model cards.
+ * A card-first "scope chooser, NOT a table" (anchor 12, D-9): one card per
+ * scorecard instance in the active period — 64px score ring, band lozenge,
+ * scope, Δ-vs-prior, coverage footnote — with the enterprise (CEO) card
+ * carrying the accent border and sorting first. A composed judgment one-liner
+ * frames the outlier. Every score/band is server-calculated (useScorecardCalcs
+ * → strata_calc_* RPC / frozen snapshot); the UI only renders. Models are
+ * managed in the Model Builder (anchor 05), not here.
+ *
+ * ADS tokens only. Zero-assumption: unknown score/scope/delta renders nothing.
  */
 import React, { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { CatalystTag, EmptyState, Lozenge, SectionMessage, Spinner } from '@/components/ads';
-import { JiraTable } from '@/components/shared/JiraTable';
-import type { Column } from '@/components/shared/JiraTable';
+import { Button, EmptyState, SectionMessage } from '@/components/ads';
 import { Routes } from '@/lib/routes';
-import { PieChart, Scale } from '@/lib/atlaskit-icons';
 import {
-  useScorecardCalc, useScorecardInstances, useScorecardModels, useStrataContext,
+  useScorecardInstances, useScorecardModels, useScorecardCalcs, useStrataContext,
+  useStrataRoles, useBandResolver,
 } from '@/modules/strata/hooks/useStrata';
 import {
-  T, StrataBandLozenge, StrataDataStateLozenge, StrataPageShell, StrataPanel,
-  StrataStatStrip, type StrataStat,
+  T, StrataBandLozenge, StrataPageShell, StrataScoreRing,
 } from '@/modules/strata/components/shared';
 import { fmtScore, labelize } from '@/modules/strata/components/format';
-import type { GovernedStatus, StrataScorecardInstance, StrataScorecardModel } from '@/modules/strata/types';
-
-// ── Governed-status lozenge (SYSTEM governance states — DB CHECKs) ──────────
-const GOVERNED_APPEARANCE: Record<GovernedStatus, React.ComponentProps<typeof Lozenge>['appearance']> = {
-  approved: 'success',
-  draft: 'default',
-  pending_approval: 'moved',
-  retired: 'removed',
-  superseded: 'removed',
-};
-
-function GovernedStatusLozenge({ status }: { status: GovernedStatus | string | null | undefined }) {
-  if (!status) return null;
-  const appearance = GOVERNED_APPEARANCE[status as GovernedStatus] ?? 'default';
-  return <Lozenge appearance={appearance}>{labelize(String(status))}</Lozenge>;
-}
+import type { ScorecardCalcResult, StrataScorecardInstance, StrataScorecardModel } from '@/modules/strata/types';
 
 // Locked STRATA terminology (goal rule 6, REQ-012): enterprise scope = the
 // CEO Scorecard; sector and function scopes are ONE combined concept.
@@ -47,258 +33,256 @@ const SCOPE_LABEL: Record<string, string> = {
   function: 'Sector / CXO Scorecard',
 };
 
-// ── Model card ───────────────────────────────────────────────────────────────
-function ModelCard({ model }: { model: StrataScorecardModel }) {
+/** Layout-matched card skeleton: ring + two text lines (anchor 12 loading). */
+function CardSkeleton() {
   return (
-    <div
-      data-testid={`strata-model-card-${model.id}`}
-      style={{
-        background: T.raised, border: `1px solid ${T.border}`,
-        borderRadius: 8, padding: 16, minWidth: 0,
-        display: 'flex', flexDirection: 'column', gap: 8,
-        boxShadow: 'var(--ds-shadow-raised)',
-      }}
-    >
-      <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
-        <span aria-hidden style={{
-          display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-          width: 28, height: 28, borderRadius: 6, background: T.selected, color: T.brandText, flexShrink: 0,
-        }}>
-          <Scale size={16} />
-        </span>
-        <span style={{
-          fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: T.text,
-          minWidth: 0, overflowWrap: 'anywhere', flex: '1 1 auto',
-        }}>
-          {model.name}
-        </span>
-        <span style={{ flexShrink: 0 }}><CatalystTag text={`v${model.version}`} /></span>
-      </div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-        <GovernedStatusLozenge status={model.status} />
-        {model.owner_scope_type ? (
-          <span style={{ fontSize: 'var(--ds-font-size-100)', color: T.subtle }}>
-            {SCOPE_LABEL[model.owner_scope_type] ?? labelize(model.owner_scope_type)}
-          </span>
-        ) : null}
-      </div>
-      <div style={{ fontSize: 'var(--ds-font-size-100)', color: T.subtlest }}>
-        Rollup: {model.rollup_method ? labelize(model.rollup_method) : '—'}
-        {' · '}
-        Granularity: {model.period_granularity ? labelize(model.period_granularity) : '—'}
+    <div aria-hidden style={{
+      border: `1px solid ${T.border}`, borderRadius: 8, background: T.raised,
+      padding: 'var(--ds-space-200)', display: 'flex', gap: 'var(--ds-space-200)', alignItems: 'center',
+    }}>
+      <div style={{ width: 64, height: 64, borderRadius: '50%', background: T.neutral, flexShrink: 0 }} />
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 'var(--ds-space-100)' }}>
+        <div style={{ height: 14, width: '60%', borderRadius: 4, background: T.neutral }} />
+        <div style={{ height: 12, width: '40%', borderRadius: 4, background: T.neutral }} />
       </div>
     </div>
   );
 }
 
-// ── Score cell — server-computed only, zero-assumption ───────────────────────
-function ScoreCell({ instance }: { instance: StrataScorecardInstance }) {
-  const calc = useScorecardCalc(instance);
-  if (calc.isLoading) {
-    return <Spinner size="small" />;
-  }
-  if (calc.isError || !calc.data || !calc.data.has_data) {
-    return (
-      <span style={{ display: 'inline-flex', alignItems: 'baseline', gap: 6 }}>
-        <span style={{ color: T.text, fontWeight: 600 }}>—</span>
-        <span style={{ fontSize: 'var(--ds-font-size-050)', color: T.subtlest }}>No data</span>
-      </span>
-    );
-  }
-  return (
-    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
-      <span style={{
-        color: T.text, fontWeight: 600, fontVariantNumeric: 'tabular-nums',
-        fontSize: 'var(--ds-font-size-200)',
-      }}>
-        {fmtScore(calc.data.score)}
-      </span>
-      <StrataBandLozenge bandKey={calc.data.status_key} />
-    </span>
-  );
-}
+/** One scorecard instance as an executive card. Calc is passed in (page-level
+ *  useScorecardCalcs) so the card holds no data hooks — no rules-of-hooks risk. */
+function InstanceCard({
+  instance, model, calc, priorCalc, priorPeriodName, onOpen,
+}: {
+  instance: StrataScorecardInstance;
+  model: StrataScorecardModel | undefined;
+  calc: ScorecardCalcResult | null;
+  priorCalc: ScorecardCalcResult | null;
+  priorPeriodName: string | null;
+  onOpen?: () => void;
+}) {
+  const isEnterprise = model?.owner_scope_type === 'enterprise';
+  const scopeLabel = model?.owner_scope_type
+    ? (SCOPE_LABEL[model.owner_scope_type] ?? labelize(model.owner_scope_type))
+    : null;
+  const hasData = !!calc?.has_data;
+  const delta = hasData && priorCalc?.has_data ? calc!.score - priorCalc.score : null;
+  const up = delta != null && delta > 0.05;
+  const down = delta != null && delta < -0.05;
+  const lines = calc?.lines ?? [];
+  const withData = lines.filter((l) => l.has_data).length;
+  const clickable = !!onOpen && !!instance.slug;
 
-// ── Instance table row model ─────────────────────────────────────────────────
-interface InstanceRowData extends StrataScorecardInstance {
-  periodName: string | null;
-  modelName: string | null;
+  return (
+    <div
+      role={clickable ? 'button' : undefined}
+      tabIndex={clickable ? 0 : undefined}
+      onClick={clickable ? onOpen : undefined}
+      onKeyDown={clickable ? (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onOpen?.(); } } : undefined}
+      data-testid={`strata-scorecard-card-${instance.id}`}
+      style={{
+        // Enterprise (CEO) default carries the accent border (anchor 12).
+        border: isEnterprise ? '2px solid var(--ds-background-discovery-bold)' : `1px solid ${T.border}`,
+        borderRadius: 8, background: T.raised, boxShadow: 'var(--ds-shadow-raised)',
+        padding: 'var(--ds-space-200)', minWidth: 0, cursor: clickable ? 'pointer' : 'default',
+        display: 'flex', flexDirection: 'column', gap: 'var(--ds-space-150)',
+      }}
+    >
+      <div style={{ display: 'flex', gap: 'var(--ds-space-150)', alignItems: 'center', minWidth: 0 }}>
+        <StrataScoreRing
+          score={hasData ? calc!.score : null}
+          bandKey={hasData ? calc!.status_key : null}
+          size={64}
+          strokeWidth={7}
+          testId={`strata-scorecard-card-ring-${instance.id}`}
+        />
+        <div style={{ minWidth: 0, flex: 1 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+            <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 653, color: T.text, minWidth: 0, overflowWrap: 'anywhere' }}>
+              {instance.name}
+            </span>
+            <StrataBandLozenge bandKey={hasData ? calc!.status_key : null} />
+          </div>
+          {scopeLabel ? (
+            <div style={{ fontSize: 'var(--ds-font-size-100)', color: T.subtlest, marginTop: 'var(--ds-space-025)' }}>
+              {scopeLabel}
+            </div>
+          ) : null}
+          {delta != null ? (
+            <div style={{ fontSize: 'var(--ds-font-size-100)', marginTop: 'var(--ds-space-075)' }}>
+              <span style={{
+                color: up ? 'var(--ds-text-success)' : down ? 'var(--ds-text-danger)' : T.subtlest,
+                fontWeight: 600, fontVariantNumeric: 'tabular-nums',
+              }}>
+                {up || down ? `${up ? '▲' : '▼'} ${fmtScore(Math.abs(delta))}` : 'No change'}
+              </span>
+              {priorPeriodName ? <span style={{ color: T.subtlest }}>{` vs ${priorPeriodName}`}</span> : null}
+            </div>
+          ) : null}
+        </div>
+      </div>
+      <div style={{
+        fontSize: 'var(--ds-font-size-050)', color: T.subtlest,
+        paddingTop: 'var(--ds-space-150)', borderTop: `1px solid ${T.border}`,
+      }}>
+        {hasData
+          ? `${lines.length} ${lines.length === 1 ? 'input' : 'inputs'} · ${withData} with data`
+          : 'No calculated score for this period'}
+      </div>
+    </div>
+  );
 }
 
 // ── Page ─────────────────────────────────────────────────────────────────────
 export default function StrataScorecardsPage() {
   const navigate = useNavigate();
-  const { periods, activeCycle } = useStrataContext();
+  const { periods, activeCycle, activePeriod } = useStrataContext();
   const modelsQ = useScorecardModels();
   const instancesQ = useScorecardInstances(activeCycle?.id);
+  const rolesQ = useStrataRoles();
+  const resolveBand = useBandResolver();
 
+  const roles = rolesQ.data ?? [];
+  const isAdmin = roles.includes('strata_admin');
+  // Role-aware restricted (§17): no STRATA role → RLS denies; explain, never blank.
+  const noStrataRole = !rolesQ.isLoading && roles.length === 0;
+
+  const allInstances = instancesQ.data ?? [];
   const models = modelsQ.data ?? [];
-  const instances = instancesQ.data ?? [];
-  const modelNameById = useMemo(() => new Map(models.map((m) => [m.id, m.name])), [models]);
-  const periodNameById = useMemo(() => new Map(periods.map((p) => [p.id, p.name])), [periods]);
+  const modelById = useMemo(() => new Map(models.map((m) => [m.id, m])), [models]);
+  const periodById = useMemo(() => new Map(periods.map((p) => [p.id, p])), [periods]);
 
-  const rows: InstanceRowData[] = useMemo(
-    () => instances.map((i) => ({
-      ...i,
-      periodName: i.period_id ? periodNameById.get(i.period_id) ?? null : null,
-      modelName: modelNameById.get(i.model_id) ?? null,
-    })),
-    [instances, periodNameById, modelNameById],
+  // Cards = instances for the ACTIVE period (one per scope, anchor 12).
+  const cardInstances = useMemo(
+    () => allInstances.filter((i) => activePeriod && i.period_id === activePeriod.id),
+    [allInstances, activePeriod],
   );
 
-  // ── Summary strip — counts from already-loaded config queries only ────────
-  const summaryReady = !modelsQ.isLoading && !instancesQ.isLoading && !modelsQ.isError && !instancesQ.isError;
-  const summaryStats: StrataStat[] = [
-    {
-      key: 'models-approved',
-      label: 'Models approved',
-      value: models.filter((m) => m.status === 'approved').length,
-      caption: 'Governed scorecard models in force',
-      testId: 'strata-scorecards-stat-models',
-    },
-    {
-      key: 'instances-live',
-      label: 'Instances live',
-      value: instances.filter((i) => i.status === 'live').length,
-      caption: activeCycle ? `In ${activeCycle.name}` : 'No active cycle',
-      testId: 'strata-scorecards-stat-live',
-    },
-    {
-      key: 'instances-locked',
-      label: 'Locked',
-      value: instances.filter((i) => i.status === 'locked').length,
-      caption: 'Frozen in snapshots',
-      testId: 'strata-scorecards-stat-locked',
-    },
-  ];
+  // Prior-period instance per model (same model, greatest starts_on < active) — Δ basis.
+  const priorByInstanceId = useMemo(() => {
+    const m = new Map<string, StrataScorecardInstance | null>();
+    const activeStart = activePeriod ? periodById.get(activePeriod.id)?.starts_on ?? null : null;
+    cardInstances.forEach((inst) => {
+      if (!activeStart) { m.set(inst.id, null); return; }
+      const prior = allInstances
+        .filter((o) => o.model_id === inst.model_id && o.id !== inst.id)
+        .map((o) => ({ o, start: periodById.get(o.period_id ?? '')?.starts_on ?? '' }))
+        .filter((x) => x.start && x.start < activeStart)
+        .sort((a, b) => (a.start < b.start ? 1 : -1))[0]?.o ?? null;
+      m.set(inst.id, prior);
+    });
+    return m;
+  }, [cardInstances, allInstances, activePeriod, periodById]);
 
-  const columns: Column<InstanceRowData>[] = useMemo(() => [
-    {
-      id: 'name',
-      label: 'Name',
-      flex: true,
-      cell: ({ row }) => (
-        <span
-          data-testid={`strata-instance-row-${row.id}`}
-          style={{
-            fontSize: 'var(--ds-font-size-400)', lineHeight: 'var(--ds-line-height-body)', fontWeight: 600,
-            color: row.slug ? T.brandText : T.text,
-            minWidth: 0, overflowWrap: 'anywhere',
-          }}
-        >
-          {row.name}
-        </span>
-      ),
-    },
-    {
-      id: 'period',
-      label: 'Period',
-      width: 12,
-      cell: ({ row }) => (
-        <span style={{ fontSize: 'var(--ds-font-size-200)', color: T.subtle }}>{row.periodName ?? '—'}</span>
-      ),
-    },
-    {
-      id: 'model',
-      label: 'Model',
-      width: 18,
-      cell: ({ row }) => (
-        <span style={{ fontSize: 'var(--ds-font-size-200)', color: T.subtle, minWidth: 0, overflowWrap: 'anywhere' }}>
-          {row.modelName ?? '—'}
-        </span>
-      ),
-    },
-    {
-      id: 'state',
-      label: 'State',
-      width: 14,
-      cell: ({ row }) => <StrataDataStateLozenge state={row.status} />,
-    },
-    {
-      id: 'score',
-      label: 'Latest score',
-      width: 16,
-      align: 'end',
-      cell: ({ row }) => <ScoreCell instance={row} />,
-    },
-  ], []);
+  // Calc set = card instances + their priors, deduped + memoised (drives useQueries).
+  const calcInstances = useMemo(() => {
+    const seen = new Set<string>();
+    const out: StrataScorecardInstance[] = [];
+    const push = (inst: StrataScorecardInstance | null | undefined) => {
+      if (inst && !seen.has(inst.id)) { seen.add(inst.id); out.push(inst); }
+    };
+    cardInstances.forEach(push);
+    cardInstances.forEach((inst) => push(priorByInstanceId.get(inst.id)));
+    return out;
+  }, [cardInstances, priorByInstanceId]);
+  const calcs = useScorecardCalcs(calcInstances);
+
+  // Enterprise (CEO) first, then worst-score first (role-scoped default order).
+  const orderedCards = useMemo(() => [...cardInstances].sort((a, b) => {
+    const aEnt = modelById.get(a.model_id)?.owner_scope_type === 'enterprise' ? 0 : 1;
+    const bEnt = modelById.get(b.model_id)?.owner_scope_type === 'enterprise' ? 0 : 1;
+    if (aEnt !== bEnt) return aEnt - bEnt;
+    const as = calcs.byId.get(a.id)?.score ?? Infinity;
+    const bs = calcs.byId.get(b.id)?.score ?? Infinity;
+    return as - bs;
+  }), [cardInstances, modelById, calcs.byId]);
+
+  // Judgment one-liner — worst-scoring instance + on-track count (zero-assumption).
+  const judgment = useMemo(() => {
+    const scored = cardInstances
+      .map((i) => ({ i, c: calcs.byId.get(i.id) }))
+      .filter((x): x is { i: StrataScorecardInstance; c: ScorecardCalcResult } => !!x.c?.has_data);
+    if (scored.length === 0) return null;
+    const worst = scored.reduce((lo, x) => (x.c.score < lo.c.score ? x : lo));
+    const onTrack = scored.filter((x) => resolveBand(x.c.status_key)?.appearance === 'success').length;
+    return { worstName: worst.i.name, worstScore: worst.c.score, onTrack, total: scored.length };
+  }, [cardInstances, calcs.byId, resolveBand]);
+
+  const isLoading = instancesQ.isLoading || rolesQ.isLoading || modelsQ.isLoading
+    || (cardInstances.length > 0 && calcs.isLoading);
 
   return (
-    <StrataPageShell testId="strata-scorecards-chrome">
-      {(modelsQ.isError || instancesQ.isError) ? (
-        <div style={{ marginBottom: 16 }}>
-          <SectionMessage appearance="error" title="Could not load scorecards">
-            <p>{(modelsQ.error as Error)?.message ?? (instancesQ.error as Error)?.message ?? 'Unknown error.'}</p>
-          </SectionMessage>
+    <StrataPageShell docTitle="Scorecards" testId="strata-scorecards-chrome">
+      {noStrataRole ? (
+        <EmptyState
+          size="default"
+          header="You don't have access to Scorecards"
+          description="Your account has no STRATA role, so scorecard data is restricted. Ask a STRATA administrator or the strategy office to grant a role, then reload this page."
+          testId="strata-scorecards-restricted"
+        />
+      ) : isLoading ? (
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: 16 }}>
+          {[0, 1, 2, 3].map((k) => <CardSkeleton key={k} />)}
         </div>
-      ) : null}
-
-      {summaryReady ? <StrataStatStrip items={summaryStats} testId="strata-scorecards-summary" /> : null}
-
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-        <StrataPanel
-          title="Models"
-          icon={<Scale size={16} />}
-          count={modelsQ.isLoading ? null : models.length}
-          testId="strata-scorecard-models-panel"
-        >
-          {modelsQ.isLoading ? (
-            <div style={{ display: 'flex', justifyContent: 'center', padding: 24 }}><Spinner size="medium" /></div>
-          ) : models.length === 0 ? (
-            <EmptyState
-              size="compact"
-              header="No scorecard models"
-              description="Governed scorecard models appear here once configured and approved."
-              testId="strata-models-empty"
-            />
-          ) : (
-            // Grouped by the locked BSC hierarchy (REQ-012): the CEO
-            // Scorecard rolls up Sector / CXO Scorecards.
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-              {([
-                ['CEO Scorecard', models.filter((m) => m.owner_scope_type === 'enterprise')],
-                ['Sector / CXO Scorecards', models.filter((m) => m.owner_scope_type === 'sector' || m.owner_scope_type === 'function')],
-                ['Other models', models.filter((m) => !['enterprise', 'sector', 'function'].includes(m.owner_scope_type ?? ''))],
-              ] as Array<[string, StrataScorecardModel[]]>).map(([group, groupModels]) => (
-                groupModels.length === 0 ? null : (
-                  <div key={group} style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                    <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: T.subtlest, letterSpacing: '0.04em' }}>
-                      {group}
-                    </span>
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 12 }}>
-                      {groupModels.map((m) => <ModelCard key={m.id} model={m} />)}
-                    </div>
-                  </div>
-                )
-              ))}
-            </div>
-          )}
-        </StrataPanel>
-
-        <StrataPanel
-          title="Instances"
-          icon={<PieChart size={16} />}
-          count={instancesQ.isLoading ? null : instances.length}
-          noPadding
-          testId="strata-scorecard-instances-panel"
-        >
-          <JiraTable<InstanceRowData>
-            columns={columns}
-            data={rows}
-            getRowId={(row) => row.id}
-            onRowClick={(row) => { if (row.slug) navigate(Routes.strata.scorecard(row.slug)); }}
-            isLoading={instancesQ.isLoading}
-            emptyView={(
-              <EmptyState
-                size="compact"
-                header="No scorecard instances"
-                description="No scorecard instances exist for the selected cycle yet."
-                testId="strata-instances-empty"
-              />
-            )}
-            ariaLabel="Scorecard instances"
-          />
-        </StrataPanel>
-      </div>
+      ) : (instancesQ.isError || modelsQ.isError) ? (
+        <SectionMessage appearance="error" title="Could not load scorecards">
+          <p>{(instancesQ.error as Error)?.message ?? (modelsQ.error as Error)?.message ?? 'Unknown error.'}</p>
+        </SectionMessage>
+      ) : !activeCycle ? (
+        <EmptyState
+          size="default"
+          header="No strategy cycle active"
+          description="Select or create a strategy cycle to see its scorecards."
+          testId="strata-scorecards-no-cycle"
+        />
+      ) : cardInstances.length === 0 ? (
+        <EmptyState
+          size="default"
+          header={activePeriod ? `No scorecards for ${activePeriod.name}` : 'No scorecards for this period'}
+          description={isAdmin
+            ? 'Approve a scorecard model and generate its instances in STRATA admin to populate this period.'
+            : 'Scorecard instances appear here once the strategy office generates them for this period.'}
+          primaryAction={isAdmin ? (
+            <Button appearance="primary" onClick={() => navigate(Routes.strata.admin())} testId="strata-scorecards-empty-cta">
+              Open STRATA admin
+            </Button>
+          ) : undefined}
+          testId="strata-scorecards-empty"
+        />
+      ) : (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+          {judgment ? (
+            <p
+              data-testid="strata-scorecards-judgment"
+              style={{ margin: 0, fontSize: 'var(--ds-font-size-300)', lineHeight: 'var(--ds-line-height-body)', color: T.text, textWrap: 'pretty' }}
+            >
+              <strong style={{ fontWeight: 653 }}>{judgment.worstName}</strong>
+              {` is the lowest at ${fmtScore(judgment.worstScore)}. ${judgment.onTrack} of ${judgment.total} ${judgment.total === 1 ? 'scorecard is' : 'scorecards are'} on track — all calculate under the same model, so scores are directly comparable.`}
+            </p>
+          ) : null}
+          {calcs.isError ? (
+            <SectionMessage appearance="warning" title="Some scores could not be calculated">
+              <p>Cards without a score below could not reach the calc engine — retry shortly.</p>
+            </SectionMessage>
+          ) : null}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: 16 }}>
+            {orderedCards.map((inst) => {
+              const prior = priorByInstanceId.get(inst.id) ?? null;
+              return (
+                <InstanceCard
+                  key={inst.id}
+                  instance={inst}
+                  model={modelById.get(inst.model_id)}
+                  calc={calcs.byId.get(inst.id) ?? null}
+                  priorCalc={prior ? calcs.byId.get(prior.id) ?? null : null}
+                  priorPeriodName={prior?.period_id ? periodById.get(prior.period_id)?.name ?? null : null}
+                  onOpen={inst.slug ? () => navigate(Routes.strata.scorecard(inst.slug!)) : undefined}
+                />
+              );
+            })}
+          </div>
+        </div>
+      )}
     </StrataPageShell>
   );
 }
