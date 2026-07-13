@@ -19,3 +19,12 @@ Deviations from the anchor that were taken deliberately (with rationale), pendin
   a REGRESSION. The trend chart is a working panel.
 - **Status:** raised as **D-8 (proposed)** — keep both, or remove to match the anchor? Do not remove
   working/governed features without an explicit decision.
+
+## DRIFT-3 · CC changes-since-snapshot placement (slice 1A-4)
+- **Anchor 01 / handover:** "changes since last locked review" noted as "row 2 right".
+- **Implemented:** added as a new full-width Row 3 (span 12) between trend/health (Row 2) and the
+  needs-attention inbox — a pure addition, no cut/paste of working panels.
+- **Why:** same lower-risk rationale as DRIFT-1 — reflowing the span-8/span-4 Row 2 to insert the panel
+  beside perspective-health risks the working trend chart + health panel. User-approved this session
+  (new full-width row). Refine toward the anchor's literal 7/5 / row-2-right split in a later polish pass.
+- **Status:** minor visual deviation, functionally complete; live-verified both modes.

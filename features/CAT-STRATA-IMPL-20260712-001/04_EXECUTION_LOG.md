@@ -147,3 +147,42 @@ link. Spacing via `var(--ds-space-*)` to clear the HARDCODED_PX ratchet.
   mid-session auth-session expiry + re-login): spine "Scope Enterprise" + "Data as of 6 Jul 2026";
   strip "2 sources · 1 active · 0 actuals pending validation · Open Data & Lineage". Also
   incidentally confirmed 1A-1 "n days overdue" (inbox showed "13 days overdue" on MISSING ACTUAL rows).
+
+## Slice 1A-4 — Command Center close-out — IMPLEMENTED + VERIFIED (not committed at write time)
+Branch: `strata/impl-phase01`. Single source file: `src/modules/strata/pages/StrataCommandCenterPage.tsx`
+(no shared.tsx / map / sidebar touch → map + shared protections inherently satisfied). No migration.
+
+### The four items
+1. **Restricted/403 role-aware state (§17).** `noStrataRole = !rolesQ.isLoading && roles.length === 0`.
+   When true, the whole grid is replaced by a full-size explained `EmptyState`
+   ("You don't have access to the Command Center …") — never blank/generic. Presentation only; RLS is
+   the real gate. `executive_viewer` etc. hold ≥1 role → NOT restricted; advisory writes stay gated by
+   `canAdvise`. Decision: whole-page (user-approved this session).
+2. **"Mine" no-results one-click Clear.** `EmptyState.primaryAction` in the inbox mine-empty branch →
+   `setAttentionScope('all')`. Gated `attentionScope==='mine' && attentionRows.length > 0` so it never
+   dead-ends into another empty; label "Show all N items".
+3. **Changes-since-snapshot (D-3, client diff, no RPC).** New Row 3 panel "Since the last locked review".
+   `refSnapshot` = most-recent `locked` snapshot in the active cycle whose id ≠ current instance's
+   `locked_snapshot_id` (live → last review; locked → prior review, else honest empty). `useSnapshotItems`
+   → frozen `scorecard_instance` payload (`value`, `inputs.perspectives[]`); diff enterprise score +
+   per-perspective by **stable `perspective_id`** (only perspectives present in both, `has_data`). Deltas
+   via `DeltaText` (▲/▼ glyph + word + success/danger token — color never alone). Zero-assumption empty
+   when no comparable prior review / no live data / no frozen instance.
+4. **Trend-dot accessible names (§14).** `TrendDot` circles → `role="link"`, `tabIndex=0`, `aria-label`
+   ("Q1 FY2026, 87.5, On track — view evidence" via `useBandResolver().label`), Enter/Space activation.
+   Non-clickable points → `role="img"` + label.
+
+### Verification
+- Gates GREEN: `npx tsc --noEmit` (clean), `lint:colors:gate` (0=baseline), `audit:ads:gate`
+  (no category above baseline — one off-grid `6px` caught by HARDCODED_PX ratchet, fixed to
+  `var(--ds-space-075)`), `lint:cre` (passed).
+- LIVE (localhost:8080, staging), **live mode** Q2 FY2026: changes panel shows "Enterprise score 100
+  ▲ 12.5 since SNAP-1001 (87.5, 8 Apr 2026)" + Financial 84.1→100 ▲15.9 / Customer 87.9→100 ▲12.1 /
+  Digital 93.1→100 ▲6.9 — matches frozen SNAP-1001 by perspective_id; People/ESG (not in live 3) correctly
+  excluded. Trend dots DOM-probed: 3× role=link, tabindex=0, correct aria-labels.
+- LIVE **locked mode** (Period → Q1 FY2026 · closed): SNAP-1001 band still renders (fragment restructure
+  safe); changes panel correctly shows zero-assumption empty "No prior locked review to compare".
+- Both themes clean (dark: success/danger delta tokens legible, no hardcoded-color leak).
+- **Code-verified only** (unreachable in current staging data/session): the "Mine" Clear button
+  (this viewer owns 8 items → mine-empty not reachable) and the restricted state (no role-less session
+  available). Both are deterministic JSX branches validated by tsc — precedent: overdue-row states in 1A-1/1A-2b.

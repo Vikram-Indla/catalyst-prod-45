@@ -26,7 +26,7 @@ import { JiraTable } from '@/components/shared/JiraTable';
 import type { Column } from '@/components/shared/JiraTable';
 import { LABEL } from '@/components/project-hub/dashboard/dashboardTypography';
 import { Routes } from '@/lib/routes';
-import { AlertTriangle, PieChart, Sparkles, TrendingUp } from '@/lib/atlaskit-icons';
+import { AlertTriangle, History, PieChart, Sparkles, TrendingUp } from '@/lib/atlaskit-icons';
 import { governanceApi } from '@/modules/strata/domain';
 import {
   useStrataContext,
@@ -39,12 +39,14 @@ import {
   useKpis,
   useNeedsAttention,
   useSnapshots,
+  useSnapshotItems,
   useDataSources,
   useUploadRuns,
   useStrataUserId,
   useEnterpriseScoreTrend,
   useAiOutputs,
   useStrataRoles,
+  useBandResolver,
   useInvalidateStrata,
 } from '@/modules/strata/hooks/useStrata';
 import {
@@ -153,15 +155,22 @@ interface TrendChartPoint {
   slug: string | null;
 }
 
-/** Band-toned dot; click navigates to the period's scorecard evidence. */
+/** Band-toned dot; focusable link with an accessible name (§14) — keyboard
+ *  activatable when a scorecard slug exists, else a labelled non-interactive point. */
 function TrendDot(props: {
   cx?: number; cy?: number; payload?: TrendChartPoint;
   tone: (bandKey?: string | null) => string;
+  bandLabelFor: (bandKey?: string | null) => string | null;
   onPointClick: (p: TrendChartPoint) => void;
 }) {
-  const { cx, cy, payload, tone, onPointClick } = props;
+  const { cx, cy, payload, tone, bandLabelFor, onPointClick } = props;
   if (cx == null || cy == null || !payload) return null;
   const clickable = !!payload.slug;
+  const bandLabel = bandLabelFor(payload.statusKey);
+  // "Q1 2026, 73.5, Needs attention — view evidence" (§14 accessible-name shape).
+  const accessibleName =
+    [payload.label, fmtScore(payload.score), bandLabel].filter(Boolean).join(', ')
+    + (clickable ? ' — view evidence' : '');
   return (
     <circle
       cx={cx}
@@ -170,10 +179,28 @@ function TrendDot(props: {
       fill={tone(payload.statusKey)}
       stroke={T.raised}
       strokeWidth={1.5}
-      style={{ cursor: clickable ? 'pointer' : 'default' }}
+      role={clickable ? 'link' : 'img'}
+      aria-label={accessibleName}
+      tabIndex={clickable ? 0 : undefined}
+      style={{ cursor: clickable ? 'pointer' : 'default', outlineOffset: 2 }}
       onClick={clickable ? () => onPointClick(payload) : undefined}
+      onKeyDown={clickable ? (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onPointClick(payload); } } : undefined}
       data-testid={`strata-cc-trend-dot-${payload.label}`}
     />
+  );
+}
+
+/** Score delta with direction glyph + word (color never alone, §14). */
+function DeltaText({ delta }: { delta: number }) {
+  const up = delta > 0.005;
+  const down = delta < -0.005;
+  return (
+    <span style={{
+      color: up ? 'var(--ds-text-success)' : down ? 'var(--ds-text-danger)' : T.subtlest,
+      fontWeight: 600, fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap',
+    }}>
+      {up || down ? `${up ? '▲' : '▼'} ${fmtScore(Math.abs(delta))}` : 'No change'}
+    </span>
   );
 }
 
@@ -262,6 +289,8 @@ export default function StrataCommandCenterPage() {
   const navigate = useNavigate();
   const { activeCycle, activePeriod, periods, isLoading: ctxLoading } = useStrataContext();
   const bandTone = useBandTone();
+  const resolveBand = useBandResolver();
+  const bandLabelFor = (bandKey?: string | null): string | null => resolveBand(bandKey)?.label ?? null;
 
   // ── Scorecard: the instance for the active period, server-calculated ──────
   const instancesQ = useScorecardInstances(activeCycle?.id);
@@ -299,6 +328,10 @@ export default function StrataCommandCenterPage() {
   const rolesQ = useStrataRoles();
   const invalidate = useInvalidateStrata();
   const canAdvise = (rolesQ.data ?? []).some((r) => ADVISORY_ROLES.includes(r));
+  // Role-aware restricted state (§17): a viewer with no STRATA role sees strategy
+  // data denied by RLS — explain it, never blank/generic. Presentation only; the DB
+  // is the real gate. executive_viewer etc. hold >=1 role and are NOT restricted.
+  const noStrataRole = !rolesQ.isLoading && (rolesQ.data ?? []).length === 0;
   /** 'generate' or the advisory id under review — one action at a time. */
   const [advisoryBusy, setAdvisoryBusy] = useState<string | null>(null);
   const [advisoryError, setAdvisoryError] = useState<string | null>(null);
@@ -473,6 +506,42 @@ export default function StrataCommandCenterPage() {
     [snapshotsQ.data, instance],
   );
 
+  // ── Changes since the last locked review (D-3: client diff, no RPC) ─────────
+  // Reference = most-recent LOCKED snapshot in the active cycle that is NOT the one
+  // currently being viewed. Live mode → the last executive review; locked mode →
+  // the review before this one (compare-to-self is meaningless → zero-assumption empty).
+  const refSnapshot = useMemo(
+    () => (snapshotsQ.data ?? []).find(
+      (s) => s.status === 'locked' && s.cycle_id === activeCycle?.id && s.id !== instance?.locked_snapshot_id,
+    ) ?? null,
+    [snapshotsQ.data, activeCycle, instance],
+  );
+  const refItemsQ = useSnapshotItems(refSnapshot?.id);
+  /** Frozen enterprise score + per-perspective deltas vs the live calc. Null when
+   *  there is no comparable prior review (no snapshot, no frozen instance, no live data). */
+  const changesDiff = useMemo(() => {
+    if (!refSnapshot || !calc || !calc.has_data) return null;
+    const instItem = (refItemsQ.data as Array<{ entity_type: string; payload: Record<string, unknown> }> | undefined)
+      ?.find((i) => i.entity_type === 'scorecard_instance');
+    if (!instItem) return null;
+    const p = instItem.payload as {
+      value?: number | string | null;
+      inputs?: { perspectives?: Array<{ perspective_id: string; score: number; has_data?: boolean }> };
+    };
+    const frozenScore = p.value != null ? Number(p.value) : null;
+    if (frozenScore == null || Number.isNaN(frozenScore)) return null;
+    const frozenById = new Map((p.inputs?.perspectives ?? []).map((fp) => [fp.perspective_id, fp]));
+    const rows = calc.perspectives
+      .filter((cp) => cp.has_data && frozenById.has(cp.perspective_id))
+      .map((cp) => {
+        const fp = frozenById.get(cp.perspective_id)!;
+        return { id: cp.perspective_id, name: cp.name, then: Number(fp.score), now: cp.score, delta: cp.score - Number(fp.score) };
+      })
+      .filter((r) => Number.isFinite(r.delta))
+      .sort((a, b) => Math.abs(b.delta) - Math.abs(a.delta));
+    return { frozenScore, enterpriseDelta: calc.score - frozenScore, rows };
+  }, [refSnapshot, calc, refItemsQ.data]);
+
   // ── Judgment band inputs (anchor 01: one composed executive argument) ───────
   // Worst-scoring perspective — the one that drags the enterprise score.
   const worstPerspective = useMemo(() => {
@@ -570,18 +639,15 @@ export default function StrataCommandCenterPage() {
       freshness={freshnessNode}
       testId="strata-cc-chrome"
     >
-      {dataState === 'locked' && lockedSnapshot ? (
-        <div style={{ marginBottom: 16 }}>
-          <StrataSnapshotBand
-            snapshotKey={lockedSnapshot.snapshot_key}
-            frozenAt={fmtDateTime(lockedSnapshot.locked_at)}
-            basis={lockedSnapshot.name}
-            testId="strata-cc-snapshot-band"
-          />
-        </div>
-      ) : null}
-      {isLoading ? (
+      {isLoading || rolesQ.isLoading ? (
         <LoadingSkeleton />
+      ) : noStrataRole ? (
+        <EmptyState
+          size="default"
+          header="You don't have access to the Command Center"
+          description="Your account has no STRATA role, so strategy data is restricted. Ask a STRATA administrator or the strategy office to grant a role, then reload this page."
+          testId="strata-cc-restricted"
+        />
       ) : !activeCycle ? (
         <EmptyState
           size="compact"
@@ -590,6 +656,17 @@ export default function StrataCommandCenterPage() {
           testId="strata-cc-empty"
         />
       ) : (
+        <>
+        {dataState === 'locked' && lockedSnapshot ? (
+          <div style={{ marginBottom: 16 }}>
+            <StrataSnapshotBand
+              snapshotKey={lockedSnapshot.snapshot_key}
+              frozenAt={fmtDateTime(lockedSnapshot.locked_at)}
+              basis={lockedSnapshot.name}
+              testId="strata-cc-snapshot-band"
+            />
+          </div>
+        ) : null}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(12, minmax(0, 1fr))', gap: 16 }}>
           {/* ── Row 1: judgment band — one composed executive argument ──────── */}
           <div style={{ gridColumn: 'span 12', minWidth: 0 }}>
@@ -696,7 +773,7 @@ export default function StrataCommandCenterPage() {
                         stroke="var(--ds-text-brand)"
                         strokeWidth={2}
                         fill="url(#strataTrendFill)"
-                        dot={<TrendDot tone={bandTone} onPointClick={openTrendEvidence} />}
+                        dot={<TrendDot tone={bandTone} bandLabelFor={bandLabelFor} onPointClick={openTrendEvidence} />}
                         activeDot={false}
                         isAnimationActive={false}
                       />
@@ -751,7 +828,69 @@ export default function StrataCommandCenterPage() {
             </StrataPanel>
           </div>
 
-          {/* ── Row 3: needs attention — one actionable inbox ──────────────── */}
+          {/* ── Row 3: changes since the last locked review (D-3 client diff) ── */}
+          <div style={{ gridColumn: 'span 12', minWidth: 0 }}>
+            <StrataPanel
+              title="Since the last locked review"
+              icon={<History size={16} />}
+              count={changesDiff ? changesDiff.rows.length : null}
+              testId="strata-cc-changes"
+            >
+              {snapshotsQ.isError ? (
+                <PanelError error={snapshotsQ.error} />
+              ) : (snapshotsQ.isLoading || (!!refSnapshot && refItemsQ.isLoading)) ? (
+                <div aria-hidden style={{ height: 72, borderRadius: 8, background: T.neutral }} />
+              ) : !changesDiff ? (
+                <EmptyState
+                  size="compact"
+                  header="No prior locked review to compare"
+                  description="Once an executive review is locked for this cycle, movement in the enterprise score and each perspective since that lock appears here."
+                />
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                  <div style={{
+                    display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap',
+                    paddingBottom: 12, marginBottom: 4, borderBottom: `1px solid ${T.border}`,
+                  }}>
+                    <StrataBandLozenge bandKey={calc?.has_data ? calc?.status_key : null} />
+                    <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: T.text }}>
+                      Enterprise score {fmtScore(calc!.score)}
+                    </span>
+                    <DeltaText delta={changesDiff.enterpriseDelta} />
+                    <span style={{ fontSize: 'var(--ds-font-size-100)', color: T.subtlest }}>
+                      {`since ${refSnapshot!.snapshot_key} (${fmtScore(changesDiff.frozenScore)}, ${fmtDate(refSnapshot!.locked_at)})`}
+                    </span>
+                  </div>
+                  {changesDiff.rows.length === 0 ? (
+                    <span style={{ fontSize: 'var(--ds-font-size-100)', color: T.subtlest, padding: '4px 0' }}>
+                      No perspective is comparable across the two reviews.
+                    </span>
+                  ) : (
+                    changesDiff.rows.map((r) => (
+                      <div
+                        key={r.id}
+                        data-testid={`strata-cc-change-${r.id}`}
+                        style={{ display: 'flex', alignItems: 'center', gap: 8, padding: 'var(--ds-space-075) 0' }}
+                      >
+                        <span style={{
+                          flex: 1, minWidth: 0, fontSize: 'var(--ds-font-size-200)', color: T.text,
+                          overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                        }}>
+                          {r.name}
+                        </span>
+                        <span style={{ fontSize: 'var(--ds-font-size-100)', color: T.subtlest, fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap' }}>
+                          {`${fmtScore(r.then)} → ${fmtScore(r.now)}`}
+                        </span>
+                        <DeltaText delta={r.delta} />
+                      </div>
+                    ))
+                  )}
+                </div>
+              )}
+            </StrataPanel>
+          </div>
+
+          {/* ── Row 4: needs attention — one actionable inbox ──────────────── */}
           <div style={{ gridColumn: 'span 12', minWidth: 0 }}>
             <StrataPanel
               title="Needs attention"
@@ -795,6 +934,16 @@ export default function StrataCommandCenterPage() {
                     description={attentionScope === 'mine'
                       ? 'Items assigned to you — validations, blockers, overdue actions and delayed projects you own — appear here. Switch to All to see every open queue.'
                       : 'Pending attestations and validations, blocked dependencies, overdue actions and gates, broken assumptions, missing actuals and upload rejections land here.'}
+                    primaryAction={attentionScope === 'mine' && attentionRows.length > 0 ? (
+                      <Button
+                        appearance="primary"
+                        spacing="compact"
+                        onClick={() => setAttentionScope('all')}
+                        testId="strata-cc-attention-clear-mine"
+                      >
+                        {`Show all ${attentionRows.length} items`}
+                      </Button>
+                    ) : undefined}
                   />
                 ) : null
               ) : (
@@ -810,7 +959,7 @@ export default function StrataCommandCenterPage() {
             </StrataPanel>
           </div>
 
-          {/* ── Row 4: AI advisory — drafts pending human review (F-GOV-009) ── */}
+          {/* ── Row 5: AI advisory — drafts pending human review (F-GOV-009) ── */}
           <div style={{ gridColumn: 'span 12', minWidth: 0 }}>
             <StrataPanel
               title="AI advisory"
@@ -913,7 +1062,7 @@ export default function StrataCommandCenterPage() {
             </StrataPanel>
           </div>
 
-          {/* ── Row 5: data-trust strip — subordinate, always present ──────── */}
+          {/* ── Row 6: data-trust strip — subordinate, always present ──────── */}
           <div style={{ gridColumn: 'span 12', minWidth: 0 }}>
             <div
               data-testid="strata-cc-data-trust"
@@ -946,6 +1095,7 @@ export default function StrataCommandCenterPage() {
             </div>
           </div>
         </div>
+        </>
       )}
     </StrataPageShell>
   );
