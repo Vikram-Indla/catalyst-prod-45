@@ -219,3 +219,22 @@ Branch: `strata/impl-phase01`. Resolves DRIFT-4 / D-9 (full anchor-12 redesign, 
   Both themes clean. docTitle "Scorecards" (+ detail "CEO Scorecard · Q2 FY2026") confirmed in tab title.
 - Data-gap: "variance to plan" not client-derivable → backend task filed (task_e44f1ba9); ranked panel
   (1C-2) will use worst-first + Δ-vs-prior per D-10.
+
+## Slice 1C-2 — Scorecards Index ranked-variance panel — IMPLEMENTED + VERIFIED (not committed at write time)
+Branch: `strata/impl-phase01`. Completes anchor-12 (D-9); ranked basis per D-10.
+
+### File changed (1 source)
+- `src/modules/strata/pages/StrataScorecardsPage.tsx` — added the "Where attention pays" ranked panel
+  below the cards (anchor-12 "JiraTable idiom"). Canonical `JiraTable` in a `StrataPanel` (noPadding),
+  columns Scorecard · Score(+band) · Since prior(Δ) · Where attention pays(weakest perspective).
+  `rankedRows` = active-period instances sorted worst-score-first (nulls last); `DeltaSpan` helper
+  (▲/▼ + word + success/danger token, color never alone). Row click → scorecard detail. "Variance to
+  plan" NOT used (not client-derivable — backend task_e44f1ba9); interim basis = score + Δ-vs-prior (D-10).
+
+### Verification
+- Gates GREEN: tsc clean; colors 0=baseline; audit no-increase (tokens 19966/19966); CRE passed.
+- LIVE (localhost:8080, staging) Q2 FY2026: panel "Where attention pays (2)" + subcaption "Lowest score
+  first · same model & thresholds, directly comparable". Rows worst-first: CEO 96.5 ON TRACK · ▲ 9 vs
+  Q1 FY2026 · "Digital & Innovation 86.7 — weakest perspective"; B2B Sector 100 ON TRACK · "—" (no prior,
+  zero-assumption) · "Financial 100 — weakest perspective". DOM: JiraTable, 2 rows, brand-link names,
+  row-click wired. Both themes clean.

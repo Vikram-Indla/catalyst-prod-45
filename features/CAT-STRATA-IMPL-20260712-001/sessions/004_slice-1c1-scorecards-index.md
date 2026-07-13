@@ -16,3 +16,8 @@ live-verified both themes + click-through. GitHub Desktop auto-committer still N
 staging + `git log` check after commit.
 
 ## Next: 1C-2 (ranked-variance panel) then 1D (Scorecard Detail — read anchor 13 first).
+
+## 1C-2 done (same session): ranked-variance panel
+"Where attention pays" JiraTable panel below the cards — worst-score-first + Δ-vs-prior + weakest-
+perspective driver (D-10; variance-to-plan deferred to backend task_e44f1ba9). Gates green, live-verified
+both themes. See 04_EXECUTION_LOG.md Slice 1C-2. Anchor 12 (D-9) now COMPLETE. Next: 1D (read anchor 13).
