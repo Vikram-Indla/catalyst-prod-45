@@ -14,13 +14,16 @@
 import React, { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button, EmptyState, SectionMessage } from '@/components/ads';
+import { JiraTable } from '@/components/shared/JiraTable';
+import type { Column } from '@/components/shared/JiraTable';
 import { Routes } from '@/lib/routes';
+import { Scale } from '@/lib/atlaskit-icons';
 import {
   useScorecardInstances, useScorecardModels, useScorecardCalcs, useStrataContext,
   useStrataRoles, useBandResolver,
 } from '@/modules/strata/hooks/useStrata';
 import {
-  T, StrataBandLozenge, StrataPageShell, StrataScoreRing,
+  T, StrataBandLozenge, StrataPageShell, StrataPanel, StrataScoreRing,
 } from '@/modules/strata/components/shared';
 import { fmtScore, labelize } from '@/modules/strata/components/format';
 import type { ScorecardCalcResult, StrataScorecardInstance, StrataScorecardModel } from '@/modules/strata/types';
@@ -133,6 +136,36 @@ function InstanceCard({
   );
 }
 
+/** Score movement vs prior period — direction glyph + word (color never alone, §14). */
+function DeltaSpan({ delta, priorPeriodName }: { delta: number; priorPeriodName: string | null }) {
+  const up = delta > 0.05;
+  const down = delta < -0.05;
+  return (
+    <span style={{ fontSize: 'var(--ds-font-size-100)', whiteSpace: 'nowrap' }}>
+      <span style={{
+        color: up ? 'var(--ds-text-success)' : down ? 'var(--ds-text-danger)' : T.subtlest,
+        fontWeight: 600, fontVariantNumeric: 'tabular-nums',
+      }}>
+        {up || down ? `${up ? '▲' : '▼'} ${fmtScore(Math.abs(delta))}` : 'No change'}
+      </span>
+      {priorPeriodName ? <span style={{ color: T.subtlest }}>{` vs ${priorPeriodName}`}</span> : null}
+    </span>
+  );
+}
+
+/** Ranked-panel row: the same active-period instances, worst-score first (D-10). */
+interface RankedRow {
+  id: string;
+  name: string;
+  slug: string | null;
+  score: number | null;
+  statusKey: string | null;
+  delta: number | null;
+  priorPeriodName: string | null;
+  /** Weakest perspective — the derivable "where attention pays" driver. */
+  driver: string | null;
+}
+
 // ── Page ─────────────────────────────────────────────────────────────────────
 export default function StrataScorecardsPage() {
   const navigate = useNavigate();
@@ -208,6 +241,65 @@ export default function StrataScorecardsPage() {
     return { worstName: worst.i.name, worstScore: worst.c.score, onTrack, total: scored.length };
   }, [cardInstances, calcs.byId, resolveBand]);
 
+  // ── Ranked panel — worst-score first + Δ-vs-prior + weakest-perspective driver (D-10) ──
+  const rankedRows: RankedRow[] = useMemo(() => cardInstances.map((inst) => {
+    const c = calcs.byId.get(inst.id);
+    const prior = priorByInstanceId.get(inst.id) ?? null;
+    const pc = prior ? calcs.byId.get(prior.id) ?? null : null;
+    const hasData = !!c?.has_data;
+    const scored = (c?.perspectives ?? []).filter((p) => p.has_data && p.score != null);
+    const worst = scored.length ? scored.reduce((lo, p) => (p.score < lo.score ? p : lo)) : null;
+    return {
+      id: inst.id,
+      name: inst.name,
+      slug: inst.slug,
+      score: hasData ? c!.score : null,
+      statusKey: hasData ? c!.status_key : null,
+      delta: hasData && pc?.has_data ? c!.score - pc.score : null,
+      priorPeriodName: prior?.period_id ? periodById.get(prior.period_id)?.name ?? null : null,
+      driver: worst ? `${worst.name} ${fmtScore(worst.score)} — weakest perspective` : null,
+    };
+  }).sort((a, b) => (a.score ?? Infinity) - (b.score ?? Infinity)),
+  [cardInstances, calcs.byId, priorByInstanceId, periodById]);
+
+  const rankedColumns: Column<RankedRow>[] = useMemo(() => [
+    {
+      id: 'name', label: 'Scorecard', flex: true,
+      cell: ({ row }) => (
+        <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: row.slug ? T.brandText : T.text, minWidth: 0, overflowWrap: 'anywhere' }}>
+          {row.name}
+        </span>
+      ),
+    },
+    {
+      id: 'score', label: 'Score', width: 18,
+      cell: ({ row }) => (row.score == null ? (
+        <span style={{ color: T.subtlest }}>—</span>
+      ) : (
+        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+          <span style={{ fontWeight: 700, fontVariantNumeric: 'tabular-nums', color: T.text, fontSize: 'var(--ds-font-size-200)' }}>
+            {fmtScore(row.score)}
+          </span>
+          <StrataBandLozenge bandKey={row.statusKey} />
+        </span>
+      )),
+    },
+    {
+      id: 'delta', label: 'Since prior', width: 16,
+      cell: ({ row }) => (row.delta == null
+        ? <span style={{ color: T.subtlest, fontSize: 'var(--ds-font-size-100)' }}>—</span>
+        : <DeltaSpan delta={row.delta} priorPeriodName={row.priorPeriodName} />),
+    },
+    {
+      id: 'driver', label: 'Where attention pays', flex: true,
+      cell: ({ row }) => (
+        <span style={{ fontSize: 'var(--ds-font-size-100)', color: T.subtle, minWidth: 0, overflowWrap: 'anywhere' }}>
+          {row.driver ?? '—'}
+        </span>
+      ),
+    },
+  ], []);
+
   const isLoading = instancesQ.isLoading || rolesQ.isLoading || modelsQ.isLoading
     || (cardInstances.length > 0 && calcs.isLoading);
 
@@ -281,6 +373,29 @@ export default function StrataScorecardsPage() {
               );
             })}
           </div>
+
+          {/* Ranked panel — the 80/20 "where attention pays" answer (anchor 12). */}
+          <StrataPanel
+            title="Where attention pays"
+            icon={<Scale size={16} />}
+            count={rankedRows.length}
+            noPadding
+            testId="strata-scorecards-ranked"
+            actions={(
+              <span style={{ fontSize: 'var(--ds-font-size-100)', color: T.subtlest }}>
+                Lowest score first · same model &amp; thresholds, directly comparable
+              </span>
+            )}
+          >
+            <JiraTable<RankedRow>
+              columns={rankedColumns}
+              data={rankedRows}
+              getRowId={(r) => r.id}
+              onRowClick={(r) => { if (r.slug) navigate(Routes.strata.scorecard(r.slug)); }}
+              showRowCount={false}
+              ariaLabel="Scorecards ranked by score"
+            />
+          </StrataPanel>
         </div>
       )}
     </StrataPageShell>
