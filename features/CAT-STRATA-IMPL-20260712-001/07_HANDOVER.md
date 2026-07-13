@@ -16,7 +16,11 @@
     (judgment band in `StrataCommandCenterPage.tsx`) + docs, swept from my working tree. See below.
   - `58cb2af90` 1A-3 (the D-8 tweak; bulk is in the foreign commit above) — judgment band, live-verified.
   - `c3de22709` untrack + gitignore the stray `Design attachments archive.zip` (swept in by `20eb0db1c`).
-- **Phase 0 COMPLETE.** Phase 1 IN PROGRESS: 1A-1, 1A-2, 1A-3 done. Working tree clean.
+  - `469202473` handover update (1A-3 + git-hazard note).
+  - `8fcf1b99b` 1A-2b — context-spine scope/freshness + data-trust strip (live-verified).
+- **Phase 0 COMPLETE.** Phase 1 IN PROGRESS: 1A-1, 1A-2, 1A-3, 1A-2b done. Working tree clean.
+- Spun-off background task `task_70e821ad` — add a data-source freshness/staleness column so the
+  data-trust strip can show "N stale" (schema gap; see 1A-2b in `04_EXECUTION_LOG.md`).
 
 ## ⚠️ GIT HAZARD — active GitHub Desktop auto-committer ([[github-desktop-autocommit-hazard]])
 A GitHub Desktop process (user `Vikram-Indla`) auto-commits the working tree as commits titled
@@ -46,19 +50,23 @@ D-6 add slug|UUID dual-mode to `useScorecardInstanceBySlug` (do in 1D). D-7 defe
 to Phase 2 (no Phase-1 consumer; prior art inline in `StrataEvidencePage.tsx:106-338`).
 
 ## NEXT — remaining Phase-1 work (in order)
-Slice 1A is split (2h rule). Remaining sub-slices, each ≤2h, one commit each, screenshot-verified:
-- **1A-2b** — context-spine scope + freshness slots wired on CC (StrataPageShell already accepts
-  `scope`/`freshness` from 0A) + data-trust strip (anchor 01 row 4). NEEDS `StrataDataSource` /
-  `StrataUploadRun` field confirmation first (freshness/staleness fields) — read
-  `src/modules/strata/types.ts` (StrataDataSource, StrataUploadRun) + `useDataSources`/`useUploadRuns`
-  (`useStrata.tsx:468/470`). Zero-assumption: render nothing where freshness unknown.
-- **1A-3** — judgment-band redesign (anchor 01): replace the 6-tile `StrataStatStrip` with the
-  composed judgment band (StrataScoreRing 88px + composed executive sentence linking
-  perspective/value/decisions) + perspective-health panel. Biggest/highest-value; always visible →
-  easy to screenshot-verify. Keep decisions + what-changed as row 2, inbox row 3, data-trust row 4
-  (current inbox-at-row-3 already matches the anchor — do NOT "promote" it).
-- **1A-4** — restricted/403 role-aware state (rolesQ; executive_viewer consume-only), "Mine"
-  no-results one-click Clear, changes-since-snapshot client diff (D-3), trend-dot accessible names.
+Slice 1A is split (2h rule). One commit each, screenshot-verified. **DONE: 1A-1, 1A-2, 1A-3, 1A-2b.**
+
+- **1A-4 (START HERE)** — closes out Command Center. All in `StrataCommandCenterPage.tsx` unless noted:
+  - **Restricted/403 role-aware state:** `rolesQ = useStrataRoles()`. When the viewer has no strata
+    role / RLS denies, render an explained restricted panel (never blank or a generic error).
+    `executive_viewer` is consume-only — advisory generate/review is already gated by `canAdvise`
+    (`ADVISORY_ROLES`); extend the same pattern to any other write affordance. §17: hiding a button
+    is presentation, never the security model.
+  - **"Mine" no-results one-click Clear:** in the inbox empty state when `attentionScope==='mine'` &
+    0 rows, add a real button calling `setAttentionScope('all')` (teaching text already says "Switch
+    to All").
+  - **changes-since-snapshot (D-3, client diff, no RPC):** "What changed since the last locked
+    review" panel (anchor 01 row 2 right). Diff the active locked snapshot's items vs live calc —
+    `useSnapshots` + `useSnapshotItems(snapshotId)` (`useStrata.tsx:505`) vs current calc/values.
+    Zero-assumption where no prior snapshot exists.
+  - **Trend-dot accessible names (§14):** `TrendDot` SVG circles → focusable links with accessible
+    names ("Q1 2026, 73.5, Needs attention — view evidence") + keyboard activation.
 - **1B My Work** (NEW `/strata/my-work`) — new page + route (`StrataRoutes.tsx` before catch-all) +
   `strataRoutes.myWork()` + `routeRegistry.ts` + sidebar item (add here, WITH the route). `useMyWork`
   aggregator over `needsAttention(owner_id=me)` + decisions + actions; verb groups
@@ -71,6 +79,16 @@ Slice 1A is split (2h rule). Remaining sub-slices, each ≤2h, one commit each, 
   Recalculate, skeleton, restricted, stale label, D-6 dual-mode slug hook. Read anchor 13 first.
 
 Then Phases 2–5 get their OWN Plan Locks (do not start without one).
+
+## Command Center as-built (reference for 1A-4)
+Grid rows: **1** judgment band (full-width: StrataScoreRing 88px + eyebrow[score label · verdict
+Lozenge · Δ vs prior] + composed sentence[worst-perspective · VaR · decisions, `InlineLink`s] +
+footer) · **2** trend chart (span 8) + perspective health (span 4) · **3** needs-attention inbox
+(JiraTable, Mine/All toggle) · **4** AI advisory (D-8 keep) · **5** data-trust strip. Locked mode
+renders `StrataSnapshotBand` above Row 1. Spine: Cycle · Period · Scope Enterprise · Model ·
+[freshness "Data as of…"] · LIVE/locked. Local helpers: `InlineLink`, `daysOverdue`. Reach locked
+mode via Period → "Q1 FY2026 · closed" (instance CEO Scorecard Q1 → SNAP-1001). DRIFT-1: perspective
+health is Row 2, not beside the band (anchor 7/5 split) — refine later if desired.
 
 ## Environment / verification gotchas
 - **Dev app + Supabase MCP both target `cyijbdeuehohvhnsywig` (catalyst-staging) ONLY.** Prod
