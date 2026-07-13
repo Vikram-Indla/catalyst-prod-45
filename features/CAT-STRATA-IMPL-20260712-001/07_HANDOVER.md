@@ -4,10 +4,58 @@
 > Read order for continuation: `00_READ_ME_FIRST` → `01_OBJECTIVE` → `03_PLAN_LOCK` →
 > this file → `08_DRIFT_LOG` → `09_DECISIONS` → `discovery/00_anchor_specs` → latest `sessions/`.
 
-## State (as of session 004, 2026-07-13)
-- **Branch:** `strata/impl-phase01`. **Everything through `926cece43` is MERGED TO MAIN AND PUSHED**
-  (`origin/main` = `062bfa741`). Working tree clean.
-- **Phase 0 COMPLETE. Phase 1 COMPLETE except 1B (skipped, see NEXT). Anchor-13 polish also DONE.**
+## State (as of session 005, 2026-07-13)
+- **Branch:** `strata/impl-phase01`. **Everything through `84fcb57ff` is MERGED TO MAIN AND PUSHED**
+  (`origin/main` = `184e720a8`). Working tree clean.
+- **Phase 0 + Phase 1 COMPLETE** (1B skipped; anchor-13 polish done). **PHASE 2 STARTED:** Plan Lock
+  approved (`03_PLAN_LOCK_PHASE2.md`, full build — nothing deferred), **slice 2A (StrataChainStrip) done
+  + merged** (`84fcb57ff` → `184e720a8`). **NEXT = slice 2B-1 (KPI Detail) — see PHASE 2 NEXT below.**
+- Session 005 checkpointed here deliberately (context-health): 2B is the largest Phase-2 surface and
+  deserves fresh context. Resume with `continue feature CAT-STRATA-IMPL-20260712-001`.
+
+## ⭐ PHASE 2 — NEXT (START HERE). Plan Lock: `03_PLAN_LOCK_PHASE2.md` (APPROVED, full build)
+Phase 2 = measure & direction, 5 REDESIGNS of existing pages. Slice order: **2A done** →
+**2B (KPI Detail, SPLIT — DO NEXT)** → 2C Library → 2D Strategy Room (SPLIT) → 2E Element Detail →
+2F Evidence. All backed by existing tables/RPCs — **no migrations expected** except a
+`strata_saved_views` table at 2C (P2-D2 BUILD). Map protection is structural: `/strata/strategy` is
+NOT the map (it's `StrataStrategyRoomPage`); the map is a standalone route; nothing imports the map
+component — so the Structure view (2D) is a Room-page redesign + a toggle whose "Map" navigates out.
+
+### 2A DONE — `StrataChainStrip` (`shared.tsx`, commit `84fcb57ff`)
+Canonical compact "IN THE CHAIN" strip (anchors 06/14/02). API: `StrataChainStrip({ segments, heading?,
+testId })`; `segments: [{ icon?, label, items: StrataChainLink[], emptyText? }]`;
+`StrataChainLink: { name, onNav?, meta?, tone?:'default'|'danger' }`. Zero-assumption empties; danger
+tone = blocked link (color+weight). NOT yet mounted anywhere → **first live mount is 2B-1** (this
+verifies 2A, same as 0B StrataSnapshotBand → 1A-2). Scope refinement logged: EvidencePage's richer
+lineage chain (EvidenceRow-based) is NOT refactored into the compact strip (would regress detail).
+
+### 2B — KPI Detail (`StrataKpiDetailPage.tsx`, 1109 LOC, anchor 06). Read anchor 06 in full at start.
+Anchor-06 order = **verdict → trust → definition**. SPLIT:
+- **2B-1 (DO FIRST):** (1) **Verdict band (5fr) + Trend (7fr)** row. Verdict band replaces the plain
+  `StrataStatStrip` hero: "MONTH VERDICT" eyebrow + band lozenge (BELOW TARGET) + PENDING-VALIDATION
+  lozenge; big actual value + "vs target X" + "▲ n vs {prev period}"; achievement bar (StrataBandBar)
+  with target marker; "Achievement N (governed formula …)" + threshold; composed prose sentence. Trend
+  = existing recharts LineChart, add band-toned dots + "every point drills to evidence →" (`?from=`).
+  (2) **Chain strip (StrataChainStrip, 7fr) + Trust strip (5fr)** row. Chain segments: ↑ Objective ·
+  ◔ Scorecards · ▦ Delivery · ◇ Value. Trust: Source · Last run · Formula · Validation.
+- **2B-2:** Actuals & validation JiraTable — columns Period·Actual·Target·Band·Validation·**Commentary**
+  ·Lineage (commentary as a COLUMN, NOT the orphaned "Commentary" panel — remove that panel);
+  progressive-reveal Definition/Formula/Audit; role-gated Submit actual (owner) / Validate (validator →
+  attestation modal; `kpiApi.attestActual`; submitter≠validator server-enforced, explained); Viewer no
+  ghosts.
+- **Current page wiring to PRESERVE** (discovery): hooks `useKpiBySlug`→`kpi`, `useKpiDetail(kpi.id)`→
+  `{formulas,targets,actuals,lineage,calc}`, `useKpiAchievement(kpi.id, activePeriod.id)`→`achievement`
+  (`{achievement, score, status_key, actual, target, confidence}`), `commentaryQ` (`kpiApi.commentary`),
+  `elementKpisQ`+`elementsQ` (chain: linked objective/theme), `uploadRunsQ` (trust/last-run), `rolesQ`.
+  `trendRows` memo (targets⋈actuals per period, sorted) at ~366; `chartData` at ~391. Many governance
+  modals (submit/approve KPI, approve formula, attest, edit/new-formula/set-target/submit-actual) —
+  KEEP. Roles: `CREATE_ROLES`, `SUBMIT_ROLES` (~45). Render starts ~519.
+- **Chain-data sourcing DECISION (resolve at 2B-1 start):** ↑ Objective is available now
+  (`elementKpisQ` filtered to this kpi → `elementsQ`). Scorecards/Projects/Benefits linkage for a KPI is
+  NOT loaded on the page. Option A: use `useKpiEvidenceChain(kpiId, periodId)` (F-REP-005, returns full
+  chain — check its shape first) to populate all 4 segments. Option B: populate ↑ Objective truthfully +
+  render honest `emptyText` for segments without loaded data, add wiring incrementally. Recommend A if
+  the hook's shape is clean; else B (zero-assumption — never invent links).
 
 ### Shipped + merged (sessions 003–004, all live-verified, gates green)
 - `16d41e844` **1A-4** CC close-out — whole-page restricted (§17), "Mine" one-click Clear,
@@ -85,7 +133,8 @@ DRIFT-4 (anchor-12 vs Plan Lock, resolved via D-9).
 3. **Apply migration 20260713100000 to prod** (see OPERATIONAL above).
 4. Spun-off background task `task_70e821ad` — data-source freshness/staleness column (schema gap;
    data-trust strip "N stale").
-5. **Phases 2–5 need their OWN Plan Locks** — do not start without one.
+5. **Phase 2 is ACTIVE** — Plan Lock approved (`03_PLAN_LOCK_PHASE2.md`), 2A done; resume at 2B-1 (see
+   the ⭐ PHASE 2 — NEXT section at the top). **Phases 3–5 still need their OWN Plan Locks.**
 
 ## As-built quick reference
 - **Command Center rows:** 1 judgment band · 2 trend (8) + perspective health (4) · 3 "Since the
