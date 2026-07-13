@@ -25,13 +25,15 @@ import type { Column } from '@/components/shared/JiraTable';
 import { Routes } from '@/lib/routes';
 import { configApi, kpiApi, strategyApi } from '@/modules/strata/domain';
 import {
-  useDataSources, useElementKpis, useInvalidateStrata, useKpiAchievement, useKpiBySlug, useKpiDetail, useKpiTypes,
+  useBandResolver, useDataSources, useElementKpis, useInvalidateStrata, useKpiAchievement, useKpiBySlug,
+  useKpiDetail, useKpiEvidenceChain, useKpiTypes,
   useProfileNames, useStrataContext, useStrataRoles, useStrategyElements, useThresholdSchemes, useUploadRuns,
 } from '@/modules/strata/hooks/useStrata';
 import type { StrataProfileRef } from '@/modules/strata/hooks/useStrata';
 import {
-  StrataDecisionModal, StrataPageShell, StrataPanel, StrataStatStrip, T,
+  StrataBandBar, StrataBandLozenge, StrataChainStrip, StrataDecisionModal, StrataPageShell, StrataPanel, T,
 } from '@/modules/strata/components/shared';
+import type { StrataChainSegment } from '@/modules/strata/components/shared';
 import { StrataFormModal } from '@/modules/strata/components/authoring';
 import { fmtDate, fmtDateTime, fmtPct, fmtRatioPct, fmtUnit, labelize } from '@/modules/strata/components/format';
 import { StrataGovernedStatusLozenge } from '@/modules/strata/pages/StrataKpiLibraryPage';
@@ -330,6 +332,11 @@ export default function StrataKpiDetailPage() {
     staleTime: 60_000,
   });
   const invalidate = useInvalidateStrata();
+  // Evidence chain (F-REP-005) powers BOTH the chain strip and the trust strip
+  // (elements/projects/benefits + formula_version). Zero-assumption: unloaded
+  // segments render honest empties — never invented links.
+  const chainQ = useKpiEvidenceChain(kpi?.id, activePeriod?.id);
+  const resolveBand = useBandResolver();
   const [showTrendData, setShowTrendData] = useState(false);
   const [showStrategyLinks, setShowStrategyLinks] = useState(false);
   /** Governance verdict modal — one at a time (approve KPI / approve formula / attest actual). */
@@ -516,6 +523,47 @@ export default function StrataKpiDetailPage() {
     manualActuals.length > 0 ? 'Manual entries carry submitter attestation.' : null,
   ].filter(Boolean).join(' ');
 
+  // ── Verdict-band + chain/trust inputs (anchor 06) ─────────────────────────
+  const chain = (chainQ.data ?? {}) as {
+    elements?: Array<{ id: string; name: string; element_type?: string }>;
+    projects?: Array<{ id: string; name: string; blocked_dependencies?: number }>;
+    benefits?: Array<{ id: string; name: string }>;
+    formula_version?: { version?: number; formula_type?: string } | null;
+  };
+  // Current-period actual (actuals ordered submitted_at desc → first match is latest).
+  const currentActual = actuals.find((a) => a.period_id === activePeriod?.id) ?? null;
+  // Δ vs the prior period's actual (trendRows ascending by starts_on).
+  const curTrendIdx = trendRows.findIndex((r) => r.periodId === activePeriod?.id);
+  const prevActualRow = curTrendIdx > 0 ? trendRows[curTrendIdx - 1] : null;
+  const actualDelta = achievement?.actual != null && prevActualRow?.actual?.value != null
+    ? achievement.actual - prevActualRow.actual.value : null;
+  const chainSegments: StrataChainSegment[] = [
+    {
+      icon: '↑', label: 'Objective',
+      items: (chain.elements ?? [])
+        .filter((e) => e.element_type === 'objective' || e.element_type === 'theme')
+        .map((e) => {
+          const elSlug = elementById.get(e.id)?.slug ?? null;
+          return { name: e.name, onNav: elSlug ? () => navigate(Routes.strata.strategyElement(elSlug)) : undefined };
+        }),
+      emptyText: 'No linked objective',
+    },
+    {
+      icon: '▦', label: 'Delivery',
+      items: (chain.projects ?? []).map((p) => ({
+        name: p.name,
+        meta: (p.blocked_dependencies ?? 0) > 0 ? `${p.blocked_dependencies} blocked` : undefined,
+        tone: (p.blocked_dependencies ?? 0) > 0 ? ('danger' as const) : undefined,
+      })),
+      emptyText: 'No linked project cards',
+    },
+    {
+      icon: '◇', label: 'Value',
+      items: (chain.benefits ?? []).map((b) => ({ name: b.name })),
+      emptyText: 'No linked benefits',
+    },
+  ];
+
   return (
     <StrataPageShell
       trail={[{ text: 'KPI library', href: Routes.strata.kpis() }]}
@@ -585,34 +633,59 @@ export default function StrataKpiDetailPage() {
             </p>
           </SectionMessage>
         ) : null}
-        {/* (b) hero — achievement ring + trend spark FIRST (S-147, S-150) */}
-        <StrataStatStrip
-          testId="strata-kpi-hero"
-          items={[
-            {
-              key: 'achievement',
-              label: `Achievement · ${activePeriod?.name ?? '—'}`,
-              value: achievement?.achievement != null ? fmtPct(achievement.achievement) : '—',
-              ring: { score: achievement?.achievement, bandKey: achievement?.status_key },
-              bandKey: achievement?.status_key ?? null,
-              spark: actualSpark.filter((v) => v != null).length >= 2 ? actualSpark : undefined,
-              caption:
-                achievement && (achievement.actual != null || achievement.target != null)
-                  ? `Actual ${fmtUnit(achievement.actual, kpi.unit)} · Target ${fmtUnit(achievement.target, kpi.unit)}`
-                  : 'No achievement calculated for this period',
-              testId: 'strata-kpi-achievement-stat',
-            },
-            {
-              key: 'confidence',
-              label: 'Confidence',
-              value: confidenceText ?? '—',
-              caption: 'Reported by the calc engine',
-              testId: 'strata-kpi-confidence-stat',
-            },
-          ]}
-        />
+        {/* Verdict (5fr) + Trend (7fr) — verdict-first order (anchor 06) */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 5fr) minmax(0, 7fr)', gap: 16 }}>
+          <section
+            data-testid="strata-kpi-verdict"
+            style={{
+              border: `1px solid ${T.border}`, borderRadius: 8, background: T.raised,
+              boxShadow: 'var(--ds-shadow-raised)', padding: 'var(--ds-space-250)',
+              display: 'flex', flexDirection: 'column', gap: 'var(--ds-space-100)', minWidth: 0,
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+              <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, letterSpacing: '0.04em', color: T.subtlest }}>
+                {`${activePeriod?.name ?? '—'} verdict`.toUpperCase()}
+              </span>
+              <StrataBandLozenge bandKey={achievement?.status_key ?? null} />
+              {currentActual ? <ValidationLozenge status={currentActual.validation_status} /> : null}
+            </div>
+            {achievement?.actual != null ? (
+              <div style={{ display: 'flex', alignItems: 'baseline', gap: 12, flexWrap: 'wrap' }}>
+                <span style={{ fontFamily: T.fontDisplay, fontSize: 'var(--ds-font-size-700)', fontWeight: 700, color: T.text, fontVariantNumeric: 'tabular-nums', lineHeight: 1 }}>
+                  {fmtUnit(achievement.actual, kpi.unit)}
+                </span>
+                {achievement.target != null ? (
+                  <span style={{ fontSize: 'var(--ds-font-size-200)', color: T.subtle }}>
+                    vs target <strong style={{ color: T.text, fontWeight: 600 }}>{fmtUnit(achievement.target, kpi.unit)}</strong>
+                  </span>
+                ) : null}
+                {actualDelta != null && Math.abs(actualDelta) > 0.0001 ? (
+                  <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, fontVariantNumeric: 'tabular-nums', color: actualDelta >= 0 ? 'var(--ds-text-success)' : 'var(--ds-text-danger)' }}>
+                    {`${actualDelta >= 0 ? '▲' : '▼'} ${fmtUnit(Math.abs(actualDelta), kpi.unit)} vs ${prevActualRow?.period?.name ?? 'prior'}`}
+                  </span>
+                ) : null}
+              </div>
+            ) : (
+              <span style={{ fontSize: 'var(--ds-font-size-200)', color: T.subtle }}>No actual submitted for this period.</span>
+            )}
+            {achievement?.achievement != null ? (
+              <div style={{ marginTop: 'var(--ds-space-050)' }}>
+                <StrataBandBar value={achievement.achievement} bandKey={achievement.status_key} height={8} />
+              </div>
+            ) : null}
+            <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', fontSize: 'var(--ds-font-size-100)', color: T.subtlest }}>
+              {achievement?.achievement != null ? <span>{`Achievement ${fmtPct(achievement.achievement)}`}</span> : null}
+              {confidenceText ? <span>{`Confidence ${confidenceText}`}</span> : null}
+              {chain.formula_version ? (
+                <span style={{ marginLeft: 'auto' }}>
+                  {`Formula ${labelize(chain.formula_version.formula_type ?? '')}${chain.formula_version.version != null ? ` v${chain.formula_version.version}` : ''}`}
+                </span>
+              ) : null}
+            </div>
+          </section>
 
-        {/* (c) Trend */}
+          {/* (c) Trend */}
         <StrataPanel
           title="Trend"
           icon={<Activity size={16} />}
@@ -685,6 +758,41 @@ export default function StrataKpiDetailPage() {
             </>
           )}
         </StrataPanel>
+        </div>
+
+        {/* Chain strip (7fr) + Trust strip (5fr) — trust follows verdict (anchor 06) */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 7fr) minmax(0, 5fr)', gap: 16 }}>
+          <StrataChainStrip segments={chainSegments} testId="strata-kpi-chain" />
+          <div
+            data-testid="strata-kpi-trust"
+            style={{
+              border: `1px solid ${T.border}`, borderRadius: 8, background: T.sunken,
+              padding: 'var(--ds-space-150) var(--ds-space-200)', minWidth: 0,
+            }}
+          >
+            <div style={{ fontSize: 'var(--ds-font-size-050)', fontWeight: 700, letterSpacing: '0.06em', color: T.subtlest, marginBottom: 'var(--ds-space-075)' }}>
+              TRUST
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--ds-space-050)', fontSize: 'var(--ds-font-size-100)', color: T.subtle }}>
+              <span>Source · <strong style={{ color: T.text, fontWeight: 600 }}>{currentActual?.entry_method ? labelize(currentActual.entry_method) : '—'}</strong></span>
+              <span>
+                Last run · {currentActual?.upload_run_id && runKeyById.get(currentActual.upload_run_id)
+                  ? <strong style={{ color: T.text, fontWeight: 600 }}>{runKeyById.get(currentActual.upload_run_id)}</strong>
+                  : '—'}
+              </span>
+              <span>
+                Formula · <strong style={{ color: T.text, fontWeight: 600 }}>
+                  {chain.formula_version ? `${labelize(chain.formula_version.formula_type ?? '')}${chain.formula_version.version != null ? ` v${chain.formula_version.version}` : ''}` : '—'}
+                </strong>
+              </span>
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
+                Validation · {currentActual
+                  ? <ValidationLozenge status={currentActual.validation_status} />
+                  : <span style={{ color: T.subtlest }}>no actual this period</span>}
+              </span>
+            </div>
+          </div>
+        </div>
 
         {/* (d) Ownership — after the hero (S-147) */}
         <StrataPanel title="Ownership" icon={<Users size={16} />} testId="strata-kpi-ownership">

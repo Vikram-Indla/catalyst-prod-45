@@ -360,3 +360,32 @@ Branch: `strata/impl-phase01`. Plan Lock: `03_PLAN_LOCK_PHASE2.md` (APPROVED —
 - Gates GREEN: tsc / colors 0=baseline / audit no-increase / CRE. No map/sidebar/shared-consumer touch.
 - Live verification DEFERRED to 2B first mount (KPI Detail chain strip) — same pattern as 0B
   StrataSnapshotBand → 1A-2. Pure presentational component, deterministic.
+
+## PHASE 2 · Slice 2B-1 — KPI Detail verdict band + chain strip + trust strip (anchor 06) — IMPLEMENTED + VERIFIED
+Branch: `strata/impl-phase01`. File: `StrataKpiDetailPage.tsx` (single source). First live mount of
+StrataChainStrip (2A verified).
+
+### Changes
+- Chain/trust data sourced from **`useKpiEvidenceChain(kpi.id, activePeriod.id)`** (`strata_kpi_evidence_chain`
+  RPC → elements/projects/benefits/formula_version/lineage). Decision A (see session 006).
+- **Verdict band** (replaces the plain StrataStatStrip hero; 5fr): "{period} VERDICT" eyebrow + band
+  lozenge (achievement.status_key) + validation lozenge (current-period actual); big actual value
+  (`var(--ds-font-size-700)`) + "vs target X" + "▲/▼ Δ vs {prior period}" (from trendRows); achievement
+  bar (StrataBandBar); footer "Achievement N% · Confidence · Formula {type} v{n}". Verdict → trust order.
+- **Trend** (7fr) — existing recharts Actual/Target panel, moved into the verdict/trend grid (kept as-is;
+  band-toned dots + per-point evidence-drill are an anchor enhancement → 2B-2/polish).
+- **StrataChainStrip** (7fr): ↑ Objective (elements, linked to element detail via elementById slug map),
+  ▦ Delivery (projects; "N blocked" danger meta/tone), ◇ Value (benefits, plain — no slug loaded).
+  Scorecards segment OMITTED (not in the RPC — zero-assumption, not invented).
+- **Trust strip** (5fr): Source (actual.entry_method) · Last run (upload_run → runKey) · Formula
+  (chain.formula_version) · Validation (ValidationLozenge). All honest "—" when absent.
+- Everything below (Ownership, Formula versions, Strategy links, Lineage, Commentary, all governance
+  modals) PRESERVED unchanged — 2B-2 handles the actuals/validation table + commentary column.
+
+### Verification
+- Gates GREEN: tsc / colors 0=baseline / audit no-increase / CRE.
+- LIVE (localhost:8080, staging) b2b-revenue-growth Q2 FY2026: verdict "Q2 FY2026 VERDICT · ON TRACK ·
+  VALIDATED · 8.9% vs target 8% · ▲ 2.7% vs Q1 · Achievement 111.3% · Confidence 95% · Formula Ratio to
+  target v1". Chain: ↑ B2B Growth Engine + Grow B2B Revenue (linked); ▦ CPQ & Sales Enablement (1 blocked,
+  danger) + Enterprise Care Desk; ◇ B2B Revenue Uplift + Cost-to-Serve Reduction. Trust: Upload / RUN-1001
+  / Ratio to target v1 / VALIDATED. DOM-probed. Both themes clean. StrataChainStrip (2A) live-verified.
