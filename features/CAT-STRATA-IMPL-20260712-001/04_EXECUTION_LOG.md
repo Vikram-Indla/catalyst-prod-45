@@ -310,3 +310,35 @@ degenerate-design finding raised to Vikram BEFORE any DDL; uncapped-rollup desig
 - Gates GREEN: tsc / colors 0=baseline / audit no-increase / CRE.
 - LIVE Q2 FY2026: CEO "+0.2 vs plan" (ranked first, 0.2 < 6.4) · B2B "+6.4 vs plan"; DOM-probed rows
   match RPC output; both themes clean. Locked/uncovered "—" branch code-verified (deterministic).
+
+## Follow-up — Scorecard Detail anchor-13 polish — IMPLEMENTED + VERIFIED (not committed at write time)
+Branch: `strata/impl-phase01`. The 3 optional items offered after 1D (composed verdict, contribution
+column, roll-up footer) — Vikram "do the anchor-13 polish". Single file: `StrataScorecardDetailPage.tsx`.
+
+### Changes
+- **Composed verdict sentence (hero, anchor-13 "headline IS the finding"):** worst-scoring perspective
+  + its below-target measures (band moved/removed via `useBandResolver`), measure names are
+  `VerdictLink`s to KPI evidence carrying `?from=` (thread origin); "all measures on/above target"
+  fallback; total **Δ-vs-prior** (same-model prior-period instance via `useScorecardInstances` +
+  `useScorecardCalc`, shown only when both calcs have data). Footer enriched to "Calculated … · N
+  lines, M with data". Eyebrow → "TOTAL SCORE".
+- **Contribution column (Measures-by-perspective table):** per-line share of the total score =
+  perspective weight-share × line weight-share × line score ("N pts"); "—" when no data. Panel
+  retitled "Measures by perspective" + caption "Contribution = share of the total score".
+- **Roll-up mechanics footer:** sunken strip below the table — "Total = Σ perspective weight ×
+  perspective score; perspective score = Σ measure weight × measure score. {model} v{ver} · {rollup}
+  rollup." One reveal away, never competing with the verdict.
+
+### Bug caught + fixed during live verify
+- **TDZ:** the `failingMeasures` memo referenced `refNameFor` (a `const` declared later) → runtime
+  "Cannot access 'refNameFor' before initialization" (tsc can't catch const TDZ). Fixed by hoisting
+  `refNameFor` above the derivation block. This is why live verification is mandatory — gates were
+  green but the page white-screened until the move.
+
+### Verification
+- Gates GREEN: tsc / colors 0=baseline / audit no-increase (weight 653 not 650) / CRE.
+- LIVE (localhost:8080, staging; re-auth mid-session): verdict "Digital & Innovation (86.7) is the
+  weakest perspective — Network Availability is below target" + "▲ 9 vs Q1 FY2026" + "8 lines, 8 with
+  data"; Network Availability is a link. Contribution column DOM-probed — **Σ contributions = 96.5 =
+  total score** (B2B Revenue Growth 20 · Cost to Serve 13.1 · Churn 15.3 · NPS 12.5 · Digital Rev 13.3
+  · Network Avail 5.9 · Employee Eng 16.4 · CO2 —). Roll-up footer present. Both themes clean.
