@@ -269,6 +269,23 @@ export interface ScorecardCalcResult {
   calculated_at: string;
 }
 
+/** Shape returned by strata_calc_scorecard_plan_variance (read-only rollup of
+ *  uncapped plan achievements; 100 = exactly on plan). Locked instances return
+ *  has_data=false, reason='locked_snapshot' — variance is never recomputed
+ *  against live tables for a frozen basis. */
+export interface ScorecardPlanVariance {
+  instance_id: string;
+  period_id: string | null;
+  plan_index: number | null;
+  /** plan_index − 100; signed ("−7.2 / +1.9 vs plan"). Null when underivable. */
+  variance: number | null;
+  has_data: boolean;
+  reason?: string;
+  covered_lines: number;
+  total_lines: number;
+  calculated_at: string;
+}
+
 // ── KPI / OKR ────────────────────────────────────────────────────────────────
 export interface StrataKpi extends GovernedEnvelope {
   id: string;

@@ -11,7 +11,7 @@ import {
   configApi, executionApi, governanceApi, kpiApi, lineageApi, scorecardApi, strategyApi, valueApi,
 } from '../domain';
 import type {
-  ScorecardCalcResult,
+  ScorecardCalcResult, ScorecardPlanVariance,
   StrataCycle, StrataPeriod, StrataRole, StrataScorecardInstance, StrataThresholdScheme, ThresholdBand,
 } from '../types';
 
@@ -309,6 +309,27 @@ export const useScorecardCalcs = (instances: StrataScorecardInstance[]) => {
   });
   return useMemo(() => {
     const byId = new Map<string, ScorecardCalcResult | null>();
+    instances.forEach((inst, i) => byId.set(inst.id, results[i]?.data ?? null));
+    return {
+      byId,
+      isLoading: results.some((r) => r.isLoading),
+      isError: results.some((r) => r.isError),
+    };
+  }, [instances, results]);
+};
+
+/** Batch plan-variance (strata_calc_scorecard_plan_variance, read-only) for the
+ *  Scorecards Index ranked panel. Caller memoises `instances`. */
+export const useScorecardPlanVariances = (instances: StrataScorecardInstance[]) => {
+  const results = useQueries({
+    queries: instances.map((inst) => ({
+      queryKey: ['strata', 'scorecard-plan-variance', inst.id, inst.status],
+      queryFn: () => scorecardApi.planVariance(inst.id),
+      staleTime: STALE,
+    })),
+  });
+  return useMemo(() => {
+    const byId = new Map<string, ScorecardPlanVariance | null>();
     instances.forEach((inst, i) => byId.set(inst.id, results[i]?.data ?? null));
     return {
       byId,

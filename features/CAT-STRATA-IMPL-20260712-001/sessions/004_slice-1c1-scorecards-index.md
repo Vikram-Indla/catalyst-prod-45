@@ -29,3 +29,9 @@ role-gated Recalculate, layout-matched skeletons, whole-page restricted, partial
 dual-mode slug|UUID + canonical redirect. Live-verified: both evidence paths show "← Back to
 Scorecard"; UUID URL canonicalizes; gates green; both themes. Anchor-13 extras (composed verdict
 sentence, contribution column, roll-up footer) = optional polish, offered to Vikram, NOT built.
+
+## Plan-variance backend done (same session, task_e44f1ba9 → D-11)
+Task's naive plan-rollup proven degenerate (constant 100) → raised, Vikram approved uncapped-
+achievement design. Migration 20260713100000 applied to staging (ledger 1:1), RPC verified
+(CEO +0.18, B2B +6.42, locked → null), ranked panel re-based to true vs-plan. D-10 interim
+basis superseded by D-11.

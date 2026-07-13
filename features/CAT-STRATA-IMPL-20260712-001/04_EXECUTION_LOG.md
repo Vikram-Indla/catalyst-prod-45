@@ -276,3 +276,37 @@ column, roll-up footer) noted as optional polish — not silently absorbed, offe
   - Detail renders hero 96.5 ON TRACK, honest "—/No data" Network & Infrastructure tile. Both themes clean.
 - **Code-verified only:** restricted page (no role-less session), partial label (CEO Q2 = 8/8 lines with
   data → not present, correct), skeletons (flash too fast to screenshot; deterministic JSX).
+
+## Follow-up — scorecard plan-variance backend (task_e44f1ba9, D-11) — IMPLEMENTED + VERIFIED (not committed at write time)
+Branch: `strata/impl-phase01`. First migration of this feature (Plan Lock stop-condition honored:
+degenerate-design finding raised to Vikram BEFORE any DDL; uncapped-rollup design approved).
+
+### Migration (staging APPLIED, ledger 1:1)
+- `supabase/migrations/20260713100000_strata_scorecard_plan_variance.sql` —
+  `strata_kpi_plan_achievement(p_kpi,p_period)` (read-only replica of the engine's achievement math:
+  same target/actual selection, direction cases, [0,150] clamp — NO capped score, NO provenance
+  INSERT) + `strata_calc_scorecard_plan_variance(p_instance)` (same line/perspective/model weight
+  rollup as the instance calc over uncapped achievements; returns plan_index, variance=plan_index−100,
+  has_data, covered/total_lines; locked → 'locked_snapshot' null; benefit lines excluded). GRANT to
+  authenticated; strata_calc_guard() kept. Applied to staging `cyijbdeuehohvhnsywig` via MCP
+  execute_sql + explicit ledger INSERT (version 20260713100000 = committed file, 1:1). Prod NOT
+  applied (unreachable via MCP — apply on next prod migration run).
+- **RPC verified on staging:** CEO Q2 → variance +0.18 (plan_index 100.18, 8/8 lines); B2B Q2 →
+  +6.42 (106.42, 4/4); locked CEO Q1 → has_data=false reason='locked_snapshot'. Non-degenerate,
+  signed, positive-capable (what the capped score can never show: CEO reads 96.5 capped yet is
+  +0.18 vs plan).
+
+### UI wiring (4 source files)
+- `types.ts` — `ScorecardPlanVariance` interface.
+- `domain/index.ts` — `scorecardApi.planVariance(instanceId)` via typedRpc.
+- `hooks/useStrata.tsx` — `useScorecardPlanVariances(instances)` batch (useQueries, mirrors
+  useScorecardCalcs).
+- `StrataScorecardsPage.tsx` — ranked panel re-based per D-11: primary sort = vs-plan variance asc
+  (furthest below plan first, nulls last), tie → score; new "Vs plan" column (signed +/−, "On plan"
+  band, partial-coverage sub-note "N of M lines"); caption "Furthest below plan first"; Δ-vs-prior
+  column retained.
+
+### Verification
+- Gates GREEN: tsc / colors 0=baseline / audit no-increase / CRE.
+- LIVE Q2 FY2026: CEO "+0.2 vs plan" (ranked first, 0.2 < 6.4) · B2B "+6.4 vs plan"; DOM-probed rows
+  match RPC output; both themes clean. Locked/uncovered "—" branch code-verified (deterministic).

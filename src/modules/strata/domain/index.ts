@@ -7,7 +7,7 @@
 import { supabase, typedQuery, typedRpc } from '@/integrations/supabase/client';
 import type {
   ExecutionImportDependencyRow, ExecutionImportMilestoneRow, ExecutionImportProjectCardRow, ExecutionImportResult,
-  ScorecardCalcResult, StrataAction, StrataAiOutput, StrataAssumption, StrataBenefit,
+  ScorecardCalcResult, ScorecardPlanVariance, StrataAction, StrataAiOutput, StrataAssumption, StrataBenefit,
   StrataBenefitProjectCard, StrataBenefitValue, StrataBoardPack, StrataCalculatedValue, StrataChangeRequest,
   StrataCycle, StrataDataSource, StrataDecision, StrataDependency, StrataGateInstance,
   StrataGateModel, StrataGateModelStage, StrataInitiative, StrataInitiativeProject,
@@ -335,6 +335,10 @@ export const scorecardApi = {
     }
     return run(typedRpc('strata_calc_scorecard_instance', { p_instance: instance.id }));
   },
+  /** Read-only plan-variance rollup (task_e44f1ba9): uncapped achievement vs the
+   *  per-period targets; 100 = on plan. No provenance writes. */
+  planVariance: (instanceId: string): Promise<ScorecardPlanVariance> =>
+    run(typedRpc('strata_calc_scorecard_plan_variance', { p_instance: instanceId })),
 };
 
 // ── KPI / OKR ────────────────────────────────────────────────────────────────
