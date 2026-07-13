@@ -434,3 +434,34 @@ Branch: `strata/impl-phase01`. File: `StrataKpiLibraryPage.tsx`.
   Growth 111.3% ON TRACK · 8.9%/8% · rising spark · VALIDATED · 5 Jul; Network Availability 66.7% WATCH ·
   99.4%/99.9% · RED declining spark; Cost to Serve "SAR 97 / SAR 95". KPIs without actuals → "—". Owner
   avatars (Vikram Indla, Jahanara Khan). Both themes clean.
+
+---
+
+## Slice 2C-2a — KPI Library backend: strata_saved_views + governed bulk RPC (session 007, 2026-07-14)
+**Migration:** `20260713110000_strata_saved_views_and_bulk_kpi_update.sql` (staging-applied; prod parked).
+
+### Discovery (staging probe)
+- Owner = `strata_kpis.accountable_owner_id`; threshold = `threshold_scheme_id`. Governance is
+  **version-based** (`status` draft→pending_approval→approved→superseded; `strata_submit_record` /
+  `strata_approve_record`, segregation of duties enforced), NOT a change-request queue.
+- **KEY GAP (session-007 decision):** `strata_update_kpi` (the only owner/scheme path) **refuses approved
+  KPIs** — "retire and recreate to change an approved KPI". No `strata_revise_kpi` / superseding-version
+  RPC exists. Library is mostly approved (staging 10 approved / 6 draft / 1 pending). Vikram chose the
+  **honest loop** over building a versioning subsystem: bulk RPC loops the existing `strata_update_kpi`.
+
+### Built
+- **`strata_saved_views`** — per-user private view configs (`user_id`/`entity`/`name`/`config` jsonb/
+  `is_default`; unique(user,entity,name); entity CHECK 'kpi'). RLS: 4 policies all `user_id = auth.uid()`.
+  `strata_touch_updated_at` trigger. **NOT URL-navigated → no slug contract** (documented on the table).
+- **`strata_bulk_update_kpis(p_kpi_ids uuid[], p_accountable_owner uuid, p_threshold_scheme uuid,
+  p_reason text) → jsonb`** — role-gated (`strategy_office`/`kpi_owner`/admin, fail-fast); per-KPI
+  subtransaction loops `strata_update_kpi` so one blocked row never aborts the batch; returns
+  `{applied, failed, results:[{kpi_id, ok, error?}]}`; one `RPC:bulk_update_kpis` audit event.
+
+### Verification (raw)
+- Objects: table 1 · policies 4 · touch trigger 1 · fn 1 · RLS on · ledger row 20260713110000 (1:1 file).
+- **Functional (simulated strategy_office user, rolled back — zero mutation):** bulk over [draft,
+  approved] → `applied:1, failed:1`; draft `ok:true`; approved `ok:false, error:"only draft or pending
+  KPIs can be edited (current: approved); retire and recreate…"`. Role gate passes; batch not aborted.
+- Gates GREEN: tsc no errors · colors 0=baseline · audit no-increase (tokens 19799, typography 1366) · CRE.
+- No TS/UI change this commit — types land with consumers in 2C-2c/2C-2d.

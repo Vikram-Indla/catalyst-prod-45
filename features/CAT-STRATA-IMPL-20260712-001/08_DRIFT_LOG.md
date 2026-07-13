@@ -29,6 +29,23 @@ Deviations from the anchor that were taken deliberately (with rationale), pendin
   (new full-width row). Refine toward the anchor's literal 7/5 / row-2-right split in a later polish pass.
 - **Status:** minor visual deviation, functionally complete; live-verified both modes.
 
+## DRIFT-5 · KPI Library columns — anchor 16 vs 2C-1 shipped (slice 2C-2, RAISED, awaiting decision)
+- **2C-1 shipped:** `KPI · Achievement · Actual/Target (combined) · Trend spark (StrataTrendSpark) ·
+  Validation · Owner · Freshness` (7 cols). Plan Lock 2C line explicitly listed "Actual vs Target ·
+  Trend spark (StrataTrendSpark)".
+- **Anchor 16 (read in full session 007):** `[28px ✓] · KPI·objective · Achievement · Actual · Target ·
+  Δ · Validation · Owner · Freshness` (9 cols). **NO trend spark.** Actual and Target are SEPARATE
+  columns; a Δ (vs prior period) column is added. Freshness = glyph (●/◐/○) + relative time.
+- **Conflict:** the anchor (design authority) has no trend spark and splits Actual/Target; the Plan Lock
+  (higher precedence) kept a combined Actual/Target + a trend spark. Per drift protocol ("if the anchor
+  contradicts this plan… stop for re-decision — do not silently adapt").
+- **Decision needed:** (a) match anchor literally — drop trend spark, split Actual + Target, add Δ; or
+  (b) keep the trend spark 2C-1 shipped AND add split Actual/Target/Δ (wider table); or (c) keep combined
+  Actual/Target + trend spark and add only Δ. **Recommend (a)** — the anchor is deliberate (trend lives on
+  KPI Detail; the library is verdict-scan, and Δ already carries direction-of-travel). RAISED; no code until resolved.
+- **RESOLVED (Vikram, session 007): (a) match anchor exactly** — drop trend spark, split Actual + Target
+  into separate columns, add Δ (vs prior period). Applied in slice 2C-2b.
+
 ## DRIFT-4 · Scorecards Index — anchor 12 exceeds Plan Lock 1C scope (slice 1C, RAISED, awaiting decision)
 - **Plan Lock 1C:** incremental state-quality on the CURRENT page (Models grid + Instances JiraTable)
   — skeleton, per-panel errors, role-aware empty, restricted, docTitle — plus a "ranked-variance panel

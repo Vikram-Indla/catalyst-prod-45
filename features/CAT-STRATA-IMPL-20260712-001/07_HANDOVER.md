@@ -4,14 +4,14 @@
 > Read order for continuation: `00_READ_ME_FIRST` → `01_OBJECTIVE` → `03_PLAN_LOCK` →
 > this file → `08_DRIFT_LOG` → `09_DECISIONS` → `discovery/00_anchor_specs` → latest `sessions/`.
 
-## State (as of session 006, 2026-07-13)
-- **Branch:** `strata/impl-phase01`. **Everything through `91c0f868e` is MERGED TO MAIN AND PUSHED**
-  (`origin/main` = `43ecfe3c9`). Working tree clean.
+## State (as of session 007, 2026-07-14)
+- **Branch:** `strata/impl-phase01`, fast-forwarded to `origin/main` (`02ec24f61`, was ancestor — no
+  divergence). **2C-2a backend committed locally, NOT yet merged to main** (awaiting Vikram commit approval).
 - **Phase 0 + Phase 1 COMPLETE** (1B skipped; anchor-13 polish done). **PHASE 2 IN PROGRESS:**
-  **2A (StrataChainStrip), 2B-1 + 2B-2 (KPI Detail anchor 06 COMPLETE), 2C-1 (KPI Library verdict-first
-  columns) all DONE + merged.** **NEXT = slice 2C-2 (Library bulk + saved views + anchor-16 richness).**
-- Session 006 checkpointed here deliberately (context-health + scope): 2C-2 is genuinely 2–3 slices
-  incl. a governed bulk-write backend RPC. Resume with `continue feature CAT-STRATA-IMPL-20260712-001`.
+  **2A · 2B-1 · 2B-2 · 2C-1 DONE + merged; 2C-2a (Library backend: strata_saved_views + governed bulk
+  RPC) DONE (staging-applied, verified).** **NEXT = slice 2C-2b (verdict columns: DRIFT-5 resolved —
+  split Actual/Target, add Δ, drop trend spark; objective-ancestry sub-line; freshness glyph).**
+- 2C-2 split into 2C-2a (backend ✓) · 2C-2b (columns) · 2C-2c (BulkFooterBar) · 2C-2d (saved views + filters).
 
 ## ⭐ PHASE 2 — NEXT (START HERE). Plan Lock: `03_PLAN_LOCK_PHASE2.md` (APPROVED, full build)
 Phase 2 = measure & direction, 5 REDESIGNS of existing pages. Slice order: **2A ✓ · 2B ✓ · 2C-1 ✓** →
@@ -35,12 +35,19 @@ whose "Map" navigates out.
   (`kpiApi.actuals`). Removed dead DirectionCell/ValidatorCell/dataSourceNameById. OKR accordion kept.
 
 ### 2C-2 — KPI Library: bulk + saved views + anchor-16 richness (`StrataKpiLibraryPage.tsx`). RE-READ anchor 16 in full at start.
-Anchor 16 is RICHER than 2C-1 shipped. Remaining anchor-16 work (Vikram: build everything, nothing deferred):
-1. **Governed bulk RPC (backend sub-slice FIRST — Vikram-approved to build):** NO strata bulk-write RPC
-   exists (confirmed — only ph_/tm_/roles bulk RPCs). Build a governed bulk owner-change / threshold-scheme-
-   assign RPC that **routes through approval** (anchor: "bulk changes are governed — owner changes route
-   through approval"). Migration (staging-applied; prod parked w/ 20260713100000). Mirror the plan-variance
-   pattern (session-004): raise design, verify shapes, apply via execute_sql + explicit ledger INSERT.
+Anchor 16 is RICHER than 2C-1 shipped. Sub-slice order: **2C-2a ✓ (backend, DONE session 007)** →
+**2C-2b (DO NEXT: columns) → 2C-2c (BulkFooterBar) → 2C-2d (saved views + filters)**.
+Anchor 16 re-read in FULL session 007 → **DRIFT-5** (anchor has NO trend spark; splits Actual/Target;
+adds Δ) **RESOLVED (Vikram): match anchor exactly** — 2C-2b drops trend spark, splits Actual + Target,
+adds Δ. Remaining anchor-16 work (Vikram: build everything, nothing deferred):
+1. **Governed bulk RPC — ✓ DONE (2C-2a, migration `20260713110000`, staging-applied; prod parked).**
+   `strata_bulk_update_kpis(p_kpi_ids uuid[], p_accountable_owner, p_threshold_scheme, p_reason) → jsonb
+   {applied,failed,results:[{kpi_id,ok,error?}]}`. **HONEST-LOOP design** (session-007 decision): loops the
+   existing `strata_update_kpi`, which REFUSES approved KPIs ("retire and recreate…") — no versioning
+   subsystem was built. So the bulk verb applies to draft/pending KPIs; approved rows return the honest
+   per-row rejection for BulkFooterBar to surface (§17). Role-gated strategy_office/kpi_owner/admin.
+   Also shipped `strata_saved_views` table (per-user, RLS user_id=auth.uid(), NO slug — not URL-nav) for 2C-2d.
+   No TS types added yet — add `SavedView` + bulk-result types to `src/modules/strata/types.ts` when 2C-2c/d consume them.
 2. **BulkFooterBar** (reuse `src/components/shared/JiraTable/BulkFooterBar.tsx`): JiraTable `selectable`/
    `selection`/`onSelectionChange` + footer verbs **Change owner… · Assign threshold scheme… · Export**.
    Export = client-side CSV of selected (safe). Owner/scheme = the new governed RPC + "routes through
