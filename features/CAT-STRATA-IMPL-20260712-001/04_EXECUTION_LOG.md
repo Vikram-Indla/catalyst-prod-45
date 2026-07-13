@@ -465,3 +465,32 @@ Branch: `strata/impl-phase01`. File: `StrataKpiLibraryPage.tsx`.
   KPIs can be edited (current: approved); retire and recreate…"`. Role gate passes; batch not aborted.
 - Gates GREEN: tsc no errors · colors 0=baseline · audit no-increase (tokens 19799, typography 1366) · CRE.
 - No TS/UI change this commit — types land with consumers in 2C-2c/2C-2d.
+
+---
+
+## Slice 2C-2b — KPI Library verdict columns to anchor 16 (DRIFT-5) (session 007, 2026-07-14)
+**File:** `src/modules/strata/pages/StrataKpiLibraryPage.tsx` (only source file).
+
+### Changes (DRIFT-5 = "match anchor exactly")
+- **Dropped the Trend spark column** (`KpiTrendCell` + `StrataTrendSpark` import removed — trend lives on
+  KPI Detail; library is verdict-scan).
+- **Split "Actual / Target"** into two columns (`KpiValueCell` param'd by `field`): Actual (bold, text) ·
+  Target (subtle). Both from the per-row achievement RPC.
+- **Added Δ column** (`KpiDeltaCell`): actual vs the prior period's actual (from `useKpiActualsLite`, sorted
+  by submitted_at; current = active-period actual). Arrow (▲/▼) carries the sign (grayscale-safe); color is
+  direction-aware (higher_better ↑=success; lower_better ↓=success; band/manual neutral). Rendered only when
+  both current + prior values exist (zero-assumption); Δ=0 → subtle "0".
+- **Objective-ancestry sub-line** on the KPI cell ("↑ {objective}") from `useElementKpis` ⋈
+  `useStrategyElements` (objectives win, themes fallback); no link → no sub-line (never invented). Column
+  relabelled "KPI · objective". Governed-status lozenge kept inline (additive to the anchor).
+- **Freshness → staleness glyph** (`KpiFreshnessCell`): ● fresh ≤2d (success) / ◐ aging 3–5d (warning) /
+  ○ stale >5d (danger, "stale Nd") + relative time; absolute date on hover (Tooltip). Replaces the plain date.
+- **Owner NO-OWNER → "— no owner"** value (never blank), per anchor.
+
+### Verification (raw)
+- Gates GREEN: tsc no errors · colors 0=baseline · audit no-increase (tokens 19799, typography 1366) · CRE.
+- LIVE (localhost:8080, staging, 17 KPIs Q2 FY2026) **light + dark**: header now
+  `KPI·objective · Achievement · Actual · Target · Δ · Validation · Owner · Freshness` (no Trend). e.g.
+  B2B Revenue Growth "↑ Grow B2B Revenue" · 111.3% ON TRACK · 8.9% / 8% · ▲2.7 (green) · VALIDATED · ○ stale 8d;
+  Churn Rate ▼0.5 GREEN (lower_better) · Cost to Serve "SAR 97 / SAR 95" ▼4 green. "— no owner" values;
+  empty rows all dashes. Both themes token-clean. (Floating pink FAB = global "Open messages" button, not this change.)

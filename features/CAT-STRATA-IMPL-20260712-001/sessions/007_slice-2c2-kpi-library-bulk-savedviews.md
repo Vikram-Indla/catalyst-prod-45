@@ -40,4 +40,11 @@ Migration `20260713110000`: `strata_saved_views` (per-user, RLS, no slug) + `str
 Functional test (simulated strategy_office, rolled back): `applied:1, failed:1` — draft applied, approved
 honestly rejected. Gates GREEN. See 04_EXECUTION_LOG "Slice 2C-2a". **Awaiting Vikram commit approval.**
 
-## Status: 2C-2a built + verified; commit pending Vikram approval → then 2C-2b (columns).
+## 2C-2a — MERGED to main `01cbe7f87` (commit `cf82ea182`), pushed. Gates green on merged tree.
+
+## 2C-2b — DONE (verdict columns to anchor 16, DRIFT-5 = match anchor exactly)
+`StrataKpiLibraryPage.tsx` only: dropped Trend spark; split Actual+Target; added Δ (vs prior, direction-aware
+arrow+color); objective sub-line "↑ {objective}"; freshness staleness glyph ●/◐/○ + relative time; Owner
+"— no owner". Gates green; live-verified light+dark (17 KPIs). See 04_EXECUTION_LOG "Slice 2C-2b".
+
+## Status: 2C-2b built + verified; commit pending Vikram approval → then 2C-2c (BulkFooterBar).
