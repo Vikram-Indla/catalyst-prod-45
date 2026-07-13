@@ -411,3 +411,26 @@ Branch: `strata/impl-phase01`. File: `StrataKpiDetailPage.tsx`. Completes anchor
 - LIVE (localhost:8080, staging) b2b-revenue-growth: table headers exactly Period·Actual·Target·Band·
   Validation·Commentary·Lineage (DOM-probed). Q2 6.2%→8.9%, Band ON TRACK (Q2; Q1 empty = not calc'd,
   honest), VALIDATED, Lineage RUN-1001. Commentary panel confirmed removed. Both themes clean.
+
+## PHASE 2 · Slice 2C-1 — KPI & OKR Library verdict-first columns (anchor 16) — IMPLEMENTED + VERIFIED
+Branch: `strata/impl-phase01`. File: `StrataKpiLibraryPage.tsx`.
+
+### Changes
+- Replaced the field-dump KPI columns (unit/direction/frequency/entry_method/status/validator/data_source)
+  with anchor-16 **verdict-first columns**: KPI (+ governed-status lozenge) · Achievement (%+band+bar) ·
+  Actual / Target · Trend (StrataTrendSpark, band-toned, higherIsBetter by direction) · Validation
+  (per-actual lozenge) · Owner (accountable_owner, avatar) · Freshness (latest actual date).
+- Per-row data: Achievement + Actual/Target from `useKpiAchievement` (existing per-row RPC);
+  Trend/Validation/Freshness from a per-row `useKpiActualsLite` (`kpiApi.actuals`) — same queryKey across
+  a row's cells so React Query dedupes to ONE fetch. Zero-assumption: no actuals → "—" everywhere.
+- Removed orphaned helpers `DirectionCell`, `ValidatorCell`, `dataSourceNameById` (dead after the column
+  swap). OKR accordion (OkrPanel/OkrRow/KeyResultsList) + search + status filter PRESERVED.
+- **Deferred to 2C-2:** BulkFooterBar (row selection + bulk verbs) + saved views (`strata_saved_views`
+  migration, P2-D2).
+
+### Verification
+- Gates GREEN: tsc / colors 0=baseline / audit no-increase / CRE (re-run after dead-code removal).
+- LIVE (localhost:8080, staging) 17 KPIs Q2 FY2026: verdict-first columns render — e.g. B2B Revenue
+  Growth 111.3% ON TRACK · 8.9%/8% · rising spark · VALIDATED · 5 Jul; Network Availability 66.7% WATCH ·
+  99.4%/99.9% · RED declining spark; Cost to Serve "SAR 97 / SAR 95". KPIs without actuals → "—". Owner
+  avatars (Vikram Indla, Jahanara Khan). Both themes clean.
