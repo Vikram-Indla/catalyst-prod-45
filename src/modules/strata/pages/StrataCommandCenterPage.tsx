@@ -26,7 +26,7 @@ import { JiraTable } from '@/components/shared/JiraTable';
 import type { Column } from '@/components/shared/JiraTable';
 import { LABEL } from '@/components/project-hub/dashboard/dashboardTypography';
 import { Routes } from '@/lib/routes';
-import { AlertTriangle, PieChart, Sparkles, TrendingUp } from '@/lib/atlaskit-icons';
+import { AlertTriangle, History, PieChart, Sparkles, TrendingUp } from '@/lib/atlaskit-icons';
 import { governanceApi } from '@/modules/strata/domain';
 import {
   useStrataContext,
@@ -35,26 +35,29 @@ import {
   usePortfolios,
   useValueAtRisk,
   useBenefits,
-  useBenefitRealization,
   useDecisions,
-  useDependencies,
   useKpis,
   useNeedsAttention,
+  useSnapshots,
+  useSnapshotItems,
+  useDataSources,
+  useUploadRuns,
   useStrataUserId,
   useEnterpriseScoreTrend,
   useAiOutputs,
   useStrataRoles,
+  useBandResolver,
   useInvalidateStrata,
 } from '@/modules/strata/hooks/useStrata';
 import {
   T,
   StrataPageShell,
+  StrataSnapshotBand,
   StrataPanel,
-  StrataStatStrip,
+  StrataScoreRing,
   StrataBandBar,
   StrataBandLozenge,
   useBandTone,
-  type StrataStat,
 } from '@/modules/strata/components/shared';
 import {
   fmtDate, fmtDateTime, fmtPct, fmtRatioPct, fmtSarCompact, fmtScore, labelize,
@@ -72,6 +75,13 @@ function isOverdue(iso: string | null | undefined): boolean {
   if (!iso) return false;
   const d = new Date(iso);
   return !Number.isNaN(d.getTime()) && d.getTime() < Date.now();
+}
+
+/** Whole days a due date is past — 0 = due earlier today. */
+function daysOverdue(iso: string): number {
+  const t = new Date(iso).getTime();
+  if (Number.isNaN(t)) return 0;
+  return Math.max(0, Math.floor((Date.now() - t) / 86400000));
 }
 
 function ClickableRow({ onClick, children, testId }: { onClick?: () => void; children: React.ReactNode; testId?: string }) {
@@ -120,6 +130,23 @@ function PanelError({ error }: { error: unknown }) {
   );
 }
 
+/** Inline text link used inside the judgment-band sentence — token-pure, keyboard
+ *  accessible (real button), navigates on click. Inherits the sentence's font. */
+function InlineLink({ onClick, children }: { onClick: () => void; children: React.ReactNode }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      style={{
+        background: 'none', border: 'none', padding: 0, margin: 0, font: 'inherit',
+        color: 'var(--ds-link)', cursor: 'pointer', textDecoration: 'underline',
+      }}
+    >
+      {children}
+    </button>
+  );
+}
+
 // ── Enterprise score trend ────────────────────────────────────────────────────
 interface TrendChartPoint {
   label: string;
@@ -128,15 +155,22 @@ interface TrendChartPoint {
   slug: string | null;
 }
 
-/** Band-toned dot; click navigates to the period's scorecard evidence. */
+/** Band-toned dot; focusable link with an accessible name (§14) — keyboard
+ *  activatable when a scorecard slug exists, else a labelled non-interactive point. */
 function TrendDot(props: {
   cx?: number; cy?: number; payload?: TrendChartPoint;
   tone: (bandKey?: string | null) => string;
+  bandLabelFor: (bandKey?: string | null) => string | null;
   onPointClick: (p: TrendChartPoint) => void;
 }) {
-  const { cx, cy, payload, tone, onPointClick } = props;
+  const { cx, cy, payload, tone, bandLabelFor, onPointClick } = props;
   if (cx == null || cy == null || !payload) return null;
   const clickable = !!payload.slug;
+  const bandLabel = bandLabelFor(payload.statusKey);
+  // "Q1 2026, 73.5, Needs attention — view evidence" (§14 accessible-name shape).
+  const accessibleName =
+    [payload.label, fmtScore(payload.score), bandLabel].filter(Boolean).join(', ')
+    + (clickable ? ' — view evidence' : '');
   return (
     <circle
       cx={cx}
@@ -145,10 +179,28 @@ function TrendDot(props: {
       fill={tone(payload.statusKey)}
       stroke={T.raised}
       strokeWidth={1.5}
-      style={{ cursor: clickable ? 'pointer' : 'default' }}
+      role={clickable ? 'link' : 'img'}
+      aria-label={accessibleName}
+      tabIndex={clickable ? 0 : undefined}
+      style={{ cursor: clickable ? 'pointer' : 'default', outlineOffset: 2 }}
       onClick={clickable ? () => onPointClick(payload) : undefined}
+      onKeyDown={clickable ? (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onPointClick(payload); } } : undefined}
       data-testid={`strata-cc-trend-dot-${payload.label}`}
     />
+  );
+}
+
+/** Score delta with direction glyph + word (color never alone, §14). */
+function DeltaText({ delta }: { delta: number }) {
+  const up = delta > 0.005;
+  const down = delta < -0.005;
+  return (
+    <span style={{
+      color: up ? 'var(--ds-text-success)' : down ? 'var(--ds-text-danger)' : T.subtlest,
+      fontWeight: 600, fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap',
+    }}>
+      {up || down ? `${up ? '▲' : '▼'} ${fmtScore(Math.abs(delta))}` : 'No change'}
+    </span>
   );
 }
 
@@ -237,6 +289,8 @@ export default function StrataCommandCenterPage() {
   const navigate = useNavigate();
   const { activeCycle, activePeriod, periods, isLoading: ctxLoading } = useStrataContext();
   const bandTone = useBandTone();
+  const resolveBand = useBandResolver();
+  const bandLabelFor = (bandKey?: string | null): string | null => resolveBand(bandKey)?.label ?? null;
 
   // ── Scorecard: the instance for the active period, server-calculated ──────
   const instancesQ = useScorecardInstances(activeCycle?.id);
@@ -255,23 +309,29 @@ export default function StrataCommandCenterPage() {
   const portfolio = portfoliosQ.data?.[0] ?? null;
   const varQ = useValueAtRisk(portfolio?.id);
 
-  // ── Benefits realization (top benefit) ─────────────────────────────────────
+  // ── Benefits (entity-name resolution for the attention inbox) ──────────────
   const benefitsQ = useBenefits();
-  const topBenefit = benefitsQ.data?.[0] ?? null;
-  const realizationQ = useBenefitRealization(topBenefit?.id);
 
   // ── Governance / execution counts ──────────────────────────────────────────
   const decisionsQ = useDecisions();
-  const dependenciesQ = useDependencies();
   const kpisQ = useKpis();
   // Server-side rule engine feed — replaces the former client-composed inbox.
   const needsAttentionQ = useNeedsAttention(activePeriod?.id);
+  // Locked-mode snapshot basis (resolves instance.locked_snapshot_id → snapshot).
+  const snapshotsQ = useSnapshots();
+  // Data-trust inputs (sources + latest completed run + pending validations).
+  const dataSourcesQ = useDataSources();
+  const uploadRunsQ = useUploadRuns();
 
   // ── AI advisory (generate + human review) ──────────────────────────────────
   const aiOutputsQ = useAiOutputs();
   const rolesQ = useStrataRoles();
   const invalidate = useInvalidateStrata();
   const canAdvise = (rolesQ.data ?? []).some((r) => ADVISORY_ROLES.includes(r));
+  // Role-aware restricted state (§17): a viewer with no STRATA role sees strategy
+  // data denied by RLS — explain it, never blank/generic. Presentation only; the DB
+  // is the real gate. executive_viewer etc. hold >=1 role and are NOT restricted.
+  const noStrataRole = !rolesQ.isLoading && (rolesQ.data ?? []).length === 0;
   /** 'generate' or the advisory id under review — one action at a time. */
   const [advisoryBusy, setAdvisoryBusy] = useState<string | null>(null);
   const [advisoryError, setAdvisoryError] = useState<string | null>(null);
@@ -294,19 +354,6 @@ export default function StrataCommandCenterPage() {
     () => (decisionsQ.data ?? []).filter((d) => d.status === 'open'),
     [decisionsQ.data],
   );
-  // Live blocked-dependency rows (same rule as the engine's blocked_dependency).
-  const blockedDeps = useMemo(
-    () => (dependenciesQ.data ?? []).filter(
-      (d) => (d.is_blocker || d.status === 'blocked') && !['resolved', 'cancelled'].includes(d.status),
-    ),
-    [dependenciesQ.data],
-  );
-  // Pending attestations for the active period — from the rule-engine feed.
-  const pendingAttestations = useMemo(
-    () => (needsAttentionQ.data ?? []).filter((r) => r.item_type === 'pending_attestation'),
-    [needsAttentionQ.data],
-  );
-
   const kpiById = useMemo(
     () => new Map((kpisQ.data ?? []).map((k) => [k.id, k])),
     [kpisQ.data],
@@ -335,7 +382,7 @@ export default function StrataCommandCenterPage() {
   }, [trendQ.data, periods]);
 
   const openTrendEvidence = (p: TrendChartPoint) => {
-    if (p.slug) navigate(Routes.strata.scorecardEvidence(p.slug));
+    if (p.slug) navigate(Routes.strata.scorecardEvidence(p.slug, Routes.strata.root()));
   };
 
   // ── Needs attention rows (server rule engine → drill to owning surface) ────
@@ -428,103 +475,179 @@ export default function StrataCommandCenterPage() {
     },
     {
       id: 'due', label: 'Due', width: 12,
-      cell: ({ row }) => row.due ? (
-        <span style={{
-          fontSize: 'var(--ds-font-size-100)',
-          color: isOverdue(row.due) ? 'var(--ds-text-danger)' : T.subtlest,
-          fontWeight: isOverdue(row.due) ? 600 : 400,
-          whiteSpace: 'nowrap',
-        }}>
-          {fmtDate(row.due)}
-        </span>
-      ) : (
-        <span style={{ color: T.subtlest }}>—</span>
-      ),
+      cell: ({ row }) => {
+        if (!row.due) return <span style={{ color: T.subtlest }}>—</span>;
+        if (isOverdue(row.due)) {
+          const n = daysOverdue(row.due);
+          return (
+            <span style={{
+              fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-danger)',
+              fontWeight: 600, whiteSpace: 'nowrap', fontVariantNumeric: 'tabular-nums',
+            }}>
+              {n === 0 ? 'Due today' : `${n} ${n === 1 ? 'day' : 'days'} overdue`}
+            </span>
+          );
+        }
+        return (
+          <span style={{ fontSize: 'var(--ds-font-size-100)', color: T.subtlest, whiteSpace: 'nowrap' }}>
+            {fmtDate(row.due)}
+          </span>
+        );
+      },
     },
   ], []);
 
   // ── Page states ─────────────────────────────────────────────────────────────
   const isLoading = ctxLoading || instancesQ.isLoading || (!!instance && calcQ.isLoading);
   const dataState = instance ? (instance.status === 'locked' ? 'locked' : 'live') : null;
+  // Resolve the locked snapshot behind a locked instance (chrome-level band basis).
+  const lockedSnapshot = useMemo(
+    () => (snapshotsQ.data ?? []).find((s) => s.id === instance?.locked_snapshot_id) ?? null,
+    [snapshotsQ.data, instance],
+  );
 
-  // ── Executive stat strip (hero: enterprise score ring) ─────────────────────
-  const stats: StrataStat[] = [
-    calcQ.isError
-      ? {
-          key: 'enterprise', label: 'Enterprise score', value: '—',
-          caption: 'Could not load score', captionTone: 'danger',
-          testId: 'strata-cc-enterprise-score',
-        }
-      : {
-          key: 'enterprise',
-          label: 'Enterprise score',
-          value: scoreText(calc?.score, calc?.has_data),
-          ring: { score: calc?.has_data ? calc.score : null, bandKey: calc?.status_key },
-          bandKey: calc?.has_data ? calc?.status_key : null,
-          caption: instance
-            ? (instance.slug ? 'View evidence' : 'Evidence route needs a slug')
-            : 'No scorecard for this period',
-          onClick: instance?.slug ? () => navigate(Routes.strata.scorecardEvidence(instance.slug!)) : undefined,
-          testId: 'strata-cc-enterprise-score',
-        },
-    {
-      key: 'var',
-      label: 'Value at risk',
-      value: varQ.isError ? '—' : fmtSarCompact(varQ.data?.value),
-      bandKey: varQ.data?.status_key,
-      caption: varQ.isError ? 'Could not load' : portfolio ? (portfolio.slug ? 'View evidence' : 'Evidence route needs a slug') : 'No portfolio',
-      captionTone: varQ.isError ? 'danger' : 'neutral',
-      onClick: portfolio?.slug ? () => navigate(Routes.strata.portfolioEvidence(portfolio.slug!)) : undefined,
-      testId: 'strata-cc-var',
-    },
-    {
-      key: 'benefits',
-      label: 'Benefits realization',
-      value: realizationQ.isError ? '—' : fmtRatioPct(realizationQ.data?.value),
-      ring: realizationQ.data?.value != null
-        ? { score: realizationQ.data.value * 100, bandKey: realizationQ.data.status_key }
-        : undefined,
-      caption: topBenefit ? `Realized vs planned — ${topBenefit.name}` : 'No benefits registered',
-      testId: 'strata-cc-benefits',
-    },
-    {
-      key: 'decisions',
-      label: 'Open decisions',
-      value: decisionsQ.data ? openDecisions.length : '—',
-      caption: 'Awaiting a decision forum',
-      captionTone: openDecisions.length > 0 ? 'warning' : 'neutral',
-      onClick: () => navigate(Routes.strata.reviews()),
-      testId: 'strata-cc-open-decisions',
-    },
-    {
-      key: 'deps',
-      label: 'Blocked dependencies',
-      value: dependenciesQ.data ? blockedDeps.length : '—',
-      caption: 'Cross-initiative blockers',
-      captionTone: blockedDeps.length > 0 ? 'danger' : 'neutral',
-      onClick: () => navigate(Routes.strata.execution()),
-      testId: 'strata-cc-blocked-deps',
-    },
-    {
-      key: 'attestations',
-      label: 'Pending attestations',
-      value: needsAttentionQ.data ? pendingAttestations.length : '—',
-      caption: activePeriod ? `KPI actuals in ${activePeriod.name}` : 'No active period',
-      captionTone: pendingAttestations.length > 0 ? 'warning' : 'neutral',
-      onClick: () => navigate(Routes.strata.data()),
-      testId: 'strata-cc-pending-attestations',
-    },
-  ];
+  // ── Changes since the last locked review (D-3: client diff, no RPC) ─────────
+  // Reference = most-recent LOCKED snapshot in the active cycle that is NOT the one
+  // currently being viewed. Live mode → the last executive review; locked mode →
+  // the review before this one (compare-to-self is meaningless → zero-assumption empty).
+  const refSnapshot = useMemo(
+    () => (snapshotsQ.data ?? []).find(
+      (s) => s.status === 'locked' && s.cycle_id === activeCycle?.id && s.id !== instance?.locked_snapshot_id,
+    ) ?? null,
+    [snapshotsQ.data, activeCycle, instance],
+  );
+  const refItemsQ = useSnapshotItems(refSnapshot?.id);
+  /** Frozen enterprise score + per-perspective deltas vs the live calc. Null when
+   *  there is no comparable prior review (no snapshot, no frozen instance, no live data). */
+  const changesDiff = useMemo(() => {
+    if (!refSnapshot || !calc || !calc.has_data) return null;
+    const instItem = (refItemsQ.data as Array<{ entity_type: string; payload: Record<string, unknown> }> | undefined)
+      ?.find((i) => i.entity_type === 'scorecard_instance');
+    if (!instItem) return null;
+    const p = instItem.payload as {
+      value?: number | string | null;
+      inputs?: { perspectives?: Array<{ perspective_id: string; score: number; has_data?: boolean }> };
+    };
+    const frozenScore = p.value != null ? Number(p.value) : null;
+    if (frozenScore == null || Number.isNaN(frozenScore)) return null;
+    const frozenById = new Map((p.inputs?.perspectives ?? []).map((fp) => [fp.perspective_id, fp]));
+    const rows = calc.perspectives
+      .filter((cp) => cp.has_data && frozenById.has(cp.perspective_id))
+      .map((cp) => {
+        const fp = frozenById.get(cp.perspective_id)!;
+        return { id: cp.perspective_id, name: cp.name, then: Number(fp.score), now: cp.score, delta: cp.score - Number(fp.score) };
+      })
+      .filter((r) => Number.isFinite(r.delta))
+      .sort((a, b) => Math.abs(b.delta) - Math.abs(a.delta));
+    return { frozenScore, enterpriseDelta: calc.score - frozenScore, rows };
+  }, [refSnapshot, calc, refItemsQ.data]);
+
+  // ── Judgment band inputs (anchor 01: one composed executive argument) ───────
+  // Worst-scoring perspective — the one that drags the enterprise score.
+  const worstPerspective = useMemo(() => {
+    const scored = (calc?.perspectives ?? []).filter((p) => p.has_data && p.score != null);
+    if (scored.length === 0) return null;
+    return scored.reduce((lo, p) => (p.score < lo.score ? p : lo));
+  }, [calc]);
+  // Δ vs the prior period on the enterprise-score trend.
+  const scoreDelta = useMemo((): { delta: number; priorLabel: string } | null => {
+    if (trendPoints.length < 2) return null;
+    const curIdx = activePeriod ? trendPoints.findIndex((p) => p.label === activePeriod.name) : trendPoints.length - 1;
+    const cur = curIdx >= 0 ? trendPoints[curIdx] : trendPoints[trendPoints.length - 1];
+    const prior = curIdx > 0 ? trendPoints[curIdx - 1] : null;
+    if (!cur || !prior) return null;
+    return { delta: cur.score - prior.score, priorLabel: prior.label };
+  }, [trendPoints, activePeriod]);
+  // Composed exception clauses — zero-assumption: only data-bearing clauses appear.
+  const judgmentClauses: React.ReactNode[] = [];
+  if (worstPerspective) {
+    judgmentClauses.push(
+      <React.Fragment key="persp">
+        <InlineLink onClick={() => { if (instance?.slug) navigate(Routes.strata.scorecard(instance.slug)); }}>
+          {`${worstPerspective.name} (${fmtScore(worstPerspective.score)})`}
+        </InlineLink>
+        {' drags the enterprise score'}
+      </React.Fragment>,
+    );
+  }
+  if (!varQ.isError && varQ.data?.value != null && portfolio?.slug) {
+    judgmentClauses.push(
+      <React.Fragment key="var">
+        <InlineLink onClick={() => navigate(Routes.strata.portfolioEvidence(portfolio.slug!, Routes.strata.root()))}>
+          {fmtSarCompact(varQ.data.value)}
+        </InlineLink>
+        {' of portfolio value is at risk against plan'}
+      </React.Fragment>,
+    );
+  }
+  if (openDecisions.length > 0) {
+    judgmentClauses.push(
+      <React.Fragment key="dec">
+        <InlineLink onClick={() => navigate(Routes.strata.reviews())}>
+          {`${openDecisions.length} ${openDecisions.length === 1 ? 'decision is' : 'decisions are'} waiting`}
+        </InlineLink>
+      </React.Fragment>,
+    );
+  }
+  const judgmentSentence: React.ReactNode = judgmentClauses.length > 0
+    ? (
+      <>
+        {judgmentClauses.map((c, i) => (
+          <React.Fragment key={i}>
+            {i > 0 ? (i === judgmentClauses.length - 1 ? ', and ' : ', ') : ''}
+            {c}
+          </React.Fragment>
+        ))}
+        {'.'}
+      </>
+    )
+    : 'All perspectives are within plan and no decisions are waiting.';
+
+  // ── Context-spine scope + freshness (from real data; omit when unknown) ────
+  const latestRunAt = useMemo(() => {
+    const times = (uploadRunsQ.data ?? [])
+      .map((r) => r.completed_at)
+      .filter((t): t is string => !!t);
+    return times.length ? times.reduce((a, b) => (a > b ? a : b)) : null;
+  }, [uploadRunsQ.data]);
+  const pendingValidationCount = useMemo(
+    () => (uploadRunsQ.data ?? []).filter((r) => r.status === 'pending_attestation').length,
+    [uploadRunsQ.data],
+  );
+  const sourceCount = dataSourcesQ.data?.length ?? null;
+  const activeSourceCount = dataSourcesQ.data
+    ? dataSourcesQ.data.filter((s) => s.status === 'active').length
+    : null;
+  // The command centre is enterprise-scoped by definition (factual, not assumed).
+  const scopeNode = (
+    <span style={{ fontSize: 'var(--ds-font-size-100)', color: T.subtlest }}>
+      Scope <strong style={{ color: T.text, fontWeight: 600 }}>Enterprise</strong>
+    </span>
+  );
+  const freshnessNode = latestRunAt ? (
+    <span style={{ fontSize: 'var(--ds-font-size-100)', color: T.subtlest }}>
+      Data as of <strong style={{ color: T.text, fontWeight: 600 }}>{fmtDate(latestRunAt)}</strong>
+    </span>
+  ) : null;
 
   return (
     <StrataPageShell
       docTitle="Command Center"
       modelLabel={instance?.name ?? null}
       state={dataState}
+      scope={scopeNode}
+      freshness={freshnessNode}
       testId="strata-cc-chrome"
     >
-      {isLoading ? (
+      {isLoading || rolesQ.isLoading ? (
         <LoadingSkeleton />
+      ) : noStrataRole ? (
+        <EmptyState
+          size="default"
+          header="You don't have access to the Command Center"
+          description="Your account has no STRATA role, so strategy data is restricted. Ask a STRATA administrator or the strategy office to grant a role, then reload this page."
+          testId="strata-cc-restricted"
+        />
       ) : !activeCycle ? (
         <EmptyState
           size="compact"
@@ -533,10 +656,72 @@ export default function StrataCommandCenterPage() {
           testId="strata-cc-empty"
         />
       ) : (
+        <>
+        {dataState === 'locked' && lockedSnapshot ? (
+          <div style={{ marginBottom: 16 }}>
+            <StrataSnapshotBand
+              snapshotKey={lockedSnapshot.snapshot_key}
+              frozenAt={fmtDateTime(lockedSnapshot.locked_at)}
+              basis={lockedSnapshot.name}
+              testId="strata-cc-snapshot-band"
+            />
+          </div>
+        ) : null}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(12, minmax(0, 1fr))', gap: 16 }}>
-          {/* ── Row 1: executive stat strip ─────────────────────────────────── */}
+          {/* ── Row 1: judgment band — one composed executive argument ──────── */}
           <div style={{ gridColumn: 'span 12', minWidth: 0 }}>
-            <StrataStatStrip items={stats} testId="strata-cc-hero" />
+            <section
+              data-testid="strata-cc-judgment"
+              style={{
+                border: `1px solid ${T.border}`, borderRadius: 8, background: T.raised,
+                boxShadow: 'var(--ds-shadow-raised)', padding: 'var(--ds-space-250)',
+                display: 'flex', gap: 'var(--ds-space-250)', alignItems: 'center', minWidth: 0,
+              }}
+            >
+              <StrataScoreRing
+                score={calc?.has_data ? calc.score : null}
+                bandKey={calc?.status_key}
+                size={88}
+                strokeWidth={8}
+                testId="strata-cc-judgment-ring"
+              />
+              <div style={{ minWidth: 0, flex: 1 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8, flexWrap: 'wrap' }}>
+                  <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, letterSpacing: '0.04em', color: T.subtlest }}>
+                    {`ENTERPRISE SCORE${activePeriod ? ` · ${activePeriod.name}` : ''}`}
+                  </span>
+                  <StrataBandLozenge bandKey={calc?.has_data ? calc?.status_key : null} />
+                  {scoreDelta ? (
+                    <span style={{
+                      fontSize: 'var(--ds-font-size-100)', fontWeight: 600, fontVariantNumeric: 'tabular-nums',
+                      color: scoreDelta.delta >= 0 ? 'var(--ds-text-success)' : 'var(--ds-text-danger)',
+                    }}>
+                      {`${scoreDelta.delta >= 0 ? '▲' : '▼'} ${fmtScore(Math.abs(scoreDelta.delta))} vs ${scoreDelta.priorLabel}`}
+                    </span>
+                  ) : null}
+                </div>
+                {calcQ.isError ? (
+                  <p style={{ margin: 0, fontSize: 'var(--ds-font-size-300)', color: T.subtle }}>
+                    The enterprise score could not be loaded for this period.
+                  </p>
+                ) : (
+                  <p style={{ margin: 0, fontSize: 'var(--ds-font-size-400)', lineHeight: 'var(--ds-line-height-body)', color: T.text, textWrap: 'pretty' }}>
+                    {judgmentSentence}
+                  </p>
+                )}
+                <div style={{ marginTop: 12, fontSize: 'var(--ds-font-size-100)', color: T.subtlest }}>
+                  {`Server-calculated${instance?.name ? ` · ${instance.name}` : ''}`}
+                  {instance?.slug ? (
+                    <>
+                      {' · '}
+                      <InlineLink onClick={() => navigate(Routes.strata.scorecardEvidence(instance.slug!, Routes.strata.root()))}>
+                        View evidence
+                      </InlineLink>
+                    </>
+                  ) : null}
+                </div>
+              </div>
+            </section>
           </div>
 
           {/* ── Row 2: enterprise score trend + perspective health ─────────── */}
@@ -588,7 +773,7 @@ export default function StrataCommandCenterPage() {
                         stroke="var(--ds-text-brand)"
                         strokeWidth={2}
                         fill="url(#strataTrendFill)"
-                        dot={<TrendDot tone={bandTone} onPointClick={openTrendEvidence} />}
+                        dot={<TrendDot tone={bandTone} bandLabelFor={bandLabelFor} onPointClick={openTrendEvidence} />}
                         activeDot={false}
                         isAnimationActive={false}
                       />
@@ -643,7 +828,69 @@ export default function StrataCommandCenterPage() {
             </StrataPanel>
           </div>
 
-          {/* ── Row 3: needs attention — one actionable inbox ──────────────── */}
+          {/* ── Row 3: changes since the last locked review (D-3 client diff) ── */}
+          <div style={{ gridColumn: 'span 12', minWidth: 0 }}>
+            <StrataPanel
+              title="Since the last locked review"
+              icon={<History size={16} />}
+              count={changesDiff ? changesDiff.rows.length : null}
+              testId="strata-cc-changes"
+            >
+              {snapshotsQ.isError ? (
+                <PanelError error={snapshotsQ.error} />
+              ) : (snapshotsQ.isLoading || (!!refSnapshot && refItemsQ.isLoading)) ? (
+                <div aria-hidden style={{ height: 72, borderRadius: 8, background: T.neutral }} />
+              ) : !changesDiff ? (
+                <EmptyState
+                  size="compact"
+                  header="No prior locked review to compare"
+                  description="Once an executive review is locked for this cycle, movement in the enterprise score and each perspective since that lock appears here."
+                />
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                  <div style={{
+                    display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap',
+                    paddingBottom: 12, marginBottom: 4, borderBottom: `1px solid ${T.border}`,
+                  }}>
+                    <StrataBandLozenge bandKey={calc?.has_data ? calc?.status_key : null} />
+                    <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: T.text }}>
+                      Enterprise score {fmtScore(calc!.score)}
+                    </span>
+                    <DeltaText delta={changesDiff.enterpriseDelta} />
+                    <span style={{ fontSize: 'var(--ds-font-size-100)', color: T.subtlest }}>
+                      {`since ${refSnapshot!.snapshot_key} (${fmtScore(changesDiff.frozenScore)}, ${fmtDate(refSnapshot!.locked_at)})`}
+                    </span>
+                  </div>
+                  {changesDiff.rows.length === 0 ? (
+                    <span style={{ fontSize: 'var(--ds-font-size-100)', color: T.subtlest, padding: '4px 0' }}>
+                      No perspective is comparable across the two reviews.
+                    </span>
+                  ) : (
+                    changesDiff.rows.map((r) => (
+                      <div
+                        key={r.id}
+                        data-testid={`strata-cc-change-${r.id}`}
+                        style={{ display: 'flex', alignItems: 'center', gap: 8, padding: 'var(--ds-space-075) 0' }}
+                      >
+                        <span style={{
+                          flex: 1, minWidth: 0, fontSize: 'var(--ds-font-size-200)', color: T.text,
+                          overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                        }}>
+                          {r.name}
+                        </span>
+                        <span style={{ fontSize: 'var(--ds-font-size-100)', color: T.subtlest, fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap' }}>
+                          {`${fmtScore(r.then)} → ${fmtScore(r.now)}`}
+                        </span>
+                        <DeltaText delta={r.delta} />
+                      </div>
+                    ))
+                  )}
+                </div>
+              )}
+            </StrataPanel>
+          </div>
+
+          {/* ── Row 4: needs attention — one actionable inbox ──────────────── */}
           <div style={{ gridColumn: 'span 12', minWidth: 0 }}>
             <StrataPanel
               title="Needs attention"
@@ -687,6 +934,16 @@ export default function StrataCommandCenterPage() {
                     description={attentionScope === 'mine'
                       ? 'Items assigned to you — validations, blockers, overdue actions and delayed projects you own — appear here. Switch to All to see every open queue.'
                       : 'Pending attestations and validations, blocked dependencies, overdue actions and gates, broken assumptions, missing actuals and upload rejections land here.'}
+                    primaryAction={attentionScope === 'mine' && attentionRows.length > 0 ? (
+                      <Button
+                        appearance="primary"
+                        spacing="compact"
+                        onClick={() => setAttentionScope('all')}
+                        testId="strata-cc-attention-clear-mine"
+                      >
+                        {`Show all ${attentionRows.length} items`}
+                      </Button>
+                    ) : undefined}
                   />
                 ) : null
               ) : (
@@ -702,7 +959,7 @@ export default function StrataCommandCenterPage() {
             </StrataPanel>
           </div>
 
-          {/* ── Row 4: AI advisory — drafts pending human review (F-GOV-009) ── */}
+          {/* ── Row 5: AI advisory — drafts pending human review (F-GOV-009) ── */}
           <div style={{ gridColumn: 'span 12', minWidth: 0 }}>
             <StrataPanel
               title="AI advisory"
@@ -804,7 +1061,41 @@ export default function StrataCommandCenterPage() {
               )}
             </StrataPanel>
           </div>
+
+          {/* ── Row 6: data-trust strip — subordinate, always present ──────── */}
+          <div style={{ gridColumn: 'span 12', minWidth: 0 }}>
+            <div
+              data-testid="strata-cc-data-trust"
+              style={{
+                display: 'flex', alignItems: 'center', gap: 'var(--ds-space-250)', flexWrap: 'wrap',
+                padding: 'var(--ds-space-150) var(--ds-space-200)', borderRadius: 8,
+                border: `1px solid ${T.border}`, background: T.sunken,
+                fontSize: 'var(--ds-font-size-100)', color: T.subtle,
+              }}
+            >
+              <span style={{ fontWeight: 600, letterSpacing: '0.04em', color: T.subtlest, fontSize: 'var(--ds-font-size-050)' }}>DATA TRUST</span>
+              {dataSourcesQ.isError ? (
+                <span style={{ color: 'var(--ds-text-danger)' }}>Sources could not be loaded</span>
+              ) : dataSourcesQ.isLoading ? (
+                <span>Loading sources…</span>
+              ) : (
+                <>
+                  <span>
+                    <strong style={{ color: T.text }}>{sourceCount ?? '—'}</strong>{` ${sourceCount === 1 ? 'source' : 'sources'}`}
+                    {activeSourceCount != null ? ` · ${activeSourceCount} active` : ''}
+                  </span>
+                  <span>
+                    <strong style={{ color: T.text }}>{uploadRunsQ.data ? pendingValidationCount : '—'}</strong> actuals pending validation
+                  </span>
+                </>
+              )}
+              <span style={{ marginLeft: 'auto' }}>
+                <InlineLink onClick={() => navigate(Routes.strata.data())}>Open Data &amp; Lineage →</InlineLink>
+              </span>
+            </div>
+          </div>
         </div>
+        </>
       )}
     </StrataPageShell>
   );

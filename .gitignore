@@ -95,3 +95,6 @@ package-lock.json
 
 # Playwright storageState (live session token — never commit)
 .auth/
+
+# Stray design archive swept in by GitHub Desktop (CAT-STRATA-IMPL-20260712-001)
+/Design attachments archive.zip

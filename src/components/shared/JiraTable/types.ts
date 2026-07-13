@@ -180,6 +180,15 @@ export interface JiraTableProps<TRow> {
   onEscape?: () => void;
   /** Density preset — "comfortable" is the Catalyst default. */
   density?: Density;
+  /**
+   * Horizontal overflow of the OUTER grid wrapper. Opt-in: when omitted the
+   * grid keeps its default clip (`overflow: hidden`); pass `'auto'` so wide
+   * tables scroll horizontally instead of clipping trailing columns. Upstreams
+   * the STRATA page-scoped CSS workaround as a real prop
+   * (CAT-STRATA-IMPL-20260712-001, slice 0A). No default → zero change for
+   * existing callers.
+   */
+  overflowX?: 'hidden' | 'auto';
   /** Loading + empty UI. */
   isLoading?: boolean;
   emptyView?: ReactNode;
