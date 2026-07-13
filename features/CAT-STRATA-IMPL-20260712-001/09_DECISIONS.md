@@ -57,3 +57,13 @@ D-1…D-6 CONFIRMED by Vikram 2026-07-12 ("proceed with all recommended decision
 - **D-10 · Ranked panel basis = worst-first by server score + band + Δ-vs-prior where a prior period
   exists (else nothing).** "Variance to plan" is NOT client-derivable (no instance-level plan/target;
   would need a rollup RPC) → raised as a backend data-gap ticket, not faked. (Vikram, 2026-07-13.)
+
+## CONFIRMED (session 004 — plan-variance backend, Vikram 2026-07-13)
+- **D-11 · "Vs plan" = uncapped-achievement rollup, NOT targets-as-actuals.** The task-proposed
+  `strata_calc_scorecard_plan_variance` naive design (roll up targets as if actuals) is DEGENERATE —
+  the engine scores actual/target so target/target = 100 for every KPI, a constant. Since targets are
+  per-period, plan = 100 on the achievement scale; the engine's cap-at-100 destroys the above-plan
+  signal. Shipped: read-only RPC rolling up UNCAPPED achievements ([0,150] engine clamp), variance =
+  plan_index − 100, signed like anchor 12. Locked instances → has_data=false ('locked_snapshot');
+  benefit lines excluded (no per-period plan concept); no provenance writes. **Supersedes the D-10
+  interim ranked-panel basis** (worst-score-first) — panel now ranks by true vs-plan variance.

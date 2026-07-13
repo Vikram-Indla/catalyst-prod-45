@@ -19,8 +19,8 @@ import type { Column } from '@/components/shared/JiraTable';
 import { Routes } from '@/lib/routes';
 import { Scale } from '@/lib/atlaskit-icons';
 import {
-  useScorecardInstances, useScorecardModels, useScorecardCalcs, useStrataContext,
-  useStrataRoles, useBandResolver,
+  useScorecardInstances, useScorecardModels, useScorecardCalcs, useScorecardPlanVariances,
+  useStrataContext, useStrataRoles, useBandResolver,
 } from '@/modules/strata/hooks/useStrata';
 import {
   T, StrataBandLozenge, StrataPageShell, StrataPanel, StrataScoreRing,
@@ -153,7 +153,9 @@ function DeltaSpan({ delta, priorPeriodName }: { delta: number; priorPeriodName:
   );
 }
 
-/** Ranked-panel row: the same active-period instances, worst-score first (D-10). */
+/** Ranked-panel row: active-period instances ranked by true vs-plan variance
+ *  (strata_calc_scorecard_plan_variance, task_e44f1ba9 — supersedes the D-10
+ *  interim worst-score basis). Null variance sorts last, zero-assumption. */
 interface RankedRow {
   id: string;
   name: string;
@@ -162,6 +164,10 @@ interface RankedRow {
   statusKey: string | null;
   delta: number | null;
   priorPeriodName: string | null;
+  /** Signed variance vs plan (plan_index − 100); null when underivable. */
+  planVariance: number | null;
+  /** "N of M lines" when plan coverage is partial; null when full/none. */
+  planCoverage: string | null;
   /** Weakest perspective — the derivable "where attention pays" driver. */
   driver: string | null;
 }
@@ -219,6 +225,8 @@ export default function StrataScorecardsPage() {
     return out;
   }, [cardInstances, priorByInstanceId]);
   const calcs = useScorecardCalcs(calcInstances);
+  // True vs-plan variance (read-only RPC; null for locked/uncovered instances).
+  const planVariances = useScorecardPlanVariances(cardInstances);
 
   // Enterprise (CEO) first, then worst-score first (role-scoped default order).
   const orderedCards = useMemo(() => [...cardInstances].sort((a, b) => {
@@ -241,7 +249,7 @@ export default function StrataScorecardsPage() {
     return { worstName: worst.i.name, worstScore: worst.c.score, onTrack, total: scored.length };
   }, [cardInstances, calcs.byId, resolveBand]);
 
-  // ── Ranked panel — worst-score first + Δ-vs-prior + weakest-perspective driver (D-10) ──
+  // ── Ranked panel — furthest below plan first (true vs-plan RPC), then score ──
   const rankedRows: RankedRow[] = useMemo(() => cardInstances.map((inst) => {
     const c = calcs.byId.get(inst.id);
     const prior = priorByInstanceId.get(inst.id) ?? null;
@@ -249,6 +257,7 @@ export default function StrataScorecardsPage() {
     const hasData = !!c?.has_data;
     const scored = (c?.perspectives ?? []).filter((p) => p.has_data && p.score != null);
     const worst = scored.length ? scored.reduce((lo, p) => (p.score < lo.score ? p : lo)) : null;
+    const plan = planVariances.byId.get(inst.id) ?? null;
     return {
       id: inst.id,
       name: inst.name,
@@ -257,10 +266,16 @@ export default function StrataScorecardsPage() {
       statusKey: hasData ? c!.status_key : null,
       delta: hasData && pc?.has_data ? c!.score - pc.score : null,
       priorPeriodName: prior?.period_id ? periodById.get(prior.period_id)?.name ?? null : null,
+      planVariance: plan?.has_data ? plan.variance : null,
+      planCoverage: plan?.has_data && plan.covered_lines < plan.total_lines
+        ? `${plan.covered_lines} of ${plan.total_lines} lines`
+        : null,
       driver: worst ? `${worst.name} ${fmtScore(worst.score)} — weakest perspective` : null,
     };
-  }).sort((a, b) => (a.score ?? Infinity) - (b.score ?? Infinity)),
-  [cardInstances, calcs.byId, priorByInstanceId, periodById]);
+  }).sort((a, b) =>
+    (a.planVariance ?? Infinity) - (b.planVariance ?? Infinity)
+    || (a.score ?? Infinity) - (b.score ?? Infinity)),
+  [cardInstances, calcs.byId, planVariances.byId, priorByInstanceId, periodById]);
 
   const rankedColumns: Column<RankedRow>[] = useMemo(() => [
     {
@@ -285,7 +300,32 @@ export default function StrataScorecardsPage() {
       )),
     },
     {
-      id: 'delta', label: 'Since prior', width: 16,
+      id: 'plan', label: 'Vs plan', width: 16,
+      cell: ({ row }) => {
+        if (row.planVariance == null) {
+          return <span style={{ color: T.subtlest, fontSize: 'var(--ds-font-size-100)' }}>—</span>;
+        }
+        const above = row.planVariance > 0.05;
+        const below = row.planVariance < -0.05;
+        return (
+          <span style={{ display: 'flex', flexDirection: 'column', gap: 'var(--ds-space-025)', fontSize: 'var(--ds-font-size-100)' }}>
+            <span style={{
+              color: above ? 'var(--ds-text-success)' : below ? 'var(--ds-text-danger)' : T.subtle,
+              fontWeight: 600, fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap',
+            }}>
+              {above || below
+                ? `${above ? '+' : '−'}${fmtScore(Math.abs(row.planVariance))} vs plan`
+                : 'On plan'}
+            </span>
+            {row.planCoverage ? (
+              <span style={{ color: T.subtlest }}>{row.planCoverage}</span>
+            ) : null}
+          </span>
+        );
+      },
+    },
+    {
+      id: 'delta', label: 'Since prior', width: 14,
       cell: ({ row }) => (row.delta == null
         ? <span style={{ color: T.subtlest, fontSize: 'var(--ds-font-size-100)' }}>—</span>
         : <DeltaSpan delta={row.delta} priorPeriodName={row.priorPeriodName} />),
@@ -383,7 +423,7 @@ export default function StrataScorecardsPage() {
             testId="strata-scorecards-ranked"
             actions={(
               <span style={{ fontSize: 'var(--ds-font-size-100)', color: T.subtlest }}>
-                Lowest score first · same model &amp; thresholds, directly comparable
+                Furthest below plan first · same model &amp; thresholds, directly comparable
               </span>
             )}
           >
