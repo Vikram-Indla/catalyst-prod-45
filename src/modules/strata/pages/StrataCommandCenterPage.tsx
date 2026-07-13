@@ -39,6 +39,8 @@ import {
   useKpis,
   useNeedsAttention,
   useSnapshots,
+  useDataSources,
+  useUploadRuns,
   useStrataUserId,
   useEnterpriseScoreTrend,
   useAiOutputs,
@@ -288,6 +290,9 @@ export default function StrataCommandCenterPage() {
   const needsAttentionQ = useNeedsAttention(activePeriod?.id);
   // Locked-mode snapshot basis (resolves instance.locked_snapshot_id → snapshot).
   const snapshotsQ = useSnapshots();
+  // Data-trust inputs (sources + latest completed run + pending validations).
+  const dataSourcesQ = useDataSources();
+  const uploadRunsQ = useUploadRuns();
 
   // ── AI advisory (generate + human review) ──────────────────────────────────
   const aiOutputsQ = useAiOutputs();
@@ -529,11 +534,40 @@ export default function StrataCommandCenterPage() {
     )
     : 'All perspectives are within plan and no decisions are waiting.';
 
+  // ── Context-spine scope + freshness (from real data; omit when unknown) ────
+  const latestRunAt = useMemo(() => {
+    const times = (uploadRunsQ.data ?? [])
+      .map((r) => r.completed_at)
+      .filter((t): t is string => !!t);
+    return times.length ? times.reduce((a, b) => (a > b ? a : b)) : null;
+  }, [uploadRunsQ.data]);
+  const pendingValidationCount = useMemo(
+    () => (uploadRunsQ.data ?? []).filter((r) => r.status === 'pending_attestation').length,
+    [uploadRunsQ.data],
+  );
+  const sourceCount = dataSourcesQ.data?.length ?? null;
+  const activeSourceCount = dataSourcesQ.data
+    ? dataSourcesQ.data.filter((s) => s.status === 'active').length
+    : null;
+  // The command centre is enterprise-scoped by definition (factual, not assumed).
+  const scopeNode = (
+    <span style={{ fontSize: 'var(--ds-font-size-100)', color: T.subtlest }}>
+      Scope <strong style={{ color: T.text, fontWeight: 600 }}>Enterprise</strong>
+    </span>
+  );
+  const freshnessNode = latestRunAt ? (
+    <span style={{ fontSize: 'var(--ds-font-size-100)', color: T.subtlest }}>
+      Data as of <strong style={{ color: T.text, fontWeight: 600 }}>{fmtDate(latestRunAt)}</strong>
+    </span>
+  ) : null;
+
   return (
     <StrataPageShell
       docTitle="Command Center"
       modelLabel={instance?.name ?? null}
       state={dataState}
+      scope={scopeNode}
+      freshness={freshnessNode}
       testId="strata-cc-chrome"
     >
       {dataState === 'locked' && lockedSnapshot ? (
@@ -877,6 +911,39 @@ export default function StrataCommandCenterPage() {
                 })
               )}
             </StrataPanel>
+          </div>
+
+          {/* ── Row 5: data-trust strip — subordinate, always present ──────── */}
+          <div style={{ gridColumn: 'span 12', minWidth: 0 }}>
+            <div
+              data-testid="strata-cc-data-trust"
+              style={{
+                display: 'flex', alignItems: 'center', gap: 'var(--ds-space-250)', flexWrap: 'wrap',
+                padding: 'var(--ds-space-150) var(--ds-space-200)', borderRadius: 8,
+                border: `1px solid ${T.border}`, background: T.sunken,
+                fontSize: 'var(--ds-font-size-100)', color: T.subtle,
+              }}
+            >
+              <span style={{ fontWeight: 600, letterSpacing: '0.04em', color: T.subtlest, fontSize: 'var(--ds-font-size-050)' }}>DATA TRUST</span>
+              {dataSourcesQ.isError ? (
+                <span style={{ color: 'var(--ds-text-danger)' }}>Sources could not be loaded</span>
+              ) : dataSourcesQ.isLoading ? (
+                <span>Loading sources…</span>
+              ) : (
+                <>
+                  <span>
+                    <strong style={{ color: T.text }}>{sourceCount ?? '—'}</strong>{` ${sourceCount === 1 ? 'source' : 'sources'}`}
+                    {activeSourceCount != null ? ` · ${activeSourceCount} active` : ''}
+                  </span>
+                  <span>
+                    <strong style={{ color: T.text }}>{uploadRunsQ.data ? pendingValidationCount : '—'}</strong> actuals pending validation
+                  </span>
+                </>
+              )}
+              <span style={{ marginLeft: 'auto' }}>
+                <InlineLink onClick={() => navigate(Routes.strata.data())}>Open Data &amp; Lineage →</InlineLink>
+              </span>
+            </div>
           </div>
         </div>
       )}

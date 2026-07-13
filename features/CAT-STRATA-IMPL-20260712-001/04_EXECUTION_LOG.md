@@ -129,3 +129,21 @@ imports; added `worstPerspective`/`scoreDelta` memos. Imported `StrataScoreRing`
 - Validation: tsc / lint:colors:gate / audit:ads:gate green. Live-verified on staging (Q2 FY2026):
   ring 100 · ON TRACK · ▲12.5 vs Q1 · "Financial (100) drags…, SAR 375K…, 1 decision is waiting."
   + View evidence. File: `StrataCommandCenterPage.tsx`.
+
+### Committed
+`58cb2af90` + foreign `20eb0db1c` — 1A-3. `c3de22709` — zip untrack. `469202473` — handover update.
+⚠️ A concurrent GitHub Desktop auto-commit split 1A-3 + swept in a stray zip — see 07_HANDOVER / D-nil.
+
+## Slice 1A-2b — context-spine scope + freshness + data-trust strip — VERIFIED (not committed at write time)
+File: `StrataCommandCenterPage.tsx`. Imported `useDataSources`/`useUploadRuns`; wired StrataPageShell
+`scope` (static "Scope Enterprise" — CC is enterprise-scoped by definition) + `freshness`
+("Data as of {latest completed upload run}", omitted when no runs); added a data-trust strip (Row 5)
+with HONEST metrics only — source count + active count + pending-validation count + Open Data & Lineage
+link. Spacing via `var(--ds-space-*)` to clear the HARDCODED_PX ratchet.
+- **Zero-assumption / data-gap flagged:** the anchor's "N sources stale" cannot be rendered truthfully
+  — `StrataDataSource.health` is opaque & NULL in staging, and there is no `last_loaded_at`/freshness
+  column. A reliable staleness signal needs a backend/data change (own ticket). NOT faked.
+- Validation: tsc / lint:colors:gate / audit:ads:gate green. Live-verified on staging (after a
+  mid-session auth-session expiry + re-login): spine "Scope Enterprise" + "Data as of 6 Jul 2026";
+  strip "2 sources · 1 active · 0 actuals pending validation · Open Data & Lineage". Also
+  incidentally confirmed 1A-1 "n days overdue" (inbox showed "13 days overdue" on MISSING ACTUAL rows).
