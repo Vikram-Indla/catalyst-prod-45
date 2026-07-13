@@ -389,3 +389,25 @@ StrataChainStrip (2A verified).
   target v1". Chain: ↑ B2B Growth Engine + Grow B2B Revenue (linked); ▦ CPQ & Sales Enablement (1 blocked,
   danger) + Enterprise Care Desk; ◇ B2B Revenue Uplift + Cost-to-Serve Reduction. Trust: Upload / RUN-1001
   / Ratio to target v1 / VALIDATED. DOM-probed. Both themes clean. StrataChainStrip (2A) live-verified.
+
+## PHASE 2 · Slice 2B-2 — KPI Detail Actuals & validation table (anchor 06) — IMPLEMENTED + VERIFIED
+Branch: `strata/impl-phase01`. File: `StrataKpiDetailPage.tsx`. Completes anchor-06 KPI Detail.
+
+### Changes
+- Unified **"Actuals & validation"** JiraTable (replaces the old "Lineage" panel): columns
+  **Period · Actual · Target · Band · Validation · Commentary · Lineage** (anchor 06). Commentary is a
+  COLUMN tied to its period (strata_commentary has `period_id`) — the orphaned "Commentary" panel is
+  REMOVED. Per-period joins: `targetByPeriodId` (approved-latest), `bandByPeriodId` (from
+  `detailQ.data.calc` = calcValues status_key; empty where a period wasn't calc'd — zero-assumption),
+  `commentaryByPeriodId`. Lineage cell links `upload_run → RUN-key` (run detail) else entry_method.
+- **Role-gated Validate:** pending actuals show a "Validate" button ONLY when `canValidate`
+  (`VALIDATE_ROLES` = vmo_validator/data_steward/strategy_office/strata_admin) → existing attest
+  decision flow (`strata_attest_actual`, submitter≠validator server-enforced). Viewer sees no ghost (§17).
+- Removed now-unused `lineageColumns` + `commentary` var. Formula versions / Strategy links / Ownership
+  panels + all governance modals PRESERVED.
+
+### Verification
+- Gates GREEN: tsc / colors 0=baseline / audit no-increase / CRE.
+- LIVE (localhost:8080, staging) b2b-revenue-growth: table headers exactly Period·Actual·Target·Band·
+  Validation·Commentary·Lineage (DOM-probed). Q2 6.2%→8.9%, Band ON TRACK (Q2; Q1 empty = not calc'd,
+  honest), VALIDATED, Lineage RUN-1001. Commentary panel confirmed removed. Both themes clean.

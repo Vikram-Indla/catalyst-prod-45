@@ -46,6 +46,9 @@ const STALE = 30_000;
 /** UI affordance gating only — server RPCs enforce the real role rules (SoD etc.). */
 const CREATE_ROLES = ['strategy_office', 'kpi_owner', 'strata_admin'] as const;
 const SUBMIT_ROLES = ['kpi_owner', 'data_steward', 'strategy_office', 'strata_admin'] as const;
+/** Validation is a governed write (attest actual). Viewer sees no Validate button —
+ *  presentation only; the RPC enforces submitter≠validator SoD (anchor 06 §17). */
+const VALIDATE_ROLES = ['vmo_validator', 'data_steward', 'strategy_office', 'strata_admin'] as const;
 
 const DIRECTION_OPTIONS = [
   { value: 'higher_better', label: 'Higher is better' },
@@ -85,6 +88,7 @@ interface KpiAchievementPayload {
 /** Loose row shape for strata_commentary — fields rendered defensively. */
 interface StrataCommentaryRow {
   id: string;
+  period_id?: string | null;
   body?: string | null;
   content?: string | null;
   author_id?: string | null;
@@ -353,6 +357,7 @@ export default function StrataKpiDetailPage() {
   const roles = rolesQ.data ?? [];
   const canAuthor = roles.some((r) => (CREATE_ROLES as readonly string[]).includes(r));
   const canSubmitActual = roles.some((r) => (SUBMIT_ROLES as readonly string[]).includes(r));
+  const canValidate = roles.some((r) => (VALIDATE_ROLES as readonly string[]).includes(r));
 
   const commentaryQ = useQuery({
     queryKey: ['strata', 'commentary', 'kpi', kpi?.id],
@@ -419,62 +424,97 @@ export default function StrataKpiDetailPage() {
     },
   ], [kpi?.unit]);
 
-  const lineageColumns = useMemo<Column<StrataKpiActual>[]>(() => [
+  // ── Per-period joins for the unified Actuals & validation table (anchor 06) ──
+  const targetByPeriodId = useMemo(() => {
+    const m = new Map<string, StrataKpiTarget>();
+    (detailQ.data?.targets ?? []).forEach((t) => {
+      const ex = m.get(t.period_id);
+      if (!ex || (t.status === 'approved' && ex.status !== 'approved') || (t.status === ex.status && t.version > ex.version)) {
+        m.set(t.period_id, t);
+      }
+    });
+    return m;
+  }, [detailQ.data?.targets]);
+  const bandByPeriodId = useMemo(() => {
+    const m = new Map<string, string | null>();
+    (detailQ.data?.calc ?? []).forEach((cv) => {
+      const c = cv as { period_id?: string | null; status_key?: string | null };
+      if (c.period_id && !m.has(c.period_id)) m.set(c.period_id, c.status_key ?? null);
+    });
+    return m;
+  }, [detailQ.data?.calc]);
+  const commentaryByPeriodId = useMemo(() => {
+    const m = new Map<string, string>();
+    ((commentaryQ.data ?? []) as StrataCommentaryRow[]).forEach((c) => {
+      const text = c.body ?? c.content ?? '';
+      if (c.period_id && text && !m.has(c.period_id)) m.set(c.period_id, text);
+    });
+    return m;
+  }, [commentaryQ.data]);
+
+  // Anchor 06: Period · Actual · Target · Band · Validation · Commentary · Lineage —
+  // commentary tied to its period (no orphaned commentary section).
+  const actualsColumns = useMemo<Column<StrataKpiActual>[]>(() => [
     {
-      id: 'period', label: 'Period', flex: true,
-      cell: ({ row }) => (periodById.get(row.period_id)?.name ? <span style={{ color: T.text }}>{periodById.get(row.period_id)?.name}</span> : <Dash />),
+      id: 'period', label: 'Period', width: 14,
+      cell: ({ row }) => (periodById.get(row.period_id)?.name
+        ? <span style={{ color: T.text, fontWeight: 600 }}>{periodById.get(row.period_id)!.name}</span> : <Dash />),
     },
     {
-      id: 'value', label: 'Value', width: 12,
+      id: 'actual', label: 'Actual', width: 12,
       cell: ({ row }) => <span style={{ fontWeight: 600, fontVariantNumeric: 'tabular-nums' }}>{fmtUnit(row.value, kpi?.unit)}</span>,
     },
     {
-      id: 'entry_method', label: 'Entry', width: 10,
-      cell: ({ row }) => (row.entry_method ? <CatalystTag text={labelize(row.entry_method)} /> : <Dash />),
-    },
-    {
-      id: 'upload_run', label: 'Upload run', width: 16,
+      id: 'target', label: 'Target', width: 12,
       cell: ({ row }) => {
-        const runKey = row.upload_run_id ? runKeyById.get(row.upload_run_id) ?? null : null;
-        if (runKey) {
-          return (
-            <Button appearance="subtle" spacing="compact" onClick={() => navigate(Routes.strata.run(runKey))}>
-              {runKey}
-            </Button>
-          );
-        }
-        return <Dash />;
+        const t = targetByPeriodId.get(row.period_id);
+        return t ? <span style={{ color: T.subtle, fontVariantNumeric: 'tabular-nums' }}>{fmtUnit(t.target, kpi?.unit)}</span> : <Dash />;
       },
     },
     {
-      id: 'staging_row', label: 'Staging row', width: 12,
-      cell: ({ row }) => (row.staging_row_id
-        ? <span title={row.staging_row_id} style={{ fontFamily: 'var(--ds-font-family-code)', fontSize: 'var(--ds-font-size-100)', color: T.subtle }}>{row.staging_row_id.slice(0, 8)}</span>
-        : <Dash />),
+      id: 'band', label: 'Band', width: 12,
+      cell: ({ row }) => <StrataBandLozenge bandKey={bandByPeriodId.get(row.period_id) ?? null} />,
     },
     {
-      id: 'validated_at', label: 'Validated at', width: 16,
-      cell: ({ row }) => (row.validated_at ? <span style={{ color: T.subtle }}>{fmtDateTime(row.validated_at)}</span> : <Dash />),
-    },
-    {
-      id: 'validation', label: 'Validation', width: 16,
+      id: 'validation', label: 'Validation', width: 18,
       cell: ({ row }) => (
-        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
           <ValidationLozenge status={row.validation_status} />
-          {row.validation_status === 'pending' ? (
+          {row.validation_status === 'pending' && canValidate ? (
             <Button
               appearance="default"
               spacing="compact"
               onClick={() => setDecision({ kind: 'attest', id: row.id, periodId: row.period_id, label: periodById.get(row.period_id)?.name ?? '—' })}
-              testId={`strata-attest-${row.id}`}
+              testId={`strata-validate-${row.id}`}
             >
-              Attest
+              Validate
             </Button>
           ) : null}
         </span>
       ),
     },
-  ], [periodById, runKeyById, navigate, kpi?.unit]);
+    {
+      id: 'commentary', label: 'Commentary', flex: true,
+      cell: ({ row }) => {
+        const c = commentaryByPeriodId.get(row.period_id);
+        return c
+          ? <span style={{ fontSize: 'var(--ds-font-size-100)', color: T.subtle, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'block', minWidth: 0 }}>{c}</span>
+          : <span style={{ color: T.subtlest }}>—</span>;
+      },
+    },
+    {
+      id: 'lineage', label: 'Lineage', width: 14,
+      cell: ({ row }) => {
+        const runKey = row.upload_run_id ? runKeyById.get(row.upload_run_id) ?? null : null;
+        if (runKey) {
+          return <Button appearance="subtle" spacing="compact" onClick={() => navigate(Routes.strata.run(runKey))}>{runKey}</Button>;
+        }
+        return row.entry_method
+          ? <span style={{ fontSize: 'var(--ds-font-size-100)', color: T.subtlest }}>{labelize(row.entry_method)}</span>
+          : <Dash />;
+      },
+    },
+  ], [periodById, targetByPeriodId, bandByPeriodId, commentaryByPeriodId, runKeyById, navigate, kpi?.unit, canValidate]);
 
   // ── Loading / error / not-found states ────────────────────────────────────
   const stateTrail = [{ text: 'KPI library', href: Routes.strata.kpis() }];
@@ -516,7 +556,6 @@ export default function StrataKpiDetailPage() {
   const formulas = detailQ.data?.formulas ?? [];
   const lineageActuals = actuals.filter((a) => a.upload_run_id);
   const manualActuals = actuals.filter((a) => a.entry_method === 'manual');
-  const commentary = (commentaryQ.data ?? []) as StrataCommentaryRow[];
   const confidenceText = fmtConfidence(achievement?.confidence);
   const lineageFootnote = [
     lineageActuals.length > 0 ? 'Uploaded values trace to a staging row inside their upload run.' : null,
@@ -911,12 +950,12 @@ export default function StrataKpiDetailPage() {
           )}
         </StrataPanel>
 
-        {/* (f) Lineage */}
+        {/* (f) Actuals & validation — commentary is a column, not an orphaned panel (anchor 06) */}
         <StrataPanel
-          title="Lineage"
+          title="Actuals & validation"
           icon={<Database size={16} />}
           count={actuals.length || null}
-          testId="strata-kpi-lineage"
+          testId="strata-kpi-actuals"
           noPadding
           actions={canSubmitActual ? (
             <Button appearance="default" spacing="compact" onClick={() => setAuthoring('submit-actual')} testId="strata-kpi-submit-actual">
@@ -933,13 +972,13 @@ export default function StrataKpiDetailPage() {
           ) : (
             <>
               <JiraTable<StrataKpiActual>
-                columns={lineageColumns}
+                columns={actualsColumns}
                 data={actuals}
                 getRowId={(row) => row.id}
                 density="compact"
                 showRowCount={false}
                 rowsPerPage={100}
-                ariaLabel="Lineage"
+                ariaLabel="Actuals and validation"
               />
               {lineageFootnote ? (
                 <p style={{ fontSize: 'var(--ds-font-size-100)', color: T.subtlest, margin: 0, padding: '8px 16px 12px' }}>
@@ -950,33 +989,6 @@ export default function StrataKpiDetailPage() {
           )}
         </StrataPanel>
 
-        {/* (g) Commentary */}
-        <StrataPanel title="Commentary" icon={<Info size={16} />} count={commentary.length || null} testId="strata-kpi-commentary">
-          {commentaryQ.isLoading ? (
-            <Spinner size="medium" aria-label="Loading commentary" />
-          ) : commentaryQ.isError ? (
-            <SectionMessage appearance="error" title="Failed to load commentary">
-              <p>{(commentaryQ.error as Error)?.message ?? 'Unknown error'}</p>
-            </SectionMessage>
-          ) : commentary.length === 0 ? (
-            <EmptyState size="compact" header="No commentary yet" description="Narrative context recorded against this KPI will appear here." />
-          ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-              {commentary.map((c) => (
-                <div key={c.id} style={{ padding: '8px 12px', background: T.sunken, borderRadius: 4 }}>
-                  <p style={{ fontSize: 'var(--ds-font-size-200)', color: T.text, margin: 0, whiteSpace: 'pre-wrap' }}>
-                    {c.body ?? c.content ?? '—'}
-                  </p>
-                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 'var(--ds-font-size-075)', color: T.subtlest, marginTop: 4 }}>
-                    <PersonName id={(c.author_id ?? c.created_by) ?? null} profiles={profilesQ.data} />
-                    <span>·</span>
-                    <span>{c.created_at ? fmtDateTime(c.created_at) : '—'}</span>
-                  </span>
-                </div>
-              ))}
-            </div>
-          )}
-        </StrataPanel>
       </div>
 
       {/* Governance verdict modals — RPC-enforced SoD; errors render in-modal */}
