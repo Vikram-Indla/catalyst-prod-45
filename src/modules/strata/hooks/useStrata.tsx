@@ -5,12 +5,13 @@
  */
 import React, { createContext, useContext, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useQueries, useQueryClient } from '@tanstack/react-query';
 import { supabase, typedRpc } from '@/integrations/supabase/client';
 import {
   configApi, executionApi, governanceApi, kpiApi, lineageApi, scorecardApi, strategyApi, valueApi,
 } from '../domain';
 import type {
+  ScorecardCalcResult,
   StrataCycle, StrataPeriod, StrataRole, StrataScorecardInstance, StrataThresholdScheme, ThresholdBand,
 } from '../types';
 
@@ -291,6 +292,31 @@ export const useScorecardCalc = (instance?: StrataScorecardInstance | null) =>
     enabled: !!instance,
     staleTime: STALE,
   });
+
+/**
+ * Batch calc for many instances (index/aggregate views — Scorecards Index cards,
+ * judgment one-liner). Same queryKey/queryFn as useScorecardCalc so every result
+ * dedupes with any single-instance subscription. `instances` MUST be memoised by
+ * the caller (array identity drives the query set).
+ */
+export const useScorecardCalcs = (instances: StrataScorecardInstance[]) => {
+  const results = useQueries({
+    queries: instances.map((inst) => ({
+      queryKey: ['strata', 'scorecard-calc', inst.id, inst.status],
+      queryFn: () => scorecardApi.calcResult(inst),
+      staleTime: STALE,
+    })),
+  });
+  return useMemo(() => {
+    const byId = new Map<string, ScorecardCalcResult | null>();
+    instances.forEach((inst, i) => byId.set(inst.id, results[i]?.data ?? null));
+    return {
+      byId,
+      isLoading: results.some((r) => r.isLoading),
+      isError: results.some((r) => r.isError),
+    };
+  }, [instances, results]);
+};
 
 // ── KPIs ─────────────────────────────────────────────────────────────────────
 export const useKpis = () => useQuery({ queryKey: ['strata', 'kpis'], queryFn: kpiApi.list, staleTime: STALE });

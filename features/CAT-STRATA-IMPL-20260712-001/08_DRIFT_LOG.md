@@ -28,3 +28,18 @@ Deviations from the anchor that were taken deliberately (with rationale), pendin
   beside perspective-health risks the working trend chart + health panel. User-approved this session
   (new full-width row). Refine toward the anchor's literal 7/5 / row-2-right split in a later polish pass.
 - **Status:** minor visual deviation, functionally complete; live-verified both modes.
+
+## DRIFT-4 · Scorecards Index — anchor 12 exceeds Plan Lock 1C scope (slice 1C, RAISED, awaiting decision)
+- **Plan Lock 1C:** incremental state-quality on the CURRENT page (Models grid + Instances JiraTable)
+  — skeleton, per-panel errors, role-aware empty, restricted, docTitle — plus a "ranked-variance panel
+  (client-derived, no RPC)". Written when anchor 12 was read "via critique only".
+- **Anchor 12 (now read in full):** a card-first **scope chooser, NOT a table** — composed judgment
+  one-liner + one instance card each (64px StrataScoreRing + band Lozenge + owner/scope + Δ-vs-prior +
+  coverage/trust footnote; CEO card accent border; role-scoped order; click→detail) + ranked-variance
+  panel. **No Models grid.**
+- **Data facts (staging FY2026):** 3 instances only (CEO Q1 locked, CEO Q2 live, B2B Sector Q2 live);
+  `owner_id` all NULL. **"Variance to plan" is NOT client-derivable** — no instance-level plan/target
+  score (only per-KPI targets → would need the rollup RPC). Only the CEO scorecard has a prior period.
+- **Decision needed:** (1) scope — full anchor-12 card redesign (split ≤2h) vs Plan-Lock-literal
+  incremental; (2) ranked-panel basis — since "vs plan" can't be truthful, rank by current score/band
+  (worst-first) or by Δ-vs-prior. RAISED to Vikram; no code until resolved.
