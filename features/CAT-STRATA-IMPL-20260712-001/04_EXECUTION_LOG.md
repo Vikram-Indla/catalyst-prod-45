@@ -606,3 +606,31 @@ Branch: `strata/impl-phase01`. File: `StrataKpiLibraryPage.tsx`.
   GAPS, Execution 4/7·3 GAPS danger, Draft 4). Narrative → "coming soon" placeholder, filters hidden. **Map
   toggle → navigates to the map, VISUALLY IDENTICAL to baseline** (nodes/edges/legend/controls unchanged);
   `git status` confirms ONLY the Room page changed — map component + deps byte-untouched. ZERO-CHANGE GATE PASS.
+
+---
+
+## Slice 2D-2 — Strategy Room: JiraTable structure tree (anchor 02) (session 007/008, 2026-07-14)
+**File:** `StrataStrategyRoomPage.tsx` only. **Map component NEVER touched** (re-probed — zero change).
+
+### Changes
+- **Replaced the hand-rolled recursive `renderNode` tree with a canonical `JiraTable`** (flat
+  hierarchy-ordered rows + `getRowDepth` for indent — the Backlog "All Work" pattern). Columns:
+  **Element** (chevron collapse + type chip + name link + DRAFT lozenge + gap chip, indented) · **Owner** ·
+  **KPIs** (element_kpis count; objective with 0 → warning-toned+bold) · **Cards** (project cards by
+  `objective_element_id`; a theme rolls up its descendants) · **Actions** (Promote + Actions menu).
+- **Gap chips** on objective rows: NO MEASURES (0 KPIs) / NO OWNER (no owner_id), anchor 02.
+- **"Show coverage gaps only"** toggle (panel header) — filters to gap rows + their ancestor themes.
+- Panel retitled "Strategic structure". **Dropped the KPI-coverage + Cause & effect panels** (subsumed by
+  the tree's KPIs column + the readiness band; cause-and-effect lives in the Map view — anchor-faithful,
+  same pattern as 1C dropping the Models grid). Expand/collapse + all authoring modals + promote PRESERVED.
+- Removed now-dead: `renderNode`, `objectives`/`kpiLinksByElement`/`kpiById` memos, `TREE_CSS`, `useMapEdges`/
+  edges, `CatalystTag`/`fmtRatioPct`/`Network`/`MoveRight` imports.
+- **Health + Benefits columns → slice 2D-2b** (Health = derived rollup via useQueries; Benefits = multi-hop).
+
+### Verification (raw)
+- Gates GREEN: tsc no errors · colors 0=baseline · audit no-increase (tokens 19799) · CRE.
+- LIVE (localhost:8080, staging) **light + dark**: tree renders indented (themes→objectives→sub-objectives),
+  chevron collapse, NO MEASURES/NO OWNER chips, DRAFT lozenges, KPIs (orange 0 gaps)/Cards counts (B2B theme
+  Cards=3 rollup), Promote+Actions. "Show coverage gaps only" → drops non-gap themes (Digital Market
+  Leadership, ZZTEST), keeps gap objectives + ancestors. **MAP re-probed → visually identical to baseline;
+  git shows ONLY the Room page changed. ZERO-CHANGE GATE PASS.**

@@ -20,4 +20,13 @@
 Removed dead bandStats + StrataStatStrip import. Gates green (tokenized 2 off-grid px). Live-verified
 light+dark. **MAP ZERO-CHANGE GATE PASSED** (visually identical; git shows only Room page changed).
 
-## Status: 2D-1 built + verified; commit pending Vikram approval → then 2D-2 (JiraTable grouped tree).
+## 2D-1 — MERGED to main `0e9f8d46a`.
+
+## 2D-2 — DONE (JiraTable structure tree)
+Replaced hand-rolled `renderNode` with JiraTable (flat rows + getRowDepth). Columns Element·Owner·KPIs·Cards·
+Actions + gap chips (NO MEASURES/NO OWNER) + "Show coverage gaps only" toggle + DRAFT lozenge; dropped
+KPI-coverage/cause-effect panels; preserved expand/modals/promote. Removed dead renderNode/TREE_CSS/edges/
+kpiById/objectives/kpiLinksByElement + CatalystTag/fmtRatioPct/Network/MoveRight. Gates green; live-verified
+light+dark; MAP zero-change re-probed = PASS. Health + Benefits → 2D-2b.
+
+## Status: 2D-2 built + verified; commit pending Vikram approval → then 2D-2b (Health + Benefits columns).

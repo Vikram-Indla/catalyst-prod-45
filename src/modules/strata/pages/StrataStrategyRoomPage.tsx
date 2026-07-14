@@ -9,16 +9,18 @@
 import React, { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  Button, CatalystTag, EmptyState, IconButton,
+  Button, EmptyState, IconButton,
   Lozenge, Modal, ModalBody, ModalFooter, ModalHeader, ModalTitle, SectionMessage, Select, Spinner, Textfield,
 } from '@/components/ads';
 import type { SelectOption } from '@/components/ads';
+import { JiraTable } from '@/components/shared/JiraTable';
+import type { Column } from '@/components/shared/JiraTable';
 import { Routes } from '@/lib/routes';
 import {
-  ChevronDown, ChevronRight, Gem, GitBranch, MoveRight, Network, Target, X,
+  ChevronDown, ChevronRight, Gem, GitBranch, Target, X,
 } from '@/lib/atlaskit-icons';
 import {
-  useElementKpis, useGateModels, useInvalidateStrata, useKpis, useMapEdges, usePerspectives,
+  useElementKpis, useGateModels, useInvalidateStrata, useKpis, usePerspectives,
   useProjectCards, useThemeCharters, useProfileNames, useStrataContext, useStrataRoles, useStrategyElements,
 } from '@/modules/strata/hooks/useStrata';
 import { strategyApi } from '@/modules/strata/domain';
@@ -28,7 +30,7 @@ import {
   EditElementModal, gateModelSelectOptions, NewElementModal, perspectiveSelectOptions, StrataFormModal,
   str, themeParentOptions, ThemeCharterModal,
 } from '@/modules/strata/components/authoring';
-import { fmtRatioPct, labelize } from '@/modules/strata/components/format';
+import { labelize } from '@/modules/strata/components/format';
 import type { StrataKpi, StrataStrategyElement } from '@/modules/strata/types';
 
 type LozengeAppearance = React.ComponentProps<typeof Lozenge>['appearance'];
@@ -70,15 +72,6 @@ function TypeChip({ type }: { type: string }) {
     </span>
   );
 }
-
-/** Hover states need real :hover — inline styles cannot express them. Tokens only. */
-const TREE_CSS = `
-.strata-tree-row { transition: background 80ms ease; }
-.strata-tree-row:hover { background: var(--ds-surface-sunken); }
-.strata-row-actions { opacity: 0; transition: opacity 80ms ease; }
-.strata-tree-row:hover .strata-row-actions,
-.strata-tree-row:focus-within .strata-row-actions { opacity: 1; }
-`;
 
 /** Roles allowed to author strategy structure — UI gate only; DB RPCs enforce. */
 const AUTHOR_ROLES = ['strategy_office', 'strata_admin'] as const;
@@ -309,7 +302,6 @@ export default function StrataStrategyRoomPage() {
   const navigate = useNavigate();
   const { activeCycle, isLoading: contextLoading } = useStrataContext();
   const elementsQ = useStrategyElements(activeCycle?.id);
-  const edgesQ = useMapEdges(activeCycle?.id);
   const chartersQ = useThemeCharters();
   const elementKpisQ = useElementKpis();
   const kpisQ = useKpis();
@@ -326,6 +318,7 @@ export default function StrataStrategyRoomPage() {
   const [typeFilter, setTypeFilter] = useState<string | null>(null);
   const [statusFilter, setStatusFilter] = useState<string | null>(null);
   const [perspectiveFilter, setPerspectiveFilter] = useState<string | null>(null);
+  const [gapsOnly, setGapsOnly] = useState(false);
   const [promoteError, setPromoteError] = useState<string | null>(null);
   const [promotingId, setPromotingId] = useState<string | null>(null);
   const [promoteTarget, setPromoteTarget] = useState<StrataStrategyElement | null>(null);
@@ -340,12 +333,10 @@ export default function StrataStrategyRoomPage() {
   const charters = chartersQ.data ?? [];
   const elementKpis = elementKpisQ.data ?? [];
   const kpis = kpisQ.data ?? [];
-  const edges = edgesQ.data ?? [];
   const profiles = profilesQ.data;
 
   const elementById = useMemo(() => new Map(elements.map((e) => [e.id, e])), [elements]);
   const charterByElement = useMemo(() => new Map(charters.map((c) => [c.element_id, c])), [charters]);
-  const kpiById = useMemo(() => new Map(kpis.map((k) => [k.id, k])), [kpis]);
   const perspectiveName = (id: string | null): string =>
     (id ? perspectives.find((p) => p.id === id)?.name : null) ?? '—';
   const ownerName = (ownerId: string | null): string =>
@@ -423,6 +414,69 @@ export default function StrataStrategyRoomPage() {
     return { roots: rootList, childrenOf: children, filteredCount: filtered.length };
   }, [elements, typeFilter, statusFilter, perspectiveFilter]);
 
+  // ── Structure-tree coverage columns (anchor 02) ───────────────────────────
+  // KPIs = linked measures; Cards = Project Cards by objective_element_id
+  // (a theme rolls up its descendant objectives' cards). All from loaded data.
+  const kpiCountByElement = useMemo(() => {
+    const m = new Map<string, number>();
+    elementKpis.forEach((l) => m.set(l.element_id, (m.get(l.element_id) ?? 0) + 1));
+    return m;
+  }, [elementKpis]);
+  const directCardCount = useMemo(() => {
+    const m = new Map<string, number>();
+    (projectCardsQ.data ?? []).forEach((c) => {
+      if (c.objective_element_id) m.set(c.objective_element_id, (m.get(c.objective_element_id) ?? 0) + 1);
+    });
+    return m;
+  }, [projectCardsQ.data]);
+  const descendantsOf = (id: string): StrataStrategyElement[] => {
+    const out: StrataStrategyElement[] = [];
+    const walk = (pid: string) => (childrenOf.get(pid) ?? []).forEach((c) => { out.push(c); walk(c.id); });
+    walk(id);
+    return out;
+  };
+  const cardCountFor = (el: StrataStrategyElement): number =>
+    el.element_type === 'theme'
+      ? descendantsOf(el.id).reduce((n, d) => n + (directCardCount.get(d.id) ?? 0), 0) + (directCardCount.get(el.id) ?? 0)
+      : (directCardCount.get(el.id) ?? 0);
+
+  // Coverage gaps flagged on objective rows only (measures / owner), anchor 02.
+  const gapOf = (el: StrataStrategyElement): 'NO MEASURES' | 'NO OWNER' | null => {
+    if (el.element_type !== 'objective') return null;
+    if ((kpiCountByElement.get(el.id) ?? 0) === 0) return 'NO MEASURES';
+    if (!el.owner_id) return 'NO OWNER';
+    return null;
+  };
+
+  // Flat hierarchy-ordered rows (respecting collapse + "gaps only") for JiraTable
+  // with getRowDepth. "Gaps only" keeps gap rows and their ancestors.
+  const { flatRows, depthOf, hasChildrenMap } = useMemo(() => {
+    const gapIds = new Set<string>();
+    if (gapsOnly) {
+      elements.forEach((el) => { if (gapOf(el)) gapIds.add(el.id); });
+      // include ancestors so the tree path to each gap stays visible
+      [...gapIds].forEach((id) => {
+        let cur = elementById.get(id)?.parent_id ?? null;
+        while (cur) { gapIds.add(cur); cur = elementById.get(cur)?.parent_id ?? null; }
+      });
+    }
+    const flat: StrataStrategyElement[] = [];
+    const depth = new Map<string, number>();
+    const kids = new Map<string, boolean>();
+    const walk = (el: StrataStrategyElement, d: number) => {
+      if (gapsOnly && !gapIds.has(el.id)) return;
+      flat.push(el);
+      depth.set(el.id, d);
+      const children = childrenOf.get(el.id) ?? [];
+      const visibleKids = gapsOnly ? children.filter((c) => gapIds.has(c.id)) : children;
+      kids.set(el.id, visibleKids.length > 0);
+      if (!collapsed.has(el.id)) visibleKids.forEach((c) => walk(c, d + 1));
+    };
+    roots.forEach((r) => walk(r, 0));
+    return { flatRows: flat, depthOf: depth, hasChildrenMap: kids };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [roots, childrenOf, collapsed, gapsOnly, elements, elementById, kpiCountByElement]);
+
   const toggleCollapsed = (id: string) => {
     setCollapsed((prev) => {
       const next = new Set(prev);
@@ -465,108 +519,81 @@ export default function StrataStrategyRoomPage() {
     }
   };
 
-  const renderNode = (el: StrataStrategyElement, depth: number): React.ReactNode => {
-    const charter = el.element_type === 'theme' ? charterByElement.get(el.id) : undefined;
-    const charterComplete = !!(charter && charter.hypothesis && charter.value_thesis && charter.owner_id);
-    const kids = childrenOf.get(el.id) ?? [];
-    const isCollapsed = collapsed.has(el.id);
-    return (
-      <React.Fragment key={el.id}>
-        <div
-          data-testid={`strata-element-row-${el.id}`}
-          className="strata-tree-row"
-          style={{
-            display: 'flex', alignItems: 'center', gap: 10,
-            minHeight: 36, padding: '4px 12px',
-            borderBottom: `1px solid ${T.border}`,
-          }}
-        >
-          {/* Depth rails */}
-          {Array.from({ length: depth }).map((_, i) => (
-            <span
-              key={i}
-              aria-hidden
-              style={{ alignSelf: 'stretch', width: 20, flexShrink: 0, borderLeft: `1px solid ${T.border}` }}
-            />
-          ))}
-          {/* Expand affordance */}
-          {kids.length > 0 ? (
-            <IconButton
-              icon={isCollapsed ? <ChevronRight size={16} /> : <ChevronDown size={16} />}
-              appearance="subtle"
-              spacing="compact"
-              aria-label={isCollapsed ? `Expand ${el.name}` : `Collapse ${el.name}`}
-              onClick={() => toggleCollapsed(el.id)}
-            />
-          ) : (
-            <span aria-hidden style={{ width: 24, flexShrink: 0 }} />
-          )}
-          <TypeChip type={el.element_type} />
-          <button
-            type="button"
-            onClick={() => el.slug && navigate(Routes.strata.strategyElement(el.slug))}
-            disabled={!el.slug}
-            style={{
-              fontSize: 'var(--ds-font-size-400)', lineHeight: 'var(--ds-line-height-body)', fontWeight: 600, color: T.text,
-              flex: '1 1 auto', minWidth: 120, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-              background: 'none', border: 'none', padding: 0, textAlign: 'left',
-              cursor: el.slug ? 'pointer' : 'default', font: 'inherit',
-            }}
-          >
-            {el.name}
-          </button>
-          {el.stage ? (
-            <span style={{ fontSize: 'var(--ds-font-size-100)', color: T.subtlest, whiteSpace: 'nowrap' }}>
-              <span style={{ fontWeight: 600 }}>Stage</span> {labelize(el.stage)}
-            </span>
-          ) : null}
-          <Lozenge appearance={STATUS_APPEARANCE[el.status] ?? 'default'}>{labelize(el.status)}</Lozenge>
-          <span style={{ fontSize: 'var(--ds-font-size-100)', color: T.subtle, whiteSpace: 'nowrap' }}>
-            {ownerName(el.owner_id)}
-          </span>
-          <span style={{ fontSize: 'var(--ds-font-size-100)', color: T.subtlest, whiteSpace: 'nowrap' }}>
-            {perspectiveName(el.perspective_id)}
-          </span>
-          {el.element_type === 'theme' && !charterComplete ? (
-            <Lozenge appearance="moved">Charter incomplete</Lozenge>
-          ) : null}
-          {canAuthor ? (
-            <span className="strata-row-actions" style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
-              {el.status === 'draft' || el.status === 'proposed' ? (
-                <Button
-                  spacing="compact"
-                  isLoading={promotingId === el.id}
-                  onClick={() => setPromoteTarget(el)}
-                >
-                  Promote
-                </Button>
-              ) : null}
-              <StrataChipMenu
-                value="Actions"
-                aria-label={`Actions for ${el.name}`}
-                options={rowActions(el)}
-              />
-            </span>
-          ) : null}
-        </div>
-        {!isCollapsed ? kids.map((child) => renderNode(child, depth + 1)) : null}
-      </React.Fragment>
-    );
-  };
-
-  const objectives = useMemo(
-    () => elements.filter((e) => e.element_type === 'objective'),
-    [elements],
+  // ── Strategic-structure JiraTable columns (anchor 02) ─────────────────────
+  //    Element (indented via getRowDepth) · Owner · KPIs · Cards · Actions.
+  //    Health + Benefits columns land in slice 2D-2b.
+  const gapCountCell = (n: number, isGap: boolean) => (
+    <span style={{
+      fontVariantNumeric: 'tabular-nums', color: isGap ? 'var(--ds-text-warning)' : T.subtle,
+      fontWeight: isGap ? 700 : 400,
+    }}>{n}</span>
   );
-  const kpiLinksByElement = useMemo(() => {
-    const map = new Map<string, string[]>();
-    elementKpis.forEach((link) => {
-      const list = map.get(link.element_id) ?? [];
-      list.push(link.kpi_id);
-      map.set(link.element_id, list);
-    });
-    return map;
-  }, [elementKpis]);
+  const structureColumns: Column<StrataStrategyElement>[] = [
+    {
+      id: 'name', label: 'Element', flex: true, alwaysVisible: true,
+      cell: ({ row }) => {
+        const gap = gapOf(row);
+        const canExpand = hasChildrenMap.get(row.id);
+        const isCol = collapsed.has(row.id);
+        return (
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, minWidth: 0 }}>
+            {canExpand ? (
+              <IconButton
+                icon={isCol ? <ChevronRight size={16} /> : <ChevronDown size={16} />}
+                appearance="subtle" spacing="compact"
+                aria-label={isCol ? `Expand ${row.name}` : `Collapse ${row.name}`}
+                onClick={(e) => { e.stopPropagation(); toggleCollapsed(row.id); }}
+              />
+            ) : <span aria-hidden style={{ width: 24, flexShrink: 0 }} />}
+            <TypeChip type={row.element_type} />
+            <button
+              type="button"
+              onClick={(e) => { e.stopPropagation(); if (row.slug) navigate(Routes.strata.strategyElement(row.slug)); }}
+              disabled={!row.slug}
+              style={{
+                fontSize: 'var(--ds-font-size-200)', fontWeight: row.element_type === 'theme' ? 653 : 500, color: T.text,
+                minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                background: 'none', border: 'none', padding: 0, textAlign: 'left',
+                cursor: row.slug ? 'pointer' : 'default', font: 'inherit',
+              }}
+            >
+              {row.name}
+            </button>
+            {row.status === 'draft' ? <Lozenge appearance="default">Draft</Lozenge> : null}
+            {gap ? <Lozenge appearance="moved">{gap}</Lozenge> : null}
+          </span>
+        );
+      },
+    },
+    {
+      id: 'owner', label: 'Owner', width: 16,
+      cell: ({ row }) => <span style={{ color: T.subtle, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{ownerName(row.owner_id)}</span>,
+    },
+    {
+      id: 'kpis', label: 'KPIs', width: 8, align: 'end',
+      cell: ({ row }) => {
+        const n = kpiCountByElement.get(row.id) ?? 0;
+        return gapCountCell(n, row.element_type === 'objective' && n === 0);
+      },
+    },
+    {
+      id: 'cards', label: 'Cards', width: 8, align: 'end',
+      cell: ({ row }) => gapCountCell(cardCountFor(row), false),
+    },
+    {
+      id: 'actions', label: '', width: 16, align: 'end',
+      cell: ({ row }) => (canAuthor ? (
+        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, justifyContent: 'flex-end' }}>
+          {row.status === 'draft' || row.status === 'proposed' ? (
+            <Button spacing="compact" isLoading={promotingId === row.id} onClick={(e) => { e?.stopPropagation?.(); setPromoteTarget(row); }}>
+              Promote
+            </Button>
+          ) : null}
+          <StrataChipMenu value="Actions" aria-label={`Actions for ${row.name}`} options={rowActions(row)} />
+        </span>
+      ) : null),
+    },
+  ];
 
   const isLoading = contextLoading || elementsQ.isLoading;
 
@@ -663,7 +690,6 @@ export default function StrataStrategyRoomPage() {
       toolbarActions={showData && viewMode === 'structure' ? filters : undefined}
       testId="strata-strategy-room-chrome"
     >
-      <style>{TREE_CSS}</style>
 
       {isLoading ? (
         <div style={{ display: 'flex', justifyContent: 'center', padding: 32 }}>
@@ -704,114 +730,44 @@ export default function StrataStrategyRoomPage() {
 
           <ReadinessBand tiles={readiness} />
 
-          {/* Hierarchy */}
+          {/* Strategic structure (anchor 02) — JiraTable grouped/indented tree */}
           <div style={{ marginBottom: 16 }}>
             <StrataPanel
-              title="Strategy hierarchy"
+              title="Strategic structure"
               icon={<GitBranch size={16} />}
               count={filteredCount}
               testId="strata-hierarchy-panel"
               noPadding
-            >
-              {roots.length === 0 ? (
-                <div style={{ padding: 16 }}>
-                  <EmptyState size="compact" header="No elements match the filters" description="Clear a filter to see the hierarchy." />
-                </div>
-              ) : (
-                <div>{roots.map((el) => renderNode(el, 0))}</div>
-              )}
-            </StrataPanel>
-          </div>
-
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))', gap: 16 }}>
-            {/* KPI coverage */}
-            <StrataPanel
-              title="KPI coverage"
-              icon={<Target size={16} />}
-              count={objectives.length}
-              testId="strata-kpi-coverage-panel"
-            >
-              {objectives.length === 0 ? (
-                <EmptyState size="compact" header="No objectives in this cycle" />
-              ) : (
-                objectives.map((obj) => {
-                  const linkedKpiIds = kpiLinksByElement.get(obj.id) ?? [];
-                  return (
-                    <div
-                      key={obj.id}
-                      style={{
-                        display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap',
-                        padding: '8px 0', borderBottom: `1px solid ${T.border}`,
-                      }}
-                    >
-                      <span style={{
-                        fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: T.text,
-                        flex: '1 1 auto', minWidth: 140,
-                      }}>
-                        {obj.name}
-                      </span>
-                      {linkedKpiIds.length === 0 ? (
-                        <Lozenge appearance="moved">No KPIs</Lozenge>
-                      ) : (
-                        linkedKpiIds.map((kpiId) => {
-                          const kpi = kpiById.get(kpiId);
-                          if (!kpi) return <span key={kpiId} style={{ fontSize: 'var(--ds-font-size-100)', color: T.subtlest }}>—</span>;
-                          return (
-                            <Button
-                              key={kpiId}
-                              appearance="link"
-                              spacing="compact"
-                              isDisabled={!kpi.slug}
-                              onClick={() => { if (kpi.slug) navigate(Routes.strata.kpi(kpi.slug)); }}
-                            >
-                              {kpi.name}
-                            </Button>
-                          );
-                        })
-                      )}
-                    </div>
-                  );
-                })
-              )}
-            </StrataPanel>
-
-            {/* Cause & effect */}
-            <StrataPanel
-              title="Cause & effect"
-              icon={<Network size={16} />}
-              count={edges.length}
               actions={
-                <Button appearance="subtle" spacing="compact" onClick={() => navigate(Routes.strata.strategyMap())}>
-                  Open map
+                <Button
+                  appearance="subtle"
+                  spacing="compact"
+                  isSelected={gapsOnly}
+                  onClick={() => setGapsOnly((v) => !v)}
+                  testId="strata-gaps-only-toggle"
+                >
+                  Show coverage gaps only
                 </Button>
               }
-              testId="strata-cause-effect-panel"
             >
-              {edges.length === 0 ? (
-                <EmptyState size="compact" header="No cause & effect links" description="Draw links between elements on the strategy map." />
+              {flatRows.length === 0 ? (
+                <div style={{ padding: 16 }}>
+                  <EmptyState
+                    size="compact"
+                    header={gapsOnly ? 'No coverage gaps' : 'No elements match the filters'}
+                    description={gapsOnly ? 'Every objective has a measure and an owner.' : 'Clear a filter to see the hierarchy.'}
+                  />
+                </div>
               ) : (
-                edges.map((edge) => {
-                  const from = elementById.get(edge.from_element_id);
-                  const to = elementById.get(edge.to_element_id);
-                  return (
-                    <div
-                      key={edge.id}
-                      style={{
-                        display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap',
-                        padding: '8px 0', borderBottom: `1px solid ${T.border}`,
-                        fontSize: 'var(--ds-font-size-200)',
-                      }}
-                    >
-                      <span style={{ color: T.text, fontWeight: 600 }}>{from?.name ?? '—'}</span>
-                      <span aria-hidden style={{ display: 'inline-flex', color: T.subtlest }}><MoveRight size={14} /></span>
-                      <span style={{ color: T.text, fontWeight: 600 }}>{to?.name ?? '—'}</span>
-                      <CatalystTag text={labelize(edge.relationship_type)} />
-                      <span style={{ fontSize: 'var(--ds-font-size-100)', color: T.subtle, marginLeft: 'auto', whiteSpace: 'nowrap' }}>
-                        {edge.confidence != null ? `Confidence ${fmtRatioPct(edge.confidence)}` : '—'}
-                      </span>
-                    </div>
-                  );
-                })
+                <JiraTable<StrataStrategyElement>
+                  columns={structureColumns}
+                  data={flatRows}
+                  getRowId={(row) => row.id}
+                  getRowDepth={(row) => depthOf.get(row.id) ?? 0}
+                  onRowClick={(row) => { if (row.slug) navigate(Routes.strata.strategyElement(row.slug)); }}
+                  density="compact"
+                  ariaLabel="Strategic structure"
+                />
               )}
             </StrataPanel>
           </div>
