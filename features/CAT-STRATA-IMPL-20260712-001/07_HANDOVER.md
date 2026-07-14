@@ -9,9 +9,26 @@
   divergence). **2C-2a backend committed locally, NOT yet merged to main** (awaiting Vikram commit approval).
 - **Phase 0 + Phase 1 COMPLETE** (1B skipped; anchor-13 polish done). **PHASE 2 IN PROGRESS:**
   **2A · 2B-1 · 2B-2 · 2C-1 · 2C-2a (`01cbe7f87`) · 2C-2b (`b54d68a84`) · 2C-2c (`75c5daba1`) ·
-  2C-2d-1 (`e23fc8f90`) merged; 2C-2d-2 (Validation filter + Saved views) DONE + verified, commit pending.**
-  **✅ Anchor 16 (KPI & OKR Library) COMPLETE.** **NEXT Phase-2 surface = slice 2D Strategy Room Structure
-  view (anchor 02, SPLIT 2D-1/2D-2) — see the Phase-2 slice list in `03_PLAN_LOCK_PHASE2.md`.**
+  2C-2d-1 (`e23fc8f90`) · 2C-2d-2 (`da80fdb43`) merged — ✅ Anchor 16 COMPLETE. 2D Strategy Room STARTED:
+  2D-1 (view toggle + Direction-readiness band) DONE + verified, commit pending.**
+  **NEXT = slice 2D-2 (JiraTable grouped structure tree — Element·Owner·Health(derived)·KPIs·Cards·Benefits
+  + gap chips + show-gaps-only; replaces the hand-rolled tree). Then 2D-3 inspector rail, 2D-4 Narrative body.**
+
+### 2D Strategy Room (anchor 02) — SPLIT 2D-1/2D-2/2D-3/2D-4. HARD GATE: map component never touched.
+- **Anchor 02 re-read in full (session 007).** **MAP BASELINE captured:** `/strata/strategy/map` = 18
+  React-Flow nodes · dashed edges (Drives/Contributes/Enables) · 4 zoom controls · legend. RE-PROBE + visual
+  diff after EVERY 2D slice; `git status` must show ZERO map-file changes (`StrataStrategyMapPage.tsx` + deps).
+- **Decisions:** P2-D5 Health = **derive from linked-measure bands** (no element-health column/RPC exists —
+  only stage/status); P2-D4 Narrative = **3-way toggle now, body in 2D-4** (no anchor chrome for Narrative).
+- **2D-1 DONE** (`StrataStrategyRoomPage.tsx` only): `ViewToggle` (Structure/Map→navigate-out/Narrative) +
+  `ReadinessBand` (4 tiles: measures/owners/execution/draft, client-derived from elements+element_kpis+
+  project-cards.objective_element_id) replacing StrataStatStrip. Narrative = placeholder. Existing tree +
+  authoring modals PRESERVED. Gates green; live-verified light+dark; map zero-change gate PASSED.
+- **2D-2 (NEXT):** replace the hand-rolled `renderNode` tree with a JiraTable grouped tree (theme = group
+  header) — columns Element·Owner·Health(derived rollup of linked-KPI achievement bands, via useQueries)·
+  KPIs(element_kpis count)·Cards(project cards by objective_element_id; theme = sum of children)·Benefits
+  (multi-hop: benefit↔card via `useBenefitProjectCards` ⋈ card.objective_element_id — or render — if messy).
+  Gap chips NO MEASURES/NO OWNER on objective rows; "Show coverage gaps only" filter; draft rows (dashed accent).
 - 2C-2 split into 2C-2a (backend ✓) · 2C-2b (columns) · 2C-2c (BulkFooterBar) · 2C-2d (saved views + filters).
 
 ## ⭐ PHASE 2 — NEXT (START HERE). Plan Lock: `03_PLAN_LOCK_PHASE2.md` (APPROVED, full build)

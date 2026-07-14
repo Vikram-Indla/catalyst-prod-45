@@ -575,3 +575,34 @@ Branch: `strata/impl-phase01`. File: `StrataKpiLibraryPage.tsx`.
   **"Delete this view" → DB row removed** (remaining=0, test row cleaned up). Both themes token-clean.
 
 ### ✅ Anchor 16 (KPI & OKR Library) COMPLETE — all of 2C-2 (a·b·c·d-1·d-2) shipped.
+
+---
+
+## Slice 2D-1 — Strategy Room: view toggle + Direction-readiness band (anchor 02) (session 007, 2026-07-14)
+**File:** `StrataStrategyRoomPage.tsx` only. **Map component NEVER touched** (hard gate).
+2D split for the 2h rule: 2D-1 = toggle + readiness band; 2D-2 = JiraTable grouped structure tree
+(Element·Owner·Health·KPIs·Cards·Benefits + gap chips + show-gaps-only); 2D-3 = inspector rail; 2D-4 = Narrative body.
+
+### Decisions (Vikram, session 007)
+- **P2-D5 Health source = derive from linked-measure bands** (labeled) — no element-health column/RPC exists
+  (`strata_strategy_elements` has only stage/status). Applied in 2D-2 (the tree's Health column).
+- **P2-D4 Narrative = 3-way toggle now, body later (2D-4)** — Narrative has no anchor chrome; 2D-1 ships the
+  toggle + a "coming soon" placeholder; approach shown before building the body.
+
+### Changes
+- **View toggle** (`ViewToggle`, anchor 02): Structure / Map / Narrative. Structure = this authoring surface;
+  **Map → `navigate(Routes.strata.strategyMap())`** (protected canvas, never imported — toggle only routes);
+  Narrative → local `viewMode` placeholder. Replaces the old "Open Strategy Map" header button.
+- **Direction-readiness band** (`ReadinessBand`, 4 tiles, replaces the old StrataStatStrip): OBJECTIVES WITH
+  MEASURES · WITH OWNERS · EXECUTION COVERAGE · DRAFT ELEMENTS — all client-derived from elements +
+  element_kpis + project cards (`objective_element_id`). Gaps carry a worded badge (N GAPS / DRAFT), color never alone.
+- Removed dead `bandStats` memo + StrataStatStrip import. Existing tree + authoring modals + promote PRESERVED
+  (no regression); filters hidden in Narrative mode.
+
+### Verification (raw)
+- Gates GREEN: tsc no errors · colors 0=baseline · audit no-increase (tokens 19799 after tokenizing 2 off-grid px) · CRE.
+- **MAP BASELINE** (before 2D): `/strata/strategy/map` = 18 React-Flow nodes · dashed edges · 4 zoom controls · legend.
+- LIVE (localhost:8080, staging) **light + dark**: readiness band renders (Measures 5/7·2 GAPS, Owners 2/7·5
+  GAPS, Execution 4/7·3 GAPS danger, Draft 4). Narrative → "coming soon" placeholder, filters hidden. **Map
+  toggle → navigates to the map, VISUALLY IDENTICAL to baseline** (nodes/edges/legend/controls unchanged);
+  `git status` confirms ONLY the Room page changed — map component + deps byte-untouched. ZERO-CHANGE GATE PASS.
