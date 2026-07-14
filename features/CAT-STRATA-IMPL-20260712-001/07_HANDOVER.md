@@ -10,8 +10,10 @@
 - **Phase 0 + Phase 1 COMPLETE** (1B skipped; anchor-13 polish done). **PHASE 2 IN PROGRESS:**
   **2A · 2B-1 · 2B-2 · 2C-1 · 2C-2a (`01cbe7f87`) · 2C-2b (`b54d68a84`) · 2C-2c (`75c5daba1`) ·
   2C-2d-1 (`e23fc8f90`) · 2C-2d-2 (`da80fdb43`) merged — ✅ Anchor 16 COMPLETE. 2D Strategy Room:
-  2D-1 (`0e9f8d46a`) merged; 2D-2 (JiraTable structure tree) DONE + verified, commit pending.**
-  **NEXT = slice 2D-2b (Health-derived + Benefits columns) → 2D-3 inspector rail → 2D-4 Narrative body.**
+  2D-1 (`0e9f8d46a`) · 2D-2 (`54bf41767`) merged; 2D-2b (Health-derived + Benefits columns) DONE + verified,
+  commit pending — ✅ anchor-02 structure tree COMPLETE.**
+  **NEXT = slice 2D-3 (inspector rail: 360px sticky right, shared selection with the tree, Esc closes →
+  focus row, <1280 overlay drawer) → 2D-4 Narrative body (approach shown to Vikram first, P2-D4).**
 
 ### 2D Strategy Room (anchor 02) — SPLIT 2D-1/2D-2/2D-3/2D-4. HARD GATE: map component never touched.
 - **Anchor 02 re-read in full (session 007).** **MAP BASELINE captured:** `/strata/strategy/map` = 18
@@ -29,11 +31,14 @@
   theme rolls up descendants)·Actions(Promote+menu). Gap chips NO MEASURES/NO OWNER; "Show coverage gaps only"
   toggle (gap rows + ancestors); dropped KPI-coverage + Cause-effect panels (subsumed). Draft = DRAFT lozenge
   (JiraTable has NO per-row style hook, so no dashed accent). Gates green; light+dark; MAP zero-change PASS.
-- **2D-2b (NEXT):** add **Health** column (derived: per-element rollup of linked-KPI achievement bands via
-  `useQueries` over linked KPI ids in the active period; objective = worst band of its KPIs, theme = worst of
-  its objectives; label "derived"; no measures → —) + **Benefits** column (multi-hop: `useBenefitProjectCards`
-  benefit↔card ⋈ card.objective_element_id; distinct benefits per element). Insert both into `structureColumns`.
-- **2D-3:** inspector rail (360px sticky right; shared selection with the tree; Esc closes → focus row; <1280 drawer).
+- **2D-2b DONE** — Health column (derived rollup via `useQueries` over linked KPI achievement bands, worst-band;
+  Tooltip "derived"; no measures → —) + Benefits column (multi-hop `useBenefitProjectCards` ⋈ card.
+  objective_element_id). Column order now Element·Owner·Health·KPIs·Cards·Benefits·Actions; Promote folded into
+  the Actions menu (no wide button column). Gates green; light+dark; MAP zero-change PASS. Anchor-02 tree COMPLETE.
+- **2D-3 (NEXT):** inspector rail — 360px sticky right column; selecting a tree row shows chip + name +
+  description + StrataChainStrip (in-the-chain) + Owner/Lifecycle/Health/Since + attention callout + "Open
+  full page →"; shared selection with the tree (add a selected-row highlight + onRowClick that sets selection
+  instead of navigating — navigate only via "Open full page"); Esc closes → focus returns to row; <1280 → overlay drawer.
 - **2D-4:** Narrative view body (replace the placeholder; approach shown to Vikram first — P2-D4).
 - 2C-2 split into 2C-2a (backend ✓) · 2C-2b (columns) · 2C-2c (BulkFooterBar) · 2C-2d (saved views + filters).
 
