@@ -805,3 +805,32 @@ strip; 2E-3 charter/OKR restyle + promote + states.
   evidence chain intact. Both themes clean.
 
 ### ✅ 2F Evidence COMPLETE — and ✅✅ PHASE 2 (measure & direction) COMPLETE: 2A · 2B · 2C · 2D · 2E · 2F all shipped + merged.
+
+---
+
+## PHASE 3 (delivery & value) — Plan Lock `03_PLAN_LOCK_PHASE3.md` APPROVED (Vikram 2026-07-14, P3-D1…D8 confirmed, P3-D3 scoped-down)
+
+### ⏳ Slice 3A-1a — Project Cards List canonical table (anchor 17) — DONE, gates green, live-verified; PENDING commit approval
+- File: `src/modules/strata/pages/StrataExecutionPage.tsx` (only src file touched).
+- Replaced hand-rolled card tiles (`CardGrid`/`ProjectCardItem`/`MilestonesSubtable` — banned hand-rolled UI)
+  with a canonical grouped **`JiraTable`** (`ProjectCardsTable`) carrying anchor-17 strategic-contribution
+  columns: **Card · source** (name + source_system·source_key·synced) · **↑ Objective** (objective_element_id
+  → element name; dash when none) · **Health** (`StrataExecutionHealthLozenge`, faithful band-key map, P3-D4)
+  · **Forecast Δ** (`forecast_variance_days`, signed, danger/success tone, tabular; "on hold"/dash) ·
+  **Blockers** (open `is_blocker` count + worst OVERDUE age from `due_date` — no fabricated age, zero-assumption).
+- Single flex column (Card·source) — JiraTable reserves a 640px floor per flex col, so Objective/Health/
+  Forecast/Blockers are fixed widths + `overflowX="auto"`; table fits the panel (root-caused the 2-flex overflow).
+- Row-click → full-page detail via `openCard`; added `?from=/strata/execution` to the detail suffix (origin
+  preservation for anchor-07 back-link, consumed in 3A-2). GroupStatRow rollups + all 6 views + filters +
+  dependency accountability + authoring modals **PRESERVED** (no regression).
+- **Inline milestones RESTORED** (Vikram, DRIFT-7 reversed): canonical JiraTable **tree rows** — card row
+  expands (chevron) to indented milestone child rows (name + status lozenge + due), `getRowDepth`/
+  `getRowHasChildren`/`expandedRowIds`; `milestonesByCard` built once from `allMilestonesQ` (no per-row query).
+  Hit a stale-HMR crash mid-edit (Fast Refresh saw the new prop undefined) — cleared by full reload; verified clean.
+- GATES: `tsc` clean · `lint:colors:gate` 0=baseline · `audit:ads:gate` 19799/19799 (no category up) · `lint:cre` pass.
+- LIVE (localhost:8080, staging) **light + dark**: theme-grouped tables render all 5 columns in-panel; source
+  lines ("Jira · SLM · synced 10d ago", "Upload · PRJ-TEST-001", "Manual"); ↑ objective ancestry + "—" for
+  unknown; health word-lozenges + tones; Forecast Δ "+20/+58/+92 days" danger + "—"; "1 open" blocker.
+  Row-click → `/strata/execution/care-app-v3?…&from=%2Fstrata%2Fexecution`. Only console noise = pre-existing
+  @atlaskit/select legacy-context warning (not this change). MAP file untouched.
+- NEXT: **3A-1b** — Benefit-at-stake column (`useCardBenefitStakes` batch via `useQueries` over linked benefits).

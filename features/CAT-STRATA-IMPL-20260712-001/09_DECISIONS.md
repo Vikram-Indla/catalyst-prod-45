@@ -58,6 +58,20 @@ D-1…D-6 CONFIRMED by Vikram 2026-07-12 ("proceed with all recommended decision
   exists (else nothing).** "Variance to plan" is NOT client-derivable (no instance-level plan/target;
   would need a rollup RPC) → raised as a backend data-gap ticket, not faked. (Vikram, 2026-07-13.)
 
+## CONFIRMED (session 011 — Phase-3 scope, Vikram 2026-07-14)
+- **D-12 · Phase 3 = HANDOFF "delivery & value" as written: anchors 07·17·18·08·22·21.** Resolves
+  DRIFT-6 (handover 07 misread HANDOFF's phase labels). Order = delivery spine first (17 list → 07
+  detail → 18 import), then value spine (22 portfolio index → 08 portfolio detail → 21 benefit detail).
+  Governance/data anchors (09·10·19·20·23·24) deferred to Phase 4 (own Plan Lock). (Vikram, 2026-07-14.)
+
+- **P3-D1…D8 · ALL CONFIRMED (Vikram, 2026-07-14, with Plan-Lock approval).** D1 full-page `?from=` drill
+  (no overlay router); D2 client-derived portfolio aggregates (no migration); **D3 anchor-18 scoped-down to
+  existing dry-run/apply backend — no fake Matched/Conflict/Unmatched, no undo affordance; full
+  reconciliation engine = separate backend initiative (Phase 4/backlog)**; D4 map health band keys faithfully;
+  D5 StrataValueBar additive variants; D6 render DB assumption status (no invented "under strain"); D7
+  portfolio page split (index `/strata/portfolio`, detail `/strata/portfolio/:slug`, benefit unchanged);
+  D8 attestation via StrataDecisionModal `description` + `validateBenefitValue` SoD. See `03_PLAN_LOCK_PHASE3.md`.
+
 ## CONFIRMED (session 004 — plan-variance backend, Vikram 2026-07-13)
 - **D-11 · "Vs plan" = uncapped-achievement rollup, NOT targets-as-actuals.** The task-proposed
   `strata_calc_scorecard_plan_variance` naive design (roll up targets as if actuals) is DEGENERATE —

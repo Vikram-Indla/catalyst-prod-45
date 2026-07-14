@@ -18,10 +18,10 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { exportToCsv } from '@/utils/exports';
 import {
-  Button, CatalystTag, EmptyState, Lozenge, ProgressBar, SectionMessage, Select, Spinner, Textfield, Tooltip,
+  Button, CatalystTag, EmptyState, Lozenge, SectionMessage, Select, Spinner, Textfield, Tooltip,
 } from '@/components/ads';
 import { StatusLozenge } from '@/components/shared/StatusLozenge';
-import { GitBranch, TrendingDown, TrendingUp } from '@/lib/atlaskit-icons';
+import { GitBranch } from '@/lib/atlaskit-icons';
 import { JiraTable } from '@/components/shared/JiraTable';
 import type { Column } from '@/components/shared/JiraTable';
 import { Routes } from '@/lib/routes';
@@ -43,9 +43,6 @@ import type {
   StrataDependency, StrataMilestone, StrataProjectCard, StrataRole, StrataStrategyElement,
 } from '@/modules/strata/types';
 
-const MILESTONE_STATUS: Record<StrataMilestone['status'], 'default' | 'inprogress' | 'success' | 'removed' | 'moved' | 'new'> = {
-  done: 'success', in_progress: 'inprogress', planned: 'default', missed: 'removed', descoped: 'default',
-};
 const DEPENDENCY_STATUS: Record<StrataDependency['status'], 'default' | 'inprogress' | 'success' | 'removed' | 'moved' | 'new'> = {
   open: 'default', at_risk: 'moved', blocked: 'removed', resolved: 'success', cancelled: 'default',
 };
@@ -66,9 +63,6 @@ const DEPENDENCY_TYPE_OPTIONS = ['delivery', 'data', 'decision', 'resource', 'ex
 const DEPENDENCY_STATUS_FILTER_OPTIONS: StrataDependency['status'][] = ['open', 'at_risk', 'blocked', 'resolved', 'cancelled'];
 
 const Dash = () => <span style={{ color: T.subtlest }}>—</span>;
-
-const asFraction = (v: number | null | undefined): number | null =>
-  v == null ? null : Math.max(0, Math.min(1, v > 1 ? v / 100 : v));
 
 const fmtConfidence = (v: number | null | undefined): string | null => {
   if (v == null) return null;
@@ -187,106 +181,154 @@ function useIsNarrow(breakpoint = 1024): boolean {
   return narrow;
 }
 
-// ── Milestones subtable (canonical JiraTable) ────────────────────────────────
-const milestoneOverdue = (m: StrataMilestone): boolean =>
-  isPast(m.baseline_end) && m.status !== 'done' && m.status !== 'descoped';
+// ── Project cards table (canonical grouped JiraTable, anchor 17) ─────────────
+// Strategic-contribution columns: what the card does for the strategy (objective
+// ancestry) + its delivery truth (server health enum, forecast Δ) + blocker
+// pressure — not PM fields. Row → full-page detail (anchor 07). On-hold cards
+// render dimmed with a HOLD lozenge, kept in place (visibility over tidiness).
+// A card row expands inline to its milestones (canonical JiraTable tree rows).
+const MILESTONE_STATUS_APPEARANCE: Record<StrataMilestone['status'], 'default' | 'inprogress' | 'success' | 'removed' | 'moved' | 'new'> = {
+  done: 'success', in_progress: 'inprogress', planned: 'default', missed: 'removed', descoped: 'default',
+};
 
-function MilestonesSubtable({ projectCardId }: { projectCardId: string }) {
-  const milestonesQ = useMilestones(projectCardId);
+// Union row: a project card, or one of its milestones (child row when expanded).
+type CardTableRow =
+  | { kind: 'card'; id: string; card: StrataProjectCard }
+  | { kind: 'ms'; id: string; ms: StrataMilestone; parentId: string };
 
-  const columns = useMemo<Column<StrataMilestone>[]>(() => [
-    { id: 'name', label: 'Milestone', flex: true, cell: ({ row }) => <span style={{ fontWeight: 600, color: T.text }}>{row.name}</span> },
-    {
-      id: 'due', label: 'Due', width: 11,
-      cell: ({ row }) => (row.baseline_end
-        ? <span style={{ color: milestoneOverdue(row) ? 'var(--ds-text-danger)' : T.subtle, fontWeight: milestoneOverdue(row) ? 600 : 400 }}>{fmtDate(row.baseline_end)}</span>
-        : <Dash />),
-    },
-    {
-      id: 'progress', label: 'Progress', width: 12,
-      cell: ({ row }) => { const frac = asFraction(row.progress); return frac == null ? <Dash /> : <ProgressBar value={frac} aria-label={`Milestone progress ${Math.round(frac * 100)}%`} />; },
-    },
-    { id: 'status', label: 'Status', width: 12, cell: ({ row }) => <StatusLozenge status={row.status} appearance={MILESTONE_STATUS[row.status] ?? 'default'} /> },
-  ], []);
-
-  if (milestonesQ.isLoading) return <div style={{ padding: 8 }}><Spinner size="small" aria-label="Loading milestones" /></div>;
-  if (milestonesQ.isError) return <p style={{ ...captionStyle, color: 'var(--ds-text-danger)' }}>Failed to load milestones.</p>;
-  const milestones = milestonesQ.data ?? [];
-  if (milestones.length === 0) return <p style={captionStyle}>No milestones recorded for this project card.</p>;
-  return (
-    <div style={{ marginTop: 8 }} data-testid={`strata-milestones-${projectCardId}`}>
-      <JiraTable<StrataMilestone> columns={columns} data={milestones} getRowId={(row) => row.id} density="compact" showRowCount={false} rowsPerPage={100} ariaLabel="Milestones" />
-    </div>
-  );
-}
-
-// ── Project card item (Theme-grouped list) ───────────────────────────────────
-function ProjectCardItem({ card, onOpenDetail }: { card: StrataProjectCard; onOpenDetail: () => void }) {
-  const [expanded, setExpanded] = useState(false);
-  const milestonesQ = useMilestones(card.id);
-  const milestoneCount = milestonesQ.data?.length ?? null;
-  const frac = asFraction(card.actual_progress);
-  const connectorFed = card.source_system === 'jira' || card.source_system === 'api';
-  const synced = connectorFed ? relTime(card.last_synced_at) : null;
-  const forecastDelta = card.forecast_variance_days;
-  return (
-    <div
-      data-testid={`strata-project-card-${card.slug ?? card.id}`}
-      style={{ border: `1px solid ${T.border}`, borderRadius: 8, padding: 12, display: 'flex', flexDirection: 'column', gap: 8, background: T.raised }}
-    >
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, flexWrap: 'wrap' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0, flexWrap: 'wrap' }}>
-          <strong style={{ fontSize: 'var(--ds-font-size-200)', color: T.text, overflowWrap: 'anywhere' }}>{card.name}</strong>
-          <CatalystTag text={`${SOURCE_LABEL[card.source_system] ?? labelize(card.source_system)}${card.source_key ? ` · ${card.source_key}` : ''}`} />
-        </div>
-        <StrataExecutionHealthLozenge health={card.calculated_health} />
-      </div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-        {frac == null ? (
-          <span style={{ ...captionStyle, fontWeight: 600 }}>Actual progress —</span>
-        ) : (
-          <>
-            <div style={{ flex: 1, minWidth: 0 }}><ProgressBar value={frac} aria-label={`Actual progress ${Math.round(frac * 100)}%`} /></div>
-            <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: T.subtle, flexShrink: 0, fontVariantNumeric: 'tabular-nums' }}>{`${Math.round(frac * 100)}%`}</span>
-          </>
-        )}
-      </div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
-        <span style={captionStyle}>Baseline progress {card.baseline_progress_pct == null ? '—' : `${Math.round(card.baseline_progress_pct)}%`}</span>
-        <span style={captionStyle}>Variance {card.variance_pct == null ? '—' : `${card.variance_pct > 0 ? '+' : ''}${Math.round(card.variance_pct)}%`}</span>
-        <span style={captionStyle}>Baseline end {fmtDate(card.calc_baseline_end)}</span>
-        <span style={captionStyle}>Final forecast end {fmtDate(card.final_forecast_end)}</span>
-        {forecastDelta != null && forecastDelta !== 0 ? (
-          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: forecastDelta > 0 ? 'var(--ds-text-danger)' : 'var(--ds-text-success)' }}>
-            {forecastDelta > 0 ? <TrendingDown size={14} color="var(--ds-icon-danger)" /> : <TrendingUp size={14} color="var(--ds-icon-success)" />}
-            Forecast {forecastDelta > 0 ? '+' : ''}{forecastDelta} day{Math.abs(forecastDelta) === 1 ? '' : 's'}
-          </span>
-        ) : null}
-        {synced ? <span style={captionStyle}>Synced {synced}</span> : null}
-      </div>
-      {card.health_reason ? <span style={{ ...captionStyle, fontStyle: 'italic' }}>{card.health_reason}</span> : null}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-        <Button appearance="subtle" spacing="compact" onClick={() => setExpanded((v) => !v)}>
-          {`${expanded ? 'Hide' : 'Show'} milestones${milestoneCount != null ? ` (${milestoneCount})` : ''}`}
-        </Button>
-        <Button appearance="subtle" spacing="compact" onClick={onOpenDetail} testId={`strata-project-detail-open-${card.slug ?? card.id}`}>
-          Details
-        </Button>
-      </div>
-      {expanded ? <MilestonesSubtable projectCardId={card.id} /> : null}
-    </div>
-  );
-}
-
-function CardGrid({ cards, isNarrow, onOpenDetail }: {
-  cards: StrataProjectCard[]; isNarrow: boolean; onOpenDetail: (card: StrataProjectCard) => void;
+function ProjectCardsTable({ cards, dependencies, elementById, milestonesByCard, onOpenDetail }: {
+  cards: StrataProjectCard[];
+  dependencies: StrataDependency[];
+  elementById: Map<string, StrataStrategyElement>;
+  milestonesByCard: Map<string, StrataMilestone[]>;
+  onOpenDetail: (card: StrataProjectCard) => void;
 }) {
+  const [expanded, setExpanded] = useState<ReadonlySet<string>>(() => new Set<string>());
+  const toggle = (id: string) => setExpanded((prev) => {
+    const next = new Set(prev);
+    if (next.has(id)) next.delete(id); else next.add(id);
+    return next;
+  });
+
+  // Open blockers touching each card, with the worst OVERDUE age (from due_date —
+  // the only dated blocker signal; StrataDependency carries no opened_at). Age is
+  // shown only when a blocker is actually overdue, never fabricated (zero-assumption).
+  const blockersByCard = useMemo(() => {
+    const m = new Map<string, StrataDependency[]>();
+    const add = (id: string, d: StrataDependency) => { const a = m.get(id) ?? []; a.push(d); m.set(id, a); };
+    for (const d of dependencies) {
+      if (!isOpenBlocker(d)) continue;
+      if (d.requesting_type === 'project_card') add(d.requesting_id, d);
+      if (d.serving_type === 'project_card' && d.serving_id) add(d.serving_id, d);
+    }
+    return m;
+  }, [dependencies]);
+
+  // Flatten: each card row, followed by its milestone rows while the card is expanded.
+  const rows = useMemo<CardTableRow[]>(() => {
+    const out: CardTableRow[] = [];
+    for (const c of cards) {
+      out.push({ kind: 'card', id: c.id, card: c });
+      if (expanded.has(c.id)) {
+        for (const ms of milestonesByCard.get(c.id) ?? []) {
+          out.push({ kind: 'ms', id: `ms:${ms.id}`, ms, parentId: c.id });
+        }
+      }
+    }
+    return out;
+  }, [cards, expanded, milestonesByCard]);
+
+  const columns = useMemo<Column<CardTableRow>[]>(() => [
+    {
+      id: 'card', label: 'Card · source', flex: true,
+      cell: ({ row }) => {
+        if (row.kind === 'ms') {
+          const ms = row.ms;
+          return (
+            <span style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
+              <span style={{ color: T.subtle, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{ms.name}</span>
+              <StatusLozenge status={ms.status} appearance={MILESTONE_STATUS_APPEARANCE[ms.status] ?? 'default'} />
+              {ms.baseline_end ? <span style={captionStyle}>due {fmtDate(ms.baseline_end)}</span> : null}
+            </span>
+          );
+        }
+        const card = row.card;
+        const onHold = card.calculated_health === 'on_hold';
+        const connectorFed = card.source_system === 'jira' || card.source_system === 'api';
+        const synced = connectorFed ? relTime(card.last_synced_at) : null;
+        const source = `${SOURCE_LABEL[card.source_system] ?? labelize(card.source_system)}${card.source_key ? ` · ${card.source_key}` : ''}${synced ? ` · synced ${synced}` : ''}`;
+        return (
+          <span style={{ display: 'block', minWidth: 0, opacity: onHold ? 0.6 : 1 }}>
+            <span style={{ display: 'flex', alignItems: 'center', gap: 6, minWidth: 0 }}>
+              <span style={{ fontWeight: 600, color: T.text, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{card.name}</span>
+              {onHold ? <Lozenge appearance="default">Hold</Lozenge> : null}
+            </span>
+            <span style={{ ...captionStyle, display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{source}</span>
+          </span>
+        );
+      },
+    },
+    {
+      // Fixed width (not flex): JiraTable reserves a 640px floor per flex column,
+      // so a single flex column (Card · source) keeps the table inside the panel.
+      id: 'objective', label: 'Objective', width: 20,
+      cell: ({ row }) => {
+        if (row.kind === 'ms') return null;
+        const obj = row.card.objective_element_id ? elementById.get(row.card.objective_element_id) : null;
+        return obj
+          ? <span style={{ color: T.subtle, display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>↑ {obj.name}</span>
+          : <Dash />;
+      },
+    },
+    { id: 'health', label: 'Health', width: 12, cell: ({ row }) => (row.kind === 'ms' ? null : <StrataExecutionHealthLozenge health={row.card.calculated_health} />) },
+    {
+      id: 'forecast', label: 'Forecast Δ', width: 10, align: 'end',
+      cell: ({ row }) => {
+        if (row.kind === 'ms') return null;
+        if (row.card.calculated_health === 'on_hold') return <span style={captionStyle}>on hold</span>;
+        const d = row.card.forecast_variance_days;
+        if (d == null || d === 0) return <Dash />;
+        return (
+          <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: d > 0 ? 'var(--ds-text-danger)' : 'var(--ds-text-success)', fontVariantNumeric: 'tabular-nums' }}>
+            {d > 0 ? '+' : '−'}{Math.abs(d)} day{Math.abs(d) === 1 ? '' : 's'}
+          </span>
+        );
+      },
+    },
+    {
+      id: 'blockers', label: 'Blockers', width: 10,
+      cell: ({ row }) => {
+        if (row.kind === 'ms') return null;
+        const bl = blockersByCard.get(row.card.id) ?? [];
+        if (bl.length === 0) return <Dash />;
+        const overdue = bl
+          .map((d) => (isPast(d.due_date) ? Math.floor((Date.now() - new Date(d.due_date as string).getTime()) / 86_400_000) : 0))
+          .reduce((a, b) => Math.max(a, b), 0);
+        return (
+          <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--ds-text-danger)', fontVariantNumeric: 'tabular-nums' }}>
+            {bl.length} open{overdue > 0 ? ` · ${overdue}d` : ''}
+          </span>
+        );
+      },
+    },
+  ], [blockersByCard, elementById]);
+
   return (
-    <div style={{ display: isNarrow ? 'flex' : 'grid', flexDirection: 'column', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: 12 }}>
-      {cards.map((card) => (
-        <ProjectCardItem key={card.id} card={card} onOpenDetail={() => onOpenDetail(card)} />
-      ))}
-    </div>
+    <JiraTable<CardTableRow>
+      columns={columns}
+      data={rows}
+      getRowId={(row) => row.id}
+      getRowDepth={(row) => (row.kind === 'ms' ? 1 : 0)}
+      getRowHasChildren={(row) => row.kind === 'card' && (milestonesByCard.get(row.card.id)?.length ?? 0) > 0}
+      expandedRowIds={expanded}
+      onToggleRowExpanded={toggle}
+      density="compact"
+      showRowCount={false}
+      rowsPerPage={100}
+      onRowClick={(row) => { if (row.kind === 'card') onOpenDetail(row.card); }}
+      overflowX="auto"
+      ariaLabel="Project cards"
+    />
   );
 }
 
@@ -336,10 +378,11 @@ function BREAKDOWN_COLUMNS(dependencies: StrataDependency[]): Column<CardGroup>[
 
 /** Shared group-panel renderer for the Leading Business Unit / Strategic Theme /
  * Project Manager / Delivery Team views — same panel shape, different grouping key. */
-function GroupedCardsSection({ groups, dependencies, isNarrow, onOpenDetail, emptyDescription, testId }: {
+function GroupedCardsSection({ groups, dependencies, elementById, milestonesByCard, onOpenDetail, emptyDescription, testId }: {
   groups: CardGroup[];
   dependencies: StrataDependency[];
-  isNarrow: boolean;
+  elementById: Map<string, StrataStrategyElement>;
+  milestonesByCard: Map<string, StrataMilestone[]>;
   onOpenDetail: (card: StrataProjectCard) => void;
   emptyDescription: string;
   testId: string;
@@ -357,7 +400,7 @@ function GroupedCardsSection({ groups, dependencies, isNarrow, onOpenDetail, emp
             {g.cards.length === 0 ? (
               <EmptyState size="compact" header="No project cards in this group" />
             ) : (
-              <CardGrid cards={g.cards} isNarrow={isNarrow} onOpenDetail={onOpenDetail} />
+              <ProjectCardsTable cards={g.cards} dependencies={dependencies} elementById={elementById} milestonesByCard={milestonesByCard} onOpenDetail={onOpenDetail} />
             )}
           </StrataPanel>
         );
@@ -384,6 +427,9 @@ export default function StrataExecutionPage() {
     const p = new URLSearchParams();
     if (activeCycle) p.set('cycle', ctxToken(activeCycle.name));
     if (activePeriod) p.set('period', ctxToken(activePeriod.name));
+    // Origin preservation (anchor 07 "Back to [origin]"): the detail's back link
+    // resolves this to "Back to Project Cards". Consumed by the anchor-07 redesign (3A-2).
+    p.set('from', Routes.strata.execution());
     const s = p.toString();
     return s ? `?${s}` : '';
   })();
@@ -450,6 +496,17 @@ export default function StrataExecutionPage() {
   const elements = elementsQ.data ?? [];
   const dependencies = dependenciesQ.data ?? [];
   const allMilestones = allMilestonesQ.data ?? [];
+  // Milestones grouped by card for the anchor-17 table's inline expand — one
+  // page-level fetch (allMilestonesQ), never a per-row query.
+  const milestonesByCard = useMemo(() => {
+    const m = new Map<string, StrataMilestone[]>();
+    for (const ms of allMilestones) {
+      const a = m.get(ms.project_card_id) ?? [];
+      a.push(ms);
+      m.set(ms.project_card_id, a);
+    }
+    return m;
+  }, [allMilestones]);
   const themes = elements.filter((e) => e.element_type === 'theme');
 
   // Hold the whole list in loading until the active cycle's strategy elements have
@@ -967,7 +1024,7 @@ export default function StrataExecutionPage() {
               <GroupedCardsSection
                 groups={themeGroups}
                 dependencies={filteredDependencies}
-                  isNarrow={isNarrow}
+                  elementById={themeById} milestonesByCard={milestonesByCard}
                 onOpenDetail={openCard}
                 emptyDescription="Adjust or clear filters to see project cards."
                 testId="strata-execution-theme-groups"
@@ -977,7 +1034,7 @@ export default function StrataExecutionPage() {
             <GroupedCardsSection
               groups={businessUnitGroups}
               dependencies={filteredDependencies}
-              isNarrow={isNarrow}
+              elementById={themeById} milestonesByCard={milestonesByCard}
               onOpenDetail={openCard}
               emptyDescription="Adjust or clear filters to see project cards."
               testId="strata-execution-lob-groups"
@@ -986,7 +1043,7 @@ export default function StrataExecutionPage() {
             <GroupedCardsSection
               groups={themeGroups}
               dependencies={filteredDependencies}
-              isNarrow={isNarrow}
+              elementById={themeById} milestonesByCard={milestonesByCard}
               onOpenDetail={openCard}
               emptyDescription="Adjust or clear filters to see project cards."
               testId="strata-execution-theme-groups"
@@ -995,7 +1052,7 @@ export default function StrataExecutionPage() {
             <GroupedCardsSection
               groups={pmGroups}
               dependencies={filteredDependencies}
-              isNarrow={isNarrow}
+              elementById={themeById} milestonesByCard={milestonesByCard}
               onOpenDetail={openCard}
               emptyDescription="Adjust or clear filters to see project cards."
               testId="strata-execution-pm-groups"
@@ -1004,7 +1061,7 @@ export default function StrataExecutionPage() {
             <GroupedCardsSection
               groups={deliveryTeamGroups}
               dependencies={filteredDependencies}
-              isNarrow={isNarrow}
+              elementById={themeById} milestonesByCard={milestonesByCard}
               onOpenDetail={openCard}
               emptyDescription="Adjust or clear filters to see project cards."
               testId="strata-execution-team-groups"

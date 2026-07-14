@@ -29,6 +29,29 @@ Deviations from the anchor that were taken deliberately (with rationale), pendin
   (new full-width row). Refine toward the anchor's literal 7/5 / row-2-right split in a later polish pass.
 - **Status:** minor visual deviation, functionally complete; live-verified both modes.
 
+## DRIFT-7 · Project Cards list — inline milestones (slice 3A-1a) — RAISED then REVERSED by Vikram
+- **Was:** each hand-rolled card tile had a "Show milestones (N)" inline expander (`MilestonesSubtable`).
+- **Anchor 17:** a clean strategic-contribution table, row → detail; the anchor shows no inline milestones.
+- **First cut (RAISED):** replaced tiles with a JiraTable and relocated milestones to the card detail (07).
+- **RESOLVED (Vikram, 2026-07-14): RESTORE inline milestones.** Re-implemented as canonical JiraTable **tree
+  rows** — a card row expands (chevron) to its milestones as indented child rows (name + status lozenge +
+  due date), other columns blank; `getRowDepth`/`getRowHasChildren`/`expandedRowIds`. Milestones fetched
+  once page-level (`milestonesByCard` from `allMilestonesQ`), never per-row. Hand-rolled tiles still gone.
+- **Status:** NOT a drift from the anchor's intent (row→detail preserved; expand is an additive affordance).
+  Live-verified light+dark (Care App v3 → MVP release DONE / AI deflection IN PROGRESS / Full migration PLANNED).
+- **LESSON:** the union-row edit hit a **stale-HMR crash** (`getRowHasChildren` saw `milestonesByCard` undefined
+  during Fast Refresh) — a full page reload cleared it; tsc + a clean load are the real gate, not the HMR state.
+
+## DRIFT-6 · Phase-3 anchor set — handover candidate ≠ HANDOFF build-order (Phase-3 start, RESOLVED)
+- **Handover 07 said:** "Phase-3 = governance & delivery; anchors likely 07·09·10·17·18·19·23·24."
+- **HANDOFF.md build-order (authoritative, re-read via DesignSync 2026-07-14) has NO "governance &
+  delivery" phase.** Phase 3 = **delivery & value** (07·17·18·08·22·21); Phase 4 = **governance & data**
+  (10·23·24·09·19·20). The handover conflated the two phases and dropped the Phase-3 value anchors
+  (08 Portfolio · 22 Portfolio Index · 21 Benefit Detail).
+- **RESOLVED (Vikram, 2026-07-14): implement HANDOFF Phase 3 as written — 07·17·18·08·22·21.**
+  Governance/data (09·10·19·20·23·24) becomes Phase 4 with its own Plan Lock. Caught by the
+  "confirm the exact anchor set against HANDOFF.md at Phase-3 start" guard. No code before Plan Lock.
+
 ## DRIFT-5 · KPI Library columns — anchor 16 vs 2C-1 shipped (slice 2C-2, RAISED, awaiting decision)
 - **2C-1 shipped:** `KPI · Achievement · Actual/Target (combined) · Trend spark (StrataTrendSpark) ·
   Validation · Owner · Freshness` (7 cols). Plan Lock 2C line explicitly listed "Actual vs Target ·
