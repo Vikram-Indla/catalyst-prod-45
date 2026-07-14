@@ -65,4 +65,13 @@ toolbar Status·Band·Perspective·Owner; Band "Below threshold" = appearance∈
 achievement default sort; filter summary bar + Clear filters. Gates green; live-verified light+dark
 (worst-first order; Below-threshold → 1 of 17; clear → 17 of 17). Audit caught off-grid 10px → space tokens.
 
-## Status: 2C-2d-1 built + verified; commit pending Vikram approval → then 2C-2d-2 (Validation + saved views).
+## 2C-2d-1 — MERGED to main `e23fc8f90`.
+
+## 2C-2d-2 — DONE (Validation filter + Saved views) — ANCHOR 16 COMPLETE
+Validation filter (actuals batch via useQueries, deduped); Saved views ("Saved views ▾" selector,
+"My exceptions" built-in, strata_saved_views CRUD via kpiApi.savedViews/create/delete + useSavedViews).
+New: StrataSavedView type. Gates green; live-verified light+dark incl. real DB insert (Board exceptions)
++ delete (remaining=0). Files: StrataKpiLibraryPage.tsx, domain/index.ts, types.ts, hooks/useStrata.tsx.
+
+## Status: 2C-2d-2 built + verified; commit pending Vikram approval. **Anchor 16 (KPI Library) COMPLETE** —
+next Phase-2 surface = 2D Strategy Room (anchor 02).

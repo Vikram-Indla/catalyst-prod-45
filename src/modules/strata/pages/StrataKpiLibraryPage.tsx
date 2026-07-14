@@ -19,12 +19,12 @@ import type { Column, SortOrder, BulkAction } from '@/components/shared/JiraTabl
 import { Routes } from '@/lib/routes';
 import { kpiApi } from '@/modules/strata/domain';
 import {
-  useBandResolver, useDataSources, useElementKpis, useInvalidateStrata, useKpiAchievement, useKpis, useOkrs, usePerspectives, useProfileNames, useStrataContext, useStrataRoles, useStrategyElements, useThresholdSchemes,
+  useBandResolver, useDataSources, useElementKpis, useInvalidateStrata, useKpiAchievement, useKpis, useOkrs, usePerspectives, useProfileNames, useSavedViews, useStrataContext, useStrataRoles, useStrategyElements, useThresholdSchemes,
 } from '@/modules/strata/hooks/useStrata';
 import { OkrRow, StrataBandBar, StrataBandLozenge, StrataChipMenu, StrataPageShell, StrataPanel, T } from '@/modules/strata/components/shared';
 import { StrataFormModal } from '@/modules/strata/components/authoring';
 import { fmtDate, fmtPct, fmtUnit, labelize } from '@/modules/strata/components/format';
-import type { GovernedStatus, StrataBulkUpdateResult, StrataKpi, StrataKpiActual, StrataOkr, ThresholdBand } from '@/modules/strata/types';
+import type { GovernedStatus, StrataBulkUpdateResult, StrataKpi, StrataKpiActual, StrataOkr, StrataSavedView, ThresholdBand } from '@/modules/strata/types';
 import type { StrataProfileRef } from '@/modules/strata/hooks/useStrata';
 
 /** UI affordance gating only — server RPCs enforce the real role rules (SoD etc.). */
@@ -467,6 +467,26 @@ export default function StrataKpiLibraryPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [allKpis, activePeriod?.id, achievementQueries.map((q) => (q.data ? 1 : 0)).join('')]);
 
+  // Page-level actuals per KPI — SAME queryKey as the row cells' useKpiActualsLite (deduped).
+  // Powers the Validation filter (current-period validation status, else most recent actual).
+  const actualsQueries = useQueries({
+    queries: allKpis.map((k) => ({
+      queryKey: ['strata', 'kpi-actuals', k.id],
+      queryFn: () => kpiApi.actuals(k.id),
+      staleTime: 30_000,
+    })),
+  });
+  const validationByKpiId = useMemo(() => {
+    const m = new Map<string, string | null>();
+    allKpis.forEach((k, i) => {
+      const acts = (actualsQueries[i]?.data ?? []) as StrataKpiActual[];
+      const cur = acts.find((a) => a.period_id === activePeriod?.id) ?? acts[0] ?? null;
+      m.set(k.id, cur?.validation_status ?? null);
+    });
+    return m;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [allKpis, activePeriod?.id, actualsQueries.map((q) => (q.data ? 1 : 0)).join('')]);
+
   // KPI → perspective_id via its linked element (element_kpis ⋈ elements). First link wins.
   const perspectiveIdByKpiId = useMemo(() => {
     const elById = new Map((elementsQ.data ?? []).map((e) => [e.id, e]));
@@ -483,6 +503,11 @@ export default function StrataKpiLibraryPage() {
   const [bandFilter, setBandFilter] = useState<'all' | 'exceptions' | string>('all');
   const [perspectiveFilter, setPerspectiveFilter] = useState<string>('all');
   const [ownerFilter, setOwnerFilter] = useState<string>('all');
+  const [validationFilter, setValidationFilter] = useState<string>('all');
+  // Saved views (per-user, strata_saved_views). activeViewId: a view id, '__exceptions__' (built-in), or null.
+  const savedViewsQ = useSavedViews('kpi');
+  const [activeViewId, setActiveViewId] = useState<string | null>(null);
+  const [saveViewOpen, setSaveViewOpen] = useState(false);
   // Worst-first by achievement is the anchor-16 default; a column-header click overrides it.
   const [sortKey, setSortKey] = useState<string>('achievement');
   const [sortOrder, setSortOrder] = useState<SortOrder>('ASC');
@@ -510,6 +535,11 @@ export default function StrataKpiLibraryPage() {
         else if (k.accountable_owner_id !== ownerFilter) return false;
       }
       if (perspectiveFilter !== 'all' && (perspectiveIdByKpiId.get(k.id) ?? null) !== perspectiveFilter) return false;
+      if (validationFilter !== 'all') {
+        const vs = validationByKpiId.get(k.id) ?? null;
+        if (validationFilter === 'none') { if (vs != null) return false; }
+        else if (vs !== validationFilter) return false;
+      }
       if (bandFilter !== 'all') {
         const sk = achByKpiId.get(k.id)?.status_key ?? null;
         if (bandFilter === 'exceptions') { if (!isExceptionBand(sk)) return false; }
@@ -539,7 +569,7 @@ export default function StrataKpiLibraryPage() {
     }
     return rows;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [allKpis, search, statusFilter, ownerFilter, perspectiveFilter, bandFilter, sortKey, sortOrder, achByKpiId, perspectiveIdByKpiId, resolveBand]);
+  }, [allKpis, search, statusFilter, ownerFilter, perspectiveFilter, validationFilter, bandFilter, sortKey, sortOrder, achByKpiId, perspectiveIdByKpiId, validationByKpiId, resolveBand]);
 
   // ── Filter option lists (anchor 16 chips) ─────────────────────────────────
   const bandList = useMemo<ThresholdBand[]>(() => {
@@ -562,6 +592,11 @@ export default function StrataKpiLibraryPage() {
     return { named, anyNone };
   }, [allKpis, profilesQ.data]);
 
+  const VALIDATION_OPTIONS: Array<{ value: string; label: string }> = [
+    { value: 'all', label: 'All' }, { value: 'validated', label: 'Validated' },
+    { value: 'pending', label: 'Pending' }, { value: 'rejected', label: 'Rejected' },
+    { value: 'quarantined', label: 'Quarantined' }, { value: 'none', label: 'No data' },
+  ];
   const bandLabel = bandFilter === 'all' ? 'All'
     : bandFilter === 'exceptions' ? 'Below threshold'
     : (resolveBand(bandFilter)?.label ?? bandFilter);
@@ -569,19 +604,53 @@ export default function StrataKpiLibraryPage() {
   const ownerLabel = ownerFilter === 'all' ? 'All'
     : ownerFilter === 'none' ? 'No owner'
     : (profilesQ.data?.get(ownerFilter)?.name ?? 'Unknown');
+  const validationLabel = VALIDATION_OPTIONS.find((o) => o.value === validationFilter)?.label ?? 'All';
 
   const hasActiveFilters = statusFilter !== 'all' || bandFilter !== 'all'
-    || perspectiveFilter !== 'all' || ownerFilter !== 'all' || search.trim() !== '';
+    || perspectiveFilter !== 'all' || ownerFilter !== 'all' || validationFilter !== 'all' || search.trim() !== '';
   const filterSummary = [
     bandFilter === 'exceptions' ? 'below-threshold bands' : bandFilter !== 'all' ? `${bandLabel} band` : null,
     perspectiveFilter !== 'all' ? `${perspectiveLabel} perspective` : null,
     ownerFilter !== 'all' ? (ownerFilter === 'none' ? 'unowned KPIs' : `owner ${ownerLabel}`) : null,
+    validationFilter !== 'all' ? (validationFilter === 'none' ? 'no reported data' : `${validationLabel.toLowerCase()} validation`) : null,
     statusFilter !== 'all' ? `${statusFilter.replace('_', ' ')} status` : null,
     search.trim() ? `“${search.trim()}”` : null,
   ].filter(Boolean).join(' · ');
   const clearFilters = () => {
-    setSearch(''); setStatusFilter('all'); setBandFilter('all'); setPerspectiveFilter('all'); setOwnerFilter('all');
+    setSearch(''); setStatusFilter('all'); setBandFilter('all'); setPerspectiveFilter('all');
+    setOwnerFilter('all'); setValidationFilter('all'); setActiveViewId(null);
   };
+
+  // ── Saved views: apply / save / delete ─────────────────────────────────────
+  const currentViewConfig = (): Record<string, unknown> => ({
+    search, statusFilter, bandFilter, perspectiveFilter, ownerFilter, validationFilter, sortKey, sortOrder,
+  });
+  const applySavedView = (v: StrataSavedView) => {
+    const c = v.config as Record<string, unknown>;
+    setSearch(typeof c.search === 'string' ? c.search : '');
+    setStatusFilter((c.statusFilter as GovernedStatus | 'all') ?? 'all');
+    setBandFilter((c.bandFilter as string) ?? 'all');
+    setPerspectiveFilter((c.perspectiveFilter as string) ?? 'all');
+    setOwnerFilter((c.ownerFilter as string) ?? 'all');
+    setValidationFilter((c.validationFilter as string) ?? 'all');
+    setSortKey((c.sortKey as string) ?? 'achievement');
+    setSortOrder((c.sortOrder as SortOrder) ?? 'ASC');
+    setActiveViewId(v.id);
+  };
+  const applyMyExceptions = () => {
+    setSearch(''); setStatusFilter('all'); setPerspectiveFilter('all'); setOwnerFilter('all');
+    setValidationFilter('all'); setSortKey('achievement'); setSortOrder('ASC');
+    setBandFilter('exceptions'); setActiveViewId('__exceptions__');
+  };
+  const deleteActiveView = async () => {
+    if (!activeViewId || activeViewId.startsWith('__')) return;
+    await kpiApi.deleteSavedView(activeViewId);
+    setActiveViewId(null);
+    invalidate();
+  };
+  const savedViews = savedViewsQ.data ?? [];
+  const activeViewLabel = activeViewId === '__exceptions__' ? 'My exceptions'
+    : (savedViews.find((v) => v.id === activeViewId)?.name ?? 'Saved views');
   const sortSummary = sortKey === 'achievement'
     ? `achievement, ${sortOrder === 'ASC' ? 'worst first' : 'best first'}`
     : `${sortKey}, ${sortOrder === 'ASC' ? 'ascending' : 'descending'}`;
@@ -809,6 +878,31 @@ export default function StrataKpiLibraryPage() {
                   })),
                 ]}
               />
+              <StrataChipMenu
+                value={`Validation: ${validationLabel}`}
+                active={validationFilter !== 'all'}
+                aria-label="Filter KPIs by validation"
+                options={VALIDATION_OPTIONS.map((o) => ({
+                  key: o.value, label: o.value === 'all' ? 'All validation' : o.label,
+                  isSelected: o.value === validationFilter, onClick: () => setValidationFilter(o.value),
+                }))}
+              />
+              {/* Saved views (per-user) — right-aligned */}
+              <div style={{ marginLeft: 'auto' }}>
+                <StrataChipMenu
+                  value={activeViewLabel}
+                  active={activeViewId !== null}
+                  aria-label="Saved views"
+                  options={[
+                    { key: '__exceptions__', label: 'My exceptions', isSelected: activeViewId === '__exceptions__', onClick: applyMyExceptions },
+                    ...savedViews.map((v) => ({ key: v.id, label: v.name, isSelected: activeViewId === v.id, onClick: () => applySavedView(v) })),
+                    { key: '__save__', label: 'Save current view…', isSelected: false, onClick: () => setSaveViewOpen(true) },
+                    ...(activeViewId && !activeViewId.startsWith('__')
+                      ? [{ key: '__delete__', label: 'Delete this view', isSelected: false, onClick: () => { void deleteActiveView(); } }]
+                      : []),
+                  ]}
+                />
+              </div>
             </div>
 
             {/* Filter summary bar */}
@@ -945,6 +1039,22 @@ export default function StrataKpiLibraryPage() {
         submitLabel="Assign scheme"
         onSubmit={async (v) => { await runBulk({ thresholdSchemeId: String(v.schemeId) }); }}
         testId="strata-bulk-scheme-modal"
+      />
+
+      {/* Save current view — persists filters + sort to strata_saved_views (per user) */}
+      <StrataFormModal
+        open={saveViewOpen}
+        onClose={() => setSaveViewOpen(false)}
+        title="Save current view"
+        description="Saves the current filters and sort as a named view, visible only to you."
+        fields={[{ key: 'name', label: 'View name', kind: 'text', required: true, placeholder: 'e.g. Quarterly board set' }]}
+        submitLabel="Save view"
+        onSubmit={async (v) => {
+          const created = await kpiApi.createSavedView({ entity: 'kpi', name: String(v.name).trim(), config: currentViewConfig() });
+          setActiveViewId(created.id);
+          invalidate();
+        }}
+        testId="strata-save-view-modal"
       />
     </StrataPageShell>
   );

@@ -362,6 +362,18 @@ export interface StrataBulkUpdateResult {
   results: Array<{ kpi_id: string; ok: boolean; error?: string }>;
 }
 
+/** Per-user named filter/column view config for a STRATA list surface (strata_saved_views). */
+export interface StrataSavedView {
+  id: string;
+  user_id: string;
+  entity: string;
+  name: string;
+  config: Record<string, unknown>;
+  is_default: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface StrataOkr {
   id: string;
   objective_element_id: string | null;

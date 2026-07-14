@@ -549,3 +549,29 @@ Branch: `strata/impl-phase01`. File: `StrataKpiLibraryPage.tsx`.
   WATCH at top → B2B 111.3% → no-data KPIs last). Band "Below threshold" → "Showing 1 of 17 — filtered to
   below-threshold bands" (only the WATCH KPI). Band menu lists scheme labels (On track/Watch/At risk).
   Clear filters → back to 17 of 17. Both themes token-clean.
+
+---
+
+## Slice 2C-2d-2 — KPI Library Validation filter + Saved views (session 007, 2026-07-14) — anchor 16 COMPLETE
+**Files:** `StrataKpiLibraryPage.tsx`, `domain/index.ts` (+3 saved-view methods), `types.ts`
+(+`StrataSavedView`), `hooks/useStrata.tsx` (+`useSavedViews`).
+
+### Changes
+- **Validation filter chip** — page-level actuals batch via `useQueries` (SAME queryKey as the row
+  cells → deduped) → current-period validation status per KPI. Options: All · Validated · Pending ·
+  Rejected · Quarantined · No data (no actuals). Applied in the filtered memo + summary bar.
+- **Saved views (per-user, `strata_saved_views` from 2C-2a)** — "Saved views ▾" selector (right of the
+  toolbar): built-in **"My exceptions"** (applies Band = Below threshold) + user views + "Save current
+  view…" + "Delete this view" (when a user view is active). Config persisted = {search, statusFilter,
+  bandFilter, perspectiveFilter, ownerFilter, validationFilter, sortKey, sortOrder} jsonb.
+  Client: `kpiApi.savedViews/createSavedView/deleteSavedView` (direct `typedQuery`, RLS-scoped to auth.uid()).
+  `useSavedViews('kpi')` hook. Save modal = `StrataFormModal` (name).
+
+### Verification (raw)
+- Gates GREEN: tsc no errors · colors 0=baseline · audit no-increase · CRE.
+- LIVE (localhost:8080, staging) **light + dark**: Validation "No data" → "Showing 8 of 17 — filtered to
+  no reported data" (the 8 actual-less KPIs). Saved views: "My exceptions" → Band Below-threshold (1 of 17);
+  **"Save current view" → DB row confirmed** (`Board exceptions`, config jsonb exact) + chip reflects it;
+  **"Delete this view" → DB row removed** (remaining=0, test row cleaned up). Both themes token-clean.
+
+### ✅ Anchor 16 (KPI & OKR Library) COMPLETE — all of 2C-2 (a·b·c·d-1·d-2) shipped.
