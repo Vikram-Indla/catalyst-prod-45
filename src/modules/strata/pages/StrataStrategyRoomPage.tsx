@@ -19,11 +19,11 @@ import {
 } from '@/lib/atlaskit-icons';
 import {
   useElementKpis, useGateModels, useInvalidateStrata, useKpis, useMapEdges, usePerspectives,
-  useThemeCharters, useProfileNames, useStrataContext, useStrataRoles, useStrategyElements,
+  useProjectCards, useThemeCharters, useProfileNames, useStrataContext, useStrataRoles, useStrategyElements,
 } from '@/modules/strata/hooks/useStrata';
 import { strategyApi } from '@/modules/strata/domain';
-import { StrataChipMenu, StrataPageShell, StrataPanel, StrataStatStrip, T } from '@/modules/strata/components/shared';
-import type { StrataMenuOption, StrataStat } from '@/modules/strata/components/shared';
+import { StrataChipMenu, StrataPageShell, StrataPanel, T } from '@/modules/strata/components/shared';
+import type { StrataMenuOption } from '@/modules/strata/components/shared';
 import {
   EditElementModal, gateModelSelectOptions, NewElementModal, perspectiveSelectOptions, StrataFormModal,
   str, themeParentOptions, ThemeCharterModal,
@@ -242,6 +242,69 @@ function KpiLinksModal({
   );
 }
 
+/** Direction-readiness band (anchor 02) — 4 coverage tiles. Color never alone:
+ *  each gap carries a worded badge ("N GAPS" / "DRAFT"). */
+interface ReadinessTile {
+  key: string; label: string; value: string; gaps: number;
+  tone: 'warning' | 'danger' | 'neutral'; caption: string; isDraft?: boolean;
+}
+const READINESS_TONE: Record<ReadinessTile['tone'], { bg: string; fg: string }> = {
+  warning: { bg: 'var(--ds-background-warning)', fg: 'var(--ds-text-warning)' },
+  danger: { bg: 'var(--ds-background-danger)', fg: 'var(--ds-text-danger)' },
+  neutral: { bg: 'var(--ds-background-neutral)', fg: 'var(--ds-text-subtle)' },
+};
+function ReadinessBand({ tiles }: { tiles: ReadinessTile[] }) {
+  return (
+    <div
+      data-testid="strata-direction-readiness"
+      style={{
+        display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+        border: `1px solid ${T.border}`, borderRadius: 8, background: T.raised,
+        overflow: 'hidden', marginBottom: 'var(--ds-space-200)',
+      }}
+    >
+      {tiles.map((t, i) => {
+        const badge = t.isDraft ? 'DRAFT' : t.gaps > 0 ? `${t.gaps} GAP${t.gaps > 1 ? 'S' : ''}` : null;
+        const tone = READINESS_TONE[t.tone];
+        return (
+          <div key={t.key} style={{ padding: 'var(--ds-space-200)', borderRight: i < tiles.length - 1 ? `1px solid ${T.border}` : undefined, minWidth: 0 }}>
+            <div style={{ fontSize: 'var(--ds-font-size-050)', fontWeight: 600, letterSpacing: '0.04em', color: T.subtlest, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+              {t.label}
+            </div>
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: 'var(--ds-space-100)', margin: 'var(--ds-space-075) 0 var(--ds-space-025)' }}>
+              <span style={{ fontSize: 'var(--ds-font-size-500)', fontWeight: 700, color: T.text, fontVariantNumeric: 'tabular-nums' }}>{t.value}</span>
+              {badge ? (
+                <span style={{ fontSize: 'var(--ds-font-size-050)', fontWeight: 700, borderRadius: 3, padding: 'var(--ds-space-025) var(--ds-space-075)', background: tone.bg, color: tone.fg }}>{badge}</span>
+              ) : null}
+            </div>
+            <div style={{ fontSize: 'var(--ds-font-size-100)', color: T.subtle }}>{t.caption}</div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+/** Structure / Map / Narrative segmented toggle (anchor 02). Map navigates to the
+ *  protected canvas; the component is never imported here — the toggle only routes to it. */
+function ViewToggle({ mode, onStructure, onNarrative, onMap }: {
+  mode: 'structure' | 'narrative'; onStructure: () => void; onNarrative: () => void; onMap: () => void;
+}) {
+  const seg = (active: boolean, borderLeft: boolean): React.CSSProperties => ({
+    padding: 'var(--ds-space-075) var(--ds-space-200)', fontSize: 'var(--ds-font-size-100)', cursor: 'pointer',
+    background: active ? 'var(--ds-background-selected)' : 'transparent',
+    color: active ? T.brandText : T.subtle, fontWeight: active ? 600 : 400,
+    border: 'none', borderLeft: borderLeft ? `1px solid ${T.border}` : 'none', font: 'inherit',
+  });
+  return (
+    <span role="tablist" aria-label="Strategy Room view" style={{ display: 'inline-flex', border: `1px solid ${T.border}`, borderRadius: 6, overflow: 'hidden' }}>
+      <button type="button" role="tab" aria-selected={mode === 'structure'} style={seg(mode === 'structure', false)} onClick={onStructure}>Structure</button>
+      <button type="button" role="tab" aria-selected={false} style={seg(false, true)} onClick={onMap}>Map</button>
+      <button type="button" role="tab" aria-selected={mode === 'narrative'} style={seg(mode === 'narrative', true)} onClick={onNarrative}>Narrative</button>
+    </span>
+  );
+}
+
 export default function StrataStrategyRoomPage() {
   const navigate = useNavigate();
   const { activeCycle, isLoading: contextLoading } = useStrataContext();
@@ -254,8 +317,12 @@ export default function StrataStrategyRoomPage() {
   const profilesQ = useProfileNames();
   const gateModelsQ = useGateModels();
   const rolesQ = useStrataRoles();
+  const projectCardsQ = useProjectCards();
   const invalidate = useInvalidateStrata();
 
+  // Anchor-02 view toggle. Structure = this authoring surface; Map navigates to the
+  // protected canvas (never imported); Narrative = companion prose view (body: slice 2D-4).
+  const [viewMode, setViewMode] = useState<'structure' | 'narrative'>('structure');
   const [typeFilter, setTypeFilter] = useState<string | null>(null);
   const [statusFilter, setStatusFilter] = useState<string | null>(null);
   const [perspectiveFilter, setPerspectiveFilter] = useState<string | null>(null);
@@ -284,34 +351,44 @@ export default function StrataStrategyRoomPage() {
   const ownerName = (ownerId: string | null): string =>
     (ownerId ? profiles?.get(ownerId)?.name : null) ?? '—';
 
-  // Executive KPI band (Command Room SRC-M3) — derived from already-loaded
-  // data, zero fabrication; charter completeness matches the row lozenge rule.
-  const bandStats = useMemo((): StrataStat[] => {
-    const themes = elements.filter((e) => e.element_type === 'theme');
-    const activeThemes = themes.filter((e) => e.status === 'active');
-    const themeObjectives = elements.filter((e) => e.element_type === 'objective' && e.context === 'theme');
-    const activeObjectives = themeObjectives.filter((e) => e.status === 'active');
-    const chartersComplete = activeThemes.filter((t) => {
-      const c = charterByElement.get(t.id);
-      return !!(c && c.hypothesis && c.value_thesis && c.owner_id);
-    }).length;
+  // Direction-readiness band (anchor 02) — coverage diagnostics as the judgment band.
+  // All client-derived from already-loaded data; zero fabrication.
+  const readiness = useMemo(() => {
+    const objectives = elements.filter((e) => e.element_type === 'objective' && e.context === 'theme');
+    const total = objectives.length;
     const kpiLinked = new Set(elementKpis.map((l) => l.element_id));
-    const objectivesMeasured = activeObjectives.filter((o) => kpiLinked.has(o.id)).length;
+    const cardObjectiveIds = new Set(
+      (projectCardsQ.data ?? []).map((c) => c.objective_element_id).filter(Boolean) as string[],
+    );
+    const withMeasures = objectives.filter((o) => kpiLinked.has(o.id)).length;
+    const withOwners = objectives.filter((o) => !!o.owner_id).length;
+    const withExecution = objectives.filter((o) => cardObjectiveIds.has(o.id)).length;
+    const draftCount = elements.filter((e) => e.status === 'draft').length;
+    const gapTone = (gaps: number, danger = false): 'warning' | 'danger' | 'neutral' =>
+      gaps === 0 ? 'neutral' : danger ? 'danger' : 'warning';
     return [
-      { key: 'themes', label: 'Active themes', value: activeThemes.length, caption: `of ${themes.length} in cycle` },
-      { key: 'objectives', label: 'Active objectives', value: activeObjectives.length, caption: 'strategic objectives' },
       {
-        key: 'charters', label: 'Charters complete', value: `${chartersComplete}/${activeThemes.length}`,
-        caption: chartersComplete < activeThemes.length ? 'governance drift' : 'all active themes chartered',
-        captionTone: chartersComplete < activeThemes.length ? 'warning' : 'success',
+        key: 'measures', label: 'OBJECTIVES WITH MEASURES', value: `${withMeasures} / ${total}`,
+        gaps: total - withMeasures, tone: gapTone(total - withMeasures),
+        caption: total - withMeasures > 0 ? `${total - withMeasures} without a linked KPI` : 'All objectives measured',
       },
       {
-        key: 'coverage', label: 'Objectives measured', value: `${objectivesMeasured}/${activeObjectives.length}`,
-        caption: objectivesMeasured < activeObjectives.length ? 'missing KPI links' : 'full KPI coverage',
-        captionTone: objectivesMeasured < activeObjectives.length ? 'warning' : 'success',
+        key: 'owners', label: 'OBJECTIVES WITH OWNERS', value: `${withOwners} / ${total}`,
+        gaps: total - withOwners, tone: gapTone(total - withOwners),
+        caption: total - withOwners > 0 ? `${total - withOwners} with no accountable owner` : 'All objectives owned',
+      },
+      {
+        key: 'execution', label: 'EXECUTION COVERAGE', value: `${withExecution} / ${total}`,
+        gaps: total - withExecution, tone: gapTone(total - withExecution, true),
+        caption: total - withExecution > 0 ? `${total - withExecution} with no linked Project Card` : 'All objectives in delivery',
+      },
+      {
+        key: 'draft', label: 'DRAFT ELEMENTS', value: String(draftCount),
+        gaps: draftCount, tone: 'neutral' as const, isDraft: true,
+        caption: draftCount > 0 ? 'Not yet promoted into active governance' : 'No pending drafts',
       },
     ];
-  }, [elements, charterByElement, elementKpis]);
+  }, [elements, elementKpis, projectCardsQ.data]);
 
   const distinctTypes = useMemo(
     () => Array.from(new Set(elements.map((e) => e.element_type))),
@@ -566,7 +643,13 @@ export default function StrataStrategyRoomPage() {
   return (
     <StrataPageShell
       headerActions={
-        <span style={{ display: 'inline-flex', gap: 8 }}>
+        <span style={{ display: 'inline-flex', gap: 8, alignItems: 'center' }}>
+          <ViewToggle
+            mode={viewMode}
+            onStructure={() => setViewMode('structure')}
+            onNarrative={() => setViewMode('narrative')}
+            onMap={() => navigate(Routes.strata.strategyMap())}
+          />
           {canAuthor ? (
             <Button onClick={() => setAuthoring({ kind: 'create-cycle' })}>New cycle</Button>
           ) : null}
@@ -575,12 +658,9 @@ export default function StrataStrategyRoomPage() {
               New element
             </Button>
           ) : null}
-          <Button appearance="primary" onClick={() => navigate(Routes.strata.strategyMap())}>
-            Open Strategy Map
-          </Button>
         </span>
       }
-      toolbarActions={showData ? filters : undefined}
+      toolbarActions={showData && viewMode === 'structure' ? filters : undefined}
       testId="strata-strategy-room-chrome"
     >
       <style>{TREE_CSS}</style>
@@ -601,6 +681,17 @@ export default function StrataStrategyRoomPage() {
             <Button onClick={() => navigate(Routes.strata.admin())}>Open Configuration</Button>
           }
         />
+      ) : viewMode === 'narrative' ? (
+        <>
+          <ReadinessBand tiles={readiness} />
+          <StrataPanel title="Narrative" icon={<GitBranch size={16} />} testId="strata-narrative-panel">
+            <EmptyState
+              size="compact"
+              header="Narrative view — coming soon"
+              description="An executive narrative of this cycle’s themes and objectives is on the way. For now, use Structure to author the hierarchy or Map for the cause-and-effect canvas."
+            />
+          </StrataPanel>
+        </>
       ) : (
         <>
           {promoteError ? (
@@ -611,7 +702,7 @@ export default function StrataStrategyRoomPage() {
             </div>
           ) : null}
 
-          <StrataStatStrip items={bandStats} testId="strata-strategy-band" />
+          <ReadinessBand tiles={readiness} />
 
           {/* Hierarchy */}
           <div style={{ marginBottom: 16 }}>
