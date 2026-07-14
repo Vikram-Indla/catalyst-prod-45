@@ -48,7 +48,10 @@ spawn discovery; produce `03_PLAN_LOCK_PHASE3.md`; STOP for approval. No code be
   Inline milestones restored (Vikram). No foreign commits swept.
 - **3A-1b DONE** (pending commit): Benefit-at-stake column via page-level `useQueries` batch
   (`benefitProjectCards` ⋈ `benefitValues` planned × share); zero-assumption dash; all 6 columns fit
-  (Objective 20→16). Gates green; light+dark verified. **✅ 3A-1 (anchor 17) COMPLETE.** NEXT: 3A-2 (anchor 07).
+  (Objective 20→16). Gates green; light+dark verified. **✅ 3A-1 (anchor 17) COMPLETE.**
+- **3A-2a DONE** (pending commit): Project Card Detail (anchor 07) → CatalystViewBase anatomy (strategic-role
+  panel + Health&forecast + 360px rail Details/Source System), tabs preserved. Fixed a +5 off-grid audit
+  regression (tokenized to `var(--ds-space-*)`). Gates green; light+dark verified. NEXT: 3A-2b (threats + value).
 
 ## Open debt carried (unchanged)
 1. Prod migrations `20260713100000` + `20260713110000` = staging-only (no prod access). Apply later.
