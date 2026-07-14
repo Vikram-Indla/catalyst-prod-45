@@ -686,3 +686,26 @@ Branch: `strata/impl-phase01`. File: `StrataKpiLibraryPage.tsx`.
   → identical to baseline; git shows only the Room page changed. ZERO-CHANGE GATE PASS.**
 - NB: JiraTable has no single-row highlight hook, so selection feedback is the brand-toned name + the rail
   (no full-row background tint). NB: dev session had logged out mid-slice; Vikram re-authenticated to finish verification.
+
+---
+
+## Slice 2D-4 — Strategy Room Narrative view (P2-D4, approach approved) (session 008, 2026-07-14) — 2D COMPLETE
+**File:** `StrataStrategyRoomPage.tsx` only. Map re-probed → zero change.
+
+### Changes
+- Replaced the "coming soon" placeholder with a **grounded executive narrative** (`renderNarrative`).
+  Per strategy theme: a **composed verdict sentence** from real counts ("{Theme} spans N objectives:
+  X/N measured and Y/N owned. Worst measure signal across the theme is {band}.") + a health lozenge
+  (derived) + "Open →". Then each objective as a one-liner: name — {derived health or "not yet measured"};
+  {measures} measures · {cards} cards · {benefits} benefits · {gap}. **No invented content** — every value
+  comes from already-loaded data (elements, element_kpis, project cards, benefit↔card, achievement rollup).
+
+### Verification (raw)
+- Gates GREEN: tsc no errors · colors 0=baseline · audit no-increase (tokens 19799) · CRE.
+- LIVE (localhost:8080, staging) **light + dark**: Narrative tab → "B2B Growth Engine spans 5 objectives:
+  3/5 measured and 0/5 owned. Worst measure signal … is on track." + objective lines with counts + inline
+  "no owner"/"no measures" warnings; "Investor Journey Transformation spans 2 objectives: 0/2 measured and
+  2/2 owned. No objective is measured yet." **MAP re-probed → identical to baseline; git shows only the Room
+  page changed. ZERO-CHANGE GATE PASS.**
+
+### ✅ 2D Strategy Room (anchor 02) COMPLETE — 2D-1 · 2D-2 · 2D-2b · 2D-3 · 2D-4 all shipped.

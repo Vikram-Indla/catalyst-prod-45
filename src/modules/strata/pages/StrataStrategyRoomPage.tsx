@@ -772,6 +772,67 @@ export default function StrataStrategyRoomPage() {
     );
   };
 
+  // ── Narrative view (P2-D4) — executive prose grounded ENTIRELY in loaded data:
+  //    per theme, a composed verdict sentence from real counts + its objectives
+  //    as one-liners with measure/delivery/value coverage. No invented content. ──
+  const objectivesUnder = (themeId: string): StrataStrategyElement[] => {
+    const out: StrataStrategyElement[] = [];
+    const walk = (pid: string) => elements.filter((e) => e.parent_id === pid).forEach((c) => {
+      if (c.element_type === 'objective') out.push(c);
+      walk(c.id);
+    });
+    walk(themeId);
+    return out;
+  };
+  const renderNarrative = () => {
+    const themes = elements.filter((e) => e.element_type === 'theme');
+    if (themes.length === 0) {
+      return <EmptyState size="compact" header="No themes to narrate" description="Add strategy themes and objectives to see the executive narrative." />;
+    }
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--ds-space-300)' }}>
+        {themes.map((theme) => {
+          const objs = objectivesUnder(theme.id);
+          const n = objs.length;
+          const measured = objs.filter((o) => (kpiCountByElement.get(o.id) ?? 0) > 0).length;
+          const owned = objs.filter((o) => !!o.owner_id).length;
+          const key = healthKeyFor(theme);
+          const band = key ? resolveBand(key) : null;
+          const verdict = n === 0
+            ? `${theme.name} has no objectives yet — it is not yet actionable.`
+            : `${theme.name} spans ${n} objective${n === 1 ? '' : 's'}: ${measured}/${n} measured and ${owned}/${n} owned.${band ? ` Worst measure signal across the theme is ${band.label.toLowerCase()}.` : ' No objective is measured yet.'}`;
+          return (
+            <div key={theme.id} style={{ borderLeft: `3px solid ${T.border}`, paddingLeft: 'var(--ds-space-200)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--ds-space-100)', marginBottom: 'var(--ds-space-075)' }}>
+                <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 653, color: T.text }}>{theme.name}</span>
+                {band ? <Lozenge appearance={(band.appearance as LozengeAppearance) ?? 'default'}>{band.label}</Lozenge> : null}
+                {theme.slug ? <Button appearance="link" spacing="none" onClick={() => navigate(Routes.strata.strategyElement(theme.slug!))}>Open →</Button> : null}
+              </div>
+              <p style={{ margin: 0, fontSize: 'var(--ds-font-size-200)', color: T.subtle, lineHeight: 'var(--ds-line-height-body)' }}>{verdict}</p>
+              {n > 0 ? (
+                <ul style={{ margin: 'var(--ds-space-150) 0 0', paddingLeft: 'var(--ds-space-250)', display: 'flex', flexDirection: 'column', gap: 'var(--ds-space-075)' }}>
+                  {objs.map((o) => {
+                    const gap = gapOf(o);
+                    const oKey = healthKeyFor(o);
+                    const oBand = oKey ? resolveBand(oKey) : null;
+                    return (
+                      <li key={o.id} style={{ fontSize: 'var(--ds-font-size-100)', color: T.subtle, lineHeight: 'var(--ds-line-height-body)' }}>
+                        <span style={{ fontWeight: 600, color: T.text }}>{o.name}</span>
+                        {' — '}{oBand ? oBand.label.toLowerCase() : 'not yet measured'}
+                        {`; ${kpiCountByElement.get(o.id) ?? 0} measures · ${cardCountFor(o)} cards · ${benefitCountFor(o)} benefits`}
+                        {gap ? <span style={{ color: 'var(--ds-text-warning)', fontWeight: 600 }}>{` · ${gap.toLowerCase()}`}</span> : null}
+                      </li>
+                    );
+                  })}
+                </ul>
+              ) : null}
+            </div>
+          );
+        })}
+      </div>
+    );
+  };
+
   const isLoading = contextLoading || elementsQ.isLoading;
 
   const filterControl = (
@@ -888,11 +949,7 @@ export default function StrataStrategyRoomPage() {
         <>
           <ReadinessBand tiles={readiness} />
           <StrataPanel title="Narrative" icon={<GitBranch size={16} />} testId="strata-narrative-panel">
-            <EmptyState
-              size="compact"
-              header="Narrative view — coming soon"
-              description="An executive narrative of this cycle’s themes and objectives is on the way. For now, use Structure to author the hierarchy or Map for the cause-and-effect canvas."
-            />
+            {renderNarrative()}
           </StrataPanel>
         </>
       ) : (

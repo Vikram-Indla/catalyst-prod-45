@@ -45,4 +45,12 @@ Gates green; live-verified light+dark; MAP zero-change re-probed = PASS.
 Esc-close + <1280 overlay drawer. Gates green; live-verified light+dark + narrow drawer (1120px);
 MAP zero-change re-probed = PASS. (Dev session logged out mid-slice; Vikram re-authed to finish.)
 
-## Status: 2D-3 built + verified; commit pending Vikram approval → then 2D-4 (Narrative body — show approach first).
+## 2D-3 — MERGED to main `497d83510`.
+
+## 2D-4 — DONE (Narrative view) — 2D COMPLETE
+Grounded executive prose (renderNarrative): per theme a composed verdict sentence from real counts +
+health lozenge + Open→, objectives as one-liners with measures/cards/benefits + gap warnings. No invented
+content (approach approved by Vikram). Gates green; live-verified light+dark; MAP zero-change re-probed = PASS.
+
+## Status: 2D-4 built + verified; commit pending Vikram approval. ✅ 2D Strategy Room (anchor 02) COMPLETE.
+Next Phase-2 surface = 2E Element Detail (anchor 14).
