@@ -40,24 +40,26 @@
  * Deliberately out of scope: Strategic Investment summary (budget/spend).
  * See features/CAT-STRATA-THEME-DETAIL-20260710-001/ for the full slice plans.
  */
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { useQueries } from '@tanstack/react-query';
 import { Button, EmptyState, Lozenge, Spinner } from '@/components/ads';
 import { Briefcase, ClipboardList, GitBranch, Network, Plus, Target } from '@/lib/atlaskit-icons';
 import { Routes } from '@/lib/routes';
 import {
-  useActions, useDecisions, useElementKpis, useGateModels, useInvalidateStrata, useKpis, useMapEdges, useOkrs,
+  useActions, useBandResolver, useBenefitProjectCards, useBenefits, useDecisions, useElementKpis, useGateModels, useInvalidateStrata, useKpis, useMapEdges, useOkrs,
   ctxToken, usePerspectives, useProjectCards, useThemeCharters, useProfileNames, useStrataAudit, useStrataContext,
   useStrataRoles, useStrategyElementBySlug, useStrategyElements,
 } from '@/modules/strata/hooks/useStrata';
 import {
-  computeCardRollup, forecastSource, OkrRow, StrataExecutionHealthLozenge, StrataPageShell, StrataPanel, T,
+  computeCardRollup, forecastSource, OkrRow, StrataChainStrip, StrataExecutionHealthLozenge, StrataPageShell, StrataPanel, T,
 } from '@/modules/strata/components/shared';
+import type { StrataChainSegment } from '@/modules/strata/components/shared';
 import {
   EditElementModal, gateModelSelectOptions, NewElementModal, perspectiveSelectOptions, StrataFormModal, str,
   themeParentOptions, ThemeCharterModal,
 } from '@/modules/strata/components/authoring';
-import { governanceApi } from '@/modules/strata/domain';
+import { governanceApi, kpiApi } from '@/modules/strata/domain';
 import { fmtDate, fmtDateTime, formatAuditAction, labelize } from '@/modules/strata/components/format';
 import { isThemeElement } from '@/modules/strata/types';
 import type { StrataDecision, StrataStrategyElement } from '@/modules/strata/types';
@@ -106,9 +108,12 @@ export default function StrataStrategyElementDetailPage() {
   const actionsQ = useActions();
   const rolesQ = useStrataRoles();
   const auditQ = useStrataAudit('strata_strategy_elements');
+  const benefitCardsQ = useBenefitProjectCards();
+  const benefitsQ = useBenefits();
   const profiles = useProfileNames();
   const invalidate = useInvalidateStrata();
-  const { cycles } = useStrataContext();
+  const resolveBand = useBandResolver();
+  const { cycles, activePeriod } = useStrataContext();
 
   const [authoring, setAuthoring] = useState<AuthoringState | null>(null);
   const [expandedOkrs, setExpandedOkrs] = useState<Set<string>>(new Set());
@@ -128,6 +133,22 @@ export default function StrataStrategyElementDetailPage() {
     if (!id) return '—';
     return perspectivesQ.data?.find((p) => p.id === id)?.name ?? '—';
   };
+
+  // Element health is DERIVED (P2-D5: no element-health calc exists) — roll up the
+  // linked KPIs' governed achievement bands for the active period, worst-band wins.
+  // Called before the early returns to satisfy the rules of hooks.
+  const linkedKpiIdsForHealth = useMemo(
+    () => (element ? [...new Set((elementKpisQ.data ?? []).filter((l) => l.element_id === element.id).map((l) => l.kpi_id))] : []),
+    [element, elementKpisQ.data],
+  );
+  const achievementQueries = useQueries({
+    queries: linkedKpiIdsForHealth.map((id) => ({
+      queryKey: ['strata', 'kpi-achievement', id, activePeriod?.id],
+      queryFn: () => kpiApi.achievement(id, activePeriod!.id),
+      enabled: !!activePeriod?.id,
+      staleTime: 30_000,
+    })),
+  });
 
   if (elementQ.isLoading) {
     return (
@@ -208,6 +229,42 @@ export default function StrataStrategyElementDetailPage() {
   const overdueActionsCount = themeActions.filter((a) =>
     (a.status === 'open' || a.status === 'in_progress') && a.due_date != null && a.due_date < todayIso).length;
 
+  // ── Derived health (P2-D5) — worst governed band across the linked measures ──
+  const BAND_RANK: Record<string, number> = { removed: 3, moved: 2, inprogress: 1, new: 1, success: 1 };
+  const bandRank = (k: string | null | undefined) => BAND_RANK[resolveBand(k ?? null)?.appearance ?? ''] ?? 0;
+  const measureBandKeys = linkedKpiIdsForHealth
+    .map((_, i) => (achievementQueries[i]?.data as { status_key?: string | null } | undefined)?.status_key)
+    .filter(Boolean) as string[];
+  const healthBandKey = measureBandKeys.length > 0
+    ? measureBandKeys.reduce((worst, k) => (bandRank(k) > bandRank(worst) ? k : worst))
+    : null;
+  const healthBand = healthBandKey ? resolveBand(healthBandKey) : null;
+  const belowMeasures = measureBandKeys.filter((k) => bandRank(k) >= 2).length;
+
+  // ── Chain (anchor 14): Theme · Measures · Delivery · Value · Decisions ──
+  const elementCards = element.element_type === 'objective'
+    ? (projectCardsQ.data ?? []).filter((c) => c.objective_element_id === element.id && c.stage !== 'archived')
+    : themeCards;
+  const benefitsByCard = new Map<string, string[]>();
+  (benefitCardsQ.data ?? []).forEach((b) => { const l = benefitsByCard.get(b.project_card_id) ?? []; l.push(b.benefit_id); benefitsByCard.set(b.project_card_id, l); });
+  const benefitById = new Map((benefitsQ.data ?? []).map((b) => [b.id, b]));
+  const elementBenefitIds = [...new Set(elementCards.flatMap((c) => benefitsByCard.get(c.id) ?? []))];
+  const chainSegments: StrataChainSegment[] = [
+    { icon: '↑', label: 'Theme', emptyText: 'Top-level theme',
+      items: parent ? [{ name: parent.name, onNav: parent.slug ? () => navigate(Routes.strata.strategyElement(parent.slug!)) : undefined }] : [] },
+    { icon: '◎', label: 'Measures', emptyText: 'No linked measures — add from the Strategy Room row menu',
+      items: linkedKpis.map(({ kpi }) => ({ name: kpi!.name, onNav: kpi!.slug ? () => navigate(Routes.strata.kpi(kpi!.slug!)) : undefined })) },
+    { icon: '▦', label: 'Delivery', emptyText: 'No linked Project Cards',
+      items: elementCards.map((c) => ({ name: c.name, onNav: c.slug ? () => navigate(`${Routes.strata.projectCard(c.slug)}${cardCtxSuffix}`) : undefined })) },
+    { icon: '◇', label: 'Value', emptyText: 'No linked benefits',
+      items: elementBenefitIds.map((id) => ({ name: benefitById.get(id)?.name ?? '—' })) },
+    { icon: '⚖', label: 'Decisions', emptyText: 'No linked decisions',
+      items: themeDecisions.map((d) => ({ name: d.title })) },
+  ];
+  const healthVerdict = linkedKpis.length === 0
+    ? 'Not yet measured — no measures are linked to this element.'
+    : `Health is ${healthBand?.label.toLowerCase() ?? 'unresolved'} — derived from ${linkedKpis.length} linked measure${linkedKpis.length === 1 ? '' : 's'}${belowMeasures > 0 ? `, ${belowMeasures} below target` : ''}${elementCards.length > 0 ? `, across ${elementCards.length} delivery card${elementCards.length === 1 ? '' : 's'}` : ''}.`;
+
   return (
     <StrataPageShell
       trail={[{ text: 'Strategy Room', onClick: () => navigate(Routes.strata.strategy()) }]}
@@ -230,8 +287,21 @@ export default function StrataStrategyElementDetailPage() {
       ) : undefined}
     >
       <div style={{ display: 'grid', gap: 16, gridTemplateColumns: 'minmax(0, 1fr) 360px', alignItems: 'start' }}>
-        {/* Left analytical body (anchor 14 ViewBase anatomy) */}
+        {/* Left analytical body (anchor 14 ViewBase anatomy) — health verdict leads */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16, minWidth: 0 }}>
+          {/* Health verdict (derived) */}
+          <section style={{ border: `1px solid ${T.border}`, borderRadius: 8, background: T.raised, boxShadow: 'var(--ds-shadow-raised)', padding: 'var(--ds-space-250) var(--ds-space-300)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--ds-space-100)', marginBottom: 'var(--ds-space-100)', flexWrap: 'wrap' }}>
+              <span style={{ fontSize: 'var(--ds-font-size-050)', fontWeight: 600, letterSpacing: '0.04em', color: T.subtlest }}>
+                {activePeriod?.name ? `${activePeriod.name} HEALTH` : 'HEALTH'}
+              </span>
+              {healthBand ? <Lozenge appearance={(healthBand.appearance as React.ComponentProps<typeof Lozenge>['appearance']) ?? 'default'}>{healthBand.label}</Lozenge> : <Lozenge appearance="default">Not measured</Lozenge>}
+              <span style={{ fontSize: 'var(--ds-font-size-100)', color: T.subtlest }}>derived from linked measures</span>
+            </div>
+            <p style={{ margin: 0, fontSize: 'var(--ds-font-size-300)', lineHeight: 'var(--ds-line-height-body)', color: T.text }}>{healthVerdict}</p>
+          </section>
+          {/* In the chain */}
+          <StrataChainStrip segments={chainSegments} testId="strata-element-detail-chain" />
         {isTheme ? (
           <StrataPanel
             title="Charter"

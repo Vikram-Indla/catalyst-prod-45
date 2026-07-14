@@ -732,3 +732,25 @@ strip; 2E-3 charter/OKR restyle + promote + states.
   + relationships; rail Details (Objective · ACTIVE · Financial · Parent B2B Growth Engine) + History.
   Theme (`profitable-growth-proof`) → left body Charter/Objectives/OKR/… ; rail Details (Theme · DRAFT ·
   Root-level · Charter None) + History; header Edit/Charter/Add-Objective preserved. Both themes clean.
+
+---
+
+## Slice 2E-2 — Element Detail: Health verdict (derived) + StrataChainStrip (anchor 14) (session 008/009, 2026-07-14)
+**File:** `StrataStrategyElementDetailPage.tsx` only.
+
+### Changes
+- **Health verdict** section now LEADS the left body (anchor 14): "{period} HEALTH" + derived band lozenge
+  + "derived from linked measures" + a composed grounded sentence. Health = P2-D5 derived rollup — page-level
+  `useQueries` over the element's linked KPI ids in the active period (`kpiApi.achievement`), worst governed
+  band wins; verdict cites measure count, below-target count, and delivery-card count. No measures → "Not yet measured".
+  useQueries placed before the early returns (rules of hooks).
+- **StrataChainStrip** below the verdict: Theme (parent) · Measures (linked KPIs) · Delivery (Project Cards
+  by objective_element_id / theme_id) · Value (multi-hop benefit↔card) · Decisions (strata_decisions by
+  element_id). Links where a route exists; honest emptyText per segment.
+
+### Verification (raw)
+- Gates GREEN: tsc no errors · colors 0=baseline · audit no-increase (tokens 19799) · CRE.
+- LIVE (localhost:8080, staging) **light + dark**: `grow-b2b-revenue` → "Q2 FY2026 HEALTH · ON TRACK ·
+  derived from linked measures" + "Health is on track — derived from 1 linked measure, across 3 delivery
+  cards."; chain = ↑ B2B Growth Engine · ◎ B2B Revenue Growth · ▦ 3 cards · ◇ 2 benefits · ⚖ no linked
+  decisions. Both themes clean.
