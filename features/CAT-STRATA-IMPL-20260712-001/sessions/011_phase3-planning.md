@@ -43,7 +43,12 @@ spawn discovery; produce `03_PLAN_LOCK_PHASE3.md`; STOP for approval. No code be
 - **3A-1a DONE** (pending commit approval): canonical grouped JiraTable (`ProjectCardsTable`) replacing
   hand-rolled tiles on `StrataExecutionPage.tsx`; anchor-17 columns Card·source/↑Objective/Health/Forecast Δ/
   Blockers; row→detail with `?from=`. DRIFT-7 logged (milestones → detail). All gates green; light+dark verified.
-- **3A-1b NEXT**: Benefit-at-stake column (`useCardBenefitStakes` batch).
+- **3A-1a MERGED** — commit `25d39f80d`, merge `49dbd64b1` → `origin/main` (temp-worktree flow, all gates
+  re-run green on merged tree, branch synced + pushed, worktree removed, map untouched across merge).
+  Inline milestones restored (Vikram). No foreign commits swept.
+- **3A-1b DONE** (pending commit): Benefit-at-stake column via page-level `useQueries` batch
+  (`benefitProjectCards` ⋈ `benefitValues` planned × share); zero-assumption dash; all 6 columns fit
+  (Objective 20→16). Gates green; light+dark verified. **✅ 3A-1 (anchor 17) COMPLETE.** NEXT: 3A-2 (anchor 07).
 
 ## Open debt carried (unchanged)
 1. Prod migrations `20260713100000` + `20260713110000` = staging-only (no prod access). Apply later.

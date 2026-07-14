@@ -15,6 +15,7 @@
  * Calculation). Zero-assumption: '—' for unknowns.
  */
 import React, { useEffect, useMemo, useState } from 'react';
+import { useQueries } from '@tanstack/react-query';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { exportToCsv } from '@/utils/exports';
 import {
@@ -34,13 +35,14 @@ import { StrataFormModal } from '@/modules/strata/components/authoring';
 import type { StrataFormValues } from '@/modules/strata/components/authoring';
 import { ProjectCardDetailView } from '@/modules/strata/components/ProjectCardDetailView';
 import { executionApi, valueApi } from '@/modules/strata/domain';
-import { fmtDate, fmtPct, fmtRatioPct, labelize } from '@/modules/strata/components/format';
+import { fmtDate, fmtPct, fmtRatioPct, fmtSarCompact, labelize } from '@/modules/strata/components/format';
 import {
-  useDependencies, useInvalidateStrata, useMilestones, usePortfolios, useProfileNames, useProjectCardBySlug,
-  ctxToken, useProjectCardPicklists, useProjectCards, useStrataContext, useStrataRoles, useStrategyElements,
+  useBenefitProjectCards, useDependencies, useInvalidateStrata, useMilestones, usePortfolios, useProfileNames,
+  useProjectCardBySlug, ctxToken, useProjectCardPicklists, useProjectCards, useStrataContext, useStrataRoles,
+  useStrategyElements,
 } from '@/modules/strata/hooks/useStrata';
 import type {
-  StrataDependency, StrataMilestone, StrataProjectCard, StrataRole, StrataStrategyElement,
+  StrataBenefitValue, StrataDependency, StrataMilestone, StrataProjectCard, StrataRole, StrataStrategyElement,
 } from '@/modules/strata/types';
 
 const DEPENDENCY_STATUS: Record<StrataDependency['status'], 'default' | 'inprogress' | 'success' | 'removed' | 'moved' | 'new'> = {
@@ -196,11 +198,12 @@ type CardTableRow =
   | { kind: 'card'; id: string; card: StrataProjectCard }
   | { kind: 'ms'; id: string; ms: StrataMilestone; parentId: string };
 
-function ProjectCardsTable({ cards, dependencies, elementById, milestonesByCard, onOpenDetail }: {
+function ProjectCardsTable({ cards, dependencies, elementById, milestonesByCard, stakeByCard, onOpenDetail }: {
   cards: StrataProjectCard[];
   dependencies: StrataDependency[];
   elementById: Map<string, StrataStrategyElement>;
   milestonesByCard: Map<string, StrataMilestone[]>;
+  stakeByCard: Map<string, number | null>;
   onOpenDetail: (card: StrataProjectCard) => void;
 }) {
   const [expanded, setExpanded] = useState<ReadonlySet<string>>(() => new Set<string>());
@@ -271,7 +274,7 @@ function ProjectCardsTable({ cards, dependencies, elementById, milestonesByCard,
     {
       // Fixed width (not flex): JiraTable reserves a 640px floor per flex column,
       // so a single flex column (Card · source) keeps the table inside the panel.
-      id: 'objective', label: 'Objective', width: 20,
+      id: 'objective', label: 'Objective', width: 16,
       cell: ({ row }) => {
         if (row.kind === 'ms') return null;
         const obj = row.card.objective_element_id ? elementById.get(row.card.objective_element_id) : null;
@@ -296,6 +299,14 @@ function ProjectCardsTable({ cards, dependencies, elementById, milestonesByCard,
       },
     },
     {
+      id: 'stake', label: 'Benefit at stake', width: 12, align: 'end',
+      cell: ({ row }) => {
+        if (row.kind === 'ms') return null;
+        const s = stakeByCard.get(row.card.id);
+        return s == null ? <Dash /> : <span style={{ color: T.subtle, fontVariantNumeric: 'tabular-nums' }}>{fmtSarCompact(s)}</span>;
+      },
+    },
+    {
       id: 'blockers', label: 'Blockers', width: 10,
       cell: ({ row }) => {
         if (row.kind === 'ms') return null;
@@ -311,7 +322,7 @@ function ProjectCardsTable({ cards, dependencies, elementById, milestonesByCard,
         );
       },
     },
-  ], [blockersByCard, elementById]);
+  ], [blockersByCard, elementById, stakeByCard]);
 
   return (
     <JiraTable<CardTableRow>
@@ -378,11 +389,12 @@ function BREAKDOWN_COLUMNS(dependencies: StrataDependency[]): Column<CardGroup>[
 
 /** Shared group-panel renderer for the Leading Business Unit / Strategic Theme /
  * Project Manager / Delivery Team views — same panel shape, different grouping key. */
-function GroupedCardsSection({ groups, dependencies, elementById, milestonesByCard, onOpenDetail, emptyDescription, testId }: {
+function GroupedCardsSection({ groups, dependencies, elementById, milestonesByCard, stakeByCard, onOpenDetail, emptyDescription, testId }: {
   groups: CardGroup[];
   dependencies: StrataDependency[];
   elementById: Map<string, StrataStrategyElement>;
   milestonesByCard: Map<string, StrataMilestone[]>;
+  stakeByCard: Map<string, number | null>;
   onOpenDetail: (card: StrataProjectCard) => void;
   emptyDescription: string;
   testId: string;
@@ -400,7 +412,7 @@ function GroupedCardsSection({ groups, dependencies, elementById, milestonesByCa
             {g.cards.length === 0 ? (
               <EmptyState size="compact" header="No project cards in this group" />
             ) : (
-              <ProjectCardsTable cards={g.cards} dependencies={dependencies} elementById={elementById} milestonesByCard={milestonesByCard} onOpenDetail={onOpenDetail} />
+              <ProjectCardsTable cards={g.cards} dependencies={dependencies} elementById={elementById} milestonesByCard={milestonesByCard} stakeByCard={stakeByCard} onOpenDetail={onOpenDetail} />
             )}
           </StrataPanel>
         );
@@ -507,6 +519,48 @@ export default function StrataExecutionPage() {
     }
     return m;
   }, [allMilestones]);
+
+  // ── Benefit at stake (anchor 17) ──────────────────────────────────────────
+  // Per card: Σ over its linked benefits of (benefit planned value × attribution
+  // share). Planned = the benefit's 'planned' value for the active period (else its
+  // first planned row). ONE page-level batch (useQueries over the linked benefits) —
+  // never a per-row query. Zero-assumption: no linked benefit with a planned value → dash.
+  const benefitLinks = useBenefitProjectCards().data ?? [];
+  const cardIdSet = useMemo(() => new Set(projectCards.map((c) => c.id)), [projectCards]);
+  const stakeBenefitIds = useMemo(
+    () => Array.from(new Set(benefitLinks.filter((l) => cardIdSet.has(l.project_card_id)).map((l) => l.benefit_id))),
+    [benefitLinks, cardIdSet],
+  );
+  const benefitValueQueries = useQueries({
+    queries: stakeBenefitIds.map((bid) => ({
+      queryKey: ['strata', 'benefit-values', bid],
+      queryFn: () => valueApi.benefitValues(bid),
+      staleTime: 30_000,
+    })),
+  });
+  const plannedByBenefit = useMemo(() => {
+    const m = new Map<string, number>();
+    stakeBenefitIds.forEach((bid, i) => {
+      const rows = (benefitValueQueries[i]?.data ?? []) as StrataBenefitValue[];
+      const planned = rows.filter((v) => v.value_kind === 'planned');
+      const pick = planned.find((v) => v.period_id === activePeriod?.id) ?? planned[0];
+      if (pick) m.set(bid, pick.value);
+    });
+    return m;
+    // benefitValueQueries is a fresh array each render; key on resolved-count + period.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [stakeBenefitIds, activePeriod?.id, benefitValueQueries.map((q) => (q.data ? 1 : 0)).join('')]);
+  const stakesByCard = useMemo(() => {
+    const m = new Map<string, number | null>();
+    for (const l of benefitLinks) {
+      if (!cardIdSet.has(l.project_card_id)) continue;
+      const planned = plannedByBenefit.get(l.benefit_id);
+      if (planned == null) continue;
+      m.set(l.project_card_id, (m.get(l.project_card_id) ?? 0) + planned * (l.attribution_share ?? 1));
+    }
+    return m;
+  }, [benefitLinks, cardIdSet, plannedByBenefit]);
+
   const themes = elements.filter((e) => e.element_type === 'theme');
 
   // Hold the whole list in loading until the active cycle's strategy elements have
@@ -1024,7 +1078,7 @@ export default function StrataExecutionPage() {
               <GroupedCardsSection
                 groups={themeGroups}
                 dependencies={filteredDependencies}
-                  elementById={themeById} milestonesByCard={milestonesByCard}
+                  elementById={themeById} milestonesByCard={milestonesByCard} stakeByCard={stakesByCard}
                 onOpenDetail={openCard}
                 emptyDescription="Adjust or clear filters to see project cards."
                 testId="strata-execution-theme-groups"
@@ -1034,7 +1088,7 @@ export default function StrataExecutionPage() {
             <GroupedCardsSection
               groups={businessUnitGroups}
               dependencies={filteredDependencies}
-              elementById={themeById} milestonesByCard={milestonesByCard}
+              elementById={themeById} milestonesByCard={milestonesByCard} stakeByCard={stakesByCard}
               onOpenDetail={openCard}
               emptyDescription="Adjust or clear filters to see project cards."
               testId="strata-execution-lob-groups"
@@ -1043,7 +1097,7 @@ export default function StrataExecutionPage() {
             <GroupedCardsSection
               groups={themeGroups}
               dependencies={filteredDependencies}
-              elementById={themeById} milestonesByCard={milestonesByCard}
+              elementById={themeById} milestonesByCard={milestonesByCard} stakeByCard={stakesByCard}
               onOpenDetail={openCard}
               emptyDescription="Adjust or clear filters to see project cards."
               testId="strata-execution-theme-groups"
@@ -1052,7 +1106,7 @@ export default function StrataExecutionPage() {
             <GroupedCardsSection
               groups={pmGroups}
               dependencies={filteredDependencies}
-              elementById={themeById} milestonesByCard={milestonesByCard}
+              elementById={themeById} milestonesByCard={milestonesByCard} stakeByCard={stakesByCard}
               onOpenDetail={openCard}
               emptyDescription="Adjust or clear filters to see project cards."
               testId="strata-execution-pm-groups"
@@ -1061,7 +1115,7 @@ export default function StrataExecutionPage() {
             <GroupedCardsSection
               groups={deliveryTeamGroups}
               dependencies={filteredDependencies}
-              elementById={themeById} milestonesByCard={milestonesByCard}
+              elementById={themeById} milestonesByCard={milestonesByCard} stakeByCard={stakesByCard}
               onOpenDetail={openCard}
               emptyDescription="Adjust or clear filters to see project cards."
               testId="strata-execution-team-groups"
