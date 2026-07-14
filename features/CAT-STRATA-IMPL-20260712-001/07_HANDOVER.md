@@ -10,10 +10,11 @@
 - **Phase 0 + Phase 1 COMPLETE** (1B skipped; anchor-13 polish done). **PHASE 2 IN PROGRESS:**
   **2A · 2B-1 · 2B-2 · 2C-1 · 2C-2a (`01cbe7f87`) · 2C-2b (`b54d68a84`) · 2C-2c (`75c5daba1`) ·
   2C-2d-1 (`e23fc8f90`) · 2C-2d-2 (`da80fdb43`) merged — ✅ Anchor 16 COMPLETE. 2D Strategy Room:
-  2D-1 (`0e9f8d46a`) · 2D-2 (`54bf41767`) merged; 2D-2b (Health-derived + Benefits columns) DONE + verified,
-  commit pending — ✅ anchor-02 structure tree COMPLETE.**
-  **NEXT = slice 2D-3 (inspector rail: 360px sticky right, shared selection with the tree, Esc closes →
-  focus row, <1280 overlay drawer) → 2D-4 Narrative body (approach shown to Vikram first, P2-D4).**
+  2D-1 (`0e9f8d46a`) · 2D-2 (`54bf41767`) · 2D-2b (`47dd9f1e8`) merged; 2D-3 (inspector rail) DONE + verified,
+  commit pending.**
+  **NEXT = slice 2D-4 (Narrative view body — replace the placeholder; SHOW VIKRAM THE APPROACH FIRST per
+  P2-D4: grounded in real data = strategy themes→objectives as executive prose + coverage, no invented chrome).
+  After 2D → 2E Element Detail (anchor 14) → 2F Evidence (anchor 15).**
 
 ### 2D Strategy Room (anchor 02) — SPLIT 2D-1/2D-2/2D-3/2D-4. HARD GATE: map component never touched.
 - **Anchor 02 re-read in full (session 007).** **MAP BASELINE captured:** `/strata/strategy/map` = 18
@@ -35,11 +36,14 @@
   Tooltip "derived"; no measures → —) + Benefits column (multi-hop `useBenefitProjectCards` ⋈ card.
   objective_element_id). Column order now Element·Owner·Health·KPIs·Cards·Benefits·Actions; Promote folded into
   the Actions menu (no wide button column). Gates green; light+dark; MAP zero-change PASS. Anchor-02 tree COMPLETE.
-- **2D-3 (NEXT):** inspector rail — 360px sticky right column; selecting a tree row shows chip + name +
-  description + StrataChainStrip (in-the-chain) + Owner/Lifecycle/Health/Since + attention callout + "Open
-  full page →"; shared selection with the tree (add a selected-row highlight + onRowClick that sets selection
-  instead of navigating — navigate only via "Open full page"); Esc closes → focus returns to row; <1280 → overlay drawer.
-- **2D-4:** Narrative view body (replace the placeholder; approach shown to Vikram first — P2-D4).
+- **2D-3 DONE** — 360px inspector rail (2-col grid). Selected element → chip + Open-full-page + name +
+  description + `StrataChainStrip` (Theme/Measures/Delivery/Value, real multi-hop) + Owner/Lifecycle/Health/
+  Perspective + derived attention callout. Row/name click SELECTS (no nav; nav via "Open full page"); Esc
+  closes; <1280 → overlay drawer (`isNarrow` resize listener). No full-row highlight (JiraTable lacks the
+  hook — feedback is brand-toned name + rail). Gates green; light+dark; MAP zero-change PASS.
+- **2D-4 (NEXT):** Narrative view body — replace the "coming soon" placeholder. **P2-D4: SHOW VIKRAM THE
+  APPROACH BEFORE BUILDING.** Grounded in real data (themes→objectives as executive verdict prose +
+  coverage), no invented chrome. Toggle + placeholder already wired in 2D-1; just fill the `viewMode==='narrative'` branch.
 - 2C-2 split into 2C-2a (backend ✓) · 2C-2b (columns) · 2C-2c (BulkFooterBar) · 2C-2d (saved views + filters).
 
 ## ⭐ PHASE 2 — NEXT (START HERE). Plan Lock: `03_PLAN_LOCK_PHASE2.md` (APPROVED, full build)

@@ -37,4 +37,12 @@ Benefits = multi-hop useBenefitProjectCards ⋈ card.objective_element_id. Colum
 (Element·Owner·Health·KPIs·Cards·Benefits·Actions). Promote folded into Actions menu (fixed 7-col width squeeze).
 Gates green; live-verified light+dark; MAP zero-change re-probed = PASS.
 
-## Status: 2D-2b built + verified; commit pending Vikram approval → then 2D-3 (inspector rail).
+## 2D-2b — MERGED to main `47dd9f1e8`.
+
+## 2D-3 — DONE (inspector rail)
+360px rail (2-col grid) + shared selection (row/name click selects, no nav) + StrataChainStrip
+(Theme/Measures/Delivery/Value multi-hop) + Owner/Lifecycle/Health/Perspective + derived attention +
+Esc-close + <1280 overlay drawer. Gates green; live-verified light+dark + narrow drawer (1120px);
+MAP zero-change re-probed = PASS. (Dev session logged out mid-slice; Vikram re-authed to finish.)
+
+## Status: 2D-3 built + verified; commit pending Vikram approval → then 2D-4 (Narrative body — show approach first).

@@ -659,3 +659,30 @@ Branch: `strata/impl-phase01`. File: `StrataKpiLibraryPage.tsx`.
   (Investor Journey Transformation). Benefits multi-hop counts (B2B Growth Engine 2, Investor Journey 1).
   Actions dropdown fits; Promote in the menu. **MAP re-probed → identical to baseline; git shows only the
   Room page changed. ZERO-CHANGE GATE PASS.** ✅ Anchor-02 structure tree COMPLETE (2D-2 + 2D-2b).
+
+---
+
+## Slice 2D-3 — Strategy Room inspector rail (anchor 02) (session 008, 2026-07-14)
+**File:** `StrataStrategyRoomPage.tsx` only. Map re-probed → zero change.
+
+### Changes
+- **360px inspector rail** in a 2-col grid beside the tree (P2-D1: reproduce the ViewBase "body + 360px
+  rail" anatomy via a grid, not CatalystViewBase). Selected element shows: type chip + "Open full page →"
+  + close; name + description; **`StrataChainStrip`** (↑ Theme parent · ◎ Measures = linked KPIs · ▦
+  Delivery = Project Cards · ◇ Value = benefits, all real, links where a route exists); Owner/Lifecycle/
+  Health(derived)/Perspective field grid; a **derived attention callout** (health warning/danger, else
+  coverage gap); "…→ element detail" link. Placeholder when nothing selected.
+- **Shared selection** — row-click + name-click **select** (set `selectedId`), they no longer navigate;
+  selected name renders brand-toned; navigation moves to the rail's "Open full page →".
+- **Esc closes** the rail (deselect). **<1280 → overlay drawer** (fixed right, dimmed blanket) via a
+  window-width listener (`isNarrow`); ≥1280 = sticky rail column.
+
+### Verification (raw)
+- Gates GREEN: tsc no errors · colors 0=baseline · audit no-increase (tokens 19799) · CRE.
+- LIVE (localhost:8080, staging) **light + dark**: selecting "Grow B2B Revenue" → rail shows chain
+  (↑ B2B Growth Engine, ◎ B2B Revenue Growth, ▦ 3 cards, ◇ 2 benefits — matches the Cards=3/Benefits=2
+  columns), ACTIVE lifecycle, ON TRACK health, "Coverage gap: no owner" attention. Esc → placeholder.
+  **Resized to 1120px → rail becomes an overlay drawer over a blanket** (tree full-width). **MAP re-probed
+  → identical to baseline; git shows only the Room page changed. ZERO-CHANGE GATE PASS.**
+- NB: JiraTable has no single-row highlight hook, so selection feedback is the brand-toned name + the rail
+  (no full-row background tint). NB: dev session had logged out mid-slice; Vikram re-authenticated to finish verification.
