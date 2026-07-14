@@ -833,4 +833,17 @@ strip; 2E-3 charter/OKR restyle + promote + states.
   unknown; health word-lozenges + tones; Forecast Δ "+20/+58/+92 days" danger + "—"; "1 open" blocker.
   Row-click → `/strata/execution/care-app-v3?…&from=%2Fstrata%2Fexecution`. Only console noise = pre-existing
   @atlaskit/select legacy-context warning (not this change). MAP file untouched.
-- NEXT: **3A-1b** — Benefit-at-stake column (`useCardBenefitStakes` batch via `useQueries` over linked benefits).
+### ⏳ Slice 3A-1b — Benefit-at-stake column (anchor 17, completes 3A-1) — DONE, gates green, live-verified; PENDING commit
+- File: `src/modules/strata/pages/StrataExecutionPage.tsx` (only src file).
+- Added the 6th anchor-17 column **Benefit at stake** (SAR, `fmtSarCompact`, between Forecast Δ and Blockers).
+- **Page-level batch** (no per-row query): `useBenefitProjectCards()` (all links) → distinct linked benefit_ids
+  for in-scope cards → `useQueries` over `valueApi.benefitValues(id)` → `plannedByBenefit` (the benefit's
+  'planned' value for the active period, else its first planned row; memo keyed on resolved-count + period,
+  KPI-library pattern) → `stakesByCard` = Σ over a card's links of `planned × (attribution_share ?? 1)`.
+  Threaded `stakeByCard` through GroupedCardsSection → ProjectCardsTable. **Zero-assumption:** dash when a card
+  has no linked benefit with a planned value. Objective width trimmed 20→16 so all 6 columns fit in-panel.
+- GATES: `tsc` clean · colors 0=baseline · audit 19799/19799 · CRE pass.
+- LIVE (localhost:8080, staging) **light + dark**: Care App v3 SAR 760M · Investor Journey Product SAR 1.2M ·
+  IR Platform SAR 800K · CPQ/Enterprise/MIM "—" (no planned-linked benefit). Values read faithfully from
+  `strata_benefit_values` (magnitudes are seed data, not fabricated). All 6 columns fit; Blockers visible.
+- **✅ 3A-1 (anchor 17 Project Cards List) COMPLETE** — 3A-1a + 3A-1b. NEXT: **3A-2** (anchor 07 Project Card Detail).
