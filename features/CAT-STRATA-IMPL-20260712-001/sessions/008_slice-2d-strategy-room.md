@@ -29,4 +29,12 @@ KPI-coverage/cause-effect panels; preserved expand/modals/promote. Removed dead 
 kpiById/objectives/kpiLinksByElement + CatalystTag/fmtRatioPct/Network/MoveRight. Gates green; live-verified
 light+dark; MAP zero-change re-probed = PASS. Health + Benefits → 2D-2b.
 
-## Status: 2D-2 built + verified; commit pending Vikram approval → then 2D-2b (Health + Benefits columns).
+## 2D-2 — MERGED to main `54bf41767`.
+
+## 2D-2b — DONE (Health-derived + Benefits columns) — anchor-02 tree COMPLETE
+Health = useQueries rollup of linked-KPI achievement bands (worst-band; no measures → —; Tooltip "derived").
+Benefits = multi-hop useBenefitProjectCards ⋈ card.objective_element_id. Column order now matches anchor
+(Element·Owner·Health·KPIs·Cards·Benefits·Actions). Promote folded into Actions menu (fixed 7-col width squeeze).
+Gates green; live-verified light+dark; MAP zero-change re-probed = PASS.
+
+## Status: 2D-2b built + verified; commit pending Vikram approval → then 2D-3 (inspector rail).

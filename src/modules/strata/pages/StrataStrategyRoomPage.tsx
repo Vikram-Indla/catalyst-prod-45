@@ -8,9 +8,10 @@
  */
 import React, { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useQueries } from '@tanstack/react-query';
 import {
   Button, EmptyState, IconButton,
-  Lozenge, Modal, ModalBody, ModalFooter, ModalHeader, ModalTitle, SectionMessage, Select, Spinner, Textfield,
+  Lozenge, Modal, ModalBody, ModalFooter, ModalHeader, ModalTitle, SectionMessage, Select, Spinner, Textfield, Tooltip,
 } from '@/components/ads';
 import type { SelectOption } from '@/components/ads';
 import { JiraTable } from '@/components/shared/JiraTable';
@@ -20,10 +21,10 @@ import {
   ChevronDown, ChevronRight, Gem, GitBranch, Target, X,
 } from '@/lib/atlaskit-icons';
 import {
-  useElementKpis, useGateModels, useInvalidateStrata, useKpis, usePerspectives,
+  useBandResolver, useBenefitProjectCards, useElementKpis, useGateModels, useInvalidateStrata, useKpis, usePerspectives,
   useProjectCards, useThemeCharters, useProfileNames, useStrataContext, useStrataRoles, useStrategyElements,
 } from '@/modules/strata/hooks/useStrata';
-import { strategyApi } from '@/modules/strata/domain';
+import { kpiApi, strategyApi } from '@/modules/strata/domain';
 import { StrataChipMenu, StrataPageShell, StrataPanel, T } from '@/modules/strata/components/shared';
 import type { StrataMenuOption } from '@/modules/strata/components/shared';
 import {
@@ -300,7 +301,8 @@ function ViewToggle({ mode, onStructure, onNarrative, onMap }: {
 
 export default function StrataStrategyRoomPage() {
   const navigate = useNavigate();
-  const { activeCycle, isLoading: contextLoading } = useStrataContext();
+  const { activeCycle, activePeriod, isLoading: contextLoading } = useStrataContext();
+  const resolveBand = useBandResolver();
   const elementsQ = useStrategyElements(activeCycle?.id);
   const chartersQ = useThemeCharters();
   const elementKpisQ = useElementKpis();
@@ -310,6 +312,7 @@ export default function StrataStrategyRoomPage() {
   const gateModelsQ = useGateModels();
   const rolesQ = useStrataRoles();
   const projectCardsQ = useProjectCards();
+  const benefitCardsQ = useBenefitProjectCards();
   const invalidate = useInvalidateStrata();
 
   // Anchor-02 view toggle. Structure = this authoring surface; Map navigates to the
@@ -440,6 +443,66 @@ export default function StrataStrategyRoomPage() {
       ? descendantsOf(el.id).reduce((n, d) => n + (directCardCount.get(d.id) ?? 0), 0) + (directCardCount.get(el.id) ?? 0)
       : (directCardCount.get(el.id) ?? 0);
 
+  // ── Benefits (multi-hop, anchor 02): element → Project Cards (objective_element_id)
+  //    → benefit↔card links → distinct benefits. Themes roll up their descendants.
+  const cardIdsByObjective = useMemo(() => {
+    const m = new Map<string, string[]>();
+    (projectCardsQ.data ?? []).forEach((c) => {
+      if (c.objective_element_id) { const l = m.get(c.objective_element_id) ?? []; l.push(c.id); m.set(c.objective_element_id, l); }
+    });
+    return m;
+  }, [projectCardsQ.data]);
+  const benefitsByCard = useMemo(() => {
+    const m = new Map<string, string[]>();
+    (benefitCardsQ.data ?? []).forEach((b) => { const l = m.get(b.project_card_id) ?? []; l.push(b.benefit_id); m.set(b.project_card_id, l); });
+    return m;
+  }, [benefitCardsQ.data]);
+  const benefitCountFor = (el: StrataStrategyElement): number => {
+    const targets = el.element_type === 'theme' ? [el, ...descendantsOf(el.id)] : [el];
+    const benefitIds = new Set<string>();
+    targets.forEach((t) => (cardIdsByObjective.get(t.id) ?? []).forEach((cid) => (benefitsByCard.get(cid) ?? []).forEach((bid) => benefitIds.add(bid))));
+    return benefitIds.size;
+  };
+
+  // ── Health (derived, P2-D5): no element-health calc exists, so roll up the
+  //    linked KPIs' governed achievement bands. objective = worst band of its
+  //    measures; theme = worst of its objectives. No measures → null (—).
+  const kpiIdsByElement = useMemo(() => {
+    const m = new Map<string, string[]>();
+    elementKpis.forEach((l) => { const list = m.get(l.element_id) ?? []; list.push(l.kpi_id); m.set(l.element_id, list); });
+    return m;
+  }, [elementKpis]);
+  const linkedKpiIds = useMemo(() => [...new Set(elementKpis.map((l) => l.kpi_id))], [elementKpis]);
+  const achievementQueries = useQueries({
+    queries: linkedKpiIds.map((id) => ({
+      queryKey: ['strata', 'kpi-achievement', id, activePeriod?.id],
+      queryFn: () => kpiApi.achievement(id, activePeriod!.id),
+      enabled: !!activePeriod?.id,
+      staleTime: 30_000,
+    })),
+  });
+  const bandKeyByKpiId = useMemo(() => {
+    const m = new Map<string, string>();
+    linkedKpiIds.forEach((id, i) => {
+      const d = achievementQueries[i]?.data as { status_key?: string | null } | undefined;
+      if (d?.status_key) m.set(id, d.status_key);
+    });
+    return m;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [linkedKpiIds, activePeriod?.id, achievementQueries.map((q) => (q.data ? 1 : 0)).join('')]);
+  // Worst-band picker — danger beats warning beats everything else.
+  const BAND_RANK: Record<string, number> = { removed: 3, moved: 2, inprogress: 1, new: 1, success: 1 };
+  const healthKeyFor = (el: StrataStrategyElement): string | null => {
+    const keys: string[] = el.element_type === 'theme'
+      ? descendantsOf(el.id).filter((d) => d.element_type === 'objective').flatMap((o) => (kpiIdsByElement.get(o.id) ?? []).map((k) => bandKeyByKpiId.get(k)).filter(Boolean) as string[])
+      : ((kpiIdsByElement.get(el.id) ?? []).map((k) => bandKeyByKpiId.get(k)).filter(Boolean) as string[]);
+    if (keys.length === 0) return null;
+    return keys.reduce((worst, k) => {
+      const rank = (kk: string) => BAND_RANK[resolveBand(kk)?.appearance ?? ''] ?? 0;
+      return rank(k) > rank(worst) ? k : worst;
+    });
+  };
+
   // Coverage gaps flagged on objective rows only (measures / owner), anchor 02.
   const gapOf = (el: StrataStrategyElement): 'NO MEASURES' | 'NO OWNER' | null => {
     if (el.element_type !== 'objective') return null;
@@ -492,8 +555,12 @@ export default function StrataStrategyRoomPage() {
   const parentOptions = (excludeId?: string) => themeParentOptions(elements, excludeId);
   const gateModelOptions = (currentId?: string | null) => gateModelSelectOptions(gateModelsQ.data ?? [], currentId);
 
-  /** Authoring row menu — every mutation is RPC-validated server-side. */
+  /** Authoring row menu — every mutation is RPC-validated server-side.
+   *  Promote is folded in (draft/proposed) so the tree needs no wide actions column. */
   const rowActions = (el: StrataStrategyElement): StrataMenuOption[] => [
+    ...(el.status === 'draft' || el.status === 'proposed'
+      ? [{ key: 'promote', label: 'Promote…', onClick: () => setPromoteTarget(el) }]
+      : []),
     { key: 'edit', label: 'Edit', onClick: () => setAuthoring({ kind: 'edit-element', element: el }) },
     ...(el.element_type === 'theme'
       ? [{ key: 'charter', label: 'Charter', onClick: () => setAuthoring({ kind: 'charter', element: el }) }]
@@ -566,8 +633,21 @@ export default function StrataStrategyRoomPage() {
       },
     },
     {
-      id: 'owner', label: 'Owner', width: 16,
+      id: 'owner', label: 'Owner', width: 15,
       cell: ({ row }) => <span style={{ color: T.subtle, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{ownerName(row.owner_id)}</span>,
+    },
+    {
+      id: 'health', label: 'Health', width: 11,
+      cell: ({ row }) => {
+        const key = healthKeyFor(row);
+        if (!key) return <span style={{ color: T.subtlest }}>—</span>;
+        const band = resolveBand(key);
+        return (
+          <Tooltip content="Health derived from the worst band of this element’s linked measures">
+            <span><Lozenge appearance={(band?.appearance as LozengeAppearance) ?? 'default'}>{band?.label ?? key}</Lozenge></span>
+          </Tooltip>
+        );
+      },
     },
     {
       id: 'kpis', label: 'KPIs', width: 8, align: 'end',
@@ -581,14 +661,13 @@ export default function StrataStrategyRoomPage() {
       cell: ({ row }) => gapCountCell(cardCountFor(row), false),
     },
     {
-      id: 'actions', label: '', width: 16, align: 'end',
+      id: 'benefits', label: 'Benefits', width: 9, align: 'end',
+      cell: ({ row }) => gapCountCell(benefitCountFor(row), false),
+    },
+    {
+      id: 'actions', label: '', width: 9, align: 'end',
       cell: ({ row }) => (canAuthor ? (
-        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, justifyContent: 'flex-end' }}>
-          {row.status === 'draft' || row.status === 'proposed' ? (
-            <Button spacing="compact" isLoading={promotingId === row.id} onClick={(e) => { e?.stopPropagation?.(); setPromoteTarget(row); }}>
-              Promote
-            </Button>
-          ) : null}
+        <span style={{ display: 'inline-flex', justifyContent: 'flex-end' }}>
           <StrataChipMenu value="Actions" aria-label={`Actions for ${row.name}`} options={rowActions(row)} />
         </span>
       ) : null),

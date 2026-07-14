@@ -634,3 +634,28 @@ Branch: `strata/impl-phase01`. File: `StrataKpiLibraryPage.tsx`.
   Cards=3 rollup), Promote+Actions. "Show coverage gaps only" → drops non-gap themes (Digital Market
   Leadership, ZZTEST), keeps gap objectives + ancestors. **MAP re-probed → visually identical to baseline;
   git shows ONLY the Room page changed. ZERO-CHANGE GATE PASS.**
+
+---
+
+## Slice 2D-2b — Strategy Room tree: Health (derived) + Benefits (multi-hop) columns (session 008, 2026-07-14)
+**File:** `StrataStrategyRoomPage.tsx` only. Map re-probed → zero change. Completes the anchor-02 structure tree.
+
+### Changes
+- **Health column (derived, P2-D5)** — no element-health calc exists, so rolls up linked KPIs' governed
+  achievement bands: page-level `useQueries` over distinct linked KPI ids in the active period (`kpiApi.
+  achievement`, same queryKey shape as elsewhere → deduped), objective = worst band of its measures, theme =
+  worst of its objectives. Rendered as a band Lozenge + Tooltip "derived from the worst band of linked
+  measures". No measures → "—" (zero-assumption).
+- **Benefits column (multi-hop)** — element → Project Cards (`objective_element_id`) → benefit↔card links
+  (`useBenefitProjectCards`) → distinct benefits; themes roll up descendants.
+- Column order now matches anchor 02: **Element · Owner · Health · KPIs · Cards · Benefits · Actions**.
+- **Folded Promote into the row Actions menu** (draft/proposed) so the tree needs no wide inline-button
+  column — fixes the 7-column width squeeze; anchor says actions are "reachable from row menus".
+
+### Verification (raw)
+- Gates GREEN: tsc no errors · colors 0=baseline · audit no-increase (tokens 19799) · CRE.
+- LIVE (localhost:8080, staging) **light + dark**: Health shows ON TRACK (B2B Growth Engine, Grow B2B
+  Revenue), WATCH (Network Excellence), "—" for 0-measure objectives + themes with no measured objectives
+  (Investor Journey Transformation). Benefits multi-hop counts (B2B Growth Engine 2, Investor Journey 1).
+  Actions dropdown fits; Promote in the menu. **MAP re-probed → identical to baseline; git shows only the
+  Room page changed. ZERO-CHANGE GATE PASS.** ✅ Anchor-02 structure tree COMPLETE (2D-2 + 2D-2b).
