@@ -56,4 +56,13 @@ Export (client CSV); result → SectionMessage banner. New: kpiApi.bulkUpdate, S
 Gates green; live-verified light+dark — 2 approved KPIs → "0 applied, 2 not applied" honest rejection.
 Files: StrataKpiLibraryPage.tsx, domain/index.ts, types.ts, JiraTable/BulkFooterBar.tsx + index.ts.
 
-## Status: 2C-2c built + verified; commit pending Vikram approval → then 2C-2d (saved views + filters).
+## 2C-2c — MERGED to main `75c5daba1`.
+
+## 2C-2d SPLIT (2h rule): 2C-2d-1 (filters/sort/summary) + 2C-2d-2 (Validation filter + saved views).
+## 2C-2d-1 — DONE (filters + worst-first sort + summary bar)
+`StrataKpiLibraryPage.tsx` only: page-level achievement batch (useQueries, deduped w/ cells); filter
+toolbar Status·Band·Perspective·Owner; Band "Below threshold" = appearance∈{removed,moved}; worst-first
+achievement default sort; filter summary bar + Clear filters. Gates green; live-verified light+dark
+(worst-first order; Below-threshold → 1 of 17; clear → 17 of 17). Audit caught off-grid 10px → space tokens.
+
+## Status: 2C-2d-1 built + verified; commit pending Vikram approval → then 2C-2d-2 (Validation + saved views).

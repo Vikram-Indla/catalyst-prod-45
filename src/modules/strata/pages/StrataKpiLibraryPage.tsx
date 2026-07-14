@@ -6,7 +6,7 @@
  */
 import React, { useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueries } from '@tanstack/react-query';
 import {
   Avatar, Button, CatalystTag,
   EmptyState, Lozenge, SectionMessage, Spinner, Textfield, Tooltip,
@@ -19,12 +19,12 @@ import type { Column, SortOrder, BulkAction } from '@/components/shared/JiraTabl
 import { Routes } from '@/lib/routes';
 import { kpiApi } from '@/modules/strata/domain';
 import {
-  useDataSources, useElementKpis, useInvalidateStrata, useKpiAchievement, useKpis, useOkrs, useProfileNames, useStrataContext, useStrataRoles, useStrategyElements, useThresholdSchemes,
+  useBandResolver, useDataSources, useElementKpis, useInvalidateStrata, useKpiAchievement, useKpis, useOkrs, usePerspectives, useProfileNames, useStrataContext, useStrataRoles, useStrategyElements, useThresholdSchemes,
 } from '@/modules/strata/hooks/useStrata';
 import { OkrRow, StrataBandBar, StrataBandLozenge, StrataChipMenu, StrataPageShell, StrataPanel, T } from '@/modules/strata/components/shared';
 import { StrataFormModal } from '@/modules/strata/components/authoring';
 import { fmtDate, fmtPct, fmtUnit, labelize } from '@/modules/strata/components/format';
-import type { GovernedStatus, StrataBulkUpdateResult, StrataKpi, StrataKpiActual, StrataOkr } from '@/modules/strata/types';
+import type { GovernedStatus, StrataBulkUpdateResult, StrataKpi, StrataKpiActual, StrataOkr, ThresholdBand } from '@/modules/strata/types';
 import type { StrataProfileRef } from '@/modules/strata/hooks/useStrata';
 
 /** UI affordance gating only — server RPCs enforce the real role rules (SoD etc.). */
@@ -409,7 +409,7 @@ const STATUS_FILTER_OPTIONS: Array<{ value: GovernedStatus | 'all'; label: strin
 
 export default function StrataKpiLibraryPage() {
   const navigate = useNavigate();
-  const { activeCycle } = useStrataContext();
+  const { activeCycle, activePeriod } = useStrataContext();
   const kpisQ = useKpis();
   const dataSourcesQ = useDataSources();
   const profilesQ = useProfileNames();
@@ -417,6 +417,8 @@ export default function StrataKpiLibraryPage() {
   const elementKpisQ = useElementKpis();
   const elementsQ = useStrategyElements(activeCycle?.id);
   const schemesQ = useThresholdSchemes();
+  const perspectivesQ = usePerspectives();
+  const resolveBand = useBandResolver();
   // Bulk selection + governed bulk-write state (anchor 16 BulkFooterBar).
   const [selection, setSelection] = useState<Set<string>>(new Set());
   const [bulkModal, setBulkModal] = useState<null | 'owner' | 'scheme'>(null);
@@ -441,9 +443,48 @@ export default function StrataKpiLibraryPage() {
     return m;
   }, [elementKpisQ.data, elementsQ.data]);
   const invalidate = useInvalidateStrata();
+
+  const allKpis = useMemo(() => kpisQ.data ?? [], [kpisQ.data]);
+
+  // Page-level achievement for the active period — one query per KPI, SAME queryKey as the row cells,
+  // so React Query dedupes to a single fetch per KPI. Powers the Band filter + worst-first sort.
+  const achievementQueries = useQueries({
+    queries: allKpis.map((k) => ({
+      queryKey: ['strata', 'kpi-achievement', k.id, activePeriod?.id],
+      queryFn: () => kpiApi.achievement(k.id, activePeriod!.id),
+      enabled: !!activePeriod?.id,
+      staleTime: 30_000,
+    })),
+  });
+  const achByKpiId = useMemo(() => {
+    const m = new Map<string, KpiAchievementPayload>();
+    allKpis.forEach((k, i) => {
+      const d = achievementQueries[i]?.data as KpiAchievementPayload | undefined;
+      if (d) m.set(k.id, d);
+    });
+    return m;
+    // achievementQueries is a fresh array each render; key the memo on resolved-count + period.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [allKpis, activePeriod?.id, achievementQueries.map((q) => (q.data ? 1 : 0)).join('')]);
+
+  // KPI → perspective_id via its linked element (element_kpis ⋈ elements). First link wins.
+  const perspectiveIdByKpiId = useMemo(() => {
+    const elById = new Map((elementsQ.data ?? []).map((e) => [e.id, e]));
+    const m = new Map<string, string>();
+    (elementKpisQ.data ?? []).forEach((l) => {
+      const el = elById.get(l.element_id);
+      if (el?.perspective_id && !m.has(l.kpi_id)) m.set(l.kpi_id, el.perspective_id);
+    });
+    return m;
+  }, [elementKpisQ.data, elementsQ.data]);
+
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<GovernedStatus | 'all'>('all');
-  const [sortKey, setSortKey] = useState<string>('name');
+  const [bandFilter, setBandFilter] = useState<'all' | 'exceptions' | string>('all');
+  const [perspectiveFilter, setPerspectiveFilter] = useState<string>('all');
+  const [ownerFilter, setOwnerFilter] = useState<string>('all');
+  // Worst-first by achievement is the anchor-16 default; a column-header click overrides it.
+  const [sortKey, setSortKey] = useState<string>('achievement');
   const [sortOrder, setSortOrder] = useState<SortOrder>('ASC');
   const [newKpiOpen, setNewKpiOpen] = useState(false);
   // Holds the id of a KPI already created this modal session, so a resubmit
@@ -453,21 +494,97 @@ export default function StrataKpiLibraryPage() {
 
   const canAuthor = (rolesQ.data ?? []).some((r) => (CREATE_ROLES as readonly string[]).includes(r));
 
+  // A KPI is an "exception" when its governed band resolves to a warning/danger appearance.
+  const isExceptionBand = (statusKey?: string | null) => {
+    const ap = resolveBand(statusKey ?? null)?.appearance;
+    return ap === 'removed' || ap === 'moved';
+  };
+
   const filtered = useMemo(() => {
     const term = search.trim().toLowerCase();
-    let rows = (kpisQ.data ?? []).filter((k) =>
-      (statusFilter === 'all' || k.status === statusFilter) &&
-      (!term || k.name.toLowerCase().includes(term)));
-    const dir = sortOrder === 'ASC' ? 1 : -1;
-    // Numeric-aware sort (S-127): compare numbers as numbers, everything else lexically.
-    rows = [...rows].sort((a, b) => {
-      const av = (a as unknown as Record<string, unknown>)[sortKey];
-      const bv = (b as unknown as Record<string, unknown>)[sortKey];
-      if (typeof av === 'number' && typeof bv === 'number') return (av - bv) * dir;
-      return String(av ?? '').localeCompare(String(bv ?? '')) * dir;
+    let rows = allKpis.filter((k) => {
+      if (statusFilter !== 'all' && k.status !== statusFilter) return false;
+      if (term && !k.name.toLowerCase().includes(term)) return false;
+      if (ownerFilter !== 'all') {
+        if (ownerFilter === 'none') { if (k.accountable_owner_id != null) return false; }
+        else if (k.accountable_owner_id !== ownerFilter) return false;
+      }
+      if (perspectiveFilter !== 'all' && (perspectiveIdByKpiId.get(k.id) ?? null) !== perspectiveFilter) return false;
+      if (bandFilter !== 'all') {
+        const sk = achByKpiId.get(k.id)?.status_key ?? null;
+        if (bandFilter === 'exceptions') { if (!isExceptionBand(sk)) return false; }
+        else if (sk !== bandFilter) return false;
+      }
+      return true;
     });
+    const dir = sortOrder === 'ASC' ? 1 : -1;
+    if (sortKey === 'achievement') {
+      // Worst-first: ascending achievement; KPIs without a value sort last regardless of direction.
+      rows = [...rows].sort((a, b) => {
+        const av = achByKpiId.get(a.id)?.achievement;
+        const bv = achByKpiId.get(b.id)?.achievement;
+        if (av == null && bv == null) return a.name.localeCompare(b.name);
+        if (av == null) return 1;
+        if (bv == null) return -1;
+        return (av - bv) * dir;
+      });
+    } else {
+      // Numeric-aware sort (S-127): compare numbers as numbers, everything else lexically.
+      rows = [...rows].sort((a, b) => {
+        const av = (a as unknown as Record<string, unknown>)[sortKey];
+        const bv = (b as unknown as Record<string, unknown>)[sortKey];
+        if (typeof av === 'number' && typeof bv === 'number') return (av - bv) * dir;
+        return String(av ?? '').localeCompare(String(bv ?? '')) * dir;
+      });
+    }
     return rows;
-  }, [kpisQ.data, search, statusFilter, sortKey, sortOrder]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [allKpis, search, statusFilter, ownerFilter, perspectiveFilter, bandFilter, sortKey, sortOrder, achByKpiId, perspectiveIdByKpiId, resolveBand]);
+
+  // ── Filter option lists (anchor 16 chips) ─────────────────────────────────
+  const bandList = useMemo<ThresholdBand[]>(() => {
+    const m = new Map<string, ThresholdBand>();
+    (schemesQ.data ?? []).forEach((s) => (s.bands ?? []).forEach((b) => { if (!m.has(b.key)) m.set(b.key, b); }));
+    return [...m.values()].sort((a, b) => b.min_score - a.min_score);
+  }, [schemesQ.data]);
+  const perspectiveNameById = useMemo(
+    () => new Map((perspectivesQ.data ?? []).map((p) => [p.id, p.name])),
+    [perspectivesQ.data],
+  );
+  // Owners actually present on some KPI, plus a "No owner" bucket when any KPI is unowned.
+  const ownerOptionList = useMemo(() => {
+    const ids = new Set<string>();
+    let anyNone = false;
+    allKpis.forEach((k) => { if (k.accountable_owner_id) ids.add(k.accountable_owner_id); else anyNone = true; });
+    const named = [...ids]
+      .map((id) => ({ id, name: profilesQ.data?.get(id)?.name ?? 'Unknown' }))
+      .sort((a, b) => a.name.localeCompare(b.name));
+    return { named, anyNone };
+  }, [allKpis, profilesQ.data]);
+
+  const bandLabel = bandFilter === 'all' ? 'All'
+    : bandFilter === 'exceptions' ? 'Below threshold'
+    : (resolveBand(bandFilter)?.label ?? bandFilter);
+  const perspectiveLabel = perspectiveFilter === 'all' ? 'All' : (perspectiveNameById.get(perspectiveFilter) ?? 'Unknown');
+  const ownerLabel = ownerFilter === 'all' ? 'All'
+    : ownerFilter === 'none' ? 'No owner'
+    : (profilesQ.data?.get(ownerFilter)?.name ?? 'Unknown');
+
+  const hasActiveFilters = statusFilter !== 'all' || bandFilter !== 'all'
+    || perspectiveFilter !== 'all' || ownerFilter !== 'all' || search.trim() !== '';
+  const filterSummary = [
+    bandFilter === 'exceptions' ? 'below-threshold bands' : bandFilter !== 'all' ? `${bandLabel} band` : null,
+    perspectiveFilter !== 'all' ? `${perspectiveLabel} perspective` : null,
+    ownerFilter !== 'all' ? (ownerFilter === 'none' ? 'unowned KPIs' : `owner ${ownerLabel}`) : null,
+    statusFilter !== 'all' ? `${statusFilter.replace('_', ' ')} status` : null,
+    search.trim() ? `“${search.trim()}”` : null,
+  ].filter(Boolean).join(' · ');
+  const clearFilters = () => {
+    setSearch(''); setStatusFilter('all'); setBandFilter('all'); setPerspectiveFilter('all'); setOwnerFilter('all');
+  };
+  const sortSummary = sortKey === 'achievement'
+    ? `achievement, ${sortOrder === 'ASC' ? 'worst first' : 'best first'}`
+    : `${sortKey}, ${sortOrder === 'ASC' ? 'ascending' : 'descending'}`;
 
   const clearSelection = () => setSelection(new Set());
 
@@ -546,6 +663,7 @@ export default function StrataKpiLibraryPage() {
       id: 'achievement',
       label: 'Achievement',
       width: 14,
+      sortable: true,
       cell: ({ row }) => <KpiAchievementCell kpiId={row.id} />,
     },
     {
@@ -631,17 +749,6 @@ export default function StrataKpiLibraryPage() {
                     aria-label="Search KPIs by name"
                   />
                 </div>
-                <StrataChipMenu
-                  value={statusLabel}
-                  active={statusFilter !== null}
-                  aria-label="Filter KPIs by status"
-                  options={STATUS_FILTER_OPTIONS.map((o) => ({
-                    key: String(o.value),
-                    label: o.label,
-                    isSelected: o.value === statusFilter,
-                    onClick: () => setStatusFilter(o.value),
-                  }))}
-                />
                 {canAuthor ? (
                   <Button
                     appearance="primary"
@@ -656,6 +763,68 @@ export default function StrataKpiLibraryPage() {
               </>
             }
           >
+            {/* Filter toolbar (anchor 16): Status · Band · Perspective · Owner */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--ds-space-100)', flexWrap: 'wrap', padding: 'var(--ds-space-150) var(--ds-space-200)', borderBottom: `1px solid ${T.border}` }}>
+              <StrataChipMenu
+                value={statusLabel}
+                active={statusFilter !== 'all'}
+                aria-label="Filter KPIs by status"
+                options={STATUS_FILTER_OPTIONS.map((o) => ({
+                  key: String(o.value), label: o.label,
+                  isSelected: o.value === statusFilter, onClick: () => setStatusFilter(o.value),
+                }))}
+              />
+              <StrataChipMenu
+                value={`Band: ${bandLabel}`}
+                active={bandFilter !== 'all'}
+                aria-label="Filter KPIs by band"
+                options={[
+                  { key: 'all', label: 'All bands', isSelected: bandFilter === 'all', onClick: () => setBandFilter('all') },
+                  { key: 'exceptions', label: 'Below threshold', isSelected: bandFilter === 'exceptions', onClick: () => setBandFilter('exceptions') },
+                  ...bandList.map((b) => ({
+                    key: b.key, label: b.label, isSelected: bandFilter === b.key, onClick: () => setBandFilter(b.key),
+                  })),
+                ]}
+              />
+              <StrataChipMenu
+                value={`Perspective: ${perspectiveLabel}`}
+                active={perspectiveFilter !== 'all'}
+                aria-label="Filter KPIs by perspective"
+                options={[
+                  { key: 'all', label: 'All perspectives', isSelected: perspectiveFilter === 'all', onClick: () => setPerspectiveFilter('all') },
+                  ...(perspectivesQ.data ?? []).map((p) => ({
+                    key: p.id, label: p.name, isSelected: perspectiveFilter === p.id, onClick: () => setPerspectiveFilter(p.id),
+                  })),
+                ]}
+              />
+              <StrataChipMenu
+                value={`Owner: ${ownerLabel}`}
+                active={ownerFilter !== 'all'}
+                aria-label="Filter KPIs by owner"
+                options={[
+                  { key: 'all', label: 'All owners', isSelected: ownerFilter === 'all', onClick: () => setOwnerFilter('all') },
+                  ...(ownerOptionList.anyNone ? [{ key: 'none', label: 'No owner', isSelected: ownerFilter === 'none', onClick: () => setOwnerFilter('none') }] : []),
+                  ...ownerOptionList.named.map((o) => ({
+                    key: o.id, label: o.name, isSelected: ownerFilter === o.id, onClick: () => setOwnerFilter(o.id),
+                  })),
+                ]}
+              />
+            </div>
+
+            {/* Filter summary bar */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--ds-space-150)', flexWrap: 'wrap', padding: 'var(--ds-space-100) var(--ds-space-200)', borderBottom: `1px solid ${T.border}`, fontSize: 'var(--ds-font-size-100)', color: T.subtle }}>
+              <span>
+                Showing <strong style={{ color: T.text }}>{filtered.length}</strong> of {allKpis.length}
+                {filterSummary ? <> — filtered to {filterSummary}</> : null}
+              </span>
+              {hasActiveFilters ? (
+                <Button appearance="subtle-link" spacing="none" onClick={clearFilters} testId="strata-kpi-clear-filters">
+                  Clear filters
+                </Button>
+              ) : null}
+              <span style={{ marginLeft: 'auto', color: T.subtlest }}>Sorted by {sortSummary}</span>
+            </div>
+
             <JiraTable<StrataKpi>
               columns={columns}
               data={filtered}

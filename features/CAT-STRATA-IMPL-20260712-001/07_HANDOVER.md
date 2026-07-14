@@ -8,10 +8,10 @@
 - **Branch:** `strata/impl-phase01`, fast-forwarded to `origin/main` (`02ec24f61`, was ancestor — no
   divergence). **2C-2a backend committed locally, NOT yet merged to main** (awaiting Vikram commit approval).
 - **Phase 0 + Phase 1 COMPLETE** (1B skipped; anchor-13 polish done). **PHASE 2 IN PROGRESS:**
-  **2A · 2B-1 · 2B-2 · 2C-1 · 2C-2a (`01cbe7f87`) · 2C-2b (`b54d68a84`) merged; 2C-2c (BulkFooterBar +
-  governed bulk write) DONE + verified, commit pending.** **NEXT = slice 2C-2d (saved-views selector +
-  filter chips Band/Perspective/Owner/Validation + filter-summary bar + worst-first default sort + states;
-  uses `strata_saved_views` from 2C-2a).**
+  **2A · 2B-1 · 2B-2 · 2C-1 · 2C-2a (`01cbe7f87`) · 2C-2b (`b54d68a84`) · 2C-2c (`75c5daba1`) merged;
+  2C-2d-1 (filters + worst-first sort + summary bar) DONE + verified, commit pending.** **NEXT = slice
+  2C-2d-2 (Validation filter chip + Saved views: `strata_saved_views` CRUD from 2C-2a, "Saved views ▾"
+  selector, "My exceptions" default = Band Below-threshold).**
 - 2C-2 split into 2C-2a (backend ✓) · 2C-2b (columns) · 2C-2c (BulkFooterBar) · 2C-2d (saved views + filters).
 
 ## ⭐ PHASE 2 — NEXT (START HERE). Plan Lock: `03_PLAN_LOCK_PHASE2.md` (APPROVED, full build)
@@ -36,8 +36,15 @@ whose "Map" navigates out.
   (`kpiApi.actuals`). Removed dead DirectionCell/ValidatorCell/dataSourceNameById. OKR accordion kept.
 
 ### 2C-2 — KPI Library: bulk + saved views + anchor-16 richness (`StrataKpiLibraryPage.tsx`). RE-READ anchor 16 in full at start.
-Anchor 16 is RICHER than 2C-1 shipped. Sub-slice order: **2C-2a ✓ · 2C-2b ✓ · 2C-2c ✓ (all DONE session 007)** →
-**2C-2d (DO NEXT: saved views + filter chips + summary bar + worst-first sort + states)**.
+Anchor 16 is RICHER than 2C-1 shipped. Sub-slice order: **2C-2a ✓ · 2C-2b ✓ · 2C-2c ✓ · 2C-2d-1 ✓ (all DONE session 007)** →
+**2C-2d-2 (DO NEXT & LAST: Validation filter chip + Saved views)**. (2C-2d split for the 2h rule:
+2C-2d-1 = filters/sort/summary; 2C-2d-2 = Validation filter + saved-views persistence.)
+- **2C-2d-1 DONE** (`StrataKpiLibraryPage.tsx` only) — page-level achievement batch via `useQueries`
+  (deduped with cells); filter toolbar Status·Band·Perspective·Owner (`StrataChipMenu`); Band "Below
+  threshold" = appearance ∈ {removed,moved}; worst-first achievement default sort (Achievement col now
+  sortable); filter summary bar (Showing N of M — filtered to … · Clear filters · Sorted by …). Gates
+  green; live-verified light+dark. NOTE: `useQueries` result array is fresh each render — memo keyed on
+  resolved-count string. Spacing tokenized to `var(--ds-space-*)` (audit caught an off-grid 10px).
 - **2C-2c DONE** — BulkFooterBar extended additively (`actions`/`note`/`BulkAction`, existing verbs +
   4 consumers untouched); JiraTable `selectable`/`selection` wired → anchor leading checkbox; verbs
   Change owner… · Assign threshold scheme… (gated canAuthor, → `kpiApi.bulkUpdate`/`strata_bulk_update_kpis`)
