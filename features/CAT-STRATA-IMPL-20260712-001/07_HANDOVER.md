@@ -10,10 +10,13 @@
 - **Phase 0 + Phase 1 COMPLETE** (1B skipped; anchor-13 polish done). **PHASE 2 IN PROGRESS:**
   **2A · 2B-1 · 2B-2 · 2C-1 · 2C-2a (`01cbe7f87`) · 2C-2b (`b54d68a84`) · 2C-2c (`75c5daba1`) ·
   2C-2d-1 (`e23fc8f90`) · 2C-2d-2 (`da80fdb43`) merged — ✅ Anchor 16 COMPLETE. 2D Strategy Room:
-  2D COMPLETE (2D-4 merged `a11d8e8e9`). **2E Element Detail (anchor 14): 2E-1 (`139b9dfd3`) merged; 2E-2 (health verdict + chain
-  strip) DONE + verified, commit pending.**
-  **NEXT = slice 2E-3 (Charter/OKR restyle to anchor tables + Promote-to-active + restricted/
-  locked/responsive). Then 2F Evidence (anchor 15). 2E anchor 14 read in full session 008.**
+  2D COMPLETE (2D-4 merged `a11d8e8e9`). **2E Element Detail (anchor 14): 2E-1 (`139b9dfd3`) merged; 2E-2 (`621c1c644`) merged; 2E-3 (promote +
+  charter restyle + responsive) DONE + verified, commit pending — ✅ 2E COMPLETE.**
+  **NEXT = slice 2F Evidence (anchor 15) — the LAST Phase-2 surface. Page `StrataEvidencePage.tsx` (anchor
+  15 NOT yet read in full — re-read at slice start per drift protocol). Plan Lock 2F: trust-story opening
+  paragraph + lineage table alignment; live/locked variants (StrataSnapshotBand when locked); confirm
+  `?from=` "Back to [origin]" on all three kinds (KPI done in 2B, scorecard in 1D, portfolio); skeleton/
+  restricted/error states. Smaller — the page exists; polish. This COMPLETES Phase 2.**
 
 ### 2E Element Detail (anchor 14) — SPLIT 2E-1/2E-2/2E-3. Page: `StrataStrategyElementDetailPage.tsx`.
 - Anchor 14 = 2-col ViewBase: left body [health verdict (LEADS) → StrataChainStrip → Charter (Intent/Scope)
@@ -31,7 +34,10 @@
   worst-band, grounded sentence) LEADS the left body + StrataChainStrip (Theme/Measures/Delivery/Value/
   Decisions, multi-hop: element_kpis, project cards by objective_element_id, benefit↔card, decisions by
   element_id). Gates green; light+dark. NB: useQueries placed BEFORE the early returns (rules of hooks).
-- **2E-3 (NEXT):** Charter → anchor Intent/Scope prose layout (versioned header, current Charter panel is a
+- **2E-3 DONE** — Promote-to-active (draft, server-validated + §17 rejection surfaced), Charter INTENT/SCOPE
+  prose restyle, responsive rail-fold <1100. Backend defect flagged: `strata_promote_element` references
+  dropped `strata_play_charters` for legacy elements (task_65642237). Deferred nice-to-haves: OKR table restyle, locked band.
+- ~~2E-3 (was NEXT):~~ Charter → anchor Intent/Scope prose layout (versioned header, current Charter panel is a
   field dump); OKRs → anchor table (Key result·Owner·Progress·Status — current OkrRow accordion is fine but
   the anchor wants a flat table for an objective's own KRs); **Promote-to-active** for drafts (server-validated
   `strategyApi.promoteElement`, confirm modal listing requirements: measures + owner required); restricted

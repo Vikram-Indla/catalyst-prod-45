@@ -40,7 +40,7 @@
  * Deliberately out of scope: Strategic Investment summary (budget/spend).
  * See features/CAT-STRATA-THEME-DETAIL-20260710-001/ for the full slice plans.
  */
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useQueries } from '@tanstack/react-query';
 import { Button, EmptyState, Lozenge, Spinner } from '@/components/ads';
@@ -59,7 +59,8 @@ import {
   EditElementModal, gateModelSelectOptions, NewElementModal, perspectiveSelectOptions, StrataFormModal, str,
   themeParentOptions, ThemeCharterModal,
 } from '@/modules/strata/components/authoring';
-import { governanceApi, kpiApi } from '@/modules/strata/domain';
+import { governanceApi, kpiApi, strategyApi } from '@/modules/strata/domain';
+import { Modal, ModalBody, ModalFooter, ModalHeader, ModalTitle, SectionMessage } from '@/components/ads';
 import { fmtDate, fmtDateTime, formatAuditAction, labelize } from '@/modules/strata/components/format';
 import { isThemeElement } from '@/modules/strata/types';
 import type { StrataDecision, StrataStrategyElement } from '@/modules/strata/types';
@@ -117,6 +118,10 @@ export default function StrataStrategyElementDetailPage() {
 
   const [authoring, setAuthoring] = useState<AuthoringState | null>(null);
   const [expandedOkrs, setExpandedOkrs] = useState<Set<string>>(new Set());
+  const [promoteOpen, setPromoteOpen] = useState(false);
+  const [promoting, setPromoting] = useState(false);
+  const [promoteError, setPromoteError] = useState<string | null>(null);
+  const [isNarrow, setIsNarrow] = useState(false);
   const canAuthor = (rolesQ.data ?? []).some((r) => (AUTHOR_ROLES as readonly string[]).includes(r));
   const canGovern = (rolesQ.data ?? []).some((r) => (DECISION_AUTHOR_ROLES as readonly string[]).includes(r));
   const toggleOkr = (id: string) =>
@@ -149,6 +154,27 @@ export default function StrataStrategyElementDetailPage() {
       staleTime: 30_000,
     })),
   });
+  // <1100 → the 360px rail folds below the left body (anchor 14 responsive).
+  useEffect(() => {
+    const onResize = () => setIsNarrow(window.innerWidth < 1100);
+    onResize();
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
+  const handlePromote = async () => {
+    if (!element) return;
+    setPromoting(true);
+    setPromoteError(null);
+    try {
+      await strategyApi.promoteElement(element.id);
+      invalidate();
+      setPromoteOpen(false);
+    } catch (e) {
+      setPromoteError(e instanceof Error ? e.message : String(e));
+    } finally {
+      setPromoting(false);
+    }
+  };
 
   if (elementQ.isLoading) {
     return (
@@ -274,6 +300,9 @@ export default function StrataStrategyElementDetailPage() {
       testId="strata-strategy-element-detail"
       headerActions={canAuthor ? (
         <span style={{ display: 'inline-flex', gap: 8 }}>
+          {element.status === 'draft' || element.status === 'proposed' ? (
+            <Button appearance="primary" onClick={() => { setPromoteError(null); setPromoteOpen(true); }}>Promote to active</Button>
+          ) : null}
           <Button onClick={() => setAuthoring({ kind: 'edit-element', element })}>Edit</Button>
           {isTheme ? (
             <Button onClick={() => setAuthoring({ kind: 'charter', element })}>Charter</Button>
@@ -286,7 +315,7 @@ export default function StrataStrategyElementDetailPage() {
         </span>
       ) : undefined}
     >
-      <div style={{ display: 'grid', gap: 16, gridTemplateColumns: 'minmax(0, 1fr) 360px', alignItems: 'start' }}>
+      <div style={{ display: 'grid', gap: 16, gridTemplateColumns: isNarrow ? '1fr' : 'minmax(0, 1fr) 360px', alignItems: 'start' }}>
         {/* Left analytical body (anchor 14 ViewBase anatomy) — health verdict leads */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16, minWidth: 0 }}>
           {/* Health verdict (derived) */}
@@ -309,11 +338,12 @@ export default function StrataStrategyElementDetailPage() {
             actions={!charterComplete ? <Lozenge appearance="moved">Incomplete</Lozenge> : undefined}
           >
             {charter ? (
-              <div style={{ display: 'grid', gap: 8, fontSize: 'var(--ds-font-size-100)' }}>
-                <div><span style={{ fontWeight: 600 }}>Hypothesis</span> {charter.hypothesis || '—'}</div>
-                <div><span style={{ fontWeight: 600 }}>Scope</span> {charter.scope || '—'}</div>
-                <div><span style={{ fontWeight: 600 }}>Value thesis</span> {charter.value_thesis || '—'}</div>
-                <div><span style={{ fontWeight: 600 }}>Charter owner</span> {ownerName(charter.owner_id)}</div>
+              <div style={{ fontSize: 'var(--ds-font-size-100)', color: T.subtle, lineHeight: 'var(--ds-line-height-body)' }}>
+                <div style={{ fontSize: 'var(--ds-font-size-050)', fontWeight: 600, color: T.subtlest, marginBottom: 'var(--ds-space-050)' }}>INTENT</div>
+                <p style={{ margin: '0 0 var(--ds-space-150)', color: T.text }}>{charter.value_thesis || charter.hypothesis || '—'}</p>
+                <div style={{ fontSize: 'var(--ds-font-size-050)', fontWeight: 600, color: T.subtlest, marginBottom: 'var(--ds-space-050)' }}>SCOPE &amp; ASSUMPTIONS</div>
+                <p style={{ margin: 0 }}>{charter.scope || '—'}</p>
+                <div style={{ marginTop: 'var(--ds-space-150)', fontSize: 'var(--ds-font-size-050)', color: T.subtlest }}>Charter owner: {ownerName(charter.owner_id)}</div>
               </div>
             ) : (
               <EmptyState
@@ -748,6 +778,31 @@ export default function StrataStrategyElementDetailPage() {
           }}
         />
       ) : null}
+
+      {/* Promote to active — server-validated (strata_promote_element); rejection text surfaces verbatim */}
+      <Modal isOpen={promoteOpen} onClose={() => { if (!promoting) setPromoteOpen(false); }} width="small">
+        <ModalHeader><ModalTitle>Promote to active</ModalTitle></ModalHeader>
+        <ModalBody>
+          <p style={{ margin: 0, fontSize: 'var(--ds-font-size-200)', color: T.text }}>
+            Promote <strong>{element.name}</strong> to active governance?
+          </p>
+          <p style={{ margin: '8px 0 0', fontSize: 'var(--ds-font-size-100)', color: T.subtle }}>
+            Promotion is enforced server-side. An objective needs at least one linked measure and an accountable
+            owner; a theme needs an approved charter and gate requirements met. The server rejects and explains if not.
+          </p>
+          {promoteError ? (
+            <div style={{ marginTop: 12 }}>
+              <SectionMessage appearance="error" title="Promotion blocked">
+                <p style={{ whiteSpace: 'pre-wrap' }}>{promoteError}</p>
+              </SectionMessage>
+            </div>
+          ) : null}
+        </ModalBody>
+        <ModalFooter>
+          <Button appearance="subtle" isDisabled={promoting} onClick={() => setPromoteOpen(false)}>Cancel</Button>
+          <Button appearance="primary" isLoading={promoting} onClick={handlePromote}>Promote</Button>
+        </ModalFooter>
+      </Modal>
     </StrataPageShell>
   );
 }
