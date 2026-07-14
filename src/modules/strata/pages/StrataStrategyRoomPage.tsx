@@ -6,7 +6,7 @@
  * Authoring (Lane A recovery): cycle/element/charter/KPI-link/gate writes go
  * through server-validated RPCs, gated on strategy_office / strata_admin.
  */
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQueries } from '@tanstack/react-query';
 import {
@@ -21,12 +21,12 @@ import {
   ChevronDown, ChevronRight, Gem, GitBranch, Target, X,
 } from '@/lib/atlaskit-icons';
 import {
-  useBandResolver, useBenefitProjectCards, useElementKpis, useGateModels, useInvalidateStrata, useKpis, usePerspectives,
+  useBandResolver, useBenefits, useBenefitProjectCards, useElementKpis, useGateModels, useInvalidateStrata, useKpis, usePerspectives,
   useProjectCards, useThemeCharters, useProfileNames, useStrataContext, useStrataRoles, useStrategyElements,
 } from '@/modules/strata/hooks/useStrata';
 import { kpiApi, strategyApi } from '@/modules/strata/domain';
-import { StrataChipMenu, StrataPageShell, StrataPanel, T } from '@/modules/strata/components/shared';
-import type { StrataMenuOption } from '@/modules/strata/components/shared';
+import { StrataChainStrip, StrataChipMenu, StrataPageShell, StrataPanel, T } from '@/modules/strata/components/shared';
+import type { StrataChainSegment, StrataMenuOption } from '@/modules/strata/components/shared';
 import {
   EditElementModal, gateModelSelectOptions, NewElementModal, perspectiveSelectOptions, StrataFormModal,
   str, themeParentOptions, ThemeCharterModal,
@@ -313,6 +313,7 @@ export default function StrataStrategyRoomPage() {
   const rolesQ = useStrataRoles();
   const projectCardsQ = useProjectCards();
   const benefitCardsQ = useBenefitProjectCards();
+  const benefitsQ = useBenefits();
   const invalidate = useInvalidateStrata();
 
   // Anchor-02 view toggle. Structure = this authoring surface; Map navigates to the
@@ -322,6 +323,10 @@ export default function StrataStrategyRoomPage() {
   const [statusFilter, setStatusFilter] = useState<string | null>(null);
   const [perspectiveFilter, setPerspectiveFilter] = useState<string | null>(null);
   const [gapsOnly, setGapsOnly] = useState(false);
+  // Inspector rail (anchor 02): the selected element shows in a 360px right rail
+  // (≥1280) or an overlay drawer (<1280). Selecting a row does NOT navigate.
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [isNarrow, setIsNarrow] = useState(false);
   const [promoteError, setPromoteError] = useState<string | null>(null);
   const [promotingId, setPromotingId] = useState<string | null>(null);
   const [promoteTarget, setPromoteTarget] = useState<StrataStrategyElement | null>(null);
@@ -340,6 +345,24 @@ export default function StrataStrategyRoomPage() {
 
   const elementById = useMemo(() => new Map(elements.map((e) => [e.id, e])), [elements]);
   const charterByElement = useMemo(() => new Map(charters.map((c) => [c.element_id, c])), [charters]);
+  const kpiById = useMemo(() => new Map(kpis.map((k) => [k.id, k])), [kpis]);
+  const cardById = useMemo(() => new Map((projectCardsQ.data ?? []).map((c) => [c.id, c])), [projectCardsQ.data]);
+  const benefitById = useMemo(() => new Map((benefitsQ.data ?? []).map((b) => [b.id, b])), [benefitsQ.data]);
+
+  // Rail: track viewport for the <1280 overlay-drawer variant; Esc deselects.
+  useEffect(() => {
+    const onResize = () => setIsNarrow(window.innerWidth < 1280);
+    onResize();
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
+  useEffect(() => {
+    if (selectedId === null) return;
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setSelectedId(null); };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [selectedId]);
+
   const perspectiveName = (id: string | null): string =>
     (id ? perspectives.find((p) => p.id === id)?.name : null) ?? '—';
   const ownerName = (ownerId: string | null): string =>
@@ -615,13 +638,13 @@ export default function StrataStrategyRoomPage() {
             <TypeChip type={row.element_type} />
             <button
               type="button"
-              onClick={(e) => { e.stopPropagation(); if (row.slug) navigate(Routes.strata.strategyElement(row.slug)); }}
-              disabled={!row.slug}
+              onClick={(e) => { e.stopPropagation(); setSelectedId(row.id); }}
               style={{
-                fontSize: 'var(--ds-font-size-200)', fontWeight: row.element_type === 'theme' ? 653 : 500, color: T.text,
+                fontSize: 'var(--ds-font-size-200)', fontWeight: row.element_type === 'theme' ? 653 : 500,
+                color: selectedId === row.id ? T.brandText : T.text,
                 minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
                 background: 'none', border: 'none', padding: 0, textAlign: 'left',
-                cursor: row.slug ? 'pointer' : 'default', font: 'inherit',
+                cursor: 'pointer', font: 'inherit',
               }}
             >
               {row.name}
@@ -673,6 +696,81 @@ export default function StrataStrategyRoomPage() {
       ) : null),
     },
   ];
+
+  // ── Inspector rail body (anchor 02) — selected element's chain + coverage. ──
+  const selected = selectedId ? elementById.get(selectedId) ?? null : null;
+  const inspectorBody = () => {
+    if (!selected) {
+      return (
+        <div style={{ padding: 'var(--ds-space-300) var(--ds-space-200)', color: T.subtlest, fontSize: 'var(--ds-font-size-200)', textAlign: 'center' }}>
+          Select an element to inspect its chain and coverage.
+        </div>
+      );
+    }
+    const el = selected;
+    const openFull = el.slug ? () => navigate(Routes.strata.strategyElement(el.slug!)) : undefined;
+    const key = healthKeyFor(el);
+    const band = key ? resolveBand(key) : null;
+    const parent = el.parent_id ? elementById.get(el.parent_id) : null;
+    const kpiIds = kpiIdsByElement.get(el.id) ?? [];
+    const cardIds = el.element_type === 'theme'
+      ? [el, ...descendantsOf(el.id)].flatMap((t) => cardIdsByObjective.get(t.id) ?? [])
+      : (cardIdsByObjective.get(el.id) ?? []);
+    const benefitIds = [...new Set(cardIds.flatMap((cid) => benefitsByCard.get(cid) ?? []))];
+    const segments: StrataChainSegment[] = [
+      { icon: '↑', label: 'Theme', emptyText: 'Top-level theme',
+        items: parent ? [{ name: parent.name, onNav: parent.slug ? () => navigate(Routes.strata.strategyElement(parent.slug!)) : undefined }] : [] },
+      { icon: '◎', label: 'Measures', emptyText: 'No linked measures',
+        items: kpiIds.map((id) => { const k = kpiById.get(id); return { name: k?.name ?? '—', onNav: k?.slug ? () => navigate(Routes.strata.kpi(k.slug!)) : undefined }; }) },
+      { icon: '▦', label: 'Delivery', emptyText: 'No linked Project Cards',
+        items: cardIds.map((id) => ({ name: cardById.get(id)?.name ?? '—' })) },
+      { icon: '◇', label: 'Value', emptyText: 'No linked benefits',
+        items: benefitIds.map((id) => ({ name: benefitById.get(id)?.name ?? '—' })) },
+    ];
+    const attention = band && (band.appearance === 'removed' || band.appearance === 'moved')
+      ? `Health is ${band.label} — the worst band among linked measures.`
+      : (gapOf(el) ? `Coverage gap: ${gapOf(el)!.toLowerCase()}.` : null);
+    const field = (label: string, node: React.ReactNode) => (
+      <div>
+        <div style={{ color: T.subtlest, fontSize: 'var(--ds-font-size-050)' }}>{label}</div>
+        <div style={{ color: T.text, fontSize: 'var(--ds-font-size-100)', fontWeight: 600 }}>{node}</div>
+      </div>
+    );
+    return (
+      <>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--ds-space-100)', padding: 'var(--ds-space-150) var(--ds-space-200)', borderBottom: `1px solid ${T.border}` }}>
+          <TypeChip type={el.element_type} />
+          <span style={{ marginLeft: 'auto', display: 'inline-flex', gap: 'var(--ds-space-100)' }}>
+            {openFull ? <Button appearance="link" spacing="none" onClick={openFull}>Open full page →</Button> : null}
+            <IconButton icon={<X size={16} />} appearance="subtle" spacing="compact" aria-label="Close inspector" onClick={() => setSelectedId(null)} />
+          </span>
+        </div>
+        <div style={{ padding: 'var(--ds-space-200)', display: 'flex', flexDirection: 'column', gap: 'var(--ds-space-200)' }}>
+          <div>
+            <div style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 653, color: T.text, lineHeight: 'var(--ds-line-height-body)' }}>{el.name}</div>
+            {el.description ? <p style={{ margin: 'var(--ds-space-100) 0 0', fontSize: 'var(--ds-font-size-100)', color: T.subtle, lineHeight: 'var(--ds-line-height-body)' }}>{el.description}</p> : null}
+          </div>
+          <StrataChainStrip segments={segments} testId="strata-element-chain" />
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--ds-space-150)' }}>
+            {field('Owner', ownerName(el.owner_id))}
+            {field('Lifecycle', <Lozenge appearance={STATUS_APPEARANCE[el.status] ?? 'default'}>{labelize(el.status)}</Lozenge>)}
+            {field('Health', band ? <Lozenge appearance={(band.appearance as LozengeAppearance) ?? 'default'}>{band.label}</Lozenge> : <span style={{ color: T.subtlest, fontWeight: 400 }}>—</span>)}
+            {field('Perspective', perspectiveName(el.perspective_id))}
+          </div>
+          {attention ? (
+            <div style={{ padding: 'var(--ds-space-150)', borderRadius: 6, background: 'var(--ds-background-warning)', color: 'var(--ds-text-warning)', fontSize: 'var(--ds-font-size-100)', lineHeight: 'var(--ds-line-height-body)' }}>
+              <strong>Attention:</strong> {attention}
+            </div>
+          ) : null}
+          {openFull ? (
+            <div style={{ fontSize: 'var(--ds-font-size-100)', color: T.subtlest }}>
+              Charter, full relationships, audit → <Button appearance="link" spacing="none" onClick={openFull}>element detail</Button>
+            </div>
+          ) : null}
+        </div>
+      </>
+    );
+  };
 
   const isLoading = contextLoading || elementsQ.isLoading;
 
@@ -809,8 +907,8 @@ export default function StrataStrategyRoomPage() {
 
           <ReadinessBand tiles={readiness} />
 
-          {/* Strategic structure (anchor 02) — JiraTable grouped/indented tree */}
-          <div style={{ marginBottom: 16 }}>
+          {/* Strategic structure (anchor 02) — JiraTable tree + inspector rail (2-col) */}
+          <div style={{ marginBottom: 16, display: 'grid', gridTemplateColumns: isNarrow ? '1fr' : 'minmax(0, 1fr) 360px', gap: 16, alignItems: 'start' }}>
             <StrataPanel
               title="Strategic structure"
               icon={<GitBranch size={16} />}
@@ -843,13 +941,38 @@ export default function StrataStrategyRoomPage() {
                   data={flatRows}
                   getRowId={(row) => row.id}
                   getRowDepth={(row) => depthOf.get(row.id) ?? 0}
-                  onRowClick={(row) => { if (row.slug) navigate(Routes.strata.strategyElement(row.slug)); }}
+                  onRowClick={(row) => setSelectedId(row.id)}
                   density="compact"
                   ariaLabel="Strategic structure"
                 />
               )}
             </StrataPanel>
+
+            {/* Inspector rail — sticky 360px column on ≥1280 (anchor 02) */}
+            {!isNarrow ? (
+              <aside
+                data-testid="strata-inspector-rail"
+                style={{ position: 'sticky', top: 16, border: `1px solid ${T.border}`, borderRadius: 8, background: T.raised, boxShadow: 'var(--ds-shadow-raised)', overflow: 'hidden', alignSelf: 'start' }}
+              >
+                {inspectorBody()}
+              </aside>
+            ) : null}
           </div>
+
+          {/* Inspector overlay drawer — <1280, only when an element is selected */}
+          {isNarrow && selected ? (
+            <>
+              <div aria-hidden onClick={() => setSelectedId(null)} style={{ position: 'fixed', inset: 0, background: 'var(--ds-blanket)', zIndex: 200 }} />
+              <div
+                role="dialog"
+                aria-label="Element inspector"
+                data-testid="strata-inspector-drawer"
+                style={{ position: 'fixed', top: 0, right: 0, bottom: 0, width: 360, maxWidth: '92vw', background: T.raised, borderLeft: `1px solid ${T.border}`, boxShadow: 'var(--ds-shadow-overlay)', zIndex: 201, overflowY: 'auto' }}
+              >
+                {inspectorBody()}
+              </div>
+            </>
+          ) : null}
 
           {/* Promote confirmation */}
           <Modal
