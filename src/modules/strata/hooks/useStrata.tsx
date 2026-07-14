@@ -367,6 +367,8 @@ export const useKpiAchievement = (kpiId?: string, periodId?: string) =>
     staleTime: STALE,
   });
 export const useOkrs = () => useQuery({ queryKey: ['strata', 'okrs'], queryFn: kpiApi.okrs, staleTime: STALE });
+export const useSavedViews = (entity: string) =>
+  useQuery({ queryKey: ['strata', 'saved-views', entity], queryFn: () => kpiApi.savedViews(entity), staleTime: STALE });
 
 // ── Execution ────────────────────────────────────────────────────────────────
 export const useInitiatives = () =>

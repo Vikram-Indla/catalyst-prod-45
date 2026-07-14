@@ -8,10 +8,10 @@
 - **Branch:** `strata/impl-phase01`, fast-forwarded to `origin/main` (`02ec24f61`, was ancestor — no
   divergence). **2C-2a backend committed locally, NOT yet merged to main** (awaiting Vikram commit approval).
 - **Phase 0 + Phase 1 COMPLETE** (1B skipped; anchor-13 polish done). **PHASE 2 IN PROGRESS:**
-  **2A · 2B-1 · 2B-2 · 2C-1 · 2C-2a (`01cbe7f87`) · 2C-2b (`b54d68a84`) · 2C-2c (`75c5daba1`) merged;
-  2C-2d-1 (filters + worst-first sort + summary bar) DONE + verified, commit pending.** **NEXT = slice
-  2C-2d-2 (Validation filter chip + Saved views: `strata_saved_views` CRUD from 2C-2a, "Saved views ▾"
-  selector, "My exceptions" default = Band Below-threshold).**
+  **2A · 2B-1 · 2B-2 · 2C-1 · 2C-2a (`01cbe7f87`) · 2C-2b (`b54d68a84`) · 2C-2c (`75c5daba1`) ·
+  2C-2d-1 (`e23fc8f90`) merged; 2C-2d-2 (Validation filter + Saved views) DONE + verified, commit pending.**
+  **✅ Anchor 16 (KPI & OKR Library) COMPLETE.** **NEXT Phase-2 surface = slice 2D Strategy Room Structure
+  view (anchor 02, SPLIT 2D-1/2D-2) — see the Phase-2 slice list in `03_PLAN_LOCK_PHASE2.md`.**
 - 2C-2 split into 2C-2a (backend ✓) · 2C-2b (columns) · 2C-2c (BulkFooterBar) · 2C-2d (saved views + filters).
 
 ## ⭐ PHASE 2 — NEXT (START HERE). Plan Lock: `03_PLAN_LOCK_PHASE2.md` (APPROVED, full build)
@@ -36,9 +36,12 @@ whose "Map" navigates out.
   (`kpiApi.actuals`). Removed dead DirectionCell/ValidatorCell/dataSourceNameById. OKR accordion kept.
 
 ### 2C-2 — KPI Library: bulk + saved views + anchor-16 richness (`StrataKpiLibraryPage.tsx`). RE-READ anchor 16 in full at start.
-Anchor 16 is RICHER than 2C-1 shipped. Sub-slice order: **2C-2a ✓ · 2C-2b ✓ · 2C-2c ✓ · 2C-2d-1 ✓ (all DONE session 007)** →
-**2C-2d-2 (DO NEXT & LAST: Validation filter chip + Saved views)**. (2C-2d split for the 2h rule:
-2C-2d-1 = filters/sort/summary; 2C-2d-2 = Validation filter + saved-views persistence.)
+Anchor 16 **COMPLETE** — 2C-2a ✓ · 2C-2b ✓ · 2C-2c ✓ · 2C-2d-1 ✓ · 2C-2d-2 ✓ (all DONE session 007).
+- **2C-2d-2 DONE** — Validation filter chip (page-level actuals batch via `useQueries`, deduped w/ cells;
+  All/Validated/Pending/Rejected/Quarantined/No data) + **Saved views** ("Saved views ▾" selector, built-in
+  "My exceptions" = Band Below-threshold, user views via `strata_saved_views`, Save/Delete). New:
+  `kpiApi.savedViews/createSavedView/deleteSavedView`, `useSavedViews`, `StrataSavedView`. Gates green;
+  live-verified light+dark incl. real DB insert (Board exceptions) + delete (cleaned up).
 - **2C-2d-1 DONE** (`StrataKpiLibraryPage.tsx` only) — page-level achievement batch via `useQueries`
   (deduped with cells); filter toolbar Status·Band·Perspective·Owner (`StrataChipMenu`); Band "Below
   threshold" = appearance ∈ {removed,moved}; worst-first achievement default sort (Achievement col now

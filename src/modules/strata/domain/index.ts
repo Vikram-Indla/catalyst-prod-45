@@ -11,7 +11,7 @@ import type {
   StrataBenefitProjectCard, StrataBenefitValue, StrataBoardPack, StrataCalculatedValue, StrataChangeRequest,
   StrataCycle, StrataDataSource, StrataDecision, StrataDependency, StrataGateInstance,
   StrataGateModel, StrataGateModelStage, StrataInitiative, StrataInitiativeProject,
-  StrataBulkUpdateResult, StrataKeyResult, StrataKpi, StrataKpiActual, StrataKpiFormulaVersion, StrataKpiTarget,
+  StrataBulkUpdateResult, StrataSavedView, StrataKeyResult, StrataKpi, StrataKpiActual, StrataKpiFormulaVersion, StrataKpiTarget,
   StrataKpiTypeConfig, StrataMapEdge, StrataMilestone, StrataModelPerspective, StrataNotification, StrataNotificationRule, StrataOkr,
   StrataPeriod, StrataPerspective, StrataThemeCharter, StrataPortfolio, StrataProjectCard,
   StrataProjectCardFieldConfig, StrataProjectCardPicklist, StrataProjectCardSectionConfig,
@@ -413,6 +413,13 @@ export const kpiApi = {
       p_threshold_scheme: input.thresholdSchemeId ?? null,
       p_reason: input.reason ?? null,
     })) as Promise<StrataBulkUpdateResult>,
+  // ── Per-user saved views (strata_saved_views; RLS scopes to auth.uid()) ──
+  savedViews: (entity: string): Promise<StrataSavedView[]> =>
+    run(typedQuery('strata_saved_views').select('*').eq('entity', entity).order('name')),
+  createSavedView: (input: { entity: string; name: string; config: Record<string, unknown> }): Promise<StrataSavedView> =>
+    run(typedQuery('strata_saved_views').insert({ entity: input.entity, name: input.name, config: input.config }).select('*').single()),
+  deleteSavedView: (id: string): Promise<unknown> =>
+    run(typedQuery('strata_saved_views').delete().eq('id', id).select('id')),
   createFormulaVersion: (input: {
     kpiId: string; expression: string; variables?: Record<string, unknown>;
     formulaType?: string; changeReason?: string;
