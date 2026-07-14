@@ -1,23 +1,47 @@
 # 07 — HANDOVER · CAT-STRATA-IMPL-20260712-001
 
-> Resume point for the STRATA design-pack implementation (Phase 0 + Phase 1).
-> Read order for continuation: `00_READ_ME_FIRST` → `01_OBJECTIVE` → `03_PLAN_LOCK` →
-> this file → `08_DRIFT_LOG` → `09_DECISIONS` → `discovery/00_anchor_specs` → latest `sessions/`.
+> Resume point for the STRATA design-pack implementation. **Phases 0, 1, and 2 are COMPLETE.**
+> Read order for a Phase-3 start: `00_READ_ME_FIRST` → `01_OBJECTIVE` → `03_PLAN_LOCK` →
+> this file → `08_DRIFT_LOG` → `09_DECISIONS` → then read the Phase-3 anchors before writing a Plan Lock.
 
-## State (as of session 007, 2026-07-14)
-- **Branch:** `strata/impl-phase01`, fast-forwarded to `origin/main` (`02ec24f61`, was ancestor — no
-  divergence). **2C-2a backend committed locally, NOT yet merged to main** (awaiting Vikram commit approval).
-- **Phase 0 + Phase 1 COMPLETE** (1B skipped; anchor-13 polish done). **PHASE 2 IN PROGRESS:**
-  **2A · 2B-1 · 2B-2 · 2C-1 · 2C-2a (`01cbe7f87`) · 2C-2b (`b54d68a84`) · 2C-2c (`75c5daba1`) ·
-  2C-2d-1 (`e23fc8f90`) · 2C-2d-2 (`da80fdb43`) merged — ✅ Anchor 16 COMPLETE. 2D Strategy Room:
-  2D COMPLETE. 2E COMPLETE (2E-1 `139b9dfd3` · 2E-2 `621c1c644` · 2E-3 `f1c3a3364`). 2F Evidence (anchor 15)
-  DONE + verified, commit pending.**
-  **✅✅ PHASE 2 (measure & direction) COMPLETE — 2A · 2B · 2C (anchor 16) · 2D (anchor 02) · 2E (anchor 14) ·
-  2F (anchor 15) all shipped + merged.**
-  **NEXT: Phases 3–5 each need their OWN Plan Lock (NOT started — do not implement without one). Open debt:
-  (1) prod migrations `20260713100000` + `20260713110000` staging-only, apply on next prod run; (2) backend
-  defect task_65642237 (`strata_promote_element` references dropped `strata_play_charters`). 2F = `StrataEvidencePage.tsx`
-  trust-story paragraph (composed provenance) + `StrataSnapshotBand` when locked; chain/history/dossier/?from= preserved.**
+## State (as of 2026-07-14 — end of Phase 2)
+- **Branch:** `strata/impl-phase01`. `origin/main` = `f4b2b2b6a`; branch and main are in sync. Working tree
+  clean. All Phase-2 work is merged + pushed to main AND to `origin/strata/impl-phase01`.
+- **Phase 0 + Phase 1 COMPLETE.** **✅✅ PHASE 2 (measure & direction) COMPLETE** — every anchor shipped +
+  merged, each gated (tsc · colors · audit · CRE) + live-verified light+dark:
+  - **2A** StrataChainStrip · **2B** KPI Detail (anchor 06) — earlier sessions.
+  - **2C** KPI & OKR Library (anchor 16): `da80fdb43` (2C-1 · 2C-2a/b/c/d-1/d-2).
+  - **2D** Strategy Room (anchor 02): `a11d8e8e9` (2D-1 toggle+band · 2D-2 JiraTable tree · 2D-2b health+benefits
+    · 2D-3 inspector rail · 2D-4 Narrative). **Map (`StrataStrategyMapPage.tsx`) byte-untouched throughout —
+    zero-change gate re-probed after every slice.**
+  - **2E** Element Detail (anchor 14): `f1c3a3364` (2E-1 ViewBase 2-col · 2E-2 health verdict + chain · 2E-3
+    promote + charter restyle + responsive).
+  - **2F** Evidence (anchor 15): `f4b2b2b6a` (trust-story paragraph + StrataSnapshotBand-when-locked; chain/
+    history/dossier/?from= preserved).
+
+## ⛔ NEXT = PHASE 3 — needs its OWN Plan Lock before ANY code (see `03_PLAN_LOCK_PHASE2.md` for the format)
+Phases 3–5 are NOT started. Per CLAUDE.md "PLAN LOCK BEFORE CODE": read the Phase-3 anchors in full via
+DesignSync (parent-only), run discovery agents, produce `03_PLAN_LOCK_PHASE3.md`, and STOP for Vikram's
+approval before implementing. Phase-3 scope per HANDOFF build-order = **governance & delivery** (Reviews &
+Decisions, Project Cards, Import/Reconciliation, Data & Lineage) — confirm the exact anchor set against
+`HANDOFF.md` at Phase-3 start. Anchors likely in play: 07 Project Card Detail · 09 Upload Validation &
+Lineage · 10 Decision Cockpit & Board Pack · 17 Project Cards List · 18 Import-Reconciliation ·
+19 Data-Lineage Landing · 23 Reviews Index · 24 Board Pack Present Mode.
+
+## ⚠️ OPEN DEBT (carry into Phase 3 — do NOT lose)
+1. **Prod migrations BLOCKED (no prod access this session — tackle later).** `20260713100000`
+   (plan-variance, session 004) and `20260713110000` (strata_saved_views + strata_bulk_update_kpis, 2C-2a)
+   are applied to **staging (`cyijbdeuehohvhnsywig`) ONLY**; prod (`lmqwtldpfacrrlvdnmld`) is unreachable via
+   the Supabase MCP. Apply BOTH on the next prod migration run (link a disposable dir, `execute_sql` +
+   explicit ledger INSERT since MCP apply_migration stamps its own version — see CONCURRENT SESSIONS rule).
+   Until then: Scorecards-Index "Vs plan" and any bulk/saved-view write error-degrade on prod only.
+2. **Backend defect `task_65642237`** — `strata_promote_element` references the dropped `strata_play_charters`
+   table and errors for legacy elements ("relation public.strata_play_charters does not exist"). Fix to use
+   `strata_theme_charters` (or drop the dead 'play' branch) + committed migration. The Promote UI already
+   surfaces the rejection correctly (§17); this is a pre-existing backend bug, not a UI regression.
+3. **Deferred Phase-2 nice-to-haves (non-anchor-critical, optional):** Element-Detail OKR anchor-table
+   restyle + locked-snapshot band; Evidence exact Step/Fact lineage-table restyle + "differs from live" markers.
+4. Spun-off background task `task_70e821ad` — data-source freshness/staleness column (schema gap).
 
 ### 2E Element Detail (anchor 14) — SPLIT 2E-1/2E-2/2E-3. Page: `StrataStrategyElementDetailPage.tsx`.
 - Anchor 14 = 2-col ViewBase: left body [health verdict (LEADS) → StrataChainStrip → Charter (Intent/Scope)
@@ -38,11 +62,6 @@
 - **2E-3 DONE** — Promote-to-active (draft, server-validated + §17 rejection surfaced), Charter INTENT/SCOPE
   prose restyle, responsive rail-fold <1100. Backend defect flagged: `strata_promote_element` references
   dropped `strata_play_charters` for legacy elements (task_65642237). Deferred nice-to-haves: OKR table restyle, locked band.
-- ~~2E-3 (was NEXT):~~ Charter → anchor Intent/Scope prose layout (versioned header, current Charter panel is a
-  field dump); OKRs → anchor table (Key result·Owner·Progress·Status — current OkrRow accordion is fine but
-  the anchor wants a flat table for an objective's own KRs); **Promote-to-active** for drafts (server-validated
-  `strategyApi.promoteElement`, confirm modal listing requirements: measures + owner required); restricted
-  read-only (hide edit affordances when `useStrataRoles` empty); locked snapshot band; <1100 rail folds below.
 
 ### 2D Strategy Room (anchor 02) — SPLIT 2D-1/2D-2/2D-3/2D-4. HARD GATE: map component never touched.
 - **Anchor 02 re-read in full (session 007).** **MAP BASELINE captured:** `/strata/strategy/map` = 18
