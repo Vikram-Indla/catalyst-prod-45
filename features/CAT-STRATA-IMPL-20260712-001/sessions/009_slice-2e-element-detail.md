@@ -16,4 +16,10 @@ Details field rows (Type/Lifecycle/Owner/Perspective/Parent/Charter) + History (
 Summary + Audit panels; all other panels preserved in the left body. Gates green; live-verified light+dark
 (objective grow-b2b-revenue + theme profitable-growth-proof).
 
-## Status: 2E-1 built + verified; commit pending Vikram approval → then 2E-2 (health verdict + StrataChainStrip).
+## 2E-1 — MERGED `139b9dfd3`.
+
+## 2E-2 — DONE (health verdict + chain strip)
+Health verdict LEADS left body: derived worst-band rollup (useQueries over linked KPIs, active period) + grounded
+sentence; StrataChainStrip (Theme/Measures/Delivery/Value/Decisions, multi-hop). Gates green; light+dark verified.
+
+## Status: 2E-2 built + verified; commit pending → then 2E-3 (charter/OKR restyle + promote + states).
