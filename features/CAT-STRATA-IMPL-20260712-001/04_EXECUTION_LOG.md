@@ -847,3 +847,21 @@ strip; 2E-3 charter/OKR restyle + promote + states.
   IR Platform SAR 800K · CPQ/Enterprise/MIM "—" (no planned-linked benefit). Values read faithfully from
   `strata_benefit_values` (magnitudes are seed data, not fabricated). All 6 columns fit; Blockers visible.
 - **✅ 3A-1 (anchor 17 Project Cards List) COMPLETE** — 3A-1a + 3A-1b. NEXT: **3A-2** (anchor 07 Project Card Detail).
+
+### ⏳ Slice 3A-2a — Project Card Detail layout + rail (anchor 07) — DONE, gates green, live-verified; PENDING commit
+- File: `src/modules/strata/components/ProjectCardDetailView.tsx` (only src file).
+- Restructured to CatalystViewBase anatomy (reproduced via a 2-col grid, per P2-D1 — no CatalystViewBase fork):
+  **strategic-role panel FIRST** (real prose from value_hypothesis/scope/business_case + chain links ↑Objective /
+  ◈Theme / ◎Affects-KPIs) → **2-col grid** (left `minmax(0,1fr)` + **360px sticky rail**, collapses to 1-col <1100).
+  Left body: **Health & forecast** panel (Progress / Baseline end / Forecast end w/ danger +Nd / Variance /
+  Forecast source + ProgressBar + health_reason) → the EXISTING Tabs (Overview/Scope/Delivery) preserved verbatim.
+  Right rail: **Details** field-rows (owner/PM/LeadBU/team/stage/budget/on-hold-derived, config-gated sponsor/budget) +
+  **Source System** (system/reference/last-synced + "View reconciliation →" → executionImport + "STRATA summarizes and
+  links" note). Replaced `StrataStatStrip` (counts now in tab titles). New helpers `DetailPanel`/`RailField`/`useIsNarrow`.
+- Zero-assumption: dash for missing rail fields; no "Open in Jira" button (no real external URL stored — omitted, not faked).
+- Preservation: all tabs + authoring modals + config-gating intact (2E precedent — anchor on top, rich panels kept).
+- GATES: `tsc` clean · colors 0=baseline · audit 19799/19799 (fixed a +5 off-grid-spacing regression by tokenizing
+  to `var(--ds-space-*)`) · CRE pass. LIVE **light + dark**: strategic role, health panel (Forecast +20 days danger),
+  rail, Delivery tab (milestones table + authoring) all render; sticky rail; `?from=` breadcrumb back-nav.
+- NEXT: **3A-2b** — unified "What threatens the forecast" (merge milestones-at-risk + deps + risks, ranked) +
+  Value Contribution rail panel (`useCardBenefitValue`, completion≠benefit callout); trim Overview/rail duplication.

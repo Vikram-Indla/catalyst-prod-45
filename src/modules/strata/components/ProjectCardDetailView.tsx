@@ -13,7 +13,7 @@
  * strata_kpis frameworks as Theme Objectives / Theme KPIs (context='project'),
  * linked via the generic strata_execution_links bridge — no second model.
  */
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import Tabs, { Tab, TabList, TabPanel } from '@atlaskit/tabs';
 import {
   Avatar, Button, CatalystTag, EmptyState, Lozenge, ProgressBar, SectionMessage, Tooltip,
@@ -35,7 +35,7 @@ import type {
 import { fmtDate, fmtSarCompact, labelize } from './format';
 import { StrataFormModal } from './authoring';
 import type { StrataFormValues } from './authoring';
-import { StrataExecutionHealthLozenge, StrataPanel, StrataStatStrip, T } from './shared';
+import { StrataExecutionHealthLozenge, StrataPanel, T } from './shared';
 
 const WRITE_ROLES: StrataRole[] = ['strategy_office', 'vmo_validator', 'data_steward', 'strata_admin'];
 const ARCHIVE_ROLES: StrataRole[] = ['strategy_office', 'vmo_validator', 'strata_admin'];
@@ -107,6 +107,40 @@ function LinkedRow({ primary, meta, actionLabel = 'Unlink', onAction, canAct }: 
       <span style={{ flex: 1, minWidth: 0, fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: T.text, overflowWrap: 'anywhere' }}>{primary}</span>
       {meta ? <span style={captionStyle}>{meta}</span> : null}
       {canAct && onAction ? <Button appearance="subtle" spacing="compact" onClick={onAction}>{actionLabel}</Button> : null}
+    </div>
+  );
+}
+
+// Single-column collapse of the anchor-07 body + rail (annotation: @container <680;
+// STRATA rail folds under the body on narrow — use a slightly wider 1100 breakpoint).
+function useIsNarrow(breakpoint = 1100): boolean {
+  const [narrow, setNarrow] = useState<boolean>(() => typeof window !== 'undefined' && window.innerWidth < breakpoint);
+  useEffect(() => {
+    const mq = window.matchMedia(`(max-width: ${breakpoint - 1}px)`);
+    const onChange = () => setNarrow(mq.matches);
+    onChange();
+    mq.addEventListener('change', onChange);
+    return () => mq.removeEventListener('change', onChange);
+  }, [breakpoint]);
+  return narrow;
+}
+
+// Anchor-07 section card: bordered panel with a small uppercase label (rail + health).
+function DetailPanel({ label, children, testId }: { label: string; children: React.ReactNode; testId?: string }) {
+  return (
+    <section data-testid={testId} style={{ border: `1px solid ${T.border}`, borderRadius: 8, background: T.raised, padding: 16 }}>
+      <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, letterSpacing: '0.04em', color: T.subtlest, marginBottom: 'var(--ds-space-100)' }}>{label}</div>
+      {children}
+    </section>
+  );
+}
+
+// Rail key/value row (CatalystSidebarDetails-style field rows, anchor 07).
+function RailField({ k, children }: { k: string; children: React.ReactNode }) {
+  return (
+    <div style={{ display: 'grid', gridTemplateColumns: '112px minmax(0, 1fr)', gap: 8, padding: 'var(--ds-space-050) 0', alignItems: 'center' }}>
+      <span style={{ color: T.subtlest, fontSize: 'var(--ds-font-size-100)' }}>{k}</span>
+      <span style={{ color: T.text, fontWeight: 500, fontSize: 'var(--ds-font-size-200)', overflowWrap: 'anywhere' }}>{children}</span>
     </div>
   );
 }
@@ -219,6 +253,11 @@ export function ProjectCardDetailView({ card, theme }: {
   };
 
   const derivedProgress = asFraction(card.actual_progress);
+  const isNarrow = useIsNarrow(1100);
+  // Strategic-role prose (anchor 07) — real fields only, never invented.
+  const linkedObjective = card.objective_element_id ? themeObjectives.find((o) => o.id === card.objective_element_id) ?? null : null;
+  const roleProse = card.value_hypothesis?.trim() || card.scope_description?.trim() || card.business_case?.trim() || null;
+  const forecastLate = (card.forecast_variance_days ?? 0) > 0;
 
   const milestoneColumns = useMemo<Column<StrataMilestone>[]>(() => [
     { id: 'name', label: 'Milestone', flex: true, cell: ({ row }) => <span style={{ fontWeight: 600, color: T.text }}>{row.name}</span> },
@@ -293,18 +332,54 @@ export function ProjectCardDetailView({ card, theme }: {
         </span>
       </div>
 
-      <StrataStatStrip
-        items={[
-          { key: 'progress', label: 'Actual progress', helpText: "Milestone progress weighted by each milestone's baseline duration in days (elapsed days, not inclusive). Falls back to a weight-weighted average when no milestone has both baseline dates. Rounded to the nearest whole percent.", value: derivedProgress == null ? '—' : `${Math.round(derivedProgress * 100)}%` },
-          { key: 'baseline_progress', label: 'Baseline progress', helpText: 'Planned percent-complete today over the milestone-derived baseline window (elapsed days from the earliest baseline start to the latest baseline end). 0% before the window opens, 100% after it closes. Rounded to the nearest whole percent.', value: card.baseline_progress_pct == null ? '—' : `${Math.round(card.baseline_progress_pct)}%` },
-          { key: 'variance', label: 'Variance', helpText: 'Baseline progress minus Actual progress. Positive = behind schedule: ≥10% is Minor Delay, ≥20% is Major Delay (a forecast >30 days past baseline end also forces Major Delay). Rounded to the nearest whole percent.', value: card.variance_pct == null ? '—' : `${card.variance_pct > 0 ? '+' : ''}${Math.round(card.variance_pct)}%` },
-          { key: 'milestones', label: 'Milestones', value: milestones.length },
-          { key: 'dependencies', label: 'Dependencies', value: projectDependencies.length },
-          { key: 'blockers', label: 'Blockers', value: blockers.length },
-        ]}
-      />
+      {/* Strategic role first (anchor 07) — what this card does for the strategy, then its chain. */}
+      <section data-testid="strata-project-role" style={{ border: `1px solid ${T.border}`, borderRadius: 8, background: T.raised, padding: 'var(--ds-space-150) var(--ds-space-200)' }}>
+        <p style={{ margin: 0, fontSize: 'var(--ds-font-size-200)', lineHeight: 1.5, color: T.text }}>
+          {roleProse ?? `Delivery of ${card.name}.`}
+        </p>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--ds-space-075) var(--ds-space-300)', marginTop: 'var(--ds-space-100)', fontSize: 'var(--ds-font-size-100)', color: T.subtle }}>
+          {linkedObjective ? (
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 2 }}>↑ Objective · <Button appearance="subtle" spacing="compact" onClick={() => window.location.assign(Routes.strata.strategy())}>{linkedObjective.name}</Button></span>
+          ) : null}
+          {theme ? (
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 2 }}>◈ Theme · <Button appearance="subtle" spacing="compact" onClick={() => window.location.assign(Routes.strata.strategy())}>{theme.name}</Button></span>
+          ) : null}
+          {projectKpis.length > 0 ? <span>◎ Affects · {projectKpis.map((k) => k.name).join(', ')}</span> : null}
+        </div>
+      </section>
 
-      <Tabs id={`strata-project-detail-tabs-${card.id}`}>
+      <div style={{ display: 'grid', gridTemplateColumns: isNarrow ? '1fr' : 'minmax(0, 1fr) 360px', gap: 16, alignItems: 'start' }}>
+        <div style={{ minWidth: 0, display: 'flex', flexDirection: 'column', gap: 16 }}>
+          <DetailPanel label="HEALTH & FORECAST" testId="strata-project-health">
+            <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap', alignItems: 'flex-start', marginBottom: 12 }}>
+              <div>
+                <div style={captionStyle}>Progress</div>
+                <div style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 700, color: T.text, fontVariantNumeric: 'tabular-nums' }}>{derivedProgress == null ? '—' : `${Math.round(derivedProgress * 100)}%`}</div>
+              </div>
+              <div>
+                <div style={captionStyle}>Baseline end</div>
+                <div style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: T.text }}>{fmtDate(card.calc_baseline_end)}</div>
+              </div>
+              <div>
+                <div style={captionStyle}>Forecast end</div>
+                <div style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: forecastLate ? 'var(--ds-text-danger)' : T.text }}>
+                  {fmtDate(card.final_forecast_end)}{card.forecast_variance_days ? ` (${card.forecast_variance_days > 0 ? '+' : ''}${card.forecast_variance_days} days)` : ''}
+                </div>
+              </div>
+              <div>
+                <div style={captionStyle}>Variance</div>
+                <div style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: T.text }}>{card.variance_pct == null ? '—' : `${card.variance_pct > 0 ? '+' : ''}${Math.round(card.variance_pct)}%`}</div>
+              </div>
+              <div>
+                <div style={captionStyle}>Forecast source</div>
+                <div style={{ fontSize: 'var(--ds-font-size-200)', color: T.subtle }}>{card.system_forecast_end ? 'System (milestone roll-up)' : card.forecast_end ? 'Submitted' : '—'}</div>
+              </div>
+            </div>
+            {derivedProgress == null ? null : <ProgressBar value={derivedProgress} aria-label={`Progress ${Math.round(derivedProgress * 100)}%`} />}
+            {card.health_reason ? <p style={{ ...captionStyle, margin: 'var(--ds-space-100) 0 0', lineHeight: 1.5 }}>{card.health_reason}</p> : null}
+          </DetailPanel>
+
+          <Tabs id={`strata-project-detail-tabs-${card.id}`}>
         <TabList>
           <Tab>Overview</Tab>
           <Tab>Scope &amp; Measures</Tab>
@@ -496,7 +571,32 @@ export function ProjectCardDetailView({ card, theme }: {
             ) : null}
           </div>
         </TabPanel>
-      </Tabs>
+          </Tabs>
+        </div>
+
+        <aside style={{ display: 'flex', flexDirection: 'column', gap: 16, alignSelf: 'start', position: isNarrow ? 'static' : 'sticky', top: 16 }}>
+          <DetailPanel label="DETAILS" testId="strata-project-details">
+            {fieldVisible('sponsor_id') && profileName(card.sponsor_id) ? <RailField k="Sponsor">{profileName(card.sponsor_id)}</RailField> : null}
+            <RailField k="Business owner">{profileName(card.business_owner_id) ?? <Dash />}</RailField>
+            <RailField k="Project manager">{profileName(card.pm_id) ?? <Dash />}</RailField>
+            <RailField k="Lead BU">{card.lead_business_unit ?? <Dash />}</RailField>
+            <RailField k="Delivery team">{card.delivery_team ?? <Dash />}</RailField>
+            <RailField k="Stage">{card.stage ? labelize(card.stage) : <Dash />}</RailField>
+            {fieldVisible('budget') ? <RailField k="Budget">{card.budget != null ? fmtSarCompact(card.budget) : <Dash />}</RailField> : null}
+            <RailField k="On hold">{card.calculated_health === 'on_hold' ? 'Yes' : 'No'}</RailField>
+          </DetailPanel>
+
+          <DetailPanel label="SOURCE SYSTEM" testId="strata-project-source">
+            <RailField k="System">{labelize(card.source_system)}</RailField>
+            {card.source_key ? <RailField k="Reference">{card.source_key}</RailField> : null}
+            <RailField k="Last synced">{card.last_synced_at ? fmtDate(card.last_synced_at) : <Dash />}</RailField>
+            <div style={{ marginTop: 8 }}>
+              <Button appearance="subtle" spacing="compact" onClick={() => window.location.assign(Routes.strata.executionImport())}>View reconciliation →</Button>
+            </div>
+            <p style={{ ...captionStyle, margin: '8px 0 0', lineHeight: 1.5 }}>STRATA summarizes and links — the work items live in {labelize(card.source_system)}. This card never becomes a task tracker.</p>
+          </DetailPanel>
+        </aside>
+      </div>
 
       {/* ── Authoring modals ── */}
       <StrataFormModal
