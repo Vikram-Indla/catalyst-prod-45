@@ -709,3 +709,26 @@ Branch: `strata/impl-phase01`. File: `StrataKpiLibraryPage.tsx`.
   page changed. ZERO-CHANGE GATE PASS.**
 
 ### ✅ 2D Strategy Room (anchor 02) COMPLETE — 2D-1 · 2D-2 · 2D-2b · 2D-3 · 2D-4 all shipped.
+
+---
+
+## Slice 2E-1 — Element Detail: 2-col ViewBase restructure + rail (anchor 14) (session 008, 2026-07-14)
+**File:** `StrataStrategyElementDetailPage.tsx` only. 2E split: 2E-1 layout; 2E-2 health verdict + chain
+strip; 2E-3 charter/OKR restyle + promote + states.
+
+### Changes
+- Converted the auto-fit multi-panel grid to the anchor-14 **2-col ViewBase anatomy**: left analytical body
+  (`minmax(0,1fr)`, flex column) + **360px sticky right rail**.
+- **Right rail** (new): **Details** field rows (Type · Lifecycle lozenge · Owner · Perspective · Parent link ·
+  Charter status for themes) — absorbs the old "Summary" panel; **History** — the audit events, moved out of
+  the standalone "Audit" panel.
+- Left body keeps every existing panel (Charter, Objectives, OKR Performance, Project Cards, Execution
+  Summary, Governance, Strategy relationships) — **no regression**; the rich Theme features aren't in the
+  anchor but stay (same "keep working features" rule as prior drifts). Removed the standalone Summary + Audit panels.
+
+### Verification (raw)
+- Gates GREEN: tsc no errors · colors 0=baseline · audit no-increase (tokens 19799) · CRE.
+- LIVE (localhost:8080, staging) **light + dark**: objective (`grow-b2b-revenue`) → left body OKR Performance
+  + relationships; rail Details (Objective · ACTIVE · Financial · Parent B2B Growth Engine) + History.
+  Theme (`profitable-growth-proof`) → left body Charter/Objectives/OKR/… ; rail Details (Theme · DRAFT ·
+  Root-level · Charter None) + History; header Edit/Charter/Add-Objective preserved. Both themes clean.

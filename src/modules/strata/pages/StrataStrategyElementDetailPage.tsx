@@ -229,34 +229,9 @@ export default function StrataStrategyElementDetailPage() {
         </span>
       ) : undefined}
     >
-      <div style={{ display: 'grid', gap: 16, gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))' }}>
-        <StrataPanel title="Summary" icon={<Target size={16} />}>
-          <div style={{ display: 'grid', gap: 8, fontSize: 'var(--ds-font-size-100)' }}>
-            <div><span style={{ fontWeight: 600 }}>Type</span> {labelize(element.element_type)}</div>
-            <div>
-              <span style={{ fontWeight: 600 }}>Status</span>{' '}
-              <Lozenge appearance={STATUS_APPEARANCE[element.status] ?? 'default'}>{labelize(element.status)}</Lozenge>
-            </div>
-            <div><span style={{ fontWeight: 600 }}>Owner</span> {ownerName(element.owner_id)}</div>
-            <div><span style={{ fontWeight: 600 }}>Perspective</span> {perspectiveName(element.perspective_id)}</div>
-            <div>
-              <span style={{ fontWeight: 600 }}>Parent</span>{' '}
-              {parent ? (
-                <button
-                  type="button"
-                  onClick={() => parent.slug && navigate(Routes.strata.strategyElement(parent.slug))}
-                  style={{ color: T.brand, background: 'none', border: 'none', padding: 0, cursor: parent.slug ? 'pointer' : 'default', font: 'inherit' }}
-                  disabled={!parent.slug}
-                >
-                  {parent.name}
-                </button>
-              ) : (
-                <span style={{ color: T.subtlest }}>Root-level</span>
-              )}
-            </div>
-          </div>
-        </StrataPanel>
-
+      <div style={{ display: 'grid', gap: 16, gridTemplateColumns: 'minmax(0, 1fr) 360px', alignItems: 'start' }}>
+        {/* Left analytical body (anchor 14 ViewBase anatomy) */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16, minWidth: 0 }}>
         {isTheme ? (
           <StrataPanel
             title="Charter"
@@ -561,20 +536,57 @@ export default function StrataStrategyElementDetailPage() {
           )}
         </StrataPanel>
 
-        <StrataPanel title="Audit" icon={<GitBranch size={16} />} count={auditRows.length}>
-          {auditRows.length === 0 ? (
-            <EmptyState size="compact" header="No audit events" description="Changes to this element will appear here." />
-          ) : (
-            <div style={{ display: 'grid', gap: 6, fontSize: 'var(--ds-font-size-050)' }}>
-              {auditRows.map((a: { action: string | null; created_at: string; actor_id: string | null }, i: number) => (
-                <div key={i} style={{ display: 'flex', justifyContent: 'space-between', color: T.subtle }}>
-                  <span>{formatAuditAction(a.action)}</span>
-                  <span style={{ color: T.subtlest }}>{fmtDateTime(a.created_at)}</span>
-                </div>
-              ))}
+        </div>
+
+        {/* Right rail (anchor 14): Details field rows + History (360px, sticky) */}
+        <aside style={{ position: 'sticky', top: 16, display: 'flex', flexDirection: 'column', gap: 16, alignSelf: 'start' }}>
+          <StrataPanel title="Details" icon={<Target size={16} />}>
+            <div style={{ display: 'grid', gridTemplateColumns: '110px minmax(0,1fr)', rowGap: 'var(--ds-space-150)', columnGap: 'var(--ds-space-100)', fontSize: 'var(--ds-font-size-100)', alignItems: 'center' }}>
+              <span style={{ color: T.subtlest }}>Type</span>
+              <span style={{ color: T.text, fontWeight: 500 }}>{labelize(element.element_type)}</span>
+              <span style={{ color: T.subtlest }}>Lifecycle</span>
+              <span><Lozenge appearance={STATUS_APPEARANCE[element.status] ?? 'default'}>{labelize(element.status)}</Lozenge></span>
+              <span style={{ color: T.subtlest }}>Owner</span>
+              <span style={{ color: T.text, fontWeight: 500 }}>{ownerName(element.owner_id)}</span>
+              <span style={{ color: T.subtlest }}>Perspective</span>
+              <span style={{ color: T.text, fontWeight: 500 }}>{perspectiveName(element.perspective_id)}</span>
+              <span style={{ color: T.subtlest }}>Parent</span>
+              <span>
+                {parent ? (
+                  <button
+                    type="button"
+                    onClick={() => parent.slug && navigate(Routes.strata.strategyElement(parent.slug))}
+                    style={{ color: T.brand, background: 'none', border: 'none', padding: 0, cursor: parent.slug ? 'pointer' : 'default', font: 'inherit', fontWeight: 500, textAlign: 'left' }}
+                    disabled={!parent.slug}
+                  >
+                    {parent.name}
+                  </button>
+                ) : <span style={{ color: T.subtlest }}>Root-level</span>}
+              </span>
+              {isTheme ? (
+                <>
+                  <span style={{ color: T.subtlest }}>Charter</span>
+                  <span>{charter ? <Lozenge appearance={charterComplete ? 'success' : 'moved'}>{charterComplete ? 'Complete' : 'Incomplete'}</Lozenge> : <span style={{ color: T.subtlest }}>None</span>}</span>
+                </>
+              ) : null}
             </div>
-          )}
-        </StrataPanel>
+          </StrataPanel>
+
+          <StrataPanel title="History" icon={<GitBranch size={16} />} count={auditRows.length}>
+            {auditRows.length === 0 ? (
+              <EmptyState size="compact" header="No history yet" description="Changes to this element will appear here." />
+            ) : (
+              <div style={{ display: 'grid', gap: 'var(--ds-space-100)', fontSize: 'var(--ds-font-size-050)' }}>
+                {auditRows.map((a: { action: string | null; created_at: string; actor_id: string | null }, i: number) => (
+                  <div key={i} style={{ display: 'flex', justifyContent: 'space-between', gap: 8, color: T.subtle }}>
+                    <span>{formatAuditAction(a.action)}</span>
+                    <span style={{ color: T.subtlest, whiteSpace: 'nowrap' }}>{fmtDateTime(a.created_at)}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </StrataPanel>
+        </aside>
       </div>
 
       {authoring?.kind === 'edit-element' ? (

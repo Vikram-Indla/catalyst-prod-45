@@ -10,11 +10,32 @@
 - **Phase 0 + Phase 1 COMPLETE** (1B skipped; anchor-13 polish done). **PHASE 2 IN PROGRESS:**
   **2A · 2B-1 · 2B-2 · 2C-1 · 2C-2a (`01cbe7f87`) · 2C-2b (`b54d68a84`) · 2C-2c (`75c5daba1`) ·
   2C-2d-1 (`e23fc8f90`) · 2C-2d-2 (`da80fdb43`) merged — ✅ Anchor 16 COMPLETE. 2D Strategy Room:
-  2D-1 (`0e9f8d46a`) · 2D-2 (`54bf41767`) · 2D-2b (`47dd9f1e8`) · 2D-3 (`497d83510`) merged; 2D-4 (Narrative
-  view) DONE + verified, commit pending — ✅ 2D Strategy Room (anchor 02) COMPLETE.**
-  **NEXT Phase-2 surface = slice 2E Element Detail (anchor 14) — see `03_PLAN_LOCK_PHASE2.md` slice 2E; then
-  2F Evidence (anchor 15). NOTE P2-D5 (element-health source) already resolved in 2D-2b (derive from linked
-  measures) — reuse the same `healthKeyFor` rollup pattern on Element Detail.**
+  2D COMPLETE (2D-4 merged `a11d8e8e9`). **2E Element Detail (anchor 14) STARTED: 2E-1 (2-col ViewBase
+  restructure + rail) DONE + verified, commit pending.**
+  **NEXT = slice 2E-2 (Health verdict + StrataChainStrip at the TOP of the left body — the anchor's headline;
+  health verdict LEADS). Then 2E-3 (Charter/OKR restyle to anchor tables + Promote-to-active + restricted/
+  locked/responsive). Then 2F Evidence (anchor 15). 2E anchor 14 read in full session 008.**
+
+### 2E Element Detail (anchor 14) — SPLIT 2E-1/2E-2/2E-3. Page: `StrataStrategyElementDetailPage.tsx`.
+- Anchor 14 = 2-col ViewBase: left body [health verdict (LEADS) → StrataChainStrip → Charter (Intent/Scope)
+  → OKRs table] + 360px rail [Details field rows + History]. Draft → DRAFT lozenge + "Promote to active"
+  (server-validated `strategyApi.promoteElement`, lists requirements). Themes = same shell, theme charter +
+  child-objective list replacing OKRs. Restricted read-only; locked snapshot band. Health = derived (P2-D5,
+  reuse `healthKeyFor` from 2D-2b — achievement rollup of linked KPIs).
+- **DECISION (session 008):** the current rich Theme panels (Execution Summary, Governance, Project Cards,
+  Strategy relationships) are NOT in anchor 14 but are PRESERVED in the left body (no regression, same rule
+  as DRIFT-4/D-9). Anchor sections layer on TOP.
+- **2E-1 DONE** — 2-col grid (left body 1fr + 360px sticky rail). Rail = Details field rows (Type/Lifecycle/
+  Owner/Perspective/Parent/Charter) + History (audit). Removed standalone Summary + Audit panels; all other
+  panels kept in left body. Gates green; light+dark; objective + theme both verified.
+- **2E-2 (NEXT):** at the TOP of the left body add (a) **Health verdict** section — "{period} HEALTH" +
+  derived band lozenge (`useBandResolver` + achievement `useQueries` over the element's linked KPI ids in
+  activePeriod, worst-band) + "derived from linked measures" note + a composed grounded verdict sentence
+  (linked-KPI + card-health counts); (b) **StrataChainStrip** (Theme/Measures/Delivery/Value/Decisions —
+  reuse the 2D-3 multi-hop pattern: element_kpis, project cards by objective_element_id, benefit↔card,
+  strata_decisions by element_id). Import StrataChainStrip + useBenefits/useBenefitProjectCards + useBandResolver + kpiApi + useQueries.
+- **2E-3:** Charter → anchor Intent/Scope prose layout (versioned header); OKRs → anchor table (Key result·
+  Owner·Progress·Status); Promote-to-active for drafts (requirements list); restricted read-only; locked snapshot band; <1100 rail folds.
 
 ### 2D Strategy Room (anchor 02) — SPLIT 2D-1/2D-2/2D-3/2D-4. HARD GATE: map component never touched.
 - **Anchor 02 re-read in full (session 007).** **MAP BASELINE captured:** `/strata/strategy/map` = 18
