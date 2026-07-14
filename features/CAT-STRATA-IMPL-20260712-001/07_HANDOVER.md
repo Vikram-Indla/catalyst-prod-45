@@ -10,13 +10,14 @@
 - **Phase 0 + Phase 1 COMPLETE** (1B skipped; anchor-13 polish done). **PHASE 2 IN PROGRESS:**
   **2A · 2B-1 · 2B-2 · 2C-1 · 2C-2a (`01cbe7f87`) · 2C-2b (`b54d68a84`) · 2C-2c (`75c5daba1`) ·
   2C-2d-1 (`e23fc8f90`) · 2C-2d-2 (`da80fdb43`) merged — ✅ Anchor 16 COMPLETE. 2D Strategy Room:
-  2D COMPLETE (2D-4 merged `a11d8e8e9`). **2E Element Detail (anchor 14): 2E-1 (`139b9dfd3`) merged; 2E-2 (`621c1c644`) merged; 2E-3 (promote +
-  charter restyle + responsive) DONE + verified, commit pending — ✅ 2E COMPLETE.**
-  **NEXT = slice 2F Evidence (anchor 15) — the LAST Phase-2 surface. Page `StrataEvidencePage.tsx` (anchor
-  15 NOT yet read in full — re-read at slice start per drift protocol). Plan Lock 2F: trust-story opening
-  paragraph + lineage table alignment; live/locked variants (StrataSnapshotBand when locked); confirm
-  `?from=` "Back to [origin]" on all three kinds (KPI done in 2B, scorecard in 1D, portfolio); skeleton/
-  restricted/error states. Smaller — the page exists; polish. This COMPLETES Phase 2.**
+  2D COMPLETE. 2E COMPLETE (2E-1 `139b9dfd3` · 2E-2 `621c1c644` · 2E-3 `f1c3a3364`). 2F Evidence (anchor 15)
+  DONE + verified, commit pending.**
+  **✅✅ PHASE 2 (measure & direction) COMPLETE — 2A · 2B · 2C (anchor 16) · 2D (anchor 02) · 2E (anchor 14) ·
+  2F (anchor 15) all shipped + merged.**
+  **NEXT: Phases 3–5 each need their OWN Plan Lock (NOT started — do not implement without one). Open debt:
+  (1) prod migrations `20260713100000` + `20260713110000` staging-only, apply on next prod run; (2) backend
+  defect task_65642237 (`strata_promote_element` references dropped `strata_play_charters`). 2F = `StrataEvidencePage.tsx`
+  trust-story paragraph (composed provenance) + `StrataSnapshotBand` when locked; chain/history/dossier/?from= preserved.**
 
 ### 2E Element Detail (anchor 14) — SPLIT 2E-1/2E-2/2E-3. Page: `StrataStrategyElementDetailPage.tsx`.
 - Anchor 14 = 2-col ViewBase: left body [health verdict (LEADS) → StrataChainStrip → Charter (Intent/Scope)

@@ -778,3 +778,30 @@ strip; 2E-3 charter/OKR restyle + promote + states.
 
 ### ✅ 2E Element Detail (anchor 14) COMPLETE — 2E-1 · 2E-2 · 2E-3.
 ### Deferred (honest, noted): OKR anchor-table restyle (OkrRow accordion is functional); locked-snapshot band (nice-to-have).
+
+---
+
+## Slice 2F — Evidence: trust-story paragraph + locked-snapshot band (anchor 15) (session 009, 2026-07-14) — PHASE 2 COMPLETE
+**File:** `StrataEvidencePage.tsx` only. Anchor 15 read in full at slice start.
+
+### Changes (anchor 15 "trust story first, tables second" — polish; page already rich)
+- **Trust-story paragraph** — a composed plain-language provenance sentence below the hero, grounded in the
+  chain/calc data: "This {metric} figure of {value}, against a target of {target}, was calculated under
+  formula v{n}, from upload run {run}, submitted by {who} on {date}. {validation clause}." Validation clause
+  from actual.validation_status (validated/pending/rejected). Non-KPI kinds compose from the latest calc.
+  Falls back to the generic one-liner when no calc. Nothing invented.
+- **Locked-snapshot band** — `StrataSnapshotBand` renders above the content when the latest calc is frozen in
+  a governance snapshot (`snapshot_id` → `strata_snapshots.locked_at`), and the trust paragraph appends
+  "These facts are frozen as of {locked_at}." (live evidence shows no band).
+- Existing hero, evidence chain, history chart, calculations dossier, `?from=` "Back to [origin]", and
+  loading/error/empty states PRESERVED (already anchor-faithful "every step inspectable"). Deferred nice-to-
+  have: exact Step/Fact lineage-table restyle (the richer chain panel already covers it) + "differs from live" markers.
+
+### Verification (raw)
+- Gates GREEN: tsc no errors · colors 0=baseline · audit no-increase (tokens 19799) · CRE.
+- LIVE (localhost:8080, staging) **light + dark**: `b2b-revenue-growth` evidence (`?from=/strata/kpis`) →
+  "← Back to KPIs & OKRs"; hero 111.3 ON TRACK; trust paragraph "This achievement pct figure of 8.9%,
+  against a target of 8%, was calculated under formula v1, from upload run RUN-1001. Independently validated.";
+  evidence chain intact. Both themes clean.
+
+### ✅ 2F Evidence COMPLETE — and ✅✅ PHASE 2 (measure & direction) COMPLETE: 2A · 2B · 2C · 2D · 2E · 2F all shipped + merged.

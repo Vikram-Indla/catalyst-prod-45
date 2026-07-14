@@ -23,7 +23,7 @@ import {
   useProfileNames, useScorecardInstanceBySlug, useSnapshots, useStrataContext, useUploadRuns,
 } from '@/modules/strata/hooks/useStrata';
 import {
-  StrataBandLozenge, StrataExecutionHealthLozenge, StrataPageShell, StrataPanel, StrataScoreRing, T,
+  StrataBandLozenge, StrataExecutionHealthLozenge, StrataPageShell, StrataPanel, StrataScoreRing, StrataSnapshotBand, T,
 } from '@/modules/strata/components/shared';
 import {
   EvidenceConfigContext, EvidenceInputs, EvidenceRow, shortId,
@@ -213,6 +213,43 @@ export default function StrataEvidencePage() {
   const lineParam = kind === 'scorecard' ? searchParams.get('line') : null;
   const confidenceText = fmtConfidence(latest?.confidence);
 
+  // Locked evidence (anchor 15): when the latest calc is frozen in a governance
+  // snapshot, the discovery band persists above the content and facts render as-of.
+  const snapshotById = useMemo(
+    () => new Map((snapshotsQ.data ?? []).map((s) => [s.id, s])),
+    [snapshotsQ.data],
+  );
+  const lockedSnapshot = latest?.snapshot_id ? snapshotById.get(latest.snapshot_id) ?? null : null;
+
+  // Trust story (anchor 15): a plain-language provenance paragraph — the number
+  // and where it came from, readable aloud to a board. Grounded entirely in the
+  // chain/calc data; nothing invented.
+  const trustParagraph = ((): string | null => {
+    if (!latest) return null;
+    const num = kind === 'kpi' && chain?.actual?.value != null
+      ? fmtUnit(chain.actual.value, chain.kpi?.unit)
+      : fmtScore(latest.value);
+    const parts: string[] = [`This ${labelize(latest.metric_key).toLowerCase()} figure of ${num}`];
+    if (kind === 'kpi' && chain?.target?.target != null) parts.push(`against a target of ${fmtUnit(chain.target.target, chain.kpi?.unit)}`);
+    const fv = kind === 'kpi' ? chain?.formula_version?.version : latest.formula_version;
+    parts.push(fv != null ? `was calculated under formula v${fv}` : 'was calculated');
+    if (kind === 'kpi') {
+      const run = chain?.lineage?.find((l) => l.run_key)?.run_key;
+      if (run) parts.push(`from upload run ${run}`);
+      else if (chain?.actual?.entry_method === 'manual') parts.push('from a manual submission');
+    }
+    const submitter = kind === 'kpi' ? nameOf(chain?.actual?.submitted_by) : null;
+    const submittedAt = kind === 'kpi' ? chain?.actual?.submitted_at : null;
+    if (submitter) parts.push(`submitted by ${submitter}${submittedAt ? ` on ${fmtDate(submittedAt)}` : ''}`);
+    let sentence = `${parts.join(', ')}.`;
+    const vs = kind === 'kpi' ? chain?.actual?.validation_status : null;
+    if (vs === 'validated') sentence += ` Independently validated${nameOf(chain?.actual?.validated_by) ? ` by ${nameOf(chain?.actual?.validated_by)}` : ''}.`;
+    else if (vs === 'pending') sentence += ' It awaits independent validation — until then it is marked pending everywhere it appears.';
+    else if (vs === 'rejected') sentence += ' This submission was rejected and is excluded from official reporting.';
+    if (lockedSnapshot) sentence += ` These facts are frozen as of ${fmtDateTime(lockedSnapshot.locked_at)}.`;
+    return sentence;
+  })();
+
   const trail = entity && slug
     ? [
         { text: meta.indexLabel, href: meta.indexHref },
@@ -257,9 +294,15 @@ export default function StrataEvidencePage() {
         />
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-          <p style={{ margin: 0, fontSize: 'var(--ds-font-size-100)', color: T.subtlest }}>
-            Every number traces to source, formula version, validation and snapshot. Nothing here is computed in the UI.
-          </p>
+          {/* Locked evidence — governance snapshot band (anchor 15) */}
+          {lockedSnapshot ? (
+            <StrataSnapshotBand
+              snapshotKey={lockedSnapshot.snapshot_key}
+              frozenAt={fmtDateTime(lockedSnapshot.locked_at)}
+              basis="This evidence is frozen in a governance snapshot — every fact renders as of the freeze."
+              testId="strata-evidence-snapshot-band"
+            />
+          ) : null}
 
           {lineParam ? (
             <SectionMessage appearance="information" title="Opened from a scorecard line">
@@ -316,6 +359,20 @@ export default function StrataEvidencePage() {
               </div>
             </div>
           ) : null}
+
+          {/* Trust story — plain-language provenance (anchor 15: trust story first, tables second) */}
+          {trustParagraph ? (
+            <p
+              data-testid="strata-evidence-trust-paragraph"
+              style={{ margin: 0, fontSize: 'var(--ds-font-size-300)', lineHeight: 'var(--ds-line-height-body)', color: T.text, maxWidth: 860 }}
+            >
+              {trustParagraph}
+            </p>
+          ) : (
+            <p style={{ margin: 0, fontSize: 'var(--ds-font-size-100)', color: T.subtlest }}>
+              Every number traces to source, formula version, validation and snapshot. Nothing here is computed in the UI.
+            </p>
+          )}
 
           {/* Full evidence chain (KPI routes only): strategy → execution → value → source */}
           {kind === 'kpi' ? (
