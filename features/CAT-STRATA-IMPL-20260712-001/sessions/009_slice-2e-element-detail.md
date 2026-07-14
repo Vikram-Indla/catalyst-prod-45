@@ -22,4 +22,10 @@ Summary + Audit panels; all other panels preserved in the left body. Gates green
 Health verdict LEADS left body: derived worst-band rollup (useQueries over linked KPIs, active period) + grounded
 sentence; StrataChainStrip (Theme/Measures/Delivery/Value/Decisions, multi-hop). Gates green; light+dark verified.
 
-## Status: 2E-2 built + verified; commit pending → then 2E-3 (charter/OKR restyle + promote + states).
+## 2E-2 — MERGED `621c1c644`.
+
+## 2E-3 — DONE (promote + charter restyle + responsive) — 2E COMPLETE
+Promote-to-active (server-validated, §17 rejection surfaced — flagged backend bug strata_play_charters =
+task_65642237); Charter INTENT/SCOPE prose; responsive rail-fold <1100. Gates green; light + responsive verified.
+
+## Status: 2E-3 built + verified; commit pending. ✅ 2E COMPLETE. Next = 2F Evidence (anchor 15, last Phase-2 surface).

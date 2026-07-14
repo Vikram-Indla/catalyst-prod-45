@@ -754,3 +754,27 @@ strip; 2E-3 charter/OKR restyle + promote + states.
   derived from linked measures" + "Health is on track — derived from 1 linked measure, across 3 delivery
   cards."; chain = ↑ B2B Growth Engine · ◎ B2B Revenue Growth · ▦ 3 cards · ◇ 2 benefits · ⚖ no linked
   decisions. Both themes clean.
+
+---
+
+## Slice 2E-3 — Element Detail: Promote + charter restyle + responsive (anchor 14) (session 008/009, 2026-07-14) — 2E COMPLETE
+**File:** `StrataStrategyElementDetailPage.tsx` only.
+
+### Changes
+- **Promote to active** — primary header action for draft/proposed elements (canAuthor-gated) + confirm modal;
+  calls `strategyApi.promoteElement` (server-validated), lists the requirements, and surfaces the server
+  rejection verbatim (§17). Restricted read-only is already handled (all edit affordances gate on canAuthor).
+- **Charter restyle** — the theme charter panel now renders the anchor's INTENT (value_thesis/hypothesis) +
+  SCOPE & ASSUMPTIONS (scope) prose with a charter-owner footnote, replacing the field dump.
+- **Responsive** — `<1100` (isNarrow resize listener) folds the 360px rail below the left body (single column).
+
+### Verification (raw)
+- Gates GREEN: tsc no errors · colors 0=baseline · audit no-increase (tokens 19799) · CRE.
+- LIVE (localhost:8080, staging) light + responsive: draft theme `profitable-growth-proof` → "Promote to
+  active" button; modal → server rejection surfaced verbatim ("relation public.strata_play_charters does not
+  exist" — a PRE-EXISTING backend bug in `strata_promote_element` for legacy elements, flagged as task_65642237;
+  the UI handles it gracefully per §17). Resized <1100 → rail folds to a single column. Health/chain dark
+  verified in 2E-2 (same components).
+
+### ✅ 2E Element Detail (anchor 14) COMPLETE — 2E-1 · 2E-2 · 2E-3.
+### Deferred (honest, noted): OKR anchor-table restyle (OkrRow accordion is functional); locked-snapshot band (nice-to-have).
