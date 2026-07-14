@@ -523,3 +523,29 @@ Branch: `strata/impl-phase01`. File: `StrataKpiLibraryPage.tsx`.
   applied, 2 not applied · approved KPIs can't be edited in place. Retire and recreate…"** (RPC honest
   rejection, §17), owners unchanged, selection cleared. Both themes token-clean. (Footer full-width fixed
   overlaps the sidebar Configuration label — pre-existing canonical BulkFooterBar behavior, as on BacklogPage.)
+
+---
+
+## Slice 2C-2d-1 — KPI Library filters + worst-first sort + summary bar (session 007, 2026-07-14)
+**File:** `StrataKpiLibraryPage.tsx` only. (2C-2d split: 2C-2d-1 = filters/sort/summary; 2C-2d-2 = Validation filter + saved views.)
+
+### Changes (anchor 16 filter row + summary bar)
+- **Page-level achievement batch** via `useQueries` (one query per KPI, SAME queryKey as the row cells →
+  React Query dedupes to one fetch each). Powers the Band filter + worst-first sort without a new RPC.
+- **Filter toolbar** (canonical `StrataChipMenu`): **Status · Band · Perspective · Owner** (Status moved
+  out of the header into the toolbar). Band options = All · **Below threshold** (config-driven: band
+  appearance ∈ {removed, moved}) · each governed band (from threshold schemes, sorted by min_score).
+  Perspective from `usePerspectives` via element_kpis→element.perspective_id. Owner = distinct
+  accountable owners present + "No owner" bucket.
+- **Worst-first default sort** — `sortKey` defaults to `'achievement'` ASC (nulls last); Achievement
+  column made sortable so a header click toggles best/worst-first; other columns keep field sort.
+- **Filter summary bar**: "Showing N of M — filtered to … · Clear filters · [right] Sorted by
+  achievement, worst first". Clear filters resets search + all 4 chips.
+- Spacing uses `var(--ds-space-*)` (audit ratchet caught an off-grid 10px → tokenized to space-150/200).
+
+### Verification (raw)
+- Gates GREEN: tsc no errors · colors 0=baseline · audit no-increase (tokens 19799 after tokenizing spacing) · CRE.
+- LIVE (localhost:8080, staging) **light + dark**: worst-first order confirmed (Network Availability 66.7%
+  WATCH at top → B2B 111.3% → no-data KPIs last). Band "Below threshold" → "Showing 1 of 17 — filtered to
+  below-threshold bands" (only the WATCH KPI). Band menu lists scheme labels (On track/Watch/At risk).
+  Clear filters → back to 17 of 17. Both themes token-clean.
