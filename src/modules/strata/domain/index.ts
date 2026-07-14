@@ -11,7 +11,7 @@ import type {
   StrataBenefitProjectCard, StrataBenefitValue, StrataBoardPack, StrataCalculatedValue, StrataChangeRequest,
   StrataCycle, StrataDataSource, StrataDecision, StrataDependency, StrataGateInstance,
   StrataGateModel, StrataGateModelStage, StrataInitiative, StrataInitiativeProject,
-  StrataKeyResult, StrataKpi, StrataKpiActual, StrataKpiFormulaVersion, StrataKpiTarget,
+  StrataBulkUpdateResult, StrataKeyResult, StrataKpi, StrataKpiActual, StrataKpiFormulaVersion, StrataKpiTarget,
   StrataKpiTypeConfig, StrataMapEdge, StrataMilestone, StrataModelPerspective, StrataNotification, StrataNotificationRule, StrataOkr,
   StrataPeriod, StrataPerspective, StrataThemeCharter, StrataPortfolio, StrataProjectCard,
   StrataProjectCardFieldConfig, StrataProjectCardPicklist, StrataProjectCardSectionConfig,
@@ -402,6 +402,17 @@ export const kpiApi = {
       p_clear_data_source: patch.clearDataSource ?? false,
       p_clear_escalation_owner: patch.clearEscalationOwner ?? false,
     })),
+  /** Governed bulk owner / threshold-scheme reassignment (loops strata_update_kpi server-side).
+   *  Returns per-KPI verdicts — approved KPIs come back ok:false with the server's rejection text. */
+  bulkUpdate: (input: {
+    kpiIds: string[]; accountableOwnerId?: string; thresholdSchemeId?: string; reason?: string;
+  }): Promise<StrataBulkUpdateResult> =>
+    run(typedRpc('strata_bulk_update_kpis', {
+      p_kpi_ids: input.kpiIds,
+      p_accountable_owner: input.accountableOwnerId ?? null,
+      p_threshold_scheme: input.thresholdSchemeId ?? null,
+      p_reason: input.reason ?? null,
+    })) as Promise<StrataBulkUpdateResult>,
   createFormulaVersion: (input: {
     kpiId: string; expression: string; variables?: Record<string, unknown>;
     formulaType?: string; changeReason?: string;

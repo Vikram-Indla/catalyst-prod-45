@@ -494,3 +494,32 @@ Branch: `strata/impl-phase01`. File: `StrataKpiLibraryPage.tsx`.
   B2B Revenue Growth "↑ Grow B2B Revenue" · 111.3% ON TRACK · 8.9% / 8% · ▲2.7 (green) · VALIDATED · ○ stale 8d;
   Churn Rate ▼0.5 GREEN (lower_better) · Cost to Serve "SAR 97 / SAR 95" ▼4 green. "— no owner" values;
   empty rows all dashes. Both themes token-clean. (Floating pink FAB = global "Open messages" button, not this change.)
+
+---
+
+## Slice 2C-2c — KPI Library BulkFooterBar + governed bulk write (session 007, 2026-07-14)
+**Files:** `StrataKpiLibraryPage.tsx`, `domain/index.ts` (+`kpiApi.bulkUpdate`), `types.ts`
+(+`StrataBulkUpdateResult`), `JiraTable/BulkFooterBar.tsx` + `index.ts` (additive `actions`/`note`/`BulkAction`).
+
+### Changes
+- **BulkFooterBar extended additively** (canonical, reused): optional `actions?: BulkAction[]` (generic
+  verbs, rendered left) + `note?: ReactNode` (right-aligned governance note). Existing built-in
+  verbs (Delete/Move/Transition) + the 4 consumers (BacklogPage + 3 stories) untouched. `BulkAction`
+  exported from the JiraTable index.
+- **JiraTable selection wired**: `selectable` + `selection`/`onSelectionChange` on the KPI table → the
+  anchor-16 leading checkbox column. Footer shows on selection with verbs **Change owner… · Assign
+  threshold scheme… · Export** + note "Bulk changes are governed — owner changes route through approval".
+  Write verbs gated to `canAuthor` (strategy_office/kpi_owner/admin); Export always available.
+- **Export** = client-side CSV of selected rows (name/status/unit/direction/frequency/owner) via Blob —
+  read-only, no server call.
+- **Change owner / Assign scheme** = `StrataFormModal` (user / scheme-select) → `kpiApi.bulkUpdate`
+  (`strata_bulk_update_kpis`). Result surfaced in a `SectionMessage` banner (applied/failed + the honest
+  approved-KPI rejection message). Selection clears + query invalidates on completion.
+
+### Verification (raw)
+- Gates GREEN: tsc no errors · colors 0=baseline · audit no-increase · CRE.
+- LIVE (localhost:8080, staging) **light + dark**: selected 2 approved KPIs → footer renders (2 selected +
+  3 verbs + governance note); "Change owner…" modal + person picker; submit → banner **"Bulk update — 0
+  applied, 2 not applied · approved KPIs can't be edited in place. Retire and recreate…"** (RPC honest
+  rejection, §17), owners unchanged, selection cleared. Both themes token-clean. (Footer full-width fixed
+  overlaps the sidebar Configuration label — pre-existing canonical BulkFooterBar behavior, as on BacklogPage.)

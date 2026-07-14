@@ -47,4 +47,13 @@ honestly rejected. Gates GREEN. See 04_EXECUTION_LOG "Slice 2C-2a". **Awaiting V
 arrow+color); objective sub-line "↑ {objective}"; freshness staleness glyph ●/◐/○ + relative time; Owner
 "— no owner". Gates green; live-verified light+dark (17 KPIs). See 04_EXECUTION_LOG "Slice 2C-2b".
 
-## Status: 2C-2b built + verified; commit pending Vikram approval → then 2C-2c (BulkFooterBar).
+## 2C-2b — MERGED to main `b54d68a84`.
+
+## 2C-2c — DONE (BulkFooterBar + governed bulk write)
+BulkFooterBar extended additively (actions/note/BulkAction; 4 consumers untouched); JiraTable selection →
+leading checkbox; verbs Change owner… / Assign scheme… (→ kpiApi.bulkUpdate/strata_bulk_update_kpis) /
+Export (client CSV); result → SectionMessage banner. New: kpiApi.bulkUpdate, StrataBulkUpdateResult.
+Gates green; live-verified light+dark — 2 approved KPIs → "0 applied, 2 not applied" honest rejection.
+Files: StrataKpiLibraryPage.tsx, domain/index.ts, types.ts, JiraTable/BulkFooterBar.tsx + index.ts.
+
+## Status: 2C-2c built + verified; commit pending Vikram approval → then 2C-2d (saved views + filters).
