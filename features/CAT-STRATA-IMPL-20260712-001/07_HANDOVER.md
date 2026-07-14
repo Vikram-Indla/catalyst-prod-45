@@ -10,11 +10,11 @@
 - **Phase 0 + Phase 1 COMPLETE** (1B skipped; anchor-13 polish done). **PHASE 2 IN PROGRESS:**
   **2A · 2B-1 · 2B-2 · 2C-1 · 2C-2a (`01cbe7f87`) · 2C-2b (`b54d68a84`) · 2C-2c (`75c5daba1`) ·
   2C-2d-1 (`e23fc8f90`) · 2C-2d-2 (`da80fdb43`) merged — ✅ Anchor 16 COMPLETE. 2D Strategy Room:
-  2D-1 (`0e9f8d46a`) · 2D-2 (`54bf41767`) · 2D-2b (`47dd9f1e8`) merged; 2D-3 (inspector rail) DONE + verified,
-  commit pending.**
-  **NEXT = slice 2D-4 (Narrative view body — replace the placeholder; SHOW VIKRAM THE APPROACH FIRST per
-  P2-D4: grounded in real data = strategy themes→objectives as executive prose + coverage, no invented chrome).
-  After 2D → 2E Element Detail (anchor 14) → 2F Evidence (anchor 15).**
+  2D-1 (`0e9f8d46a`) · 2D-2 (`54bf41767`) · 2D-2b (`47dd9f1e8`) · 2D-3 (`497d83510`) merged; 2D-4 (Narrative
+  view) DONE + verified, commit pending — ✅ 2D Strategy Room (anchor 02) COMPLETE.**
+  **NEXT Phase-2 surface = slice 2E Element Detail (anchor 14) — see `03_PLAN_LOCK_PHASE2.md` slice 2E; then
+  2F Evidence (anchor 15). NOTE P2-D5 (element-health source) already resolved in 2D-2b (derive from linked
+  measures) — reuse the same `healthKeyFor` rollup pattern on Element Detail.**
 
 ### 2D Strategy Room (anchor 02) — SPLIT 2D-1/2D-2/2D-3/2D-4. HARD GATE: map component never touched.
 - **Anchor 02 re-read in full (session 007).** **MAP BASELINE captured:** `/strata/strategy/map` = 18
@@ -41,9 +41,10 @@
   Perspective + derived attention callout. Row/name click SELECTS (no nav; nav via "Open full page"); Esc
   closes; <1280 → overlay drawer (`isNarrow` resize listener). No full-row highlight (JiraTable lacks the
   hook — feedback is brand-toned name + rail). Gates green; light+dark; MAP zero-change PASS.
-- **2D-4 (NEXT):** Narrative view body — replace the "coming soon" placeholder. **P2-D4: SHOW VIKRAM THE
-  APPROACH BEFORE BUILDING.** Grounded in real data (themes→objectives as executive verdict prose +
-  coverage), no invented chrome. Toggle + placeholder already wired in 2D-1; just fill the `viewMode==='narrative'` branch.
+- **2D-4 DONE** — Narrative view = grounded executive prose (`renderNarrative`): per theme a composed
+  verdict sentence from real counts + health lozenge + "Open →", then objectives as one-liners with
+  measures/cards/benefits + gap warnings. No invented content. Approach approved by Vikram. Gates green;
+  light+dark; MAP zero-change PASS. **✅ 2D COMPLETE.**
 - 2C-2 split into 2C-2a (backend ✓) · 2C-2b (columns) · 2C-2c (BulkFooterBar) · 2C-2d (saved views + filters).
 
 ## ⭐ PHASE 2 — NEXT (START HERE). Plan Lock: `03_PLAN_LOCK_PHASE2.md` (APPROVED, full build)
