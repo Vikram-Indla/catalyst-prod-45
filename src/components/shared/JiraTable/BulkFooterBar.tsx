@@ -10,6 +10,14 @@
 import React from 'react';
 import { token } from '@atlaskit/tokens';
 
+/** Generic bulk verb — rendered left of the spacer, in order. */
+export interface BulkAction {
+  label: string;
+  onClick: () => void;
+  appearance?: 'default' | 'danger';
+  disabled?: boolean;
+}
+
 export interface BulkFooterBarProps {
   selectedCount: number;
   onSelectAll?: () => void;
@@ -17,6 +25,10 @@ export interface BulkFooterBarProps {
   onDelete?: () => void;
   onMove?: () => void;
   onTransition?: () => void;
+  /** Generic verbs (e.g. "Change owner…") — an additive alternative to the built-in Delete/Move/Transition. */
+  actions?: BulkAction[];
+  /** Right-aligned help/governance note (e.g. "Bulk changes are governed — owner changes route through approval"). */
+  note?: React.ReactNode;
 }
 
 export function BulkFooterBar({
@@ -26,6 +38,8 @@ export function BulkFooterBar({
   onDelete,
   onMove,
   onTransition,
+  actions,
+  note,
 }: BulkFooterBarProps) {
   if (selectedCount === 0) {
     return null;
@@ -88,8 +102,40 @@ export function BulkFooterBar({
         </>
       )}
 
+      {/* Generic verbs (additive) — rendered left, in order */}
+      {actions?.map((a) => (
+        <button
+          key={a.label}
+          type="button"
+          onClick={a.onClick}
+          disabled={a.disabled}
+          style={{
+            padding: '4px 12px',
+            borderRadius: 3,
+            border: `1px solid ${token('color.border', 'var(--ds-border)')}`,
+            background: token('color.background.neutral', 'var(--ds-surface)'),
+            color: a.appearance === 'danger'
+              ? token('color.text.danger', 'var(--ds-text-danger)')
+              : token('color.text', 'var(--ds-text)'),
+            cursor: a.disabled ? 'not-allowed' : 'pointer',
+            opacity: a.disabled ? 0.6 : 1,
+            fontSize: 'var(--ds-font-size-400)',
+            fontWeight: 500,
+          }}
+        >
+          {a.label}
+        </button>
+      ))}
+
       {/* Spacer */}
       <div style={{ flex: 1 }} />
+
+      {/* Right-aligned governance/help note */}
+      {note && (
+        <span style={{ fontSize: 'var(--ds-font-size-300)', color: token('color.text.subtlest', 'var(--ds-text-subtlest)') }}>
+          {note}
+        </span>
+      )}
 
       {/* Action Buttons */}
       {onDelete && (

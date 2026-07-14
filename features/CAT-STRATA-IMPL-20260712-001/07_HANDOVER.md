@@ -8,9 +8,10 @@
 - **Branch:** `strata/impl-phase01`, fast-forwarded to `origin/main` (`02ec24f61`, was ancestor — no
   divergence). **2C-2a backend committed locally, NOT yet merged to main** (awaiting Vikram commit approval).
 - **Phase 0 + Phase 1 COMPLETE** (1B skipped; anchor-13 polish done). **PHASE 2 IN PROGRESS:**
-  **2A · 2B-1 · 2B-2 · 2C-1 · 2C-2a (backend, merged `01cbe7f87`) DONE; 2C-2b (verdict columns to anchor 16)
-  DONE + verified, commit pending.** **NEXT = slice 2C-2c (BulkFooterBar: row selection + Change owner /
-  Assign scheme / Export CSV, wired to `strata_bulk_update_kpis`).**
+  **2A · 2B-1 · 2B-2 · 2C-1 · 2C-2a (`01cbe7f87`) · 2C-2b (`b54d68a84`) merged; 2C-2c (BulkFooterBar +
+  governed bulk write) DONE + verified, commit pending.** **NEXT = slice 2C-2d (saved-views selector +
+  filter chips Band/Perspective/Owner/Validation + filter-summary bar + worst-first default sort + states;
+  uses `strata_saved_views` from 2C-2a).**
 - 2C-2 split into 2C-2a (backend ✓) · 2C-2b (columns) · 2C-2c (BulkFooterBar) · 2C-2d (saved views + filters).
 
 ## ⭐ PHASE 2 — NEXT (START HERE). Plan Lock: `03_PLAN_LOCK_PHASE2.md` (APPROVED, full build)
@@ -35,8 +36,15 @@ whose "Map" navigates out.
   (`kpiApi.actuals`). Removed dead DirectionCell/ValidatorCell/dataSourceNameById. OKR accordion kept.
 
 ### 2C-2 — KPI Library: bulk + saved views + anchor-16 richness (`StrataKpiLibraryPage.tsx`). RE-READ anchor 16 in full at start.
-Anchor 16 is RICHER than 2C-1 shipped. Sub-slice order: **2C-2a ✓ · 2C-2b ✓ (both DONE session 007)** →
-**2C-2c (DO NEXT: BulkFooterBar) → 2C-2d (saved views + filters + summary + worst-first sort)**.
+Anchor 16 is RICHER than 2C-1 shipped. Sub-slice order: **2C-2a ✓ · 2C-2b ✓ · 2C-2c ✓ (all DONE session 007)** →
+**2C-2d (DO NEXT: saved views + filter chips + summary bar + worst-first sort + states)**.
+- **2C-2c DONE** — BulkFooterBar extended additively (`actions`/`note`/`BulkAction`, existing verbs +
+  4 consumers untouched); JiraTable `selectable`/`selection` wired → anchor leading checkbox; verbs
+  Change owner… · Assign threshold scheme… (gated canAuthor, → `kpiApi.bulkUpdate`/`strata_bulk_update_kpis`)
+  · Export (client CSV). Result → SectionMessage banner (honest approved-KPI rejection surfaced, §17).
+  New: `kpiApi.bulkUpdate`, `StrataBulkUpdateResult` type. Gates green; live-verified light+dark
+  (0 applied/2 not-applied on 2 approved KPIs). Footer full-width overlaps sidebar Configuration label
+  (pre-existing canonical BulkFooterBar behavior — not a regression).
 - **2C-2b DONE** (`StrataKpiLibraryPage.tsx` only) — columns now match anchor 16 (DRIFT-5): dropped Trend
   spark; split Actual + Target; added Δ (vs prior period, direction-aware arrow+color, grayscale-safe);
   objective-ancestry sub-line "↑ {objective}" (useElementKpis⋈useStrategyElements, objectives-win);

@@ -354,6 +354,14 @@ export interface StrataKpiActual {
   confidence: number | null;
 }
 
+/** Per-row verdict from strata_bulk_update_kpis — one entry per submitted KPI.
+ *  `ok: false` carries the server's honest rejection (e.g. approved KPIs can't be edited). */
+export interface StrataBulkUpdateResult {
+  applied: number;
+  failed: number;
+  results: Array<{ kpi_id: string; ok: boolean; error?: string }>;
+}
+
 export interface StrataOkr {
   id: string;
   objective_element_id: string | null;

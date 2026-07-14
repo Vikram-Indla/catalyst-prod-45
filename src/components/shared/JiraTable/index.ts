@@ -66,7 +66,7 @@ export type { FlagAppearance, ShowFlagInput, FlagAction } from './flags';
 
 // Bulk selection UI
 export { BulkFooterBar } from './BulkFooterBar';
-export type { BulkFooterBarProps } from './BulkFooterBar';
+export type { BulkFooterBarProps, BulkAction } from './BulkFooterBar';
 
 // Toolbar overflow menu (portal-mounted; @atlaskit/dropdown-menu empty-portal workaround)
 export { ToolbarMenuButton } from './ToolbarMenuButton';

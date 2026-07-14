@@ -14,17 +14,17 @@ import {
 import {
   Activity, ArrowDown, ArrowUp, CheckCircle2, Plus, Scale, Target,
 } from '@/lib/atlaskit-icons';
-import { JiraTable } from '@/components/shared/JiraTable';
-import type { Column, SortOrder } from '@/components/shared/JiraTable';
+import { JiraTable, BulkFooterBar } from '@/components/shared/JiraTable';
+import type { Column, SortOrder, BulkAction } from '@/components/shared/JiraTable';
 import { Routes } from '@/lib/routes';
 import { kpiApi } from '@/modules/strata/domain';
 import {
-  useDataSources, useElementKpis, useInvalidateStrata, useKpiAchievement, useKpis, useOkrs, useProfileNames, useStrataContext, useStrataRoles, useStrategyElements,
+  useDataSources, useElementKpis, useInvalidateStrata, useKpiAchievement, useKpis, useOkrs, useProfileNames, useStrataContext, useStrataRoles, useStrategyElements, useThresholdSchemes,
 } from '@/modules/strata/hooks/useStrata';
 import { OkrRow, StrataBandBar, StrataBandLozenge, StrataChipMenu, StrataPageShell, StrataPanel, T } from '@/modules/strata/components/shared';
 import { StrataFormModal } from '@/modules/strata/components/authoring';
 import { fmtDate, fmtPct, fmtUnit, labelize } from '@/modules/strata/components/format';
-import type { GovernedStatus, StrataKpi, StrataKpiActual, StrataOkr } from '@/modules/strata/types';
+import type { GovernedStatus, StrataBulkUpdateResult, StrataKpi, StrataKpiActual, StrataOkr } from '@/modules/strata/types';
 import type { StrataProfileRef } from '@/modules/strata/hooks/useStrata';
 
 /** UI affordance gating only — server RPCs enforce the real role rules (SoD etc.). */
@@ -416,6 +416,12 @@ export default function StrataKpiLibraryPage() {
   const rolesQ = useStrataRoles();
   const elementKpisQ = useElementKpis();
   const elementsQ = useStrategyElements(activeCycle?.id);
+  const schemesQ = useThresholdSchemes();
+  // Bulk selection + governed bulk-write state (anchor 16 BulkFooterBar).
+  const [selection, setSelection] = useState<Set<string>>(new Set());
+  const [bulkModal, setBulkModal] = useState<null | 'owner' | 'scheme'>(null);
+  const [bulkBusy, setBulkBusy] = useState(false);
+  const [bulkResult, setBulkResult] = useState<StrataBulkUpdateResult | null>(null);
 
   // KPI → objective-ancestry name (anchor-16 sub-line). Objectives win; themes are the fallback.
   // Zero-assumption: a KPI with no linked objective/theme renders no sub-line (never invented).
@@ -462,6 +468,51 @@ export default function StrataKpiLibraryPage() {
     });
     return rows;
   }, [kpisQ.data, search, statusFilter, sortKey, sortOrder]);
+
+  const clearSelection = () => setSelection(new Set());
+
+  // Export = client-side CSV of the selected rows (read-only, safe — no server call).
+  const exportSelectedCsv = () => {
+    const rows = filtered.filter((k) => selection.has(k.id));
+    if (rows.length === 0) return;
+    const esc = (s: unknown) => `"${String(s ?? '').replace(/"/g, '""')}"`;
+    const header = ['Name', 'Status', 'Unit', 'Direction', 'Frequency', 'Owner'];
+    const lines = [header.join(',')];
+    rows.forEach((k) => {
+      const owner = k.accountable_owner_id ? (profilesQ.data?.get(k.accountable_owner_id)?.name ?? '') : '';
+      lines.push([k.name, k.status, k.unit, k.direction, k.frequency, owner].map(esc).join(','));
+    });
+    const blob = new Blob([lines.join('\n')], { type: 'text/csv;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `strata-kpis-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  // Governed bulk write — loops strata_update_kpi server-side; approved KPIs come back rejected.
+  const runBulk = async (patch: { accountableOwnerId?: string; thresholdSchemeId?: string }) => {
+    setBulkBusy(true);
+    try {
+      const res = await kpiApi.bulkUpdate({ kpiIds: [...selection], ...patch });
+      setBulkResult(res);
+      setBulkModal(null);
+      clearSelection();
+      invalidate();
+    } finally {
+      setBulkBusy(false);
+    }
+  };
+
+  const bulkActions = useMemo<BulkAction[]>(() => [
+    ...(canAuthor ? [
+      { label: 'Change owner…', onClick: () => setBulkModal('owner'), disabled: bulkBusy },
+      { label: 'Assign threshold scheme…', onClick: () => setBulkModal('scheme'), disabled: bulkBusy },
+    ] : []),
+    { label: 'Export', onClick: exportSelectedCsv },
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  ], [canAuthor, bulkBusy, selection, filtered, profilesQ.data]);
 
   // Verdict-first columns (anchor 16): KPI·objective · Achievement · Actual · Target · Δ ·
   // Validation · Owner · Freshness (DRIFT-5 — no trend spark; Actual/Target split; Δ added).
@@ -547,6 +598,22 @@ export default function StrataKpiLibraryPage() {
         </SectionMessage>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+          {bulkResult ? (
+            <SectionMessage
+              appearance={bulkResult.failed === 0 ? 'success' : 'warning'}
+              title={`Bulk update — ${bulkResult.applied} applied${bulkResult.failed ? `, ${bulkResult.failed} not applied` : ''}`}
+              actions={[{ key: 'dismiss', text: 'Dismiss', onClick: () => setBulkResult(null) }]}
+            >
+              {bulkResult.failed > 0 ? (
+                <p>
+                  {bulkResult.failed} KPI{bulkResult.failed === 1 ? ' was' : 's were'} not changed —
+                  approved KPIs can’t be edited in place. Retire and recreate to change an approved KPI.
+                </p>
+              ) : (
+                <p>Changes on draft KPIs still route through the normal approval step before they go live.</p>
+              )}
+            </SectionMessage>
+          ) : null}
           <StrataPanel
             title="KPI dictionary"
             icon={<Activity size={16} />}
@@ -594,6 +661,9 @@ export default function StrataKpiLibraryPage() {
               data={filtered}
               getRowId={(row) => row.id}
               onRowClick={(row) => { if (row.slug) navigate(Routes.strata.kpi(row.slug)); }}
+              selectable
+              selection={selection}
+              onSelectionChange={setSelection}
               sortKey={sortKey}
               sortOrder={sortOrder}
               onSortChange={(key, order) => { setSortKey(key); setSortOrder(order); }}
@@ -671,6 +741,41 @@ export default function StrataKpiLibraryPage() {
           invalidate();
         }}
         testId="strata-new-kpi-modal"
+      />
+
+      {/* Bulk actions footer — shows when rows are selected (anchor 16) */}
+      <BulkFooterBar
+        selectedCount={selection.size}
+        onDeselectAll={clearSelection}
+        actions={bulkActions}
+        note={canAuthor ? 'Bulk changes are governed — owner changes route through approval' : undefined}
+      />
+
+      {/* Bulk: change accountable owner — governed (approved KPIs are rejected server-side) */}
+      <StrataFormModal
+        open={bulkModal === 'owner'}
+        onClose={() => setBulkModal(null)}
+        title={`Change owner · ${selection.size} KPI${selection.size === 1 ? '' : 's'}`}
+        description="Reassigns the accountable owner. Draft KPIs update immediately (then follow approval); approved KPIs are rejected — retire and recreate to change an approved KPI."
+        fields={[{ key: 'ownerId', label: 'Accountable owner', kind: 'user', required: true }]}
+        submitLabel="Change owner"
+        onSubmit={async (v) => { await runBulk({ accountableOwnerId: String(v.ownerId) }); }}
+        testId="strata-bulk-owner-modal"
+      />
+
+      {/* Bulk: assign threshold scheme — governed (approved KPIs are rejected server-side) */}
+      <StrataFormModal
+        open={bulkModal === 'scheme'}
+        onClose={() => setBulkModal(null)}
+        title={`Assign threshold scheme · ${selection.size} KPI${selection.size === 1 ? '' : 's'}`}
+        description="Assigns a threshold scheme. Draft KPIs update immediately (then follow approval); approved KPIs are rejected — retire and recreate to change an approved KPI."
+        fields={[{
+          key: 'schemeId', label: 'Threshold scheme', kind: 'select', required: true,
+          options: (schemesQ.data ?? []).map((s) => ({ value: s.id, label: s.name })),
+        }]}
+        submitLabel="Assign scheme"
+        onSubmit={async (v) => { await runBulk({ thresholdSchemeId: String(v.schemeId) }); }}
+        testId="strata-bulk-scheme-modal"
       />
     </StrataPageShell>
   );
