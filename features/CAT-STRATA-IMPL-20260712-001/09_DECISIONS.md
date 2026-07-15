@@ -81,3 +81,22 @@ D-1…D-6 CONFIRMED by Vikram 2026-07-12 ("proceed with all recommended decision
   plan_index − 100, signed like anchor 12. Locked instances → has_data=false ('locked_snapshot');
   benefit lines excluded (no per-period plan concept); no provenance writes. **Supersedes the D-10
   interim ranked-panel basis** (worst-score-first) — panel now ranks by true vs-plan variance.
+
+## CONFIRMED (session 015 — Phase-4 Plan Lock, Vikram 2026-07-15 "Approve — start 4A"; P4-D0…D8 all CONFIRMED as recommended). See `03_PLAN_LOCK_PHASE4.md`.
+- **P4-D0 · Build `StrataLifecycleStepper` first** (extract `PipelineStepper`/`StageDot`→shared.tsx, variant full|dots;
+  refactor DataPipeline + UploadWizard). @atlaskit progress-tracker rejected on API-fit. → Recommend CONFIRM.
+- **P4-D1 · Reviews = derived virtual entity** (no `strata_reviews` table; spine = snapshots keyed by snapshot_key).
+  Cut "+Schedule review"/chair/cadence (no backing); derive stage transparently. → Recommend CONFIRM.
+- **P4-D2 · Anchor 24 board pack SPLIT** — ship read-only pack preview + Present mode overlay + Print/PDF (reuse
+  existing) on snapshot data; DEFER editorial builder + Issue (freeze/distribution/immutable) to a separate backend
+  feature (migration + own Plan Lock). No fabricated drafts/distribution. → Recommend CONFIRM.
+- **P4-D3 · Anchor 09 run detail 2-way** (Accepted/Rejected; no invented Quarantine); clustered errors client GROUP BY
+  error_code; promote via existing `strata_promote_run`, reversibility framed honestly. → Recommend CONFIRM.
+- **P4-D4 · Downstream dependents honest** — backward-derivable named KPIs only (kpisForSource); labeled gap for
+  scorecard/snapshot forward impact; never fabricate. → Recommend CONFIRM.
+- **P4-D5 · Compare-with-live = client diff** of snapshot_items.payload vs live calc (no RPC). → Recommend CONFIRM.
+- **P4-D6 · Upload wizard 7-step + AUTO/CONFIRM/DECIDE mapping; stages run then hands off to run detail (09) for
+  validate/promote**; mapping-memory write DEFERRED (no path). Uses lineageApi staging (NOT importExecutionBatch). → Recommend CONFIRM.
+- **P4-D7 · Promote "reversible" is UI framing only** (no reverse RPC; pending-attestation ≠ committed). → Recommend CONFIRM.
+- **P4-D8 · Freshness glyph parity** — promote KpiFreshnessCell→shared; source freshness derived from latest run
+  completed_at per data_source_id. → Recommend CONFIRM.
