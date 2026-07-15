@@ -28,7 +28,7 @@ import {
 } from '@/lib/atlaskit-icons';
 import { importApi } from '@/modules/strata/domain';
 import { useInvalidateStrata, useProjectCards, useStrataContext, useStrataRoles, useStrategyElements } from '@/modules/strata/hooks/useStrata';
-import { StrataPageShell, StrataPanel, T } from '@/modules/strata/components/shared';
+import { StrataPageShell, StrataPanel, StrataStatStrip, T } from '@/modules/strata/components/shared';
 import type {
   ExecutionImportDependencyRow, ExecutionImportMilestoneRow, ExecutionImportProjectCardRow,
   ExecutionImportResult, ExecutionImportRowResult,
@@ -879,31 +879,71 @@ export default function StrataExecutionImportPage() {
       {step === 3 && preview ? (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
           {(() => {
-            const totalRejected = preview.summary.project_cards.rejected + preview.summary.milestones.rejected + preview.summary.dependencies.rejected;
+            const sheets = [preview.summary.project_cards, preview.summary.milestones, preview.summary.dependencies];
+            const totalRows = sheets.reduce((n, s) => n + s.total, 0);
+            const totalCreate = sheets.reduce((n, s) => n + s.created, 0);
+            const totalUpdate = sheets.reduce((n, s) => n + s.updated, 0);
+            const totalRejected = sheets.reduce((n, s) => n + s.rejected, 0);
             return (
-              <SectionMessage appearance={totalRejected > 0 ? 'warning' : 'success'} title={totalRejected > 0 ? `${totalRejected} row(s) failed validation` : 'All rows pass validation'}>
-                <p>Rows with errors will be skipped on confirm — nothing else in the file is blocked by them. {ignoredCount > 0 ? `${ignoredCount} row(s) were ignored/unmapped before validation.` : ''}</p>
-              </SectionMessage>
+              <>
+                {/* DRY RUN header — commitment is explicit before any mutation (anchor 18). */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+                  <Lozenge appearance="inprogress">Dry run</Lozenge>
+                  <span style={{ fontSize: 'var(--ds-font-size-100)', color: T.subtlest }}>
+                    {fileName} · validated against live STRATA — no writes yet.
+                  </span>
+                  <span style={{ marginLeft: 'auto' }}>
+                    <Button appearance="subtle" iconBefore={<Download size={14} />} onClick={() => downloadErrorReport(preview)}>
+                      Download error report
+                    </Button>
+                  </span>
+                </div>
+                {/* Summary strip — honest created/updated/rejected (no fabricated Matched/Conflict/Unmatched). */}
+                <StrataStatStrip
+                  testId="strata-import-summary-strip"
+                  items={[
+                    { key: 'create', label: 'WILL CREATE', value: <span style={{ color: 'var(--ds-text-success)' }}>{totalCreate}</span>, caption: 'new cards & rows', captionTone: 'neutral' },
+                    { key: 'update', label: 'WILL UPDATE', value: <span style={{ color: 'var(--ds-text-information)' }}>{totalUpdate}</span>, caption: 'existing, matched by reference', captionTone: 'neutral' },
+                    { key: 'rejected', label: 'REJECTED', value: <span style={{ color: totalRejected > 0 ? 'var(--ds-text-danger)' : T.subtlest }}>{totalRejected}</span>, caption: totalRejected > 0 ? 'skipped on apply — fix & re-run' : 'none', captionTone: totalRejected > 0 ? 'danger' : 'neutral' },
+                    { key: 'written', label: 'WRITTEN', value: <span style={{ color: T.subtlest }}>0</span>, caption: 'nothing is written until you apply', captionTone: 'neutral' },
+                  ]}
+                />
+                <SectionMessage appearance={totalRejected > 0 ? 'warning' : 'success'} title={totalRejected > 0 ? `${totalRejected} of ${totalRows} row(s) failed validation` : `All ${totalRows} row(s) pass validation`}>
+                  <p>Rows with errors are skipped on apply — nothing else in the file is blocked by them. {ignoredCount > 0 ? `${ignoredCount} row(s) were ignored/unmapped before validation.` : ''}</p>
+                </SectionMessage>
+              </>
             );
           })()}
-          <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-            <Button appearance="subtle" iconBefore={<Download size={14} />} onClick={() => downloadErrorReport(preview)}>Download error report</Button>
-          </div>
           <ResultTable title="Project Cards" rows={preview.project_cards} />
           <ResultTable title="Milestones" rows={preview.milestones} />
           <ResultTable title="Delivery Dependencies" rows={preview.dependencies} />
         </div>
       ) : null}
 
-      {/* ── Step 4: Confirm import ── */}
+      {/* ── Step 4: Confirm import — the single commitment point ── */}
       {step === 4 && preview ? (
         <StrataPanel title="Confirm import" icon={<Upload size={16} />} testId="strata-execution-import-confirm-panel">
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             <p style={bodyStyle}>
               {preview.summary.project_cards.created + preview.summary.project_cards.updated} project card(s),{' '}
               {preview.summary.milestones.created + preview.summary.milestones.updated} milestone(s),{' '}
-              {preview.summary.dependencies.created + preview.summary.dependencies.updated} dependenc{preview.summary.dependencies.created + preview.summary.dependencies.updated === 1 ? 'y' : 'ies'} will be created or updated.
+              {preview.summary.dependencies.created + preview.summary.dependencies.updated} dependenc{preview.summary.dependencies.created + preview.summary.dependencies.updated === 1 ? 'y' : 'ies'} will be created or updated. Rejected rows are skipped.
             </p>
+            {/* Commitment band — honest about what apply does and how it is reversed
+                (re-import; there is no undo RPC). Anchor 18 shows a 24h undo the backend
+                does not have — render the true recovery path instead. */}
+            <div style={{
+              display: 'flex', alignItems: 'flex-start', gap: 20, flexWrap: 'wrap',
+              padding: 'var(--ds-space-150) var(--ds-space-200)', border: `1px solid ${T.border}`,
+              borderRadius: 8, background: T.sunken,
+            }}>
+              <span style={{ fontSize: 'var(--ds-font-size-075)', fontWeight: 600, letterSpacing: '0.04em', color: T.subtlest }}>COMMITMENT</span>
+              <span style={{ minWidth: 0, flex: 1, fontSize: 'var(--ds-font-size-100)', color: T.subtle, lineHeight: 1.5 }}>
+                Apply writes card links, milestones and progress rollups in one batch. Re-import is idempotent —
+                a row already matched by reference updates in place, never duplicates — so correcting a value means
+                re-running a fixed file, not an undo. Every applied row is recorded in the upload run + audit log.
+              </span>
+            </div>
             {runError ? <SectionMessage appearance="error" title="Import failed"><p>{runError}</p></SectionMessage> : null}
           </div>
         </StrataPanel>
@@ -949,7 +989,7 @@ export default function StrataExecutionImportPage() {
             <Button appearance="primary" isDisabled={!anyTargetHasRows} onClick={() => setStep(3)}>Continue to preview</Button>
           ) : null}
           {step === 3 && !preview ? (
-            <Button appearance="primary" iconBefore={validating ? undefined : <ListChecks size={14} />} isDisabled={validating} onClick={() => void goToPreview()}>
+            <Button appearance="primary" iconBefore={validating ? undefined : <ListChecks size={14} />} isDisabled={validating || !hasImportRole} onClick={() => void goToPreview()}>
               {validating ? 'Validating…' : 'Preview & validate'}
             </Button>
           ) : null}
@@ -960,11 +1000,11 @@ export default function StrataExecutionImportPage() {
             <Button
               appearance="primary"
               iconBefore={committing ? undefined : <Upload size={14} />}
-              isDisabled={committing}
+              isDisabled={committing || !hasImportRole}
               onClick={() => void confirmImport()}
               testId="strata-execution-import-confirm"
             >
-              {committing ? 'Importing…' : 'Confirm import'}
+              {committing ? 'Importing…' : 'Apply import'}
             </Button>
           ) : null}
           {step === 5 ? <Button appearance="primary" onClick={() => navigate(Routes.strata.execution())}>Done</Button> : null}

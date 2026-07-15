@@ -5,11 +5,13 @@
 > this file → `08_DRIFT_LOG` → `09_DECISIONS` → `04_EXECUTION_LOG` (per-slice detail) → then re-read the
 > next slice's anchor in full via DesignSync (parent-only) before coding.
 
-## State (as of 2026-07-15 — mid Phase 3, after 3B-3)
-- **Branch:** `strata/impl-phase01`. **`origin/main` = `338da9903`** (3B-3 merged, fast-forward — GitHub rejects
-  the `--no-ff` merge-commit push, [[github-noff-merge-push-rejected]]); branch and main in sync + pushed (both at
-  `338da9903`). Working tree clean. **`StrataStrategyMapPage.tsx` byte-untouched across all of Phase 3** (verify every slice).
-- **Value spine COMPLETE (3B-0/1/2/3).** Only **3C (Import & Reconciliation, anchor 18)** remains in Phase 3.
+## State (as of 2026-07-15 — Phase 3 COMPLETE pending 3C merge)
+- **Branch:** `strata/impl-phase01`. `origin/main` = `338da9903` (3B-3); **3C committed + AWAITING merge** (fast-forward
+  path — GitHub rejects the `--no-ff` merge-commit push, [[github-noff-merge-push-rejected]]; pushes are also flaky —
+  retry). **`StrataStrategyMapPage.tsx` byte-untouched across all of Phase 3.**
+- **PHASE 3 COMPLETE** (3A · 3B-0 · 3B-1 · 3B-2 · 3B-3 · 3C). **NEXT = PHASE 4 (governance & data:
+  anchors 09·10·19·20·23·24) — needs its OWN Plan Lock before any code** (per CLAUDE.md). Also Phase 5 (config &
+  system-states: 03·04·05·25·26·27·28). See OPEN DEBT below (prod migrations, backend defects, deferred polish).
 - **Phases 0/1/2 COMPLETE + merged** (see history below). **Phase 3 = HANDOFF "delivery & value"** per D-12
   (DRIFT-6 resolved): anchors **17 · 07 · 18 · 08 · 22 · 21**. Plan Lock `03_PLAN_LOCK_PHASE3.md` APPROVED
   (Vikram 2026-07-14; decisions **P3-D1…D8** all CONFIRMED — P3-D3 = scoped-down import on the existing
@@ -24,7 +26,7 @@
 | 3B-1 | 21 Benefit Detail (`BenefitDetailSection` in `StrataPortfolioVmoPage`) | ✅ merged **(focused)** — verdict band + hero value stages. **DEFERRED:** 2-col rail (IN-THE-CHAIN + Confidence) + attestation-timeline |
 | 3B-2 | 08 Portfolio Detail — NEW route `/strata/portfolio/:slug` (`StrataPortfolioDetailPage`) | ✅ **merged to main `12deb2d15` (session 012)**. Leakage hero (`StrataValueBar` hero + grounded verdict) · leakage-sorted benefits JiraTable · gates decision-context list (`decideGate`). P3-D2 client-derived via `useQueries`. No shadow (benefits/:slug + :slug/evidence + index all verified unbroken). Map zero-change. **DEFERRED:** objective-hop subline (kept "via N cards"). **⚠️ MERGE QUIRK:** GitHub rejected the `--no-ff` merge-commit push to main with `remote: fatal error in commit_refs` (no branch-protection/ruleset exists — verified). Fast-forward push of the identical commit (`git push origin <sha>:main`) succeeded. main + branch now BOTH at `12deb2d15` (no merge commit this slice). See [[github-noff-merge-push-rejected]]. |
 | 3B-3 | 22 Portfolio Index — repurpose `/strata/portfolio` to a real index | ✅ **merged to main `338da9903` (session 013)**. New `StrataPortfolioIndexView` (leakage-concentration sentence + shared-scale small multiples + ranked-by-leakage JiraTable → row→detail + comparability footer). VMO page → thin **dispatcher** (bare `/portfolio` → index; `?portfolio=`/benefit slug → `StrataPortfolioManageView`, byte-identical). `StrataValueBar` gained additive `scaleOverride?` (default-preserving). No shadow/regression: `?portfolio=` management + `/benefits/:slug` + hero all verified unbroken. Map zero-change. **DEFERRED:** <1100 responsive stacking (small multiples already `auto-fit`); committed-spend SAR (no field). |
-| **3C** | **18 Import & Reconciliation (`StrataExecutionImportPage`, scoped-down P3-D3)** | ❌ **NEXT — not started (last Phase-3 slice)** |
+| 3C | 18 Import & Reconciliation (`StrataExecutionImportPage`, scoped-down P3-D3) | ✅ **built + gates green (session 014) — AWAITING commit/merge**. Anchor-18 signature onto the honest Excel dry-run/apply backend: DRY RUN `Lozenge` + **`StrataStatStrip`** summary (WILL CREATE/UPDATE/REJECTED/WRITTEN-0) + honest **COMMITMENT** band (idempotent re-import, no 24h undo) + role-gated **Apply**. Per-row `ResultTable`s + upload/classify/map steps unchanged. **NOT built (no backend):** Matched/Conflict/Unmatched, both-sides diff, 24h undo, run-log ledger. **⚠️ Preview-step screenshot NOT captured** — Chrome `file_upload` sandbox rejects synthesized files; verified by tsc+gates+code (canonical components). Map zero-change. |
 
 ## ⛔ NEXT = SLICE 3C — Import & Reconciliation (anchor 18), the LAST Phase-3 slice. (3B-2 + 3B-3 done, awaiting commit/merge.)
 **No code without re-reading anchor 18 in full via DesignSync first** (drift protocol). Key resume facts:

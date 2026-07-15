@@ -971,3 +971,25 @@ strip; 2E-3 charter/OKR restyle + promote + states.
 - Changed set (4 files): shared.tsx, StrataPortfolioVmoPage.tsx, StrataPortfolioIndexView.tsx (new), session 013 log.
 - **DEFERRED:** <1100 responsive column-drop (small multiples already `auto-fit`); committed-spend SAR (no field).
   NEXT: **3C** Import & Reconciliation (anchor 18, P3-D3 scoped) — last Phase-3 slice.
+
+### ⏳ Slice 3C — Import & Reconciliation (anchor 18, P3-D3 scoped) — DONE, gates green; PENDING commit — PHASE 3 COMPLETE
+- Anchor 18 re-read in FULL via DesignSync. Anchor depicts the full Jira reconciliation engine (Matched/Conflict/
+  Unmatched, both-sides diff, 24h undo, run log) — **none of that backend exists** (P3-D3, not a drift).
+- **Reality:** `importApi.importExecutionBatch` = Excel batch dry-run/apply → `ExecutionImportResult` (per-sheet
+  `ExecutionImportRowResult[]` with `status:valid|error`, `action:create|update`, errors/warnings + `summary
+  {total,created,updated,rejected}`). Current page = 6-step wizard (Upload→Classify→Map→Preview→Confirm→Summary)
+  with per-row validation tables already honest.
+- **Surgical redesign (`StrataExecutionImportPage.tsx`, +54/−14; steps 0–2 untouched):**
+  (1) **Preview step** — DRY RUN `Lozenge` + filename line + Download-error-report; **`StrataStatStrip`** summary
+  (WILL CREATE[success-tinted] · WILL UPDATE[info] · REJECTED[danger when >0] · WRITTEN 0 "nothing is written until
+  you apply") mapped honestly from `summary`; pass/fail `SectionMessage`; per-row `ResultTable`s kept.
+  (2) **Confirm step** — honest **COMMITMENT** band (sunken): apply writes in one batch; re-import idempotent
+  (matched-by-reference updates in place, never duplicates); history in upload run + audit; **NO 24h undo** (no
+  revert RPC). (3) Primary buttons **role-gated** (`!hasImportRole` disables Preview & validate + Apply); CTA
+  relabelled **"Apply import"**. Added `StrataStatStrip` import.
+- GATES: `tsc` clean · colors 0=0 · audit 19799/19799 · `lint:cre` passed. LIVE upload step **light + dark**
+  (wizard shell/stepper unregressed, no console errors). **⚠️ Preview/confirm steps NOT screenshotted** — behind a
+  file upload; Chrome MCP `file_upload` only accepts user-shared paths, rejects scratchpad files (env limit, like
+  Vitest). Verified via tsc + gates + code review (all canonical components). **Vikram: commit + merge with this
+  verification (2026-07-15).** Map zero-change. Changed set: StrataExecutionImportPage.tsx + session 014 log.
+- **✅ PHASE 3 COMPLETE** (3A·3B-0·3B-1·3B-2·3B-3·3C). NEXT = Phase 4 (governance & data) — own Plan Lock required.
