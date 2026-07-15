@@ -289,6 +289,7 @@ export const strataRoutes = {
   reviews: () => '/strata/reviews',
   // snapshotKey is the display key e.g. "SNAP-1001"
   review: (snapshotKey: string) => `/strata/reviews/${snapshotKey}`,
+  boardPack: (snapshotKey: string) => `/strata/reviews/${snapshotKey}/pack`,
   admin: () => '/strata/admin',
   adminSection: (section: string) => `/strata/admin/${section}`,
 };

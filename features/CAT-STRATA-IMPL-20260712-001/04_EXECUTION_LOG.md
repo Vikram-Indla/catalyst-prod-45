@@ -1110,3 +1110,13 @@ strip; 2E-3 charter/OKR restyle + promote + states.
 - GATES: tsc · colors 0=0 · audit 19799→19798 (baseline ratcheted down) · CRE green. Live-verified light+dark (CSV paste →
   MAP step: 3 AUTO + 1 DECIDE, Continue disabled→enabled on DECIDE resolve). Only StrataUploadWizardPage.tsx + audit
   baseline touched (map untouched); console clean. NEXT: 4G Board Pack (anchor 24) + cockpit present/export.
+
+## Slice 4G — Board Pack + Present mode (anchor 24), NEW route + StrataBoardPackPage — BUILT + verified (session 021) — PHASE 4 COMPLETE
+- NEW `Routes.strata.boardPack(snapshotKey)` → `/strata/reviews/:snapshotKey/pack` + `StrataRoutes` registration; new
+  `StrataBoardPackPage` (resolves via `useSnapshotByKey`). Editorial-arc preview (Cover + Condition/Explanation/Value/
+  Decisions/Follow-through page cards) with GROUNDED narrative from snapshot items/decisions/actions (KPI band tally,
+  benefit-count honest gap, per-page snapshot stamp) + LOCKED SNAPSHOT band. Present mode `?present`/`?section` overlay
+  (16:9, ←/→/Esc). Print/PDF reuses `generateBoardPackPdf`. Cockpit detail header gains a "Board pack" action.
+- Deferred P4-D2 (no fabrication): editorial builder + Issue + draft numbers + compare-since-freeze.
+- GATES: tsc · colors 0=0 · audit 19798/19798 · CRE green. Live-verified light+dark (editorial arc grounded, present-mode
+  nav + Esc). Map untouched; console clean. **PHASE 4 (governance & data) COMPLETE — anchors 23·10·24·09·19·20 + 4A.**

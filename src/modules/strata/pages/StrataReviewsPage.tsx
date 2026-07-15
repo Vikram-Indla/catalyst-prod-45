@@ -1262,6 +1262,17 @@ export default function StrataReviewsPage() {
                       {selectedStage ? (
                         <StatusLozenge status={selectedStage.status} label={selectedStage.label} appearance={selectedStage.appearance} />
                       ) : null}
+                      <span style={{ marginLeft: 'auto' }}>
+                        <Button
+                          appearance="default"
+                          spacing="compact"
+                          iconBefore={<FileBarChart size={14} />}
+                          onClick={() => navigate(Routes.strata.boardPack(selected.snapshot_key))}
+                          testId="strata-cockpit-board-pack"
+                        >
+                          Board pack
+                        </Button>
+                      </span>
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', marginTop: 8 }}>
                       <FactChip icon={<Database size={12} />} value={configCount} label={`config version${configCount === 1 ? '' : 's'}`} />

@@ -1,8 +1,9 @@
 # 07 — HANDOVER · CAT-STRATA-IMPL-20260712-001
 
-> Resume point. **Phases 0–3 COMPLETE. Phase 4 (governance & data) IN PROGRESS — Plan Lock APPROVED; slices 4A + 4B + 4C(1/2/3) + 4D + 4E + 4F done; NEXT = 4G (Board Pack, anchor 24). Vikram authorized AUTO-COMMIT-WHEN-GREEN for remaining Phase-4 slices.**
-> **Anchors DONE: 23·10 (cockpit) · 19 (data landing) · 09 (run detail) · 20 (upload wizard). ONLY REMAINING: 4G Board Pack (24) — NEW route `/strata/reviews/:snapshotKey/pack` + `StrataBoardPackPage` (scoped P4-D2: read-only editorial preview + Present mode + Print/PDF; editorial builder + Issue DEFERRED), + wire the cockpit's Present-mode/Export-board-pack actions (deferred from 4C).**
-> **Reusable now in shared.tsx: `StrataLifecycleStepper` (4A, consumed by 4B/4C/4E/4F), `StrataFreshnessGlyph` (4D).**
+> Resume point. **Phases 0–4 COMPLETE. ✅ PHASE 4 (governance & data) COMPLETE — all slices 4A–4G merged. NEXT = Phase 5 (config & system-states: anchors 03·04·05·25·26·27·28) — needs its OWN Plan Lock before any code.**
+> **Phase 4 anchors ALL shipped: 23·10 (cockpit 4B/4C incl. compare-with-live) · 19 (data landing 4D) · 09 (run detail 4E) · 20 (upload wizard 4F) · 24 (board pack + present mode 4G). Plus 4A `StrataLifecycleStepper`.**
+> **DEFERRED backend features (own migration + Plan Lock): board-pack editorial builder + Issue; run-downstream blast-radius RPC; quarantine validation tier; `strata_reviews` scheduling entity; mapping-memory write; prod migrations 20260713100000 + 20260713110000 (staging-only, prod-parked). See OPEN DEBT below.**
+> **Reusable now in shared.tsx: `StrataLifecycleStepper` (4A, consumed by 4B/4C/4E/4F/4G), `StrataFreshnessGlyph` (4D).**
 > Read order to resume Phase 4: `00_READ_ME_FIRST` → `01_OBJECTIVE` → **`03_PLAN_LOCK_PHASE4` (APPROVED)** →
 > this file (State section below) → `08_DRIFT_LOG` (DRIFT-8; DRIFT-9 = 4B derived-review model) → `09_DECISIONS`
 > (P4-D0…D8 CONFIRMED) → `discovery/07_phase4_anchor_specs.md` (6 anchor digests) → `04_EXECUTION_LOG` (per-slice
