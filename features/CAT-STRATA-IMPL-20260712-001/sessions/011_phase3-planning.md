@@ -60,6 +60,15 @@ spawn discovery; produce `03_PLAN_LOCK_PHASE3.md`; STOP for approval. No code be
 - **3B-1 DONE (focused)** (pending commit): anchor-21 verdict band + hero value stages on `BenefitDetailSection`;
   panels preserved. PARTIAL: IN-THE-CHAIN + Confidence rail + attestation-timeline deferred. Gates green; light+dark.
 
+## Session close (2026-07-15)
+- **Merged this session (all on `origin/main`, gated + light/dark-verified, map untouched throughout):**
+  Phase-3 planning + Plan Lock (approved) → **3A-1a/b (17)** → **3A-2a/b (07)** → **3B-0** (ValueBar variants) →
+  **3B-1 (21, focused)**. main = `21583d3ba`. 7 merges, no foreign commits, clean tree each step.
+- **STOPPED before 3B-2** at Vikram's direction (context-heavy session; 3B-2/3B-3 are a high-stakes route-split +
+  restructure of the 1142-LOC `StrataPortfolioVmoPage` — deserve fresh context). Handover updated (`07_HANDOVER.md`
+  State + NEXT=3B-2 + resume facts). **Remaining Phase 3: 3B-2 (08, new route) · 3B-3 (22 index) · 3C (18 import)
+  + 3B-1 deferred rail.**
+
 ## Open debt carried (unchanged)
 1. Prod migrations `20260713100000` + `20260713110000` = staging-only (no prod access). Apply later.
 2. Backend defect `task_65642237` — `strata_promote_element` refs dropped `strata_play_charters`.

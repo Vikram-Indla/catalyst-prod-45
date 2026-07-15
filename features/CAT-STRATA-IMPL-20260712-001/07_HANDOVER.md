@@ -1,32 +1,67 @@
 # 07 — HANDOVER · CAT-STRATA-IMPL-20260712-001
 
-> Resume point for the STRATA design-pack implementation. **Phases 0, 1, and 2 are COMPLETE.**
-> Read order for a Phase-3 start: `00_READ_ME_FIRST` → `01_OBJECTIVE` → `03_PLAN_LOCK` →
-> this file → `08_DRIFT_LOG` → `09_DECISIONS` → then read the Phase-3 anchors before writing a Plan Lock.
+> Resume point. **Phases 0, 1, 2 COMPLETE. Phase 3 IN PROGRESS (~half).**
+> Read order to resume Phase 3: `00_READ_ME_FIRST` → `01_OBJECTIVE` → `03_PLAN_LOCK_PHASE3` (APPROVED) →
+> this file → `08_DRIFT_LOG` → `09_DECISIONS` → `04_EXECUTION_LOG` (per-slice detail) → then re-read the
+> next slice's anchor in full via DesignSync (parent-only) before coding.
 
-## State (as of 2026-07-14 — end of Phase 2)
-- **Branch:** `strata/impl-phase01`. `origin/main` = `f4b2b2b6a`; branch and main are in sync. Working tree
-  clean. All Phase-2 work is merged + pushed to main AND to `origin/strata/impl-phase01`.
-- **Phase 0 + Phase 1 COMPLETE.** **✅✅ PHASE 2 (measure & direction) COMPLETE** — every anchor shipped +
-  merged, each gated (tsc · colors · audit · CRE) + live-verified light+dark:
-  - **2A** StrataChainStrip · **2B** KPI Detail (anchor 06) — earlier sessions.
-  - **2C** KPI & OKR Library (anchor 16): `da80fdb43` (2C-1 · 2C-2a/b/c/d-1/d-2).
-  - **2D** Strategy Room (anchor 02): `a11d8e8e9` (2D-1 toggle+band · 2D-2 JiraTable tree · 2D-2b health+benefits
-    · 2D-3 inspector rail · 2D-4 Narrative). **Map (`StrataStrategyMapPage.tsx`) byte-untouched throughout —
-    zero-change gate re-probed after every slice.**
-  - **2E** Element Detail (anchor 14): `f1c3a3364` (2E-1 ViewBase 2-col · 2E-2 health verdict + chain · 2E-3
-    promote + charter restyle + responsive).
-  - **2F** Evidence (anchor 15): `f4b2b2b6a` (trust-story paragraph + StrataSnapshotBand-when-locked; chain/
-    history/dossier/?from= preserved).
+## State (as of 2026-07-15 — mid Phase 3)
+- **Branch:** `strata/impl-phase01`. **`origin/main` = `21583d3ba`**; branch and main are in sync + pushed.
+  Working tree clean. **`StrataStrategyMapPage.tsx` byte-untouched across all of Phase 3** (verify every slice).
+- **Phases 0/1/2 COMPLETE + merged** (see history below). **Phase 3 = HANDOFF "delivery & value"** per D-12
+  (DRIFT-6 resolved): anchors **17 · 07 · 18 · 08 · 22 · 21**. Plan Lock `03_PLAN_LOCK_PHASE3.md` APPROVED
+  (Vikram 2026-07-14; decisions **P3-D1…D8** all CONFIRMED — P3-D3 = scoped-down import on the existing
+  dry-run/apply backend, no undo/conflict engine).
 
-## ⛔ NEXT = PHASE 3 — needs its OWN Plan Lock before ANY code (see `03_PLAN_LOCK_PHASE2.md` for the format)
-Phases 3–5 are NOT started. Per CLAUDE.md "PLAN LOCK BEFORE CODE": read the Phase-3 anchors in full via
-DesignSync (parent-only), run discovery agents, produce `03_PLAN_LOCK_PHASE3.md`, and STOP for Vikram's
-approval before implementing. Phase-3 scope per HANDOFF build-order = **governance & delivery** (Reviews &
-Decisions, Project Cards, Import/Reconciliation, Data & Lineage) — confirm the exact anchor set against
-`HANDOFF.md` at Phase-3 start. Anchors likely in play: 07 Project Card Detail · 09 Upload Validation &
-Lineage · 10 Decision Cockpit & Board Pack · 17 Project Cards List · 18 Import-Reconciliation ·
-19 Data-Lineage Landing · 23 Reviews Index · 24 Board Pack Present Mode.
+### Phase-3 slice status (order per Plan Lock)
+| Slice | Anchor / target | Status |
+|---|---|---|
+| 3A-1a/b | 17 Project Cards List (`StrataExecutionPage`) | ✅ merged — grouped JiraTable (Card·source·↑Objective·Health·Forecast Δ·Benefit-at-stake·Blockers), inline milestone tree-rows, row→detail `?from=` |
+| 3A-2a/b | 07 Project Card Detail (`ProjectCardDetailView`) | ✅ merged — strategic-role panel · Health&Forecast · unified "What threatens the forecast" · 360px rail (Details/Source System/Value Contribution) |
+| 3B-0 | `StrataValueBar` hero + `multiple` variants (`shared.tsx`) | ✅ merged — additive `variant` prop; default path unchanged |
+| 3B-1 | 21 Benefit Detail (`BenefitDetailSection` in `StrataPortfolioVmoPage`) | ✅ merged **(focused)** — verdict band + hero value stages. **DEFERRED:** 2-col rail (IN-THE-CHAIN + Confidence) + attestation-timeline |
+| **3B-2** | **08 Portfolio Detail — NEW route** `/strata/portfolio/:slug` | ❌ **NEXT — not started** |
+| 3B-3 | 22 Portfolio Index — repurpose `/strata/portfolio` to a real index | ❌ not started |
+| 3C | 18 Import & Reconciliation (`StrataExecutionImportPage`, scoped-down P3-D3) | ❌ not started |
+
+## ⛔ NEXT = SLICE 3B-2 — Portfolio Detail (anchor 08), then 3B-3, then 3C
+**No code without re-reading the slice's anchor in full via DesignSync first** (drift protocol). Key resume facts:
+- **`StrataPortfolioVmoPage.tsx` (1142 LOC) currently serves 3 modes off one component:** index (via a
+  `?portfolio=` selector, `usePortfolios`), portfolio-detail (implicit), and benefit-detail (`:slug` →
+  `useBenefitBySlug` → `BenefitDetailSection`). **3B-2 splits portfolio-detail into a new `PortfolioDetailPage`
+  at `/strata/portfolio/:slug`; 3B-3 repurposes `/strata/portfolio` into a real portfolio index.** HIGH-STAKES
+  route/page split — do it carefully so `/strata/portfolio` never breaks.
+- **Route work (P3-D7):** `usePortfolioBySlug(slug)` ALREADY EXISTS (`useStrata.tsx:430`, unused). Add
+  `Routes.strata.portfolioDetail(slug)` in `src/lib/routes.ts` + a `portfolio/:slug` route in
+  `StrataRoutes.tsx` **before the `*` catch-all** (the slot is free; `portfolio/benefits/:slug` +
+  `portfolio/:slug/evidence` keep priority — no shadow). Benefit detail stays at `portfolio/benefits/:slug`.
+- **Components ready:** `StrataValueBar` **`variant="hero"`** (anchors 08/21 waterfall) + **`variant="multiple"`**
+  (anchor-22 small multiples) shipped in 3B-0. Hero is already consumed by 3B-1.
+- **Portfolio value aggregates (P3-D2):** `strata_portfolios` has only `value_target` — NO stored
+  planned/forecast/leakage/validated rollup and NO RPC. **Client-derive** by aggregating each portfolio's
+  benefits' `strata_benefit_values` (via `useBenefits(portfolioId)` + `useBenefitValues` per benefit, active
+  period else first). Zero-assumption: dash where a `value_kind` row is absent; VaR/realization DISPLAY reads
+  `lineageApi.latestCalc` (NEVER the recompute RPC in render).
+- **3C (import) scope is DELIBERATELY reduced (P3-D3):** redesign to the anchor LAYOUT on the existing
+  `importApi.importExecutionBatch` dry-run/apply (created/updated/rejected) — NO Matched/Conflict/Unmatched
+  three-way, NO both-sides diff, **NO "undo" affordance** (none of that backend exists). Render honestly.
+
+## Merge / commit discipline (unchanged — used for all 7 Phase-3 merges)
+One slice = one commit (explicit files; feature docs alongside; `git add -A` banned). Verify the staged set
+with `git diff --cached --name-status` before every commit (GitHub Desktop auto-committer may be active).
+Merge to main via a temp worktree: `git worktree add <scratchpad>/merge-main main` → `git merge --no-ff
+strata/impl-phase01` → symlink node_modules → re-run ALL gates on the merged tree → `push origin main` →
+(from the shared checkout) `git merge --ff-only main` + `push origin strata/impl-phase01` → remove worktree.
+**LESSON (this session):** never `cd` INTO the worktree persistently — run gates in a `( cd "$WT" && … )`
+subshell and remove the worktree from the repo-root cwd, else removing it deletes your cwd (concurrent-session
+rule → STOP + re-verify). Gates: `npx tsc --noEmit` · `npm run lint:colors:gate` · `npm run audit:ads:gate`
+(baseline 19799) · `npm run lint:cre`. Live-verify every UI slice light + dark on `localhost:8080`.
+
+## Phase 0/1/2 history (reference)
+- Phase 0/1 complete (earlier sessions). **Phase 2** (measure & direction) COMPLETE + merged: 2A StrataChainStrip ·
+  2B KPI Detail (06) · 2C KPI/OKR Library (16, `da80fdb43`) · 2D Strategy Room (02, `a11d8e8e9`) · 2E Element
+  Detail (14, `f1c3a3364`) · 2F Evidence (15, `f4b2b2b6a`). Detail for those slices is in git history + the
+  lower sections of this file (below OPEN DEBT).
 
 ## ⚠️ OPEN DEBT (carry into Phase 3 — do NOT lose)
 1. **Prod migrations BLOCKED (no prod access this session — tackle later).** `20260713100000`
@@ -42,6 +77,12 @@ Lineage · 10 Decision Cockpit & Board Pack · 17 Project Cards List · 18 Impor
 3. **Deferred Phase-2 nice-to-haves (non-anchor-critical, optional):** Element-Detail OKR anchor-table
    restyle + locked-snapshot band; Evidence exact Step/Fact lineage-table restyle + "differs from live" markers.
 4. Spun-off background task `task_70e821ad` — data-source freshness/staleness column (schema gap).
+5. **Phase-3 deferred polish (anchor 21, from slice 3B-1):** the 2-col Benefit-Detail restructure with a 360px
+   rail (IN-THE-CHAIN links: objective ↑ / delivery ▦ / measured-by ◎ / gate ⚖, + Confidence panel) and
+   attestation-history-as-timeline were NOT built — verdict band + hero value stages shipped, other panels
+   preserved as-is. Fold into a 3B-1b pass or the 3B-2 portfolio-page restructure.
+6. **Phases 4–5 NOT started** (governance & data: anchors 09·10·19·20·23·24; config & system-states: 03·04·
+   05·25·26·27·28). Each needs its own Plan Lock per CLAUDE.md before any code.
 
 ### 2E Element Detail (anchor 14) — SPLIT 2E-1/2E-2/2E-3. Page: `StrataStrategyElementDetailPage.tsx`.
 - Anchor 14 = 2-col ViewBase: left body [health verdict (LEADS) → StrataChainStrip → Charter (Intent/Scope)
