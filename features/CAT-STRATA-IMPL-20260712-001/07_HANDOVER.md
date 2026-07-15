@@ -24,7 +24,7 @@
   layered above the preserved key-metrics/evidence/decisions/board-pack panels. Corrected a FactChip mislabel
   ("frozen records"→"config versions") the band surfaced. Gates green; light+dark (SNAP-1001 rich + SNAP-1 sparse);
   index branch unbroken; only StrataReviewsPage.tsx touched (map zero-change); no console errors. See session 017.
-## Slice 4C-2 ✅ BUILT + verified (anchor 10 decision + actions registers) — AWAITING commit/merge
+## Slice 4C-2 ✅ MERGED `df5475b7c` (anchor 10 decision + actions registers)
 - "03 Decisions & actions" → anchor-10 **2-col 7fr/5fr** registers. Decision register: `renderDecision` reworked into
   always-visible cards (status + evidence prose + verdict-record band [status-as-verdict + Recorded by X · date ·
   against SNAP] + evidence tags + preserved authoring; dropped chevron-expand + `expandedDecisionId`). Actions register:
