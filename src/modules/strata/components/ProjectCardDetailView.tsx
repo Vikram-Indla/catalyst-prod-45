@@ -14,6 +14,7 @@
  * linked via the generic strata_execution_links bridge — no second model.
  */
 import React, { useEffect, useMemo, useState } from 'react';
+import { useQueries } from '@tanstack/react-query';
 import Tabs, { Tab, TabList, TabPanel } from '@atlaskit/tabs';
 import {
   Avatar, Button, CatalystTag, EmptyState, Lozenge, ProgressBar, SectionMessage, Tooltip,
@@ -22,15 +23,16 @@ import { StatusLozenge } from '@/components/shared/StatusLozenge';
 import { JiraTable } from '@/components/shared/JiraTable';
 import type { Column } from '@/components/shared/JiraTable';
 import { Routes } from '@/lib/routes';
-import { executionApi } from '../domain';
+import { executionApi, valueApi } from '../domain';
 import {
-  useDependencies, useExecutionLinks, useMilestones, useProfileNames, useProjectCardFieldConfigs,
-  useProjectCardPicklists, useProjectCardSectionConfigs, useProjectKpis,
+  useBenefitProjectCards, useDependencies, useExecutionLinks, useMilestones, useProfileNames,
+  useProjectCardFieldConfigs, useProjectCardPicklists, useProjectCardSectionConfigs, useProjectKpis,
   useProjectObjectives, useInvalidateStrata, useKpis, useRisks, useStrataContext, useStrataRoles,
   useStrategyElements,
 } from '../hooks/useStrata';
 import type {
-  StrataDependency, StrataMilestone, StrataProjectCard, StrataRisk, StrataRole, StrataStrategyElement,
+  StrataBenefitValue, StrataDependency, StrataMilestone, StrataProjectCard, StrataRisk, StrataRole,
+  StrataStrategyElement,
 } from '../types';
 import { fmtDate, fmtSarCompact, labelize } from './format';
 import { StrataFormModal } from './authoring';
@@ -163,7 +165,7 @@ export function ProjectCardDetailView({ card, theme }: {
   const canWriteKpi = roles.some((r) => KPI_WRITE_ROLES.includes(r));
   const canWriteObjective = roles.some((r) => OBJECTIVE_WRITE_ROLES.includes(r));
   const canArchive = roles.some((r) => ARCHIVE_ROLES.includes(r));
-  const { activeCycle } = useStrataContext();
+  const { activeCycle, activePeriod } = useStrataContext();
 
   const milestonesQ = useMilestones(card.id);
   const dependenciesQ = useDependencies();
@@ -258,6 +260,71 @@ export function ProjectCardDetailView({ card, theme }: {
   const linkedObjective = card.objective_element_id ? themeObjectives.find((o) => o.id === card.objective_element_id) ?? null : null;
   const roleProse = card.value_hypothesis?.trim() || card.scope_description?.trim() || card.business_case?.trim() || null;
   const forecastLate = (card.forecast_variance_days ?? 0) > 0;
+
+  // ── Unified "What threatens the forecast" (anchor 07) ──────────────────────
+  // Milestones-at-risk + dependencies + risks + blockers merged into one list,
+  // ranked by CLIENT-DERIVED schedule impact (no schedule_impact column exists —
+  // milestone slip / dependency overdue from dates; risks carry no schedule date
+  // so they rank last with a level, never a fabricated day count).
+  const threats = useMemo(() => {
+    type ThreatItem = { kind: string; tone: React.ComponentProps<typeof Lozenge>['appearance']; title: string; detail: string; impact: string; impactDays: number };
+    const out: ThreatItem[] = [];
+    const overdueDays = (d: string | null) => (d && new Date(d).getTime() < Date.now() ? Math.floor((Date.now() - new Date(d).getTime()) / 86_400_000) : 0);
+    const slipDays = (fc: string | null, base: string | null) => (fc && base ? Math.max(0, Math.round((new Date(fc).getTime() - new Date(base).getTime()) / 86_400_000)) : 0);
+    milestones.forEach((m) => {
+      if (m.status === 'done' || m.status === 'descoped') return;
+      const impactDays = slipDays(m.forecast_date, m.baseline_end) || overdueDays(m.baseline_end);
+      if (impactDays <= 0) return;
+      out.push({ kind: 'MILESTONE', tone: 'moved', title: m.name, detail: `Forecast ${fmtDate(m.forecast_date)} · baseline ${fmtDate(m.baseline_end)}`, impact: `+${impactDays} days`, impactDays });
+    });
+    projectDependencies.forEach((d) => {
+      if (d.status === 'resolved' || d.status === 'cancelled') return;
+      const od = overdueDays(d.due_date);
+      const blocker = d.is_blocker || d.status === 'blocked';
+      out.push({ kind: blocker ? 'BLOCKER' : 'DEPENDENCY', tone: blocker ? 'removed' : 'default', title: d.name ?? d.serving_label ?? labelize(d.dependency_type), detail: d.impact ?? (d.serving_label ? `Serving: ${d.serving_label}` : ''), impact: od > 0 ? `${od} days overdue` : 'open', impactDays: od });
+    });
+    risks.forEach((r) => {
+      if (r.status === 'closed') return;
+      out.push({ kind: 'RISK', tone: r.impact === 'high' ? 'removed' : r.impact === 'medium' ? 'moved' : 'default', title: r.title, detail: r.target_resolution_date ? `Target ${fmtDate(r.target_resolution_date)}` : (r.mitigation ?? ''), impact: r.impact ? `${labelize(r.impact)} impact` : '—', impactDays: 0 });
+    });
+    return out.sort((a, b) => b.impactDays - a.impactDays);
+  }, [milestones, projectDependencies, risks]);
+
+  // ── Value contribution (anchor 07) — planned/forecast/realized for THIS card's
+  // linked benefits (benefit_project_cards ⋈ benefit_values × attribution share,
+  // active period else first). Zero-assumption: dash per kind when absent. ──────
+  const benefitLinks = useBenefitProjectCards().data ?? [];
+  const cardBenefitIds = useMemo(
+    () => Array.from(new Set(benefitLinks.filter((l) => l.project_card_id === card.id).map((l) => l.benefit_id))),
+    [benefitLinks, card.id],
+  );
+  const cardBenefitShare = useMemo(() => {
+    const m = new Map<string, number>();
+    benefitLinks.filter((l) => l.project_card_id === card.id).forEach((l) => m.set(l.benefit_id, l.attribution_share ?? 1));
+    return m;
+  }, [benefitLinks, card.id]);
+  const benefitValueQueries = useQueries({
+    queries: cardBenefitIds.map((bid) => ({
+      queryKey: ['strata', 'benefit-values', bid],
+      queryFn: () => valueApi.benefitValues(bid),
+      staleTime: 30_000,
+    })),
+  });
+  const valueContribution = useMemo(() => {
+    const sumKind = (kind: StrataBenefitValue['value_kind']): number | null => {
+      let total = 0; let any = false;
+      cardBenefitIds.forEach((bid, i) => {
+        const rows = (benefitValueQueries[i]?.data ?? []) as StrataBenefitValue[];
+        const of = rows.filter((v) => v.value_kind === kind);
+        const pick = of.find((v) => v.period_id === activePeriod?.id) ?? of[0];
+        if (pick) { total += pick.value * (cardBenefitShare.get(bid) ?? 1); any = true; }
+      });
+      return any ? total : null;
+    };
+    return { hasBenefit: cardBenefitIds.length > 0, planned: sumKind('planned'), forecast: sumKind('forecast'), realized: sumKind('realized') };
+    // benefitValueQueries is fresh each render; key on resolved-count + period.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cardBenefitIds, activePeriod?.id, cardBenefitShare, benefitValueQueries.map((q) => (q.data ? 1 : 0)).join('')]);
 
   const milestoneColumns = useMemo<Column<StrataMilestone>[]>(() => [
     { id: 'name', label: 'Milestone', flex: true, cell: ({ row }) => <span style={{ fontWeight: 600, color: T.text }}>{row.name}</span> },
@@ -379,6 +446,22 @@ export function ProjectCardDetailView({ card, theme }: {
             {card.health_reason ? <p style={{ ...captionStyle, margin: 'var(--ds-space-100) 0 0', lineHeight: 1.5 }}>{card.health_reason}</p> : null}
           </DetailPanel>
 
+          {threats.length > 0 ? (
+            <DetailPanel label={`WHAT THREATENS THE FORECAST · ${threats.length}`} testId="strata-project-threats">
+              <div style={{ marginBottom: 'var(--ds-space-050)', fontSize: 'var(--ds-font-size-100)', color: T.subtlest }}>Milestones · dependencies · risks · blockers, ranked by schedule impact.</div>
+              {threats.map((t, i) => (
+                <div key={`${t.kind}-${i}`} style={{ display: 'flex', gap: 12, padding: 'var(--ds-space-150) 0', borderTop: i === 0 ? undefined : `1px solid ${T.border}`, alignItems: 'flex-start' }}>
+                  <span style={{ marginTop: 'var(--ds-space-025)', flexShrink: 0 }}><Lozenge appearance={t.tone} isBold>{t.kind}</Lozenge></span>
+                  <div style={{ minWidth: 0, flex: 1 }}>
+                    <div style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: T.text }}>{t.title}</div>
+                    {t.detail ? <div style={{ ...captionStyle, marginTop: 'var(--ds-space-025)' }}>{t.detail}</div> : null}
+                  </div>
+                  <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: t.impactDays > 0 ? 'var(--ds-text-danger)' : T.subtle, whiteSpace: 'nowrap', flexShrink: 0 }}>{t.impact}</span>
+                </div>
+              ))}
+            </DetailPanel>
+          ) : null}
+
           <Tabs id={`strata-project-detail-tabs-${card.id}`}>
         <TabList>
           <Tab>Overview</Tab>
@@ -440,8 +523,6 @@ export function ProjectCardDetailView({ card, theme }: {
             <SummaryField label="Forecast Variance (days)">
               {card.forecast_variance_days == null ? <Dash /> : `${card.forecast_variance_days > 0 ? '+' : ''}${card.forecast_variance_days}`}
             </SummaryField>
-            <SummaryField label="Source System">{labelize(card.source_system)}</SummaryField>
-            <SummaryField label="Source Reference Key">{card.source_key ?? <Dash />}</SummaryField>
             {fieldVisible('budget') ? <SummaryField label="Budget">{card.budget != null ? fmtSarCompact(card.budget) : <Dash />}</SummaryField> : null}
             {fieldVisible('sponsor_id') ? <SummaryField label="Executive Sponsor">{profileName(card.sponsor_id) ?? <Dash />}</SummaryField> : null}
             {fieldVisible('business_case') ? <SummaryField label="Business Case">{card.business_case ?? <Dash />}</SummaryField> : null}
@@ -595,6 +676,21 @@ export function ProjectCardDetailView({ card, theme }: {
             </div>
             <p style={{ ...captionStyle, margin: '8px 0 0', lineHeight: 1.5 }}>STRATA summarizes and links — the work items live in {labelize(card.source_system)}. This card never becomes a task tracker.</p>
           </DetailPanel>
+
+          {valueContribution.hasBenefit ? (
+            <DetailPanel label="VALUE CONTRIBUTION" testId="strata-project-value">
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--ds-space-075)', fontSize: 'var(--ds-font-size-200)', color: T.subtle }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', gap: 8 }}><span>Planned</span><strong style={{ color: T.text, fontVariantNumeric: 'tabular-nums' }}>{valueContribution.planned == null ? '—' : fmtSarCompact(valueContribution.planned)}</strong></div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', gap: 8 }}><span>Forecast</span><strong style={{ color: forecastLate ? 'var(--ds-text-danger)' : T.text, fontVariantNumeric: 'tabular-nums' }}>{valueContribution.forecast == null ? '—' : fmtSarCompact(valueContribution.forecast)}</strong></div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', gap: 8 }}><span>Realized</span><strong style={{ color: T.text, fontVariantNumeric: 'tabular-nums' }}>{valueContribution.realized == null ? '—' : fmtSarCompact(valueContribution.realized)}</strong></div>
+              </div>
+              {(valueContribution.realized ?? 0) <= 0 && (derivedProgress ?? 0) > 0 ? (
+                <div style={{ marginTop: 'var(--ds-space-100)', padding: 'var(--ds-space-100) var(--ds-space-150)', borderRadius: 6, background: 'var(--ds-background-danger)', fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-danger)', lineHeight: 1.5 }}>
+                  Delivery is {Math.round((derivedProgress ?? 0) * 100)}% complete but <strong>no value is realized yet</strong> — completion ≠ benefit.
+                </div>
+              ) : null}
+            </DetailPanel>
+          ) : null}
         </aside>
       </div>
 
