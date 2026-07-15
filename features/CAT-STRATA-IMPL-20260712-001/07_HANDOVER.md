@@ -1,8 +1,8 @@
 # 07 — HANDOVER · CAT-STRATA-IMPL-20260712-001
 
-> Resume point. **Phases 0–3 COMPLETE. Phase 4 (governance & data) IN PROGRESS — Plan Lock APPROVED; slices 4A + 4B + 4C(1/2/3) + 4D done; NEXT = 4E (Run Detail, anchor 09). Vikram authorized AUTO-COMMIT-WHEN-GREEN for remaining Phase-4 slices.**
-> **Governance triad (23·10·24 partial) + Data landing (19) DONE. Remaining: 4E Run Detail (09) · 4F Upload Wizard (20) · 4G Board Pack (24, present/export).**
-> **Reusable now in shared.tsx: `StrataLifecycleStepper` (4A), `StrataFreshnessGlyph` (4D, timestamp-based ●◐○).**
+> Resume point. **Phases 0–3 COMPLETE. Phase 4 (governance & data) IN PROGRESS — Plan Lock APPROVED; slices 4A + 4B + 4C(1/2/3) + 4D + 4E done; NEXT = 4F (Upload Wizard, anchor 20). Vikram authorized AUTO-COMMIT-WHEN-GREEN for remaining Phase-4 slices.**
+> **Anchors DONE: 23·10 (cockpit) · 19 (data landing) · 09 (run detail). Remaining: 4F Upload Wizard (20) · 4G Board Pack (24, + cockpit present/export).**
+> **Reusable now in shared.tsx: `StrataLifecycleStepper` (4A, consumed by 4B/4C/4E), `StrataFreshnessGlyph` (4D, timestamp-based ●◐○).**
 > Read order to resume Phase 4: `00_READ_ME_FIRST` → `01_OBJECTIVE` → **`03_PLAN_LOCK_PHASE4` (APPROVED)** →
 > this file (State section below) → `08_DRIFT_LOG` (DRIFT-8; DRIFT-9 = 4B derived-review model) → `09_DECISIONS`
 > (P4-D0…D8 CONFIRMED) → `discovery/07_phase4_anchor_specs.md` (6 anchor digests) → `04_EXECUTION_LOG` (per-slice

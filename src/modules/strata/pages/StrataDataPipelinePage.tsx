@@ -7,7 +7,7 @@ import React, { useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import {
-  Button, CatalystTag, EmptyState, IconButton, SectionMessage, Spinner, Tooltip,
+  Button, CatalystTag, EmptyState, SectionMessage, Spinner, Tooltip,
 } from '@/components/ads';
 import { JiraTable } from '@/components/shared/JiraTable';
 import type { Column } from '@/components/shared/JiraTable';
@@ -15,13 +15,16 @@ import { StatusLozenge } from '@/components/shared/StatusLozenge';
 import type { LozengeAppearance } from '@/components/shared/StatusLozenge';
 import { Routes } from '@/lib/routes';
 import {
-  AlertTriangle, CheckCircle2, Copy, Database, MoveRight, Network, RefreshCw, Upload,
+  CheckCircle2, Database, Network, RefreshCw, Upload,
 } from '@/lib/atlaskit-icons';
 import { executionApi, kpiApi, lineageApi } from '@/modules/strata/domain';
 import {
   useDataSources, useInvalidateStrata, useKpis, useProfileNames, useRunDetail, useStrataContext, useStrataRoles, useUploadRuns,
 } from '@/modules/strata/hooks/useStrata';
-import { StrataDecisionModal, StrataFreshnessGlyph, StrataPageShell, StrataPanel, T } from '@/modules/strata/components/shared';
+import {
+  StrataDecisionModal, StrataFreshnessGlyph, StrataLifecycleStepper, StrataPageShell, StrataPanel, T,
+  type StrataLifecycleStep, type StrataStepState,
+} from '@/modules/strata/components/shared';
 import { fmtDate, fmtDateTime, labelize } from '@/modules/strata/components/format';
 import type {
   StrataDataSource, StrataKpi, StrataKpiActual, StrataStagingRow, StrataUploadRun, StrataValidationResult,
@@ -93,109 +96,54 @@ function buildSourceRows(sources: StrataDataSource[], runs: StrataUploadRun[], k
   return rows.sort((a, b) => a.consequenceRank - b.consequenceRank || (b.freshnessDays ?? -1) - (a.freshnessDays ?? -1));
 }
 
+/**
+ * Run lifecycle (anchor 09) — the steward's 7-step journey, mapped from run.status.
+ * "Resolve" is derived (rejected rows outstanding), not a discrete backend stage.
+ * Promote note is honest per P4-D7: writes PENDING attestation, no reverse RPC exists.
+ */
+function runLifecycleSteps(run: StrataUploadRun): StrataLifecycleStep[] {
+  const s = run.status;
+  const rejects = run.row_count_rejected ?? 0;
+  const failed = s === 'failed';
+  let current: number;
+  if (failed) current = 3;
+  else if (s === 'uploaded') current = 1;
+  else if (s === 'staging') current = 2;
+  else if (s === 'validating') current = 3;
+  else if (rejects > 0) current = 4;
+  else if (s === 'calculating') current = 6;
+  else current = 5; // completed / pending_attestation / writing — ready to promote
+  const st = (i: number): StrataStepState =>
+    failed && i === 3 ? 'failed' : i < current ? 'done' : i === current ? 'current' : 'todo';
+  return [
+    { id: 'contract', label: 'Contract', state: st(0), note: run.template_version != null ? `template v${run.template_version}` : undefined },
+    { id: 'upload', label: 'Upload', state: st(1), note: `${run.row_count_raw} rows` },
+    { id: 'map', label: 'Map', state: st(2), note: 'staged' },
+    { id: 'validate', label: 'Validate', state: st(3), note: `${run.row_count_valid} valid · ${rejects} rejected` },
+    { id: 'resolve', label: 'Resolve', state: st(4), note: rejects > 0 ? `${rejects} to resolve` : 'nothing to resolve' },
+    { id: 'promote', label: 'Promote', state: st(5), note: 'pending attestation' },
+    { id: 'calculated', label: 'Calculated', state: st(6), note: undefined },
+  ];
+}
+
+/** Client-side error clustering (anchor 09, P4-D3) — group validation results by cause. */
+interface ErrorCluster { key: string; code: string; field: string | null; count: number; message: string; fix: string | null; severity: string; }
+function clusterErrors(results: StrataValidationResult[]): ErrorCluster[] {
+  const m = new Map<string, ErrorCluster>();
+  results.forEach((v) => {
+    const key = `${v.error_code}::${v.field_name ?? ''}`;
+    const ex = m.get(key);
+    if (ex) ex.count += 1;
+    else m.set(key, { key, code: v.error_code, field: v.field_name, count: 1, message: v.message, fix: v.suggested_fix, severity: v.severity });
+  });
+  return [...m.values()].sort((a, b) => b.count - a.count);
+}
+
 const mono: React.CSSProperties = {
   fontFamily: 'var(--ds-font-family-code, monospace)', fontSize: 'var(--ds-font-size-100)',
 };
 const bodyStyle: React.CSSProperties = { fontSize: 'var(--ds-font-size-200)', color: T.text };
 const captionStyle: React.CSSProperties = { fontSize: 'var(--ds-font-size-100)', color: T.subtlest };
-
-// ── Pipeline stepper (single stateful instance — governed lineage chain) ────
-const PIPELINE_STAGES = [
-  'Source', 'Ingestion run', 'Staging', 'Validation',
-  'Attestation', 'Canonical write', 'Calculation', 'Snapshot',
-] as const;
-
-type StageState = 'complete' | 'current' | 'failed' | 'neutral';
-
-/** Derive per-stage state from the run's system status (DB CHECK enum). The
- *  validation stage is the governed rejection point, so failed/quarantined
- *  runs mark Validation as the failure stage. No stage state is invented
- *  beyond what the status enum encodes. */
-function stageStates(run: StrataUploadRun | null | undefined): StageState[] {
-  if (!run) return PIPELINE_STAGES.map(() => 'neutral');
-  const currentByStatus: Record<string, number> = {
-    uploaded: 1, staging: 2, validating: 3, pending_attestation: 4, writing: 5, calculating: 6,
-  };
-  if (run.status === 'completed') {
-    return PIPELINE_STAGES.map((_, i) => (i <= 6 ? 'complete' : 'neutral'));
-  }
-  if (run.status === 'failed' || run.status === 'quarantined') {
-    return PIPELINE_STAGES.map((_, i) => (i < 3 ? 'complete' : i === 3 ? 'failed' : 'neutral'));
-  }
-  const cur = currentByStatus[run.status];
-  if (cur == null) return PIPELINE_STAGES.map(() => 'neutral');
-  return PIPELINE_STAGES.map((_, i) => (i < cur ? 'complete' : i === cur ? 'current' : 'neutral'));
-}
-
-function StageDot({ state }: { state: StageState }) {
-  const box: React.CSSProperties = {
-    width: 22, height: 22, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
-  };
-  if (state === 'complete') {
-    return <span style={{ ...box, color: 'var(--ds-icon-success)' }} aria-hidden><CheckCircle2 size={16} /></span>;
-  }
-  if (state === 'failed') {
-    return <span style={{ ...box, color: 'var(--ds-icon-danger)' }} aria-hidden><AlertTriangle size={16} /></span>;
-  }
-  if (state === 'current') {
-    return (
-      <span style={box} aria-hidden>
-        <span style={{
-          width: 14, height: 14, borderRadius: '50%',
-          border: '2px solid var(--ds-border-information)',
-          display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-        }}>
-          <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--ds-text-information)' }} />
-        </span>
-      </span>
-    );
-  }
-  return (
-    <span style={box} aria-hidden>
-      <span style={{ width: 10, height: 10, borderRadius: '50%', border: `2px solid ${T.border}` }} />
-    </span>
-  );
-}
-
-function PipelineStepper({ run }: { run?: StrataUploadRun | null }) {
-  const states = stageStates(run);
-  return (
-    <div
-      data-testid="strata-pipeline-strip"
-      style={{ display: 'flex', alignItems: 'flex-start', marginBottom: 16, overflowX: 'auto', paddingBottom: 4 }}
-      aria-label="Pipeline stages"
-    >
-      {PIPELINE_STAGES.map((stage, i) => (
-        <React.Fragment key={stage}>
-          {i > 0 ? (
-            <span
-              aria-hidden
-              style={{
-                flex: '1 1 24px', height: 2, marginTop: 12, minWidth: 12,
-                background: states[i - 1] === 'complete' && states[i] === 'complete'
-                  ? 'var(--ds-text-success)'
-                  : T.border,
-              }}
-            />
-          ) : null}
-          <span style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2, flexShrink: 0 }}>
-            <StageDot state={states[i]} />
-            <span style={{
-              fontSize: 'var(--ds-font-size-100)', fontWeight: states[i] === 'current' ? 600 : 500,
-              color: states[i] === 'failed' ? 'var(--ds-text-danger)'
-                : states[i] === 'current' ? T.text
-                : states[i] === 'complete' ? T.subtle
-                : T.subtlest,
-              whiteSpace: 'nowrap',
-            }}>
-              {stage}
-            </span>
-          </span>
-        </React.Fragment>
-      ))}
-    </div>
-  );
-}
 
 // ── Segmented row-count mini bar (valid / rejected / pending) ────────────────
 function SegmentedCounts({ raw, valid, rejected }: { raw: number; valid: number; rejected: number }) {
@@ -505,6 +453,8 @@ function RunDetailSection({ runKey, detail }: { runKey: string; detail: RunDetai
   const navigate = useNavigate();
   const { activePeriod } = useStrataContext();
   const invalidate = useInvalidateStrata();
+  const kpisQ = useKpis();       // downstream dependents (P4-D4) via strata_kpis.data_source_id
+  const sourcesQ = useDataSources(); // source name for the contract/lineage rail
   const runId = detail.data?.run.id ?? null;
 
   // Attestation applies to strata_kpi_actuals (not staging rows). There is no
@@ -571,7 +521,6 @@ function RunDetailSection({ runKey, detail }: { runKey: string; detail: RunDetai
   }
 
   const { run, rows, results } = detail.data;
-  const rowNumberByStagingId = new Map(rows.map((r) => [r.id, r.row_number]));
 
   // Parsed payload columns — union of keys across staged rows (display only).
   const parsedKeys: string[] = [];
@@ -660,52 +609,26 @@ function RunDetailSection({ runKey, detail }: { runKey: string; detail: RunDetai
       : []),
   ];
 
-  const errorColumns: Column<StrataValidationResult>[] = [
-    {
-      id: 'row', label: 'Row', width: 7, align: 'end',
-      cell: ({ row: v }) => (
-        <span style={{ ...bodyStyle, fontVariantNumeric: 'tabular-nums' }}>
-          {v.staging_row_id ? rowNumberByStagingId.get(v.staging_row_id) ?? '—' : '—'}
-        </span>
-      ),
-    },
-    {
-      id: 'field', label: 'Field', width: 13,
-      cell: ({ row: v }) => (v.field_name
-        ? <span style={{ ...mono, color: T.text }}>{v.field_name}</span>
-        : <span style={{ color: T.subtlest }}>—</span>),
-    },
-    {
-      id: 'code', label: 'Code', width: 15,
-      cell: ({ row: v }) => <CatalystTag text={v.error_code} />,
-    },
-    {
-      id: 'severity', label: 'Severity', width: 11,
-      cell: ({ row: v }) => (
-        <StatusLozenge
-          status={v.severity}
-          label={labelize(v.severity)}
-          appearance={v.severity === 'error' ? 'removed' : 'moved'}
-        />
-      ),
-    },
-    {
-      id: 'message', label: 'Message', flex: true,
-      cell: ({ row: v }) => <span style={bodyStyle}>{v.message}</span>,
-    },
-    {
-      id: 'fix', label: 'Suggested fix', width: 22,
-      cell: ({ row: v }) => (v.suggested_fix
-        ? <span style={{ fontSize: 'var(--ds-font-size-200)', color: T.subtle }}>{v.suggested_fix}</span>
-        : <span style={{ color: T.subtlest }}>—</span>),
-    },
-  ];
-
-  // Lineage summary — target entity counts by type from already-loaded rows.
-  const entityCounts = new Map<string, number>();
-  rows.forEach((r) => {
-    if (r.target_entity) entityCounts.set(r.target_entity, (entityCounts.get(r.target_entity) ?? 0) + 1);
-  });
+  // ── Anchor-09 derivations ──────────────────────────────────────────────────
+  const lifecycle = runLifecycleSteps(run);
+  const clusters = clusterErrors(results);
+  const dependentKpiNames = (kpisQ.data ?? [])
+    .filter((k) => run.data_source_id != null && k.data_source_id === run.data_source_id)
+    .map((k) => k.name);
+  const sourceName = run.data_source_id ? (sourcesQ.data ?? []).find((s) => s.id === run.data_source_id)?.name ?? null : null;
+  const rejectedRows = rows.filter((r) => r.validation_status === 'rejected');
+  const promoteReady = hasIngestRole && run.status === 'completed';
+  const tileNum: React.CSSProperties = { fontSize: 'var(--ds-font-size-400)', fontWeight: 700, fontVariantNumeric: 'tabular-nums' };
+  /** Client-side CSV of the rejected rows — safe, no server call (anchor 09 "Download rejected"). */
+  const downloadRejected = () => {
+    const header = ['row_number', ...parsedKeys].join(',');
+    const lines = rejectedRows.map((r) => [r.row_number, ...parsedKeys.map((k) => JSON.stringify(r.raw?.[k] ?? ''))].join(','));
+    const blob = new Blob([[header, ...lines].join('\n')], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = `${run.run_key}-rejected.csv`; a.click();
+    URL.revokeObjectURL(url);
+  };
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }} data-testid="strata-run-detail">
@@ -732,20 +655,6 @@ function RunDetailSection({ runKey, detail }: { runKey: string; detail: RunDetai
               {actionBusy ? 'Validating…' : 'Validate run'}
             </Button>
           ) : null}
-          {hasIngestRole && run.status === 'completed' ? (
-            <Button
-              appearance="primary"
-              spacing="compact"
-              isDisabled={actionBusy}
-              onClick={() => runPipelineAction(async () => {
-                const res = await lineageApi.promoteRun(run.id);
-                return `${res.promoted} actual${res.promoted === 1 ? '' : 's'} written (pending attestation), ${res.skipped} skipped.`;
-              })}
-              testId="strata-promote-run"
-            >
-              {actionBusy ? 'Promoting…' : 'Promote to canonical actuals'}
-            </Button>
-          ) : null}
         </div>
         {actionSuccess ? (
           <div style={{ marginTop: 8 }}>
@@ -761,22 +670,121 @@ function RunDetailSection({ runKey, detail }: { runKey: string; detail: RunDetai
             </SectionMessage>
           </div>
         ) : null}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap', marginTop: 8 }}>
-          <SegmentedCounts raw={run.row_count_raw} valid={run.row_count_valid} rejected={run.row_count_rejected} />
-          {run.file_hash ? (
-            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-              <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: T.subtlest }}>Checksum</span>
-              <span style={{ ...mono, color: T.subtle }}>{run.file_hash.slice(0, 12)}</span>
-              <IconButton
-                icon={<Copy size={14} />}
-                appearance="subtle"
-                spacing="compact"
-                aria-label="Copy checksum"
-                onClick={() => { void navigator.clipboard.writeText(run.file_hash ?? ''); }}
-              />
-            </span>
-          ) : null}
+      </div>
+
+      {/* Run lifecycle (anchor 09): the steward's 7-step journey */}
+      <div style={{ padding: '12px 16px', border: `1px solid ${T.border}`, borderRadius: 8, background: T.raised, boxShadow: 'var(--ds-shadow-raised)', overflowX: 'auto' }} data-testid="strata-run-lifecycle">
+        <StrataLifecycleStepper variant="full" steps={lifecycle} ariaLabel={`Lifecycle for ${run.run_key}`} />
+      </div>
+
+      {/* 2-col: validation + commit (left) · downstream impact + lineage rail (right) */}
+      <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', alignItems: 'flex-start' }}>
+        <div style={{ flex: '1 1 440px', minWidth: 0, display: 'flex', flexDirection: 'column', gap: 16 }}>
+          {/* Validation summary — 2-way (P4-D3: strata_validate_run emits valid/rejected only) + clustered errors */}
+          <StrataPanel
+            title="Validation summary"
+            icon={<CheckCircle2 size={16} />}
+            noPadding
+            testId="strata-validation-summary"
+            actions={<span style={captionStyle}>{run.row_count_raw.toLocaleString()} rows received</span>}
+          >
+            <div style={{ display: 'flex', borderBottom: `1px solid ${T.border}` }}>
+              <div style={{ flex: 1, padding: 16, borderRight: `1px solid ${T.border}` }}>
+                <div style={{ ...tileNum, color: 'var(--ds-text-success)' }}>{run.row_count_valid.toLocaleString()}</div>
+                <div style={captionStyle}>Accepted — written to staging</div>
+              </div>
+              <div style={{ flex: 1, padding: 16 }}>
+                <div style={{ ...tileNum, color: 'var(--ds-text-danger)' }}>{run.row_count_rejected.toLocaleString()}</div>
+                <div style={captionStyle}>Rejected — need a corrected file</div>
+              </div>
+            </div>
+            {clusters.length === 0 ? (
+              <div style={{ padding: 16 }}>
+                {run.row_count_rejected > 0 ? (
+                  <EmptyState size="compact" header="No per-row error detail" description={`${run.row_count_rejected} row${run.row_count_rejected === 1 ? ' was' : 's were'} rejected, but this run recorded no per-row validation detail.`} />
+                ) : (
+                  <EmptyState size="compact" header="No validation errors" description="Every staged row passed validation." />
+                )}
+              </div>
+            ) : (
+              clusters.map((c) => (
+                <div key={c.key} style={{ display: 'flex', gap: 12, padding: '12px 16px', borderBottom: `1px solid ${T.border}`, alignItems: 'flex-start' }} data-testid={`strata-cluster-${c.code}`}>
+                  <span style={{ flexShrink: 0 }}>
+                    <StatusLozenge status={c.severity} label={`${c.count} ${c.count === 1 ? 'row' : 'rows'}`} appearance={c.severity === 'error' ? 'removed' : 'moved'} />
+                  </span>
+                  <div style={{ minWidth: 0, flex: 1 }}>
+                    <div style={{ ...bodyStyle, fontWeight: 600 }}>{labelize(c.code)}{c.field ? ` · ${c.field}` : ''}</div>
+                    <div style={{ ...captionStyle, color: T.subtle, marginTop: 4 }}>{c.message}</div>
+                    {c.fix ? <div style={{ ...captionStyle, color: T.subtle, marginTop: 4 }}>Fix: {c.fix}</div> : null}
+                  </div>
+                </div>
+              ))
+            )}
+          </StrataPanel>
+
+          {/* Commit panel — promote (existing RPC); honest reversibility (P4-D7: pending attestation, no reverse RPC) */}
+          <StrataPanel title="Promote to canonical" icon={<Upload size={16} />} testId="strata-commit-panel">
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
+              <div style={{ minWidth: 0, flex: 1 }}>
+                <div style={{ ...bodyStyle, fontWeight: 600 }}>Promote {run.row_count_valid.toLocaleString()} accepted row{run.row_count_valid === 1 ? '' : 's'} to canonical</div>
+                <div style={{ ...captionStyle, color: T.subtle, marginTop: 4 }}>
+                  Writes pending-attestation actuals — not yet committed. There is no automatic reverse; to correct, re-run a fixed file. The {run.row_count_rejected} rejected row{run.row_count_rejected === 1 ? '' : 's'} never block the rest.
+                </div>
+              </div>
+              {rejectedRows.length > 0 ? (
+                <Button appearance="default" spacing="compact" onClick={downloadRejected} testId="strata-download-rejected">
+                  Download rejected ({rejectedRows.length})
+                </Button>
+              ) : null}
+              {promoteReady ? (
+                <Button
+                  appearance="primary"
+                  spacing="compact"
+                  isDisabled={actionBusy}
+                  onClick={() => runPipelineAction(async () => {
+                    const res = await lineageApi.promoteRun(run.id);
+                    return `${res.promoted} actual${res.promoted === 1 ? '' : 's'} written (pending attestation), ${res.skipped} skipped.`;
+                  })}
+                  testId="strata-promote-run"
+                >
+                  {actionBusy ? 'Promoting…' : 'Promote accepted rows'}
+                </Button>
+              ) : null}
+            </div>
+          </StrataPanel>
         </div>
+
+        {/* Downstream impact + contract/lineage rail */}
+        <aside style={{ flex: '1 1 300px', minWidth: 0, display: 'flex', flexDirection: 'column', gap: 16 }}>
+          <StrataPanel title="What depends on this run" icon={<Network size={16} />} testId="strata-run-downstream">
+            {dependentKpiNames.length === 0 ? (
+              <p style={{ ...captionStyle, margin: 0 }}>No KPIs are backward-linked to this run's source. Scorecard and snapshot forward impact is not tracked.</p>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                {dependentKpiNames.map((n) => (
+                  <span key={n} style={{ ...bodyStyle, display: 'inline-flex', alignItems: 'center', gap: 6 }}><Database size={12} /> {n}</span>
+                ))}
+                <div style={{ marginTop: 8, padding: '8px 12px', borderRadius: 6, background: 'var(--ds-background-warning)', ...captionStyle, color: 'var(--ds-text-warning)', lineHeight: 1.5 }}>
+                  Until promoted, {dependentKpiNames.length} KPI{dependentKpiNames.length === 1 ? '' : 's'} show a missing actual for this period. Scorecard/snapshot forward impact is not tracked.
+                </div>
+              </div>
+            )}
+          </StrataPanel>
+          <StrataPanel title="Contract & lineage" icon={<Network size={16} />} testId="strata-run-contract">
+            <div style={{ display: 'grid', gridTemplateColumns: '96px minmax(0,1fr)', gap: 8, ...captionStyle }}>
+              <span style={{ color: T.subtlest }}>Source</span><span style={{ color: T.text }}>{sourceName ?? '—'}</span>
+              <span style={{ color: T.subtlest }}>Template</span><span style={{ color: T.text }}>{run.template_version != null ? `v${run.template_version}` : '—'}</span>
+              <span style={{ color: T.subtlest }}>Run key</span><span style={{ color: T.text, fontVariantNumeric: 'tabular-nums' }}>{run.run_key}</span>
+              <span style={{ color: T.subtlest }}>Channel</span><span style={{ color: T.text }}>{labelize(run.channel)}</span>
+              {run.file_hash ? (
+                <>
+                  <span style={{ color: T.subtlest }}>Checksum</span>
+                  <span style={{ ...mono, color: T.text }}>{run.file_hash.slice(0, 12)}</span>
+                </>
+              ) : null}
+            </div>
+          </StrataPanel>
+        </aside>
       </div>
 
       <StrataPanel title="Staged rows" icon={<Database size={16} />} count={rows.length} noPadding testId="strata-staged-rows-panel">
@@ -790,51 +798,6 @@ function RunDetailSection({ runKey, detail }: { runKey: string; detail: RunDetai
             data={rows}
             getRowId={(r) => r.id}
             ariaLabel={`Staged rows for ${run.run_key}`}
-          />
-        )}
-      </StrataPanel>
-
-      <StrataPanel title="Row-level validation errors" icon={<AlertTriangle size={16} />} count={results.length} noPadding testId="strata-validation-errors-panel">
-        {results.length === 0 ? (
-          <div style={{ padding: 16 }}>
-            <EmptyState size="compact" header="No validation errors" description="Every staged row passed validation." />
-          </div>
-        ) : (
-          <JiraTable<StrataValidationResult>
-            columns={errorColumns}
-            data={results}
-            getRowId={(v) => v.id}
-            ariaLabel={`Validation errors for ${run.run_key}`}
-          />
-        )}
-      </StrataPanel>
-
-      <StrataPanel title="Lineage" icon={<Network size={16} />} testId="strata-run-lineage-panel">
-        {entityCounts.size > 0 ? (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-              <CatalystTag text={run.run_key} />
-              <span style={{ color: T.subtlest, display: 'inline-flex' }} aria-hidden><MoveRight size={14} /></span>
-              {[...entityCounts.entries()].map(([entity, count]) => (
-                <CatalystTag key={entity} text={`${labelize(entity)} · ${count}`} />
-              ))}
-            </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
-              <span style={{ fontSize: 'var(--ds-font-size-200)', color: T.subtle }}>
-                {run.row_count_valid} row{run.row_count_valid === 1 ? '' : 's'} passed validation in this run.
-                Inspect any KPI detail to trace canonical values back to {run.run_key}.
-              </span>
-              <Button appearance="default" onClick={() => navigate(Routes.strata.kpis())}>
-                Open KPI library
-              </Button>
-            </div>
-          </div>
-        ) : (
-          <EmptyState
-            size="compact"
-            header="No lineage recorded for this run yet"
-            description="Target entities appear here once staged rows are mapped."
-            primaryAction={<Button onClick={() => navigate(Routes.strata.kpis())}>Open KPI library</Button>}
           />
         )}
       </StrataPanel>
@@ -892,8 +855,7 @@ export default function StrataDataPipelinePage() {
       }
       testId="strata-data-pipeline-chrome"
     >
-      {/* Lifecycle stepper is run-detail only (anchor 19 landing carries no stepper). */}
-      {runKey ? <PipelineStepper run={detail.data?.run ?? null} /> : null}
+      {/* Run detail renders its own anchor-09 lifecycle stepper; landing carries none. */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
         {runKey ? (
           <RunDetailSection runKey={runKey} detail={detail} />

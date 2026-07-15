@@ -1086,3 +1086,15 @@ strip; 2E-3 charter/OKR restyle + promote + states.
   Waiting-on-it[danger when runNeedsResolution]). Source→detail NOT built (no route/page; deferred). Run→09 preserved.
 - New hooks: `useKpis`, `useProfileNames`. GATES: tsc · colors 0=0 · audit 19799/19799 · CRE all green. Live-verified
   light+dark; only shared.tsx + StrataDataPipelinePage.tsx touched (map untouched); fresh-reload console clean. NEXT: 4E.
+
+## Slice 4E — Run Detail (anchor 09), StrataDataPipelinePage RunDetailSection — BUILT + verified (session 019)
+- 7-step lifecycle stepper via canonical `StrataLifecycleStepper` (adopts 4A; `runLifecycleSteps` from run.status+rejects);
+  removed the old 8-stage PipelineStepper + machinery + page-level mount.
+- 2-way validation summary (P4-D3, no quarantine tile) + clustered errors (`clusterErrors`, GROUP BY error_code+field_name,
+  message+suggested_fix; honest empty-state when rejected>0 without detail). Commit panel: promote (existing RPC) + honest
+  reversibility (P4-D7) + client Download-rejected CSV. Downstream rail (P4-D4 backward-derived KPIs + honest forward gap) +
+  contract/lineage field rows. Kept staged-rows table + attestation modal (attestation quarantine verdict preserved).
+- Removed dead: errorColumns, entityCounts, PipelineStepper/PIPELINE_STAGES/stageStates/StageDot, rowNumberByStagingId,
+  unused imports. GATES: tsc · colors 0=0 · audit 19799/19799 (fixed marginTop:2→4) · CRE green. Live-verified light+dark
+  (RUN-1001 full experience: 2 clusters, 3 dependent KPIs, lineage; RUN-9 honest empty-state). Only StrataDataPipelinePage.tsx
+  touched (map untouched). NEXT: 4F Upload Wizard (anchor 20).
