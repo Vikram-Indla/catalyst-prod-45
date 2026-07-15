@@ -1,6 +1,6 @@
 # 07 — HANDOVER · CAT-STRATA-IMPL-20260712-001
 
-> Resume point. **Phases 0–3 COMPLETE. Phase 4 (governance & data) IN PROGRESS — Plan Lock APPROVED; slices 4A + 4B + 4C-1 + 4C-2 done; NEXT = 4C-3 (compare-with-live) or 4D.**
+> Resume point. **Phases 0–3 COMPLETE. Phase 4 (governance & data) IN PROGRESS — Plan Lock APPROVED; slices 4A + 4B + 4C(1/2/3) done (Decision Cockpit COMPLETE); NEXT = 4D. Vikram authorized AUTO-COMMIT-WHEN-GREEN for remaining Phase-4 slices.**
 > Read order to resume Phase 4: `00_READ_ME_FIRST` → `01_OBJECTIVE` → **`03_PLAN_LOCK_PHASE4` (APPROVED)** →
 > this file (State section below) → `08_DRIFT_LOG` (DRIFT-8; DRIFT-9 = 4B derived-review model) → `09_DECISIONS`
 > (P4-D0…D8 CONFIRMED) → `discovery/07_phase4_anchor_specs.md` (6 anchor digests) → `04_EXECUTION_LOG` (per-slice
@@ -24,6 +24,11 @@
   layered above the preserved key-metrics/evidence/decisions/board-pack panels. Corrected a FactChip mislabel
   ("frozen records"→"config versions") the band surfaced. Gates green; light+dark (SNAP-1001 rich + SNAP-1 sparse);
   index branch unbroken; only StrataReviewsPage.tsx touched (map zero-change); no console errors. See session 017.
+## ✅ Decision Cockpit (anchor 10) COMPLETE — 4C-1 + 4C-2 + 4C-3 merged. NEXT = 4D (anchor 19).
+- **4C-3 compare-with-live** (P4-D5): identity-band "Compare with live" toggle → Snapshot-vs-live panel (client diff of
+  frozen KPI value/band vs live `strata_calc_kpi_achievement` over `selected.period_id`; batched `useQueries` gated on the
+  toggle; restated = |Δ%|>0.05 or band flip; "Snapshot matches live" when 0). Present-mode + Export-board-pack still → 4G.
+
 ## Slice 4C-2 ✅ MERGED `df5475b7c` (anchor 10 decision + actions registers)
 - "03 Decisions & actions" → anchor-10 **2-col 7fr/5fr** registers. Decision register: `renderDecision` reworked into
   always-visible cards (status + evidence prose + verdict-record band [status-as-verdict + Recorded by X · date ·

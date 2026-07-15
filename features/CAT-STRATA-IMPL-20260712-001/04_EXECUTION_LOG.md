@@ -1060,3 +1060,17 @@ strip; 2E-3 charter/OKR restyle + promote + states.
 - GATES: tsc clean · lint:colors 0=0 · audit:ads 19799/19799 (fixed off-grid `marginTop:2`) · lint:cre passed.
   Live-verified light+dark on SNAP-1001 (DEC-1001 card + verdict band + 2-action register + footer); index unbroken;
   only StrataReviewsPage.tsx touched (map zero-change); no console errors. NEXT: compare-with-live/present/export (→4G) or 4D.
+
+## Slice 4C-3 — Compare-with-live (anchor 10, P4-D5), StrataReviewsPage cockpit — BUILT + verified (session 017)
+- Identity band `actions` slot gains a **"Compare with live"** toggle → a Snapshot-vs-live panel. Client diff of each
+  frozen KPI's snapshot value (`snapshot_items.payload.value`/`status_key`) vs its LIVE `strata_calc_kpi_achievement`
+  recalc over the snapshot's OWN period (`selected.period_id`, NOT activePeriod). No RPC/migration.
+- Batched `useQueries` over frozen KPIs (mirrors StrataKpiLibraryPage), `enabled` gated on the toggle so the RPC batch
+  fires only when opened. Dedup frozen kpi items by `entity_id`; names resolved via `useKpis`. `KpiAchievementPayload`
+  client cast. Restatement = |Δ achievement %| > 0.05 OR band flip; panel shows only restated rows + a "N compared ·
+  M restated" summary, or "Snapshot matches live" when 0.
+- New imports: `useQueries` (@tanstack/react-query), `kpiApi` (domain), `useKpis` (hooks).
+- GATES: tsc clean · lint:colors 0=0 · audit:ads 19799/19799 · lint:cre passed. Live-verified SNAP-1001 (closed period)
+  light+dark: 8 KPIs compared · 0 restated → "Snapshot matches live" (honest; locked period live == frozen). Only
+  StrataReviewsPage.tsx touched (map zero-change); fresh-reload console clean (a transient HMR stale-ref error during the
+  edit sequence cleared on reload). **Decision Cockpit anchor-10 COMPLETE (4C-1+4C-2+4C-3).** NEXT: 4D (anchor 19).

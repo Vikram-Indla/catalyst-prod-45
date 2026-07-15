@@ -16,6 +16,7 @@
  * ('—' when unknown).
  */
 import React, { useMemo, useState } from 'react';
+import { useQueries } from '@tanstack/react-query';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
   Button, CatalystTag, Checkbox, EmptyState, Heading,
@@ -30,7 +31,7 @@ import { Routes } from '@/lib/routes';
 import {
   CalendarClock, Database, FileBarChart, GitBranch, Lock,
 } from '@/lib/atlaskit-icons';
-import { governanceApi } from '@/modules/strata/domain';
+import { governanceApi, kpiApi } from '@/modules/strata/domain';
 import {
   useStrataContext,
   useSnapshots,
@@ -39,6 +40,7 @@ import {
   useActions,
   useBoardPacks,
   useAllBoardPacks,
+  useKpis,
   useProfileNames,
   useStrataAudit,
   useStrataRoles,
@@ -99,6 +101,26 @@ interface SnapshotRegistryRow {
   superseded: boolean;
   supersedesKeys: string[];
   basisOf: string;
+}
+
+/** Live achievement shape from strata_calc_kpi_achievement (client cast — compare-with-live, 4C-3). */
+interface KpiAchievementPayload {
+  achievement: number | null;
+  actual: number | null;
+  target: number | null;
+  status_key: string | null;
+}
+
+/** One frozen-vs-live comparison row (4C-3). */
+interface CompareRow {
+  kpiId: string;
+  name: string;
+  frozenValue: number | null;
+  frozenBand: string | null;
+  liveValue: number | null;
+  liveBand: string | null;
+  restated: boolean;
+  hasLive: boolean;
 }
 
 const ACTION_LOZENGE: Record<StrataAction['status'], LozengeAppearance> = {
@@ -388,6 +410,7 @@ export default function StrataReviewsPage() {
   const boardPacksQ = useBoardPacks(selected?.id);
   const auditQ = useStrataAudit('strata_snapshots');
   const profilesQ = useProfileNames();
+  const kpisQ = useKpis(); // KPI names for the compare-with-live panel (4C-3)
   // Period-close readiness (CLOSEOUT W5): advisory only — reuses the period-scoped
   // needs-attention feed; the DB still enforces the real attestation guard on close.
   const readinessQ = useNeedsAttention(activePeriod?.id);
@@ -432,6 +455,9 @@ export default function StrataReviewsPage() {
 
   const [lockOpen, setLockOpen] = useState(false);
   const [closeOpen, setCloseOpen] = useState(false);
+  const [compareOpen, setCompareOpen] = useState(false);
+  // Compare-with-live fires the live RPC batch only once opened — reset on snapshot switch.
+  React.useEffect(() => { setCompareOpen(false); }, [snapshotKey]);
 
   // ── Decision/action authoring (Lane G) — RPC-only writes, errors verbatim ──
   const [newDecisionOpen, setNewDecisionOpen] = useState(false);
@@ -653,6 +679,58 @@ export default function StrataReviewsPage() {
       { id: 'pack', label: 'Board pack', state: packCount > 0 ? 'done' : 'todo', note: packCount > 0 ? `${packCount} generated` : 'not issued' },
     ];
   }, [selected, decisionsBySnapshot, actionsByDecision, packsBySnapshot, kpiItemCount, todayISO]);
+
+  // ── Compare with live (slice 4C-3, P4-D5) ─────────────────────────────────
+  // Client diff of each frozen KPI's snapshot value vs its LIVE recalculation
+  // (strata_calc_kpi_achievement over the snapshot's OWN period). No RPC/migration.
+  // The live batch fires ONLY when the panel is open (enabled gate).
+  const kpiNameById = useMemo(() => {
+    const m = new Map<string, string>();
+    (kpisQ.data ?? []).forEach((k) => m.set(k.id, k.name));
+    return m;
+  }, [kpisQ.data]);
+
+  const frozenKpis = useMemo(() => {
+    const seen = new Map<string, SnapshotItemRow>();
+    items.forEach((i) => {
+      if (i.entity_type === 'kpi' && i.entity_id && !seen.has(i.entity_id)) seen.set(i.entity_id, i);
+    });
+    return [...seen.values()];
+  }, [items]);
+
+  const liveAchQueries = useQueries({
+    queries: frozenKpis.map((i) => ({
+      queryKey: ['strata', 'kpi-achievement', i.entity_id, selected?.period_id],
+      queryFn: () => kpiApi.achievement(i.entity_id!, selected!.period_id!),
+      enabled: compareOpen && !!selected?.period_id,
+      staleTime: 30_000,
+    })),
+  });
+  const liveResolvedKey = liveAchQueries.map((q) => (q.data ? 1 : 0)).join('');
+  const compareRows = useMemo<CompareRow[]>(() => {
+    return frozenKpis.map((i, idx) => {
+      const kpiId = i.entity_id!;
+      const rawFrozen = i.payload?.value;
+      const frozenValue = typeof rawFrozen === 'number' ? rawFrozen : typeof rawFrozen === 'string' ? Number(rawFrozen) : null;
+      const frozenBand = typeof i.payload?.status_key === 'string' ? i.payload.status_key : null;
+      const live = liveAchQueries[idx]?.data as KpiAchievementPayload | undefined;
+      const liveValue = live?.achievement ?? null;
+      const liveBand = live?.status_key ?? null;
+      const hasLive = live != null && liveValue != null;
+      // Restated when the live recalculation drifts from the frozen truth (value > 0.05 or band flip).
+      const restated = hasLive && (
+        (frozenValue != null && liveValue != null && Math.abs(frozenValue - liveValue) > 0.05) ||
+        (frozenBand != null && liveBand != null && frozenBand !== liveBand)
+      );
+      return {
+        kpiId,
+        name: kpiNameById.get(kpiId) ?? (typeof i.payload?.entity_name === 'string' ? i.payload.entity_name : kpiId.slice(0, 8)),
+        frozenValue, frozenBand, liveValue, liveBand, restated, hasLive,
+      };
+    });
+  }, [frozenKpis, kpiNameById, liveResolvedKey]); // eslint-disable-line react-hooks/exhaustive-deps
+  const compareLoading = compareOpen && liveAchQueries.some((q) => q.isLoading);
+  const restatedRows = compareRows.filter((r) => r.restated);
 
   /**
    * Build + download the executive pack from the LOADED cockpit data (no refetch,
@@ -1198,7 +1276,64 @@ export default function StrataReviewsPage() {
                     frozenAt={selected.locked_at ? fmtDateTime(selected.locked_at) : null}
                     basis={`${items.length} frozen record${items.length === 1 ? '' : 's'} · ${kpiItemCount} KPI${kpiItemCount === 1 ? '' : 's'} · ${benefitItemCount} benefit${benefitItemCount === 1 ? '' : 's'} · every number below is snapshot truth`}
                     testId="strata-cockpit-identity"
+                    actions={selected.period_id && frozenKpis.length > 0 ? (
+                      <button
+                        type="button"
+                        onClick={() => setCompareOpen((v) => !v)}
+                        aria-expanded={compareOpen}
+                        style={{ background: 'none', border: 'none', padding: 0, margin: 0, font: 'inherit', color: 'var(--ds-text-brand)', cursor: 'pointer', fontWeight: 600 }}
+                        data-testid="strata-cockpit-compare-toggle"
+                      >
+                        {compareOpen ? 'Hide comparison' : 'Compare with live'}
+                      </button>
+                    ) : undefined}
                   />
+
+                  {/* ── Compare with live (anchor 10, P4-D5): frozen vs recalculated, restatements flagged ── */}
+                  {compareOpen ? (
+                    <div style={{ border: `1px solid ${T.border}`, borderRadius: 8, background: T.raised, boxShadow: 'var(--ds-shadow-raised)', overflow: 'hidden' }} data-testid="strata-cockpit-compare">
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '12px 16px', borderBottom: `1px solid ${T.border}`, flexWrap: 'wrap' }}>
+                        <span style={{ ...bodyStyle, fontWeight: 600 }}>Snapshot vs live</span>
+                        <span style={captionStyle}>
+                          {compareLoading
+                            ? 'Recalculating…'
+                            : `${compareRows.filter((r) => r.hasLive).length} KPI${compareRows.filter((r) => r.hasLive).length === 1 ? '' : 's'} compared · ${restatedRows.length} restated`}
+                        </span>
+                      </div>
+                      {compareLoading ? (
+                        <div style={{ padding: 16 }}>{skeletonBlock(72)}</div>
+                      ) : restatedRows.length === 0 ? (
+                        <div style={{ padding: 16 }}>
+                          <EmptyState size="compact" header="Snapshot matches live" description="No KPI has been restated since this snapshot was frozen — every number here is still current." />
+                        </div>
+                      ) : (
+                        <>
+                          <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1.4fr) 1fr 1fr 0.6fr', gap: 8, padding: '8px 16px', borderBottom: `1px solid ${T.border}`, ...captionStyle, fontWeight: 600 }}>
+                            <span>KPI</span><span>Snapshot</span><span>Live now</span><span style={{ textAlign: 'end' }}>Δ</span>
+                          </div>
+                          {restatedRows.map((r) => {
+                            const delta = r.liveValue != null && r.frozenValue != null ? r.liveValue - r.frozenValue : null;
+                            return (
+                              <div key={r.kpiId} style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1.4fr) 1fr 1fr 0.6fr', gap: 8, padding: '12px 16px', borderBottom: `1px solid ${T.border}`, alignItems: 'center' }} data-testid={`strata-compare-row-${r.kpiId}`}>
+                                <span style={{ ...bodyStyle, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{r.name}</span>
+                                <span style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
+                                  <span style={{ ...captionStyle, color: T.subtle, fontVariantNumeric: 'tabular-nums' }}>{r.frozenValue != null ? `${r.frozenValue.toFixed(1)}%` : '—'}</span>
+                                  {r.frozenBand ? <StrataBandLozenge bandKey={r.frozenBand} /> : null}
+                                </span>
+                                <span style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
+                                  <span style={{ ...captionStyle, color: T.text, fontWeight: 600, fontVariantNumeric: 'tabular-nums' }}>{r.liveValue != null ? `${r.liveValue.toFixed(1)}%` : '—'}</span>
+                                  {r.liveBand ? <StrataBandLozenge bandKey={r.liveBand} /> : null}
+                                </span>
+                                <span style={{ ...captionStyle, textAlign: 'end', fontVariantNumeric: 'tabular-nums', color: 'var(--ds-text-warning)', fontWeight: 600 }}>
+                                  {delta != null ? `${delta > 0 ? '+' : ''}${delta.toFixed(1)}` : '—'}
+                                </span>
+                              </div>
+                            );
+                          })}
+                        </>
+                      )}
+                    </div>
+                  ) : null}
 
                   {/* ── Review lifecycle strip (anchor 10): staged review position ── */}
                   <div

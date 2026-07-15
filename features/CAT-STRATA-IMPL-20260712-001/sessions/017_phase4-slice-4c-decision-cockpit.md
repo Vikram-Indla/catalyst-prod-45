@@ -79,5 +79,19 @@ Live-verified SNAP-1001 **light+dark**: DEC-1001 card (DECIDED + evidence prose 
 owner —, DONE / IN PROGRESS, footer "1 of 2 closed"). Index branch unbroken; only StrataReviewsPage.tsx (map
 zero-change); no console errors.
 
-## ⛔ NEXT — remaining anchor-10 bits: compare-with-live 2-col diff (P4-D5, `useKpiAchievement` per-KPI) + Present-mode
-+ Export-board-pack (→ 4G). OR proceed to **4D — Data & Lineage Landing (anchor 19)**. Vikram's call.
+## 4C-3 — BUILT + verified + MERGED (compare-with-live, P4-D5). Auto-commit authorized (Vikram "auto-commit when green").
+Files: `src/modules/strata/pages/StrataReviewsPage.tsx` only.
+- Added a **"Compare with live"** toggle to the identity band's `actions` slot → reveals a **Snapshot-vs-live** panel that
+  client-diffs each frozen KPI's snapshot value vs its LIVE `strata_calc_kpi_achievement` recalc over the snapshot's OWN
+  period (`selected.period_id`). No RPC/migration. Batched `useQueries` over the frozen KPIs, gated `enabled` on the
+  toggle (fires only when opened). Dedup 16 kpi items → 8 unique KPIs by `entity_id`. Names via `useKpis`.
+- Restatement = |frozen−live achievement %| > 0.05 OR band flip. Panel: summary "N compared · M restated" + a table of
+  only RESTATED rows (KPI · Snapshot value+band · Live value+band · Δ), or "Snapshot matches live" when 0 restated.
+- Live-verified SNAP-1001 (closed period) light+dark: **8 KPIs compared · 0 restated → "Snapshot matches live"** (honest
+  — locked period's live recalc equals frozen). New imports: `useQueries`, `kpiApi`, `useKpis`. Gates green.
+- **HMR note:** a transient stale `kpisQ is not defined` console error appeared during the multi-edit sequence (usage
+  compiled before the definition edit landed); a fresh reload is clean, page renders (not error boundary). Same HMR-stale
+  family as DRIFT-7 / [[tsc-misses-tdz-in-memo-dep]] — the clean reload is the real gate.
+
+## ✅ Decision Cockpit (anchor 10) COMPLETE: 4C-1 (context) + 4C-2 (registers) + 4C-3 (compare-with-live).
+Present-mode + Export-board-pack remain → **4G** (board pack). ⛔ NEXT = **4D Data & Lineage Landing (anchor 19)**.
