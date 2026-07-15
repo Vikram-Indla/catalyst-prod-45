@@ -216,6 +216,10 @@ function BenefitDetailSection({ benefit, isFirst, canAuthor, canAuthorValues }: 
   const values = valuesQ.data ?? [];
   const assumptions = assumptionsQ.data ?? [];
   const projectCards = projectCardsQ.data ?? [];
+  // Realized value submitted but not yet finance-validated (anchor 21 "awaits attestation").
+  const pendingRealized = values
+    .filter((v) => v.value_kind === 'realized' && v.validation_status !== 'validated')
+    .reduce((s, v) => s + v.value, 0);
   // Resolve an attribution split's Project Card target to a display name.
   // Zero-assumption: an unknown id resolves to null → the panel renders '—'.
   const resolveCardName = (id: string) => projectCards.find((c) => c.id === id)?.name ?? null;
@@ -312,6 +316,21 @@ function BenefitDetailSection({ benefit, isFirst, canAuthor, canAuthorValues }: 
         ) : null}
       </div>
 
+      {/* Verdict band (anchor 21) — value position + what awaits attestation. */}
+      {benefit.value_hypothesis || pendingRealized > 0 ? (
+        <div data-testid="strata-benefit-verdict" style={{ border: `1px solid ${T.border}`, borderRadius: 8, background: T.raised, padding: 'var(--ds-space-200)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 'var(--ds-space-100)', flexWrap: 'wrap' }}>
+            <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, letterSpacing: '0.04em', color: T.subtlest }}>VALUE POSITION{barRow ? ` · ${barRow.periodName}` : ''}</span>
+            {pendingRealized > 0 ? (
+              <StatusLozenge status="pending" label={`${fmtUnit(pendingRealized, benefit.unit)} awaits attestation`} appearance="moved" />
+            ) : null}
+          </div>
+          {benefit.value_hypothesis ? (
+            <p style={{ margin: 0, fontSize: 'var(--ds-font-size-300)', lineHeight: 1.5, color: T.text }}>{benefit.value_hypothesis}</p>
+          ) : null}
+        </div>
+      ) : null}
+
       <StrataPanel
         title="Value profile"
         icon={<FileBarChart size={16} />}
@@ -341,6 +360,7 @@ function BenefitDetailSection({ benefit, isFirst, canAuthor, canAuthorValues }: 
             {barRow ? (
               <div style={{ padding: '12px 16px 4px' }}>
                 <StrataValueBar
+                  variant="hero"
                   planned={barValue('planned')}
                   forecast={barValue('forecast')}
                   realized={barValue('realized')}
