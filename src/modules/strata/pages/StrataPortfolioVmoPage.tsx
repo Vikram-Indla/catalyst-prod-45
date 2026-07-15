@@ -42,6 +42,7 @@ import {
 import type {
   StrataAssumption, StrataBenefit, StrataBenefitValue, StrataGateInstance, StrataGateModelStage, StrataPortfolio,
 } from '@/modules/strata/types';
+import StrataPortfolioIndexView from './StrataPortfolioIndexView';
 
 // ── System-state appearance maps (mirror DB CHECK constraints) ───────────────
 const VALIDATION_STATUS: Record<StrataBenefitValue['validation_status'], LozengeAppearance> = {
@@ -753,8 +754,9 @@ function BenefitDetailSection({ benefit, isFirst, canAuthor, canAuthorValues }: 
   );
 }
 
-// ── Page ─────────────────────────────────────────────────────────────────────
-export default function StrataPortfolioVmoPage() {
+// ── Single-portfolio management + benefit-detail view (unchanged behavior) ────
+// Reached for a ?portfolio= selection or a /portfolio/benefits/:slug deep link.
+function StrataPortfolioManageView() {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
 
@@ -1159,4 +1161,18 @@ export default function StrataPortfolioVmoPage() {
       />
     </StrataPageShell>
   );
+}
+
+// ── Route dispatcher (mounted at /strata/portfolio and /portfolio/benefits/:slug) ──
+// Bare /strata/portfolio (no ?portfolio= selection, no benefit slug) → portfolios index
+// (anchor 22, slice 3B-3). A ?portfolio= selection ("Manage benefits"/"Manage portfolios")
+// or a benefit deep link → the single-portfolio management/benefit view above (unchanged).
+// The dispatcher itself keeps a stable hook list; each branch is a whole child component, so
+// switching branches is a normal mount/unmount — no rules-of-hooks violation.
+export default function StrataPortfolioVmoPage() {
+  const { slug } = useParams<{ slug: string }>();
+  const [searchParams] = useSearchParams();
+  const portfolioParam = searchParams.get('portfolio');
+  if (!slug && !portfolioParam) return <StrataPortfolioIndexView />;
+  return <StrataPortfolioManageView />;
 }

@@ -22,26 +22,23 @@
 | 3B-0 | `StrataValueBar` hero + `multiple` variants (`shared.tsx`) | ✅ merged — additive `variant` prop; default path unchanged |
 | 3B-1 | 21 Benefit Detail (`BenefitDetailSection` in `StrataPortfolioVmoPage`) | ✅ merged **(focused)** — verdict band + hero value stages. **DEFERRED:** 2-col rail (IN-THE-CHAIN + Confidence) + attestation-timeline |
 | 3B-2 | 08 Portfolio Detail — NEW route `/strata/portfolio/:slug` (`StrataPortfolioDetailPage`) | ✅ **merged to main `12deb2d15` (session 012)**. Leakage hero (`StrataValueBar` hero + grounded verdict) · leakage-sorted benefits JiraTable · gates decision-context list (`decideGate`). P3-D2 client-derived via `useQueries`. No shadow (benefits/:slug + :slug/evidence + index all verified unbroken). Map zero-change. **DEFERRED:** objective-hop subline (kept "via N cards"). **⚠️ MERGE QUIRK:** GitHub rejected the `--no-ff` merge-commit push to main with `remote: fatal error in commit_refs` (no branch-protection/ruleset exists — verified). Fast-forward push of the identical commit (`git push origin <sha>:main`) succeeded. main + branch now BOTH at `12deb2d15` (no merge commit this slice). See [[github-noff-merge-push-rejected]]. |
-| **3B-3** | **22 Portfolio Index — repurpose `/strata/portfolio` to a real index** | ❌ **NEXT — not started** |
-| 3C | 18 Import & Reconciliation (`StrataExecutionImportPage`, scoped-down P3-D3) | ❌ not started |
+| 3B-3 | 22 Portfolio Index — repurpose `/strata/portfolio` to a real index | ✅ **built + gates green + live-verified (session 013) — AWAITING commit/merge**. New `StrataPortfolioIndexView` (leakage-concentration sentence + shared-scale small multiples + ranked-by-leakage JiraTable → row→detail + comparability footer). VMO page → thin **dispatcher** (bare `/portfolio` → index; `?portfolio=`/benefit slug → `StrataPortfolioManageView`, byte-identical). `StrataValueBar` gained additive `scaleOverride?` (default-preserving). No shadow/regression: `?portfolio=` management + `/benefits/:slug` + hero all verified unbroken. Map zero-change. **DEFERRED:** <1100 responsive stacking (small multiples already `auto-fit`); committed-spend SAR (no field). |
+| **3C** | **18 Import & Reconciliation (`StrataExecutionImportPage`, scoped-down P3-D3)** | ❌ **NEXT — not started (last Phase-3 slice)** |
 
-## ⛔ NEXT = SLICE 3B-3 — Portfolio Index (anchor 22), then 3C. (3B-2 done, awaiting commit/merge.)
-**No code without re-reading the slice's anchor in full via DesignSync first** (drift protocol). Key resume facts:
-- **`StrataPortfolioVmoPage.tsx` (1162 LOC) still serves 3 modes off one component:** index (via a
-  `?portfolio=` selector, `usePortfolios`), portfolio-detail (implicit), and benefit-detail (`:slug` →
-  `useBenefitBySlug` → `BenefitDetailSection`). **3B-3 repurposes `/strata/portfolio` into a REAL portfolio
-  index** (portfolios list: leakage sentence + `StrataValueBar variant="multiple"` small multiples shared scale
-  + ranked-by-leakage JiraTable → row → `Routes.strata.portfolioDetail(slug)`). HIGH-STAKES — `/strata/portfolio`
-  must never break. Reuse the P3-D2 client-derivation pattern from `StrataPortfolioDetailPage.tsx` (session 012).
-- **3B-2 DONE (session 012):** new route `/strata/portfolio/:slug` → `StrataPortfolioDetailPage` +
-  `Routes.strata.portfolioDetail(slug, from?)`. `usePortfolioBySlug` (`useStrata.tsx:430`) now consumed.
-  Route ordered after `portfolio/benefits/:slug` — no shadow (verified live). `StrataValueBar variant="multiple"`
-  (anchor-22 small multiples) still UNUSED — 3B-3's consumer.
-- **Portfolio value aggregates (P3-D2) — PATTERN NOW EXISTS** in `StrataPortfolioDetailPage.tsx`:
-  `useQueries` over each benefit's `valueApi.benefitValues`; per benefit pick active-period-else-latest snapshot;
-  Σ per kind; **validated = Σ realized rows where `validation_status==='validated'`** (no `validated` value kind).
-  Zero-assumption dash where a kind is absent. `strata_portfolios` still has only `value_target` (no rollup RPC).
-  Copy this aggregation into the 3B-3 index (one aggregate per portfolio, shared scale across the small multiples).
+## ⛔ NEXT = SLICE 3C — Import & Reconciliation (anchor 18), the LAST Phase-3 slice. (3B-2 + 3B-3 done, awaiting commit/merge.)
+**No code without re-reading anchor 18 in full via DesignSync first** (drift protocol). Key resume facts:
+- **3C is DELIBERATELY scoped-down (P3-D3, Vikram-confirmed):** redesign `StrataExecutionImportPage.tsx` (1015 LOC)
+  to the anchor-18 LAYOUT on the EXISTING `importApi.importExecutionBatch` dry-run/apply backend
+  (created/updated/rejected). **NO** fabricated Matched/Conflict/Unmatched three-way, **NO** both-sides diff,
+  **NO "undo" affordance** — none of that backend exists. Render honestly: DRY RUN header + summary strip
+  (`StrataStatStrip`: created/updated/rejected + "nothing written until you apply") + per-row validation table +
+  Apply = single commit + honest commitment strip. States: match-run failure SectionMessage+retry (previous
+  preserved); partial-apply per-row errors; empty→Config; restricted read-only dry-run (apply disabled, owning
+  role named); <1100 stack. If the full reconciliation engine is wanted, 3C becomes its own backend feature (own Plan Lock).
+- **Portfolio value spine COMPLETE (3B-0/1/2/3):** `/strata/portfolio` = index (`StrataPortfolioIndexView`, anchor 22);
+  `/strata/portfolio/:slug` = detail (`StrataPortfolioDetailPage`, anchor 08); `?portfolio=`/`benefits/:slug` =
+  `StrataPortfolioManageView` (the old VMO body). `StrataValueBar` variants all consumed: `hero` (08/21),
+  `multiple`+`scaleOverride` (22, shared scale). P3-D2 client-derivation pattern lives in both index + detail.
 - **3C (import) scope is DELIBERATELY reduced (P3-D3):** redesign to the anchor LAYOUT on the existing
   `importApi.importExecutionBatch` dry-run/apply (created/updated/rejected) — NO Matched/Conflict/Unmatched
   three-way, NO both-sides diff, **NO "undo" affordance** (none of that backend exists). Render honestly.

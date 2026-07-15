@@ -168,15 +168,19 @@ export function StrataScoreRing({
 // (validated ⊆ realized; forecast vs planned reference) — proof in sessions/011.
 // Token-pure like StrataScoreRing; zero-assumption (renders nothing w/o scale).
 export function StrataValueBar({
-  planned, forecast, realized, validated, periodName, testId, variant = 'default',
+  planned, forecast, realized, validated, periodName, testId, variant = 'default', scaleOverride,
 }: {
   planned: number | null; forecast: number | null; realized: number | null; validated: number | null;
   periodName?: string | null; testId?: string;
   // 'default' = single overlaid bar + legend (existing). 'hero' = labelled stacked rows
   // (anchor 08/21). 'multiple' = compact 3-bar stack for small multiples (anchor 22).
   variant?: 'default' | 'hero' | 'multiple';
+  // Denominator override so several bars share one scale (anchor-22 small multiples,
+  // planned = 100% of the largest portfolio). Default = this bar's own max (unchanged).
+  scaleOverride?: number | null;
 }) {
-  const scale = Math.max(planned ?? 0, forecast ?? 0, realized ?? 0);
+  const selfScale = Math.max(planned ?? 0, forecast ?? 0, realized ?? 0);
+  const scale = scaleOverride != null && scaleOverride > 0 ? scaleOverride : selfScale;
   if (!(scale > 0)) return null;
   const pct = (v: number | null) => (v == null ? null : Math.max(0, Math.min(100, (v / scale) * 100)));
   const p = pct(planned); const f = pct(forecast); const r = pct(realized); const va = pct(validated);

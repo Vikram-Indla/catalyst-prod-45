@@ -942,3 +942,32 @@ strip; 2E-3 charter/OKR restyle + promote + states.
   StrataPortfolioDetailPage.tsx (new), session 012 log.
 - **DEFERRED:** objective-hop subline ("↑ objective", multi-hop benefit→card→objective) — "via N cards" shown
   instead. NEXT: **3B-3** Portfolio Index (anchor 22) — repurpose `/strata/portfolio`, consumes `variant="multiple"`.
+
+### ⏳ Slice 3B-3 — Portfolio Index (anchor 22) — repurpose `/strata/portfolio` — DONE, gates green, live-verified; PENDING commit
+- Anchor 22 re-read in FULL via DesignSync — **no drift** vs Plan Lock 3B-3.
+- **`StrataValueBar scaleOverride?` (shared.tsx, additive):** default = self max (behavior-preserving; hero/default
+  consumers unaffected — verified live). Lets several `multiple` bars share ONE scale (anchor-22 planned=100%).
+- **New `src/modules/strata/pages/StrataPortfolioIndexView.tsx`** (anchor-22): subtitle (N portfolios · Σplanned ·
+  attribution rules v2) · grounded **leakage-concentration sentence** (top portfolio's share of the total gap,
+  composed from real aggregates) · **value-by-stage small multiples** ("SHARED SCALE · PLANNED = 100%",
+  `StrataValueBar variant="multiple" scaleOverride={globalMaxPlanned}`, ranked order, "No claims yet" empty) ·
+  **ranked-by-leakage JiraTable** (Portfolio + "owner · N benefits" · Planned · Forecast · Leakage[danger if the
+  row owns ≥50% of the total gap, else warning] · Validated · Weakest link) → row → `Routes.strata.portfolioDetail
+  (slug, from?)`; top-leakage row focused · **comparability footer** (attribution-rules-v2 statement + open-gate
+  exposure count). States: loading · error · empty(canAuthor→create) · per-panel value-load error.
+- **P3-D2 aggregation:** one `useBenefits()` (all benefits, carry `portfolio_id`) + `useQueries` per benefit
+  `benefitValues`; per benefit active-period-else-latest snapshot; Σ per portfolio; validated = Σ realized·validated;
+  weakest-link client-derived (max-leakage benefit else lowest-confidence). Committed-spend SAR NOT rendered (no field).
+- **Dispatcher (`StrataPortfolioVmoPage.tsx`):** existing body renamed `StrataPortfolioManageView` (byte-identical);
+  new default export dispatches bare `/strata/portfolio` (no `?portfolio=`, no benefit slug) → `StrataPortfolioIndexView`,
+  else → `StrataPortfolioManageView`. Dispatcher keeps a stable hook list (each branch a whole child component) →
+  no rules-of-hooks violation. Preserves `?portfolio=` management (3B-2 "Manage benefits") + `/benefits/:slug`.
+- GATES: `tsc` clean · `lint:colors:gate` 0=0 · `audit:ads:gate` 19799/19799 (no new offenders, first pass) ·
+  `lint:cre` passed. LIVE **light + dark** on `/strata/portfolio` — index renders; **shared-scale confirmed**
+  (Investor Experience 3.1M bar ~10% vs Transformation 27M full bar); leakage danger(−8.6M, 91% of gap) vs
+  warning(−750K); top row focused; grounded sentence; comparability footer; no console errors. **Dispatcher
+  verified:** row → 08 detail; `?portfolio=…` → ManageView (switcher/stat strip/members/register unbroken);
+  `/benefits/…` → ManageView benefit detail with **hero bar unchanged** (14M/13.8M/12.5M/12.5M). **Map zero-change.**
+- Changed set (4 files): shared.tsx, StrataPortfolioVmoPage.tsx, StrataPortfolioIndexView.tsx (new), session 013 log.
+- **DEFERRED:** <1100 responsive column-drop (small multiples already `auto-fit`); committed-spend SAR (no field).
+  NEXT: **3C** Import & Reconciliation (anchor 18, P3-D3 scoped) — last Phase-3 slice.
