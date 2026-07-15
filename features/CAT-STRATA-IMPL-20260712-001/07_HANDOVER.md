@@ -17,7 +17,7 @@
   StatStrip dropped (subsumed). Close-period ritual PRESERVED below registries (governed feature; not in anchor 23; no regression).
 - New thin hook `useAllBoardPacks` + `governanceApi.boardPacksAll` (plain select, no migration) for the pack-stage dot.
 - Gates green (tokens 19799/19799 after off-grid 10px→12px fix); live-verified light+dark; detail branch + map unchanged; no console errors. See session 016.
-## Slice 4C-1 ✅ BUILT + verified (anchor 10 cockpit context layer) — AWAITING commit/merge
+## Slice 4C-1 ✅ MERGED `70695ddd3` (anchor 10 cockpit context layer)
 - Detail branch (`isDetail`) gains: header **review-stage lozenge** + **snapshot identity band** (reused
   `StrataSnapshotBand`, rich ReactNode `basis` w/ derived KPI/benefit/frozen-record counts — no component change) +
   **review lifecycle strip** (`StrataLifecycleStepper variant="full"`, `selectedLifecycle` memo, per-step notes),
