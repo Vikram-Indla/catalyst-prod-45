@@ -880,3 +880,20 @@ strip; 2E-3 charter/OKR restyle + promote + states.
 - **✅ 3A-2 (anchor 07 Project Card Detail) COMPLETE** — 3A-2a + 3A-2b. **✅✅ SLICE 3A (delivery detail spine) COMPLETE.**
   NEXT per Plan Lock order: **3B-0** (StrataValueBar hero + small-multiple variants) → 3B-1 Benefit Detail →
   3B-2 Portfolio Detail (new route) → 3B-3 Portfolio Index → 3C Import (scoped-down P3-D3).
+
+---
+
+## PHASE 3B (value spine)
+
+### ⏳ Slice 3B-0 — StrataValueBar hero + small-multiple variants (P3-D5) — DONE, gates green; PENDING commit
+- File: `src/modules/strata/components/shared.tsx` (only).
+- Additive `variant?: 'default'|'hero'|'multiple'` prop on `StrataValueBar` (default = existing single overlaid
+  bar + legend, byte-unchanged path — existing consumer `StrataPortfolioVmoPage` passes no variant → no visual
+  change, confirmed live). **hero** = labelled stacked rows (Planned/Forecast/Realized/Validated + amounts,
+  leakage on the Forecast row) for anchors 08/21. **multiple** = compact 3-bar stack (planned · forecast+leakage ·
+  validated) on shared scale, no labels, for anchor-22 small multiples. Safe token palette only (border-bold,
+  background-information, background-success, background-success-bold, background-danger, background-neutral);
+  spacing tokenized `var(--ds-space-*)`.
+- GATES: `tsc` clean · colors 0=baseline · audit 19799/19799 · (CRE unaffected — no page/route change).
+  Hero/multiple have no consumer yet → live-verified when consumed in 3B-1/2/3. Default consumer unchanged (verified).
+- NEXT: **3B-1** Benefit Detail (anchor 21) — consumes hero variant.

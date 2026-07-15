@@ -54,7 +54,9 @@ spawn discovery; produce `03_PLAN_LOCK_PHASE3.md`; STOP for approval. No code be
   regression (tokenized to `var(--ds-space-*)`). Gates green; light+dark verified.
 - **3A-2b DONE** (pending commit): unified "What threatens the forecast" (merged milestones/deps/risks/blockers,
   ranked by schedule impact) + Value Contribution rail (benefit_project_cards ⋈ benefit_values, completion≠benefit
-  callout) + Overview source-field trim. Gates green; light+dark. **✅ 3A-2 + ✅✅ SLICE 3A COMPLETE.** NEXT: 3B-0.
+  callout) + Overview source-field trim. Gates green; light+dark. **✅ 3A-2 + ✅✅ SLICE 3A COMPLETE.**
+- **3B-0 DONE** (pending commit): StrataValueBar additive `variant` prop (hero + multiple), default path
+  unchanged (existing consumer verified). Gates green. NEXT: 3B-1 Benefit Detail (consumes hero).
 
 ## Open debt carried (unchanged)
 1. Prod migrations `20260713100000` + `20260713110000` = staging-only (no prod access). Apply later.

@@ -168,10 +168,13 @@ export function StrataScoreRing({
 // (validated ⊆ realized; forecast vs planned reference) — proof in sessions/011.
 // Token-pure like StrataScoreRing; zero-assumption (renders nothing w/o scale).
 export function StrataValueBar({
-  planned, forecast, realized, validated, periodName, testId,
+  planned, forecast, realized, validated, periodName, testId, variant = 'default',
 }: {
   planned: number | null; forecast: number | null; realized: number | null; validated: number | null;
   periodName?: string | null; testId?: string;
+  // 'default' = single overlaid bar + legend (existing). 'hero' = labelled stacked rows
+  // (anchor 08/21). 'multiple' = compact 3-bar stack for small multiples (anchor 22).
+  variant?: 'default' | 'hero' | 'multiple';
 }) {
   const scale = Math.max(planned ?? 0, forecast ?? 0, realized ?? 0);
   if (!(scale > 0)) return null;
@@ -185,6 +188,52 @@ export function StrataValueBar({
     validated != null ? `Validated ${fmtSarCompact(validated)}` : null,
     leakage != null ? `Leakage ${fmtSarCompact(leakage)}` : null,
   ].filter(Boolean).join(' · ');
+
+  // Hero: labelled stacked rows (Planned/Forecast/Realized/Validated), amounts on the
+  // right, leakage drawn on the Forecast row (anchor 08 waterfall + anchor 21 stages).
+  if (variant === 'hero') {
+    const rows: { label: string; v: number | null; w: number | null; color: string; gap: boolean }[] = [
+      { label: 'Planned', v: planned, w: p, color: 'var(--ds-border-bold)', gap: false },
+      { label: 'Forecast', v: forecast, w: f, color: 'var(--ds-background-information)', gap: true },
+      { label: 'Realized', v: realized, w: r, color: 'var(--ds-background-success)', gap: false },
+      { label: 'Validated', v: validated, w: va, color: 'var(--ds-background-success-bold)', gap: false },
+    ];
+    return (
+      <div data-testid={testId} role="img" aria-label={summary} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--ds-space-100)' }}>
+        {rows.map((row) => (
+          <div key={row.label} style={{ display: 'grid', gridTemplateColumns: '90px minmax(0, 1fr) 110px', gap: 12, alignItems: 'center' }}>
+            <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: T.subtle }}>{row.label}</span>
+            <div style={{ position: 'relative', height: 16, borderRadius: 4, background: 'var(--ds-background-neutral)', overflow: 'hidden' }}>
+              {row.w != null ? <div style={{ position: 'absolute', left: 0, width: `${row.w}%`, top: 0, bottom: 0, background: row.color, borderRadius: 4 }} /> : null}
+              {row.gap && leakage != null && f != null && p != null ? <div style={{ position: 'absolute', left: `${f}%`, width: `${p - f}%`, top: 0, bottom: 0, background: 'var(--ds-background-danger)' }} /> : null}
+            </div>
+            <strong style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 700, color: T.text, fontVariantNumeric: 'tabular-nums', textAlign: 'right' }}>{row.v != null ? fmtSarCompact(row.v) : '—'}</strong>
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  // Multiple: compact 3-bar stack (planned · forecast+leakage · validated) on a shared
+  // scale, no labels — for the portfolio small-multiples grid (anchor 22).
+  if (variant === 'multiple') {
+    const miniBar = (w: number | null, color: string, withGap: boolean) => (
+      <div style={{ position: 'relative', height: 10, borderRadius: 3, background: 'var(--ds-background-neutral)', overflow: 'hidden' }}>
+        {w != null ? <div style={{ position: 'absolute', left: 0, width: `${w}%`, top: 0, bottom: 0, background: color, borderRadius: 3 }} /> : null}
+        {withGap && leakage != null && f != null && p != null ? <div style={{ position: 'absolute', left: `${f}%`, width: `${p - f}%`, top: 0, bottom: 0, background: 'var(--ds-background-danger)' }} /> : null}
+      </div>
+    );
+    return (
+      <Tooltip content={`${periodName ? `${periodName} — ` : ''}${summary}`}>
+        <div data-testid={testId} role="img" aria-label={summary} style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+          {miniBar(p, 'var(--ds-border-bold)', false)}
+          {miniBar(f, 'var(--ds-background-information)', true)}
+          {miniBar(va, 'var(--ds-background-success-bold)', false)}
+        </div>
+      </Tooltip>
+    );
+  }
+
   return (
     <div data-testid={testId} style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
       <Tooltip content={`${periodName ? `${periodName} — ` : ''}${summary}`}>
