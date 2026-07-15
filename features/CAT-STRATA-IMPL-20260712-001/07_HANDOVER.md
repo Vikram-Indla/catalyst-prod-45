@@ -1,6 +1,6 @@
 # 07 — HANDOVER · CAT-STRATA-IMPL-20260712-001
 
-> Resume point. **Phases 0–3 COMPLETE. Phase 4 (governance & data) IN PROGRESS — Plan Lock APPROVED; slices 4A + 4B done; NEXT = 4C.**
+> Resume point. **Phases 0–3 COMPLETE. Phase 4 (governance & data) IN PROGRESS — Plan Lock APPROVED; slices 4A + 4B + 4C-1 done; NEXT = 4C-2.**
 > Read order to resume Phase 4: `00_READ_ME_FIRST` → `01_OBJECTIVE` → **`03_PLAN_LOCK_PHASE4` (APPROVED)** →
 > this file (State section below) → `08_DRIFT_LOG` (DRIFT-8; DRIFT-9 = 4B derived-review model) → `09_DECISIONS`
 > (P4-D0…D8 CONFIRMED) → `discovery/07_phase4_anchor_specs.md` (6 anchor digests) → `04_EXECUTION_LOG` (per-slice
@@ -17,8 +17,17 @@
   StatStrip dropped (subsumed). Close-period ritual PRESERVED below registries (governed feature; not in anchor 23; no regression).
 - New thin hook `useAllBoardPacks` + `governanceApi.boardPacksAll` (plain select, no migration) for the pack-stage dot.
 - Gates green (tokens 19799/19799 after off-grid 10px→12px fix); live-verified light+dark; detail branch + map unchanged; no console errors. See session 016.
-- **⛔ NEXT = 4C Decision Cockpit (anchor 10)** — redesign `StrataReviewsPage` DETAIL branch (`isDetail`). SPLIT if >2h
-  (4C-1 identity band + lifecycle strip + decision/action registers; 4C-2 compare-with-live + present/export → 4G). Re-read anchor 10 via DesignSync first.
+## Slice 4C-1 ✅ BUILT + verified (anchor 10 cockpit context layer) — AWAITING commit/merge
+- Detail branch (`isDetail`) gains: header **review-stage lozenge** + **snapshot identity band** (reused
+  `StrataSnapshotBand`, rich ReactNode `basis` w/ derived KPI/benefit/frozen-record counts — no component change) +
+  **review lifecycle strip** (`StrataLifecycleStepper variant="full"`, `selectedLifecycle` memo, per-step notes),
+  layered above the preserved key-metrics/evidence/decisions/board-pack panels. Corrected a FactChip mislabel
+  ("frozen records"→"config versions") the band surfaced. Gates green; light+dark (SNAP-1001 rich + SNAP-1 sparse);
+  index branch unbroken; only StrataReviewsPage.tsx touched (map zero-change); no console errors. See session 017.
+- **⛔ NEXT = 4C-2** — anchor-10 **2-col 7fr/5fr registers**: Decision register (verdict-record band [status + note +
+  Recorded by X · date · against SNAP] + snapshot-evidence prose + Evidence→ link; `renderDecision :825` has none of
+  these today) + Actions register (decision ancestry + owner + due + follow-up footer). Then compare-with-live diff
+  (P4-D5, `useKpiAchievement` per-KPI) + Present-mode/Export actions (→ 4G). Re-read anchor 10 §decision-register before coding.
 
 ## State (as of 2026-07-15 — PHASE 3 COMPLETE; PHASE 4 IN PROGRESS, slice 4A done)
 - **Branch:** `strata/impl-phase01`. `origin/main` advancing via fast-forward ([[github-noff-merge-push-rejected]] —

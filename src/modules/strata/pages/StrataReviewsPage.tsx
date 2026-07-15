@@ -50,6 +50,7 @@ import type { BoardPackData } from '@/modules/strata/lib/boardPack';
 import {
   StrataPageShell,
   StrataPanel,
+  StrataSnapshotBand,
   StrataDataStateLozenge,
   StrataBandLozenge,
   StrataStatStrip,
@@ -601,6 +602,46 @@ export default function StrataReviewsPage() {
 
   const configCount = selected?.config_versions ? Object.keys(selected.config_versions).length : 0;
   const runCount = selected?.data_run_ids?.length ?? 0;
+
+  // ── Cockpit derivations (slice 4C-1, anchor 10) ───────────────────────────
+  // Identity-band counts + selected-snapshot lifecycle strip, all derived from
+  // the frozen snapshot items + governance data (no new field; zero-assumption).
+  const kpiItemCount = useMemo(() => items.filter((i) => i.entity_type === 'kpi').length, [items]);
+  const benefitItemCount = useMemo(() => items.filter((i) => i.entity_type === 'benefit').length, [items]);
+
+  const selectedStage = useMemo(() => {
+    if (!selected) return null;
+    const period = periods.find((p) => p.id === selected.period_id) ?? null;
+    const closed = period?.close_status === 'closed';
+    return {
+      label: closed ? 'Closed' : 'In progress',
+      status: closed ? 'closed' : 'in_progress',
+      appearance: (closed ? 'success' : 'inprogress') as LozengeAppearance,
+    };
+  }, [selected, periods]);
+
+  const selectedLifecycle = useMemo<StrataLifecycleStep[]>(() => {
+    if (!selected) return [];
+    const decs = decisionsBySnapshot.get(selected.id) ?? [];
+    const recorded = decs.filter((d) => d.status === 'decided' || d.status === 'closed').length;
+    const open = decs.filter((d) => d.status === 'open').length;
+    const acts = decs.flatMap((d) => actionsByDecision.get(d.id) ?? []);
+    const openActs = acts.filter((a) => a.status === 'open' || a.status === 'in_progress');
+    const doneActs = acts.filter((a) => a.status === 'done').length;
+    const overdue = openActs.filter((a) => a.due_date != null && a.due_date < todayISO).length;
+    const packCount = packsBySnapshot.get(selected.id) ?? 0;
+
+    const decisionsState: StrataStepState = decs.length === 0 ? 'todo' : open > 0 ? 'current' : 'done';
+    const actionsState: StrataStepState =
+      acts.length === 0 ? 'todo' : overdue > 0 ? 'failed' : openActs.length > 0 ? 'current' : 'done';
+    return [
+      { id: 'readiness', label: 'Readiness', state: 'done', note: `${kpiItemCount} KPI${kpiItemCount === 1 ? '' : 's'} frozen` },
+      { id: 'snapshot', label: 'Snapshot locked', state: selected.locked_at ? 'done' : 'todo', note: selected.locked_at ? fmtDate(selected.locked_at) : undefined },
+      { id: 'decisions', label: 'Decisions', state: decisionsState, note: decs.length === 0 ? 'none recorded' : `${recorded} of ${decs.length} recorded` },
+      { id: 'actions', label: 'Actions', state: actionsState, note: acts.length === 0 ? 'none assigned' : `${doneActs} of ${acts.length} closed${overdue > 0 ? ` · ${overdue} overdue` : ''}` },
+      { id: 'pack', label: 'Board pack', state: packCount > 0 ? 'done' : 'todo', note: packCount > 0 ? `${packCount} generated` : 'not issued' },
+    ];
+  }, [selected, decisionsBySnapshot, actionsByDecision, packsBySnapshot, kpiItemCount, todayISO]);
 
   /**
    * Build + download the executive pack from the LOADED cockpit data (no refetch,
@@ -1156,12 +1197,32 @@ export default function StrataReviewsPage() {
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
                       <Heading as="h2" size="medium">{selected.name}</Heading>
                       <StrataDataStateLozenge state={selected.status} />
+                      {selectedStage ? (
+                        <StatusLozenge status={selectedStage.status} label={selectedStage.label} appearance={selectedStage.appearance} />
+                      ) : null}
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', marginTop: 8 }}>
-                      <FactChip icon={<Database size={12} />} value={configCount} label={`frozen record${configCount === 1 ? '' : 's'}`} />
+                      <FactChip icon={<Database size={12} />} value={configCount} label={`config version${configCount === 1 ? '' : 's'}`} />
                       <FactChip icon={<GitBranch size={12} />} value={runCount} label={`data run${runCount === 1 ? '' : 's'}`} />
                       <FactChip icon={<CalendarClock size={12} />} value={periodName(selected.period_id)} label="" />
                     </div>
+                  </div>
+
+                  {/* ── Snapshot identity band (anchor 10): persistent locked context ── */}
+                  <StrataSnapshotBand
+                    snapshotKey={selected.snapshot_key}
+                    frozenAt={selected.locked_at ? fmtDateTime(selected.locked_at) : null}
+                    basis={`${items.length} frozen record${items.length === 1 ? '' : 's'} · ${kpiItemCount} KPI${kpiItemCount === 1 ? '' : 's'} · ${benefitItemCount} benefit${benefitItemCount === 1 ? '' : 's'} · every number below is snapshot truth`}
+                    testId="strata-cockpit-identity"
+                  />
+
+                  {/* ── Review lifecycle strip (anchor 10): staged review position ── */}
+                  <div
+                    style={{ padding: '12px 16px', border: `1px solid ${T.border}`, borderRadius: 8, background: T.raised, boxShadow: 'var(--ds-shadow-raised)' }}
+                    data-testid="strata-cockpit-lifecycle"
+                  >
+                    <div style={{ ...captionStyle, fontWeight: 700, letterSpacing: '0.04em', color: T.subtlest, marginBottom: 8 }}>REVIEW LIFECYCLE</div>
+                    <StrataLifecycleStepper variant="full" steps={selectedLifecycle} ariaLabel={`Review lifecycle for ${selected.name}`} />
                   </div>
 
                   {detailError ? (

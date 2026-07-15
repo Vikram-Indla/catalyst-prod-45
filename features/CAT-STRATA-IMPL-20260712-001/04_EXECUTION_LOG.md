@@ -1027,3 +1027,20 @@ strip; 2E-3 charter/OKR restyle + promote + states.
   `10px`→`12px`) · `lint:cre` passed. Live-verified localhost:8080 **light + dark** (lifecycle dots honest, not
   flat-done); detail branch `/SNAP-1001` cockpit UNCHANGED; map `/strata/strategy/map` zero-change (0 map files); no
   console errors. Changed set: StrataReviewsPage.tsx + domain/index.ts + hooks/useStrata.tsx + feature docs. NEXT: **4C**.
+
+## Slice 4C-1 — Decision Cockpit context layer (anchor 10), StrataReviewsPage detail branch — BUILT + verified (session 017)
+- Detail branch (`isDetail`) gains the anchor-10 governance-context layer, ABOVE the preserved evidence/decision panels:
+  1. **Header review-stage lozenge** (CLOSED / IN PROGRESS, derived from period.close_status via `selectedStage` memo)
+     beside the existing snapshot-state lozenge.
+  2. **Snapshot identity band** — reused `StrataSnapshotBand` (shared.tsx:539; `basis` is a ReactNode so NO component
+     change): `{snapshot_key} · frozen {locked_at} · {items.length} frozen records · {kpiItemCount} KPIs ·
+     {benefitItemCount} benefits · every number below is snapshot truth`. Counts derived from snapshot_items entity_type.
+  3. **Review lifecycle strip** — `StrataLifecycleStepper variant="full"` with per-step notes; `selectedLifecycle` memo
+     derives 5 stages (readiness/snapshot/decisions/actions/pack) for the selected snapshot from snapshots+decisions+
+     actions+board-packs (same honest derivation family as 4B's registry dots).
+- Corrected a pre-existing FactChip mislabel the band surfaced: `configCount` was labeled "frozen records" (it counts
+  config-version domains = 3, contradicting the band's true 30) → relabeled "config version(s)".
+- Preserved 01 Key metrics / 02 Frozen evidence / Decisions&actions / Board packs / Audit below (no regression).
+- GATES: tsc clean · lint:colors 0=0 · audit:ads 19799/19799 · lint:cre passed. Live-verified light+dark on SNAP-1001
+  (rich) + SNAP-1 (sparse, honest todo states); index branch unbroken; only StrataReviewsPage.tsx touched (map
+  zero-change); no console errors. NEXT: **4C-2** (decision + actions registers, verdict band, compare-with-live) → 4G.
