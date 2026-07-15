@@ -274,6 +274,10 @@ export const strataRoutes = {
   // route slot (/strata/execution/:slug), no duplicate route created.
   projectCard: (projectCardSlug: string) => `/strata/execution/${projectCardSlug}`,
   portfolio: () => '/strata/portfolio',
+  // Portfolio detail (anchor 08). Static "benefits" and the 3-segment ".../evidence"
+  // route outrank this /:slug slot under React Router's specificity ranking — no shadow.
+  portfolioDetail: (portfolioSlug: string, from?: string) =>
+    `/strata/portfolio/${portfolioSlug}${from ? `?from=${encodeURIComponent(from)}` : ''}`,
   portfolioEvidence: (slug: string, from?: string) =>
     `/strata/portfolio/${slug}/evidence${from ? `?from=${encodeURIComponent(from)}` : ''}`,
   benefit: (benefitSlug: string) => `/strata/portfolio/benefits/${benefitSlug}`,

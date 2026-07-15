@@ -19,6 +19,7 @@ const KpiDetailPage = lazy(() => import('./pages/StrataKpiDetailPage'));
 const ExecutionPage = lazy(() => import('./pages/StrataExecutionPage'));
 const ExecutionImportPage = lazy(() => import('./pages/StrataExecutionImportPage'));
 const PortfolioVmoPage = lazy(() => import('./pages/StrataPortfolioVmoPage'));
+const PortfolioDetailPage = lazy(() => import('./pages/StrataPortfolioDetailPage'));
 const DataPipelinePage = lazy(() => import('./pages/StrataDataPipelinePage'));
 const UploadWizardPage = lazy(() => import('./pages/StrataUploadWizardPage'));
 const ReviewsPage = lazy(() => import('./pages/StrataReviewsPage'));
@@ -70,6 +71,9 @@ export function StrataRoutesShell() {
         <Route path="portfolio" element={<S><PortfolioVmoPage /></S>} />
         <Route path="portfolio/benefits/:slug" element={<S><PortfolioVmoPage /></S>} />
         <Route path="portfolio/:slug/evidence" element={<S><EvidencePage /></S>} />
+        {/* Portfolio detail (anchor 08). Ranked below the two routes above by
+            React Router specificity (static segment / longer path win) — no shadow. */}
+        <Route path="portfolio/:slug" element={<S><PortfolioDetailPage /></S>} />
         <Route path="data" element={<S><DataPipelinePage /></S>} />
         <Route path="data/upload" element={<S><UploadWizardPage /></S>} />
         <Route path="data/runs/:runKey" element={<S><DataPipelinePage /></S>} />

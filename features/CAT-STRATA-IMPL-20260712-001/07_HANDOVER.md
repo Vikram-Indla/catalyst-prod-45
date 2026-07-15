@@ -20,28 +20,27 @@
 | 3A-2a/b | 07 Project Card Detail (`ProjectCardDetailView`) | ✅ merged — strategic-role panel · Health&Forecast · unified "What threatens the forecast" · 360px rail (Details/Source System/Value Contribution) |
 | 3B-0 | `StrataValueBar` hero + `multiple` variants (`shared.tsx`) | ✅ merged — additive `variant` prop; default path unchanged |
 | 3B-1 | 21 Benefit Detail (`BenefitDetailSection` in `StrataPortfolioVmoPage`) | ✅ merged **(focused)** — verdict band + hero value stages. **DEFERRED:** 2-col rail (IN-THE-CHAIN + Confidence) + attestation-timeline |
-| **3B-2** | **08 Portfolio Detail — NEW route** `/strata/portfolio/:slug` | ❌ **NEXT — not started** |
-| 3B-3 | 22 Portfolio Index — repurpose `/strata/portfolio` to a real index | ❌ not started |
+| 3B-2 | 08 Portfolio Detail — NEW route `/strata/portfolio/:slug` (`StrataPortfolioDetailPage`) | ✅ **built + gates green + live-verified (session 012) — AWAITING commit/merge**. Leakage hero (`StrataValueBar` hero + grounded verdict) · leakage-sorted benefits JiraTable · gates decision-context list (`decideGate`). P3-D2 client-derived via `useQueries`. No shadow (benefits/:slug + :slug/evidence + index all verified unbroken). Map zero-change. **DEFERRED:** objective-hop subline (kept "via N cards"). |
+| **3B-3** | **22 Portfolio Index — repurpose `/strata/portfolio` to a real index** | ❌ **NEXT — not started** |
 | 3C | 18 Import & Reconciliation (`StrataExecutionImportPage`, scoped-down P3-D3) | ❌ not started |
 
-## ⛔ NEXT = SLICE 3B-2 — Portfolio Detail (anchor 08), then 3B-3, then 3C
+## ⛔ NEXT = SLICE 3B-3 — Portfolio Index (anchor 22), then 3C. (3B-2 done, awaiting commit/merge.)
 **No code without re-reading the slice's anchor in full via DesignSync first** (drift protocol). Key resume facts:
-- **`StrataPortfolioVmoPage.tsx` (1142 LOC) currently serves 3 modes off one component:** index (via a
+- **`StrataPortfolioVmoPage.tsx` (1162 LOC) still serves 3 modes off one component:** index (via a
   `?portfolio=` selector, `usePortfolios`), portfolio-detail (implicit), and benefit-detail (`:slug` →
-  `useBenefitBySlug` → `BenefitDetailSection`). **3B-2 splits portfolio-detail into a new `PortfolioDetailPage`
-  at `/strata/portfolio/:slug`; 3B-3 repurposes `/strata/portfolio` into a real portfolio index.** HIGH-STAKES
-  route/page split — do it carefully so `/strata/portfolio` never breaks.
-- **Route work (P3-D7):** `usePortfolioBySlug(slug)` ALREADY EXISTS (`useStrata.tsx:430`, unused). Add
-  `Routes.strata.portfolioDetail(slug)` in `src/lib/routes.ts` + a `portfolio/:slug` route in
-  `StrataRoutes.tsx` **before the `*` catch-all** (the slot is free; `portfolio/benefits/:slug` +
-  `portfolio/:slug/evidence` keep priority — no shadow). Benefit detail stays at `portfolio/benefits/:slug`.
-- **Components ready:** `StrataValueBar` **`variant="hero"`** (anchors 08/21 waterfall) + **`variant="multiple"`**
-  (anchor-22 small multiples) shipped in 3B-0. Hero is already consumed by 3B-1.
-- **Portfolio value aggregates (P3-D2):** `strata_portfolios` has only `value_target` — NO stored
-  planned/forecast/leakage/validated rollup and NO RPC. **Client-derive** by aggregating each portfolio's
-  benefits' `strata_benefit_values` (via `useBenefits(portfolioId)` + `useBenefitValues` per benefit, active
-  period else first). Zero-assumption: dash where a `value_kind` row is absent; VaR/realization DISPLAY reads
-  `lineageApi.latestCalc` (NEVER the recompute RPC in render).
+  `useBenefitBySlug` → `BenefitDetailSection`). **3B-3 repurposes `/strata/portfolio` into a REAL portfolio
+  index** (portfolios list: leakage sentence + `StrataValueBar variant="multiple"` small multiples shared scale
+  + ranked-by-leakage JiraTable → row → `Routes.strata.portfolioDetail(slug)`). HIGH-STAKES — `/strata/portfolio`
+  must never break. Reuse the P3-D2 client-derivation pattern from `StrataPortfolioDetailPage.tsx` (session 012).
+- **3B-2 DONE (session 012):** new route `/strata/portfolio/:slug` → `StrataPortfolioDetailPage` +
+  `Routes.strata.portfolioDetail(slug, from?)`. `usePortfolioBySlug` (`useStrata.tsx:430`) now consumed.
+  Route ordered after `portfolio/benefits/:slug` — no shadow (verified live). `StrataValueBar variant="multiple"`
+  (anchor-22 small multiples) still UNUSED — 3B-3's consumer.
+- **Portfolio value aggregates (P3-D2) — PATTERN NOW EXISTS** in `StrataPortfolioDetailPage.tsx`:
+  `useQueries` over each benefit's `valueApi.benefitValues`; per benefit pick active-period-else-latest snapshot;
+  Σ per kind; **validated = Σ realized rows where `validation_status==='validated'`** (no `validated` value kind).
+  Zero-assumption dash where a kind is absent. `strata_portfolios` still has only `value_target` (no rollup RPC).
+  Copy this aggregation into the 3B-3 index (one aggregate per portfolio, shared scale across the small multiples).
 - **3C (import) scope is DELIBERATELY reduced (P3-D3):** redesign to the anchor LAYOUT on the existing
   `importApi.importExecutionBatch` dry-run/apply (created/updated/rejected) — NO Matched/Conflict/Unmatched
   three-way, NO both-sides diff, **NO "undo" affordance** (none of that backend exists). Render honestly.

@@ -912,3 +912,33 @@ strip; 2E-3 charter/OKR restyle + promote + states.
   delivery/measured-by/gate links) + **Confidence** panel, and attestation-history-as-timeline — was NOT done in
   this focused pass (Confidence stays in the Value-thesis panel; attestation state stays in the value table).
   Flagged as remaining anchor-21 polish. NEXT: **3B-2** Portfolio Detail (new route, consumes hero).
+
+### ⏳ Slice 3B-2 — Portfolio Detail (anchor 08) — NEW route — DONE, gates green, live-verified; PENDING commit
+- Anchor 08 (`08 Portfolio & Benefit Realization.dc.html`) re-read in FULL via DesignSync — **no drift** vs Plan Lock 3B-2.
+- **Route split (P3-D7), surgical + shadow-checked:** `src/lib/routes.ts` → `strata.portfolioDetail(slug, from?)`;
+  `src/modules/strata/StrataRoutes.tsx` → lazy `PortfolioDetailPage` + `<Route path="portfolio/:slug">` placed
+  AFTER `portfolio/benefits/:slug`. React-Router specificity keeps `benefits/:slug` (static seg) and
+  `:slug/evidence` (3 seg) ahead of `:slug` — **verified live: no shadow** (benefit deep link → VMO benefit
+  detail; evidence → EvidencePage; `/strata/portfolio` index → untouched VMO page). `usePortfolioBySlug` now consumed.
+- **New page `src/modules/strata/pages/StrataPortfolioDetailPage.tsx`** (anchor-08 anatomy):
+  (1) **value-position leakage hero** — leakage headline lozenge + **grounded verdict sentence** composed only from
+  real Σaggregates (top-2 leaking benefits named; realized/validated/awaits-attestation clause) + `StrataValueBar
+  variant="hero"` waterfall; (2) **benefits JiraTable, leakage-sorted** — Benefit (brand link + "via N cards"
+  subline) · Planned · Forecast (danger-toned when leaking) · Realized · Validated · Confidence (level·%, e.g.
+  "High · 80%") · Attestation lozenge (Validated/Pending/Not due); row → `Routes.strata.benefit`; (3) **Gates —
+  decision-context list** (stage badge + benefit name + status lozenge + stage criteria + due/`N days overdue` +
+  role-gated `Decide` → `StrataDecisionModal` → `valueApi.decideGate`); (4) **"completion ≠ benefit"** footer.
+- **P3-D2 client-derive, NO migration:** `useQueries` over each benefit's `valueApi.benefitValues`; per benefit
+  pick active-period-else-latest snapshot; Σ per kind across benefits; **validated = Σ realized rows where
+  `validation_status==='validated'`** (there is no `validated` value kind). Zero-assumption: dash where a kind is
+  absent; leakage = Σplanned − Σforecast only when forecast < planned.
+- **Header:** matched sibling detail pattern (KPI/Scorecard/Element) — `ProjectPageHeader` H2 = `title ?? routeWord`
+  and routeWord = hub label "Portfolio & VMO", so pass trail = section back-link only + `title={portfolio.name}`.
+  (Caught in live-verify: initial two-crumb trail left the H2 as the hub label.)
+- GATES: `tsc` clean · `lint:colors:gate` 0=0 · `audit:ads:gate` 19799/19799 (fixed 2 new offenders in-file:
+  `'12px 0'`→`var(--ds-space-150)`, `marginTop:2`→`var(--ds-space-025)`) · `lint:cre` passed. LIVE
+  **light + dark** on `/strata/portfolio/transformation-portfolio-fy2026` — no console errors; states
+  grayscale-distinguishable. **Map zero-change** (git diff empty). Changed set: routes.ts, StrataRoutes.tsx,
+  StrataPortfolioDetailPage.tsx (new), session 012 log.
+- **DEFERRED:** objective-hop subline ("↑ objective", multi-hop benefit→card→objective) — "via N cards" shown
+  instead. NEXT: **3B-3** Portfolio Index (anchor 22) — repurpose `/strata/portfolio`, consumes `variant="multiple"`.
