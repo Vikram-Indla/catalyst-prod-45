@@ -569,6 +569,9 @@ export const useBoardPacks = (snapshotId?: string) =>
     enabled: !!snapshotId,
     staleTime: STALE,
   });
+/** All board packs across snapshots (reviews-index pack-stage dot, slice 4B). */
+export const useAllBoardPacks = () =>
+  useQuery({ queryKey: ['strata', 'board-packs', 'all'], queryFn: governanceApi.boardPacksAll, staleTime: STALE });
 export const useAiOutputs = () =>
   useQuery({ queryKey: ['strata', 'ai-outputs'], queryFn: governanceApi.aiOutputs, staleTime: STALE });
 // ── Notifications (CAT-STRATA-CLOSEOUT-20260710-001 W3) ──────────────────────

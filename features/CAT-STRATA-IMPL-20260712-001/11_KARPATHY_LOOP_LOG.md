@@ -71,3 +71,14 @@ Format per loop: Hypothesis → Experiment → Measure → Keep/Discard → Log.
   Upload wizard (20) best-backed (staging_rows.raw + template contract). 
 - **Keep:** Honest scoped build (P4-D2…D8): render on the existing backend, zero-assumption gaps, split anchor-24
   editorial builder + Issue to a separate backend feature (own migration + Plan Lock).
+
+## K-P4-5 · Slice 4B — is the review registry derivable honestly without a strata_reviews table? (2026-07-15)
+- **Hypothesis:** anchor 23's review registry can be composed from snapshots + decisions + actions + board-packs
+  (P4-D1), with "review == current non-superseded snapshot" as the key, and lifecycle/stage derived transparently.
+- **Experiment:** probed staging schema + rows (2 snapshots both locked, 0 superseded, 16 periods, 2 decisions,
+  3 actions, 3 board-packs); built the derivation; live-verified light+dark.
+- **Measure:** 2 honest review rows render with correct derived lifecycle — SNAP-1 (0 decisions, 1 pack) shows
+  readiness✓ snapshot✓ decisions○ actions○ pack✓; SNAP-1001 shows decisions✓ + actions●(1 of 2 open, not overdue)
+  + pack✓. Stage lozenge derives from period.close_status. No fabricated readiness-only rows (no draft snapshots exist).
+- **Keep:** derived model (DRIFT-9, within P4-D1). Anchor's period-scheduled readiness rows require the deferred
+  `strata_reviews` entity — out of Phase 4 scope. Thin `useAllBoardPacks`/`boardPacksAll` (plain select) for the pack dot.

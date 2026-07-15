@@ -1,11 +1,24 @@
 # 07 — HANDOVER · CAT-STRATA-IMPL-20260712-001
 
-> Resume point. **Phases 0–3 COMPLETE. Phase 4 (governance & data) IN PROGRESS — Plan Lock APPROVED; slice 4A done; NEXT = 4B.**
+> Resume point. **Phases 0–3 COMPLETE. Phase 4 (governance & data) IN PROGRESS — Plan Lock APPROVED; slices 4A + 4B done; NEXT = 4C.**
 > Read order to resume Phase 4: `00_READ_ME_FIRST` → `01_OBJECTIVE` → **`03_PLAN_LOCK_PHASE4` (APPROVED)** →
-> this file (State section below) → `08_DRIFT_LOG` (esp. DRIFT-8) → `09_DECISIONS` (P4-D0…D8 CONFIRMED) →
-> `discovery/07_phase4_anchor_specs.md` (6 anchor digests) → `04_EXECUTION_LOG` (per-slice detail) → latest
-> `sessions/` (015). **Then re-read the next slice's anchor (23) in full via DesignSync (parent-only) before coding.**
-> All synced at `59ef4f4cf` (main = branch); working tree clean; map byte-untouched.
+> this file (State section below) → `08_DRIFT_LOG` (DRIFT-8; DRIFT-9 = 4B derived-review model) → `09_DECISIONS`
+> (P4-D0…D8 CONFIRMED) → `discovery/07_phase4_anchor_specs.md` (6 anchor digests) → `04_EXECUTION_LOG` (per-slice
+> detail) → latest `sessions/` (016). **Then re-read the next slice's anchor (10) in full via DesignSync (parent-only) before coding.**
+> 4A merged at `59ef4f4cf`. **4B BUILT + verified, AWAITING commit/merge** (branch/main both at `2ed27144f`; 4B not yet committed).
+> Working tree: 3 code files (StrataReviewsPage.tsx, domain/index.ts, hooks/useStrata.tsx) + session 016. Map byte-untouched.
+
+## Slice 4B ✅ BUILT + verified (anchor 23 Reviews Index) — AWAITING commit/merge
+- Redesigned `StrataReviewsPage` **index branch** (`!isDetail`) to anchor 23: **NOW band** + **Review registry**
+  (JiraTable, `StrataLifecycleStepper variant="dots"` 5-stage, derived rows) + **Snapshot registry** (JiraTable,
+  supersedes struck-through). Gated the cockpit detail column to `isDetail` (fixed `selected=snapshots[0]` index leak).
+- **Derived-review model (P4-D1, honest):** review = current (non-superseded) snapshot keyed by snapshot_key; lifecycle/
+  stage/decision-counts/follow-ups derived from snapshots + decisions + actions + board-packs. Cadence subtitle CUT;
+  StatStrip dropped (subsumed). Close-period ritual PRESERVED below registries (governed feature; not in anchor 23; no regression).
+- New thin hook `useAllBoardPacks` + `governanceApi.boardPacksAll` (plain select, no migration) for the pack-stage dot.
+- Gates green (tokens 19799/19799 after off-grid 10px→12px fix); live-verified light+dark; detail branch + map unchanged; no console errors. See session 016.
+- **⛔ NEXT = 4C Decision Cockpit (anchor 10)** — redesign `StrataReviewsPage` DETAIL branch (`isDetail`). SPLIT if >2h
+  (4C-1 identity band + lifecycle strip + decision/action registers; 4C-2 compare-with-live + present/export → 4G). Re-read anchor 10 via DesignSync first.
 
 ## State (as of 2026-07-15 — PHASE 3 COMPLETE; PHASE 4 IN PROGRESS, slice 4A done)
 - **Branch:** `strata/impl-phase01`. `origin/main` advancing via fast-forward ([[github-noff-merge-push-rejected]] —

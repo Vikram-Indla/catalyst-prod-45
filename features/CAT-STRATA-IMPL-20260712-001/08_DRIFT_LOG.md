@@ -84,6 +84,20 @@ Deviations from the anchor that were taken deliberately (with rationale), pendin
   incremental; (2) ranked-panel basis — since "vs plan" can't be truthful, rank by current score/band
   (worst-first) or by Δ-vs-prior. RAISED to Vikram; no code until resolved.
 
+## DRIFT-9 · Slice 4B — derived-review registry ≠ anchor 23's period-derived rows (within P4-D1, not a true drift)
+- **Anchor 23** shows a review registry that includes a READINESS-stage row with **no snapshot** ("Logistics deep-dive
+  — July · not frozen · agenda forming"), i.e. reviews derived from scheduled periods before any snapshot exists.
+- **Reality (staging):** 2 snapshots (both locked, 0 superseded), 16 periods, **no draft/unlocked snapshots**. A
+  readiness-stage review with no snapshot is only derivable from a *scheduled* period — and scheduling/chair/cadence is
+  exactly what **P4-D1 CUT** (no backing column; "+ Schedule review" removed).
+- **Built:** review = current (non-superseded) **snapshot** keyed by snapshot_key (matches the cockpit `:snapshotKey`
+  route + P4-D1 "spine = snapshots keyed by snapshot_key"). Readiness/snapshot dots are always done (review == locked
+  snapshot); decisions/actions/pack dots + stage lozenge derive honestly. READINESS-only rows do not appear.
+- **Status:** NOT a drift from the Plan Lock — P4-D1 already anticipated this ("derive stage transparently; render a
+  gap where a stage can't be derived; a `strata_reviews` migration for scheduling is a later feature"). Logged for the
+  auditor trail. If first-class scheduled reviews (readiness rows pre-snapshot) are wanted, that's the deferred
+  `strata_reviews` entity (own migration + Plan Lock), not Phase 4.
+
 ## DRIFT-8 · Slice 4A — consumer refactor deferred to redesign slices (RAISED, low-risk refinement)
 - **Plan Lock 4A said:** build `StrataLifecycleStepper` AND refactor `StrataDataPipelinePage` + `StrataUploadWizardPage`
   consumers "behavior-preserving (no visual change to current use)".

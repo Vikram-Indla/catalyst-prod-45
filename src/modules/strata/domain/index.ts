@@ -1051,6 +1051,9 @@ export const governanceApi = {
     run(typedQuery('strata_actions').select('*').order('due_date')),
   boardPacks: (snapshotId: string): Promise<StrataBoardPack[]> =>
     run(typedQuery('strata_board_packs').select('*').eq('snapshot_id', snapshotId)),
+  /** All board-pack rows across snapshots — thin select feeding the reviews-index pack-stage dot. */
+  boardPacksAll: (): Promise<StrataBoardPack[]> =>
+    run(typedQuery('strata_board_packs').select('*')),
   /**
    * Reconcile a pending pack row after client-side generation. RLS
    * (strata_board_packs_write, 20260705100400) permits this UPDATE only for

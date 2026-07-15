@@ -38,6 +38,7 @@ import {
   useDecisions,
   useActions,
   useBoardPacks,
+  useAllBoardPacks,
   useProfileNames,
   useStrataAudit,
   useStrataRoles,
@@ -52,7 +53,10 @@ import {
   StrataDataStateLozenge,
   StrataBandLozenge,
   StrataStatStrip,
+  StrataLifecycleStepper,
   type StrataStat,
+  type StrataLifecycleStep,
+  type StrataStepState,
   T,
 } from '@/modules/strata/components/shared';
 import { StrataFormModal } from '@/modules/strata/components/authoring';
@@ -74,6 +78,26 @@ interface AuditEventRow {
   action: string | null;
   actor_id?: string | null;
   created_at: string;
+}
+
+/** Derived review-registry row (slice 4B) — one per current (non-superseded) snapshot. */
+interface ReviewRow {
+  snapshot: StrataSnapshot;
+  stageLabel: string;
+  stageStatus: string;
+  stageAppearance: LozengeAppearance;
+  steps: StrataLifecycleStep[];
+  decisionsSummary: string;
+  followupsText: string;
+  followupsOverdue: number;
+}
+
+/** Snapshot-registry row (slice 4B) — every snapshot, superseded ones struck-through. */
+interface SnapshotRegistryRow {
+  snapshot: StrataSnapshot;
+  superseded: boolean;
+  supersedesKeys: string[];
+  basisOf: string;
 }
 
 const ACTION_LOZENGE: Record<StrataAction['status'], LozengeAppearance> = {
@@ -381,38 +405,6 @@ export default function StrataReviewsPage() {
   }, [readinessQ.data, decisionsQ.data]);
   const readinessBlockers = readinessChecks.reduce((sum, c) => sum + c.pending, 0);
 
-  // Executive KPI band (Command Room SRC-M3) — derived from loaded governance
-  // data only; overdue = open/in-progress actions past their due date.
-  const governanceBand = useMemo((): StrataStat[] => {
-    const decisions = (decisionsQ.data ?? []) as StrataDecision[];
-    const actions = (actionsQ.data ?? []) as StrataAction[];
-    const openDecisions = decisions.filter((d) => d.status === 'open').length;
-    const today = new Date().toISOString().slice(0, 10);
-    const openActions = actions.filter((a) => a.status === 'open' || a.status === 'in_progress');
-    const overdue = openActions.filter((a) => a.due_date != null && a.due_date < today).length;
-    return [
-      {
-        key: 'snapshots', label: 'Snapshots', value: snapshots.length,
-        caption: snapshots[0] ? `latest ${snapshots[0].snapshot_key}` : 'none yet',
-      },
-      {
-        key: 'decisions', label: 'Open decisions', value: openDecisions,
-        caption: openDecisions > 0 ? 'awaiting a decision forum' : 'none open',
-        captionTone: openDecisions > 0 ? 'warning' : 'success',
-      },
-      {
-        key: 'actions', label: 'Overdue actions', value: overdue,
-        caption: overdue > 0 ? `of ${openActions.length} open actions` : `${openActions.length} open, none overdue`,
-        captionTone: overdue > 0 ? 'danger' : 'success',
-      },
-      {
-        key: 'period', label: 'Period close', value: activePeriod ? labelize(activePeriod.close_status) : '—',
-        caption: activePeriod ? activePeriod.name : 'no active period',
-        captionTone: activePeriod?.close_status === 'closed' ? 'success' : 'neutral',
-      },
-    ];
-  }, [decisionsQ.data, actionsQ.data, snapshots, activePeriod]);
-
   // Board-pack "01 — Key metrics" (SRC-M7): oversized stat cards from the
   // snapshot's own frozen payloads — value + governed band exactly as frozen,
   // never recomputed. Zero-assumption: section renders only when values exist.
@@ -495,6 +487,105 @@ export default function StrataReviewsPage() {
     });
     return m;
   }, [actionsQ.data]);
+
+  // ── Index registry derivations (slice 4B, anchor 23) ──────────────────────
+  // Reviews are a DERIVED virtual entity (P4-D1): one review == a current
+  // (non-superseded) locked snapshot, keyed by snapshot_key — no strata_reviews
+  // table. Lifecycle + counts compose over snapshots + decisions + actions +
+  // board packs; anything the schema can't back renders an honest gap.
+  const allPacksQ = useAllBoardPacks();
+  const packsBySnapshot = useMemo(() => {
+    const m = new Map<string, number>();
+    (allPacksQ.data ?? []).forEach((p) => m.set(p.snapshot_id, (m.get(p.snapshot_id) ?? 0) + 1));
+    return m;
+  }, [allPacksQ.data]);
+
+  const decisionsBySnapshot = useMemo(() => {
+    const m = new Map<string, StrataDecision[]>();
+    allDecisions.forEach((d) => {
+      if (!d.snapshot_id) return;
+      m.set(d.snapshot_id, [...(m.get(d.snapshot_id) ?? []), d]);
+    });
+    return m;
+  }, [allDecisions]);
+
+  const todayISO = new Date().toISOString().slice(0, 10);
+
+  const reviewRows = useMemo<ReviewRow[]>(() => {
+    return snapshots
+      .filter((s) => s.status !== 'superseded')
+      .map((s) => {
+        const period = periods.find((p) => p.id === s.period_id) ?? null;
+        const decs = decisionsBySnapshot.get(s.id) ?? [];
+        const recorded = decs.filter((d) => d.status === 'decided' || d.status === 'closed').length;
+        const open = decs.filter((d) => d.status === 'open').length;
+        const acts = decs.flatMap((d) => actionsByDecision.get(d.id) ?? []);
+        const openActs = acts.filter((a) => a.status === 'open' || a.status === 'in_progress');
+        const doneActs = acts.filter((a) => a.status === 'done').length;
+        const overdue = openActs.filter((a) => a.due_date != null && a.due_date < todayISO).length;
+
+        const decisionsState: StrataStepState = decs.length === 0 ? 'todo' : open > 0 ? 'current' : 'done';
+        const actionsState: StrataStepState =
+          acts.length === 0 ? 'todo' : overdue > 0 ? 'failed' : openActs.length > 0 ? 'current' : 'done';
+        const steps: StrataLifecycleStep[] = [
+          { id: 'readiness', label: 'Readiness', state: 'done' },
+          { id: 'snapshot', label: 'Snapshot locked', state: s.locked_at ? 'done' : 'todo' },
+          { id: 'decisions', label: 'Decisions', state: decisionsState },
+          { id: 'actions', label: 'Actions', state: actionsState },
+          { id: 'pack', label: 'Board pack', state: (packsBySnapshot.get(s.id) ?? 0) > 0 ? 'done' : 'todo' },
+        ];
+
+        const closed = period?.close_status === 'closed';
+        return {
+          snapshot: s,
+          stageLabel: closed ? 'Closed' : 'In progress',
+          stageStatus: closed ? 'closed' : 'in_progress',
+          stageAppearance: (closed ? 'success' : 'inprogress') as LozengeAppearance,
+          steps,
+          decisionsSummary: decs.length === 0 ? 'none recorded' : `${recorded} recorded${open > 0 ? ` · ${open} open` : ''}`,
+          followupsText: acts.length === 0 ? 'no follow-ups' : `${doneActs} of ${acts.length} closed${overdue > 0 ? ` · ${overdue} overdue` : ''}`,
+          followupsOverdue: overdue,
+        };
+      });
+  }, [snapshots, periods, decisionsBySnapshot, actionsByDecision, packsBySnapshot, todayISO]);
+
+  const snapshotRegistryRows = useMemo<SnapshotRegistryRow[]>(() => {
+    // Only the reverse pointer (superseded_by_id, on the OLD row) exists — scan
+    // for predecessors so the current row can narrate what it supersedes.
+    const supersedesMap = new Map<string, string[]>();
+    snapshots.forEach((s) => {
+      if (s.superseded_by_id) {
+        supersedesMap.set(s.superseded_by_id, [...(supersedesMap.get(s.superseded_by_id) ?? []), s.snapshot_key]);
+      }
+    });
+    return snapshots.map((s) => {
+      const decs = decisionsBySnapshot.get(s.id) ?? [];
+      const decNote = decs.length > 0 ? ` · ${decs.length} decision record${decs.length === 1 ? '' : 's'}` : '';
+      return {
+        snapshot: s,
+        superseded: s.status === 'superseded' || !!s.superseded_by_id,
+        supersedesKeys: supersedesMap.get(s.id) ?? [],
+        basisOf: `${s.name}${decNote}`,
+      };
+    });
+  }, [snapshots, decisionsBySnapshot]);
+
+  // NOW band — single most-consequential fact + open-cockpit link (anchor 23).
+  const nowFact = useMemo(() => {
+    if (reviewRows.length === 0) return null;
+    const inProgress = reviewRows.find((r) => r.stageLabel !== 'Closed');
+    const target = inProgress ?? reviewRows[0];
+    const decs = decisionsBySnapshot.get(target.snapshot.id) ?? [];
+    const recorded = decs.filter((d) => d.status === 'decided' || d.status === 'closed').length;
+    const clauses: string[] = [];
+    if (decs.length > 0) clauses.push(`${recorded} of ${decs.length} decision${decs.length === 1 ? '' : 's'} recorded`);
+    if (target.followupsOverdue > 0) {
+      clauses.push(`${target.followupsOverdue} follow-up${target.followupsOverdue === 1 ? '' : 's'} overdue`);
+    }
+    const lead = inProgress ? 'is in progress' : 'is the latest review';
+    const tail = clauses.length > 0 ? ` — ${clauses.join('; ')}.` : '.';
+    return { key: target.snapshot.snapshot_key, sentence: `${target.snapshot.name} ${lead}${tail}` };
+  }, [reviewRows, decisionsBySnapshot]);
 
   const evidenceGroups = useMemo(() => {
     const m = new Map<string, number>();
@@ -646,6 +737,91 @@ export default function StrataReviewsPage() {
     },
   ];
 
+  // ── Review registry (anchor 23): derived reviews, lifecycle-positioned ──────
+  const reviewColumns: Column<ReviewRow>[] = [
+    {
+      id: 'review', label: 'Review', flex: true,
+      cell: ({ row }) => (
+        <div style={{ minWidth: 0 }}>
+          <span style={{ ...bodyStyle, fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'block' }}>
+            {row.snapshot.name}
+          </span>
+          <span style={{ ...captionStyle, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'block' }}>
+            {row.snapshot.locked_at ? fmtDate(row.snapshot.locked_at) : '—'}
+          </span>
+        </div>
+      ),
+    },
+    {
+      id: 'stage', label: 'Stage', width: 15,
+      cell: ({ row }) => <StatusLozenge status={row.stageStatus} label={row.stageLabel} appearance={row.stageAppearance} />,
+    },
+    {
+      id: 'lifecycle', label: 'Lifecycle', width: 13,
+      cell: ({ row }) => (
+        <StrataLifecycleStepper variant="dots" steps={row.steps} ariaLabel={`Lifecycle for ${row.snapshot.name}`} />
+      ),
+    },
+    {
+      id: 'snapshot', label: 'Snapshot', width: 15,
+      cell: ({ row }) => <span style={{ ...captionStyle, color: T.subtle, fontVariantNumeric: 'tabular-nums' }}>{row.snapshot.snapshot_key}</span>,
+    },
+    {
+      id: 'decisions', label: 'Decisions', width: 15,
+      cell: ({ row }) => <span style={captionStyle}>{row.decisionsSummary}</span>,
+    },
+    {
+      id: 'followups', label: 'Follow-ups', width: 15,
+      cell: ({ row }) => (
+        <span style={{
+          ...captionStyle,
+          color: row.followupsOverdue > 0 ? 'var(--ds-text-danger)' : T.subtle,
+          fontWeight: row.followupsOverdue > 0 ? 600 : 400,
+        }}>
+          {row.followupsText}
+        </span>
+      ),
+    },
+  ];
+
+  // ── Snapshot registry (anchor 23): supersede chains narrated, nothing silently replaced ──
+  const snapshotColumns: Column<SnapshotRegistryRow>[] = [
+    {
+      id: 'snapshot', label: 'Snapshot', width: 20,
+      cell: ({ row }) => (
+        <span style={{
+          ...bodyStyle, fontWeight: 600, fontVariantNumeric: 'tabular-nums',
+          textDecoration: row.superseded ? 'line-through' : 'none',
+          color: row.superseded ? T.subtlest : T.brandText,
+        }}>
+          {row.snapshot.snapshot_key}
+        </span>
+      ),
+    },
+    {
+      id: 'frozen', label: 'Frozen', width: 20,
+      cell: ({ row }) => (
+        <span style={{ ...captionStyle, fontVariantNumeric: 'tabular-nums', color: row.superseded ? T.subtlest : T.subtle }}>
+          {row.snapshot.locked_at ? fmtDateTime(row.snapshot.locked_at) : '—'}
+        </span>
+      ),
+    },
+    {
+      id: 'basis', label: 'Basis of', flex: true,
+      cell: ({ row }) => (
+        <span style={{ ...captionStyle, color: row.superseded ? T.subtlest : T.subtle, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'block' }}>
+          {row.basisOf}
+        </span>
+      ),
+    },
+    {
+      id: 'supersedes', label: 'Supersedes', width: 22,
+      cell: ({ row }) => row.supersedesKeys.length > 0
+        ? <span style={captionStyle}>{row.supersedesKeys.join(', ')}</span>
+        : <span style={{ color: T.subtlest }}>—</span>,
+    },
+  ];
+
   const renderDecision = (d: StrataDecision) => {
     const expanded = expandedDecisionId === d.id;
     const decisionActions = actionsByDecision.get(d.id) ?? [];
@@ -785,6 +961,133 @@ export default function StrataReviewsPage() {
   const isDetail = !!snapshotKey;
   const closeCfg = activePeriod ? CLOSE_STATUS_LOZENGE[activePeriod.close_status] : null;
 
+  // Period governance (close ritual + readiness) — a working governed feature not
+  // in anchor 23; preserved below the registries rather than dropped (no regression).
+  const periodGovernancePanel = activePeriod ? (
+    <StrataPanel
+      title="Period governance"
+      icon={<CalendarClock size={16} />}
+      testId="strata-reviews-period-governance"
+      actions={
+        <Button
+          appearance="default"
+          spacing="compact"
+          onClick={() => setCloseOpen(true)}
+          isDisabled={activePeriod.close_status === 'closed'}
+          testId="strata-reviews-close-button"
+        >
+          Close period
+        </Button>
+      }
+    >
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+        <span style={{ ...bodyStyle, fontWeight: 600 }}>{activePeriod.name}</span>
+        {closeCfg ? <StatusLozenge status={activePeriod.close_status} label={closeCfg.label} appearance={closeCfg.appearance} /> : null}
+        <span style={captionStyle}>
+          {activePeriod.close_status === 'closed'
+            ? 'This period is closed — its numbers are final.'
+            : 'Closing is blocked while attestations are pending; overrides are audited.'}
+        </span>
+      </div>
+      {activePeriod.close_status !== 'closed' ? (
+        <div style={{ marginTop: 'var(--ds-space-200)' }} data-testid="strata-reviews-close-readiness">
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 'var(--ds-space-100)' }}>
+            <span style={{ ...bodyStyle, fontWeight: 600 }}>Close readiness</span>
+            <StatusLozenge
+              status={readinessBlockers === 0 ? 'ready' : 'attention'}
+              label={readinessBlockers === 0 ? 'Ready to close' : `${readinessBlockers} to resolve`}
+              appearance={readinessBlockers === 0 ? 'success' : 'moved'}
+            />
+            <span style={captionStyle}>Advisory — closing is still possible; the database enforces the attestation guard.</span>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: 'var(--ds-space-100)' }}>
+            {readinessChecks.map((c) => (
+              <div
+                key={c.key}
+                data-testid={`strata-reviews-readiness-${c.key}`}
+                style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, padding: 'var(--ds-space-100) var(--ds-space-150)', border: `1px solid ${T.border}`, borderRadius: 6 }}
+              >
+                <span style={bodyStyle}>{c.label}</span>
+                <StatusLozenge
+                  status={c.pending === 0 ? 'clear' : 'pending'}
+                  label={c.pending === 0 ? 'Clear' : String(c.pending)}
+                  appearance={c.pending === 0 ? 'success' : 'moved'}
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+      ) : null}
+    </StrataPanel>
+  ) : null;
+
+  // NOW band (anchor 23) — single most-consequential fact + open-cockpit link.
+  const nowBand = nowFact ? (
+    <div
+      data-testid="strata-reviews-now"
+      style={{ display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap', padding: '12px 16px', border: `1px solid ${T.border}`, borderRadius: 8, background: T.raised, boxShadow: 'var(--ds-shadow-raised)' }}
+    >
+      <span style={{ ...captionStyle, fontWeight: 700, letterSpacing: '0.04em', color: T.subtlest }}>NOW</span>
+      <span style={{ ...bodyStyle, flex: 1, minWidth: 0 }}>{nowFact.sentence}</span>
+      <button
+        type="button"
+        onClick={() => navigate(Routes.strata.review(nowFact.key))}
+        style={{ background: 'none', border: 'none', padding: 0, margin: 0, font: 'inherit', color: T.brandText, cursor: 'pointer', flexShrink: 0 }}
+        data-testid="strata-reviews-now-open"
+      >
+        Open cockpit →
+      </button>
+    </div>
+  ) : null;
+
+  // Index registries (anchor 23) — review registry + snapshot registry.
+  const reviewsIndex = (
+    <>
+      {nowBand}
+      <StrataPanel
+        title="Review registry"
+        icon={<CalendarClock size={16} />}
+        count={reviewRows.length}
+        noPadding
+        testId="strata-reviews-registry"
+        actions={<span style={captionStyle}>Lifecycle: readiness · snapshot · decisions · actions · pack</span>}
+      >
+        {reviewRows.length === 0 ? (
+          <div style={{ padding: 16 }}>
+            <EmptyState size="compact" header="No reviews yet" description="Lock a period snapshot to open its review lifecycle." />
+          </div>
+        ) : (
+          <JiraTable<ReviewRow>
+            columns={reviewColumns}
+            data={reviewRows}
+            getRowId={(r) => r.snapshot.id}
+            onRowClick={(r) => navigate(Routes.strata.review(r.snapshot.snapshot_key))}
+            showRowCount={false}
+            ariaLabel="Review registry"
+          />
+        )}
+      </StrataPanel>
+      <StrataPanel
+        title="Snapshot registry"
+        icon={<Lock size={16} />}
+        count={snapshotRegistryRows.length}
+        noPadding
+        testId="strata-reviews-snapshot-registry"
+        actions={<span style={captionStyle}>Supersede chains narrated — nothing silently replaced</span>}
+      >
+        <JiraTable<SnapshotRegistryRow>
+          columns={snapshotColumns}
+          data={snapshotRegistryRows}
+          getRowId={(r) => r.snapshot.id}
+          onRowClick={(r) => navigate(Routes.strata.review(r.snapshot.snapshot_key))}
+          showRowCount={false}
+          ariaLabel="Snapshot registry"
+        />
+      </StrataPanel>
+      {periodGovernancePanel}
+    </>
+  );
+
   return (
     <StrataPageShell
       trail={isDetail ? [{ text: 'Reviews & decisions', href: Routes.strata.reviews() }, { text: snapshotKey! }] : undefined}
@@ -792,14 +1095,6 @@ export default function StrataReviewsPage() {
       state={selected?.status ?? null}
       testId="strata-reviews-shell"
     >
-      {/* Review Cadence (locked Governance area, REQ-015) — derived from the
-          active Strategy Cycle's period granularity; nothing fabricated. */}
-      {!isDetail && activeCycle ? (
-        <p style={{ margin: '0 0 12px', fontSize: 'var(--ds-font-size-100)', color: T.subtlest }} data-testid="strata-review-cadence">
-          Review cadence: <strong style={{ color: T.subtle }}>{labelize(activeCycle.period_granularity)}</strong>
-          {' '}· from Strategy Cycle <strong style={{ color: T.subtle }}>{activeCycle.name}</strong>
-        </p>
-      ) : null}
       {railError ? (
         <SectionMessage appearance="error" title="Could not load review data">
           <p>{railError.message}</p>
@@ -815,66 +1110,6 @@ export default function StrataReviewsPage() {
         </div>
       ) : (
         <div style={{ display: 'grid', gap: 16 }}>
-          {!isDetail ? <StrataStatStrip items={governanceBand} testId="strata-reviews-band" /> : null}
-          {/* ── Period governance (index only): close ritual lives with reviews ── */}
-          {!isDetail && activePeriod ? (
-            <StrataPanel
-              title="Period governance"
-              icon={<CalendarClock size={16} />}
-              testId="strata-reviews-period-governance"
-              actions={
-                <Button
-                  appearance="default"
-                  spacing="compact"
-                  onClick={() => setCloseOpen(true)}
-                  isDisabled={activePeriod.close_status === 'closed'}
-                  testId="strata-reviews-close-button"
-                >
-                  Close period
-                </Button>
-              }
-            >
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-                <span style={{ ...bodyStyle, fontWeight: 600 }}>{activePeriod.name}</span>
-                {closeCfg ? <StatusLozenge status={activePeriod.close_status} label={closeCfg.label} appearance={closeCfg.appearance} /> : null}
-                <span style={captionStyle}>
-                  {activePeriod.close_status === 'closed'
-                    ? 'This period is closed — its numbers are final.'
-                    : 'Closing is blocked while attestations are pending; overrides are audited.'}
-                </span>
-              </div>
-              {activePeriod.close_status !== 'closed' ? (
-                <div style={{ marginTop: 'var(--ds-space-200)' }} data-testid="strata-reviews-close-readiness">
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 'var(--ds-space-100)' }}>
-                    <span style={{ ...bodyStyle, fontWeight: 600 }}>Close readiness</span>
-                    <StatusLozenge
-                      status={readinessBlockers === 0 ? 'ready' : 'attention'}
-                      label={readinessBlockers === 0 ? 'Ready to close' : `${readinessBlockers} to resolve`}
-                      appearance={readinessBlockers === 0 ? 'success' : 'moved'}
-                    />
-                    <span style={captionStyle}>Advisory — closing is still possible; the database enforces the attestation guard.</span>
-                  </div>
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: 'var(--ds-space-100)' }}>
-                    {readinessChecks.map((c) => (
-                      <div
-                        key={c.key}
-                        data-testid={`strata-reviews-readiness-${c.key}`}
-                        style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, padding: 'var(--ds-space-100) var(--ds-space-150)', border: `1px solid ${T.border}`, borderRadius: 6 }}
-                      >
-                        <span style={bodyStyle}>{c.label}</span>
-                        <StatusLozenge
-                          status={c.pending === 0 ? 'clear' : 'pending'}
-                          label={c.pending === 0 ? 'Clear' : String(c.pending)}
-                          appearance={c.pending === 0 ? 'success' : 'moved'}
-                        />
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              ) : null}
-            </StrataPanel>
-          ) : null}
-
           {snapshots.length === 0 ? (
             <div>
               <EmptyState
@@ -887,6 +1122,8 @@ export default function StrataReviewsPage() {
                 {lockButton}
               </div>
             </div>
+          ) : !isDetail ? (
+            reviewsIndex
           ) : (
             <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', alignItems: 'flex-start' }} data-testid="strata-reviews-split">
               {/* ── Snapshot rail ─────────────────────────────────────────────── */}

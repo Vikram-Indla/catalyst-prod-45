@@ -1008,3 +1008,22 @@ strip; 2E-3 charter/OKR restyle + promote + states.
 - GATES: `tsc` clean · `lint:colors:gate` 0=0 · `audit:ads:gate` 19799/19799 (fixed off-grid `marginTop:13`→`12`) ·
   `lint:cre` passed. No live surface yet (unconsumed) → live-verified when first consumed (4B/4E). **Map zero-change.**
   Changed set: shared.tsx + feature docs. NEXT: **4B** Reviews Index (anchor 23) — first `variant='dots'` consumer.
+
+## Slice 4B — Reviews Index (anchor 23), StrataReviewsPage index branch — BUILT + verified (session 016)
+- **Redesigned the `!isDetail` branch** of `StrataReviewsPage.tsx` to anchor 23; gated the existing cockpit detail
+  column to `isDetail` (fixed `selected = snapshots[0]` index leak — `/strata/reviews` no longer rendered a full cockpit).
+- **Index surface:** NOW band (derived most-consequential fact + Open cockpit →) → **Review registry** JiraTable
+  (Review [name+locked date] · Stage lozenge [Closed if period closed else In progress] · Lifecycle
+  `StrataLifecycleStepper variant="dots"` 5-stage readiness/snapshot/decisions/actions/pack · Snapshot key · Decisions
+  ["N recorded · M open"] · Follow-ups [X of Y closed · Z overdue, danger]; row→cockpit) → **Snapshot registry**
+  JiraTable (Snapshot [struck-through if superseded] · Frozen [locked_at] · Basis of [name + decision-record count] ·
+  Supersedes [reverse `superseded_by_id` scan]).
+- **Derived-review model (P4-D1 / DRIFT-9):** review == current non-superseded snapshot; all lifecycle/stage/counts
+  composed client-side over snapshots+decisions+actions+board-packs. Cadence subtitle CUT; StatStrip dropped (subsumed).
+- **Preserved** the governed Close-period ritual (`periodGovernancePanel`) below the registries (Regression rule — not
+  in anchor 23 but a working feature; relocated, not deleted). Removed orphaned `governanceBand` memo.
+- **New (thin, no migration):** `governanceApi.boardPacksAll` + `useAllBoardPacks` (plain select) for the pack-stage dot.
+- GATES: `tsc` clean · `lint:colors:gate` 0=0 · `audit:ads:gate` tokens 19799/19799 (fixed a NOW-band off-grid
+  `10px`→`12px`) · `lint:cre` passed. Live-verified localhost:8080 **light + dark** (lifecycle dots honest, not
+  flat-done); detail branch `/SNAP-1001` cockpit UNCHANGED; map `/strata/strategy/map` zero-change (0 map files); no
+  console errors. Changed set: StrataReviewsPage.tsx + domain/index.ts + hooks/useStrata.tsx + feature docs. NEXT: **4C**.
