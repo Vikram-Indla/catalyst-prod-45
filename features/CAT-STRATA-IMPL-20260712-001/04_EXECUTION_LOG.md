@@ -897,3 +897,18 @@ strip; 2E-3 charter/OKR restyle + promote + states.
 - GATES: `tsc` clean · colors 0=baseline · audit 19799/19799 · (CRE unaffected — no page/route change).
   Hero/multiple have no consumer yet → live-verified when consumed in 3B-1/2/3. Default consumer unchanged (verified).
 - NEXT: **3B-1** Benefit Detail (anchor 21) — consumes hero variant.
+
+### ⏳ Slice 3B-1 — Benefit Detail signature (anchor 21) — DONE (focused), gates green, live-verified; PENDING commit
+- File: `src/modules/strata/pages/StrataPortfolioVmoPage.tsx` (`BenefitDetailSection`).
+- Delivered anchor-21 **signature** elements: (1) **verdict band** — "VALUE POSITION · {period}" + value-position
+  prose (`value_hypothesis`) + "{X} awaits attestation" warning lozenge (sum of realized values not yet
+  finance-validated; hidden when 0, zero-assumption); (2) **hero value stages** — switched `StrataValueBar` to
+  `variant="hero"` (Planned/Forecast/Realized/Validated labelled rows + amounts, leakage on the forecast row).
+- Preserved: value-profile table (period/validation/Validate), value thesis, assumptions (status lozenges per DB
+  value, P3-D6), attribution, gates, and the `validateBenefitValue` SoD attestation modals.
+- GATES: `tsc` clean · colors 0=baseline · audit 19799/19799 · (CRE unchanged). LIVE **light + dark** (Enterprise
+  Revenue Uplift: Planned SAR 8M / Realized+Validated SAR 6.5M hero bars; verdict prose; PENDING+Validate).
+- **PARTIAL vs Plan Lock 3B-1:** the fuller 2-col restructure — a 360px rail with **IN THE CHAIN** (objective/
+  delivery/measured-by/gate links) + **Confidence** panel, and attestation-history-as-timeline — was NOT done in
+  this focused pass (Confidence stays in the Value-thesis panel; attestation state stays in the value table).
+  Flagged as remaining anchor-21 polish. NEXT: **3B-2** Portfolio Detail (new route, consumes hero).

@@ -57,6 +57,8 @@ spawn discovery; produce `03_PLAN_LOCK_PHASE3.md`; STOP for approval. No code be
   callout) + Overview source-field trim. Gates green; light+dark. **✅ 3A-2 + ✅✅ SLICE 3A COMPLETE.**
 - **3B-0 DONE** (pending commit): StrataValueBar additive `variant` prop (hero + multiple), default path
   unchanged (existing consumer verified). Gates green. NEXT: 3B-1 Benefit Detail (consumes hero).
+- **3B-1 DONE (focused)** (pending commit): anchor-21 verdict band + hero value stages on `BenefitDetailSection`;
+  panels preserved. PARTIAL: IN-THE-CHAIN + Confidence rail + attestation-timeline deferred. Gates green; light+dark.
 
 ## Open debt carried (unchanged)
 1. Prod migrations `20260713100000` + `20260713110000` = staging-only (no prod access). Apply later.
