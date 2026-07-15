@@ -1098,3 +1098,15 @@ strip; 2E-3 charter/OKR restyle + promote + states.
   unused imports. GATES: tsc · colors 0=0 · audit 19799/19799 (fixed marginTop:2→4) · CRE green. Live-verified light+dark
   (RUN-1001 full experience: 2 clusters, 3 dependent KPIs, lineage; RUN-9 honest empty-state). Only StrataDataPipelinePage.tsx
   touched (map untouched). NEXT: 4F Upload Wizard (anchor 20).
+
+## Slice 4F — Upload Wizard (anchor 20), StrataUploadWizardPage — BUILT + verified (session 020)
+- Replaced the hand-rolled stepper with canonical `StrataLifecycleStepper` (7-step lifecycle; wizard owns Contract/Upload/
+  Map, rest todo → run detail 09). Step model → 3 (Contract/Upload/Map); Preview+Submit replaced by a MAP step (`MapStep`)
+  with AUTO/CONFIRM/DECIDE mapping table (`buildMapRows` client name-match heuristic — mapping_rules empty) + monospace
+  Your-column + real Sample values + per-row ADS Select over column_schema + "Leave unmapped" + Match lozenge + honest
+  MAPPING MEMORY band. Continue gated on no unresolved DECIDE; "Continue to validation" stages remapped raw + →run detail.
+- Deviations (honest): role gate kept as 4-role warning (anchor data_steward-only) — no hard block, DB enforces; no
+  "Save & exit" draft (no persistence path). Removed dead PreviewStep/precheckRows/RowCheck/summaryRow/PREVIEW_CAP.
+- GATES: tsc · colors 0=0 · audit 19799→19798 (baseline ratcheted down) · CRE green. Live-verified light+dark (CSV paste →
+  MAP step: 3 AUTO + 1 DECIDE, Continue disabled→enabled on DECIDE resolve). Only StrataUploadWizardPage.tsx + audit
+  baseline touched (map untouched); console clean. NEXT: 4G Board Pack (anchor 24) + cockpit present/export.

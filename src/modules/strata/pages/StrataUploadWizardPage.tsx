@@ -26,7 +26,10 @@ import { lineageApi } from '@/modules/strata/domain';
 import {
   useDataSources, useInvalidateStrata, useStrataRoles, useUploadTemplates,
 } from '@/modules/strata/hooks/useStrata';
-import { StrataPageShell, StrataPanel, T } from '@/modules/strata/components/shared';
+import {
+  StrataLifecycleStepper, StrataPageShell, StrataPanel, T,
+  type StrataLifecycleStep, type StrataStepState,
+} from '@/modules/strata/components/shared';
 import { labelize } from '@/modules/strata/components/format';
 import type { StrataUploadTemplate } from '@/modules/strata/types';
 
@@ -36,9 +39,117 @@ const mono: React.CSSProperties = {
   fontFamily: 'var(--ds-font-family-code, monospace)', fontSize: 'var(--ds-font-size-100)',
 };
 
-const STEPS = ['Template', 'File', 'Preview & validate', 'Submit'] as const;
-const PREVIEW_CAP = 100;
+const STEPS = ['Contract', 'Upload', 'Map'] as const;
 const INGEST_ROLES = ['data_steward', 'kpi_owner', 'strategy_office', 'strata_admin'] as const;
+
+/** Anchor-20 7-step lifecycle — the wizard owns Contract/Upload/Map (steps 1-3),
+ *  then stages + hands off to run detail (anchor 09) for Validate→Promote→Calculated. */
+function wizardLifecycle(step: number, template: StrataUploadTemplate | null, parsed: ParsedData | null): StrataLifecycleStep[] {
+  const st = (i: number): StrataStepState => (i < step ? 'done' : i === step ? 'current' : 'todo');
+  return [
+    { id: 'contract', label: 'Contract', state: st(0), note: template ? `${template.name} v${template.version}` : undefined },
+    { id: 'upload', label: 'Upload', state: st(1), note: parsed ? `${parsed.rows.length} rows` : undefined },
+    { id: 'map', label: 'Map', state: st(2), note: 'match columns' },
+    { id: 'validate', label: 'Validate', state: 'todo', note: 'server rules' },
+    { id: 'resolve', label: 'Resolve', state: 'todo', note: undefined },
+    { id: 'promote', label: 'Promote', state: 'todo', note: 'pending attestation' },
+    { id: 'calculated', label: 'Calculated', state: 'todo', note: undefined },
+  ];
+}
+
+// ── Column mapping (anchor 20) — AUTO/CONFIRM/DECIDE client heuristic ─────────
+// No server match config exists (template.mapping_rules is empty), so match by
+// normalised column/label name: exact→AUTO, partial→CONFIRM, none→DECIDE.
+type MatchKind = 'AUTO' | 'CONFIRM' | 'DECIDE';
+interface MapRow { header: string; samples: string[]; match: MatchKind; suggested: string | null; }
+const normName = (s: string): string => s.toLowerCase().replace(/[^a-z0-9]/g, '');
+function sampleValues(parsed: ParsedData, header: string): string[] {
+  return parsed.rows.slice(0, 4).map((r) => { const v = r[header]; return v == null ? '' : String(v); }).filter((v) => v !== '').slice(0, 3);
+}
+function buildMapRows(template: StrataUploadTemplate, parsed: ParsedData): MapRow[] {
+  const fields = template.column_schema ?? [];
+  return parsed.headers.map((header) => {
+    const nh = normName(header);
+    const exact = fields.find((f) => normName(f.column) === nh || normName(f.label) === nh);
+    if (exact) return { header, samples: sampleValues(parsed, header), match: 'AUTO', suggested: exact.column };
+    const partial = nh.length >= 3
+      ? fields.find((f) => normName(f.column).includes(nh) || nh.includes(normName(f.column)) || normName(f.label).includes(nh) || nh.includes(normName(f.label)))
+      : undefined;
+    if (partial) return { header, samples: sampleValues(parsed, header), match: 'CONFIRM', suggested: partial.column };
+    return { header, samples: sampleValues(parsed, header), match: 'DECIDE', suggested: null };
+  });
+}
+const MATCH_APPEARANCE: Record<MatchKind, 'success' | 'moved'> = { AUTO: 'success', CONFIRM: 'moved', DECIDE: 'moved' };
+const UNMAPPED = '__unmapped__';
+
+/** MAP step (anchor 20) — AUTO/CONFIRM/DECIDE mapping table + honest mapping-memory band. */
+function MapStep({ template, rows, mapping, onChange }: {
+  template: StrataUploadTemplate;
+  rows: MapRow[];
+  mapping: Record<string, string>;
+  onChange: (header: string, value: string) => void;
+}) {
+  const autoCount = rows.filter((r) => r.match === 'AUTO').length;
+  const fieldOptions: SelectOption[] = [
+    ...(template.column_schema ?? []).map((f) => ({ label: f.label, value: f.column })),
+    { label: 'Leave unmapped', value: UNMAPPED },
+  ];
+  const columns: Column<MapRow>[] = [
+    {
+      id: 'yourcol', label: 'Your column', flex: true,
+      cell: ({ row }) => <span style={{ ...mono, color: T.text, fontWeight: 600 }}>{row.header}</span>,
+    },
+    {
+      id: 'samples', label: 'Sample values', width: 24,
+      cell: ({ row }) => row.samples.length > 0
+        ? <span style={{ ...mono, color: T.subtlest, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'block' }}>{row.samples.join(' · ')}</span>
+        : <span style={{ color: T.subtlest }}>—</span>,
+    },
+    {
+      id: 'target', label: 'Template field', width: 26,
+      cell: ({ row }) => (
+        <Select
+          spacing="compact"
+          options={fieldOptions}
+          value={fieldOptions.find((o) => o.value === (mapping[row.header] ?? '')) ?? null}
+          placeholder={row.match === 'DECIDE' ? 'Choose…' : undefined}
+          onChange={(opt) => onChange(row.header, (opt as SelectOption | null)?.value ?? '')}
+          aria-label={`Template field for ${row.header}`}
+        />
+      ),
+    },
+    {
+      id: 'match', label: 'Match', width: 16,
+      cell: ({ row }) => (
+        <div>
+          <StatusLozenge status={row.match.toLowerCase()} label={row.match} appearance={MATCH_APPEARANCE[row.match]} />
+          {row.match === 'CONFIRM' ? <div style={{ ...captionStyle, marginTop: 4 }}>header renamed — confirm meaning</div> : null}
+          {row.match === 'DECIDE' ? <div style={{ ...captionStyle, marginTop: 4 }}>new column — map or leave unmapped</div> : null}
+        </div>
+      ),
+    },
+  ];
+  return (
+    <>
+      <p style={{ ...bodyStyle, margin: 0 }}>
+        <strong>{autoCount} of {rows.length} column{rows.length === 1 ? '' : 's'} auto-matched</strong> against {template.name} v{template.version}
+        {rows.length - autoCount > 0 ? ` — ${rows.length - autoCount} need your decision` : ''}. Sample values are from your file.
+        <span style={{ ...captionStyle, marginLeft: 8 }}>Nothing is written until Promote.</span>
+      </p>
+      <StrataPanel title="Column mapping" icon={<ListChecks size={16} />} count={rows.length} noPadding testId="strata-upload-map">
+        {rows.length === 0 ? (
+          <div style={{ padding: 16 }}><EmptyState size="compact" header="No columns detected" description="The uploaded file has no header row to map." /></div>
+        ) : (
+          <JiraTable<MapRow> columns={columns} data={rows} getRowId={(r) => r.header} showRowCount={false} ariaLabel="Column mapping" />
+        )}
+      </StrataPanel>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 16, padding: '12px 16px', border: `1px solid ${T.border}`, borderRadius: 8, background: T.sunken, ...captionStyle, flexWrap: 'wrap' }} data-testid="strata-upload-mapping-memory">
+        <span style={{ fontWeight: 700, letterSpacing: '0.04em', color: T.subtlest }}>MAPPING MEMORY</span>
+        <span>This mapping applies to this run only — STRATA has no template-contract write path yet, so next month&apos;s file is matched fresh by column name.</span>
+      </div>
+    </>
+  );
+}
 
 // ── Parsing (client-side, display + staging payload only) ───────────────────
 interface ParsedData {
@@ -84,34 +195,6 @@ async function parseXlsx(buffer: ArrayBuffer, fileName: string): Promise<ParsedD
 }
 
 // ── Display-only pre-checks against the governed template schema ────────────
-interface RowCheck { rowNumber: number; issues: string[] }
-
-function precheckRows(template: StrataUploadTemplate, parsed: ParsedData): {
-  missingRequiredColumns: string[];
-  checks: RowCheck[];
-  invalidCount: number;
-} {
-  const schema = template.column_schema ?? [];
-  const headerSet = new Set(parsed.headers.map((h) => h.toLowerCase()));
-  const missingRequiredColumns = schema
-    .filter((c) => c.required && !headerSet.has(c.column.toLowerCase()))
-    .map((c) => c.column);
-  const checks: RowCheck[] = parsed.rows.map((row, i) => {
-    const issues: string[] = [];
-    // Header keys may differ in case from the schema column names.
-    const byLower = new Map(Object.keys(row).map((k) => [k.toLowerCase(), row[k]]));
-    schema.forEach((col) => {
-      const v = byLower.get(col.column.toLowerCase());
-      const empty = v == null || String(v).trim() === '';
-      if (col.required && empty) issues.push(`${col.column}: required, empty`);
-      if (col.type === 'number' && !empty && !Number.isFinite(Number(v))) {
-        issues.push(`${col.column}: not numeric`);
-      }
-    });
-    return { rowNumber: i + 1, issues };
-  });
-  return { missingRequiredColumns, checks, invalidCount: checks.filter((c) => c.issues.length > 0).length };
-}
 
 // ── Step 1: governed template picker ─────────────────────────────────────────
 function TemplateStep({ selected, onSelect }: {
@@ -350,85 +433,6 @@ function FileStep({ sourceId, onSourceChange, parsed, onParsed }: {
 }
 
 // ── Step 3: preview + display-only pre-checks ────────────────────────────────
-function PreviewStep({ template, parsed }: { template: StrataUploadTemplate; parsed: ParsedData }) {
-  const pre = useMemo(() => precheckRows(template, parsed), [template, parsed]);
-  const shown = parsed.rows.slice(0, PREVIEW_CAP);
-  const shownHeaders = parsed.headers.slice(0, 6);
-
-  const columns: Column<{ row: Record<string, unknown>; check: RowCheck }>[] = [
-    {
-      id: 'n', label: '#', width: 6, align: 'end',
-      cell: ({ row: r }) => <span style={{ ...bodyStyle, fontVariantNumeric: 'tabular-nums' }}>{r.check.rowNumber}</span>,
-    },
-    ...shownHeaders.map((h, i): Column<{ row: Record<string, unknown>; check: RowCheck }> => ({
-      id: `col-${h}`,
-      label: h,
-      ...(i === 0 ? { flex: true } : { width: 14 }),
-      cell: ({ row: r }) => {
-        const v = r.row[h];
-        return v == null || String(v).trim() === ''
-          ? <span style={{ color: T.subtlest }}>—</span>
-          : <span style={{ ...bodyStyle, fontVariantNumeric: 'tabular-nums', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'block' }}>{String(v)}</span>;
-      },
-    })),
-    {
-      id: 'precheck', label: 'Pre-check', width: 12,
-      cell: ({ row: r }) => (r.check.issues.length === 0
-        ? <StatusLozenge status="valid" label="Valid" appearance="success" />
-        : <StatusLozenge status="invalid" label="Invalid" appearance="removed" />),
-    },
-    {
-      id: 'issues', label: 'Issues', width: 24,
-      cell: ({ row: r }) => (r.check.issues.length === 0
-        ? <span style={{ color: T.subtlest }}>—</span>
-        : <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-danger)' }}>{r.check.issues.join('; ')}</span>),
-    },
-  ];
-
-  return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-      <SectionMessage appearance="information" title="Display-only pre-checks">
-        <p>
-          These checks compare the parsed payload with template “{template.name}” (v{template.version}) for early feedback only.
-          Authoritative validation, attestation and canonical writes happen server-side after submission.
-        </p>
-      </SectionMessage>
-      {pre.missingRequiredColumns.length > 0 ? (
-        <SectionMessage appearance="warning" title="Required columns missing from the payload">
-          <p>{pre.missingRequiredColumns.join(', ')}</p>
-        </SectionMessage>
-      ) : null}
-      <StrataPanel
-        title="Parsed rows"
-        icon={<ListChecks size={16} />}
-        count={parsed.rows.length}
-        noPadding
-        testId="strata-upload-preview-panel"
-        actions={
-          <span style={{ ...captionStyle, whiteSpace: 'nowrap' }}>
-            {pre.invalidCount > 0
-              ? `${(parsed.rows.length - pre.invalidCount).toLocaleString('en-US')} pass · ${pre.invalidCount.toLocaleString('en-US')} fail pre-checks`
-              : 'All rows pass pre-checks'}
-          </span>
-        }
-      >
-        <JiraTable<{ row: Record<string, unknown>; check: RowCheck }>
-          columns={columns}
-          data={shown.map((row, i) => ({ row, check: pre.checks[i] }))}
-          getRowId={(r) => String(r.check.rowNumber)}
-          ariaLabel="Parsed upload preview"
-        />
-        {parsed.rows.length > PREVIEW_CAP ? (
-          <div style={{ padding: '8px 16px', borderTop: `1px solid ${T.border}` }}>
-            <span style={captionStyle}>
-              Showing first {PREVIEW_CAP} of {parsed.rows.length.toLocaleString('en-US')} rows. All rows are staged on submit.
-            </span>
-          </div>
-        ) : null}
-      </StrataPanel>
-    </div>
-  );
-}
 
 // ── Page ─────────────────────────────────────────────────────────────────────
 export default function StrataUploadWizardPage() {
@@ -443,17 +447,32 @@ export default function StrataUploadWizardPage() {
   const [parsed, setParsed] = useState<ParsedData | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [mapping, setMapping] = useState<Record<string, string>>({});
 
-  const pre = useMemo(
-    () => (template && parsed ? precheckRows(template, parsed) : null),
-    [template, parsed],
-  );
+  // Column mapping rows (anchor 20); AUTO/CONFIRM defaults auto-fill, DECIDE stays undecided.
+  const mapRows = useMemo(() => (template && parsed ? buildMapRows(template, parsed) : []), [template, parsed]);
+  React.useEffect(() => {
+    if (mapRows.length === 0) return;
+    setMapping((prev) => {
+      const next = { ...prev };
+      mapRows.forEach((r) => { if (next[r.header] === undefined && r.match !== 'DECIDE' && r.suggested) next[r.header] = r.suggested; });
+      return next;
+    });
+  }, [mapRows]);
+  const unresolvedDecide = mapRows.some((r) => r.match === 'DECIDE' && mapping[r.header] === undefined);
   const hasIngestRole = (roles.data ?? []).some((r) => (INGEST_ROLES as readonly string[]).includes(r));
+
+  /** Remap a parsed row's keys to the template columns the steward mapped (anchor 20). */
+  const remapRaw = (raw: Record<string, unknown>): Record<string, unknown> => {
+    const out: Record<string, unknown> = {};
+    mapRows.forEach((r) => { const t = mapping[r.header]; if (t && t !== UNMAPPED) out[t] = raw[r.header]; });
+    return out;
+  };
 
   const canContinue =
     step === 0 ? template != null
     : step === 1 ? parsed != null && parsed.rows.length > 0
-    : true;
+    : !unresolvedDecide;
 
   const submit = async () => {
     if (!template || !parsed) return;
@@ -473,7 +492,7 @@ export default function StrataUploadWizardPage() {
         run.id,
         parsed.rows.map((raw, i) => ({
           row_number: i + 1,
-          raw,
+          raw: remapRaw(raw),
           target_entity: template.target_entity ?? null,
         })),
       );
@@ -486,42 +505,15 @@ export default function StrataUploadWizardPage() {
     }
   };
 
-  const summaryRow = (label: string, value: React.ReactNode) => (
-    <div style={{ display: 'flex', gap: 12, alignItems: 'baseline' }}>
-      <span style={{ ...captionStyle, fontWeight: 600, width: 140, flexShrink: 0 }}>{label}</span>
-      <span style={bodyStyle}>{value}</span>
-    </div>
-  );
-
   return (
     <StrataPageShell
       trail={[{ text: 'Data pipeline', href: Routes.strata.data() }, { text: 'Upload' }]}
       docTitle="Upload data"
       testId="strata-upload-wizard-chrome"
     >
-      {/* Token-pure stepper (@atlaskit/progress-tracker is not an installed dep) */}
-      <div style={{ display: 'flex', alignItems: 'flex-start', marginBottom: 20, overflowX: 'auto' }} aria-label="Upload steps">
-        {STEPS.map((label, i) => {
-          const state = i < step ? 'done' : i === step ? 'current' : 'todo';
-          const tone = state === 'done' ? 'var(--ds-text-success)' : state === 'current' ? 'var(--ds-text-brand)' : T.subtlest;
-          return (
-            <React.Fragment key={label}>
-              {i > 0 ? <div style={{ flex: '1 1 24px', height: 2, marginTop: 12, minWidth: 12, background: i <= step ? 'var(--ds-text-brand)' : T.border }} /> : null}
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, minWidth: 96 }}>
-                <span aria-hidden style={{
-                  width: 24, height: 24, borderRadius: 12, display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-                  border: `2px solid ${tone}`, color: tone, background: T.raised,
-                  fontSize: 'var(--ds-font-size-050)', fontWeight: 700, fontVariantNumeric: 'tabular-nums',
-                }}>
-                  {state === 'done' ? '✓' : i + 1}
-                </span>
-                <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: state === 'current' ? 600 : 500, color: state === 'todo' ? T.subtlest : T.text, whiteSpace: 'nowrap' }}>
-                  {label}
-                </span>
-              </div>
-            </React.Fragment>
-          );
-        })}
+      {/* Anchor-20 7-step lifecycle; wizard owns Contract/Upload/Map, then hands to run detail (09). */}
+      <div style={{ padding: '12px 16px', border: `1px solid ${T.border}`, borderRadius: 8, background: T.raised, boxShadow: 'var(--ds-shadow-raised)', overflowX: 'auto', marginBottom: 16 }}>
+        <StrataLifecycleStepper variant="full" steps={wizardLifecycle(step, template, parsed)} ariaLabel="Upload lifecycle" />
       </div>
 
       {roles.isSuccess && !hasIngestRole ? (
@@ -540,39 +532,13 @@ export default function StrataUploadWizardPage() {
         {step === 1 ? (
           <FileStep sourceId={sourceId} onSourceChange={setSourceId} parsed={parsed} onParsed={setParsed} />
         ) : null}
-        {step === 2 && template && parsed ? <PreviewStep template={template} parsed={parsed} /> : null}
-        {step === 3 && template && parsed ? (
-          <StrataPanel title="Submit governed run" icon={<Upload size={16} />} testId="strata-upload-submit-panel">
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-              {summaryRow('Template', `${template.name} (v${template.version})`)}
-              {summaryRow('Target entity', labelize(template.target_entity))}
-              {summaryRow('Source', sourceId
-                ? (sources.data ?? []).find((s) => s.id === sourceId)?.name ?? '—'
-                : '—')}
-              {summaryRow('Payload', parsed.fileName ?? 'Pasted CSV')}
-              {summaryRow('Rows to stage', parsed.rows.length.toLocaleString('en-US'))}
-              {pre ? summaryRow(
-                'Pre-checks',
-                pre.invalidCount === 0
-                  ? 'All rows pass'
-                  : `${pre.invalidCount.toLocaleString('en-US')} row(s) fail display-only pre-checks — they will still be staged; server-side validation decides`,
-              ) : null}
-              <div style={{ marginTop: 8 }}>
-                <SectionMessage appearance="information" title="What happens on submit">
-                  <p>
-                    A run (RUN-…) is created and every parsed row is staged as pending. No strata_ingest / validation RPC
-                    exists yet, so the run stops at the Staging stage of the pipeline; validation, attestation and canonical
-                    KPI writes remain server-side governance steps.
-                  </p>
-                </SectionMessage>
-              </div>
-              {submitError ? (
-                <SectionMessage appearance="error" title="Submission failed">
-                  <p>{submitError}</p>
-                </SectionMessage>
-              ) : null}
-            </div>
-          </StrataPanel>
+        {step === 2 && template && parsed ? (
+          <MapStep template={template} rows={mapRows} mapping={mapping} onChange={(header, value) => setMapping((prev) => ({ ...prev, [header]: value }))} />
+        ) : null}
+        {step === 2 && submitError ? (
+          <SectionMessage appearance="error" title="Could not stage the run">
+            <p style={{ whiteSpace: 'pre-wrap' }}>{submitError}</p>
+          </SectionMessage>
         ) : null}
       </div>
 
@@ -593,10 +559,10 @@ export default function StrataUploadWizardPage() {
               appearance="primary"
               iconBefore={submitting ? undefined : <Upload size={14} />}
               onClick={() => void submit()}
-              isDisabled={submitting || !template || !parsed}
+              isDisabled={submitting || !template || !parsed || unresolvedDecide}
               testId="strata-upload-submit"
             >
-              {submitting ? 'Submitting…' : 'Create upload run'}
+              {submitting ? 'Staging…' : 'Continue to validation'}
             </Button>
           )}
         </div>
