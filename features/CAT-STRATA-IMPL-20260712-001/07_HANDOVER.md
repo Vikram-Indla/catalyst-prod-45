@@ -5,9 +5,10 @@
 > this file → `08_DRIFT_LOG` → `09_DECISIONS` → `04_EXECUTION_LOG` (per-slice detail) → then re-read the
 > next slice's anchor in full via DesignSync (parent-only) before coding.
 
-## State (as of 2026-07-15 — mid Phase 3)
-- **Branch:** `strata/impl-phase01`. **`origin/main` = `21583d3ba`**; branch and main are in sync + pushed.
-  Working tree clean. **`StrataStrategyMapPage.tsx` byte-untouched across all of Phase 3** (verify every slice).
+## State (as of 2026-07-15 — mid Phase 3, after 3B-2)
+- **Branch:** `strata/impl-phase01`. **`origin/main` = `12deb2d15`** (3B-2 merged, fast-forward — see merge quirk in
+  the slice table); branch and main are in sync + pushed (both at `12deb2d15`). Working tree clean.
+  **`StrataStrategyMapPage.tsx` byte-untouched across all of Phase 3** (verify every slice).
 - **Phases 0/1/2 COMPLETE + merged** (see history below). **Phase 3 = HANDOFF "delivery & value"** per D-12
   (DRIFT-6 resolved): anchors **17 · 07 · 18 · 08 · 22 · 21**. Plan Lock `03_PLAN_LOCK_PHASE3.md` APPROVED
   (Vikram 2026-07-14; decisions **P3-D1…D8** all CONFIRMED — P3-D3 = scoped-down import on the existing
@@ -20,7 +21,7 @@
 | 3A-2a/b | 07 Project Card Detail (`ProjectCardDetailView`) | ✅ merged — strategic-role panel · Health&Forecast · unified "What threatens the forecast" · 360px rail (Details/Source System/Value Contribution) |
 | 3B-0 | `StrataValueBar` hero + `multiple` variants (`shared.tsx`) | ✅ merged — additive `variant` prop; default path unchanged |
 | 3B-1 | 21 Benefit Detail (`BenefitDetailSection` in `StrataPortfolioVmoPage`) | ✅ merged **(focused)** — verdict band + hero value stages. **DEFERRED:** 2-col rail (IN-THE-CHAIN + Confidence) + attestation-timeline |
-| 3B-2 | 08 Portfolio Detail — NEW route `/strata/portfolio/:slug` (`StrataPortfolioDetailPage`) | ✅ **built + gates green + live-verified (session 012) — AWAITING commit/merge**. Leakage hero (`StrataValueBar` hero + grounded verdict) · leakage-sorted benefits JiraTable · gates decision-context list (`decideGate`). P3-D2 client-derived via `useQueries`. No shadow (benefits/:slug + :slug/evidence + index all verified unbroken). Map zero-change. **DEFERRED:** objective-hop subline (kept "via N cards"). |
+| 3B-2 | 08 Portfolio Detail — NEW route `/strata/portfolio/:slug` (`StrataPortfolioDetailPage`) | ✅ **merged to main `12deb2d15` (session 012)**. Leakage hero (`StrataValueBar` hero + grounded verdict) · leakage-sorted benefits JiraTable · gates decision-context list (`decideGate`). P3-D2 client-derived via `useQueries`. No shadow (benefits/:slug + :slug/evidence + index all verified unbroken). Map zero-change. **DEFERRED:** objective-hop subline (kept "via N cards"). **⚠️ MERGE QUIRK:** GitHub rejected the `--no-ff` merge-commit push to main with `remote: fatal error in commit_refs` (no branch-protection/ruleset exists — verified). Fast-forward push of the identical commit (`git push origin <sha>:main`) succeeded. main + branch now BOTH at `12deb2d15` (no merge commit this slice). See [[github-noff-merge-push-rejected]]. |
 | **3B-3** | **22 Portfolio Index — repurpose `/strata/portfolio` to a real index** | ❌ **NEXT — not started** |
 | 3C | 18 Import & Reconciliation (`StrataExecutionImportPage`, scoped-down P3-D3) | ❌ not started |
 
