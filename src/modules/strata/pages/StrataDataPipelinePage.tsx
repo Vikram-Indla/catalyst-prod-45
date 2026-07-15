@@ -15,16 +15,16 @@ import { StatusLozenge } from '@/components/shared/StatusLozenge';
 import type { LozengeAppearance } from '@/components/shared/StatusLozenge';
 import { Routes } from '@/lib/routes';
 import {
-  AlertTriangle, CalendarClock, CheckCircle2, Copy, Database, MoveRight, Network, RefreshCw, Upload,
+  AlertTriangle, CheckCircle2, Copy, Database, MoveRight, Network, RefreshCw, Upload,
 } from '@/lib/atlaskit-icons';
 import { executionApi, kpiApi, lineageApi } from '@/modules/strata/domain';
 import {
-  useDataSources, useInvalidateStrata, useRunDetail, useStrataContext, useStrataRoles, useUploadRuns,
+  useDataSources, useInvalidateStrata, useKpis, useProfileNames, useRunDetail, useStrataContext, useStrataRoles, useUploadRuns,
 } from '@/modules/strata/hooks/useStrata';
-import { StrataDecisionModal, StrataPageShell, StrataPanel, T } from '@/modules/strata/components/shared';
-import { fmtDateTime, labelize } from '@/modules/strata/components/format';
+import { StrataDecisionModal, StrataFreshnessGlyph, StrataPageShell, StrataPanel, T } from '@/modules/strata/components/shared';
+import { fmtDate, fmtDateTime, labelize } from '@/modules/strata/components/format';
 import type {
-  StrataDataSource, StrataKpiActual, StrataStagingRow, StrataUploadRun, StrataValidationResult,
+  StrataDataSource, StrataKpi, StrataKpiActual, StrataStagingRow, StrataUploadRun, StrataValidationResult,
 } from '@/modules/strata/types';
 
 /** UI affordance gating only — DB RPC guards enforce the real rules (mirrors StrataUploadWizardPage). */
@@ -45,6 +45,53 @@ const rowValidationAppearance = (status: StrataStagingRow['validation_status']):
   status === 'valid' || status === 'validated' ? 'success'
   : status === 'rejected' ? 'removed'
   : 'moved';
+
+/** A run needs resolution when it rejected rows or failed/quarantined outright. */
+const runNeedsResolution = (r: StrataUploadRun): boolean =>
+  (r.row_count_rejected ?? 0) > 0 || r.status === 'failed' || r.status === 'quarantined';
+
+/**
+ * Enriched source row (anchor 19) — consequence-ranked from freshness (the `health`
+ * column is unpopulated in-schema, so derive from the latest run's age) + backward-
+ * derived downstream KPIs (P4-D4: strata_kpis.data_source_id; scorecard/snapshot
+ * forward impact is NOT tracked → labeled gap, never fabricated).
+ */
+interface SourceRow {
+  source: StrataDataSource;
+  lastRunAt: string | null;
+  lastRunKey: string | null;
+  contractVersion: number | null;
+  dependentNames: string[];
+  freshnessDays: number | null;
+  consequenceRank: number; // stale 0 · aging 1 · healthy 2 · never-run 3
+  statusLabel: string;
+  statusAppearance: LozengeAppearance;
+}
+function buildSourceRows(sources: StrataDataSource[], runs: StrataUploadRun[], kpis: StrataKpi[]): SourceRow[] {
+  const runsBySource = new Map<string, StrataUploadRun[]>();
+  runs.forEach((r) => { if (r.data_source_id) runsBySource.set(r.data_source_id, [...(runsBySource.get(r.data_source_id) ?? []), r]); });
+  const namesBySource = new Map<string, string[]>();
+  kpis.forEach((k) => { if (k.data_source_id) namesBySource.set(k.data_source_id, [...(namesBySource.get(k.data_source_id) ?? []), k.name]); });
+
+  const rows = sources.map((s): SourceRow => {
+    const srcRuns = (runsBySource.get(s.id) ?? []).filter((r) => r.completed_at);
+    const lastRun = srcRuns.reduce<StrataUploadRun | null>((mx, r) => (mx == null || r.completed_at! > mx.completed_at! ? r : mx), null);
+    const lastRunAt = lastRun?.completed_at ?? null;
+    const days = lastRunAt ? Math.max(0, Math.floor((Date.now() - new Date(lastRunAt).getTime()) / 86_400_000)) : null;
+    let statusLabel: string; let statusAppearance: LozengeAppearance; let consequenceRank: number;
+    if (days == null) { statusLabel = labelize(s.status); statusAppearance = SOURCE_STATUS[s.status] ?? 'default'; consequenceRank = 3; }
+    else if (days > 5) { statusLabel = 'Stale'; statusAppearance = 'removed'; consequenceRank = 0; }
+    else if (days > 2) { statusLabel = 'Aging'; statusAppearance = 'moved'; consequenceRank = 1; }
+    else { statusLabel = 'Healthy'; statusAppearance = 'success'; consequenceRank = 2; }
+    return {
+      source: s, lastRunAt, lastRunKey: lastRun?.run_key ?? null,
+      contractVersion: lastRun?.template_version ?? null,
+      dependentNames: namesBySource.get(s.id) ?? [], freshnessDays: days,
+      consequenceRank, statusLabel, statusAppearance,
+    };
+  });
+  return rows.sort((a, b) => a.consequenceRank - b.consequenceRank || (b.freshnessDays ?? -1) - (a.freshnessDays ?? -1));
+}
 
 const mono: React.CSSProperties = {
   fontFamily: 'var(--ds-font-family-code, monospace)', fontSize: 'var(--ds-font-size-100)',
@@ -190,44 +237,122 @@ function PanelState({ query, empty, emptyHeader, emptyDescription, children }: {
 }
 
 // ── Registered sources ───────────────────────────────────────────────────────
+/** Judgment sentence (anchor 19) — the steward's triage line: what breaks what, worst first. */
+function DataLandingJudgment() {
+  const sourcesQ = useDataSources();
+  const runsQ = useUploadRuns();
+  const kpisQ = useKpis();
+  const rows = useMemo(
+    () => buildSourceRows(sourcesQ.data ?? [], runsQ.data ?? [], kpisQ.data ?? []),
+    [sourcesQ.data, runsQ.data, kpisQ.data],
+  );
+  if (sourcesQ.isLoading || runsQ.isLoading) return <div aria-hidden style={{ height: 22, borderRadius: 8, background: T.neutral }} />;
+  const attention = rows.filter((r) => r.consequenceRank <= 1);
+  const resolveRuns = (runsQ.data ?? []).filter(runNeedsResolution);
+  const worst = attention[0];
+  const clauses: string[] = [];
+  if (attention.length > 0) {
+    const victims = worst?.dependentNames.length ?? 0;
+    clauses.push(
+      `${attention.length} source${attention.length === 1 ? '' : 's'} ${attention.length === 1 ? 'is' : 'are'} stale or aging`
+      + (worst && victims > 0 ? ` (${worst.source.name} degrades ${victims} KPI${victims === 1 ? '' : 's'})` : ''),
+    );
+  }
+  if (resolveRuns.length > 0) clauses.push(`${resolveRuns.length} run${resolveRuns.length === 1 ? '' : 's'} need resolution`);
+  const sentence = clauses.length > 0
+    ? `${clauses.join('; ')}.`
+    : `All ${rows.length} source${rows.length === 1 ? '' : 's'} are fresh — no runs need resolution.`;
+  return (
+    <p style={{ margin: 0, fontSize: 'var(--ds-font-size-300)', lineHeight: 'var(--ds-line-height-300)', color: T.text }} data-testid="strata-data-judgment">
+      <strong>{sentence}</strong>
+    </p>
+  );
+}
+
+// ── Sources — freshness and who depends on them (anchor 19) ───────────────────
 function SourcesPanel() {
   const sources = useDataSources();
+  const runs = useUploadRuns();
+  const kpis = useKpis();
+  const rows = useMemo(
+    () => buildSourceRows(sources.data ?? [], runs.data ?? [], kpis.data ?? []),
+    [sources.data, runs.data, kpis.data],
+  );
+
+  const columns: Column<SourceRow>[] = [
+    {
+      id: 'source', label: 'Source', flex: true,
+      cell: ({ row }) => (
+        <div style={{ minWidth: 0 }}>
+          <span style={{ ...bodyStyle, fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'block' }}>{row.source.name}</span>
+          <span style={{ ...captionStyle, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'block' }}>
+            {labelize(row.source.system_type)}{row.source.refresh_cadence ? ` · ${row.source.refresh_cadence}` : ''}
+          </span>
+        </div>
+      ),
+    },
+    {
+      id: 'freshness', label: 'Freshness', width: 14,
+      cell: ({ row }) => <StrataFreshnessGlyph latest={row.lastRunAt} testId={`strata-source-fresh-${row.source.id}`} />,
+    },
+    {
+      id: 'contract', label: 'Contract', width: 14,
+      cell: ({ row }) => row.contractVersion != null
+        ? <span style={captionStyle}>Template v{row.contractVersion}</span>
+        : <span style={{ color: T.subtlest }}>—</span>,
+    },
+    {
+      id: 'dependents', label: 'Downstream dependents', width: 22,
+      cell: ({ row }) => {
+        if (row.dependentNames.length === 0) return <span style={{ color: T.subtlest }}>— none tracked</span>;
+        const shown = row.dependentNames.slice(0, 2).join(', ');
+        const extra = row.dependentNames.length - 2;
+        return (
+          <Tooltip content={`${row.dependentNames.join(', ')} · scorecard/snapshot forward impact not tracked`}>
+            <span style={{ ...captionStyle, color: T.subtle, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'block' }}>
+              {row.dependentNames.length} KPI{row.dependentNames.length === 1 ? '' : 's'}: {shown}{extra > 0 ? ` +${extra}` : ''}
+            </span>
+          </Tooltip>
+        );
+      },
+    },
+    {
+      id: 'lastrun', label: 'Last run', width: 15,
+      cell: ({ row }) => row.lastRunKey ? (
+        <div style={{ minWidth: 0 }}>
+          <span style={{ ...captionStyle, color: T.subtle, fontWeight: 600, display: 'block' }}>{row.lastRunKey}</span>
+          {row.lastRunAt ? <span style={{ ...captionStyle, fontVariantNumeric: 'tabular-nums', display: 'block' }}>{fmtDate(row.lastRunAt)}</span> : null}
+        </div>
+      ) : <span style={{ color: T.subtlest }}>never run</span>,
+    },
+    {
+      id: 'status', label: 'Status', width: 13,
+      cell: ({ row }) => <StatusLozenge status={row.statusLabel.toLowerCase()} label={row.statusLabel} appearance={row.statusAppearance} />,
+    },
+  ];
+
   return (
-    <StrataPanel title="Registered sources" icon={<Database size={16} />} count={sources.data?.length ?? null} testId="strata-sources-panel">
-      <p style={{ ...captionStyle, margin: '0 0 12px' }}>
-        Only registered sources can feed approved KPIs.
-      </p>
+    <StrataPanel
+      title="Sources — freshness and who depends on them"
+      icon={<Database size={16} />}
+      count={rows.length}
+      noPadding
+      testId="strata-sources-panel"
+      actions={<span style={captionStyle}>Sorted by consequence: stale &gt; aging &gt; healthy</span>}
+    >
       <PanelState
         query={sources}
-        empty={(sources.data ?? []).length === 0}
+        empty={rows.length === 0}
         emptyHeader="No data sources registered yet"
-        emptyDescription="Register a source to begin governed ingestion."
+        emptyDescription="Register a source to begin governed ingestion — its freshness and downstream KPIs appear here."
       >
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: 12 }}>
-          {(sources.data ?? []).map((s) => (
-            <div
-              key={s.id}
-              style={{
-                border: `1px solid ${T.border}`, borderRadius: 8, padding: 12,
-                background: T.raised, boxShadow: 'var(--ds-shadow-raised)',
-                display: 'flex', flexDirection: 'column', gap: 8,
-              }}
-            >
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
-                <strong style={{ fontSize: 'var(--ds-font-size-200)', color: T.text }}>{s.name}</strong>
-                <StatusLozenge status={s.status} label={labelize(s.status)} appearance={SOURCE_STATUS[s.status] ?? 'default'} />
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-                <CatalystTag text={labelize(s.system_type)} />
-                {s.refresh_cadence ? (
-                  <span style={{ ...captionStyle, display: 'inline-flex', alignItems: 'center', gap: 4 }}>
-                    <CalendarClock size={12} /> Refresh {s.refresh_cadence}
-                  </span>
-                ) : null}
-              </div>
-            </div>
-          ))}
-        </div>
+        <JiraTable<SourceRow>
+          columns={columns}
+          data={rows}
+          getRowId={(r) => r.source.id}
+          showRowCount={false}
+          ariaLabel="Data sources"
+        />
       </PanelState>
     </StrataPanel>
   );
@@ -239,6 +364,14 @@ function RunsPanel() {
   const navigate = useNavigate();
   const rolesQ = useStrataRoles();
   const invalidate = useInvalidateStrata();
+  const kpis = useKpis();
+  const profiles = useProfileNames();
+  // Downstream KPIs per source — "waiting on it" for runs that still need resolution (P4-D4).
+  const namesBySource = useMemo(() => {
+    const m = new Map<string, string[]>();
+    (kpis.data ?? []).forEach((k) => { if (k.data_source_id) m.set(k.data_source_id, [...(m.get(k.data_source_id) ?? []), k.name]); });
+    return m;
+  }, [kpis.data]);
   const hasSyncRole = (rolesQ.data ?? []).some((r) => (SYNC_ROLES as readonly string[]).includes(r));
   const [syncBusy, setSyncBusy] = useState(false);
   const [syncError, setSyncError] = useState<string | null>(null);
@@ -265,47 +398,57 @@ function RunsPanel() {
 
   const columns: Column<StrataUploadRun>[] = [
     {
-      id: 'run', label: 'Run', width: 13, sortable: true,
+      id: 'run', label: 'Run', width: 12, sortable: true,
       accessor: (r) => r.run_key,
       cell: ({ row: r }) => (
-        <span style={{ fontSize: 'var(--ds-font-size-300)', lineHeight: 'var(--ds-line-height-body)', fontWeight: 600, color: T.brandText, whiteSpace: 'nowrap' }}>
-          {r.run_key}
-        </span>
+        <span style={{ ...bodyStyle, fontWeight: 600, color: T.brandText, whiteSpace: 'nowrap' }}>{r.run_key}</span>
       ),
     },
     {
-      id: 'file', label: 'File / channel', flex: true,
+      id: 'what', label: 'What', flex: true,
       accessor: (r) => r.file_name ?? r.channel,
-      cell: ({ row: r }) => (
-        <span style={{
-          ...bodyStyle, fontSize: 'var(--ds-font-size-400)', lineHeight: 'var(--ds-line-height-body)',
-          overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'block',
-        }}>
-          {r.file_name ?? labelize(r.channel)}
-        </span>
-      ),
+      cell: ({ row: r }) => {
+        const owner = r.initiated_by ? profiles.data?.get(r.initiated_by)?.name ?? null : null;
+        return (
+          <div style={{ minWidth: 0 }}>
+            <span style={{ ...bodyStyle, fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'block' }}>
+              {r.file_name ?? labelize(r.channel)}
+            </span>
+            <span style={{ ...captionStyle, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'block' }}>
+              {owner ? `${owner} · ` : ''}{fmtDate(r.started_at)}
+            </span>
+          </div>
+        );
+      },
     },
     {
-      id: 'started', label: 'Started', width: 17, sortable: true,
-      accessor: (r) => r.started_at,
-      cell: ({ row: r }) => <span style={{ ...bodyStyle, fontVariantNumeric: 'tabular-nums' }}>{fmtDateTime(r.started_at)}</span>,
-    },
-    {
-      id: 'rows', label: 'Rows', width: 22,
+      id: 'rows', label: 'Rows', width: 20,
       cell: ({ row: r }) => <SegmentedCounts raw={r.row_count_raw} valid={r.row_count_valid} rejected={r.row_count_rejected} />,
     },
     {
-      id: 'status', label: 'Status', width: 13, sortable: true,
+      id: 'status', label: 'Status', width: 14, sortable: true,
       accessor: (r) => r.status,
       cell: ({ row: r }) => (
         <StatusLozenge status={r.status} label={labelize(r.status)} appearance={runStatusAppearance(r.status)} />
       ),
     },
+    {
+      id: 'waiting', label: 'Waiting on it', width: 18,
+      cell: ({ row: r }) => {
+        if (!runNeedsResolution(r)) return <span style={{ color: T.subtlest }}>—</span>;
+        const deps = r.data_source_id ? namesBySource.get(r.data_source_id) ?? [] : [];
+        return (
+          <span style={{ ...captionStyle, color: 'var(--ds-text-danger)', fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'block' }}>
+            {deps.length > 0 ? `${deps.length} KPI${deps.length === 1 ? '' : 's'} waiting` : 'needs resolution'}
+          </span>
+        );
+      },
+    },
   ];
 
   return (
     <StrataPanel
-      title="Upload runs"
+      title="Recent runs"
       icon={<Upload size={16} />}
       count={runs.data?.length ?? null}
       noPadding
@@ -749,12 +892,14 @@ export default function StrataDataPipelinePage() {
       }
       testId="strata-data-pipeline-chrome"
     >
-      <PipelineStepper run={runKey ? detail.data?.run ?? null : null} />
+      {/* Lifecycle stepper is run-detail only (anchor 19 landing carries no stepper). */}
+      {runKey ? <PipelineStepper run={detail.data?.run ?? null} /> : null}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
         {runKey ? (
           <RunDetailSection runKey={runKey} detail={detail} />
         ) : (
           <>
+            <DataLandingJudgment />
             <SourcesPanel />
             <RunsPanel />
           </>

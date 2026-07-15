@@ -25,7 +25,7 @@ import type { Column } from '@/components/shared/JiraTable';
 import { kpiApi } from '../domain';
 import { useBandResolver, useStrataContext } from '../hooks/useStrata';
 import { StrataNotificationBell } from './StrataNotificationBell';
-import { fmtPct, fmtRatioPct, fmtSarCompact, fmtScore, fmtUnit, labelize } from './format';
+import { fmtDate, fmtPct, fmtRatioPct, fmtSarCompact, fmtScore, fmtUnit, labelize } from './format';
 import type { DataState, StrataDependency, StrataKeyResult, StrataOkr, StrataProjectCard, ThresholdBand } from '../types';
 
 const STALE = 30_000;
@@ -947,6 +947,30 @@ const STEP_DOT_FILL: Record<StrataStepState, string> = {
   failed: 'var(--ds-background-danger-bold)',
   todo: 'var(--ds-background-neutral)',
 };
+/**
+ * Freshness staleness glyph — ● fresh (≤2d) / ◐ aging (3–5d) / ○ stale (>5d) + relative
+ * age; absolute date on hover. Glyph shape + word carry state (colour never alone).
+ * Timestamp-based so it serves any freshness surface (KPI actuals, data-source last run).
+ * Thresholds/glyphs/tokens match StrataKpiLibraryPage's KpiFreshnessCell (§P4-D8).
+ */
+export function StrataFreshnessGlyph({ latest, testId }: { latest: string | null; testId?: string }) {
+  if (!latest) return <span style={{ color: T.subtlest }}>—</span>;
+  const days = Math.max(0, Math.floor((Date.now() - new Date(latest).getTime()) / 86_400_000));
+  const stale = days > 5;
+  const aging = days > 2 && days <= 5;
+  const glyph = stale ? '○' : aging ? '◐' : '●';
+  const color = stale ? 'var(--ds-text-danger)' : aging ? 'var(--ds-text-warning)' : 'var(--ds-text-success)';
+  const rel = days === 0 ? 'today' : `${days}d`;
+  return (
+    <Tooltip content={fmtDate(latest)}>
+      <span data-testid={testId} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, color, fontSize: 'var(--ds-font-size-100)', whiteSpace: 'nowrap' }}>
+        <span aria-hidden>{glyph}</span>
+        <span>{stale ? `stale ${rel}` : rel}</span>
+      </span>
+    </Tooltip>
+  );
+}
+
 export function StrataLifecycleStepper({
   steps, variant = 'full', ariaLabel, testId,
 }: {

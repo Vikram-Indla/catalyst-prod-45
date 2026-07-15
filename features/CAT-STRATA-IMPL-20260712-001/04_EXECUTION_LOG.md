@@ -1074,3 +1074,15 @@ strip; 2E-3 charter/OKR restyle + promote + states.
   light+dark: 8 KPIs compared · 0 restated → "Snapshot matches live" (honest; locked period live == frozen). Only
   StrataReviewsPage.tsx touched (map zero-change); fresh-reload console clean (a transient HMR stale-ref error during the
   edit sequence cleared on reload). **Decision Cockpit anchor-10 COMPLETE (4C-1+4C-2+4C-3).** NEXT: 4D (anchor 19).
+
+## Slice 4D — Data & Lineage Landing (anchor 19), StrataDataPipelinePage landing branch — BUILT + verified (session 018)
+- **P4-D8:** promoted `StrataFreshnessGlyph` to `shared.tsx` (timestamp-based; KPI-library thresholds/glyphs/tokens
+  replicated exactly; library consumer not refactored — DRIFT-8 precedent).
+- Guarded the lifecycle stepper to run-detail-only (landing carried a neutral 8-dot stepper; anchor 19 has none).
+- Judgment sentence (`DataLandingJudgment`, derived) + Sources table (`buildSourceRows`, consequence-ranked from
+  last-run freshness since `health` is null; freshness glyph; contract from last run's template_version; downstream KPIs
+  backward-derived via `strata_kpis.data_source_id`, P4-D4, with scorecard/snapshot forward impact a labeled gap;
+  last-run stacked; derived Stale/Aging/Healthy status) + Recent runs table (Run·What[file+owner+date]·Rows·Status·
+  Waiting-on-it[danger when runNeedsResolution]). Source→detail NOT built (no route/page; deferred). Run→09 preserved.
+- New hooks: `useKpis`, `useProfileNames`. GATES: tsc · colors 0=0 · audit 19799/19799 · CRE all green. Live-verified
+  light+dark; only shared.tsx + StrataDataPipelinePage.tsx touched (map untouched); fresh-reload console clean. NEXT: 4E.
