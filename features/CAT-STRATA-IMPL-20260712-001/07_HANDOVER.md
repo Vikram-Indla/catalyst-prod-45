@@ -5,10 +5,10 @@
 > this file (State section below) → `08_DRIFT_LOG` (DRIFT-8; DRIFT-9 = 4B derived-review model) → `09_DECISIONS`
 > (P4-D0…D8 CONFIRMED) → `discovery/07_phase4_anchor_specs.md` (6 anchor digests) → `04_EXECUTION_LOG` (per-slice
 > detail) → latest `sessions/` (016). **Then re-read the next slice's anchor (10) in full via DesignSync (parent-only) before coding.**
-> 4A merged at `59ef4f4cf`. **4B BUILT + verified, AWAITING commit/merge** (branch/main both at `2ed27144f`; 4B not yet committed).
-> Working tree: 3 code files (StrataReviewsPage.tsx, domain/index.ts, hooks/useStrata.tsx) + session 016. Map byte-untouched.
+> 4A merged at `59ef4f4cf`. **4B MERGED at `5afac31f8`** (branch == origin/branch == origin/main, fast-forward — no
+> merge commit; [[github-noff-merge-push-rejected]] avoided via linear ff). Working tree clean; map byte-untouched.
 
-## Slice 4B ✅ BUILT + verified (anchor 23 Reviews Index) — AWAITING commit/merge
+## Slice 4B ✅ MERGED `5afac31f8` (anchor 23 Reviews Index)
 - Redesigned `StrataReviewsPage` **index branch** (`!isDetail`) to anchor 23: **NOW band** + **Review registry**
   (JiraTable, `StrataLifecycleStepper variant="dots"` 5-stage, derived rows) + **Snapshot registry** (JiraTable,
   supersedes struck-through). Gated the cockpit detail column to `isDetail` (fixed `selected=snapshots[0]` index leak).
