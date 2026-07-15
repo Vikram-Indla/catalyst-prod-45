@@ -83,3 +83,20 @@ Deviations from the anchor that were taken deliberately (with rationale), pendin
 - **Decision needed:** (1) scope — full anchor-12 card redesign (split ≤2h) vs Plan-Lock-literal
   incremental; (2) ranked-panel basis — since "vs plan" can't be truthful, rank by current score/band
   (worst-first) or by Δ-vs-prior. RAISED to Vikram; no code until resolved.
+
+## DRIFT-8 · Slice 4A — consumer refactor deferred to redesign slices (RAISED, low-risk refinement)
+- **Plan Lock 4A said:** build `StrataLifecycleStepper` AND refactor `StrataDataPipelinePage` + `StrataUploadWizardPage`
+  consumers "behavior-preserving (no visual change to current use)".
+- **Reality found at slice start:** the canonical stepper matches the ANCHOR (numbered circles; **current = warning**,
+  per anchors 09/20). The two existing steppers differ: UploadWizard `current = --ds-text-brand` (blue); DataPipeline
+  `PipelineStepper` is a DIFFERENT visual entirely (icon-dots, 8-stage) and its surfaces are being redesigned —
+  anchor 19 (landing) has NO stepper (removed in 4D), anchor 09 (run detail) gets the numbered stepper (4E).
+- **Conflict:** refactoring either consumer in 4A would EITHER change its "current" colour (brand/info → warning =
+  NOT behavior-preserving) OR duplicate the 4D/4E/4F redesign work. There is no behavior-preserving refactor available.
+- **Taken:** 4A ships the canonical `StrataLifecycleStepper` component ONLY (like 3B-0 shipped StrataValueBar variants
+  ahead of consumers). Consumers ADOPT it in their own redesign slices — 4E (run detail), 4F (upload wizard),
+  4B/4C (review dots) — where changing to the anchor stepper is the intended design, not a regression. The existing
+  inline steppers stay untouched until then (zero visual change now).
+- **Status:** low-risk refinement; component is tsc + gates green, live-verified when first consumed. **Flagged to
+  Vikram** — not silently adapted. If Vikram wants the consumers swapped in 4A regardless (accepting the current-colour
+  shift), say so and I will.

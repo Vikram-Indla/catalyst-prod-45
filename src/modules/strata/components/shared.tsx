@@ -924,6 +924,92 @@ export function StrataMetricStat({
   );
 }
 
+// ── Lifecycle stepper (governed multi-stage journey; proposal §18) ──────────
+// Canonical stepper for STRATA governed journeys. 'full' = numbered circles + label
+// + optional per-step note (anchors 09 run detail / 20 upload wizard: Contract→…→
+// Calculated). 'dots' = compact filled circles for in-table review-lifecycle (anchors
+// 23 registry / 10 cockpit strip). Token-pure; state carries via glyph (✓ / number / !)
+// + a per-step aria-label, never color alone.
+export type StrataStepState = 'done' | 'current' | 'todo' | 'failed';
+export interface StrataLifecycleStep {
+  id: string;
+  label: string;
+  state: StrataStepState;
+  /** Per-step commitment/reversibility note — 'full' variant only. */
+  note?: React.ReactNode;
+}
+const STEP_STATE_WORD: Record<StrataStepState, string> = {
+  done: 'complete', current: 'in progress', todo: 'not started', failed: 'failed',
+};
+const STEP_DOT_FILL: Record<StrataStepState, string> = {
+  done: 'var(--ds-background-success-bold)',
+  current: 'var(--ds-background-warning-bold)',
+  failed: 'var(--ds-background-danger-bold)',
+  todo: 'var(--ds-background-neutral)',
+};
+export function StrataLifecycleStepper({
+  steps, variant = 'full', ariaLabel, testId,
+}: {
+  steps: StrataLifecycleStep[];
+  variant?: 'full' | 'dots';
+  ariaLabel: string;
+  testId?: string;
+}) {
+  // Compact dots (review lifecycle in a JiraTable cell): color + a11y title carry state.
+  if (variant === 'dots') {
+    return (
+      <span data-testid={testId} role="img" aria-label={ariaLabel} style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+        {steps.map((s) => (
+          <span
+            key={s.id}
+            title={`${s.label}: ${STEP_STATE_WORD[s.state]}`}
+            style={{
+              width: 10, height: 10, borderRadius: '50%', flexShrink: 0,
+              background: STEP_DOT_FILL[s.state],
+              border: s.state === 'todo' ? `1px solid ${T.border}` : 'none',
+            }}
+          />
+        ))}
+      </span>
+    );
+  }
+  return (
+    <div data-testid={testId} role="list" aria-label={ariaLabel} style={{ display: 'flex', alignItems: 'flex-start', overflowX: 'auto', paddingBottom: 4 }}>
+      {steps.map((s, i) => {
+        const done = s.state === 'done'; const current = s.state === 'current'; const failed = s.state === 'failed';
+        const circle: React.CSSProperties = failed
+          ? { background: 'var(--ds-background-danger)', color: 'var(--ds-text-danger)', border: '2px solid var(--ds-background-danger-bold)' }
+          : done
+          ? { background: 'var(--ds-background-success-bold)', color: 'var(--ds-text-inverse)', border: '2px solid var(--ds-background-success-bold)' }
+          : current
+          ? { background: 'var(--ds-background-warning)', color: 'var(--ds-text-warning)', border: '2px solid var(--ds-background-warning-bold)' }
+          : { background: T.raised, color: T.subtlest, border: `2px solid ${T.border}` };
+        const labelTone = failed ? 'var(--ds-text-danger)' : current ? T.text : done ? T.subtle : T.subtlest;
+        return (
+          <React.Fragment key={s.id}>
+            {i > 0 ? (
+              <span aria-hidden style={{
+                flex: '1 1 24px', height: 2, marginTop: 12, minWidth: 12,
+                background: steps[i - 1].state === 'done' ? 'var(--ds-background-success-bold)' : T.border,
+              }} />
+            ) : null}
+            <span role="listitem" aria-label={`${s.label}: ${STEP_STATE_WORD[s.state]}`} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, minWidth: 96, flexShrink: 0 }}>
+              <span aria-hidden style={{
+                width: 26, height: 26, borderRadius: '50%', display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                fontSize: 'var(--ds-font-size-050)', fontWeight: 700, fontVariantNumeric: 'tabular-nums', ...circle,
+              }}>
+                {done ? '✓' : failed ? '!' : i + 1}
+              </span>
+              <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: current ? 700 : 500, color: labelTone, whiteSpace: 'nowrap' }}>{s.label}</span>
+              {s.note != null ? <span style={{ fontSize: 'var(--ds-font-size-050)', color: T.subtlest, whiteSpace: 'nowrap' }}>{s.note}</span> : null}
+            </span>
+          </React.Fragment>
+        );
+      })}
+    </div>
+  );
+}
+
 // ── Section panel (flagship chrome: bordered header, icon anchor, count) ────
 export function StrataPanel({
   title, icon, count, actions, children, testId, noPadding,

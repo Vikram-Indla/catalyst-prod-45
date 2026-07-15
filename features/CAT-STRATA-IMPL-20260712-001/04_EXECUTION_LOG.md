@@ -993,3 +993,18 @@ strip; 2E-3 charter/OKR restyle + promote + states.
   Vitest). Verified via tsc + gates + code review (all canonical components). **Vikram: commit + merge with this
   verification (2026-07-15).** Map zero-change. Changed set: StrataExecutionImportPage.tsx + session 014 log.
 - **✅ PHASE 3 COMPLETE** (3A·3B-0·3B-1·3B-2·3B-3·3C). NEXT = Phase 4 (governance & data) — own Plan Lock required.
+
+### ⏳ Slice 4A — StrataLifecycleStepper (canonical, §18) — DONE (component only), gates green; PENDING commit
+- **New canonical `StrataLifecycleStepper`** in `src/modules/strata/components/shared.tsx` (P4-D0). API:
+  `{ steps:StrataLifecycleStep[]{id,label,state:'done'|'current'|'todo'|'failed',note?}, variant:'full'|'dots',
+  ariaLabel, testId }`. `variant='full'` = numbered circles (✓ done / n current+todo / ! failed) + label + optional
+  per-step note (anchors 09 run detail / 20 upload wizard); `variant='dots'` = compact 10px filled circles for
+  in-table review lifecycle (anchors 23 registry / 10 cockpit). Token-pure (done=success-bold, current=warning,
+  failed=danger, todo=neutral/border); a11y per-step `aria-label="{label}: {state word}"`, glyph+label carry state
+  (never colour alone). Circle 26px, connector success-bold when prior done.
+- **DRIFT-8 (RAISED):** consumer refactors (`StrataDataPipelinePage`/`StrataUploadWizardPage`) DEFERRED to redesign
+  slices 4E/4F/4B/4C — no behavior-preserving swap exists (anchor current=warning ≠ existing brand/info; DataPipeline
+  stepper is icon-dot and removed by anchor 19). Component ships alone (3B-0 precedent).
+- GATES: `tsc` clean · `lint:colors:gate` 0=0 · `audit:ads:gate` 19799/19799 (fixed off-grid `marginTop:13`→`12`) ·
+  `lint:cre` passed. No live surface yet (unconsumed) → live-verified when first consumed (4B/4E). **Map zero-change.**
+  Changed set: shared.tsx + feature docs. NEXT: **4B** Reviews Index (anchor 23) — first `variant='dots'` consumer.

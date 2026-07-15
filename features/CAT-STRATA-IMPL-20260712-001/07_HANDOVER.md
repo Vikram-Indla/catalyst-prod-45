@@ -5,13 +5,29 @@
 > this file → `08_DRIFT_LOG` → `09_DECISIONS` → `04_EXECUTION_LOG` (per-slice detail) → then re-read the
 > next slice's anchor in full via DesignSync (parent-only) before coding.
 
-## State (as of 2026-07-15 — Phase 3 COMPLETE pending 3C merge)
-- **Branch:** `strata/impl-phase01`. `origin/main` = `338da9903` (3B-3); **3C committed + AWAITING merge** (fast-forward
-  path — GitHub rejects the `--no-ff` merge-commit push, [[github-noff-merge-push-rejected]]; pushes are also flaky —
-  retry). **`StrataStrategyMapPage.tsx` byte-untouched across all of Phase 3.**
-- **PHASE 3 COMPLETE** (3A · 3B-0 · 3B-1 · 3B-2 · 3B-3 · 3C). **NEXT = PHASE 4 (governance & data:
-  anchors 09·10·19·20·23·24) — needs its OWN Plan Lock before any code** (per CLAUDE.md). Also Phase 5 (config &
-  system-states: 03·04·05·25·26·27·28). See OPEN DEBT below (prod migrations, backend defects, deferred polish).
+## State (as of 2026-07-15 — PHASE 3 COMPLETE; PHASE 4 IN PROGRESS, slice 4A done)
+- **Branch:** `strata/impl-phase01`. `origin/main` advancing via fast-forward ([[github-noff-merge-push-rejected]] —
+  `--no-ff` merge-commit push rejected; push branch then `git push origin <sha>:main`; retry flaky pushes).
+  **`StrataStrategyMapPage.tsx` byte-untouched across Phases 3 + 4.**
+- **PHASE 3 COMPLETE** (3A · 3B-0 · 3B-1 · 3B-2 `12deb2d15` · 3B-3 `338da9903` · 3C `0a85e8535`).
+- **PHASE 4 (governance & data) — Plan Lock APPROVED** `03_PLAN_LOCK_PHASE4.md` (Vikram 2026-07-15; P4-D0…D8 CONFIRMED;
+  planning docs merged `918ca5689`). 4 discovery agents done (canonical/route/integration/data-safety). Slice order:
+  **4A ✅ → 4B(23) → 4C(10) → 4D(19) → 4E(09) → 4F(20) → 4G(24 scoped)**. Anchor digests: `discovery/07_phase4_anchor_specs.md`.
+  - **4A ✅ DONE (component only) — AWAITING commit/merge.** `StrataLifecycleStepper` added to `shared.tsx`
+    (`variant='full'` numbered circles + note, anchors 09/20; `variant='dots'` compact, anchors 23/10; states
+    done/current/todo/failed, token-pure, a11y per-step). **DRIFT-8:** consumer refactors DEFERRED to redesign
+    slices (4E/4F/4B/4C) — no behavior-preserving refactor exists (anchor "current"=warning ≠ existing brand/info;
+    DataPipeline stepper is icon-dot/removed by anchor 19). Gates green; live-verified when first consumed. Flagged to Vikram.
+  - **⛔ NEXT = 4B (Reviews Index, anchor 23)** — redesign `StrataReviewsPage` index branch (`isDetail=false`): NOW
+    band + review registry (derived rows, `StrataLifecycleStepper variant="dots"`, stage lozenge, decisions/follow-up
+    counts) + snapshot registry (supersedes struck-through). Cut scheduling/chair/cadence (P4-D1). Reviews are DERIVED
+    (no `strata_reviews` table) from snapshots+decisions+actions keyed by snapshot_key. Hooks exist: useSnapshots/
+    useDecisions/useActions. Re-read anchor 23 via DesignSync before coding (drift protocol).
+- **Phase 4 KEY FACTS (from discovery):** NO splits — StrataReviewsPage branches on `:snapshotKey`, StrataDataPipelinePage
+  on `:runKey` (redesign-in-place); only 24 = NEW route `/reviews/:snapshotKey/pack` + `StrataBoardPackPage`. Backend
+  gaps (P4-D2/D3/D4): board-pack editorial builder+Issue DEFERRED (file/gen record only); runs 2-way not 3-way;
+  downstream dependents backward-derivable only; promote has no reverse RPC. NO migration this phase.
+- Phase 5 (config & system-states: 03·04·05·25·26·27·28) — own Plan Lock. See OPEN DEBT below.
 - **Phases 0/1/2 COMPLETE + merged** (see history below). **Phase 3 = HANDOFF "delivery & value"** per D-12
   (DRIFT-6 resolved): anchors **17 · 07 · 18 · 08 · 22 · 21**. Plan Lock `03_PLAN_LOCK_PHASE3.md` APPROVED
   (Vikram 2026-07-14; decisions **P3-D1…D8** all CONFIRMED — P3-D3 = scoped-down import on the existing
