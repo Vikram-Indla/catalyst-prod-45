@@ -1,9 +1,11 @@
 # 07 — HANDOVER · CAT-STRATA-IMPL-20260712-001
 
-> Resume point. **Phases 0, 1, 2 COMPLETE. Phase 3 IN PROGRESS (~half).**
-> Read order to resume Phase 3: `00_READ_ME_FIRST` → `01_OBJECTIVE` → `03_PLAN_LOCK_PHASE3` (APPROVED) →
-> this file → `08_DRIFT_LOG` → `09_DECISIONS` → `04_EXECUTION_LOG` (per-slice detail) → then re-read the
-> next slice's anchor in full via DesignSync (parent-only) before coding.
+> Resume point. **Phases 0–3 COMPLETE. Phase 4 (governance & data) IN PROGRESS — Plan Lock APPROVED; slice 4A done; NEXT = 4B.**
+> Read order to resume Phase 4: `00_READ_ME_FIRST` → `01_OBJECTIVE` → **`03_PLAN_LOCK_PHASE4` (APPROVED)** →
+> this file (State section below) → `08_DRIFT_LOG` (esp. DRIFT-8) → `09_DECISIONS` (P4-D0…D8 CONFIRMED) →
+> `discovery/07_phase4_anchor_specs.md` (6 anchor digests) → `04_EXECUTION_LOG` (per-slice detail) → latest
+> `sessions/` (015). **Then re-read the next slice's anchor (23) in full via DesignSync (parent-only) before coding.**
+> All synced at `59ef4f4cf` (main = branch); working tree clean; map byte-untouched.
 
 ## State (as of 2026-07-15 — PHASE 3 COMPLETE; PHASE 4 IN PROGRESS, slice 4A done)
 - **Branch:** `strata/impl-phase01`. `origin/main` advancing via fast-forward ([[github-noff-merge-push-rejected]] —
