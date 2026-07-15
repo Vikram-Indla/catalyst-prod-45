@@ -863,5 +863,20 @@ strip; 2E-3 charter/OKR restyle + promote + states.
 - GATES: `tsc` clean · colors 0=baseline · audit 19799/19799 (fixed a +5 off-grid-spacing regression by tokenizing
   to `var(--ds-space-*)`) · CRE pass. LIVE **light + dark**: strategic role, health panel (Forecast +20 days danger),
   rail, Delivery tab (milestones table + authoring) all render; sticky rail; `?from=` breadcrumb back-nav.
-- NEXT: **3A-2b** — unified "What threatens the forecast" (merge milestones-at-risk + deps + risks, ranked) +
-  Value Contribution rail panel (`useCardBenefitValue`, completion≠benefit callout); trim Overview/rail duplication.
+### ⏳ Slice 3A-2b — Project Card Detail threats + value (anchor 07, completes 3A-2) — DONE, gates green, live-verified; PENDING commit
+- File: `src/modules/strata/components/ProjectCardDetailView.tsx` (only src file).
+- **Unified "What threatens the forecast"** left-body panel: merges milestones-at-risk (forecast slip / overdue) +
+  dependencies + blockers (open, due-date overdue) + risks (open/mitigating) into one list, kind lozenge
+  (MILESTONE/DEPENDENCY/BLOCKER/RISK), ranked by **client-derived schedule impact** (no `schedule_impact` column —
+  milestone slip / dependency overdue days; risks carry no schedule date → rank last with impact level, never a
+  fabricated day count). Full inventories stay in the Delivery tab (anchor: "reachable"), so no removal.
+- **Value Contribution** rail panel: `useBenefitProjectCards` ⋈ `useQueries(valueApi.benefitValues)` × attribution
+  share (active period else first) → Planned/Forecast/Realized SAR; **completion ≠ benefit** danger callout shown
+  ONLY when realized=0 & progress>0 (Care App v3 has realized 749M → callout correctly omitted). Zero-assumption
+  dash per kind; panel hidden when the card has no linked benefit.
+- Light trim: removed Source System / Source Reference Key from the Overview tab (now in the rail SOURCE SYSTEM).
+- GATES: `tsc` clean · colors 0=baseline · audit 19799/19799 · CRE pass. LIVE **light + dark**: threats "· 3"
+  (2 milestones +20 days danger, 1 dependency open), value SAR 760M/184M(danger)/749M; sticky rail; tabs intact.
+- **✅ 3A-2 (anchor 07 Project Card Detail) COMPLETE** — 3A-2a + 3A-2b. **✅✅ SLICE 3A (delivery detail spine) COMPLETE.**
+  NEXT per Plan Lock order: **3B-0** (StrataValueBar hero + small-multiple variants) → 3B-1 Benefit Detail →
+  3B-2 Portfolio Detail (new route) → 3B-3 Portfolio Index → 3C Import (scoped-down P3-D3).

@@ -51,7 +51,10 @@ spawn discovery; produce `03_PLAN_LOCK_PHASE3.md`; STOP for approval. No code be
   (Objective 20→16). Gates green; light+dark verified. **✅ 3A-1 (anchor 17) COMPLETE.**
 - **3A-2a DONE** (pending commit): Project Card Detail (anchor 07) → CatalystViewBase anatomy (strategic-role
   panel + Health&forecast + 360px rail Details/Source System), tabs preserved. Fixed a +5 off-grid audit
-  regression (tokenized to `var(--ds-space-*)`). Gates green; light+dark verified. NEXT: 3A-2b (threats + value).
+  regression (tokenized to `var(--ds-space-*)`). Gates green; light+dark verified.
+- **3A-2b DONE** (pending commit): unified "What threatens the forecast" (merged milestones/deps/risks/blockers,
+  ranked by schedule impact) + Value Contribution rail (benefit_project_cards ⋈ benefit_values, completion≠benefit
+  callout) + Overview source-field trim. Gates green; light+dark. **✅ 3A-2 + ✅✅ SLICE 3A COMPLETE.** NEXT: 3B-0.
 
 ## Open debt carried (unchanged)
 1. Prod migrations `20260713100000` + `20260713110000` = staging-only (no prod access). Apply later.
