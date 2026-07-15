@@ -55,5 +55,29 @@ Readiness✓/Snapshot✓/Decisions✓ 1of1/Actions●(orange) 1of2 closed/Board 
 "1 frozen record · 1 KPI · 0 benefits", Decisions/Actions honest **todo (gray)** "none recorded"/"none assigned".
 Index branch (4B) unbroken; only StrataReviewsPage.tsx touched (map zero-change); no console errors.
 
-## ⛔ NEXT = 4C-2 — decision register + actions register (anchor 10 2-col 7fr/5fr: verdict-record band + Evidence→ +
-decision ancestry + follow-up footer) + compare-with-live (P4-D5) + Present/Export actions (→ 4G).
+## 4C-2 — BUILT + verified (decision + actions registers). AWAITING commit.
+Files: `src/modules/strata/pages/StrataReviewsPage.tsx` only.
+- Restructured "03 Decisions & actions" into the anchor-10 **2-col 7fr/5fr** (flex-wrap responsive: left `flex 7 1 420px`,
+  right `flex 5 1 300px` — stacks when narrow).
+- **Decision register** (left): reworked `renderDecision` from chevron-expand into always-visible anchor cards — status
+  lozenge + key + title + **snapshot-evidence prose** (description) + **verdict-record band** (when decided/closed:
+  status as verdict + "Recorded by {decided_by ?? —} · {decided_at} · against {snapshot_key}") + evidence-ref tags +
+  preserved governed authoring (Mark decided / Close decision / New action, canAuthor). Dropped chevron-expand +
+  `expandedDecisionId` state + ChevronDown/Right imports.
+- **Actions register** (right): NEW `renderActionRow` + `snapshotActions` memo — flat list of THIS snapshot's actions
+  (born from its decisions), each: title + "from {decision_key}" ancestry + owner + due tone (overdue=danger) + status +
+  preserved Start/Done/Cancel transitions; footer "Follow-ups: N of M closed · K overdue".
+- **Deviation (honest):** no dead "Evidence →" link — no single evidence drill target per decision; the concrete
+  evidence_refs render as tags (as before). Decision OPEN lozenge kept existing `inprogress` tone (anchor uses warning).
+- **BUG caught in live verify (tsc passed, runtime failed):** `snapshotActions` memo referenced `todayISO` before its
+  `const` declaration (TDZ — "Cannot access 'todayISO' before initialization"). Moved `todayISO` above the first
+  consumer. Lesson: tsc doesn't flag const-used-before-decl inside a memo dep array; a live load does.
+
+Gates: tsc clean · lint:colors 0/0 · audit:ads 19799/19799 (fixed an off-grid `marginTop:2`→removed) · CRE passed.
+Live-verified SNAP-1001 **light+dark**: DEC-1001 card (DECIDED + evidence prose + verdict band "Recorded by — · 8 Apr
+2026, 10:30 · against SNAP-1001" + Kpi/Benefit tags + authoring); Actions register (2 rows, "from DEC-1001" ancestry,
+owner —, DONE / IN PROGRESS, footer "1 of 2 closed"). Index branch unbroken; only StrataReviewsPage.tsx (map
+zero-change); no console errors.
+
+## ⛔ NEXT — remaining anchor-10 bits: compare-with-live 2-col diff (P4-D5, `useKpiAchievement` per-KPI) + Present-mode
++ Export-board-pack (→ 4G). OR proceed to **4D — Data & Lineage Landing (anchor 19)**. Vikram's call.

@@ -1044,3 +1044,19 @@ strip; 2E-3 charter/OKR restyle + promote + states.
 - GATES: tsc clean · lint:colors 0=0 · audit:ads 19799/19799 · lint:cre passed. Live-verified light+dark on SNAP-1001
   (rich) + SNAP-1 (sparse, honest todo states); index branch unbroken; only StrataReviewsPage.tsx touched (map
   zero-change); no console errors. NEXT: **4C-2** (decision + actions registers, verdict band, compare-with-live) → 4G.
+
+## Slice 4C-2 — Decision + Actions registers (anchor 10), StrataReviewsPage detail branch — BUILT + verified (session 017)
+- "03 Decisions & actions" restructured into the anchor-10 **2-col 7fr/5fr** register layout (flex-wrap responsive).
+- **Decision register** (left) — `renderDecision` reworked from chevron-expand into always-visible cards: status lozenge
+  + key + title + snapshot-evidence prose + **verdict-record band** (decided/closed: status-as-verdict + "Recorded by
+  {decided_by ?? —} · {decided_at} · against {snapshot_key}") + evidence-ref tags + governed authoring preserved
+  (Mark decided / Close decision / New action). Removed `expandedDecisionId` state + ChevronDown/Right imports.
+- **Actions register** (right) — NEW `renderActionRow` + `snapshotActions` memo: flat list of this snapshot's actions,
+  each carrying "from {decision_key}" ancestry + owner + due tone (overdue→danger) + status + Start/Done/Cancel;
+  footer "Follow-ups: N of M closed · K overdue".
+- Honest deviation: no dead "Evidence →" link (no single per-decision evidence route; evidence_refs shown as tags).
+- Runtime TDZ bug caught in live verify (tsc green): `todayISO` used by `snapshotActions` before its declaration →
+  relocated above the first consumer. (Lesson: tsc misses const-before-decl inside a memo dep array; live load catches it.)
+- GATES: tsc clean · lint:colors 0=0 · audit:ads 19799/19799 (fixed off-grid `marginTop:2`) · lint:cre passed.
+  Live-verified light+dark on SNAP-1001 (DEC-1001 card + verdict band + 2-action register + footer); index unbroken;
+  only StrataReviewsPage.tsx touched (map zero-change); no console errors. NEXT: compare-with-live/present/export (→4G) or 4D.

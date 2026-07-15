@@ -28,7 +28,7 @@ import { StatusLozenge } from '@/components/shared/StatusLozenge';
 import type { LozengeAppearance } from '@/components/shared/StatusLozenge';
 import { Routes } from '@/lib/routes';
 import {
-  CalendarClock, ChevronDown, ChevronRight, Database, FileBarChart, GitBranch, Lock,
+  CalendarClock, Database, FileBarChart, GitBranch, Lock,
 } from '@/lib/atlaskit-icons';
 import { governanceApi } from '@/modules/strata/domain';
 import {
@@ -430,7 +430,6 @@ export default function StrataReviewsPage() {
   const packNo = (position: number): string =>
     String(position + (keyMetrics.length > 0 ? 1 : 0)).padStart(2, '0');
 
-  const [expandedDecisionId, setExpandedDecisionId] = useState<string | null>(null);
   const [lockOpen, setLockOpen] = useState(false);
   const [closeOpen, setCloseOpen] = useState(false);
 
@@ -489,6 +488,20 @@ export default function StrataReviewsPage() {
     return m;
   }, [actionsQ.data]);
 
+  // Today (YYYY-MM-DD) — shared by every overdue derivation below. Declared here
+  // so the earliest consumer (snapshotActions) can read it without a TDZ.
+  const todayISO = new Date().toISOString().slice(0, 10);
+
+  // Actions register (slice 4C-2): this snapshot's actions, each carrying its
+  // decision ancestry (born from a decision on THIS snapshot's evidence) + the
+  // follow-up ageing footer (closed / overdue).
+  const snapshotActions = useMemo(() => {
+    const rows = snapshotDecisions.flatMap((d) => (actionsByDecision.get(d.id) ?? []).map((action) => ({ action, decisionKey: d.decision_key })));
+    const closed = rows.filter((x) => x.action.status === 'done').length;
+    const overdue = rows.filter((x) => (x.action.status === 'open' || x.action.status === 'in_progress') && x.action.due_date != null && x.action.due_date < todayISO).length;
+    return { rows, closed, overdue };
+  }, [snapshotDecisions, actionsByDecision, todayISO]);
+
   // ── Index registry derivations (slice 4B, anchor 23) ──────────────────────
   // Reviews are a DERIVED virtual entity (P4-D1): one review == a current
   // (non-superseded) locked snapshot, keyed by snapshot_key — no strata_reviews
@@ -509,8 +522,6 @@ export default function StrataReviewsPage() {
     });
     return m;
   }, [allDecisions]);
-
-  const todayISO = new Date().toISOString().slice(0, 10);
 
   const reviewRows = useMemo<ReviewRow[]>(() => {
     return snapshots
@@ -863,118 +874,91 @@ export default function StrataReviewsPage() {
     },
   ];
 
+  // Decision-register card (anchor 10): status lozenge + title + snapshot-evidence
+  // prose + verdict-record band (once recorded) + evidence refs + governed authoring.
   const renderDecision = (d: StrataDecision) => {
-    const expanded = expandedDecisionId === d.id;
-    const decisionActions = actionsByDecision.get(d.id) ?? [];
-    const evidenceCount = d.evidence_refs?.length ?? 0;
+    const recorded = d.status === 'decided' || d.status === 'closed';
+    const evidenceRefs = d.evidence_refs ?? [];
     return (
-      <div key={d.id} style={{ borderBottom: `1px solid ${T.border}` }} data-testid={`strata-reviews-decision-${d.decision_key}`}>
-        <div
-          role="button"
-          tabIndex={0}
-          aria-expanded={expanded}
-          onClick={() => setExpandedDecisionId(expanded ? null : d.id)}
-          onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setExpandedDecisionId(expanded ? null : d.id); } }}
-          style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 4px', cursor: 'pointer', minWidth: 0 }}
-        >
-          <span style={{ color: T.subtlest, flexShrink: 0, display: 'inline-flex' }} aria-hidden>
-            {expanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
+      <div key={d.id} style={{ padding: 16, borderBottom: `1px solid ${T.border}` }} data-testid={`strata-reviews-decision-${d.decision_key}`}>
+        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, minWidth: 0 }}>
+          <span style={{ flexShrink: 0 }}>
+            <StatusLozenge status={d.status} label={labelize(d.status)} appearance={DECISION_LOZENGE[d.status] ?? 'default'} />
           </span>
-          <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: T.subtle, flexShrink: 0 }}>{d.decision_key}</span>
-          <span style={{ flex: 1, minWidth: 0, ...bodyStyle, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-            {d.title}
-          </span>
-          {d.decided_at ? (
-            <span style={{ ...captionStyle, flexShrink: 0 }}>Decided {fmtDate(d.decided_at)}</span>
-          ) : d.due_date ? (
-            <span style={{ ...captionStyle, flexShrink: 0 }}>Due {fmtDate(d.due_date)}</span>
-          ) : null}
-          {evidenceCount > 0 ? (
-            <span style={{ fontSize: 'var(--ds-font-size-100)', color: T.brandText, flexShrink: 0 }}>
-              {evidenceCount} evidence ref{evidenceCount === 1 ? '' : 's'}
-            </span>
-          ) : null}
-          <StatusLozenge status={d.status} label={labelize(d.status)} appearance={DECISION_LOZENGE[d.status] ?? 'default'} />
-        </div>
-        {expanded ? (
-          <div style={{ padding: '0 4px 12px 24px' }}>
-            <p style={{ margin: '0 0 8px', fontSize: 'var(--ds-font-size-200)', color: T.subtle }}>
-              {d.description ?? '—'}
-            </p>
+          <div style={{ minWidth: 0, flex: 1 }}>
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, flexWrap: 'wrap' }}>
+              <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: T.subtle }}>{d.decision_key}</span>
+              <span style={{ ...bodyStyle, fontWeight: 600 }}>{d.title}</span>
+            </div>
+            {/* Snapshot evidence that motivates the decision */}
+            <p style={{ margin: '4px 0 0', ...captionStyle, color: T.subtle, lineHeight: 1.5 }}>{d.description ?? '—'}</p>
+            {/* Verdict record — once recorded, the outcome + who/when + against-SNAP */}
+            {recorded ? (
+              <div style={{ marginTop: 8, padding: '8px 12px', borderRadius: 6, background: T.sunken, border: `1px solid ${T.border}`, ...captionStyle, color: T.text, lineHeight: 1.5 }}>
+                <strong>{labelize(d.status)}</strong>
+                <span style={{ display: 'block', marginTop: 4, color: T.subtlest }}>
+                  Recorded by {profileName(d.decided_by) ?? '—'} · {d.decided_at ? fmtDateTime(d.decided_at) : '—'} · against {selected?.snapshot_key ?? '—'}
+                </span>
+              </div>
+            ) : d.due_date ? (
+              <p style={{ margin: '4px 0 0', ...captionStyle }}>Due {fmtDate(d.due_date)}</p>
+            ) : null}
+            {evidenceRefs.length > 0 ? (
+              <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginTop: 8 }}>
+                {evidenceRefs.map((ref, i) => (
+                  <CatalystTag key={`${ref.entity_type}-${i}`} text={ref.note ? `${labelize(ref.entity_type)} · ${ref.note}` : labelize(ref.entity_type)} />
+                ))}
+              </div>
+            ) : null}
             {canAuthor ? (
-              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 8 }}>
+              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 8 }}>
                 {d.status === 'open' ? (
-                  <Button
-                    spacing="compact"
-                    isDisabled={govBusyId === d.id}
-                    onClick={() => void transition('decision', d.id, 'decided')}
-                    testId={`strata-reviews-decide-${d.decision_key}`}
-                  >
+                  <Button spacing="compact" isDisabled={govBusyId === d.id} onClick={() => void transition('decision', d.id, 'decided')} testId={`strata-reviews-decide-${d.decision_key}`}>
                     Mark decided
                   </Button>
                 ) : null}
                 {d.status === 'decided' ? (
                   <Tooltip content="Blocked by the server while this decision still has open actions">
-                    <Button
-                      spacing="compact"
-                      isDisabled={govBusyId === d.id}
-                      onClick={() => void transition('decision', d.id, 'closed')}
-                      testId={`strata-reviews-close-decision-${d.decision_key}`}
-                    >
+                    <Button spacing="compact" isDisabled={govBusyId === d.id} onClick={() => void transition('decision', d.id, 'closed')} testId={`strata-reviews-close-decision-${d.decision_key}`}>
                       Close decision
                     </Button>
                   </Tooltip>
                 ) : null}
-                <Button
-                  spacing="compact"
-                  appearance="default"
-                  onClick={() => setActionTargetId(d.id)}
-                  testId={`strata-reviews-new-action-${d.decision_key}`}
-                >
+                <Button spacing="compact" appearance="default" onClick={() => setActionTargetId(d.id)} testId={`strata-reviews-new-action-${d.decision_key}`}>
                   New action
                 </Button>
               </div>
             ) : null}
-            {evidenceCount > 0 ? (
-              <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginBottom: 8 }}>
-                {(d.evidence_refs ?? []).map((ref, i) => (
-                  <CatalystTag key={`${ref.entity_type}-${i}`} text={ref.note ? `${labelize(ref.entity_type)} · ${ref.note}` : labelize(ref.entity_type)} />
-                ))}
-              </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  // Actions-register row (anchor 10): title + decision ancestry + owner + due tone
+  // + governed transitions. Overdue = open/in-progress past its due date.
+  const renderActionRow = (a: StrataAction, decisionKey: string) => {
+    const overdue = (a.status === 'open' || a.status === 'in_progress') && a.due_date != null && a.due_date < todayISO;
+    return (
+      <div key={a.id} style={{ padding: '12px 16px', borderBottom: `1px solid ${T.border}` }} data-testid={`strata-reviews-action-${a.action_key}`}>
+        <div style={{ ...bodyStyle, fontWeight: 600 }}>{a.title}</div>
+        <div style={{ display: 'flex', gap: 12, marginTop: 4, ...captionStyle, flexWrap: 'wrap', alignItems: 'center' }}>
+          <span>from <span style={{ color: T.subtle, fontWeight: 600 }}>{decisionKey}</span></span>
+          <span>owner <span style={{ color: T.subtle, fontWeight: 600 }}>{profileName(a.owner_id) ?? '—'}</span></span>
+          {a.due_date ? (
+            <span style={{ color: overdue ? 'var(--ds-text-danger)' : T.subtle, fontWeight: overdue ? 600 : 400 }}>Due {fmtDate(a.due_date)}</span>
+          ) : null}
+          <StatusLozenge status={a.status} label={labelize(a.status)} appearance={ACTION_LOZENGE[a.status] ?? 'default'} />
+        </div>
+        {canAuthor && (a.status === 'open' || a.status === 'in_progress') ? (
+          <div style={{ display: 'flex', gap: 8, marginTop: 8, flexWrap: 'wrap' }}>
+            {a.status === 'open' ? (
+              <Button spacing="compact" appearance="subtle" isDisabled={govBusyId === a.id} onClick={() => void transition('action', a.id, 'in_progress')} testId={`strata-reviews-start-${a.action_key}`}>Start</Button>
             ) : null}
-            {decisionActions.length === 0 ? (
-              <p style={{ margin: 0, ...captionStyle }}>No actions recorded.</p>
-            ) : (
-              decisionActions.map((a) => {
-                const ownerName = profileName(a.owner_id);
-                return (
-                  <div key={a.id} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '4px 0', minWidth: 0 }} data-testid={`strata-reviews-action-${a.action_key}`}>
-                    <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: T.subtle, flexShrink: 0 }}>{a.action_key}</span>
-                    <span style={{ flex: 1, minWidth: 0, ...bodyStyle, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                      {a.title}
-                    </span>
-                    {ownerName ? <span style={{ ...captionStyle, flexShrink: 0 }}>{ownerName}</span> : null}
-                    {a.due_date ? <span style={{ ...captionStyle, flexShrink: 0 }}>Due {fmtDate(a.due_date)}</span> : null}
-                    {canAuthor && a.status === 'open' ? (
-                      <Button spacing="compact" appearance="subtle" isDisabled={govBusyId === a.id} onClick={() => void transition('action', a.id, 'in_progress')} testId={`strata-reviews-start-${a.action_key}`}>
-                        Start
-                      </Button>
-                    ) : null}
-                    {canAuthor && a.status === 'in_progress' ? (
-                      <Button spacing="compact" appearance="subtle" isDisabled={govBusyId === a.id} onClick={() => void transition('action', a.id, 'done')} testId={`strata-reviews-done-${a.action_key}`}>
-                        Done
-                      </Button>
-                    ) : null}
-                    {canAuthor && (a.status === 'open' || a.status === 'in_progress') ? (
-                      <Button spacing="compact" appearance="subtle" isDisabled={govBusyId === a.id} onClick={() => void transition('action', a.id, 'cancelled')} testId={`strata-reviews-cancel-${a.action_key}`}>
-                        Cancel
-                      </Button>
-                    ) : null}
-                    <StatusLozenge status={a.status} label={labelize(a.status)} appearance={ACTION_LOZENGE[a.status] ?? 'default'} />
-                  </div>
-                );
-              })
-            )}
+            {a.status === 'in_progress' ? (
+              <Button spacing="compact" appearance="subtle" isDisabled={govBusyId === a.id} onClick={() => void transition('action', a.id, 'done')} testId={`strata-reviews-done-${a.action_key}`}>Done</Button>
+            ) : null}
+            <Button spacing="compact" appearance="subtle" isDisabled={govBusyId === a.id} onClick={() => void transition('action', a.id, 'cancelled')} testId={`strata-reviews-cancel-${a.action_key}`}>Cancel</Button>
           </div>
         ) : null}
       </div>
@@ -1274,28 +1258,63 @@ export default function StrataReviewsPage() {
                   ) : null}
 
                   <PackSection n={packNo(2)} title="Decisions & actions" />
-                  <StrataPanel
-                    title="Decisions"
-                    icon={<FileBarChart size={16} />}
-                    count={snapshotDecisions.length}
-                    testId="strata-reviews-decisions"
-                    actions={canAuthor ? (
-                      <Button
-                        appearance="primary"
-                        spacing="compact"
-                        onClick={() => setNewDecisionOpen(true)}
-                        testId="strata-reviews-new-decision"
+                  <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', alignItems: 'flex-start' }} data-testid="strata-reviews-registers">
+                    {/* ── Decision register (left, ~7fr): evidence culminations ── */}
+                    <div style={{ flex: '7 1 420px', minWidth: 0 }}>
+                      <StrataPanel
+                        title="Decisions on the table"
+                        icon={<FileBarChart size={16} />}
+                        count={snapshotDecisions.length}
+                        noPadding
+                        testId="strata-reviews-decisions"
+                        actions={canAuthor ? (
+                          <Button
+                            appearance="primary"
+                            spacing="compact"
+                            onClick={() => setNewDecisionOpen(true)}
+                            testId="strata-reviews-new-decision"
+                          >
+                            New decision
+                          </Button>
+                        ) : undefined}
                       >
-                        New decision
-                      </Button>
-                    ) : undefined}
-                  >
-                    {snapshotDecisions.length === 0 ? (
-                      <EmptyState size="compact" header="No decisions recorded against this snapshot" description="Decisions made on this snapshot's evidence will appear here." />
-                    ) : (
-                      snapshotDecisions.map(renderDecision)
-                    )}
-                  </StrataPanel>
+                        {snapshotDecisions.length === 0 ? (
+                          <div style={{ padding: 16 }}>
+                            <EmptyState size="compact" header="No decisions recorded against this snapshot" description="Decisions made on this snapshot's evidence will appear here." />
+                          </div>
+                        ) : (
+                          snapshotDecisions.map(renderDecision)
+                        )}
+                      </StrataPanel>
+                    </div>
+                    {/* ── Actions register (right, ~5fr): born from decisions, carry ancestry ── */}
+                    <div style={{ flex: '5 1 300px', minWidth: 0 }}>
+                      <StrataPanel
+                        title="Actions"
+                        icon={<CalendarClock size={16} />}
+                        count={snapshotActions.rows.length}
+                        noPadding
+                        testId="strata-reviews-actions-register"
+                        actions={<span style={captionStyle}>Each action carries its decision + snapshot</span>}
+                      >
+                        {snapshotActions.rows.length === 0 ? (
+                          <div style={{ padding: 16 }}>
+                            <EmptyState size="compact" header="No actions yet" description="Actions are born from decisions and carry that ancestry." />
+                          </div>
+                        ) : (
+                          <>
+                            {snapshotActions.rows.map((x) => renderActionRow(x.action, x.decisionKey))}
+                            <div style={{ padding: '12px 16px', ...captionStyle, background: T.sunken }} data-testid="strata-reviews-followup-footer">
+                              Follow-ups: {snapshotActions.closed} of {snapshotActions.rows.length} closed
+                              {snapshotActions.overdue > 0 ? (
+                                <> · <span style={{ color: 'var(--ds-text-danger)', fontWeight: 600 }}>{snapshotActions.overdue} overdue</span></>
+                              ) : null}
+                            </div>
+                          </>
+                        )}
+                      </StrataPanel>
+                    </div>
+                  </div>
 
                   {/* Unlinked decisions — clearly labeled, never implied as snapshot membership */}
                   {snapshotDecisions.length === 0 && allDecisions.length > 0 ? (
