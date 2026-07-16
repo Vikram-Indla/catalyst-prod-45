@@ -88,3 +88,49 @@ written by any test**. The one time a test failed, it was **the test that was wr
 ## Status
 ⏸ **Stopped at context limit, cleanly, on a committed+pushed boundary.** Next: **A3c** (safe, near-copy of A3a),
 then B1. **A3b needs F-9 ruled. The 3 register records need F-1.**
+
+---
+
+# SESSION 026 (part 3) — F-1 + F-9 ruled; R0 completed, R1 revision/lineage core landed
+
+**2026-07-16/17.** Vikram ruled F-1 (accountability = ROLE) and F-9 (stable logical lineage). Both discharged.
+
+## Shipped in this part — 6 more slices, all committed AND pushed
+| Slice | Commit | Migration |
+|---|---|---|
+| P0-D2 · F-1 correction + the 3 records filed | `ce4200274` | `20260716200000` |
+| A3c · threshold revision | `81bf2a9f6` | `20260716210000` |
+| A3b-1 · KPI lineage + backfill + EXCLUDE non-overlap | `804d12b16` | `20260716220000` |
+| A3b-2 · canonical effective-version resolver | `a5a277a17` | `20260716230000` |
+| A3b · KPI draft-version + revision_class | `f72faf352` | `20260716240000` |
+
+**Session total: 10 slices.** Suite steady at **2,434 passed / 6 failed** (the 6 foreign ChatDock), all gates green on
+every slice, ledger 1:1 after each migration. **No open blockers remain.**
+
+## Ruling tests satisfied (of the ruling's own list)
+✅ existing KPI IDs unchanged (**checksum-proven, byte-identical**) · ✅ chains receive one lineage (proven on a
+simulated `v1←v2←v3`; **staging has 0 real chains — `supersedes_id` was never used**) · ✅ new version retains lineage +
+increments · ✅ predecessor byte-identical · ✅ formula definitions clone · ✅ **facts do not clone** · ✅ present-day
+relationships resolve v2 · ✅ historical views resolve v1 · ✅ no overlapping effective approved versions · ✅ draft
+versions never enter official calculations · ✅ locked snapshots unchanged · ✅ gates + baseline hold.
+**Not yet proven (step 7, consumer-side):** material revision ⇒ Missing rather than a carried-forward value ·
+non_material continuity retains exact provenance. The `revision_class` column is shipped and DB-enforced; the
+CONSUMER behaviour is what remains.
+
+## Judgement calls (logged, none silent)
+- **F-1's own record count/facts were RE-PROBED** rather than copied from §3.8's prose. They matched (SNAP-1 → 1
+  post-lock row; SNAP-1001 → 5; both stamp CEO v1).
+- **Fixed a latent bug in my own P0-D design**: `UNIQUE(...)` treats NULLs as distinct, so model-class exception
+  records could be filed repeatedly. Now `UNIQUE NULLS NOT DISTINCT`.
+- **EXCLUDE constraint over a trigger** for non-overlap: a BEFORE-trigger check can be raced by two concurrent
+  approvals. Added the **adjacent-versions-allowed control** — a constraint that blocked `[a,b)`+`[b,∞)` would have
+  forbidden the very supersession it exists to support.
+- **`revision_class` REQUIRED, not defaulted**, and enforced by DB CHECK as well as the RPC. Defaulting it would have
+  the system assert "safe to trend through" on an author's behalf — invisible in the number.
+- **Version = `max(version)+1` across the LINEAGE**, not `source.version+1` (the source may not be the highest).
+
+## Status
+⏸ **Stopped at context limit on a committed+pushed boundary.** Next: **step 6** — wire the calc engine + snapshot
+provenance to the canonical resolver, together with **B1 (§4 config_versions completeness)**: the ruling's required
+provenance list and B1's required list are **the same problem**. Then step 7 (materiality consumer behaviour), then
+R2→R5.

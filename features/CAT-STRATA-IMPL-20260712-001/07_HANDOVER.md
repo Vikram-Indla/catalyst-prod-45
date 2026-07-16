@@ -15,13 +15,20 @@ CONFIRMED PRODUCT RULES: `09_DECISIONS.md` → "Backend programme AUTHORIZED".
 **Stop ONLY for a genuine hard blocker** (list in the authorization). Not for size, tests, migrations, or a debt item
 proving bigger than expected. **PR #349 stays OPEN and UNMERGED. Do not merge it. Do not force-push.**
 
-## ✅ SHIPPED THIS SESSION — R0 core. 4 slices, committed AND pushed to `strata/measures-2b`.
+## ✅ SHIPPED — R0 COMPLETE + R1 revision/lineage core. 10 slices, committed AND pushed to `strata/measures-2b`.
 | Slice | Commit | Migration | What |
 |---|---|---|---|
 | **P0-A** | `d9cd94a3b` | `20260716160000` | Approved-model aggregate immutability (D-1) — RLS draft-gate on `model_perspectives` + `model_measures`, parent-status guard in `strata_set_model_measures`, honest client failure, UI gate + visible reason |
 | **A3a** | `7ba522678` | `20260716170000` | `strata_create_model_draft_version` (D-2) + "Create new version" CTA |
 | **P0-C** | `3fced1f82` | `20260716180000` | E-4 child auditability — `updated_at`/`created_by`/`updated_by` + touch/actor/audit triggers on the 4 exposed children |
-| **P0-D** | `1d57793fa` | `20260716190000` | `strata_integrity_exceptions` — append-only register (E-1/E-2). **Table shipped; the 3 records are blocked on F-1.** |
+| **P0-D** | `1d57793fa` | `20260716190000` | `strata_integrity_exceptions` — append-only register (E-1/E-2) |
+| **P0-D2** | `ce4200274` | `20260716200000` | **F-1 correction** — `owner_role` required, `assigned_owner_id` nullable, status/due_on; **the 3 records FILED** |
+| **A3c** | `81bf2a9f6` | `20260716210000` | `strata_create_threshold_draft_version` (D-2); CTA now driven by a `REVISION_RPC` lookup |
+| **A3b-1** | `804d12b16` | `20260716220000` | **KPI `lineage_id`** + chain-aware backfill + `UNIQUE(lineage,version)` + **EXCLUDE** non-overlap (btree_gist) |
+| **A3b-2** | `a5a277a17` | `20260716230000` | **Canonical effective-version resolver** + set-based form + `strata_kpi_current_effective` view + hop indexes |
+| **A3b** | `f72faf352` | `20260716240000` | `strata_create_kpi_draft_version` + **`revision_class`** (material/non_material), DB-enforced |
+
+**⛔ F-1 and F-9 are BOTH DISCHARGED. There are NO open blockers.**
 
 **All four: applied to `catalyst-staging` (`cyijbdeuehohvhnsywig`) via `execute_sql` + explicit ledger INSERT, ledger
 1:1 verified · gates green · acceptance proven by DB probe with positive controls, fully rolled back.**
@@ -33,24 +40,53 @@ Baseline on entry was 2,426/6 → **+8 tests, 0 new failures.** Raw evidence: `0
 returning 1 row so the test could actually fail. **F-4 is discharged** (A2→A3 back-to-back), so the E-2 v2 clone path
 is open.
 
-## ▶ DO THIS NEXT — A3c, then B1. **A3b is BLOCKED on F-9.**
-1. **A3c · `strata_create_threshold_draft_version`** — SAFE and next. `strata_threshold_schemes` has **no aggregate
-   children** (probed: only `strata_kpis`/`strata_scorecard_models` REFERENCE it), so the clone is parent-only and is
-   a near-copy of A3a. **Not blocked by F-9.**
-2. **B1 · `config_versions` completeness** (§4) — needs real versions from A3.
-3. Then R2 → R5 per §5. R5 (J DEF-010 · K · L · M · N · O) may run in parallel throughout.
+## ▶ DO THIS NEXT — step 6 of the F-9 ruling's implementation order. Nothing is blocked.
+**The ruling's order (steps 1–5 are DONE):**
+1. ~~F-1 corrective migration + 3 records~~ ✅ `ce4200274`
+2. ~~A3c threshold revision~~ ✅ `81bf2a9f6`
+3. ~~KPI lineage schema + backfill~~ ✅ `804d12b16`
+4. ~~canonical effective-version resolver~~ ✅ `a5a277a17`
+5. ~~A3b KPI draft-version creation~~ ✅ `f72faf352`
+6. **← YOU ARE HERE. Wire calculations, objective links, initiative links, model measures, snapshots and provenance
+   capture to the canonical resolver.** This is the big one: it touches `strata_calc_kpi_achievement`,
+   `strata_calc_scorecard_instance`, `strata_calc_period`, `strata_calc_benefit_realization` and `strata_lock_snapshot`.
+   **Everything it needs already exists** — `strata_kpi_effective_at(as_of)` is set-based and joinable precisely so a
+   calc never hand-rolls the predicate. Per the ruling, official calculation must record: KPI row id · lineage id ·
+   KPI version · formula version · target version · model-measure/config version · effective date/context. That is
+   **the same list B1 (§4 config_versions completeness) needs** — do them together, they are one problem.
+7. Material/non-material revision behaviour + tests (the `revision_class` column is shipped and DB-enforced; the
+   **consumer** behaviour is not: material ⇒ show a methodology break, never carry an old actual forward, never imply
+   comparability; **missing eligible actual ⇒ Missing, never a carried-forward value**).
+8. Then R2 → R5 per §5. R5 (J DEF-010 · K · L · M · N · O) may run in parallel throughout.
+   **DEF-010 is now much smaller than the blueprint thinks** — the resolver already excludes drafts from official
+   resolution by construction, and draft *strategic* KPIs already link.
 
-## ⛔ THE TWO THINGS THAT NEED VIKRAM — everything else is derivable and authorized
-- **F-1 · a NAME.** Who is the `strategy_office_owner` on the three integrity-exception records (SNAP-1, SNAP-1001,
-  B2B v1)? The register table SHIPS and is proven append-only, but `strategy_office_owner` is **NOT NULL by design** —
-  an owner names a person who accepts accountability and cannot be inferred from schema. **The table is empty.** That
-  is honest ("not yet recorded"); a guessed owner would be a fabricated audit trail — the exact failure the register
-  exists to document. The 3 records' content is already written (§3.8) and is **one INSERT away** from a name.
-- **F-9 · KPI revision (A3b) moves official numbers.** `strata_kpis` has definition, relationship AND measurement
-  children; a revision makes a new row with a new id, so on approval v2 would have **no links and no actuals** and
-  every objective would silently lose its measure. D-3 settles the requirement ("preserve logical KPI lineage") but
-  **not the mechanism**, and it is not derivable. 3 options + a recommendation: `09_DECISIONS.md` → F-9.
-  **Do NOT start A3b assuming it mirrors A3a. It does not.**
+## ✅ F-1 — DISCHARGED (ruled 2026-07-16; register corrected + records filed)
+Accountability is the **ROLE**; a named person is optional. Session 026 had read this backwards and modelled
+`strategy_office_owner NOT NULL`, which made the register unfillable — it was blocked **by its own schema**, not by a
+missing fact. Corrected in `20260716200000`: `owner_role` NOT NULL (default `strategy_office`), `assigned_owner_id`
+**nullable** (NULL = "no individual assigned", **not** "unknown"), `status`/`due_on` added beside `resolution`.
+**All three records are filed**, `assigned_owner_id` NULL — no person fabricated. Locked snapshots byte-identical.
+A latent bug was fixed while doing it: the duplicate guard used a default UNIQUE, which treats NULLs as distinct, so
+**model-class records (snapshot NULL) could be filed repeatedly** — now `UNIQUE NULLS NOT DISTINCT`.
+
+## ✅ F-9 — DISCHARGED (ruled: stable logical KPI lineage)
+`lineage_id` = stable identity shared by every version; `id` = the version. **Relationships keep their existing
+`kpi_id` FK as a lineage ENTRY POINT** (the ruling's sanctioned compatibility design — nothing repointed, no FK
+changed, no migration risk) and resolve through `strata_resolve_kpi_effective(kpi_id, as_of)`.
+**Facts are never repointed; relationships are never duplicated.** Proven: the same stored v1 id resolves to **v1
+historically** and **v2 present-day**; a revision clones the formula (1/1) and clones **zero** actuals/targets/links
+while v1's remain intact.
+
+### The canonical resolver — USE IT, never re-implement the predicate
+| | |
+|---|---|
+| `strata_resolve_kpi_effective(kpi_id, as_of)` | from any version's row id (**the relationship entry point**) |
+| `strata_resolve_kpi_version(lineage_id, as_of)` | from a lineage |
+| `strata_kpi_effective_at(as_of)` → TABLE | **set-based — use this in calculations**, not per-row calls |
+| `strata_kpi_current_effective` (view) | the "as of now" case |
+**NULL means Missing** — never "fall back to latest", never a draft. `status='approved'` is filtered at this single
+point, so no official calc can reach a draft by construction. Overlaps **RAISE** rather than silently picking one.
 
 ## F-series: 6 of 8 resolved from the authorization's CONFIRMED PRODUCT RULES (see `09_DECISIONS.md`)
 **F-2** clone-as-is then edit in draft · **F-3** qualification surfaces on packs + exports · **F-4** A2→A3 back-to-back
