@@ -1496,3 +1496,52 @@ touched; the two locked ones are annotated in `strata_integrity_exceptions` (E-1
 **⚠️ Step 6c REMAINS:** `strata_calc_scorecard_instance` · `strata_calc_period` · `strata_calc_benefit_realization`
 are **not yet wired** to the canonical resolver — that is exactly the 20 items counted above. Until they are, every new
 snapshot's `used` block is honestly a LOWER BOUND.
+
+---
+
+# Step 6c · wire the remaining calcs (F-9 step 6 COMPLETE) · migration `20260717120000`
+`strata_calc_period` · `strata_calc_scorecard_instance` · `strata_calc_benefit_realization`
+(+ `strata_calc_kpi_achievement` and `strata_lock_snapshot` re-declared, see below)
+
+## Closed the gap 6b measured
+Every new snapshot said `items_with_full_provenance: 8 / items_without_full_provenance: 20`. **That count was the
+to-do list, and it is now 42 / 1.** Per entity type: kpi **20/20** · scorecard_line **12/12** · scorecard_instance
+**2/2** · perspective **8/9**. The single remainder is **genuinely stale data, not an unwired calc**: the two live
+instances' models carry 5 + 3 = **8** perspectives, so every perspective that is actually calculated is covered; the
+9th is a pre-6c row from an instance that no longer calculates. The metric correctly reports **LOWER BOUND** rather
+than claiming completeness — it is doing its job, not decorating.
+
+## 🔴 Latent bug fixed in `strata_calc_period`
+It iterated `WHERE k.status='approved'` and joined targets on `t.kpi_id = k.id`. Once a lineage has v1 (superseded) +
+v2 (approved), an **OLD period whose target sits on v1 finds no target on v2 → the KPI is never iterated → that
+period's number SILENTLY VANISHES on recalc.** Harmless today (no lineage has >1 version) and fatal the moment one
+does. Now iterates by **lineage**, resolves the version effective at the period end, and calculates that.
+
+## A flaw in 6b's own metric, fixed here
+6b keyed completeness on `config_context->>'kpi_version' IS NOT NULL` — **KPI-centric**. A benefit calculated value has
+no KPI, so it would have counted as "incomplete" **forever**, even fully wired: the metric could never reach zero and
+would have quietly stopped meaning anything. Every calc now stamps **`provenance_schema: 1`** and completeness keys on
+that. It is a **version number, not a boolean**, so a future provenance change is detectable rather than silent.
+`strata_calc_kpi_achievement` was re-declared to carry the marker — **not** by editing `20260717100000`, which shipped
+and was applied; rewriting an applied migration breaks the file↔ledger contract.
+
+## What each calc now records
+- **scorecard_line** — model id+version+rollup, scheme id **+version**, resolved_as_of, ref_type, line weight, the
+  full **`kpi_provenance`** block from 6a (so a line is traceable to the exact KPI version), and for objective lines
+  **`objective_kpis`** = every linked KPI with its **resolved** version. Without that the roll-up is a number with no
+  way back to its inputs.
+- **perspective** — + `model_perspective_weight`: **the exact child value §3 proved can move under a static model version**.
+- **scorecard_instance** — + the **resolved child aggregate** (`model_perspectives`, `model_measures` with weights and
+  aggregation) that §4 requires, because version alone is unreliable.
+- **benefit** — it wrote **no config_context at all**. Now records the assurance rule, the period cutoff rule,
+  resolved_as_of and **exactly which benefit_values counted, with their validation_status**.
+
+## Deliberately NOT changed (out of scope, would move live numbers)
+`strata_calc_benefit_realization` still counts **only** `validation_status='validated'`. **F-7 rules that
+`owner_confirmed` COUNTS**, which widens this whitelist and **will** move live numbers — that is R4 (E-6/F-7). The rule
+is now *recorded in provenance*, so when it changes the change is visible and dated instead of silently rewriting what
+past numbers meant.
+
+## Status
+✅ **DONE — STEP 6 IS COMPLETE.** Applied, ledger 1:1, gates green, suite 2,434/6.
+**Scorecard instance + benefit results byte-identical to baseline. Zero numbers moved.**

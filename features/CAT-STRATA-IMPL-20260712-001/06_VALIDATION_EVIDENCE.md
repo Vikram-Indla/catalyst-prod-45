@@ -465,3 +465,46 @@ sample kpi : {"id": "…1201", "version": "1", "lineage_id": "108e4375-…", "re
 
 **Ledger 1:1:** `20260717110000 · strata_snapshot_config_completeness`. **Gates:** tsc clean · colors 0=0 · audit no
 category above baseline · CRE pass · suite **2,434 passed / 6 failed**.
+
+---
+
+# Step 6c — RAW EVIDENCE
+
+## 1. Zero numbers moved
+```
+BASELINE                                          AFTER
+B2B Sector Scorecard · Q2 FY2026 | 100.00/true/green      (identical)
+CEO Scorecard · Q2 FY2026        | 96.54/true/green       (identical)
+BENEFIT AUM growth …             | 0.0000/true            (identical)
+BENEFIT B2B Revenue Uplift       | 0.8625/true            (identical)
+BENEFIT Churn Reduction Value    | 0.7889/true            (identical)
+BENEFIT Cost-to-Serve Reduction  | 0.9571/true            (identical)
+BENEFIT Enterprise Rev (proof)   | 0.0000/false           (identical)
+BENEFIT Operations cost reduction| 0.0000/true            (identical)
+BENEFIT Regulatory penalty …     | 0.0000/true            (identical)
+BENEFIT ZZTEST-QA-CRUD-Benefit   | 0.0000/false           (identical)
+BENEFIT ZZTEST-QA-Portfolio      | 0.0000/true            (identical)
+```
+**11/11 byte-identical.**
+
+## 2. Provenance completeness — the metric 6b created, now closed
+Driven end-to-end: `strata_calc_period(period)` then `strata_lock_snapshot(...)`. Rolled back.
+```
+=== 6c COMPLETENESS (rolled back) ===
+provenance_completeness : {"items_with_full_provenance": 42, "items_without_full_provenance": 1,
+                           "note": "LOWER BOUND: some frozen items predate full provenance capture…"}
+by entity_type:
+  kpi:                20/20 have provenance
+  perspective:         8/9  have provenance
+  scorecard_instance:  2/2  have provenance
+  scorecard_line:     12/12 have provenance
+used.kpis 8 · formula 8 · targets 8 · schemes 1 · measures 2
+draft_kpi_exclusion : {"rule": "only KPI versions approved AND effective at the period end contribute (E-7/DEF-010)",
+                       "kpis_excluded_with_actuals": 0}
+```
+**8 → 42 with provenance; 20 → 1 without.** The remaining 1 is **stale data, not an unwired calc**: the two live
+instances' models have 5 + 3 = 8 perspectives, so every perspective actually calculated is covered. The metric
+correctly still reports LOWER BOUND rather than claiming a census.
+
+**Ledger 1:1:** `20260717120000 · strata_calc_provenance_remaining`. **Gates:** tsc clean · colors 0=0 · audit no
+category above baseline · CRE pass · suite **2,434 passed / 6 failed**.
