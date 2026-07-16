@@ -91,3 +91,34 @@ slug routes" blocker — **a true premise with a wrong conclusion, inherited and
 ### ⚠️ AC-6 is 1 of 4 — NOT green
 `validate`, `resolve` and `record` remain unproven. The reusable pattern (`tabUntilFocused` + hoisted hook mocks) is in
 place for them.
+
+---
+
+## Slice 6C — STRATA Phase-5 regression tests ✅ DONE (+26 tests)
+**Files:** `__tests__/resolve-notification-target.test.ts` (NEW, 14) · `__tests__/phase5-governed-logic.test.tsx`
+(NEW, 12) · `StrataAdminConfigPage.tsx` (export `bandRows` for direct testing).
+
+**STRATA suite: 6 files / 23 tests → 9 files / 51 tests, all green.**
+
+### `resolveNotificationTarget` (5G-2) — 14 tests, the riskiest logic Phase 5 shipped
+Covers all four entity types' id→slug hops and their done-detection:
+- `strata_kpis` → slug direct; done ⇔ status `approved`
+- `strata_benefit_values` → benefit.slug (2 hops, asserts the hop ORDER); done ⇔ `validated_at`
+- `strata_decisions` → snapshot.snapshot_key; done ⇔ `decided_at`
+- `strata_dependencies` → requesting_id → project_card.slug; done ⇔ status ∈ {resolved, cancelled}
+  (parameterised over all 5 real status values found in staging)
+- **ORPHAN (a real staging row): decision with `snapshot_id = null` ⇒ `key: null`** so the bell falls back to the area
+  landing rather than build a broken link — and asserts it does NOT go looking for a snapshot it knows isn't there.
+- Degenerate inputs never fabricate a link: null entity_id (no query attempted), unknown entity_table, deleted row.
+- NB `src/test/setup.ts` mocks the supabase client but does **not** export `typedQuery`/`typedRpc` — which is exactly why
+  no STRATA domain tests existed. This file overrides that mock with a controllable fake.
+
+### `bandRows` (5D / anchor 25) + `ModelIntegrityBand` (5C / anchor 05) — 12 tests
+- Bands sort high→low regardless of JSON order; From ≥ / To < tile with **no gap and no overlap** (asserted as an
+  invariant: each band's `from` equals the next one's `to`), open at the top; single band; empty list; **does not mutate
+  the caller's array**. An off-by-one here would misstate the policy that decides every rating.
+- Integrity tri-state: ✓ at 100 · ✕ under-100 says **assign** the remainder · ✕ over-100 says **remove** the excess (not a
+  negative "assign") · △ when none configured.
+- A DRAFT model at 90 blocks Submit **with the reason visible** ("Weights total 90 — must total 100"); at 100 it submits.
+
+Gates: tsc · colors 0/0 · audit 19798/19798 · CRE — all green. Map byte-diff empty.

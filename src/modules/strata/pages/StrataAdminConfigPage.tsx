@@ -607,7 +607,8 @@ const THRESHOLD_BAND_COLUMNS: Column<BandRow>[] = [
   },
 ];
 
-function bandRows(bands: ThresholdBand[]): BandRow[] {
+/** Exported for regression tests — the range derivation is the anchor-25 object. */
+export function bandRows(bands: ThresholdBand[]): BandRow[] {
   const sorted = [...bands].sort((a, b) => b.min_score - a.min_score);
   return sorted.map((b, i) => ({
     key: b.key, label: b.label, appearance: b.appearance,
