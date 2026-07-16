@@ -3,7 +3,12 @@
 > Resume point. **Phases 0–5 COMPLETE. ✅ PHASE 5 (configuration & system states) COMPLETE — slices 5A–5G merged to `main`.**
 > **Phase 5 anchors shipped: 03 (config landing 5A) · 04 (measurement domain + taxonomy 5B) · 05 (model integrity 5C) ·
 > 25 (threshold bands 5D) · 26 (data & integration 5E) · 27 (roles & access 5F) · 28 (canonical system states 5G).**
-> **NEXT = Phase 6 per HANDOFF build-order — needs its OWN Plan Lock before any code.**
+> **⛔ THERE IS NO PHASE 6 — the design pack is FULLY IMPLEMENTED (28/28 anchors).** HANDOFF's build order allocates every
+> anchor across Phases 0–5: P1 `01·11·12·13` (4) · P2 `06·16·02·14·15` (5) · P3 `07·17·18·08·22·21` (6) ·
+> P4 `10·23·24·09·19·20` (6) · P5 `03·04·05·25·26·27·28` (7) = **28**. An earlier revision of this file said
+> "NEXT = Phase 6 per HANDOFF build-order" — that was **WRONG** (corrected 2026-07-16). **No UI phase remains.**
+> Everything still open is BACKEND, OPS or optional POLISH — see LIVE DEBT below. Each backend item needs its own
+> migration + Plan Lock; do NOT start one expecting a "Phase 6" scope to exist.
 >
 > **✅ 5G-2 NOTIFICATION LANDING SHIPPED** (`ceb99e56f`) — the earlier "UUIDs can't build slug routes" blocker was wrong in
 > its conclusion: there is no link column, but every entity_table can be hopped id→slug, and the same hop returns the
@@ -17,6 +22,30 @@
 > scorecard-model draft-create · model measure-level authoring (no model-measure table exists) · preview-with-data ·
 > version diff · data-source register/retire (+ dependents-impact check) · **server SoD-check RPC** (per-assignment
 > CLEAN/GUARDED/CONFLICT — deliberately NOT faked) · view-as audit-log write · server-calculated score-shift impact preview.
+> **Earlier-phase backend deferrals still open:** board-pack editorial builder + Issue · run downstream blast-radius RPC ·
+> quarantine validation tier · `strata_reviews` scheduling entity · mapping-memory write (all P4) · import
+> Matched/Conflict/Unmatched + both-sides diff + 24h undo + run-log ledger (P3 · 3C).
+>
+> **⚠️ LIVE OPS + VERIFICATION DEBT — STILL OPEN. Do NOT lose: it is duplicated below the `# ARCHIVE` marker, where it
+> reads as history. This block is the authoritative copy.**
+> 1. **Prod migrations parked** — `20260713100000` (plan-variance) + `20260713110000` (saved-views + bulk-update) are
+>    applied to **staging (`cyijbdeuehohvhnsywig`) ONLY**; prod (`lmqwtldpfacrrlvdnmld`) was unreachable via the Supabase
+>    MCP. Until applied, Scorecards-Index "Vs plan" and any bulk/saved-view write **error-degrade on prod only**. Apply on
+>    the next prod run with an explicit ledger INSERT (MCP `apply_migration` stamps its own version).
+> 2. **Backend defect `task_65642237`** — `strata_promote_element` references the dropped `strata_play_charters` table and
+>    errors for legacy elements. Pre-existing backend bug, not a UI regression (the Promote UI surfaces the rejection).
+> 3. **`task_70e821ad`** — data-source freshness/staleness column (schema gap). This is why 5E's registry shows
+>    status + health rather than a freshness glyph.
+> 4. **🔴 Vitest cannot run — there is NO unit-test verification for ANY phase.** Every slice was verified by gates
+>    (tsc · lint:colors:gate · audit:ads:gate · lint:cre) plus live DOM/DB probes only. The formal §20 acceptance pass
+>    (map zero-change preservation diff vs baseline, keyboard-only validate/resolve/record/weight-change, grayscale
+>    distinguishability, reload-into-dark) has never been run as a single deliberate pass. **Highest-value next check.**
+> 5. **E2E defects 010 & 013** — partially fixed; remain OPEN pending backend/schema work + QA retest.
+>
+> **Optional UI polish (non-anchor-critical, all deliberately deferred):** Benefit-Detail 2-col rail (IN-THE-CHAIN +
+> Confidence) + attestation timeline (P3 · 3B-1) · objective-hop subline · <1100 small-multiple stacking · committed-spend
+> SAR (no field) · Element-Detail OKR restyle + locked band · Evidence Step/Fact restyle (P2) · not-found search box /
+> fuzzy best-match / recents (no recents store or search index) · anchor 28 panel-scale "object deleted mid-session".
 >
 > **New canonical components (reuse these):** `components/StrataSystemStates.tsx` → `StrataNotFound` (names failed route +
 > cause + owning-area exit) and `StrataRestricted` (consequence framing + owning role + reader's actual roles).
@@ -33,7 +62,8 @@
 > (per-slice detail + honest scoping rationale). **Re-read the next slice's anchor in full via DesignSync (parent-only) before coding.**
 >
 > Phase 5 merges: 5A `4ae22c344` · 5B `18627efca` · 5C `5e4ebc65c` · 5D `56082a288` · 5E `a57670444` · 5F `18bae3c92` ·
-> 5G `aedfcb6fd`. Branch == origin/branch == origin/main (linear fast-forward). Map byte-untouched throughout.
+> 5G `aedfcb6fd` · **5G-2 `ceb99e56f`**. Branch == origin/branch == origin/main (linear fast-forward). Map byte-untouched
+> throughout (verified `git diff 3e215d4ed..HEAD -- StrataStrategyMapPage.tsx` = empty).
 
 ---
 
@@ -146,7 +176,9 @@ rule → STOP + re-verify). Gates: `npx tsc --noEmit` · `npm run lint:colors:ga
   Detail (14, `f1c3a3364`) · 2F Evidence (15, `f4b2b2b6a`). Detail for those slices is in git history + the
   lower sections of this file (below OPEN DEBT).
 
-## ⚠️ OPEN DEBT (carry into Phase 3 — do NOT lose)
+## ⚠️ OPEN DEBT — **HISTORICAL (Phase-2 era). SUPERSEDED by the LIVE DEBT block at the top of this file.**
+> Kept for provenance only. Items 1, 2 and 4 below are STILL OPEN and are restated authoritatively at the top;
+> item 6 is stale (Phases 4–5 are complete). Do not treat this section as the current picture.
 1. **Prod migrations BLOCKED (no prod access this session — tackle later).** `20260713100000`
    (plan-variance, session 004) and `20260713110000` (strata_saved_views + strata_bulk_update_kpis, 2C-2a)
    are applied to **staging (`cyijbdeuehohvhnsywig`) ONLY**; prod (`lmqwtldpfacrrlvdnmld`) is unreachable via
@@ -164,8 +196,8 @@ rule → STOP + re-verify). Gates: `npx tsc --noEmit` · `npm run lint:colors:ga
    rail (IN-THE-CHAIN links: objective ↑ / delivery ▦ / measured-by ◎ / gate ⚖, + Confidence panel) and
    attestation-history-as-timeline were NOT built — verdict band + hero value stages shipped, other panels
    preserved as-is. Fold into a 3B-1b pass or the 3B-2 portfolio-page restructure.
-6. **Phases 4–5 NOT started** (governance & data: anchors 09·10·19·20·23·24; config & system-states: 03·04·
-   05·25·26·27·28). Each needs its own Plan Lock per CLAUDE.md before any code.
+6. ~~**Phases 4–5 NOT started**~~ — **SUPERSEDED 2026-07-16: Phases 4 AND 5 are both COMPLETE and merged**
+   (all 28/28 anchors shipped). This item is Phase-2-era history; see the authoritative block at the top of this file.
 
 ### 2E Element Detail (anchor 14) — SPLIT 2E-1/2E-2/2E-3. Page: `StrataStrategyElementDetailPage.tsx`.
 - Anchor 14 = 2-col ViewBase: left body [health verdict (LEADS) → StrataChainStrip → Charter (Intent/Scope)
