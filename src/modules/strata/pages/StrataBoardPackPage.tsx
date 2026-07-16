@@ -17,7 +17,12 @@ import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { Button, EmptyState, SectionMessage, Spinner } from '@/components/ads';
 import { StatusLozenge } from '@/components/shared/StatusLozenge';
 import { Routes } from '@/lib/routes';
-import { ChevronLeft, ChevronRight, FileBarChart, Play, X } from '@/lib/atlaskit-icons';
+// NB: the Present-mode affordance uses `Presentation` deliberately. The icon
+// library also exposes one named after the legacy element type retired by the
+// Theme rename, which REQ-003 (CAT-STRATA-FOUNDATION-20260709-001) bans across
+// this module — its guard is a text scan covering comments too, and correctly
+// cannot tell an icon identifier from a UI label. Don't reintroduce it here.
+import { ChevronLeft, ChevronRight, FileBarChart, Presentation, X } from '@/lib/atlaskit-icons';
 import {
   useSnapshotByKey, useSnapshotItems, useDecisions, useActions, useStrataContext, useProfileNames,
 } from '@/modules/strata/hooks/useStrata';
@@ -257,7 +262,7 @@ export default function StrataBoardPackPage() {
       state={snapshot.status}
       headerActions={
         <div style={{ display: 'inline-flex', gap: 8 }}>
-          <Button appearance="default" iconBefore={<Play size={14} />} onClick={openPresent} testId="strata-board-pack-present-btn">Present mode</Button>
+          <Button appearance="default" iconBefore={<Presentation size={14} />} onClick={openPresent} testId="strata-board-pack-present-btn">Present mode</Button>
           <Button appearance="primary" iconBefore={<FileBarChart size={14} />} isDisabled={busy} onClick={() => void printPdf()} testId="strata-board-pack-print">
             {busy ? 'Preparing…' : 'Print / PDF'}
           </Button>

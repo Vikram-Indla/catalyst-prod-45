@@ -4,8 +4,8 @@
  * Do NOT edit by hand. Run `npx tsx scripts/scan-components.ts` to regenerate
  * after changing any import in src/.
  *
- * Captured: 2026-07-12T17:17:53.984Z
- * Stats: 4018 components observed (662 atlaskit, 3356 internal).
+ * Captured: 2026-07-16T10:26:07.948Z
+ * Stats: 4034 components observed (662 atlaskit, 3372 internal).
  */
 
 export interface UsageMapEntry {
@@ -4136,7 +4136,6 @@ export const usageMap: UsageMap = {
       "src/modules/project-work-hub/components/CreateWorkItemDropdown.tsx",
       "src/modules/project-work-hub/components/WorkTypeIcon.tsx",
       "src/modules/strata/pages/StrataCommandCenterPage.tsx",
-      "src/modules/strata/pages/StrataDataPipelinePage.tsx",
       "src/modules/task10/components/modals/T10DeleteModal.tsx",
       "src/modules/task10/components/week/T10AIBanner.tsx",
       "src/modules/task10/components/week/T10WeekViewV3.tsx",
@@ -4676,6 +4675,9 @@ export const usageMap: UsageMap = {
       "src/modules/epic-balancing/components/EpicBalancingPage.tsx",
       "src/modules/incidents/analytics/components/DrilldownDrawer.tsx",
       "src/modules/product-backlog/components/split-panel/RequestDetailPanel.tsx",
+      "src/modules/strata/pages/StrataAccessPage.tsx",
+      "src/modules/strata/pages/StrataDataIntegrationPage.tsx",
+      "src/modules/strata/pages/StrataMeasurementPage.tsx",
       "src/modules/task10/components/week/T10WeekHeader.tsx",
       "src/modules/task10/pages/T10CompletedPage.tsx",
       "src/modules/tasks/components/workstreams/ArchivedWorkstreamsView.tsx",
@@ -6055,6 +6057,7 @@ export const usageMap: UsageMap = {
       "src/modules/in-jira/pages/SummaryPage.tsx",
       "src/modules/project-work-hub/components/tabs/KanbanBoardTab.tsx",
       "src/modules/strata/pages/StrataAdminConfigPage.tsx",
+      "src/modules/strata/pages/StrataMeasurementPage.tsx",
       "src/modules/tasks/components/TaskDetailDrawer/ProgressSection.tsx",
       "src/modules/tasks/components/insights/MonthlyChronicleView.tsx",
       "src/modules/tasks/components/insights/WeeklySummaryView.tsx",
@@ -7066,7 +7069,8 @@ export const usageMap: UsageMap = {
     "source": "@/components/shared/JiraTable",
     "origin": "internal",
     "consumers": [
-      "src/modules/project-work-hub/pages/BacklogPage.atlaskit.tsx"
+      "src/modules/project-work-hub/pages/BacklogPage.atlaskit.tsx",
+      "src/modules/strata/pages/StrataKpiLibraryPage.tsx"
     ]
   },
   "BulkFooterBar::@/components/shared/JiraTable/BulkFooterBar": {
@@ -7248,20 +7252,28 @@ export const usageMap: UsageMap = {
       "src/modules/docintel/pages/DocintelWorkspacePage.tsx",
       "src/modules/strata/components/ProjectCardDetailView.tsx",
       "src/modules/strata/components/StrataNotificationBell.tsx",
+      "src/modules/strata/components/StrataSystemStates.tsx",
       "src/modules/strata/components/authoring.tsx",
       "src/modules/strata/components/shared.tsx",
       "src/modules/strata/components/vmoAuthoring.tsx",
+      "src/modules/strata/pages/StrataAccessPage.tsx",
       "src/modules/strata/pages/StrataAdminConfigPage.tsx",
+      "src/modules/strata/pages/StrataBoardPackPage.tsx",
       "src/modules/strata/pages/StrataCommandCenterPage.tsx",
+      "src/modules/strata/pages/StrataDataIntegrationPage.tsx",
       "src/modules/strata/pages/StrataDataPipelinePage.tsx",
       "src/modules/strata/pages/StrataEvidencePage.tsx",
       "src/modules/strata/pages/StrataExecutionImportPage.tsx",
       "src/modules/strata/pages/StrataExecutionPage.tsx",
       "src/modules/strata/pages/StrataKpiDetailPage.tsx",
       "src/modules/strata/pages/StrataKpiLibraryPage.tsx",
+      "src/modules/strata/pages/StrataMeasurementPage.tsx",
+      "src/modules/strata/pages/StrataPortfolioDetailPage.tsx",
+      "src/modules/strata/pages/StrataPortfolioIndexView.tsx",
       "src/modules/strata/pages/StrataPortfolioVmoPage.tsx",
       "src/modules/strata/pages/StrataReviewsPage.tsx",
       "src/modules/strata/pages/StrataScorecardDetailPage.tsx",
+      "src/modules/strata/pages/StrataScorecardsPage.tsx",
       "src/modules/strata/pages/StrataStrategyElementDetailPage.tsx",
       "src/modules/strata/pages/StrataStrategyMapPage.tsx",
       "src/modules/strata/pages/StrataStrategyRoomPage.tsx",
@@ -8223,7 +8235,6 @@ export const usageMap: UsageMap = {
     "origin": "internal",
     "consumers": [
       "src/components/settings/EmailNotificationsPanel.tsx",
-      "src/modules/strata/pages/StrataDataPipelinePage.tsx",
       "src/modules/strata/pages/StrataReviewsPage.tsx"
     ]
   },
@@ -9446,6 +9457,7 @@ export const usageMap: UsageMap = {
     "source": "@/components/ads",
     "origin": "internal",
     "consumers": [
+      "src/modules/strata/components/StrataSystemStates.tsx",
       "src/modules/strata/pages/StrataAdminConfigPage.tsx"
     ]
   },
@@ -9832,6 +9844,7 @@ export const usageMap: UsageMap = {
     "consumers": [
       "src/modules/strata/components/ProjectCardDetailView.tsx",
       "src/modules/strata/components/vmoAuthoring.tsx",
+      "src/modules/strata/pages/StrataAccessPage.tsx",
       "src/modules/strata/pages/StrataAdminConfigPage.tsx",
       "src/modules/strata/pages/StrataCommandCenterPage.tsx",
       "src/modules/strata/pages/StrataDataPipelinePage.tsx",
@@ -9839,11 +9852,10 @@ export const usageMap: UsageMap = {
       "src/modules/strata/pages/StrataExecutionPage.tsx",
       "src/modules/strata/pages/StrataKpiDetailPage.tsx",
       "src/modules/strata/pages/StrataKpiLibraryPage.tsx",
+      "src/modules/strata/pages/StrataPortfolioDetailPage.tsx",
       "src/modules/strata/pages/StrataPortfolioVmoPage.tsx",
       "src/modules/strata/pages/StrataReviewsPage.tsx",
       "src/modules/strata/pages/StrataScorecardDetailPage.tsx",
-      "src/modules/strata/pages/StrataScorecardsPage.tsx",
-      "src/modules/strata/pages/StrataStrategyRoomPage.tsx",
       "src/modules/strata/pages/StrataUploadWizardPage.tsx",
       "src/pages/admin/workflows/studio/EditorPanels.tsx",
       "src/pages/admin/workflows/studio/StudioTabs.tsx",
@@ -11442,7 +11454,6 @@ export const usageMap: UsageMap = {
       "src/modules/project-work-hub/pages/StoryBacklogPage.atlaskit.tsx",
       "src/modules/project-work-hub/pages/StoryBacklogPage.tsx",
       "src/modules/strata/components/shared.tsx",
-      "src/modules/strata/pages/StrataReviewsPage.tsx",
       "src/modules/strata/pages/StrataStrategyRoomPage.tsx",
       "src/modules/task10/components/completed/T10CompletedWeeksTable.tsx",
       "src/modules/task10/components/filters/T10AssigneeFilter.tsx",
@@ -11705,6 +11716,7 @@ export const usageMap: UsageMap = {
       "src/modules/product-roadmap/components/RoadmapToolbar.tsx",
       "src/modules/program-epics/components/EpicRoadmap.tsx",
       "src/modules/project-work-hub/pages/StoryBacklogPage.tsx",
+      "src/modules/strata/pages/StrataBoardPackPage.tsx",
       "src/modules/task10/components/week/T10WeekNavigation.tsx",
       "src/modules/task10/components/week/T10WeekSelector.tsx",
       "src/modules/task10/components/week/T10WeekViewV3.tsx",
@@ -11873,7 +11885,7 @@ export const usageMap: UsageMap = {
       "src/modules/project-work-hub/pages/FeatureBacklogPage.tsx",
       "src/modules/project-work-hub/pages/StoryBacklogPage.tsx",
       "src/modules/strata/components/shared.tsx",
-      "src/modules/strata/pages/StrataReviewsPage.tsx",
+      "src/modules/strata/pages/StrataBoardPackPage.tsx",
       "src/modules/strata/pages/StrataStrategyRoomPage.tsx",
       "src/modules/task10/components/completed/T10CompletedWeeksTable.tsx",
       "src/modules/task10/components/landing/T10CompletedCardV3.tsx",
@@ -13947,7 +13959,6 @@ export const usageMap: UsageMap = {
       "src/modules/in-jira/components/drawer/IssueActionsMenu.tsx",
       "src/modules/product-backlog/components/split-panel/RequestDetailPanel.tsx",
       "src/modules/product-roadmap/components/RoadmapDetailPanel.tsx",
-      "src/modules/strata/pages/StrataDataPipelinePage.tsx",
       "src/modules/task10/components/panel/T10EnterpriseSidePanel.tsx",
       "src/modules/task10/components/panel/T10SidePanelNew.tsx",
       "src/modules/tasks/components/TaskCard.tsx",
@@ -15069,6 +15080,7 @@ export const usageMap: UsageMap = {
       "src/components/layout/EnterpriseSidebar.tsx",
       "src/components/reqAssist/RAStatsBar.tsx",
       "src/modules/in-jira/pages/SettingsPage.tsx",
+      "src/modules/strata/pages/StrataDataIntegrationPage.tsx",
       "src/modules/strata/pages/StrataDataPipelinePage.tsx",
       "src/modules/strata/pages/StrataKpiDetailPage.tsx",
       "src/modules/strata/pages/StrataReviewsPage.tsx",
@@ -19013,15 +19025,22 @@ export const usageMap: UsageMap = {
       "src/modules/product-roadmap/components/ProductRoadmap.tsx",
       "src/modules/strata/components/ProjectCardDetailView.tsx",
       "src/modules/strata/components/StrataNotificationBell.tsx",
+      "src/modules/strata/components/StrataSystemStates.tsx",
       "src/modules/strata/components/vmoAuthoring.tsx",
+      "src/modules/strata/pages/StrataAccessPage.tsx",
       "src/modules/strata/pages/StrataAdminConfigPage.tsx",
+      "src/modules/strata/pages/StrataBoardPackPage.tsx",
       "src/modules/strata/pages/StrataCommandCenterPage.tsx",
+      "src/modules/strata/pages/StrataDataIntegrationPage.tsx",
       "src/modules/strata/pages/StrataDataPipelinePage.tsx",
       "src/modules/strata/pages/StrataEvidencePage.tsx",
       "src/modules/strata/pages/StrataExecutionImportPage.tsx",
       "src/modules/strata/pages/StrataExecutionPage.tsx",
       "src/modules/strata/pages/StrataKpiDetailPage.tsx",
       "src/modules/strata/pages/StrataKpiLibraryPage.tsx",
+      "src/modules/strata/pages/StrataMeasurementPage.tsx",
+      "src/modules/strata/pages/StrataPortfolioDetailPage.tsx",
+      "src/modules/strata/pages/StrataPortfolioIndexView.tsx",
       "src/modules/strata/pages/StrataPortfolioVmoPage.tsx",
       "src/modules/strata/pages/StrataReviewsPage.tsx",
       "src/modules/strata/pages/StrataScorecardDetailPage.tsx",
@@ -20427,6 +20446,7 @@ export const usageMap: UsageMap = {
     "source": "@/lib/atlaskit-icons",
     "origin": "internal",
     "consumers": [
+      "src/modules/strata/pages/StrataBoardPackPage.tsx",
       "src/modules/strata/pages/StrataPortfolioVmoPage.tsx",
       "src/modules/strata/pages/StrataReviewsPage.tsx"
     ]
@@ -21748,6 +21768,7 @@ export const usageMap: UsageMap = {
       "src/components/layout/ItemsDropdown.tsx",
       "src/components/layout/dropdowns/ItemsDropdown.tsx",
       "src/modules/strata/pages/StrataAdminConfigPage.tsx",
+      "src/modules/strata/pages/StrataPortfolioDetailPage.tsx",
       "src/modules/strata/pages/StrataPortfolioVmoPage.tsx",
       "src/modules/strata/pages/StrataStrategyMapPage.tsx",
       "src/modules/strata/pages/StrataStrategyRoomPage.tsx"
@@ -21838,6 +21859,7 @@ export const usageMap: UsageMap = {
       "src/modules/in-jira/components/InJiraLayout.tsx",
       "src/modules/in-jira/components/drawer/DetailsPanel.tsx",
       "src/modules/in-jira/pages/ReleaseManagementPage.tsx",
+      "src/modules/strata/pages/StrataAccessPage.tsx",
       "src/modules/strata/pages/StrataAdminConfigPage.tsx",
       "src/modules/strata/pages/StrataExecutionPage.tsx",
       "src/modules/strata/pages/StrataKpiDetailPage.tsx",
@@ -21947,6 +21969,30 @@ export const usageMap: UsageMap = {
       "src/modules/workhub/admin/components/JiraConnection.tsx"
     ],
     "package": "@atlaskit/icon"
+  },
+  "GovActions::./StrataAdminConfigPage": {
+    "name": "GovActions",
+    "source": "./StrataAdminConfigPage",
+    "origin": "internal",
+    "consumers": [
+      "src/modules/strata/pages/StrataMeasurementPage.tsx"
+    ]
+  },
+  "GovEnvelope::./StrataAdminConfigPage": {
+    "name": "GovEnvelope",
+    "source": "./StrataAdminConfigPage",
+    "origin": "internal",
+    "consumers": [
+      "src/modules/strata/pages/StrataMeasurementPage.tsx"
+    ]
+  },
+  "GovStatusLozenge::./StrataAdminConfigPage": {
+    "name": "GovStatusLozenge",
+    "source": "./StrataAdminConfigPage",
+    "origin": "internal",
+    "consumers": [
+      "src/modules/strata/pages/StrataMeasurementPage.tsx"
+    ]
   },
   "GraduationCap::@/lib/atlaskit-icons": {
     "name": "GraduationCap",
@@ -22551,6 +22597,7 @@ export const usageMap: UsageMap = {
       "src/components/workhub/jira/SyncLogTable.tsx",
       "src/components/workhub/workitems/WorkItemsPage.tsx",
       "src/modules/budget/components/ResourceCostSection.tsx",
+      "src/modules/strata/pages/StrataCommandCenterPage.tsx",
       "src/modules/tasks/components/TaskDetailDrawer/ActivitySection.tsx",
       "src/pages/UserProfile.tsx",
       "src/pages/project-hub/WorkItemsListPage.tsx",
@@ -23008,7 +23055,6 @@ export const usageMap: UsageMap = {
     "source": "@/components/ads",
     "origin": "internal",
     "consumers": [
-      "src/modules/strata/pages/StrataDataPipelinePage.tsx",
       "src/modules/strata/pages/StrataScorecardDetailPage.tsx",
       "src/modules/strata/pages/StrataStrategyMapPage.tsx",
       "src/modules/strata/pages/StrataStrategyRoomPage.tsx"
@@ -24651,17 +24697,23 @@ export const usageMap: UsageMap = {
       "src/modules/project-work-hub/pages/StoryBacklogPage.atlaskit.tsx",
       "src/modules/strata/components/ProjectCardDetailView.tsx",
       "src/modules/strata/components/shared.tsx",
+      "src/modules/strata/pages/StrataAccessPage.tsx",
       "src/modules/strata/pages/StrataAdminConfigPage.tsx",
       "src/modules/strata/pages/StrataCommandCenterPage.tsx",
+      "src/modules/strata/pages/StrataDataIntegrationPage.tsx",
       "src/modules/strata/pages/StrataDataPipelinePage.tsx",
       "src/modules/strata/pages/StrataExecutionImportPage.tsx",
       "src/modules/strata/pages/StrataExecutionPage.tsx",
       "src/modules/strata/pages/StrataKpiDetailPage.tsx",
       "src/modules/strata/pages/StrataKpiLibraryPage.tsx",
+      "src/modules/strata/pages/StrataMeasurementPage.tsx",
+      "src/modules/strata/pages/StrataPortfolioDetailPage.tsx",
+      "src/modules/strata/pages/StrataPortfolioIndexView.tsx",
       "src/modules/strata/pages/StrataPortfolioVmoPage.tsx",
       "src/modules/strata/pages/StrataReviewsPage.tsx",
       "src/modules/strata/pages/StrataScorecardDetailPage.tsx",
       "src/modules/strata/pages/StrataScorecardsPage.tsx",
+      "src/modules/strata/pages/StrataStrategyRoomPage.tsx",
       "src/modules/strata/pages/StrataUploadWizardPage.tsx",
       "src/modules/tasks/components/TaskList/TaskListTable.tsx",
       "src/modules/tasks/views/TasksTaskListView.tsx",
@@ -25086,6 +25138,14 @@ export const usageMap: UsageMap = {
       "src/modules/command-center/hooks/useCommandCenterKPIs.ts"
     ]
   },
+  "KpiTypesSection::./StrataAdminConfigPage": {
+    "name": "KpiTypesSection",
+    "source": "./StrataAdminConfigPage",
+    "origin": "internal",
+    "consumers": [
+      "src/modules/strata/pages/StrataMeasurementPage.tsx"
+    ]
+  },
   "KPIWidgetCard::@/components/shared/KPIWidgetCard": {
     "name": "KPIWidgetCard",
     "source": "@/components/shared/KPIWidgetCard",
@@ -25494,6 +25554,7 @@ export const usageMap: UsageMap = {
       "src/modules/strata/components/vmoAuthoring.tsx",
       "src/modules/strata/pages/StrataAdminConfigPage.tsx",
       "src/modules/strata/pages/StrataEvidencePage.tsx",
+      "src/modules/strata/pages/StrataMeasurementPage.tsx",
       "src/modules/strata/pages/StrataScorecardDetailPage.tsx",
       "src/modules/task10/components/week/T10WeekViewV3.tsx",
       "src/modules/tasks/components/PlannerSearchBar.tsx",
@@ -26217,6 +26278,8 @@ export const usageMap: UsageMap = {
       "src/components/releasehub/foryou/ReleaseChangeAnnouncementBanner.tsx",
       "src/modules/strata/pages/StrataAdminConfigPage.tsx",
       "src/modules/strata/pages/StrataExecutionImportPage.tsx",
+      "src/modules/strata/pages/StrataMeasurementPage.tsx",
+      "src/modules/strata/pages/StrataPortfolioDetailPage.tsx",
       "src/modules/strata/pages/StrataPortfolioVmoPage.tsx",
       "src/modules/strata/pages/StrataUploadWizardPage.tsx",
       "src/pages/releasehub/SopTemplatesPage.tsx"
@@ -26829,13 +26892,16 @@ export const usageMap: UsageMap = {
       "src/modules/project-work-hub/components/tabs/ArchivedTab.tsx",
       "src/modules/strata/components/ProjectCardDetailView.tsx",
       "src/modules/strata/components/shared.tsx",
+      "src/modules/strata/pages/StrataAccessPage.tsx",
+      "src/modules/strata/pages/StrataAdminConfigPage.tsx",
       "src/modules/strata/pages/StrataCommandCenterPage.tsx",
+      "src/modules/strata/pages/StrataDataIntegrationPage.tsx",
       "src/modules/strata/pages/StrataEvidencePage.tsx",
       "src/modules/strata/pages/StrataExecutionImportPage.tsx",
       "src/modules/strata/pages/StrataExecutionPage.tsx",
       "src/modules/strata/pages/StrataKpiDetailPage.tsx",
       "src/modules/strata/pages/StrataKpiLibraryPage.tsx",
-      "src/modules/strata/pages/StrataScorecardsPage.tsx",
+      "src/modules/strata/pages/StrataMeasurementPage.tsx",
       "src/modules/strata/pages/StrataStrategyElementDetailPage.tsx",
       "src/modules/strata/pages/StrataStrategyMapPage.tsx",
       "src/modules/strata/pages/StrataStrategyRoomPage.tsx",
@@ -27991,6 +28057,7 @@ export const usageMap: UsageMap = {
       "src/modules/strata/pages/StrataAdminConfigPage.tsx",
       "src/modules/strata/pages/StrataKpiDetailPage.tsx",
       "src/modules/strata/pages/StrataReviewsPage.tsx",
+      "src/modules/strata/pages/StrataStrategyElementDetailPage.tsx",
       "src/modules/strata/pages/StrataStrategyRoomPage.tsx",
       "src/pages/admin/workflows/studio/GenerateWorkflowModal.tsx",
       "src/pages/admin/workflows/studio/PublishModal.tsx"
@@ -28103,6 +28170,7 @@ export const usageMap: UsageMap = {
       "src/modules/strata/pages/StrataAdminConfigPage.tsx",
       "src/modules/strata/pages/StrataKpiDetailPage.tsx",
       "src/modules/strata/pages/StrataReviewsPage.tsx",
+      "src/modules/strata/pages/StrataStrategyElementDetailPage.tsx",
       "src/modules/strata/pages/StrataStrategyRoomPage.tsx",
       "src/pages/admin/workflows/studio/GenerateWorkflowModal.tsx",
       "src/pages/admin/workflows/studio/PublishModal.tsx"
@@ -28376,6 +28444,7 @@ export const usageMap: UsageMap = {
       "src/modules/strata/pages/StrataAdminConfigPage.tsx",
       "src/modules/strata/pages/StrataKpiDetailPage.tsx",
       "src/modules/strata/pages/StrataReviewsPage.tsx",
+      "src/modules/strata/pages/StrataStrategyElementDetailPage.tsx",
       "src/modules/strata/pages/StrataStrategyRoomPage.tsx",
       "src/pages/admin/workflows/studio/GenerateWorkflowModal.tsx",
       "src/pages/admin/workflows/studio/PublishModal.tsx"
@@ -28547,6 +28616,7 @@ export const usageMap: UsageMap = {
       "src/modules/strata/pages/StrataAdminConfigPage.tsx",
       "src/modules/strata/pages/StrataKpiDetailPage.tsx",
       "src/modules/strata/pages/StrataReviewsPage.tsx",
+      "src/modules/strata/pages/StrataStrategyElementDetailPage.tsx",
       "src/modules/strata/pages/StrataStrategyRoomPage.tsx",
       "src/pages/admin/workflows/studio/GenerateWorkflowModal.tsx",
       "src/pages/admin/workflows/studio/PublishModal.tsx"
@@ -28713,6 +28783,7 @@ export const usageMap: UsageMap = {
       "src/modules/strata/pages/StrataAdminConfigPage.tsx",
       "src/modules/strata/pages/StrataKpiDetailPage.tsx",
       "src/modules/strata/pages/StrataReviewsPage.tsx",
+      "src/modules/strata/pages/StrataStrategyElementDetailPage.tsx",
       "src/modules/strata/pages/StrataStrategyRoomPage.tsx",
       "src/pages/admin/workflows/studio/GenerateWorkflowModal.tsx",
       "src/pages/admin/workflows/studio/PublishModal.tsx"
@@ -29305,9 +29376,7 @@ export const usageMap: UsageMap = {
     "origin": "internal",
     "consumers": [
       "src/modules/backlog/components/BulkMoveDialog.tsx",
-      "src/modules/strata/pages/StrataAdminConfigPage.tsx",
-      "src/modules/strata/pages/StrataDataPipelinePage.tsx",
-      "src/modules/strata/pages/StrataStrategyRoomPage.tsx"
+      "src/modules/strata/pages/StrataAdminConfigPage.tsx"
     ]
   },
   "MoveRowDownIcon::@atlaskit/icon/core/table-row-move-down": {
@@ -29545,7 +29614,6 @@ export const usageMap: UsageMap = {
       "src/modules/strata/pages/StrataDataPipelinePage.tsx",
       "src/modules/strata/pages/StrataKpiDetailPage.tsx",
       "src/modules/strata/pages/StrataStrategyElementDetailPage.tsx",
-      "src/modules/strata/pages/StrataStrategyRoomPage.tsx",
       "src/pages/reports/DependencyMapsPage.tsx"
     ]
   },
@@ -30622,7 +30690,6 @@ export const usageMap: UsageMap = {
       "src/components/layout/ReleasesManagementSidebar.tsx",
       "src/modules/in-jira/pages/SummaryPage.tsx",
       "src/modules/strata/pages/StrataCommandCenterPage.tsx",
-      "src/modules/strata/pages/StrataScorecardsPage.tsx",
       "src/pages/SkillsInventory.tsx"
     ]
   },
@@ -31676,7 +31743,8 @@ export const usageMap: UsageMap = {
     "origin": "internal",
     "consumers": [
       "src/components/capacity/SleekCapacityHeader.tsx",
-      "src/components/catalyst-roadmap/RoadmapHeader.tsx"
+      "src/components/catalyst-roadmap/RoadmapHeader.tsx",
+      "src/modules/strata/pages/StrataBoardPackPage.tsx"
     ]
   },
   "PresentationModal::@/components/ideas-roadmap/PresentationModal": {
@@ -32409,8 +32477,7 @@ export const usageMap: UsageMap = {
     "origin": "internal",
     "consumers": [
       "src/modules/strata/components/ProjectCardDetailView.tsx",
-      "src/modules/strata/components/shared.tsx",
-      "src/modules/strata/pages/StrataExecutionPage.tsx"
+      "src/modules/strata/components/shared.tsx"
     ]
   },
   "ProgressBar::@/components/ads/ProgressBar": {
@@ -35722,14 +35789,21 @@ export const usageMap: UsageMap = {
       "src/modules/project-work-hub/adapters/defectsDataSource.ts",
       "src/modules/strata/components/ProjectCardDetailView.tsx",
       "src/modules/strata/components/StrataNotificationBell.tsx",
+      "src/modules/strata/components/StrataSystemStates.tsx",
+      "src/modules/strata/pages/StrataAccessPage.tsx",
       "src/modules/strata/pages/StrataAdminConfigPage.tsx",
+      "src/modules/strata/pages/StrataBoardPackPage.tsx",
       "src/modules/strata/pages/StrataCommandCenterPage.tsx",
+      "src/modules/strata/pages/StrataDataIntegrationPage.tsx",
       "src/modules/strata/pages/StrataDataPipelinePage.tsx",
       "src/modules/strata/pages/StrataEvidencePage.tsx",
       "src/modules/strata/pages/StrataExecutionImportPage.tsx",
       "src/modules/strata/pages/StrataExecutionPage.tsx",
       "src/modules/strata/pages/StrataKpiDetailPage.tsx",
       "src/modules/strata/pages/StrataKpiLibraryPage.tsx",
+      "src/modules/strata/pages/StrataMeasurementPage.tsx",
+      "src/modules/strata/pages/StrataPortfolioDetailPage.tsx",
+      "src/modules/strata/pages/StrataPortfolioIndexView.tsx",
       "src/modules/strata/pages/StrataPortfolioVmoPage.tsx",
       "src/modules/strata/pages/StrataReviewsPage.tsx",
       "src/modules/strata/pages/StrataScorecardDetailPage.tsx",
@@ -35942,6 +36016,7 @@ export const usageMap: UsageMap = {
       "src/modules/epic-balancing/components/EpicBalancingPage.tsx",
       "src/modules/strata/pages/StrataAdminConfigPage.tsx",
       "src/modules/strata/pages/StrataKpiLibraryPage.tsx",
+      "src/modules/strata/pages/StrataMeasurementPage.tsx",
       "src/modules/strata/pages/StrataScorecardsPage.tsx"
     ]
   },
@@ -36115,6 +36190,14 @@ export const usageMap: UsageMap = {
     "origin": "internal",
     "consumers": [
       "src/components/releases/dashboard/ScorecardBar.tsx"
+    ]
+  },
+  "ScorecardModelsSection::./StrataAdminConfigPage": {
+    "name": "ScorecardModelsSection",
+    "source": "./StrataAdminConfigPage",
+    "origin": "internal",
+    "consumers": [
+      "src/modules/strata/pages/StrataMeasurementPage.tsx"
     ]
   },
   "ScoringFilter::../types": {
@@ -36571,21 +36654,29 @@ export const usageMap: UsageMap = {
       "src/modules/docintel/pages/DocintelUploadPage.tsx",
       "src/modules/project-work-hub/pages/BacklogPage.atlaskit.tsx",
       "src/modules/strata/components/ProjectCardDetailView.tsx",
+      "src/modules/strata/components/StrataSystemStates.tsx",
       "src/modules/strata/components/authoring.tsx",
       "src/modules/strata/components/shared.tsx",
       "src/modules/strata/components/vmoAuthoring.tsx",
+      "src/modules/strata/pages/StrataAccessPage.tsx",
       "src/modules/strata/pages/StrataAdminConfigPage.tsx",
+      "src/modules/strata/pages/StrataBoardPackPage.tsx",
       "src/modules/strata/pages/StrataCommandCenterPage.tsx",
+      "src/modules/strata/pages/StrataDataIntegrationPage.tsx",
       "src/modules/strata/pages/StrataDataPipelinePage.tsx",
       "src/modules/strata/pages/StrataEvidencePage.tsx",
       "src/modules/strata/pages/StrataExecutionImportPage.tsx",
       "src/modules/strata/pages/StrataExecutionPage.tsx",
       "src/modules/strata/pages/StrataKpiDetailPage.tsx",
       "src/modules/strata/pages/StrataKpiLibraryPage.tsx",
+      "src/modules/strata/pages/StrataMeasurementPage.tsx",
+      "src/modules/strata/pages/StrataPortfolioDetailPage.tsx",
+      "src/modules/strata/pages/StrataPortfolioIndexView.tsx",
       "src/modules/strata/pages/StrataPortfolioVmoPage.tsx",
       "src/modules/strata/pages/StrataReviewsPage.tsx",
       "src/modules/strata/pages/StrataScorecardDetailPage.tsx",
       "src/modules/strata/pages/StrataScorecardsPage.tsx",
+      "src/modules/strata/pages/StrataStrategyElementDetailPage.tsx",
       "src/modules/strata/pages/StrataStrategyMapPage.tsx",
       "src/modules/strata/pages/StrataStrategyRoomPage.tsx",
       "src/modules/strata/pages/StrataUploadWizardPage.tsx",
@@ -38309,6 +38400,7 @@ export const usageMap: UsageMap = {
       "src/components/releasehub/EmptyState.tsx",
       "src/components/releases/quality-gates/QualityGateEditor.tsx",
       "src/modules/strata/pages/StrataAdminConfigPage.tsx",
+      "src/modules/strata/pages/StrataPortfolioDetailPage.tsx",
       "src/modules/strata/pages/StrataPortfolioVmoPage.tsx"
     ]
   },
@@ -39135,16 +39227,20 @@ export const usageMap: UsageMap = {
       "src/modules/strata/components/StrataNotificationBell.tsx",
       "src/modules/strata/components/shared.tsx",
       "src/modules/strata/components/vmoAuthoring.tsx",
+      "src/modules/strata/pages/StrataAccessPage.tsx",
       "src/modules/strata/pages/StrataAdminConfigPage.tsx",
+      "src/modules/strata/pages/StrataBoardPackPage.tsx",
+      "src/modules/strata/pages/StrataDataIntegrationPage.tsx",
       "src/modules/strata/pages/StrataDataPipelinePage.tsx",
       "src/modules/strata/pages/StrataEvidencePage.tsx",
       "src/modules/strata/pages/StrataExecutionImportPage.tsx",
       "src/modules/strata/pages/StrataExecutionPage.tsx",
       "src/modules/strata/pages/StrataKpiDetailPage.tsx",
       "src/modules/strata/pages/StrataKpiLibraryPage.tsx",
+      "src/modules/strata/pages/StrataMeasurementPage.tsx",
+      "src/modules/strata/pages/StrataPortfolioDetailPage.tsx",
+      "src/modules/strata/pages/StrataPortfolioIndexView.tsx",
       "src/modules/strata/pages/StrataPortfolioVmoPage.tsx",
-      "src/modules/strata/pages/StrataScorecardDetailPage.tsx",
-      "src/modules/strata/pages/StrataScorecardsPage.tsx",
       "src/modules/strata/pages/StrataStrategyElementDetailPage.tsx",
       "src/modules/strata/pages/StrataStrategyMapPage.tsx",
       "src/modules/strata/pages/StrataStrategyRoomPage.tsx",
@@ -39962,10 +40058,15 @@ export const usageMap: UsageMap = {
       "src/modules/project-work-hub/pages/BacklogPage.atlaskit.tsx",
       "src/modules/project-work-hub/pages/StoryBacklogPage.tsx",
       "src/modules/strata/components/ProjectCardDetailView.tsx",
+      "src/modules/strata/pages/StrataAccessPage.tsx",
       "src/modules/strata/pages/StrataAdminConfigPage.tsx",
+      "src/modules/strata/pages/StrataBoardPackPage.tsx",
+      "src/modules/strata/pages/StrataDataIntegrationPage.tsx",
       "src/modules/strata/pages/StrataDataPipelinePage.tsx",
       "src/modules/strata/pages/StrataExecutionImportPage.tsx",
       "src/modules/strata/pages/StrataExecutionPage.tsx",
+      "src/modules/strata/pages/StrataMeasurementPage.tsx",
+      "src/modules/strata/pages/StrataPortfolioDetailPage.tsx",
       "src/modules/strata/pages/StrataPortfolioVmoPage.tsx",
       "src/modules/strata/pages/StrataReviewsPage.tsx",
       "src/modules/strata/pages/StrataUploadWizardPage.tsx",
@@ -40423,6 +40524,7 @@ export const usageMap: UsageMap = {
     "origin": "internal",
     "consumers": [
       "src/modules/strata/pages/StrataCommandCenterPage.tsx",
+      "src/modules/strata/pages/StrataKpiDetailPage.tsx",
       "src/modules/strata/pages/StrataKpiLibraryPage.tsx",
       "src/modules/strata/pages/StrataPortfolioVmoPage.tsx",
       "src/modules/strata/pages/StrataScorecardDetailPage.tsx"
@@ -40443,10 +40545,21 @@ export const usageMap: UsageMap = {
     "consumers": [
       "src/modules/strata/pages/StrataCommandCenterPage.tsx",
       "src/modules/strata/pages/StrataEvidencePage.tsx",
+      "src/modules/strata/pages/StrataKpiDetailPage.tsx",
       "src/modules/strata/pages/StrataKpiLibraryPage.tsx",
       "src/modules/strata/pages/StrataReviewsPage.tsx",
       "src/modules/strata/pages/StrataScorecardDetailPage.tsx",
       "src/modules/strata/pages/StrataScorecardsPage.tsx"
+    ]
+  },
+  "StrataChainStrip::@/modules/strata/components/shared": {
+    "name": "StrataChainStrip",
+    "source": "@/modules/strata/components/shared",
+    "origin": "internal",
+    "consumers": [
+      "src/modules/strata/pages/StrataKpiDetailPage.tsx",
+      "src/modules/strata/pages/StrataStrategyElementDetailPage.tsx",
+      "src/modules/strata/pages/StrataStrategyRoomPage.tsx"
     ]
   },
   "StrataChipMenu::@/modules/strata/components/shared": {
@@ -40465,8 +40578,7 @@ export const usageMap: UsageMap = {
     "source": "@/modules/strata/components/shared",
     "origin": "internal",
     "consumers": [
-      "src/modules/strata/pages/StrataReviewsPage.tsx",
-      "src/modules/strata/pages/StrataScorecardsPage.tsx"
+      "src/modules/strata/pages/StrataReviewsPage.tsx"
     ]
   },
   "StrataDecisionModal::@/modules/strata/components/shared": {
@@ -40476,6 +40588,7 @@ export const usageMap: UsageMap = {
     "consumers": [
       "src/modules/strata/pages/StrataDataPipelinePage.tsx",
       "src/modules/strata/pages/StrataKpiDetailPage.tsx",
+      "src/modules/strata/pages/StrataPortfolioDetailPage.tsx",
       "src/modules/strata/pages/StrataPortfolioVmoPage.tsx"
     ]
   },
@@ -40510,6 +40623,7 @@ export const usageMap: UsageMap = {
     "source": "@/modules/strata/components/authoring",
     "origin": "internal",
     "consumers": [
+      "src/modules/strata/pages/StrataAccessPage.tsx",
       "src/modules/strata/pages/StrataAdminConfigPage.tsx",
       "src/modules/strata/pages/StrataExecutionPage.tsx",
       "src/modules/strata/pages/StrataKpiDetailPage.tsx",
@@ -40520,6 +40634,14 @@ export const usageMap: UsageMap = {
       "src/modules/strata/pages/StrataStrategyRoomPage.tsx"
     ]
   },
+  "StrataFreshnessGlyph::@/modules/strata/components/shared": {
+    "name": "StrataFreshnessGlyph",
+    "source": "@/modules/strata/components/shared",
+    "origin": "internal",
+    "consumers": [
+      "src/modules/strata/pages/StrataDataPipelinePage.tsx"
+    ]
+  },
   "StrataGovernedStatusLozenge::@/modules/strata/pages/StrataKpiLibraryPage": {
     "name": "StrataGovernedStatusLozenge",
     "source": "@/modules/strata/pages/StrataKpiLibraryPage",
@@ -40528,12 +40650,46 @@ export const usageMap: UsageMap = {
       "src/modules/strata/pages/StrataKpiDetailPage.tsx"
     ]
   },
+  "StrataLifecycleStepper::@/modules/strata/components/shared": {
+    "name": "StrataLifecycleStepper",
+    "source": "@/modules/strata/components/shared",
+    "origin": "internal",
+    "consumers": [
+      "src/modules/strata/pages/StrataDataPipelinePage.tsx",
+      "src/modules/strata/pages/StrataReviewsPage.tsx",
+      "src/modules/strata/pages/StrataUploadWizardPage.tsx"
+    ]
+  },
   "StrataMetricStat::@/modules/strata/components/shared": {
     "name": "StrataMetricStat",
     "source": "@/modules/strata/components/shared",
     "origin": "internal",
     "consumers": [
       "src/modules/strata/pages/StrataScorecardDetailPage.tsx"
+    ]
+  },
+  "StrataNotFound::./components/StrataSystemStates": {
+    "name": "StrataNotFound",
+    "source": "./components/StrataSystemStates",
+    "origin": "internal",
+    "consumers": [
+      "src/modules/strata/StrataRoutes.tsx"
+    ]
+  },
+  "StrataNotFound::@/modules/strata/components/StrataSystemStates": {
+    "name": "StrataNotFound",
+    "source": "@/modules/strata/components/StrataSystemStates",
+    "origin": "internal",
+    "consumers": [
+      "src/modules/strata/pages/StrataAdminConfigPage.tsx"
+    ]
+  },
+  "StrataNotificationBand::./StrataSystemStates": {
+    "name": "StrataNotificationBand",
+    "source": "./StrataSystemStates",
+    "origin": "internal",
+    "consumers": [
+      "src/modules/strata/components/shared.tsx"
     ]
   },
   "StrataNotificationBell::./StrataNotificationBell": {
@@ -40549,14 +40705,20 @@ export const usageMap: UsageMap = {
     "source": "@/modules/strata/components/shared",
     "origin": "internal",
     "consumers": [
+      "src/modules/strata/pages/StrataAccessPage.tsx",
       "src/modules/strata/pages/StrataAdminConfigPage.tsx",
+      "src/modules/strata/pages/StrataBoardPackPage.tsx",
       "src/modules/strata/pages/StrataCommandCenterPage.tsx",
+      "src/modules/strata/pages/StrataDataIntegrationPage.tsx",
       "src/modules/strata/pages/StrataDataPipelinePage.tsx",
       "src/modules/strata/pages/StrataEvidencePage.tsx",
       "src/modules/strata/pages/StrataExecutionImportPage.tsx",
       "src/modules/strata/pages/StrataExecutionPage.tsx",
       "src/modules/strata/pages/StrataKpiDetailPage.tsx",
       "src/modules/strata/pages/StrataKpiLibraryPage.tsx",
+      "src/modules/strata/pages/StrataMeasurementPage.tsx",
+      "src/modules/strata/pages/StrataPortfolioDetailPage.tsx",
+      "src/modules/strata/pages/StrataPortfolioIndexView.tsx",
       "src/modules/strata/pages/StrataPortfolioVmoPage.tsx",
       "src/modules/strata/pages/StrataReviewsPage.tsx",
       "src/modules/strata/pages/StrataScorecardDetailPage.tsx",
@@ -40581,14 +40743,19 @@ export const usageMap: UsageMap = {
     "source": "@/modules/strata/components/shared",
     "origin": "internal",
     "consumers": [
+      "src/modules/strata/pages/StrataAccessPage.tsx",
       "src/modules/strata/pages/StrataAdminConfigPage.tsx",
       "src/modules/strata/pages/StrataCommandCenterPage.tsx",
+      "src/modules/strata/pages/StrataDataIntegrationPage.tsx",
       "src/modules/strata/pages/StrataDataPipelinePage.tsx",
       "src/modules/strata/pages/StrataEvidencePage.tsx",
       "src/modules/strata/pages/StrataExecutionImportPage.tsx",
       "src/modules/strata/pages/StrataExecutionPage.tsx",
       "src/modules/strata/pages/StrataKpiDetailPage.tsx",
       "src/modules/strata/pages/StrataKpiLibraryPage.tsx",
+      "src/modules/strata/pages/StrataMeasurementPage.tsx",
+      "src/modules/strata/pages/StrataPortfolioDetailPage.tsx",
+      "src/modules/strata/pages/StrataPortfolioIndexView.tsx",
       "src/modules/strata/pages/StrataPortfolioVmoPage.tsx",
       "src/modules/strata/pages/StrataReviewsPage.tsx",
       "src/modules/strata/pages/StrataScorecardDetailPage.tsx",
@@ -40596,6 +40763,14 @@ export const usageMap: UsageMap = {
       "src/modules/strata/pages/StrataStrategyElementDetailPage.tsx",
       "src/modules/strata/pages/StrataStrategyRoomPage.tsx",
       "src/modules/strata/pages/StrataUploadWizardPage.tsx"
+    ]
+  },
+  "StrataPortfolioIndexView::./StrataPortfolioIndexView": {
+    "name": "StrataPortfolioIndexView",
+    "source": "./StrataPortfolioIndexView",
+    "origin": "internal",
+    "consumers": [
+      "src/modules/strata/pages/StrataPortfolioVmoPage.tsx"
     ]
   },
   "StrataPortfolioMembersPanel::@/modules/strata/components/vmoAuthoring": {
@@ -40614,6 +40789,14 @@ export const usageMap: UsageMap = {
       "src/modules/strata/StrataRoutes.tsx"
     ]
   },
+  "StrataRestricted::@/modules/strata/components/StrataSystemStates": {
+    "name": "StrataRestricted",
+    "source": "@/modules/strata/components/StrataSystemStates",
+    "origin": "internal",
+    "consumers": [
+      "src/modules/strata/pages/StrataAccessPage.tsx"
+    ]
+  },
   "StrataScheduleGateModal::@/modules/strata/components/vmoAuthoring": {
     "name": "StrataScheduleGateModal",
     "source": "@/modules/strata/components/vmoAuthoring",
@@ -40627,16 +40810,21 @@ export const usageMap: UsageMap = {
     "source": "@/modules/strata/components/shared",
     "origin": "internal",
     "consumers": [
+      "src/modules/strata/pages/StrataCommandCenterPage.tsx",
       "src/modules/strata/pages/StrataEvidencePage.tsx",
-      "src/modules/strata/pages/StrataScorecardDetailPage.tsx"
+      "src/modules/strata/pages/StrataScorecardDetailPage.tsx",
+      "src/modules/strata/pages/StrataScorecardsPage.tsx"
     ]
   },
-  "StrataStatStrip::./shared": {
-    "name": "StrataStatStrip",
-    "source": "./shared",
+  "StrataSnapshotBand::@/modules/strata/components/shared": {
+    "name": "StrataSnapshotBand",
+    "source": "@/modules/strata/components/shared",
     "origin": "internal",
     "consumers": [
-      "src/modules/strata/components/ProjectCardDetailView.tsx"
+      "src/modules/strata/pages/StrataBoardPackPage.tsx",
+      "src/modules/strata/pages/StrataCommandCenterPage.tsx",
+      "src/modules/strata/pages/StrataEvidencePage.tsx",
+      "src/modules/strata/pages/StrataReviewsPage.tsx"
     ]
   },
   "StrataStatStrip::@/modules/strata/components/shared": {
@@ -40644,13 +40832,10 @@ export const usageMap: UsageMap = {
     "source": "@/modules/strata/components/shared",
     "origin": "internal",
     "consumers": [
-      "src/modules/strata/pages/StrataCommandCenterPage.tsx",
+      "src/modules/strata/pages/StrataExecutionImportPage.tsx",
       "src/modules/strata/pages/StrataExecutionPage.tsx",
-      "src/modules/strata/pages/StrataKpiDetailPage.tsx",
       "src/modules/strata/pages/StrataPortfolioVmoPage.tsx",
-      "src/modules/strata/pages/StrataReviewsPage.tsx",
-      "src/modules/strata/pages/StrataScorecardsPage.tsx",
-      "src/modules/strata/pages/StrataStrategyRoomPage.tsx"
+      "src/modules/strata/pages/StrataReviewsPage.tsx"
     ]
   },
   "StrataValueBar::@/modules/strata/components/shared": {
@@ -40658,6 +40843,8 @@ export const usageMap: UsageMap = {
     "source": "@/modules/strata/components/shared",
     "origin": "internal",
     "consumers": [
+      "src/modules/strata/pages/StrataPortfolioDetailPage.tsx",
+      "src/modules/strata/pages/StrataPortfolioIndexView.tsx",
       "src/modules/strata/pages/StrataPortfolioVmoPage.tsx"
     ]
   },
@@ -41127,14 +41314,20 @@ export const usageMap: UsageMap = {
     "source": "@/modules/strata/components/shared",
     "origin": "internal",
     "consumers": [
+      "src/modules/strata/pages/StrataAccessPage.tsx",
       "src/modules/strata/pages/StrataAdminConfigPage.tsx",
+      "src/modules/strata/pages/StrataBoardPackPage.tsx",
       "src/modules/strata/pages/StrataCommandCenterPage.tsx",
+      "src/modules/strata/pages/StrataDataIntegrationPage.tsx",
       "src/modules/strata/pages/StrataDataPipelinePage.tsx",
       "src/modules/strata/pages/StrataEvidencePage.tsx",
       "src/modules/strata/pages/StrataExecutionImportPage.tsx",
       "src/modules/strata/pages/StrataExecutionPage.tsx",
       "src/modules/strata/pages/StrataKpiDetailPage.tsx",
       "src/modules/strata/pages/StrataKpiLibraryPage.tsx",
+      "src/modules/strata/pages/StrataMeasurementPage.tsx",
+      "src/modules/strata/pages/StrataPortfolioDetailPage.tsx",
+      "src/modules/strata/pages/StrataPortfolioIndexView.tsx",
       "src/modules/strata/pages/StrataPortfolioVmoPage.tsx",
       "src/modules/strata/pages/StrataReviewsPage.tsx",
       "src/modules/strata/pages/StrataScorecardDetailPage.tsx",
@@ -43685,6 +43878,14 @@ export const usageMap: UsageMap = {
       "src/features/chat-v2/components/MessagePanel/MessageBubble.tsx"
     ]
   },
+  "ThresholdsSection::./StrataAdminConfigPage": {
+    "name": "ThresholdsSection",
+    "source": "./StrataAdminConfigPage",
+    "origin": "internal",
+    "consumers": [
+      "src/modules/strata/pages/StrataMeasurementPage.tsx"
+    ]
+  },
   "ThumbnailCard::./gallery/ThumbnailCard": {
     "name": "ThumbnailCard",
     "source": "./gallery/ThumbnailCard",
@@ -44463,6 +44664,7 @@ export const usageMap: UsageMap = {
       "src/modules/strata/pages/StrataPortfolioVmoPage.tsx",
       "src/modules/strata/pages/StrataReviewsPage.tsx",
       "src/modules/strata/pages/StrataScorecardDetailPage.tsx",
+      "src/modules/strata/pages/StrataStrategyRoomPage.tsx",
       "src/modules/tasks/components/PlannerTimeline.tsx",
       "src/modules/tasks/components/task-list/BulkActionBar.tsx",
       "src/pages/ProgramDirectory.tsx",
@@ -44877,7 +45079,6 @@ export const usageMap: UsageMap = {
       "src/components/workload/WorkloadTrendChart.tsx",
       "src/modules/in-jira/pages/SummaryPage.tsx",
       "src/modules/incidents/analytics/pages/IncidentInsightsPage.tsx",
-      "src/modules/strata/pages/StrataExecutionPage.tsx",
       "src/modules/tasks/components/insights/MonthlyChronicleView.tsx",
       "src/modules/tasks/components/insights/WeeklySummaryView.tsx",
       "src/pages/SkillsInventory.tsx"
@@ -44911,7 +45112,6 @@ export const usageMap: UsageMap = {
       "src/modules/in-jira/pages/SummaryPage.tsx",
       "src/modules/incidents/analytics/pages/IncidentInsightsPage.tsx",
       "src/modules/strata/pages/StrataCommandCenterPage.tsx",
-      "src/modules/strata/pages/StrataExecutionPage.tsx",
       "src/modules/task10/components/completed/T10CompletedSummaryCards.tsx",
       "src/modules/tasks/components/dashboard/DashboardMetricCards.tsx",
       "src/modules/tasks/components/insights/WeeklySummaryView.tsx",
@@ -45292,6 +45492,7 @@ export const usageMap: UsageMap = {
       "src/modules/product-backlog/components/split-panel/AttachmentUploadModal.tsx",
       "src/modules/program-epics/components/CreateEpicDialog.tsx",
       "src/modules/strata/pages/StrataAdminConfigPage.tsx",
+      "src/modules/strata/pages/StrataDataIntegrationPage.tsx",
       "src/modules/strata/pages/StrataDataPipelinePage.tsx",
       "src/modules/strata/pages/StrataExecutionImportPage.tsx",
       "src/modules/strata/pages/StrataUploadWizardPage.tsx",
@@ -45341,6 +45542,14 @@ export const usageMap: UsageMap = {
     "origin": "internal",
     "consumers": [
       "src/components/evidence/EvidenceUploadZone.tsx"
+    ]
+  },
+  "UploadTemplatesSection::./StrataAdminConfigPage": {
+    "name": "UploadTemplatesSection",
+    "source": "./StrataAdminConfigPage",
+    "origin": "internal",
+    "consumers": [
+      "src/modules/strata/pages/StrataDataIntegrationPage.tsx"
     ]
   },
   "UploadZone::../../molecules": {
@@ -45607,6 +45816,7 @@ export const usageMap: UsageMap = {
       "src/modules/incidents/kanban/components/KanbanFiltersBar.tsx",
       "src/modules/incidents/kanban/components/SetCommitteeApproversModal.tsx",
       "src/modules/project-work-hub/ProjectWorkHubPage.tsx",
+      "src/modules/strata/pages/StrataAccessPage.tsx",
       "src/modules/strata/pages/StrataAdminConfigPage.tsx",
       "src/modules/strata/pages/StrataKpiDetailPage.tsx",
       "src/modules/tasks/components/PlannerCalendar.tsx",
@@ -46527,6 +46737,14 @@ export const usageMap: UsageMap = {
     "origin": "internal",
     "consumers": [
       "src/modules/in-jira/engine/useWorkflowEngine.ts"
+    ]
+  },
+  "WorkflowsSection::./StrataAdminConfigPage": {
+    "name": "WorkflowsSection",
+    "source": "./StrataAdminConfigPage",
+    "origin": "internal",
+    "consumers": [
+      "src/modules/strata/pages/StrataAccessPage.tsx"
     ]
   },
   "WorkflowStatus::@/types/views": {
@@ -47799,6 +48017,7 @@ export const usageMap: UsageMap = {
       "src/modules/project-work-hub/components/FilterDrawer.tsx",
       "src/modules/project-work-hub/components/SubtasksPanel/BulkEditBar.tsx",
       "src/modules/project-work-hub/pages/StoryBacklogPage.tsx",
+      "src/modules/strata/pages/StrataBoardPackPage.tsx",
       "src/modules/strata/pages/StrataStrategyMapPage.tsx",
       "src/modules/strata/pages/StrataStrategyRoomPage.tsx",
       "src/modules/task10/components/completed/T10CompletedItemsList.tsx",
@@ -48025,10 +48244,10 @@ export const usageMap: UsageMap = {
 };
 
 export const usageMapStats = {
-  total: 4018,
+  total: 4034,
   atlaskit: 662,
-  internal: 3356,
-  generatedAt: '2026-07-12T17:17:53.987Z',
+  internal: 3372,
+  generatedAt: '2026-07-16T10:26:07.954Z',
 };
 
 /**
