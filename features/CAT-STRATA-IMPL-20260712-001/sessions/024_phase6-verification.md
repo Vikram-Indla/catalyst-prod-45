@@ -122,3 +122,60 @@ Covers all four entity types' id→slug hops and their done-detection:
 - A DRAFT model at 90 blocks Submit **with the reason visible** ("Weights total 90 — must total 100"); at 100 it submits.
 
 Gates: tsc · colors 0/0 · audit 19798/19798 · CRE — all green. Map byte-diff empty.
+
+---
+
+## Slice 6D — Retest E2E defects 010 & 013 ✅ RETESTED — both remain OPEN (evidence below)
+No code. Both defects were parked "pending backend/schema decisions + QA retest"; this is the retest, run read-only
+against staging (`cyijbdeuehohvhnsywig`). **Every blocking condition still holds — neither is closable, and neither is
+blocked on UI code.**
+
+### DEF-010 — KPI strategy-hierarchy link at creation → **STILL OPEN, unchanged**
+| Probe | Result |
+|---|---|
+| `strata_link_element_kpi` still gated on `approved` | **true** (function body references it) |
+| `strata_kpis.status` column default | **`'draft'`** |
+| draft KPIs on staging today | **6** — all unlinkable at creation |
+
+The original diagnosis holds exactly: new KPIs are always `draft`, and the link RPC rejects non-approved KPIs, so the
+link-at-creation path cannot work. **Blocked on a PRODUCT DECISION, not on code:** allow draft linking / add an
+auto-approve path, **or** keep linking post-approval on the Strategy Room `KpiLinksModal` (today's behaviour, which
+works). Either way it needs a backend change + its own Plan Lock. See [[strata-kpi-link-requires-approved]].
+
+### DEF-013 — Portfolio add-member selector scoping → **STILL OPEN, but already RULED (not awaiting a decision)**
+| Probe | Result |
+|---|---|
+| `strata_project_cards.cycle_id` | **absent** → cycle scoping impossible |
+| `organization_id` on project cards | **NULL on 46/46**; **no `organizations` table** → tenant scoping impossible |
+| card lifecycle / soft-delete column | **absent** → "exclude retired/ineligible cards" not actionable |
+
+All three facts match `docs/ways-of-working/STRATA_E2E_PARKED_DECISIONS_013_011.md` (Vikram, 2026-07-12), which already
+**ruled**: the **cycle-filter portion is REJECTED as a non-requirement** (Portfolios are not cycle-anchored by design;
+cards may legitimately span cycles), and the **tenant portion is DEFERRED to the product-wide multi-tenancy initiative**
+(tenant isolation is absent across ALL of Catalyst by explicit single-tenant design — 0 of 1,274 migrations reference
+`organization_id`). So 013 is **not** "awaiting a decision" — it is parked behind that initiative and closes only with
+its schema/RLS + live cross-tenant evidence.
+
+**⚠️ Memory correction:** `[[strata-e2e-v2-open-items]]` (written 2026-07-11) still says 013 needs a decision — that was
+superseded by the 2026-07-12 ruling. Memory updated.
+
+### 6D disposition
+Both stay OPEN and **cannot be closed by this phase**. 010 needs a product decision + backend change; 013 needs the
+multi-tenancy initiative. Phase 6 carries no schema, so neither is in scope here — recorded, not quietly dropped.
+
+---
+
+# PHASE 6 COMPLETE — 6A · 6B · 6C · 6D
+| Slice | Outcome |
+|---|---|
+| 6A | **Vitest unblocked** (Node 22). Suite was never broken: 964 suites / 2,414 tests, 99.7% green. 2 real failures found — **both mine** — and fixed. `engines` tightened + `test` scripts added so it cannot recur. |
+| 6B | **AC-6 weight-change PROVEN keyboard-only** by automated test. AC-6 now **1 of 4** verbs — still not green. |
+| 6C | **+26 STRATA regression tests** (resolver incl. the real orphan row; band tiling invariant; integrity tri-state). Suite 23 → **51 tests**. |
+| 6D | Both E2E defects **retested with evidence**; both remain OPEN and out of scope (decision / initiative). |
+
+**Zero schema. Zero prod-migration debt added.** Gates green throughout; map byte-untouched.
+
+## ⏭ REMAINING (unchanged by Phase 6)
+- **AC-6 remainder**: `validate` / `resolve` / `record` keyboard proofs (pattern is in place).
+- **6 pre-existing ChatDock test failures** — foreign module, deliberately untouched.
+- Phase 7 (bugs) / Phase 8 (15 backend features — **gated on prod access**) / Phase 9 (UI polish).
