@@ -11,8 +11,9 @@
  * fixture was 'approved', so the keyboard test was passing over the defect. If someone re-opens
  * the authoring path on an approved model, this fails.
  */
-import { describe, expect, it, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { describe, expect, it, vi, beforeEach } from 'vitest';
+import { render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 
 const H = vi.hoisted(() => {
   const base = {
@@ -23,6 +24,7 @@ const H = vi.hoisted(() => {
   return {
     setModelPerspectiveWeights: vi.fn(async () => undefined),
     setModelMeasures: vi.fn(async () => undefined),
+    createModelDraftVersion: vi.fn(async () => 'm3'),
     invalidate: vi.fn(),
     // Mirrors staging: CEO Enterprise Scorecard is approved with 5 perspectives.
     APPROVED: {
@@ -77,6 +79,7 @@ vi.mock('@/modules/strata/domain', () => ({
     approveRecord: vi.fn(async () => undefined),
     approveScorecardModel: vi.fn(async () => undefined),
     retireRecord: vi.fn(async () => undefined),
+    createModelDraftVersion: H.createModelDraftVersion,
   },
   scorecardApi: { setModelMeasures: H.setModelMeasures },
   governanceApi: {},
@@ -109,5 +112,50 @@ describe('P0-A — approved scorecard-model aggregate is immutable in the UI', (
   it('shows no immutability note on the draft model', () => {
     render(<ScorecardModelsSection onError={() => {}} />);
     expect(screen.getAllByTestId('strata-model-immutable-note')).toHaveLength(1);
+  });
+});
+
+/**
+ * A3a (D-2/D-3) — the approved model is not a dead end: immutability is paired with a governed
+ * revision path. The clone itself (version+1, supersedes_id, children copied, predecessor
+ * byte-identical) is a DB concern and is proven by probe in 06_VALIDATION_EVIDENCE.md.
+ */
+describe('A3a — governed revision replaces in-place edits of an approved model', () => {
+  beforeEach(() => { H.createModelDraftVersion.mockClear(); });
+
+  it('offers "Create new version" on the approved model', () => {
+    render(<ScorecardModelsSection onError={() => {}} />);
+    expect(q('strata-model-new-version-m1')).not.toBeNull();
+  });
+
+  it('does NOT offer it on the draft model — a draft is edited directly, not revised', () => {
+    render(<ScorecardModelsSection onError={() => {}} />);
+    expect(q('strata-model-new-version-m2')).toBeNull();
+  });
+
+  it('will not create a version without a reason, and does not call the RPC', async () => {
+    const user = userEvent.setup();
+    render(<ScorecardModelsSection onError={() => {}} />);
+    await user.click(q('strata-model-new-version-m1') as HTMLElement);
+
+    const commit = await screen.findByRole('button', { name: /Create draft version/i });
+    expect(commit).toBeDisabled();
+    await user.click(commit);
+    expect(H.createModelDraftVersion).not.toHaveBeenCalled();
+  });
+
+  it('passes the typed reason to the RPC, trimmed', async () => {
+    const user = userEvent.setup();
+    render(<ScorecardModelsSection onError={() => {}} />);
+    await user.click(q('strata-model-new-version-m1') as HTMLElement);
+
+    await user.type(
+      await screen.findByLabelText(/Reason for the new version/i),
+      '  rebalance financial weights  ',
+    );
+    await user.click(screen.getByRole('button', { name: /Create draft version/i }));
+
+    await waitFor(() => expect(H.createModelDraftVersion).toHaveBeenCalledTimes(1));
+    expect(H.createModelDraftVersion).toHaveBeenCalledWith('m1', 'rebalance financial weights');
   });
 });

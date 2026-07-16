@@ -139,3 +139,43 @@ cleaning. The migration deletes nothing.
 above baseline** (tokens 19798/19798, typography 1366/1366, spacing 0/0, fontImports 0/0) · `lint:cre` → **passed** ·
 `PATH=node@22 npm test` → **2,430 passed · 6 failed · 16 skipped / 2,452**. The 6 are pre-existing foreign ChatDock
 failures (unchanged). Baseline before this slice: 2,426 passed / 6 failed → **+4 tests, 0 new failures.**
+
+---
+
+# A3a · AC §8.2 — RAW EVIDENCE
+> §8.2: "draft version has version+1, supersedes_id=<old>, reset approval fields, all children copied;
+> **predecessor byte-identical**; strata_approve_record then supersedes it with effective_to — unchanged code."
+
+Source = **B2B Sector Scorecard** (chosen deliberately: it is the only model with BOTH perspectives and measures, so
+child copying is actually exercised). Driven as a real non-admin `strategy_office` user through the full governed
+lifecycle (create → submit → self-approve attempt → approve as a second SO user). Rolled back — **no staging data written**.
+
+```
+=== A3a RESULT (rolled back) ===
+version 2 (expect 2) · status draft · supersedes_id ok t
+approval reset: approved_at=<NULL> approved_by=<NULL> effective_from=<NULL>
+slug b2b-sector-scorecard-2 (source b2b-sector-scorecard)
+reason: E-2: clean v2 with reviewed configuration
+children copied: perspectives 3/3 · measures 2/2
+PREDECESSOR BYTE-IDENTICAL while draft open: t
+blank reason  -> a change reason is required to create a new version
+dup draft     -> a draft version of this model already exists (6bc1637d-…) — finish or discard it first
+revise draft  -> this model is already a draft — edit it directly instead of creating a version
+SELF-APPROVE  -> segregation of duties: the creator cannot approve their own record
+AFTER APPROVE -> predecessor status=superseded effective_to set=t
+```
+| §8.2 clause | Result |
+|---|---|
+| `version + 1` | ✅ 2 |
+| `supersedes_id = <old>` | ✅ |
+| approval fields reset | ✅ all NULL |
+| all children copied | ✅ perspectives 3/3 · measures 2/2 |
+| **predecessor byte-identical** | ✅ `to_jsonb(before) = to_jsonb(after)` |
+| `strata_approve_record` supersedes it, **unchanged code** | ✅ predecessor → `superseded`, `effective_to` stamped |
+| slug contract (UNIQUE, frozen on creation) | ✅ auto-deduped `-2` by the existing trigger |
+| SoD inherited, not rebuilt | ✅ self-approval refused |
+
+**Ledger 1:1:** `20260716170000 · strata_create_model_draft_version` ↔ committed file of the same name.
+
+**Gates:** tsc clean · `lint:colors:gate` 0=0 · `audit:ads:gate` no category above baseline · `lint:cre` pass ·
+Node-22 suite **2,434 passed · 6 failed · 16 skipped / 2,456** (the 6 = pre-existing foreign ChatDock).

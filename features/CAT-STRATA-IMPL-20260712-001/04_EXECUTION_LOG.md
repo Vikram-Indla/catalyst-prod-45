@@ -1153,3 +1153,36 @@ link (`strata_link_element_kpi` requires `approved`).
 ✅ **DONE** — applied to staging, ledger 1:1, gates green, AC-1 (§8.1) proven at RLS **and** RPC with a positive control.
 **Follows immediately: P0-B / A3 revision RPCs (F-4 — A2→A3 back-to-back; until A3 lands, no model is editable,
 because both staging models are approved. That freeze is correct and intended, and A3 restores the path via versioning.)**
+
+---
+
+# R0 · P0-B / A3a — scorecard-model governed revision (D-2) · migration `20260716170000`
+**Session 026 · `strata_create_model_draft_version(p_model uuid, p_reason text) RETURNS uuid`**
+
+## What shipped
+RPC + `configApi.createModelDraftVersion` + a "Create new version" CTA on approved models (reusing the
+existing Retire modal pattern — reason required, stated before the round trip) + 6 tests.
+
+## Reuse — the supersession half already worked; this is the missing WRITER
+`supersedes_id` exists on 9+ tables and was **never written**; `strata_approve_record` is its only reader and
+**already** flips the predecessor to `superseded` + `effective_to=now()`. **`strata_approve_record` is NOT modified.**
+SoD comes free: `created_by` defaults to `auth.uid()`, so a draft's author cannot approve it — proven below.
+The slug trigger (`strata_generate_slug`, BEFORE INSERT) dedupes to `-2`, so the clone passes `slug=NULL` and the
+slug contract holds without special-casing.
+
+## Design choices (derivable; no new product decision)
+- **`p_reason` REQUIRED** — D-2 says the revision "records actor/reason"; a NULL reason records nothing.
+- **One open successor per predecessor** — two concurrent drafts would both carry `supersedes_id = p_model`, and
+  approving both would supersede the same predecessor twice, the second silently overriding the first.
+- **Revising a draft is refused** — a draft is already editable; cloning one forks the lineage for nothing.
+- **CTA gated on `isScorecardModel`** — only the model RPC exists at A3a. Offering it for KPI/threshold would promise
+  a verb the server cannot perform (A3b/A3c).
+
+## Test correction worth recording
+The first acceptance run drove `UPDATE … SET status='pending_approval'` directly and was refused by RLS
+(`strata_scorecard_models_update` WITH CHECK is `status='draft'`). **The test was wrong, not the code** — submission is
+RPC-only (`strata_submit_record`). Re-run through the real governed lifecycle: draft → submit → approve.
+
+## Status
+✅ **DONE** — applied to staging, ledger 1:1, gates green, §8.2 proven in full with the predecessor byte-identical.
+**F-4 is now discharged: A2→A3 landed back-to-back, and the E-2 v2 clone path is unblocked.**

@@ -96,6 +96,8 @@ export function GovActions({ table, record, isScorecardModel, onError, submitBlo
   const [busy, setBusy] = useState(false);
   const [retireOpen, setRetireOpen] = useState(false);
   const [retireReason, setRetireReason] = useState('');
+  const [versionOpen, setVersionOpen] = useState(false);
+  const [versionReason, setVersionReason] = useState('');
   const act = async (fn: () => Promise<unknown>) => {
     setBusy(true);
     onError(null);
@@ -141,9 +143,57 @@ export function GovActions({ table, record, isScorecardModel, onError, submitBlo
   if (record.status === 'approved') {
     return (
       <>
+        {/* D-2/D-3: an approved definition is immutable, so changing it means a new draft version.
+            Only scorecard models have a revision RPC so far (A3a); KPI and threshold revisions are
+            A3b/A3c. Offering the control for a table with no RPC behind it would promise a verb the
+            server cannot perform. */}
+        {isScorecardModel ? (
+          <Button
+            spacing="compact"
+            isDisabled={busy}
+            testId={`strata-model-new-version-${record.id}`}
+            onClick={() => { setVersionReason(''); setVersionOpen(true); }}
+          >
+            Create new version
+          </Button>
+        ) : null}
         <Button spacing="compact" isDisabled={busy} onClick={() => { setRetireReason(''); setRetireOpen(true); }}>
           Retire
         </Button>
+        <Modal isOpen={versionOpen} onClose={() => setVersionOpen(false)} width="small">
+          <ModalHeader>
+            <ModalTitle>Create new version</ModalTitle>
+          </ModalHeader>
+          <ModalBody>
+            <p style={{ margin: '0 0 12px', fontSize: 'var(--ds-font-size-200)', color: T.subtle }}>
+              This copies the approved model — its perspectives, weights, measures, aggregation and
+              threshold scheme — into a new draft at version {(record.version ?? 1) + 1}. The approved
+              version stays unchanged and keeps producing results until the draft is approved.
+            </p>
+            <Textfield
+              value={versionReason}
+              onChange={(e) => setVersionReason(e.target.value)}
+              placeholder="Reason for the new version"
+              aria-label="Reason for the new version"
+              autoFocus
+            />
+          </ModalBody>
+          <ModalFooter>
+            <Button appearance="subtle" onClick={() => setVersionOpen(false)}>Cancel</Button>
+            <Button
+              appearance="primary"
+              // The RPC requires a reason; disabling here states that rule before the round trip
+              // rather than surfacing it as a server error.
+              isDisabled={busy || versionReason.trim() === ''}
+              onClick={() => {
+                setVersionOpen(false);
+                void act(() => configApi.createModelDraftVersion(record.id, versionReason.trim()));
+              }}
+            >
+              Create draft version
+            </Button>
+          </ModalFooter>
+        </Modal>
         <Modal isOpen={retireOpen} onClose={() => setRetireOpen(false)} width="small">
           <ModalHeader>
             <ModalTitle>Retire record</ModalTitle>
@@ -894,8 +944,9 @@ export function ScorecardModelsSection({ onError }: { onError: OnError }) {
                 <ModelIntegrityBand sum={wsum} count={wcount} measureIssues={measureIssues} />
                 {hasAuthorRole && m.status !== 'draft' ? (
                   <span style={metaStyle} data-testid="strata-model-immutable-note">
-                    {labelize(m.status)} definitions are immutable — this model&apos;s perspective weights and
-                    measures cannot be edited.
+                    {labelize(m.status)} definitions are immutable — to change this model&apos;s perspective
+                    weights or measures, use Create new version. Version {m.version} keeps producing results
+                    until the new draft is approved.
                   </span>
                 ) : null}
                 <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>

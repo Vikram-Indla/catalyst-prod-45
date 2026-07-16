@@ -84,6 +84,15 @@ export const configApi = {
     run(typedRpc('strata_retire_record', { p_table: table, p_id: id, p_reason: reason ?? null })),
   approveScorecardModel: (modelId: string, note?: string) =>
     run(typedRpc('strata_approve_scorecard_model', { p_model: modelId, p_note: note ?? null })),
+  /**
+   * D-2/D-3: the governed way to change an APPROVED model. Clones the complete aggregate into a
+   * new draft at version+1 with supersedes_id set, and leaves the predecessor untouched. Approving
+   * the draft is what supersedes the predecessor — strata_approve_record already does that.
+   * The reason is required by the RPC (a version whose reason is NULL explains nothing).
+   * Returns the new draft's id.
+   */
+  createModelDraftVersion: (modelId: string, reason: string): Promise<string> =>
+    run(typedRpc('strata_create_model_draft_version', { p_model: modelId, p_reason: reason })),
   myRoles: async (userId: string): Promise<StrataRole[]> => {
     const rows: Array<{ role: StrataRole }> = await run(
       typedQuery('strata_role_assignments').select('role').eq('user_id', userId),
