@@ -285,3 +285,32 @@ AFTER APPROVE -> predecessor status=superseded effective_to set=t
 
 **Ledger 1:1:** `20260716210000 · strata_create_threshold_draft_version`. **Gates:** tsc clean · colors 0=0 · audit no
 category above baseline · CRE pass · suite **2,434 passed / 6 failed**.
+
+---
+
+# A3b-1 · KPI lineage — RAW EVIDENCE
+**Row-ID preservation (the ruling's first test):**
+```
+before : id_set=e7928cf9548900b1606277825b8b2ac0  full=5e226ea9b071d2d4b7e0af6ef2529e62  n=17
+after  : id_set=e7928cf9548900b1606277825b8b2ac0  full=5e226ea9b071d2d4b7e0af6ef2529e62  n=17
+         lineages=17  null_lineage=0
+```
+**Constraints (rolled back):**
+```
+=== KPI LINEAGE (rolled back) ===
+chain v1<-v2<-v3 : 1 root(s), 3 rows (expect 1 root, 3 rows)
+UNIQUE(lineage,version) dup -> duplicate key value violates unique constraint "strata_kpis_lineage_version_unique"
+EXCLUDE overlapping approved -> conflicting key value violates exclusion constraint "strata_kpis_no_overlapping_effective"
+ADJACENT approved versions -> ALLOWED (correct)
+```
+| Ruling test | Result |
+|---|---|
+| **existing KPI IDs remain unchanged** | ✅ checksums byte-identical |
+| **existing supersession chains receive one lineage** | ✅ 1 root over `v1←v2←v3` (no real chains exist — 0 `supersedes_id` on staging — so proven against a simulated chain) |
+| uniqueness on (lineage_id, version) | ✅ rejected |
+| **no overlapping effective approved versions** | ✅ rejected, declaratively (EXCLUDE, race-free) |
+| adjacent approved versions still permitted (control) | ✅ ALLOWED |
+| every row backfilled | ✅ 17 lineages / 17 KPIs, 0 NULL |
+
+**Ledger 1:1:** `20260716220000 · strata_kpi_lineage`. **Gates:** tsc clean · colors 0=0 · audit no category above
+baseline · CRE pass · suite **2,434 passed / 6 failed**.

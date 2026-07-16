@@ -1312,3 +1312,39 @@ server cannot perform. **`strata_kpis` is absent on purpose** — it joins when 
 
 ## Status
 ✅ **DONE** — applied, ledger 1:1, gates green, suite 2,434/6, §8.2 proven in full with the predecessor byte-identical.
+
+---
+
+# R0/R1 · A3b-1 — stable logical KPI lineage (F-9) · migration `20260716220000`
+
+## Why lineage exists (the F-9 problem, restated)
+A revision creates a NEW ROW with a NEW id. Without a stable identity, every relationship and fact still points at
+v1; once v1 is superseded (E-7: superseded ⇒ historical only), **v2 would have no links and no actuals and every
+objective would silently lose its measure.** `lineage_id` is the stable identity that makes revision survivable.
+`id` identifies a **version** (a governed definition); `lineage_id` identifies the **KPI as a continuing concept**.
+
+## Probe first — it made the backfill trivial
+**17 KPIs · `supersedes_id` used ZERO times · every version = 1 · 10 approved (1 with `effective_from` NULL).**
+No chains exist, so the backfill is one lineage per KPI. **The chain-aware recursive walk was written anyway** (the
+ruling requires it, and it degenerates exactly to one-per-KPI with no chains) — correct today, correct later. Proven
+against a simulated `v1←v2←v3`: **1 root, 3 rows**.
+
+## Row IDs preserved — proven by checksum, not asserted
+| | before | after |
+|---|---|---|
+| `md5(id set)` | `e7928cf9548900b1606277825b8b2ac0` | **identical** |
+| `md5(id:version:status)` | `5e226ea9b071d2d4b7e0af6ef2529e62` | **identical** |
+The migration only ADDS a column. No id rewritten, no row recreated, no FK repointed.
+
+## Non-overlap is DECLARATIVE, not a trigger
+`EXCLUDE USING gist (lineage_id WITH =, tstzrange(effective_from, effective_to, '[)') WITH &&) WHERE (status='approved')`
+via `btree_gist` (available 1.7; installed here). A BEFORE-trigger check has a **race window** where two concurrent
+approvals both see no conflict and both commit; an EXCLUDE constraint cannot be raced. Only `approved` rows
+participate — drafts/pending/superseded/retired may overlap freely, which is precisely what lets a successor be
+drafted while the predecessor is still live.
+**Critical control proven: ADJACENT approved versions are ALLOWED.** Had the constraint rejected `[a,b)` followed by
+`[b,∞)`, it would have forbidden the very supersession it exists to support.
+
+## Status
+✅ **DONE** — applied, ledger 1:1, gates green, suite 2,434/6. **Next: the canonical effective-version resolver**
+(step 4) — no UI surface may invent its own version resolution.
