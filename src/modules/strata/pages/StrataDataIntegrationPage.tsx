@@ -6,10 +6,17 @@
  * Scoped honestly (P5-D3): strata_data_sources is status-only with NO admin
  * authoring RPC, so the source registry is READ-ONLY — "+ Register source" and
  * the retire-with-dependents flow are deferred and labelled, never a dead form.
- * The type carries no last-refresh timestamp and no per-source "feeds" mapping,
- * so those columns are omitted rather than fabricated (zero-assumption).
+ * The per-source "feeds" mapping has no backing, so that column is omitted
+ * rather than fabricated (zero-assumption).
+ *
+ * Freshness (slice B2, task_70e821ad): `strata_data_sources` has no
+ * last-refresh column — but that was never the question. Freshness is DERIVED
+ * from `max(strata_upload_runs.completed_at)` per `data_source_id`, which is
+ * exactly how the Data & Lineage landing already does it (P4-D8). Same
+ * derivation, same `StrataFreshnessGlyph`, so the two surfaces agree. No
+ * schema change was needed; the "column gap" was a wrong conclusion.
  */
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button, EmptyState, Lozenge, SectionMessage, Spinner } from '@/components/ads';
 import { JiraTable } from '@/components/shared/JiraTable';
@@ -18,8 +25,8 @@ import { StatusLozenge } from '@/components/shared/StatusLozenge';
 import type { LozengeAppearance } from '@/components/shared/StatusLozenge';
 import { Routes } from '@/lib/routes';
 import { ArrowLeft, Database, Upload } from '@/lib/atlaskit-icons';
-import { useDataSources, useProfileNames } from '@/modules/strata/hooks/useStrata';
-import { StrataPageShell, StrataPanel, T } from '@/modules/strata/components/shared';
+import { useDataSources, useProfileNames, useUploadRuns } from '@/modules/strata/hooks/useStrata';
+import { StrataFreshnessGlyph, StrataPageShell, StrataPanel, T } from '@/modules/strata/components/shared';
 import { labelize } from '@/modules/strata/components/format';
 import { UploadTemplatesSection } from './StrataAdminConfigPage';
 import type { StrataDataSource } from '@/modules/strata/types';
@@ -46,9 +53,24 @@ const NAV = [
 function SourcesRegistry() {
   const q = useDataSources();
   const profiles = useProfileNames();
+  const runsQ = useUploadRuns();
   const list = q.data ?? [];
 
   const ownerName = (id: string | null): string | null => (id ? profiles.data?.get(id)?.name ?? null : null);
+
+  // B2 / task_70e821ad: last refresh = max(completed_at) of the source's runs.
+  // Same derivation as the Data & Lineage landing (P4-D8) so the two surfaces
+  // never disagree about how fresh a source is. Sources with no completed run
+  // resolve to null → the glyph renders "—" rather than inventing a date.
+  const lastRunBySource = useMemo(() => {
+    const m = new Map<string, string>();
+    for (const r of runsQ.data ?? []) {
+      if (!r.data_source_id || !r.completed_at) continue;
+      const prev = m.get(r.data_source_id);
+      if (!prev || r.completed_at > prev) m.set(r.data_source_id, r.completed_at);
+    }
+    return m;
+  }, [runsQ.data]);
 
   const columns: Column<StrataDataSource>[] = [
     {
@@ -68,6 +90,15 @@ function SourcesRegistry() {
     {
       id: 'kind', label: 'Kind', width: 16,
       cell: ({ row }) => <span style={metaStyle}>{SYSTEM_TYPE_LABEL[row.system_type] ?? labelize(row.system_type)}</span>,
+    },
+    {
+      id: 'freshness', label: 'Last refresh', width: 16,
+      cell: ({ row }) => (
+        <StrataFreshnessGlyph
+          latest={lastRunBySource.get(row.id) ?? null}
+          testId={`strata-data-source-fresh-${row.id}`}
+        />
+      ),
     },
     {
       id: 'status', label: 'Status', width: 20,

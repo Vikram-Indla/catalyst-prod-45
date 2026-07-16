@@ -253,3 +253,35 @@ execute the repaired branch. Note this is also why the defect survived: it only 
 users. Evidence is therefore structural + statement-level (conclusive: the sole failure mode was a missing relation,
 which no longer exists anywhere). **Full runtime confirmation needs a `strategy_office` session promoting a theme via
 the UI** — worth one manual pass.
+
+---
+
+## Slice B2 — `task_70e821ad` data-source freshness ✅ DONE — **NO MIGRATION NEEDED**
+**File:** `StrataDataIntegrationPage.tsx` only.
+
+### The "schema gap" was not a gap
+`task_70e821ad` was carried as *"data-source freshness/staleness column (schema gap)"*, and my own 5E header repeated it
+("the type carries no last-refresh timestamp"). Both were **true about the type and wrong as a conclusion**. Freshness is
+DERIVED from `max(strata_upload_runs.completed_at)` per `data_source_id` — which is exactly what the Data & Lineage
+landing already does (P4-D8, `buildSourceRows`). Probe: `strata_upload_runs.data_source_id` ✓ · `completed_at` ✓ ·
+derived result `Salam Finance Excel=2026-07-02 | Salam BI Extract=never`.
+
+**Fifth blocker this session to dissolve on contact** (after: 5G-2 slug routing · vitest · prod-migration debt ·
+DEF-013's premises). Same shape every time: a true observation, a wrong conclusion, never re-tested.
+
+### What shipped
+Reuses the EXISTING `useUploadRuns()` hook and the EXISTING `StrataFreshnessGlyph` — **no migration, no new reader, no
+new component**. Adds a "Last refresh" column to the 5E registry using the same derivation as 4D so the two surfaces can
+never disagree about how fresh a source is. Sources with no completed run → `null` → the glyph renders "—" rather than
+inventing a date (zero-assumption).
+
+### Verified live against DB truth
+| Source | DB | UI |
+|---|---|---|
+| Salam BI Extract | no completed run | **—** ✅ |
+| Salam Finance Excel | 2026-07-02 | **○ stale 13d** ✅ |
+
+Caught in passing: `useMemo` used without importing it — **tsc reported clean** (stale run) and it would have thrown at
+runtime. Found by re-reading the import rather than trusting the gate. cf. [[tsc-misses-tdz-in-memo-dep]].
+
+Gates: tsc · colors 0/0 · audit 19798/19798 · CRE — all green. STRATA suite 10 files / 57 tests. Map untouched.
