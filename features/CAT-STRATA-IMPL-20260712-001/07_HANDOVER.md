@@ -37,9 +37,18 @@
 > 3. **`task_70e821ad`** — data-source freshness/staleness column (schema gap). This is why 5E's registry shows
 >    status + health rather than a freshness glyph.
 > 4. **🔴 Vitest cannot run — there is NO unit-test verification for ANY phase.** Every slice was verified by gates
->    (tsc · lint:colors:gate · audit:ads:gate · lint:cre) plus live DOM/DB probes only. The formal §20 acceptance pass
->    (map zero-change preservation diff vs baseline, keyboard-only validate/resolve/record/weight-change, grayscale
->    distinguishability, reload-into-dark) has never been run as a single deliberate pass. **Highest-value next check.**
+>    (tsc · lint:colors:gate · audit:ads:gate · lint:cre) plus live DOM/DB probes only. STILL OPEN — a §20 behavioural
+>    pass is not a substitute for a test suite.
+> 4b. **§20 ACCEPTANCE PASS RUN 2026-07-16** (`06_VALIDATION_EVIDENCE.md`) — **6 PASS · 1 NOT VERIFIED · 0 FAIL.**
+>    AC-1 five-verb chain ✅ · AC-2 CC first-screenful ✅ · AC-3 verdict→evidence in **1** interaction w/ "Back to Command
+>    Center" ✅ · AC-4 grayscale ✅ · AC-5 reload-into-dark (no flash, tokens resolve) ✅ · AC-7 **map preservation ✅**
+>    (map last touched 2026-07-09, 3 days BEFORE the feature began, never touched since; probe = baseline exactly:
+>    18 nodes · Drives/Contributes to/Enables · 5 animated · 4 zoom controls · legend).
+>    **⚠️ AC-6 keyboard-only = NOT VERIFIED (not a pass).** The Chrome MCP tool could not deliver ANY keystroke to the page
+>    (real `type` on a focused input left it unchanged; Tab never left BODY) — a tooling limit, no evidence about the app.
+>    Static preconditions on the weight-change path DO pass (native controls, tabIndex 0, aria-labelled inputs, 0 positive
+>    tabindex, 0 focus traps). **validate / resolve / record remain unaudited even statically.** Needs a key-capable
+>    harness or a ~10-min human manual pass.
 > 5. **E2E defects 010 & 013** — partially fixed; remain OPEN pending backend/schema work + QA retest.
 >
 > **Optional UI polish (non-anchor-critical, all deliberately deferred):** Benefit-Detail 2-col rail (IN-THE-CHAIN +
