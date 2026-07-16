@@ -100,3 +100,27 @@ D-1…D-6 CONFIRMED by Vikram 2026-07-12 ("proceed with all recommended decision
 - **P4-D7 · Promote "reversible" is UI framing only** (no reverse RPC; pending-attestation ≠ committed). → Recommend CONFIRM.
 - **P4-D8 · Freshness glyph parity** — promote KpiFreshnessCell→shared; source freshness derived from latest run
   completed_at per data_source_id. → Recommend CONFIRM.
+
+---
+
+## Phase 5 (configuration & system states) — APPROVED by Vikram 2026-07-16 ("approved, implement full phase 5")
+Plan Lock `03_PLAN_LOCK_PHASE5.md` approved at `3e215d4ed`. All decisions ratified as recommended:
+- **P5-D0 CONFIRMED** — config landing added to bare `/strata/admin` (domain cards + approval band + change log);
+  the 12-tab page stays reachable via `:section` (transitional). Shipped 5A `4ae22c344`.
+- **P5-D1 CONFIRMED** — measurement domain page = the governed-editor shell (left section-nav + list + rail) reused by
+  04/05/25. Shipped 5B `18627efca`.
+- **P5-D2 CONFIRMED** — impact preview = CLIENT-derived usage counts + immutable-history guarantee; the anchor's
+  server-calculated score-shift has no RPC and is rendered as a labelled gap, never a number. Shipped 5B.
+- **P5-D3 CONFIRMED (scoped-down)** — authoring writes exist only for perspectives + model weights + roles, so:
+  threshold band editing, model draft-create, model measure-level authoring, preview-with-data, version diff, and data-source
+  register/retire are DEFERRED and labelled. Shipped 5C `5e4ebc65c` / 5D `56082a288` / 5E `a57670444`.
+- **P5-D4 CONFIRMED** — View-as = read-only client preview + persistent banner; SoD stays DB-enforced. **Consequence
+  discovered at build time:** there is no SoD table/field/check-RPC, so the anchor's per-row CLEAN/GUARDED/CONFLICT column
+  is NOT rendered (a fabricated "CLEAN" asserts a check that never ran) — deferred with a labelled note. No audit-write RPC,
+  so View-as states plainly it is not audit-logged. Shipped 5F `18bae3c92`.
+- **P5-D5 CONFIRMED (split)** — canonical `StrataNotFound` + `StrataRestricted` extracted and wired (incl. unknown
+  `/strata/admin/:section`, which used to fall silently to tab 0). **Notification landing SPLIT to 5G-2 (deferred)** under
+  the Plan Lock's >2h split rule — needs entity_id→slug resolution per entity type (the slug contract forbids UUID routes),
+  a provenance band on every object page, and expired-state detection. Shipped 5G `aedfcb6fd`.
+- **P5-D6 CONFIRMED** — no migration this phase. Held: the only DB additions were two plain-select readers
+  (`allModelPerspectives`; `email` on the existing profiles select). No new RPC was needed or invented.

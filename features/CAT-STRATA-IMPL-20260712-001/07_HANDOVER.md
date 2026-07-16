@@ -1,15 +1,41 @@
 # 07 — HANDOVER · CAT-STRATA-IMPL-20260712-001
 
-> Resume point. **Phases 0–4 COMPLETE. ✅ PHASE 4 (governance & data) COMPLETE — all slices 4A–4G merged. NEXT = Phase 5 (config & system-states: anchors 03·04·05·25·26·27·28) — needs its OWN Plan Lock before any code.**
-> **Phase 4 anchors ALL shipped: 23·10 (cockpit 4B/4C incl. compare-with-live) · 19 (data landing 4D) · 09 (run detail 4E) · 20 (upload wizard 4F) · 24 (board pack + present mode 4G). Plus 4A `StrataLifecycleStepper`.**
-> **DEFERRED backend features (own migration + Plan Lock): board-pack editorial builder + Issue; run-downstream blast-radius RPC; quarantine validation tier; `strata_reviews` scheduling entity; mapping-memory write; prod migrations 20260713100000 + 20260713110000 (staging-only, prod-parked). See OPEN DEBT below.**
-> **Reusable now in shared.tsx: `StrataLifecycleStepper` (4A, consumed by 4B/4C/4E/4F/4G), `StrataFreshnessGlyph` (4D).**
-> Read order to resume Phase 4: `00_READ_ME_FIRST` → `01_OBJECTIVE` → **`03_PLAN_LOCK_PHASE4` (APPROVED)** →
-> this file (State section below) → `08_DRIFT_LOG` (DRIFT-8; DRIFT-9 = 4B derived-review model) → `09_DECISIONS`
-> (P4-D0…D8 CONFIRMED) → `discovery/07_phase4_anchor_specs.md` (6 anchor digests) → `04_EXECUTION_LOG` (per-slice
-> detail) → latest `sessions/` (016). **Then re-read the next slice's anchor (10) in full via DesignSync (parent-only) before coding.**
-> 4A merged at `59ef4f4cf`. **4B MERGED at `5afac31f8`** (branch == origin/branch == origin/main, fast-forward — no
-> merge commit; [[github-noff-merge-push-rejected]] avoided via linear ff). Working tree clean; map byte-untouched.
+> Resume point. **Phases 0–5 COMPLETE. ✅ PHASE 5 (configuration & system states) COMPLETE — slices 5A–5G merged to `main`.**
+> **Phase 5 anchors shipped: 03 (config landing 5A) · 04 (measurement domain + taxonomy 5B) · 05 (model integrity 5C) ·
+> 25 (threshold bands 5D) · 26 (data & integration 5E) · 27 (roles & access 5F) · 28 (canonical system states 5G).**
+> **NEXT = Phase 6 per HANDOFF build-order — needs its OWN Plan Lock before any code.**
+>
+> **⚠️ CARRIED DEBT — 5G-2 NOTIFICATION LANDING (anchor 28 state 3) DEFERRED (a split, not a drop).** `strata_notifications`
+> has `entity_table` + `entity_id` (UUID) but no slug, and the SLUG CONTRACT forbids UUID route params ⇒ needs
+> entity_id→slug resolution per entity type + a dismissible provenance band wired into every object page + expired-state
+> detection ("validated by X while the notification waited"). Same bucket: anchor 28's panel-scale "object deleted
+> mid-session" variant. >2h, multi-file — give it its own slice/Plan Lock.
+>
+> **Phase-5 DEFERRED backend features (each needs its own migration + Plan Lock):** threshold band-editor authoring ·
+> scorecard-model draft-create · model measure-level authoring (no model-measure table exists) · preview-with-data ·
+> version diff · data-source register/retire (+ dependents-impact check) · **server SoD-check RPC** (per-assignment
+> CLEAN/GUARDED/CONFLICT — deliberately NOT faked) · view-as audit-log write · server-calculated score-shift impact preview.
+>
+> **New canonical components (reuse these):** `components/StrataSystemStates.tsx` → `StrataNotFound` (names failed route +
+> cause + owning-area exit) and `StrataRestricted` (consequence framing + owning role + reader's actual roles).
+> `StrataAdminConfigPage` now EXPORTS for reuse: `GovActions` (with `submitBlockedReason`), `GovEnvelope`,
+> `GovStatusLozenge`, `ROLE_DOCS`, `ScorecardModelsSection`, `ThresholdsSection`, `KpiTypesSection`,
+> `UploadTemplatesSection`, `WorkflowsSection`. New readers: `useAllModelPerspectives`; `StrataProfileRef` now has `email`.
+>
+> **Domain pages:** `/strata/admin` (landing) · `/strata/admin/measurement` · `/strata/admin/data` · `/strata/admin/access`.
+> The legacy 12-tab page stays reachable at `/strata/admin/:section` (transitional, P5-D0); unknown sections now render the
+> canonical not-found instead of silently falling to tab 0.
+>
+> Read order to resume: `00_READ_ME_FIRST` → `01_OBJECTIVE` → **`03_PLAN_LOCK_PHASE5` (APPROVED, `3e215d4ed`)** → this file →
+> `08_DRIFT_LOG` → `09_DECISIONS` (P5-D0…D6 CONFIRMED) → `discovery/08_phase5_anchor_specs.md` → `sessions/023_phase5-impl.md`
+> (per-slice detail + honest scoping rationale). **Re-read the next slice's anchor in full via DesignSync (parent-only) before coding.**
+>
+> Phase 5 merges: 5A `4ae22c344` · 5B `18627efca` · 5C `5e4ebc65c` · 5D `56082a288` · 5E `a57670444` · 5F `18bae3c92` ·
+> 5G `aedfcb6fd`. Branch == origin/branch == origin/main (linear fast-forward). Map byte-untouched throughout.
+
+---
+
+# ARCHIVE — Phase 4 detail below
 
 ## Slice 4B ✅ MERGED `5afac31f8` (anchor 23 Reviews Index)
 - Redesigned `StrataReviewsPage` **index branch** (`!isDetail`) to anchor 23: **NOW band** + **Review registry**
