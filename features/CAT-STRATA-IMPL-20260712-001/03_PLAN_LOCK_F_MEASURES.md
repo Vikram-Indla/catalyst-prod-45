@@ -80,3 +80,46 @@ create table public.strata_scorecard_model_measures (
 - **M-D2 · scope of the slice** — table + RPC + reader only (thin), or include the full anchor-05 measures builder UI?
   → **Recommend: split.** Table+RPC first (verifiable, low risk), builder UI as the next slice — it is a large surface
   and 5C's card layout must change to perspective groups.
+
+---
+
+# PART 2b — measure ASSIGNMENT UI · READY TO BUILD (spec is complete; no decisions outstanding)
+Everything 2b needs already exists and is verified. This is a build-only slice — do not re-derive any of it.
+
+## Already shipped (do not rebuild)
+| Piece | Where |
+|---|---|
+| Table + CHECKs + RLS | `strata_scorecard_model_measures` (migration `20260716150000`, applied, ledger 1:1) |
+| Writer | `configApi`→ **`scorecardApi.setModelMeasures(modelId, [{perspectiveId,kpiId,weight,orderIndex,required,aggregationMethod,targetPolicy}])`** → `strata_set_model_measures` (replace-set; rejects a perspective not on the model) |
+| Readers | `useAllModelMeasures()` · `useModelMeasures(modelId)` |
+| Display + integrity | `MeasureGroups` + `ModelIntegrityBand.measureIssues` in `StrataAdminConfigPage.tsx` (part 2a) |
+| KPI dictionary | `useKpis()` → name; `kpi.kpi_type_id` → `useKpiTypes()` → `directionality` |
+
+## Build exactly this
+1. **Model `MeasureGroups` on `ModelWeights`** — it is the proven idiom in this same file: local `draft` state, an
+   `editing` flag, `Save`/`Cancel`, `isDisabled` on Save while invalid, error via `SectionMessage`. Copy its shape.
+2. **Per group:** `+ Add measure` → ADS `Select` over `useKpis()` (exclude KPIs already assigned to that model —
+   `UNIQUE(model_id, perspective_id, kpi_id)` will reject duplicates server-side anyway). Each row: compact
+   `Textfield type=number` for weight (`testId={`strata-measure-weight-${kpiId}`}`), a Remove button, `required`
+   toggle, aggregation `Select` over **exactly** `weighted_average|sum|min|custom` (M-D1 — never mint a 5th).
+3. **Save** → one `setModelMeasures(modelId, allRowsAcrossAllGroups)` call (replace-set = send the FULL set, not a
+   delta). Then `invalidate()`.
+4. **Gate Save** on every group totalling 100 — **client-side only**. The RPC deliberately does NOT enforce it
+   (anchor 05 gates *submit*, not *save*); do not add server enforcement, it would make drafts unsavable.
+5. **Never** render an input for name/direction/unit/scheme — those are READ from the KPI (M-D0). An editable one is
+   the two-dictionaries bug.
+
+## Gotchas that WILL bite (learned the hard way this session)
+- **Test mocks:** any new hook used by `ScorecardModelsSection` must be added to the `vi.mock` factories in BOTH
+  `ac6-keyboard-weight-change.test.tsx` and `phase5-governed-logic.test.tsx`, or 8 tests fail instantly with
+  `undefined`. All fixtures go inside `vi.hoisted()`.
+- **Spacing:** only 0/4/8/12/16/24/32/40/48 px — the audit gate fails on `6px`/`10px`.
+- **tsc can report clean on a stale run** — re-read your imports (`useMemo` was missed exactly this way).
+- **Run tests as** `PATH="/opt/homebrew/opt/node@22/bin:$PATH" npm test` (Node 20 crashes vitest).
+
+## Verification (the table is EMPTY — this slice is what fills it)
+2b is self-verifying and closes part 2a's gap: use the new UI as `strategy_office` (the logged-in session HAS that
+role) to assign real measures, then confirm with
+`select * from strata_scorecard_model_measures` on `cyijbdeuehohvhnsywig`, and confirm the group verdict flips
+✓/✕ and the integrity band names the failing perspective. That also verifies 2a's populated row rendering, which is
+currently verified by construction only.
