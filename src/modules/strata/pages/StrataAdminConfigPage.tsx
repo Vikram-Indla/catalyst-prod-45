@@ -36,7 +36,7 @@ import { StrataFormModal, str } from '@/modules/strata/components/authoring';
 import { fmtDate, fmtDateTime, labelize } from '@/modules/strata/components/format';
 import type {
   GovernedEnvelope, GovernedStatus, StrataChangeRequest, StrataNotificationRule, StrataPerspective,
-  StrataProjectCardFieldConfig, StrataProjectCardPicklist, StrataRole, StrataScorecardModel,
+  StrataProjectCardFieldConfig, StrataProjectCardPicklist, StrataRole, StrataScorecardModel, ThresholdBand,
 } from '@/modules/strata/types';
 
 type OnError = (msg: string | null) => void;
@@ -587,23 +587,77 @@ export function ScorecardModelsSection({ onError }: { onError: OnError }) {
   );
 }
 
+/** A band's readable range: From ≥ its own min_score, To < the next-higher
+ * band's min_score (open top). Anchor 25 — the boundary is the design object. */
+interface BandRow { key: string; label: string; appearance?: string; from: number; to: number | null }
+
+const THRESHOLD_BAND_COLUMNS: Column<BandRow>[] = [
+  {
+    id: 'band', label: 'Band', flex: true,
+    cell: ({ row }) => <StatusLozenge status={row.key} label={row.label} appearance={(row.appearance as LozengeAppearance) ?? 'default'} />,
+  },
+  {
+    id: 'from', label: 'From ≥', width: 18,
+    cell: ({ row }) => <span style={{ ...bodyStyle, fontVariantNumeric: 'tabular-nums' }}>{row.from}</span>,
+  },
+  {
+    id: 'to', label: 'To <', width: 18,
+    cell: ({ row }) => <span style={{ ...bodyStyle, fontVariantNumeric: 'tabular-nums' }}>{row.to ?? '—'}</span>,
+  },
+];
+
+function bandRows(bands: ThresholdBand[]): BandRow[] {
+  const sorted = [...bands].sort((a, b) => b.min_score - a.min_score);
+  return sorted.map((b, i) => ({
+    key: b.key, label: b.label, appearance: b.appearance,
+    from: b.min_score, to: i === 0 ? null : sorted[i - 1].min_score,
+  }));
+}
+
 export function ThresholdsSection({ onError }: { onError: OnError }) {
   const q = useThresholdSchemes();
   const list = q.data ?? [];
+  const pending = list.filter((s) => s.status === 'pending_approval');
+  // Sibling-version count per name → surfaces "compare versions" affordance honestly.
+  const versionsByName = new Map<string, number>();
+  for (const s of list) versionsByName.set(s.name, (versionsByName.get(s.name) ?? 0) + 1);
+
   return (
     <StrataPanel title="Threshold schemes" icon={<BarChart3 size={16} />} count={list.length} testId="strata-admin-thresholds">
+      <p style={captionStyle}>
+        A threshold scheme turns an achievement score into a rating — the bands below are governed policy, effective-dated so
+        past periods keep their scheme version. Editing bands and the server-calculated impact preview are later features;
+        today you can review the boundaries, compare versions and manage lifecycle.
+      </p>
+      {pending.length > 0 ? (
+        <div style={{ marginBottom: 12 }}>
+          <SectionMessage appearance="warning" title={`${pending.length} scheme change${pending.length === 1 ? '' : 's'} pending approval`}>
+            <p>
+              {pending.map((p) => `${p.name} v${p.version}`).join(', ')} — a different strata_admin than the author must
+              approve. Self-approval is blocked in the database.
+            </p>
+          </SectionMessage>
+        </div>
+      ) : null}
       <SectionState query={q} empty={list.length === 0}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
           {list.map((s) => (
             <GovRecordCard key={s.id} name={s.name} table="strata_threshold_schemes" record={s} onError={onError}>
-              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
-                {(s.bands ?? []).map((b) => (
-                  <span key={b.key} style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
-                    <StatusLozenge status={b.key} label={b.label} appearance={(b.appearance as LozengeAppearance) ?? 'default'} />
-                    <span style={metaStyle}>min {b.min_score}</span>
-                  </span>
-                ))}
-              </div>
+              {s.description ? <span style={metaStyle}>{s.description}</span> : null}
+              {(versionsByName.get(s.name) ?? 0) > 1 ? (
+                <span style={{ fontSize: 'var(--ds-font-size-100)', color: T.subtlest }}>
+                  Multiple versions of “{s.name}” exist — compare the bands across the cards to see what a version changes.
+                </span>
+              ) : null}
+              {(s.bands ?? []).length > 0 ? (
+                <JiraTable<BandRow>
+                  columns={THRESHOLD_BAND_COLUMNS}
+                  data={bandRows(s.bands)}
+                  getRowId={(b) => b.key}
+                  showRowCount={false}
+                  ariaLabel={`Bands for ${s.name} v${s.version}`}
+                />
+              ) : <span style={metaStyle}>No bands configured.</span>}
               <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
                 <span style={metaStyle}>Tolerance {s.tolerance ?? '—'}</span>
                 <span style={metaStyle}>Confidence threshold {s.confidence_threshold ?? '—'}</span>

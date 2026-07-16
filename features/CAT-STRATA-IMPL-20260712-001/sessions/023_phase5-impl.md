@@ -68,4 +68,22 @@ the old tab).
   30/25/10/20/15), WEIGHTS VALID, Edit weights, Retire; intro deferral note visible. No console errors, no error boundary.
   Map untouched.
 
-## ⏭ NEXT: 5D — Threshold Schemes (anchor 25, scoped P5-D3). Re-read anchor 25 in full at slice start.
+## Slice 5D — Threshold Schemes (anchor 25, scoped P5-D3) ✅ built + gate-green + live-verified
+**File:** `StrataAdminConfigPage.tsx` (only — enhances `ThresholdsSection`, shown in BOTH measurement shell + old tab).
+- **Anchor 25 re-read IN FULL via DesignSync.** Signature = "bands as governed policy" (Band · From ≥ · To < · **Meaning**),
+  version-compare (v3↔v4), pending SoD banner, server-calc impact aside. **Backend reality:** `ThresholdBand` has NO
+  meaning/description field (only key/label/min_score/appearance); no band-authoring RPC; no server impact RPC. Per
+  zero-assumption + P5-D3: DO NOT fabricate per-band "meaning" sentences; band editing + impact preview DEFERRED (labelled).
+- Built the backed upgrade: a **bands JiraTable** (Band lozenge · From ≥ · To <) replacing the old inline lozenge+min row —
+  ranges derived by sorting bands desc on min_score (To = next-higher band's min, open top = —). Verified live:
+  ON TRACK ≥85→—, WATCH 60→85, AT RISK 0→60.
+- **Pending SoD banner** (SectionMessage warning) when any scheme is `pending_approval` — names scheme+version, states "a
+  different strata_admin must approve; self-approval blocked in the database". **Multi-version compare hint** when a scheme
+  name has >1 version (eyeball-compare across cards — no compare-modal, honest). Both conditional on data → correctly absent
+  with the single approved demo scheme.
+- Intro caption states governed-policy + effective-dating + the deferred features honestly.
+- Gates: tsc clean · colors 0/0 · audit 19798/19798 (no increase) · CRE passed.
+- Live: measurement shell → Threshold schemes nav → "Salam Standard RAG" v1 APPROVED, bands table with correct From/To
+  ranges, RAG lozenges, tolerance/confidence, Retire. No console errors, no error boundary. Map untouched.
+
+## ⏭ NEXT: 5E — Data & Integration (anchor 26, scoped P5-D3). New `/strata/admin/data` domain page. Re-read anchor 26 in full.
