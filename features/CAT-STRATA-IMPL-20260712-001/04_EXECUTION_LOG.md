@@ -1348,3 +1348,33 @@ drafted while the predecessor is still live.
 ## Status
 ✅ **DONE** — applied, ledger 1:1, gates green, suite 2,434/6. **Next: the canonical effective-version resolver**
 (step 4) — no UI surface may invent its own version resolution.
+
+---
+
+# R1 · A3b-2 — canonical KPI effective-version resolver (F-9) · migration `20260716230000`
+**"Do not allow different UI surfaces to invent their own version resolution."** This is that single rule.
+
+## Surface
+| function | use |
+|---|---|
+| `strata_resolve_kpi_version(lineage, as_of)` | resolve from a lineage |
+| `strata_resolve_kpi_effective(kpi_id, as_of)` | **resolve from ANY version's row id** — the relationship entry point |
+| `strata_kpi_effective_at(as_of)` → TABLE | set-based, for calculations/joins (per-row calls don't belong in a calc) |
+| `strata_kpi_current_effective` (view) | the common "as of now" case |
+
+## The compatibility design (ruling-sanctioned, taken deliberately)
+Relationship tables **keep their existing `kpi_id` FK**, now read as a **lineage entry point** rather than "the
+version this relationship is about": the resolver hops `kpi_id → lineage_id → effective version`. **Nothing is
+repointed, no FK changes** — the ruling's stated condition for this route. Indexes added on all three
+(`element_kpis`, `initiative_kpis`, `model_measures`).
+
+## Zero-assumption at the resolution point
+NULL when nothing approved is effective. **Not** "fall back to latest", **not** "fall back to a draft". A caller that
+gets NULL renders **Missing**. `status='approved'` is filtered here, at the single resolution point, so **no official
+calculation can reach a draft by construction** (E-7 / DEF-010).
+Overlapping matches **RAISE** rather than picking one — unreachable while the EXCLUDE constraint holds, but if it is
+ever dropped, silently picking one version would be an invisible wrong number.
+
+## Status
+✅ **DONE** — applied, ledger 1:1, gates green, suite 2,434/6. Proves 3 of the ruling's required tests outright:
+present-day resolves v2 · historical still resolves v1 · drafts never resolve.

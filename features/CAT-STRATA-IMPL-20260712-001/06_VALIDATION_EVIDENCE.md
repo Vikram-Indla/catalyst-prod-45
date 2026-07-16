@@ -314,3 +314,29 @@ ADJACENT approved versions -> ALLOWED (correct)
 
 **Ledger 1:1:** `20260716220000 · strata_kpi_lineage`. **Gates:** tsc clean · colors 0=0 · audit no category above
 baseline · CRE pass · suite **2,434 passed / 6 failed**.
+
+---
+
+# A3b-2 · resolver — RAW EVIDENCE (rolled back)
+Fixture: lineage L with v1 approved `[2026-01-01, 2026-07-01)`, v2 approved `[2026-07-01, ∞)`, v3 draft.
+A relationship stores **v1's id** (the compatibility design), and every lookup below goes through it.
+```
+=== RESOLVER (rolled back) ===
+HISTORICAL 2026-03-01 via v1 id -> ef8ce6da… (expect v1: ef8ce6da…)
+PRESENT    2026-07-16 via v1 id -> e18e3cfa… (expect v2: e18e3cfa…)
+BEFORE ANY VERSION 2025-01-01   -> <NULL> (expect NULL = Missing)
+DRAFT-ONLY lineage              -> <NULL> (expect NULL — drafts NEVER resolve)
+UNKNOWN kpi id                  -> <NULL> (expect NULL)
+boundary: v2 effective_from is INCLUSIVE at 2026-07-01 -> t (expect v2)
+set-based strata_kpi_effective_at(2026-03-01) picks v1 -> t
+```
+| Ruling test | Result |
+|---|---|
+| **present-day relationships resolve v2 after its effective date** | ✅ same stored v1 id → v2 |
+| **historical views still resolve v1** | ✅ |
+| **draft and pending versions never enter official calculations** | ✅ NULL at the single resolution point |
+| no effective version ⇒ Missing, never a substitute | ✅ NULL |
+| set-based and scalar resolvers agree | ✅ |
+
+**Ledger 1:1:** `20260716230000 · strata_kpi_effective_resolver`. **Gates:** tsc clean · colors 0=0 · audit no
+category above baseline · CRE pass · suite **2,434 passed / 6 failed**.
