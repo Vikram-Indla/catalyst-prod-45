@@ -1,5 +1,63 @@
 # 07 — HANDOVER · CAT-STRATA-IMPL-20260712-001
 
+---
+
+# 🛑 NEW SESSION — READ THIS BLOCK FIRST, THEN STOP AND WAIT FOR VIKRAM'S PROMPT
+> **Written 2026-07-16 (end of session 025) specifically to hand over to a fresh chat that will begin the
+> backend implementation programme. Vikram will supply the implementation prompt in that chat.**
+>
+> ## Do this, in order
+> 1. Run the mandatory pre-flight: `pwd` · `git branch --show-current` · `git status --short --untracked-files=all` ·
+>    `git stash list --max-count=5`.
+> 2. Read: **`03_PLAN_LOCK_BACKEND_PROGRAM.md` (the programme blueprint — the main event)** → this handover's
+>    `▶ START HERE` block → `09_DECISIONS.md` (D-1…D-8, E-1…E-7, M-D0…M-D4, DEF-010) →
+>    `sessions/025_measures-builder-part2b.md`.
+> 3. Print: `Recommended Claude conversation title: CAT-STRATA-IMPL-20260712-001 — <short purpose>`.
+> 4. Open a new session log: `sessions/026_<purpose>.md`.
+> 5. **STOP. Wait for Vikram's prompt. Do not code, do not migrate, do not pick a slice.**
+>
+> ## ⛔ Gates that are NOT satisfied — implementation is BLOCKED until Vikram clears them
+> - **The blueprint is NOT APPROVED.** CLAUDE.md: no code before Plan Lock. Product policy (D-1…D-8, E-1…E-7) is
+>   ruled, but the Plan Lock itself has not been approved.
+> - **7 decisions are OPEN — F-1…F-7 (blueprint §11). Two are hard blockers:**
+>   **F-1** — no Strategy Office owner is named for the integrity-exception records; E-1 mandates the field, so the
+>   register cannot be built. **F-4** — the P0 RLS fix freezes children on approved parents, which blocks E-2's v2
+>   clone until the revision RPC (A3) exists; A2→A3 must be sequenced back-to-back.
+>   **F-7** changes live numbers (does `owner_confirmed` count in benefit realization?).
+> - Each capability still needs **its own per-slice Plan Lock**. The blueprint is the programme, not a slice spec.
+>
+> ## Where the work actually is (this trips people up)
+> - **Branch: `strata/measures-2b`** — 5 commits, pushed. **[PR #349](https://github.com/Vikram-Indla/catalyst-prod-45/pull/349) is OPEN and UNMERGED. Do not merge without explicit authorization.**
+> - **`strata/impl-phase01` NO LONGER EXISTS** — GitHub Desktop deleted it mid-session after PR #348 merged and
+>   switched the checkout to `main`. Any instruction anywhere in this file to push `strata/impl-phase01` is STALE.
+> - `main` == `origin/main` == `35c14550b`. Local `main` is clean; do not commit to it.
+> - **[[github-desktop-autocommit-hazard]] is LIVE and bit this session** — a commit intended for a feature branch
+>   landed on `main` because the branch vanished underneath the session. **Check `git branch --show-current`
+>   immediately before every commit, and verify the landed commit with `git log --oneline -1` after.**
+>
+> ## Environment — read before running anything
+> - **Tests need Node 22:** `PATH="/opt/homebrew/opt/node@22/bin:$PATH" npm test`. Global Node 20 crashes vitest at
+>   startup — that is a VERSION MISMATCH, not a broken suite. Current: **2,426 passed · 6 failed · 16 skipped**; the
+>   6 are pre-existing **foreign ChatDock** failures. **0 are ours.**
+> - **`npm run scan:components` FAILS** (`tsx` not on the global Node 20 PATH). Use
+>   `PATH="/opt/homebrew/opt/node@22/bin:$PATH" npx tsx scripts/scan-components.ts`. **Any new component import makes
+>   `registry-drift` fail until the usage map is regenerated.**
+> - **`catalyst-staging` (`cyijbdeuehohvhnsywig`) IS the live target.** `catalyst-prod` is a paused SCOPE, not
+>   production. No prod migration debt.
+> - **Migrations:** `execute_sql` + an **explicit ledger INSERT** (MCP `apply_migration` stamps its own version and
+>   breaks the file↔ledger 1:1 rule).
+> - Gates every slice: `npx tsc --noEmit` · `npm run lint:colors:gate` · `npm run audit:ads:gate` · `npm run lint:cre`
+>   · Node-22 tests. UI slices: live-verify light + dark on `localhost:8080` ([[dev-session-expires-mid-verify]]).
+>
+> ## The one habit that matters here
+> **Do not inherit a "can't" without re-testing it.** It has bitten **nine** times on this feature — 5G-2 slug
+> routing · vitest · prod-migration debt · DEF-013's premises · `task_70e821ad`'s "schema gap" · F1a's first design ·
+> "no measure table" · "no quarantine tier" (the enums existed) · "model draft-create is a new build" (the
+> supersession half already works). **Before writing "X is impossible" into a Plan Lock, run the one query that
+> tests it.** The blueprint's reuse register (§2) exists because this rule found ~40% of the programme already built.
+
+---
+
 > Resume point. **Phases 0–5 COMPLETE. ✅ PHASE 5 (configuration & system states) COMPLETE — slices 5A–5G merged to `main`.**
 > **Phase 5 anchors shipped: 03 (config landing 5A) · 04 (measurement domain + taxonomy 5B) · 05 (model integrity 5C) ·
 > 25 (threshold bands 5D) · 26 (data & integration 5E) · 27 (roles & access 5F) · 28 (canonical system states 5G).**
@@ -305,8 +363,11 @@
   Re-read the relevant anchor via DesignSync before coding.
 
 ## State (as of 2026-07-15 — PHASE 3 COMPLETE; PHASE 4 IN PROGRESS, slice 4A done)
-- **Branch:** `strata/impl-phase01`. `origin/main` advancing via fast-forward ([[github-noff-merge-push-rejected]] —
-  `--no-ff` merge-commit push rejected; push branch then `git push origin <sha>:main`; retry flaky pushes).
+> **⚠️ HISTORICAL — this section is a 2026-07-15 snapshot. Phases 4 AND 5 have since completed (28/28 anchors).
+> The branch named below is DEAD. Authoritative state: the `🛑 NEW SESSION` block at the top of this file.**
+- **Branch (as of 2026-07-15):** `strata/impl-phase01` — **DELETED 2026-07-16 by GitHub Desktop after PR #348
+  merged. Current branch is `strata/measures-2b`.** `origin/main` advancing via fast-forward
+  ([[github-noff-merge-push-rejected]] —
   **`StrataStrategyMapPage.tsx` byte-untouched across Phases 3 + 4.**
 - **PHASE 3 COMPLETE** (3A · 3B-0 · 3B-1 · 3B-2 `12deb2d15` · 3B-3 `338da9903` · 3C `0a85e8535`).
 - **PHASE 4 (governance & data) — Plan Lock APPROVED** `03_PLAN_LOCK_PHASE4.md` (Vikram 2026-07-15; P4-D0…D8 CONFIRMED;
@@ -361,12 +422,23 @@
   `importApi.importExecutionBatch` dry-run/apply (created/updated/rejected) — NO Matched/Conflict/Unmatched
   three-way, NO both-sides diff, **NO "undo" affordance** (none of that backend exists). Render honestly.
 
-## Merge / commit discipline (unchanged — used for all 7 Phase-3 merges)
+## Merge / commit discipline
+> **⚠️ CORRECTED 2026-07-16 (session 025). The recipe below named `strata/impl-phase01` — THAT BRANCH NO LONGER
+> EXISTS** (GitHub Desktop deleted it after PR #348 merged). Substitute your **current** feature branch everywhere;
+> today that is **`strata/measures-2b`**. Never push `main` directly. **Confirm `git branch --show-current` right
+> before every commit** — this session had a commit land on `main` because the branch vanished mid-session
+> ([[github-desktop-autocommit-hazard]]).
+
 One slice = one commit (explicit files; feature docs alongside; `git add -A` banned). Verify the staged set
-with `git diff --cached --name-status` before every commit (GitHub Desktop auto-committer may be active).
-Merge to main via a temp worktree: `git worktree add <scratchpad>/merge-main main` → `git merge --no-ff
-strata/impl-phase01` → symlink node_modules → re-run ALL gates on the merged tree → `push origin main` →
-(from the shared checkout) `git merge --ff-only main` + `push origin strata/impl-phase01` → remove worktree.
+with `git diff --cached --name-status` before every commit — `grep '^[MA]'` MISSES renames/deletes
+([[git-commit-includes-foreign-staged-renames]]). **Preferred route now: push the feature branch and open a PR**
+(as PR #349 did) rather than the worktree merge dance.
+Legacy worktree recipe, if a direct merge is ever authorised: `git worktree add <scratchpad>/merge-main main` →
+`git merge --no-ff <your-feature-branch>` → symlink node_modules → re-run ALL gates on the merged tree →
+`push origin main` → (from the shared checkout) `git merge --ff-only main` + `push origin <your-feature-branch>`
+→ remove worktree. **A `--no-ff` merge-commit push to `main` has been REJECTED before** with
+`remote: fatal error in commit_refs`; the workaround was a fast-forward push of the identical commit
+(`git push origin <sha>:main`) — [[github-noff-merge-push-rejected]].
 **LESSON (this session):** never `cd` INTO the worktree persistently — run gates in a `( cd "$WT" && … )`
 subshell and remove the worktree from the repo-root cwd, else removing it deletes your cwd (concurrent-session
 rule → STOP + re-verify). Gates: `npx tsc --noEmit` · `npm run lint:colors:gate` · `npm run audit:ads:gate`
