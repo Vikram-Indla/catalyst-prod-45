@@ -371,3 +371,61 @@ draft v2 does NOT resolve (still v1) : t
 
 **Ledger 1:1:** `20260716240000 · strata_create_kpi_draft_version`. **Gates:** tsc clean · colors 0=0 · audit no
 category above baseline · CRE pass · suite **2,434 passed / 6 failed**.
+
+---
+
+# Step 6a — RAW EVIDENCE
+
+## 1. Zero numbers moved (the test that had to pass)
+Every kpi×period with a real actual+target, computed before and after the migration, rolled back both times:
+```
+BEFORE                                    AFTER
+B2B Revenue Growth | 2026-03-31 | 77.50/77.50/amber      (identical)
+B2B Revenue Growth | 2026-06-30 | 111.25/100.00/green    (identical)
+Churn Rate         | 2026-03-31 | 83.33/83.33/amber      (identical)
+Churn Rate         | 2026-06-30 | 105.26/100.00/green    (identical)
+CO2 Reduction      | 2026-03-31 | 75.00/75.00/amber      (identical)
+CO2 Reduction      | 2026-06-30 | 91.67/91.67/green      (identical)
+Cost to Serve      | 2026-03-31 | 94.06/94.06/green      (identical)
+Cost to Serve      | 2026-06-30 | 97.94/97.94/green      (identical)
+Digital Rev Share  | 2026-03-31 | 88.57/88.57/green      (identical)
+Digital Rev Share  | 2026-06-30 | 102.86/100.00/green    (identical)
+Employee Engagement| 2026-03-31 | 94.67/94.67/green      (identical)
+Employee Engagement| 2026-06-30 | 98.67/98.67/green      (identical)
+Enterprise Rev (proof) | 2027-03-31 | 83.33/83.33/-      (identical)
+Net Promoter Score | 2026-03-31 | 93.55/93.55/green      (identical)
+Net Promoter Score | 2026-06-30 | 101.61/100.00/green    (identical)
+Network Availability|2026-03-31 | 100.00/100.00/green    (identical)
+Network Availability|2026-06-30 | 66.67/66.67/amber      (identical)
+```
+**18/18 byte-identical.**
+
+## 2. F-10 erasure risk, measured before and after
+```
+before F-10 : resolve_to_same=2     WOULD_BECOME_MISSING=3210   would_switch_version=0
+after  F-10 : resolve_to_same=3212  would_become_missing=0
+```
+
+## 3. Provenance + the ruling's behavioural tests (rolled back)
+```
+PROVENANCE keys present: lineage=t version=1 formula_v=1 target_v=1 scheme_v=1 resolved_as_of=t requested=t
+
+=== MATERIAL REVISION ===
+HISTORICAL period (ends 2026-03-31): resolved=v1  achievement=90.00
+  -> v1 was effective then; its own actual is used. Trend preserved.
+CURRENT period (ends 2026-06-30): resolved=v2  achievement=<NULL> reason=no_actual
+  -> v2 effective, NO actual of its own; v1 HAS one (90).
+  -> Carried forward? no — correct
+
+DRAFT-only KPI with a VALIDATED actual -> achievement=<NULL> reason=no_effective_kpi_version
+```
+| Ruling test | Result |
+|---|---|
+| **material revision without a new actual ⇒ Missing, not a carried-forward value** | ✅ NULL, not 90 |
+| **non_material continuity retains exact provenance** | ✅ historical period still resolves v1 and uses v1's actual; full provenance recorded |
+| **draft/pending versions never enter official calculations** | ✅ `no_effective_kpi_version` — enforced in its own right, not via the actual's status |
+| official calculation records the full version context | ✅ all required identifiers present, incl. **threshold_scheme_version** |
+| locked snapshots unchanged | ✅ untouched — they read frozen payloads |
+
+**Ledger 1:1:** `20260717100000 · strata_calc_lineage_provenance`. **Gates:** tsc clean · colors 0=0 · audit no
+category above baseline · CRE pass · suite **2,434 passed / 6 failed**.

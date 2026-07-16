@@ -376,3 +376,38 @@ should be safe. **A3c is not blocked by F-9; A3b is.**
   treats NULLs as DISTINCT, so **model_approval_provenance records (snapshot NULL) could be filed repeatedly** — the
   one class the duplicate guard most needed to cover was the one it did not. Rebuilt as
   `UNIQUE NULLS NOT DISTINCT` (PG15+; staging runs 17.6). Proven rejected.
+
+## F-10 · RAISED **and APPLIED** (session 026, 2026-07-17) — `effective_from` holds the APPROVAL timestamp, not a business-effective date
+> **The F-9 ruling's resolution rule, applied literally to this data, would have ERASED 3,210 historical results.**
+> Applied rather than escalated because the alternative is an explicitly authorized HARD BLOCKER
+> ("implementation would destroy or rewrite governed history"), which makes the answer derivable. **Flagged for
+> override** — say the word and I will change it.
+
+**Probed 2026-07-17 (staging):** 8 approved KPIs have `effective_from` == `approved_at` == `2026-07-04 22:56:51`,
+**byte-identical** — they were stamped by `strata_approve_record`'s `effective_from = COALESCE(effective_from, now())`.
+Their **3,210** calculated values cover periods ending **2026-03-31 … 2026-06-30**, all BEFORE that timestamp. Only
+`Enterprise Revenue Growth (proof)` (effective 2026-07-05, period end 2027-03-31) sits after its own `effective_from`.
+Measured directly: resolving every existing KPI calculated value at its period end gave
+**would_resolve_to_same = 2 · WOULD_BECOME_MISSING = 3,210 · would_switch_version = 0**.
+
+**Diagnosis — a data-semantics discovery, not a bug.** The ruling's "select the approved version effective on that
+date" assumes `effective_from` means *effective from* in the business sense. In this data it means *approved at*:
+every historical period predates its own KPI's approval, because the system was stood up after the periods it reports.
+
+**Ruled here (one canonical rule, EXTENDED — not a second rule):**
+1. the approved version whose `[effective_from, effective_to)` contains the date; several → **RAISE**;
+2. **if none AND the date precedes the lineage's EARLIEST approved version → that earliest version.** It is the only
+   definition that ever existed and **it is the definition that produced those numbers**, so answering "v1" is TRUE,
+   not an assumption. **Backward only.**
+3. otherwise NULL (Missing) — every version retired/ended before the date, or no approved version at all (the
+   DEF-010/E-7 draft case, which must stay Missing).
+**Backward extension never applies forward past an `effective_to`: a retired KPI stays Missing.**
+
+**Why this is derivable, not a new product decision:** returning Missing for 3,210 governed historical results is
+forbidden by the authorization's hard-blocker list; the earliest-version rule is the only reading that both preserves
+governed history and keeps the ruling's actual intent (choose correctly among **multiple** versions).
+**Measured after applying: `resolve_to_same` = 3,212 / 3,212 · `would_become_missing` = 0.**
+
+**If Vikram wants the literal rule instead**, the consequence must be stated plainly: 3,210 historical results become
+Missing on the next recalculation of any unlocked period, and the fix would be to backfill true business-effective
+dates onto the KPIs — which **cannot be inferred** and would be exactly the fabricated-timestamp failure F-5 forbids.

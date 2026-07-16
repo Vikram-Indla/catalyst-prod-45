@@ -1411,3 +1411,45 @@ author who never said so — a comparability lie, and the most expensive kind, b
 ✅ **DONE** — applied, ledger 1:1, gates green, suite 2,434/6.
 **Proves 5 of the ruling's required tests:** lineage retained + version incremented · predecessor byte-identical ·
 formula definitions clone · **facts do not clone** · draft versions never resolve into official calculations.
+
+---
+
+# Step 6a · calc-engine lineage resolution + full provenance (F-9 + B1) · migration `20260717100000`
+
+## Done together, on purpose
+The F-9 ruling's provenance list (KPI row id · lineage id · KPI version · formula version · target version ·
+model-measure/config version · effective context) **IS** what B1 §4 needs captured. Capturing it twice would guarantee
+two dictionaries that drift.
+
+## 🔴 F-10 — the finding that decided this slice
+Naive date-aware resolution would have made **3,210 of 3,212** existing KPI calculated values **Missing**, because
+`effective_from` holds the **approval timestamp**, not a business-effective date (8 KPIs: `effective_from` ==
+`approved_at` == `2026-07-04 22:56:51`, while their periods end 2026-03-31…2026-06-30). Resolved by **backward
+extension of the earliest approved version** — see `09_DECISIONS.md` → F-10. **After: 3,212/3,212 resolve to their own
+version; 0 become Missing.**
+
+## What changed in `strata_calc_kpi_achievement`
+1. **Resolves the version** at the **period's end date** (the date the result is ABOUT, not when someone presses
+   recalculate) via the canonical resolver — never a hand-rolled predicate.
+2. **E-7 condition 1 enforced at calc time in its own right:** a draft KPI resolves to NULL → `no_effective_kpi_version`.
+   Previously an approved actual belonging to a draft KPI would have counted. Proven.
+3. **Complete provenance** in `config_context`: `kpi_id · kpi_lineage_id · kpi_version · kpi_revision_class ·
+   formula_version(+id) · target_version(+id) · actual_id · threshold_scheme_id · **threshold_scheme_version** ·
+   resolved_as_of · requested_kpi_id`. The scheme **version** is captured because §3 proved an id + a static version
+   number cannot re-resolve a configuration — and bands decide every rating.
+4. `requested_kpi_id` vs `kpi_id` differ **iff** a revision occurred — the version switch is provable after the fact.
+
+## The maths is untouched
+Same direction cases, same clamps, same confidence damping, same zero-assumption early return. **18/18 results
+byte-identical to the pre-migration baseline.**
+
+## Blueprint correction
+**§2.1's "calcs filter `validation_status='validated'` — a WHITELIST" is FALSE.** `strata_calc_kpi_achievement`
+prefers validated and then **falls back to `pending`** (confidence × 0.6). The *conclusion* survives (quarantined
+matches neither branch, so it is still excluded), but **pending actuals count today**, which is a real gap against
+E-7's condition 3 ("validated **or** accepted-with-exception"). **Left for G1/E-6** — closing it here would change live
+numbers outside this slice's scope. Logged, not silently adapted.
+
+## Status
+✅ **DONE** — applied, ledger 1:1, gates green, suite 2,434/6, **zero numbers moved**.
+**Next:** B1's other half — `strata_lock_snapshot.config_versions` completeness (§4) + `strata_calc_scorecard_instance`.
