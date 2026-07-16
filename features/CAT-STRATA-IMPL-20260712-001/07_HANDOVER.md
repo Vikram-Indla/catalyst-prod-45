@@ -51,7 +51,8 @@
 >
 > ### Shipped this session (all on `main`, all gates-green AND live-verified)
 > `task_65642237` fix (`strata_promote_element` → `strata_theme_charters`; it broke **every** theme promotion, not just
-> "legacy" as logged) · §20 pass 7/7 · Phase 6 (vitest unblocked, +34 tests) · **B2** freshness (no migration needed) ·
+> "legacy" as logged) · §20 pass 7/7 · the VERIFICATION pass — session-labelled "Phase 6", which was a verification
+> session and **never a UI phase** (vitest unblocked, +34 tests) · **B2** freshness (no migration needed) ·
 > **F1a** SoD RPC (`strata_check_role_sod`) closing anchor 27's column · **F2** view-as audit (`strata_log_view_as`) ·
 > **measures** table + `strata_set_model_measures` + readers + groups/integrity UI (part 2a).
 >
@@ -66,14 +67,45 @@
 > first design. **Every one was a true observation with a wrong conclusion, carried forward because nobody re-ran the
 > check.** Before you write "X is impossible" into a Plan Lock, run the one query/command that tests it.
 >
-> ### Still open
-> Backend features remaining (2b is now OFF this list): band-editor · model draft-create · preview-with-data ·
-> version diff · score-shift impact · source register/retire · board-pack editorial+Issue · blast-radius ·
-> quarantine tier · `strata_reviews` entity · mapping-memory · import 3-way+diff+undo+ledger. **Plus governance:
-> M-D4 approved-model editability** (own slice, ruled 2026-07-16 — see the START HERE block).
-> **DEF-010** needs a product decision (draft linking vs post-approval). **DEF-013** is parked behind the
-> multi-tenancy initiative (already ruled). 6 pre-existing ChatDock test failures are NOT ours (foreign module,
-> predate this feature).
+> ### ✅ Still open — **THIS BLOCK IS AUTHORITATIVE** (supersedes every debt list lower in this file)
+> **Position at 2026-07-16: no anchor-critical UI scope remains · 0 unanswered product decisions · 8 optional
+> UI-polish items · 14 backend initiatives, none specced.**
+>
+> **⚠️ COUNT FLAGGED FOR RATIFICATION — 14, not 13.** Vikram's 2026-07-16 instruction said "13 backend initiatives".
+> That figure counts the 12 legacy deferrals + M-D4, but the SAME instruction ruled DEF-010 and stated it "requires a
+> separately planned backend change and Plan Lock" — which converts DEF-010 from a product decision INTO a backend
+> initiative (session 024 independently concluded "either way it needs a backend change + its own Plan Lock").
+> DEF-010's work has to live somewhere; itemised below it is 14. **Overrule in one word if 13 was intended and the
+> DEF-010 work is meant to fold into an existing item.** Do not "fix" this by deleting an item to reach 13.
+>
+> **Backend initiatives — each needs its own Plan Lock, and usually a migration. NONE is pre-specced.**
+> 1. threshold band-editor authoring (P5, anchor 25)
+> 2. scorecard-model draft-create (P5)
+> 3. preview-with-data (P5)
+> 4. version diff (P5)
+> 5. server-calculated score-shift impact preview (P5; P5-D2 renders it as a labelled gap, never a number)
+> 6. data-source register/retire + dependents-impact check (P5, anchor 26)
+> 7. board-pack editorial builder + Issue (P4-D2)
+> 8. run downstream blast-radius RPC (P4-D4)
+> 9. quarantine validation tier (P4-D3)
+> 10. `strata_reviews` scheduling entity (P4-D1 / DRIFT-9)
+> 11. mapping-memory write (P4-D6)
+> 12. import Matched/Conflict/Unmatched + both-sides diff + 24h undo + run-log ledger (P3-D3 · 3C)
+> 13. **M-D4 · approved-model editability** — product direction APPROVED (Vikram 2026-07-16: "rule separately in its
+>     own slice"); **technical specification PENDING.** Covers BOTH `ModelWeights` + `MeasureGroups`. Mechanism still
+>     to be specified: block at `status='approved'` · require a new draft version · accept in-place. See M-D4 above.
+> 14. **DEF-010 · draft KPI → strategic-objective linking** — product direction APPROVED (Vikram 2026-07-16);
+>     **technical specification PENDING.** NEW to this list — it was a product decision until the ruling landed.
+>     See `09_DECISIONS.md` → DEF-010 for the full ruling. Today `strata_link_element_kpi` is gated on `approved`
+>     and `strata_kpis.status` defaults to `draft` (6 draft KPIs on staging, all unlinkable at creation), so the
+>     link-at-creation path cannot work without this backend change. **Do not auto-approve KPIs** — that is
+>     explicitly ruled out.
+>
+> **Product decisions: NONE outstanding.** ~~DEF-010~~ ✅ RULED 2026-07-16 (now backend initiative 14 above).
+> **DEF-013** was ALREADY ruled — parked behind the product-wide multi-tenancy initiative. It is **not** an open
+> decision and must not be re-listed as one.
+>
+> **Tests:** 6 pre-existing ChatDock failures are NOT ours (foreign module, predate this feature). 0 failures are ours.
 >
 > ### ⚠️ Suite baseline correction (session 025)
 > "2,426/2,448 green" was recorded BEFORE `def869232` (B2 freshness) landed. That commit added a
@@ -93,13 +125,26 @@
 > is mounted ONCE in `StrataPageShell` → every object page shows the "why am I here" band; live + expired variants.
 > **No Phase-5 UI debt remains.** Anchor 28's panel-scale "object deleted mid-session" variant was never in Phase-5 scope.
 >
-> **Phase-5 DEFERRED backend features (each needs its own migration + Plan Lock):** threshold band-editor authoring ·
-> scorecard-model draft-create · model measure-level authoring (no model-measure table exists) · preview-with-data ·
-> version diff · data-source register/retire (+ dependents-impact check) · **server SoD-check RPC** (per-assignment
-> CLEAN/GUARDED/CONFLICT — deliberately NOT faked) · view-as audit-log write · server-calculated score-shift impact preview.
-> **Earlier-phase backend deferrals still open:** board-pack editorial builder + Issue · run downstream blast-radius RPC ·
-> quarantine validation tier · `strata_reviews` scheduling entity · mapping-memory write (all P4) · import
-> Matched/Conflict/Unmatched + both-sides diff + 24h undo + run-log ledger (P3 · 3C).
+> ### 🗄️ Phase-5 DEFERRED backend features — **HISTORICAL SNAPSHOT (as written at Phase-5 close, 2026-07-16 early).**
+> **⛔ NOT AUTHORITATIVE. SUPERSEDED by the `▶ START HERE` → "Still open" block at the TOP of this file.** Three items
+> below shipped the same day this list was written; it is kept for the audit trail, struck through, NOT deleted.
+> If this block and the top block disagree, **the top block wins**.
+>
+> Phase-5 deferrals as recorded then: threshold band-editor authoring · scorecard-model draft-create ·
+> ~~model measure-level authoring (no model-measure table exists)~~ **← CLOSED. Both premises were wrong by end of day:
+> the table now exists (`strata_scorecard_model_measures`, migration `20260716150000`) and the authoring UI shipped.
+> Part 1 `6d30320fc` (table + RPC + reader) · part 2a `ffb3f8c68` (perspective groups + integrity) · part 2b `96781d601`
+> (assignment UI, PR #349). Anchor 05's builder is COMPLETE.** · preview-with-data · version diff ·
+> data-source register/retire (+ dependents-impact check) · ~~**server SoD-check RPC** (per-assignment
+> CLEAN/GUARDED/CONFLICT — deliberately NOT faked)~~ **← CLOSED by F1a `c033fb778` (`strata_check_role_sod`), which
+> closed anchor 27's column. NOTE: F1-D2 still defers the CONFLICT verdict specifically — the server never refuses a
+> role COMBINATION, so claiming one would assert a check that does not exist. The RPC is shipped; CONFLICT is not
+> faked.** · ~~view-as audit-log write~~ **← CLOSED by F2 `cee965731` (`strata_log_view_as`), closing P5-D4's flag** ·
+> server-calculated score-shift impact preview.
+>
+> **Earlier-phase backend deferrals — ALL STILL OPEN, unchanged:** board-pack editorial builder + Issue · run downstream
+> blast-radius RPC · quarantine validation tier · `strata_reviews` scheduling entity · mapping-memory write (all P4) ·
+> import Matched/Conflict/Unmatched + both-sides diff + 24h undo + run-log ledger (P3 · 3C).
 >
 > **⚠️ LIVE OPS + VERIFICATION DEBT — STILL OPEN. Do NOT lose: it is duplicated below the `# ARCHIVE` marker, where it
 > reads as history. This block is the authoritative copy.**
@@ -115,13 +160,23 @@
 >    growing prod-parked migration queue. No prod ⇒ no queue. Backend features ship to staging like everything else.
 >    If a real production project is ever stood up, THEN re-apply the full migration ledger to it and re-instate the
 >    CONCURRENT SESSIONS / DB-TARGETING hard stop for prod DDL.
-> 2. **Backend defect `task_65642237`** — `strata_promote_element` references the dropped `strata_play_charters` table and
->    errors for legacy elements. Pre-existing backend bug, not a UI regression (the Promote UI surfaces the rejection).
-> 3. **`task_70e821ad`** — data-source freshness/staleness column (schema gap). This is why 5E's registry shows
->    status + health rather than a freshness glyph.
-> 4. **🔴 Vitest cannot run — there is NO unit-test verification for ANY phase.** Every slice was verified by gates
->    (tsc · lint:colors:gate · audit:ads:gate · lint:cre) plus live DOM/DB probes only. STILL OPEN — a §20 behavioural
->    pass is not a substitute for a test suite.
+> 2. ~~**Backend defect `task_65642237`**~~ — ✅ **CLOSED 2026-07-16 by B1 `d017ffd8b`.** `strata_promote_element`
+>    referenced the dropped `strata_play_charters`; repaired to `strata_theme_charters`. **The original entry
+>    UNDERSTATED it:** it did not error only "for legacy elements" — it broke **every** theme promotion. Diagnosis
+>    corrected at fix time; see the START HERE "Shipped this session" line.
+> 3. ~~**`task_70e821ad`**~~ — ✅ **CLOSED 2026-07-16 by B2 `def869232`, with NO migration.** The entry called it a
+>    "schema gap" requiring a freshness/staleness column. That was a true observation with a wrong conclusion:
+>    freshness is DERIVABLE from the latest run's `completed_at` per `data_source_id` (the same derivation anchor 09
+>    already used), so 5E's registry now renders the freshness glyph. No column was ever needed.
+>    ⚠️ `def869232` shipped WITHOUT regenerating `usage-map.generated.ts`, which left `registry-drift` failing on
+>    `main` until session 025 repaired it — see the Suite baseline correction above.
+> 4. ~~**🔴 Vitest cannot run — there is NO unit-test verification for ANY phase.**~~ — ✅ **CLOSED 2026-07-16 by
+>    slice 6A `e3fc285f7`.** The claim was FALSE, not merely stale: vitest was never broken. It was a Node-20
+>    `util.styleText` startup crash (`ERR_INVALID_ARG_VALUE`) — a VERSION MISMATCH that hid a **2,414-test suite for
+>    the entire implementation**. `engines` now pins `>=22`.
+>    **Current verified status (session 025, full run on Node 22): 2,426 passed · 6 failed · 16 skipped / 2,448.**
+>    The 6 failures are pre-existing ChatDock failures in a FOREIGN module that predate this feature. **0 failures are
+>    ours.** Run tests as `PATH="/opt/homebrew/opt/node@22/bin:$PATH" npm test`.
 > 4b. **§20 ACCEPTANCE — ✅ 7 PASS / 0 NOT VERIFIED / 0 FAIL** (`06_VALIDATION_EVIDENCE.md`; run 2026-07-16,
 >    completed in Phase 6). AC-1 five-verb chain · AC-2 CC first-screenful · AC-3 verdict→evidence in **1** interaction
 >    w/ "Back to Command Center" · AC-4 grayscale · AC-5 reload-into-dark · **AC-6 keyboard-only — all 4 verbs** ·
@@ -267,8 +322,15 @@ rule → STOP + re-verify). Gates: `npx tsc --noEmit` · `npm run lint:colors:ga
   lower sections of this file (below OPEN DEBT).
 
 ## ⚠️ OPEN DEBT — **HISTORICAL (Phase-2 era). SUPERSEDED by the LIVE DEBT block at the top of this file.**
-> Kept for provenance only. Items 1, 2 and 4 below are STILL OPEN and are restated authoritatively at the top;
-> item 6 is stale (Phases 4–5 are complete). Do not treat this section as the current picture.
+> **Kept for provenance ONLY — every numbered item below is now CLOSED or DISSOLVED. Do not treat this section as
+> the current picture; the `▶ START HERE` → "Still open" block at the TOP of this file is authoritative.**
+> This pointer previously read "Items 1, 2 and 4 below are STILL OPEN" — that was true when written and is now
+> FALSE (corrected 2026-07-16, session 025). Closure map:
+> - item 1 (prod migrations blocked) → **DISSOLVED** — `catalyst-prod` is a paused SCOPE, not production; staging
+>   IS the live target, so there was never a prod queue. See LIVE DEBT item 1 at the top.
+> - item 2 (`task_65642237`) → **CLOSED** by B1 `d017ffd8b` (and it broke EVERY theme promotion, not just legacy).
+> - item 4 (`task_70e821ad`) → **CLOSED** by B2 `def869232`, with no migration — freshness was derivable all along.
+> - item 6 → stale (Phases 4–5 are complete; the design pack is 28/28).
 1. **Prod migrations BLOCKED (no prod access this session — tackle later).** `20260713100000`
    (plan-variance, session 004) and `20260713110000` (strata_saved_views + strata_bulk_update_kpis, 2C-2a)
    are applied to **staging (`cyijbdeuehohvhnsywig`) ONLY**; prod (`lmqwtldpfacrrlvdnmld`) is unreachable via

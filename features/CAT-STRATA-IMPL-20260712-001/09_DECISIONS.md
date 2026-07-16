@@ -154,6 +154,28 @@ Plan Lock `03_PLAN_LOCK_PHASE5.md` approved at `3e215d4ed`. All decisions ratifi
   perspective groups — a large surface). **Part 2a shipped `ffb3f8c68`; part 2b BUILT session 025** (gates green,
   live-verified, measures table 0 → 2 rows through the UI). Anchor 05's builder is complete.
 
+## DEF-010 — RULED (Vikram, 2026-07-16). Was the last open product decision; there are now NONE.
+- **DEF-010 ✅ RULED — draft KPIs MAY be linked to strategic objectives during authoring, but never count.**
+  Recorded verbatim:
+  - Allow draft KPIs to be linked to strategic objectives during authoring.
+  - Clearly label them as **Draft**.
+  - **Exclude draft KPIs from official calculations, health, roll-ups, scorecards, snapshots, board packs and
+    executive reporting.**
+  - **Activate** eligible links when the KPI is approved.
+  - **Do NOT auto-approve KPIs.**
+  - **Preserve historical links** when KPIs are retired or superseded.
+- **Status: product direction APPROVED; technical specification PENDING.** This is a **backend change needing its own
+  Plan Lock** — it is now backend initiative #14 in the handover's authoritative "Still open" block, not a product
+  decision. Do not start it expecting a spec to exist.
+- **Why it was blocked (probed on staging, session 024 — re-probe before specifying):** `strata_link_element_kpi` is
+  gated on `approved` (the function body references it); `strata_kpis.status` defaults to `'draft'`; 6 draft KPIs on
+  staging today, all unlinkable at creation. So link-at-creation cannot work without this change.
+  See [[strata-kpi-link-requires-approved]].
+- **The ruling rejects the auto-approve escape hatch** that session 024 floated as an alternative. The exclusion rule
+  is the load-bearing part: a draft link must be inert everywhere a number is asserted — calculations, health,
+  roll-ups, scorecards, snapshots, board packs, executive reporting. A draft KPI that silently moved a score would be
+  the zero-assumption violation this feature has refused eleven times.
+
 ## Part 2b — RULED (Vikram, 2026-07-16)
 - **M-D3 ✅ CONFIRMED (Vikram 2026-07-16): the Save gate treats an EMPTY perspective group as PASSING.** Plan Lock 2b
   says "gate Save on every group totalling 100". Read literally that includes groups with zero measures — but
