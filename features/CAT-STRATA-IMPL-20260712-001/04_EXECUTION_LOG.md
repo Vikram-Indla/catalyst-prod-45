@@ -1378,3 +1378,36 @@ ever dropped, silently picking one version would be an invisible wrong number.
 ## Status
 ✅ **DONE** — applied, ledger 1:1, gates green, suite 2,434/6. Proves 3 of the ruling's required tests outright:
 present-day resolves v2 · historical still resolves v1 · drafts never resolve.
+
+---
+
+# R1 · A3b — KPI governed revision + revision materiality (D-2/D-3, F-9) · migration `20260716240000`
+**`strata_create_kpi_draft_version(p_kpi, p_reason, p_revision_class) RETURNS uuid`**
+
+## The line this RPC draws — the entire point of F-9
+| | tables | action |
+|---|---|---|
+| **definition** (what the KPI IS) | KPI definition columns · `strata_kpi_formula_versions` | **CLONE** |
+| **facts** (what was MEASURED) | `kpi_actuals` · `kpi_targets` · `key_results` · `scorecard_lines` | **NEVER clone, never repoint** |
+| **relationships** (continuing intent) | `element_kpis` · `initiative_kpis` · `model_measures` | **NEVER clone** — they resolve through the lineage |
+Cloning either non-definition class would fabricate history: an actual submitted against v1 **was** submitted against
+v1, and duplicating a link would **double-count** the KPI in its objective. v2 inherits relationships **without a
+single row being rewritten**, via `strata_resolve_kpi_effective()`.
+
+## Two details that are easy to get wrong
+- **`version = max(version)+1 across the LINEAGE**, not `v_src.version+1` — the source may not be the highest (e.g.
+  revising a superseded version), and `(lineage_id, version)` is UNIQUE.
+- **One open successor per LINEAGE**, not per row — two drafts anywhere in the lineage would both claim the next
+  version number and collide on approval.
+
+## Revision materiality — REQUIRED, never defaulted
+`revision_class ∈ non_material | material`, enforced **at the DB** (`supersedes_id IS NULL OR revision_class IS NOT
+NULL`) as well as in the RPC — proven: an unclassified revision is rejected even by a direct INSERT. **NULL ⇔ not a
+revision**; it never means "unclassified".
+**Why required:** defaulting it would be the system asserting *"this change is safe to trend through"* on behalf of an
+author who never said so — a comparability lie, and the most expensive kind, because it is invisible in the number.
+
+## Status
+✅ **DONE** — applied, ledger 1:1, gates green, suite 2,434/6.
+**Proves 5 of the ruling's required tests:** lineage retained + version incremented · predecessor byte-identical ·
+formula definitions clone · **facts do not clone** · draft versions never resolve into official calculations.

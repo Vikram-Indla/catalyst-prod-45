@@ -340,3 +340,34 @@ set-based strata_kpi_effective_at(2026-03-01) picks v1 -> t
 
 **Ledger 1:1:** `20260716230000 · strata_kpi_effective_resolver`. **Gates:** tsc clean · colors 0=0 · audit no
 category above baseline · CRE pass · suite **2,434 passed / 6 failed**.
+
+---
+
+# A3b · KPI revision — RAW EVIDENCE (rolled back)
+Fixture: v1 approved with a formula (definition) **and** an actual, a target and an objective link (facts +
+relationship) — so the clone boundary is actually exercised rather than asserted.
+```
+=== A3b (rolled back) ===
+lineage retained t · version 2 (expect 2) · supersedes ok t · class material
+approval reset: approved_at=<NULL> effective_from=<NULL>
+DEFINITION CLONED : formula rows 1/1 (expect 1/1)
+FACTS NOT CLONED  : actuals 0 · targets 0 · element links 0 (expect 0/0/0)
+v1 facts intact   : actuals 1/1 · links 1/1 (never repointed)
+PREDECESSOR BYTE-IDENTICAL : t
+missing class -> a revision class is required: non_material … or material …
+blank reason  -> a change reason is required to create a new version
+dup draft     -> a draft version of this KPI already exists (18e521e9-…)
+unclassified revision via direct INSERT -> violates check constraint "strata_kpis_revision_class_required"
+draft v2 does NOT resolve (still v1) : t
+```
+| Ruling test | Result |
+|---|---|
+| new version retains lineage and increments version | ✅ |
+| **predecessor remains byte-identical** | ✅ |
+| **formula definitions clone** | ✅ 1/1 |
+| **facts do not clone** | ✅ actuals 0 · targets 0 · links 0, and v1's remain 1/1 |
+| draft/pending versions never enter official calculations | ✅ draft v2 does not resolve |
+| revision classification required | ✅ rejected in the RPC **and** by DB CHECK on direct INSERT |
+
+**Ledger 1:1:** `20260716240000 · strata_create_kpi_draft_version`. **Gates:** tsc clean · colors 0=0 · audit no
+category above baseline · CRE pass · suite **2,434 passed / 6 failed**.
