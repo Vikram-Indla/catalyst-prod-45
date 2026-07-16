@@ -40,7 +40,35 @@ Baseline on entry was 2,426/6 → **+8 tests, 0 new failures.** Raw evidence: `0
 returning 1 row so the test could actually fail. **F-4 is discharged** (A2→A3 back-to-back), so the E-2 v2 clone path
 is open.
 
-## ▶ DO THIS NEXT — step 6 of the F-9 ruling's implementation order. Nothing is blocked.
+## 🔴 STEP 6 IS HALF DONE — 6a + 6b shipped, **6c is the next action**
+| | commit | migration |
+|---|---|---|
+| **6a** calc lineage resolution + full provenance (F-9 + B1) | `23a5ac938` | `20260717100000` |
+| **6b** snapshot config-version completeness (§4) | `04ef41fb4` | `20260717110000` |
+
+**⚠️ 6c — the remaining calcs are NOT wired to the canonical resolver:**
+`strata_calc_scorecard_instance` · `strata_calc_period` · `strata_calc_benefit_realization`.
+They still write a `config_context` **without version identifiers**, which is why every new snapshot's `used` block
+honestly reports `provenance_completeness: {items_with_full_provenance: 8, items_without_full_provenance: 20}`.
+**That count of 20 IS the to-do list.** Wire them exactly as 6a wired `strata_calc_kpi_achievement`:
+resolve at the **period's end date** via `strata_resolve_kpi_effective`, then record the full provenance block.
+Until then the snapshot's own `note` says LOWER BOUND — which is honest, but it is not done.
+
+### 🔴 F-10 — READ THIS BEFORE TOUCHING ANY CALC (`09_DECISIONS.md` → F-10)
+**`effective_from` holds the APPROVAL timestamp, not a business-effective date.** 8 approved KPIs have
+`effective_from == approved_at == 2026-07-04 22:56:51` byte-identical, while their calculated values cover periods
+ending 2026-03-31…2026-06-30. **Applying the ruling's resolution rule literally would have made 3,210 of 3,212
+historical results Missing.** Resolved by **backward extension of the earliest approved version** inside
+`strata_resolve_kpi_version` (measured: 3,210 → 0). **Applied and flagged for override.** Any new resolution code MUST
+go through the canonical resolver so it inherits this — a hand-rolled `tstzrange @> date` predicate will erase history.
+
+### Blueprint correction from 6a — matters for G1/E-6
+**§2.1's "calcs filter `validation_status='validated'` — a WHITELIST" is FALSE.** `strata_calc_kpi_achievement`
+prefers validated then **falls back to `pending`** (confidence × 0.6). Quarantined is still excluded (it matches
+neither branch), so the conclusion survives — but **pending actuals count today**, a real gap against E-7 condition 3.
+Deliberately left for G1/E-6: closing it moves live numbers.
+
+## ▶ AFTER 6c — the F-9 ruling's remaining order
 **The ruling's order (steps 1–5 are DONE):**
 1. ~~F-1 corrective migration + 3 records~~ ✅ `ce4200274`
 2. ~~A3c threshold revision~~ ✅ `81bf2a9f6`

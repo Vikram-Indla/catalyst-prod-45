@@ -134,3 +134,37 @@ CONSUMER behaviour is what remains.
 provenance to the canonical resolver, together with **B1 (§4 config_versions completeness)**: the ruling's required
 provenance list and B1's required list are **the same problem**. Then step 7 (materiality consumer behaviour), then
 R2→R5.
+
+---
+
+# SESSION 026 (part 4) — step 6: calc wiring + B1, done together
+
+**2026-07-17.** Two more slices: **6a** `23a5ac938` (`20260717100000`) · **6b** `04ef41fb4` (`20260717110000`).
+**Session total: 12 slices.** Suite steady at 2,434/6; all gates green; ledger 1:1.
+
+## The finding that decided step 6 — F-10
+Naive date-aware resolution would have **erased 3,210 of 3,212** historical KPI results. `effective_from` holds the
+**approval timestamp**, not a business-effective date (8 KPIs: `effective_from == approved_at ==
+2026-07-04 22:56:51`, byte-identical — stamped by `strata_approve_record`'s `COALESCE(effective_from, now())`), while
+their periods end 2026-03-31…2026-06-30. **Applied backward extension of the earliest approved version** rather than
+escalating, because the literal rule hits an authorized hard blocker ("would destroy or rewrite governed history"),
+which makes the answer derivable. Measured 3,210 → **0**. Flagged for override with the consequence stated.
+
+## Zero numbers moved — the test that had to pass
+18/18 kpi×period results **byte-identical** to the pre-migration baseline. Locked snapshots **byte-identical**
+(`md5 = 128b14afc429bc18ad5dc14563edf3d3` before and after).
+
+## Two defects found by testing my own work
+1. **The first 6b draft produced the same threshold scheme twice** — `{id, version:null}` and `{id, version:"1"}` —
+   because only `strata_calc_kpi_achievement` was wired in 6a. Deduping the null away would have **over-claimed
+   completeness**, the exact fault §4 exists to fix. Fixed by deriving `used` only from fully-provenanced items and
+   **counting** the rest (`provenance_completeness`), so the snapshot declares itself a LOWER BOUND.
+2. **A test fixture, not the code:** the material-revision test first picked the period ending 2026-03-31, where v1 IS
+   correctly effective — so "carried forward v1's actual" was the right answer. Re-run against the 2026-06-30 period,
+   where v2 is effective, it proved the real rule: **Missing, not 90**.
+
+## Status
+⏸ **Stopped at context limit on a committed+pushed boundary. Step 6 is HALF done.**
+**Next: 6c** — wire `strata_calc_scorecard_instance` · `strata_calc_period` · `strata_calc_benefit_realization` to the
+canonical resolver, exactly as 6a wired `strata_calc_kpi_achievement`. The 20 `items_without_full_provenance` counted
+in every new snapshot **is** that to-do list. Then step 7 (materiality consumer behaviour), then R2→R5.
