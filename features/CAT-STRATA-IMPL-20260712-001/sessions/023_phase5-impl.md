@@ -132,4 +132,35 @@ workflow-access card) · `StrataRoutes.tsx` (+`admin/access`) · `hooks/useStrat
 - Known cosmetic (pre-existing, not introduced): `labelize` renders "Kpi owner"/"Vmo validator" — same as the legacy roles
   tab; left consistent rather than diverging.
 
-## ⏭ NEXT: 5G — System States (anchor 28). Canonical StrataNotFound + StrataRestricted + notification landing.
+## Slice 5G — System States (anchor 28, P5-D5) ✅ built + gate-green + live-verified — **SPLIT: 5G-2 deferred**
+**Files:** `components/StrataSystemStates.tsx` (NEW) · `StrataRoutes.tsx` (inline not-found deleted → canonical) ·
+`StrataAdminConfigPage.tsx` (unknown `:section` → canonical not-found) · `StrataAccessPage.tsx` (inline restricted →
+canonical `StrataRestricted`).
+- **Anchor 28 re-read IN FULL via DesignSync.** Three canonical states: not-found · restricted · **notification landing**.
+- **`StrataNotFound`** (built on ADS `EmptyState` — hand-rolled empty states are banned): "This page doesn't exist — but its
+  neighbourhood does", names the failed route in inline code + the likeliest cause, and **ranked exits** — the owning area
+  derived from the path (`/strata/kpis/...` → "KPIs & OKRs") then Command Center. Replaces the hand-rolled inline
+  not-found at `StrataRoutes.tsx:34`.
+- **`StrataRestricted`**: consequence framing ("Role assignments decide who can act on every governed record, so granting
+  them is held to one role") + names the owning role + **states the reader's actual roles** (`useStrataRoles`) + Back.
+  Never a bare 403. Now used by the access page (replacing its inline SectionMessage).
+- **Unknown `/strata/admin/:section` no longer falls silently to tab 0** (a stale link used to look like Perspectives) —
+  it renders the canonical not-found with a section-specific cause + Configuration exit. This was the explicit P5-D5 ask.
+- **Honest omissions (zero-assumption):** the anchor's not-found also offers a search box, fuzzy best-match and "recently
+  viewed" — there is no recents store and no STRATA search index to back them, so they are omitted rather than faked.
+- **⚠️ SPLIT — 5G-2 (notification landing) DEFERRED**, per the Plan Lock's own "any slice exceeding 2h → split" rule. NOT a
+  silent drop. Reason: `strata_notifications` carries `entity_table` + `entity_id` (a UUID) but **no slug/link**, and the
+  SLUG CONTRACT forbids UUID route params — so a notification deep-link needs entity_id→slug resolution per entity type,
+  PLUS a dismissible provenance band wired into every object page, PLUS expired-state detection ("validated by X while the
+  notification waited"). That is multi-file and >2h. Anchor 28's panel-scale "object deleted mid-session" variant is in the
+  same bucket (needs every detail page rewired).
+- Gates: tsc clean · colors 0/0 · audit 19798/19798 (no increase) · CRE passed.
+- Live: `/strata/kpis/otif/stale-link` → canonical not-found with "KPIs & OKRs" primary exit + Command Center;
+  `/strata/admin/bogus-section` → canonical not-found, breadcrumb "STRATA / Administration / Not found", Configuration exit.
+  `StrataRestricted` verified by construction (session holds strata_admin, so the gate does not trigger). No console errors,
+  no error boundary. Map untouched.
+
+---
+
+# PHASE 5 COMPLETE (5A–5G) — 5G-2 notification landing carried as debt.
+All seven slices committed + fast-forward-merged to `main`. Every slice: gates green + live-verified + map byte-untouched.

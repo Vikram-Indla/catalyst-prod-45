@@ -28,6 +28,7 @@ import {
   useInvalidateStrata, useProfileNames, useRoleAssignments, useStrataRoles,
 } from '@/modules/strata/hooks/useStrata';
 import { StrataPageShell, StrataPanel, T } from '@/modules/strata/components/shared';
+import { StrataRestricted } from '@/modules/strata/components/StrataSystemStates';
 import { StrataFormModal } from '@/modules/strata/components/authoring';
 import { fmtDate, labelize } from '@/modules/strata/components/format';
 import { ROLE_DOCS, WorkflowsSection } from './StrataAdminConfigPage';
@@ -340,13 +341,14 @@ export default function StrataAccessPage() {
         docTitle="Roles & access · Administration"
         testId="strata-access-chrome"
       >
-        <SectionMessage appearance="warning" title="Roles & access is restricted to strata_admin">
-          <p>
-            This page grants and revokes STRATA roles, so it is owned by the <strong>strata_admin</strong> role. Your
-            account does not hold it. Ask a strata_admin to make the change, or to grant you the role.
-          </p>
-          <Button spacing="compact" onClick={() => navigate(Routes.strata.admin())}>Back to Configuration</Button>
-        </SectionMessage>
+        <StrataRestricted
+          title="This access area is restricted"
+          why="Role assignments decide who can act on every governed record in STRATA, so granting and revoking them is held to one role."
+          owningRole="strata_admin"
+          backTo={Routes.strata.admin()}
+          backLabel="Back to Configuration"
+          testId="strata-access-restricted"
+        />
       </StrataPageShell>
     );
   }

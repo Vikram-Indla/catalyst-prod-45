@@ -32,6 +32,7 @@ import {
   useWorkflowConfigs,
 } from '@/modules/strata/hooks/useStrata';
 import { StrataPageShell, StrataPanel, T } from '@/modules/strata/components/shared';
+import { StrataNotFound } from '@/modules/strata/components/StrataSystemStates';
 import { StrataFormModal, str } from '@/modules/strata/components/authoring';
 import { fmtDate, fmtDateTime, labelize } from '@/modules/strata/components/format';
 import type {
@@ -1629,6 +1630,21 @@ export default function StrataAdminConfigPage() {
     return (
       <StrataPageShell title="Configuration" docTitle="Configuration" testId="strata-admin-chrome">
         <AdminLanding />
+      </StrataPageShell>
+    );
+  }
+
+  // Unknown /strata/admin/:section used to fall silently to tab 0 (Perspectives),
+  // making a stale link look like a real page. Surface it (anchor 28, P5-D5).
+  if (idx < 0) {
+    return (
+      <StrataPageShell
+        trail={[{ text: 'Administration', href: Routes.strata.admin() }]}
+        title="Not found"
+        docTitle="Not found · Administration"
+        testId="strata-admin-chrome"
+      >
+        <StrataNotFound cause="No configuration section by that name. It may have been renamed, or moved to a domain page." />
       </StrataPageShell>
     );
   }

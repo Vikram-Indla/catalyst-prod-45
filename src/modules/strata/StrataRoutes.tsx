@@ -4,9 +4,10 @@
  * All redirects OUT of /strata live in App.tsx, outside the shell.
  */
 import { lazy, Suspense } from 'react';
-import { Routes, Route, Link, useLocation } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { StrataProvider } from './hooks/useStrata';
+import { StrataNotFound } from './components/StrataSystemStates';
 
 const CommandCenterPage = lazy(() => import('./pages/StrataCommandCenterPage'));
 const StrategyRoomPage = lazy(() => import('./pages/StrataStrategyRoomPage'));
@@ -33,19 +34,8 @@ const EvidencePage = lazy(() => import('./pages/StrataEvidencePage'));
 // CAT-0016: the wildcard route used to silently render CommandCenterPage for
 // ANY unmatched /strata/* path, masking stale/broken deep links (e.g. a
 // renamed scorecard slug looked identical to the real dashboard). Surface the
-// mismatch instead of hiding it.
-function StrataNotFound() {
-  const location = useLocation();
-  return (
-    <div style={{ padding: 32, color: 'var(--ds-text-subtle)' }}>
-      <p style={{ color: 'var(--ds-text)', fontWeight: 600, marginBottom: 8 }}>
-        This Strategy Hub page doesn't exist
-      </p>
-      <p style={{ marginBottom: 16 }}>No route matches <code>{location.pathname}</code>.</p>
-      <Link to="/strata" style={{ color: 'var(--ds-text-brand)' }}>Back to Strategy Hub</Link>
-    </div>
-  );
-}
+// mismatch instead of hiding it — now via the canonical StrataNotFound
+// (anchor 28 / P5-D5), which also offers the owning-area exit.
 
 const S = ({ children }: { children: React.ReactNode }) => (
   <ErrorBoundary>
