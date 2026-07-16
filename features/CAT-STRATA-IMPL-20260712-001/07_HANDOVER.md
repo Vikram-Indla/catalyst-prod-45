@@ -10,6 +10,53 @@
 > Everything still open is BACKEND, OPS or optional POLISH — see LIVE DEBT below. Each backend item needs its own
 > migration + Plan Lock; do NOT start one expecting a "Phase 6" scope to exist.
 >
+> ## ▶ START HERE — resume point (2026-07-16, PR #348 merged to `main` @ `77fd5c26a`)
+> **Design pack 28/28 anchors · §20 acceptance 7/7 · suite 2,426/2,448 green · map never touched in the entire feature.**
+>
+> ### ⛔ THE ONE THING TO DO NEXT — measures builder **part 2b** (spec is DONE, no decisions left)
+> Read **`03_PLAN_LOCK_F_MEASURES.md` → section "PART 2b — READY TO BUILD"**. It names the exact component to copy
+> (`ModelWeights`, same file), the save contract (replace-set, send the FULL set), the client-only integrity gate, the
+> M-D0 rule (never render an input for name/direction/unit/scheme), and the 4 gotchas that cost time. **Build, don't
+> re-derive.** 2b is SELF-VERIFYING: using it as `strategy_office` fills the empty measures table, which also closes
+> part 2a's only gap (populated rows are currently verified by construction only).
+>
+> ### Environment — READ BEFORE RUNNING ANYTHING
+> - **Tests need Node 22:** `PATH="/opt/homebrew/opt/node@22/bin:$PATH" npm test`. On the global Node 20 vitest dies at
+>   startup (`util.styleText` / `ERR_INVALID_ARG_VALUE`) — that crash is a VERSION MISMATCH, not a broken suite. It hid
+>   a 2,414-test suite for the whole implementation. `engines` now pins `>=22`.
+> - **`catalyst-prod` is a SCOPE, not production** (INACTIVE/paused, different org). **`catalyst-staging`
+>   (`cyijbdeuehohvhnsywig`) IS the live target.** There is no prod migration debt and no prod DDL to fear.
+> - Prod token (if ever needed) lives OUTSIDE the repo at `~/.catalyst/supabase-prod.env`; `.gitignore` now covers
+>   `.env*`. Never paste a token into chat.
+> - Migrations: `execute_sql` + an **explicit ledger INSERT** (MCP `apply_migration` stamps its own version and breaks
+>   the file↔ledger 1:1 rule).
+>
+> ### Shipped this session (all on `main`, all gates-green AND live-verified)
+> `task_65642237` fix (`strata_promote_element` → `strata_theme_charters`; it broke **every** theme promotion, not just
+> "legacy" as logged) · §20 pass 7/7 · Phase 6 (vitest unblocked, +34 tests) · **B2** freshness (no migration needed) ·
+> **F1a** SoD RPC (`strata_check_role_sod`) closing anchor 27's column · **F2** view-as audit (`strata_log_view_as`) ·
+> **measures** table + `strata_set_model_measures` + readers + groups/integrity UI (part 2a).
+>
+> ### Decisions in force
+> **M-D0** a measure is a KPI ASSIGNMENT (assoc table; NO `strata_measures` master; `scorecard_lines` stays
+> instance-level) · **M-D1** ONE aggregation vocabulary — `weighted_average|sum|min|custom` (verified byte-identical to
+> `rollup_method`) · **M-D2** split the slice · **F1-D1** F1a approved · **F1-D2** CONFLICT deferred (the server never
+> refuses a role COMBINATION, so claiming one would assert a check that does not exist).
+>
+> ### ⚠️ The pattern that bit SIX times this session — do not inherit a "can't" without re-testing it
+> 5G-2 slug routing · vitest · prod-migration debt · DEF-013's premises · `task_70e821ad`'s "schema gap" · F1a's own
+> first design. **Every one was a true observation with a wrong conclusion, carried forward because nobody re-ran the
+> check.** Before you write "X is impossible" into a Plan Lock, run the one query/command that tests it.
+>
+> ### Still open (nothing blocks 2b)
+> Backend features remaining: band-editor · model draft-create · preview-with-data · version diff · score-shift impact ·
+> source register/retire · board-pack editorial+Issue · blast-radius · quarantine tier · `strata_reviews` entity ·
+> mapping-memory · import 3-way+diff+undo+ledger. **DEF-010** needs a product decision (draft linking vs post-approval).
+> **DEF-013** is parked behind the multi-tenancy initiative (already ruled). 6 pre-existing ChatDock test failures are
+> NOT ours (foreign module, predate this feature).
+
+---
+
 > **✅ 5G-2 NOTIFICATION LANDING SHIPPED** (`ceb99e56f`) — the earlier "UUIDs can't build slug routes" blocker was wrong in
 > its conclusion: there is no link column, but every entity_table can be hopped id→slug, and the same hop returns the
 > resolution state. `governanceApi.resolveNotificationTarget(n)` → `{ key, done }` (kpis→slug · benefit_values→benefit.slug ·
