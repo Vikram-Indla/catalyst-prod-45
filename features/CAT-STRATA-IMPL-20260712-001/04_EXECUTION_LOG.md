@@ -1453,3 +1453,46 @@ numbers outside this slice's scope. Logged, not silently adapted.
 ## Status
 ✅ **DONE** — applied, ledger 1:1, gates green, suite 2,434/6, **zero numbers moved**.
 **Next:** B1's other half — `strata_lock_snapshot.config_versions` completeness (§4) + `strata_calc_scorecard_instance`.
+
+---
+
+# Step 6b · B1 — snapshot config-version completeness (§4) · migration `20260717110000`
+
+## The gap, verified in the shipped body
+`config_versions` recorded only `{perspectives, threshold_schemes, scorecard_models}` — and each sub-select was
+`WHERE status='approved'` with **no link to the snapshot**, i.e. it stamped **every approved config in the system**,
+not the ones this snapshot used. KPIs, formula versions and measures were absent entirely. §4: *"today's blob
+over-claims"*. Confirmed.
+
+## Why this was only possible after step 6a
+`snapshot_items` freezes `to_jsonb(cv)`, and 6a made every calculated value carry its complete provenance in
+`config_context`. So **"the configs USED" is no longer a guess — it is read back from what actually happened.**
+That is why `config_versions` is now written **after** the items are frozen.
+
+## Now recorded
+`used.{kpis (id+version+lineage+revision_class) · kpi_formula_versions · kpi_targets · threshold_schemes **with
+version** · model_measures · resolved_as_of}` · `selection_semantics: used_only` · `draft_kpi_exclusion` (the rule +
+the count actually excluded — **proves** the exclusion was applied rather than asserting it) ·
+`provenance_completeness`. The legacy blob is **retained and relabelled** `all_approved_at_lock` (it is genuinely
+useful as "what else existed then", and the two existing snapshots are annotated against it) — but it can never again
+be mistaken for "what this snapshot used".
+
+## A defect in my own migration, caught by testing it
+The first version produced `threshold_schemes: [{id, version: null}, {id, version: "1"}]` — **the same scheme twice**.
+Cause: `strata_calc_scorecard_instance` still writes a `config_context` with a scheme id but no version (only
+`strata_calc_kpi_achievement` was wired in 6a), so a naive `DISTINCT` read one config as two.
+**Deduping the null away would have over-claimed completeness — the exact fault §4 exists to fix.** Instead `used` is
+derived ONLY from items carrying full provenance, and the rest are **counted**:
+`provenance_completeness: {items_with_full_provenance: 8, items_without_full_provenance: 20, note: "LOWER BOUND …"}`.
+The snapshot **declares itself a lower bound**, mirroring the §3.7 register discipline. **The count is also the to-do
+list for step 6c.**
+
+## Forward-only (§8.3) — proven
+`md5` over all locked snapshots: **`128b14afc429bc18ad5dc14563edf3d3` before AND after.** No existing snapshot row is
+touched; the two locked ones are annotated in `strata_integrity_exceptions` (E-1), never rewritten.
+
+## Status
+✅ **DONE** — applied, ledger 1:1, gates green, suite 2,434/6.
+**⚠️ Step 6c REMAINS:** `strata_calc_scorecard_instance` · `strata_calc_period` · `strata_calc_benefit_realization`
+are **not yet wired** to the canonical resolver — that is exactly the 20 items counted above. Until they are, every new
+snapshot's `used` block is honestly a LOWER BOUND.

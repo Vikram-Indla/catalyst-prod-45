@@ -429,3 +429,39 @@ DRAFT-only KPI with a VALIDATED actual -> achievement=<NULL> reason=no_effective
 
 **Ledger 1:1:** `20260717100000 · strata_calc_lineage_provenance`. **Gates:** tsc clean · colors 0=0 · audit no
 category above baseline · CRE pass · suite **2,434 passed / 6 failed**.
+
+---
+
+# Step 6b · B1 snapshot completeness — RAW EVIDENCE
+
+## §8.3 — existing locked snapshots byte-identical
+```
+before : md5(all locked snapshots) = 128b14afc429bc18ad5dc14563edf3d3  (n=2)
+after  : md5(all locked snapshots) = 128b14afc429bc18ad5dc14563edf3d3
+```
+
+## A NEW snapshot's config_versions (rolled back)
+```
+selection_semantics : used_only: derived from the config_context frozen on each item
+used.kpis 8 · formula_versions 8 · targets 8 · model_measures 2
+used.threshold_schemes (deduped, versioned) : [{"id": "a5a1a000-…-201", "version": "1"}]
+used.resolved_as_of : 2026-06-30T00:00:00+00:00
+provenance_completeness : {"items_with_full_provenance": 8, "items_without_full_provenance": 20,
+                           "note": "LOWER BOUND: … a calc not yet wired to the canonical resolver (step 6c) …"}
+draft_kpi_exclusion : {"rule": "only KPI versions approved AND effective at the period end contribute (E-7/DEF-010)",
+                       "kpis_excluded_with_actuals": 0}
+sample kpi : {"id": "…1201", "version": "1", "lineage_id": "108e4375-…", "revision_class": null}
+```
+| §4 requirement | Result |
+|---|---|
+| KPIs — id+version | ✅ + **lineage_id** + revision_class |
+| KPI formula versions | ✅ 8 |
+| Model measures | ✅ 2 |
+| Threshold schemes — **with version** (the §3 gap) | ✅ deduped, versioned |
+| Selection semantics: stamp the configs **USED**, not all approved | ✅ `used_only`, derived from frozen provenance |
+| Draft-KPI exclusion recorded so it is provable | ✅ rule + count excluded |
+| **Existing locked snapshots never rewritten** | ✅ checksum identical |
+| honest about what it does NOT know | ✅ `provenance_completeness` declares the lower bound |
+
+**Ledger 1:1:** `20260717110000 · strata_snapshot_config_completeness`. **Gates:** tsc clean · colors 0=0 · audit no
+category above baseline · CRE pass · suite **2,434 passed / 6 failed**.
