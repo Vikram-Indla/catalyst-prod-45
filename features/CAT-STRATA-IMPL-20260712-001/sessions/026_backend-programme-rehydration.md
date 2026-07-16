@@ -266,3 +266,26 @@ message said "unlocked snapshot", describing a state that cannot exist. Correcte
 **Next: R2/F1 board-pack issue+supersede** (needed E1; now unblocked). Then R3 → R4 → R5.
 Carry-forward R4 debt unchanged (both move live numbers): benefit realization ignores `owner_confirmed` (F-7);
 KPI achievement counts `pending` actuals (E-7 cond. 3).
+
+---
+
+# SESSION 026 (part 8) — R2 / F1 board-pack issuance
+
+**2026-07-17.** `a47385508` (`20260717140000`). **Session total: 16 slices.** Suite 2,442/6; gates green; ledger 1:1.
+
+## F-12 — the blueprint said to overload a column that was already taken
+§6: "status +issued, superseded". But `status` is the **generation** lifecycle (`pending|generating|ready|failed`),
+in use by 3 rows, and the authorization also wants an editorial builder/review/approval. One column would have made
+`generating` and `in_review` incomparable and left an `issued` pack with **no generation state at all**. Gave the
+editorial lifecycle its own `issue_status`; existing rows default to `draft`, which is the truth.
+
+## Two design calls worth keeping
+- **Immutability is a trigger, not RLS.** RLS gates *whether a row is writable*, not *which fields changed* — and both
+  RPCs are SECURITY DEFINER, so they bypass RLS entirely. Only a BEFORE UPDATE trigger sees OLD vs NEW and binds every
+  writer.
+- **The F-3 qualification is derived, never copied onto the pack.** A copied qualification goes stale the moment the
+  register changes — and the stale copy is what would get **printed on a board pack**.
+
+## Status
+⏸ **Stopped at context limit on a committed+pushed boundary. R2 is DB-COMPLETE; its UI is not built.**
+**Next:** R2's editorial builder UI (+ reviews UI from E1) → R3 → **R4 (where the two live-numbers debts land)** → R5.

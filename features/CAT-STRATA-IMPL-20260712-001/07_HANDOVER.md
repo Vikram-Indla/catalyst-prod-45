@@ -77,7 +77,24 @@ CHECKs. Readiness is derived, never stored.
 `strata_actions` already has `decision_id`, so decisions/actions reach a review **through the snapshot** — do NOT add
 `review_id` to them. Only `agenda` was genuinely missing.
 
-## ▶ DO THIS NEXT — **R2 / F1: board-pack issue + supersede** (it needed E1, which now exists)
+## ✅ R2 DB-COMPLETE — F1 board packs shipped `a47385508` (`20260717140000`)
+`issue_status` (draft→in_review→approved→issued→superseded) · `version`/`supersedes_id`/`issued_by`/`issued_at`/
+`approved_by`/`approved_at`/`title`/`sections` · `strata_issue_board_pack` (SoD: approver≠issuer) ·
+`strata_supersede_board_pack` (correction = new version; **`snapshot_id` copied, never re-pointed**) ·
+**issued packs immutable BY TRIGGER** (UPDATE + DELETE both refused) · **F-3 discharged**:
+`strata_board_pack_qualification` derives the qualification from the register and issuance stamps it into the audit
+trail. Proven live against **SNAP-1**, a genuinely qualified snapshot.
+
+**F-12 (logged):** §6 said "status +issued, superseded" — but `status` is the **generation** lifecycle
+(`pending|generating|ready|failed`) and is in use. The editorial lifecycle got its OWN column instead. Don't "fix"
+this back.
+
+## ▶ DO THIS NEXT
+1. **R2 remainder — board-pack editorial builder UI.** DB is complete (`title`, `sections` jsonb, all RPCs); there is
+   **no UI**. Also no UI yet for reviews (E1) or the version chain. Reuse `GovRecordCard`/`REVISION_RPC` patterns.
+2. **R3 — data-source register/retire + dependents-impact + server-side blast radius.**
+3. **R4 — validation & reconciliation.** ⚠️ **This is where the two live-numbers debts land** (below).
+4. **R5 — hardening/closeout + the final 14/14 capability matrix.**
 Blueprint §6 F1: `strata_board_packs` today has ONLY `snapshot_id, format, storage_path, status, generated_by/at`
 (probed — §9 correct). Add `version, supersedes_id, issued_by, issued_at`; status `+issued, superseded`; RPCs
 `strata_issue_board_pack` / `strata_supersede_board_pack`; **issued rows immutable**; `snapshot_id` unchanged on
