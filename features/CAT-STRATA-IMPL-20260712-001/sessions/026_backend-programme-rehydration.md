@@ -43,3 +43,48 @@ Read-only rehydration. **No code, no migration, no slice picked, PR #349 NOT mer
 
 ## Status
 ⏸ STOPPED as instructed — awaiting Vikram's implementation prompt.
+
+---
+
+# SESSION 026 (continued) — programme AUTHORIZED mid-session; R0 core implemented
+
+**2026-07-16.** Vikram authorized the full backend programme for continuous execution through Release 5.
+Rehydration ended; implementation began in the same session.
+
+## Shipped — 4 slices, committed AND pushed to `strata/measures-2b` (PR #349 open, unmerged, not touched)
+| Slice | Commit | Migration |
+|---|---|---|
+| P0-A · approved-model aggregate immutability (D-1) | `d9cd94a3b` | `20260716160000` |
+| A3a · `strata_create_model_draft_version` (D-2) | `7ba522678` | `20260716170000` |
+| P0-C · E-4 child auditability | `3fced1f82` | `20260716180000` |
+| P0-D · `strata_integrity_exceptions` register (E-1/E-2) | `1d57793fa` | `20260716190000` |
+
+Suite 2,426/6 on entry → **2,434 passed / 6 failed** (+8 tests, 0 new failures; the 6 are foreign ChatDock).
+All gates green on every slice. Ledger 1:1 verified after each migration.
+
+## What I did NOT do, and why
+- **The 3 integrity-exception records** — blocked on **F-1** (a person's name; not inferable). Table ships empty,
+  which is the honest state.
+- **A3b (KPI revision)** — stopped and raised **F-9**: KPI revision moves official numbers (v2 would have no links or
+  actuals; every objective silently loses its measure). D-3 settles the requirement, not the mechanism. Not derivable
+  → raised with 3 options + a recommendation rather than coded past.
+- **A3c, B1, R1–R5** — not started. Context risk; handover written instead of half-landing a slice that moves numbers.
+
+## Judgement calls made under the autonomy directive (all logged, none silent)
+- **F-2/F-3/F-4/F-5/F-6/F-7 resolved from the authorization's CONFIRMED PRODUCT RULES** rather than asking — each maps
+  to an explicit rule. Recorded in `09_DECISIONS.md` with the derivation.
+- **F-8 (new):** excluded `strata_element_kpis` from the P0 draft-gate. The blueprint said to gate it; doing so would
+  have broken every KPI link. Derived from §3.7 + E-7 + the regression ban. **DRIFT-10.**
+- **Split P0 into A/C/D + A3a** rather than one migration (§12.3 says "one migration, ships alone") — the 2-hour rule
+  and the authorization's "split it, log the split and continue".
+- **Corrected AC-6's fixture** rather than weakening the test. **DRIFT-11.**
+
+## Method note worth keeping
+Every acceptance test ran as a **real non-admin `strategy_office` user** with a **positive control**, inside a
+`DO $$ … $$` block ending in `RAISE EXCEPTION` — which reports the results AND rolls back, so **no staging data was
+written by any test**. The one time a test failed, it was **the test that was wrong, not the code** (it drove
+`UPDATE … SET status='pending_approval'` directly; submission is RPC-only).
+
+## Status
+⏸ **Stopped at context limit, cleanly, on a committed+pushed boundary.** Next: **A3c** (safe, near-copy of A3a),
+then B1. **A3b needs F-9 ruled. The 3 register records need F-1.**

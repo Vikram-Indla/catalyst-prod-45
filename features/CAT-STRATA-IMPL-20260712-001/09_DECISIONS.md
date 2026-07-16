@@ -318,3 +318,40 @@ Plan Lock `03_PLAN_LOCK_PHASE5.md` approved at `3e215d4ed`. All decisions ratifi
   change who may author measures. P0-A copies the draft-join SHAPE and preserves the existing role predicate.
 - **§12.3.3 verified, not assumed:** `strata_scorecard_models_update` gates on `status='draft'`, so the threshold
   association (`threshold_scheme_id`, on the parent) is already protected. No work needed.
+
+## F-9 · RAISED (session 026, not ruled) — KPI revision (A3b) has a live-numbers consequence the blueprint does not specify
+> **Do NOT start A3b assuming it mirrors A3a. It does not.** Found by probing `strata_kpis`' FK children.
+
+**A3a was safe because a scorecard model's children are all definition.** `strata_kpis` has **three kinds** of child,
+and only the first is part of the definition:
+| child | kind | clone into v2? |
+|---|---|---|
+| `strata_kpi_formula_versions` | **definition** — the formula decides the number | **YES** |
+| `strata_element_kpis` · `strata_initiative_kpis` | **relationship** | **NO** — §3.7: relationship ≠ definition |
+| `strata_kpi_actuals` · `strata_kpi_targets` · `strata_key_results` · `strata_scorecard_lines` · `strata_scorecard_model_measures` | **measurement facts / references** | **NO** |
+
+**The problem.** A revision creates a NEW ROW with a NEW id. Every actual, link, key result and model-measure points at
+**v1's id**. On approval, `strata_approve_record` supersedes v1 — and E-7 rules superseded ⇒ **historical only**. So
+**v2 would have no links and no actuals, and every objective would silently lose its measure.** That MOVES OFFICIAL
+NUMBERS. Regression is banned; this must not be discovered mid-slice.
+
+**What IS ruled:** D-3 — "Preserve **logical KPI lineage** + historical resolution for actuals, objectives, Key
+Results, scorecards, snapshots, board packs." So the requirement is settled: **the links and actuals must survive a
+revision.** The *mechanism* is not, and it is not derivable from the blueprint.
+
+**Options (recommendation first) — needs a ruling before A3b:**
+1. **Resolve through the lineage chain (RECOMMEND).** Keep relationship/measurement rows on the logical lineage and
+   have readers resolve v1→v2 via `supersedes_id`. Nothing is re-pointed; history stays literally true (an actual
+   submitted against v1 *was* submitted against v1). Cost: every reader must walk the chain — a real, wide change.
+2. **Carry relationships forward at approval.** `strata_approve_record` re-points `element_kpis`/`initiative_kpis` from
+   v1 to v2 when the approved record supersedes one. Cheaper to read; but it MUTATES `strata_approve_record` (which
+   A3a deliberately left untouched, and which is shared by all 9 governed tables), and it rewrites a historical
+   relationship row to point at a KPI that did not exist when the link was made.
+3. **KPI revision does not create a new row** — version the definition in place with a formula-version child. Smallest
+   blast radius, but contradicts D-2's "clone the complete governed aggregate … increments version … sets
+   supersedes_id" and the shipped model precedent.
+
+**Note the asymmetry:** D-2 names all three revision RPCs in one breath, which implies they are the same shape. **They
+are not.** `strata_create_threshold_draft_version` (A3c) is closer to A3a — `strata_threshold_schemes` has no
+aggregate children at all (only `strata_kpis`/`strata_scorecard_models` REFERENCE it), so its clone is parent-only and
+should be safe. **A3c is not blocked by F-9; A3b is.**

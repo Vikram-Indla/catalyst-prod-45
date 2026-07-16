@@ -2,6 +2,108 @@
 
 ---
 
+# 🟢 NEW SESSION — START HERE (session 026, 2026-07-16). THIS BLOCK IS AUTHORITATIVE.
+> **Everything below the next `═══` divider was written at the END OF SESSION 025, BEFORE the programme was
+> authorized. Its "STOP AND WAIT" instruction and its "blueprint NOT APPROVED / implementation BLOCKED" gates are
+> STALE — Vikram authorized the full programme on 2026-07-16. Read this block first; where they disagree, THIS WINS.**
+
+## The programme is AUTHORIZED and RUNNING. Do not stop for routine approval.
+Vikram, 2026-07-16: *"Proceed with the FULL STRATA backend programme continuously through completion … The complete
+backend-programme Plan Lock, D-series, E-series and F-series rulings are approved."* Full authorization text and the
+CONFIRMED PRODUCT RULES: `09_DECISIONS.md` → "Backend programme AUTHORIZED".
+**Per slice: implement → migrate staging → test → evidence → logs → commit → next dependency-safe slice.**
+**Stop ONLY for a genuine hard blocker** (list in the authorization). Not for size, tests, migrations, or a debt item
+proving bigger than expected. **PR #349 stays OPEN and UNMERGED. Do not merge it. Do not force-push.**
+
+## ✅ SHIPPED THIS SESSION — R0 core. 4 slices, committed AND pushed to `strata/measures-2b`.
+| Slice | Commit | Migration | What |
+|---|---|---|---|
+| **P0-A** | `d9cd94a3b` | `20260716160000` | Approved-model aggregate immutability (D-1) — RLS draft-gate on `model_perspectives` + `model_measures`, parent-status guard in `strata_set_model_measures`, honest client failure, UI gate + visible reason |
+| **A3a** | `7ba522678` | `20260716170000` | `strata_create_model_draft_version` (D-2) + "Create new version" CTA |
+| **P0-C** | `3fced1f82` | `20260716180000` | E-4 child auditability — `updated_at`/`created_by`/`updated_by` + touch/actor/audit triggers on the 4 exposed children |
+| **P0-D** | `1d57793fa` | `20260716190000` | `strata_integrity_exceptions` — append-only register (E-1/E-2). **Table shipped; the 3 records are blocked on F-1.** |
+
+**All four: applied to `catalyst-staging` (`cyijbdeuehohvhnsywig`) via `execute_sql` + explicit ledger INSERT, ledger
+1:1 verified · gates green · acceptance proven by DB probe with positive controls, fully rolled back.**
+Suite: **2,434 passed · 6 failed · 16 skipped / 2,456** — the 6 are the pre-existing foreign ChatDock failures.
+Baseline on entry was 2,426/6 → **+8 tests, 0 new failures.** Raw evidence: `06_VALIDATION_EVIDENCE.md`.
+
+**🔴 THE P0 HOLE IS CLOSED.** An approved model's weights and measures can no longer be rewritten — proven at RLS
+(0 rows) AND at the RPC (raises), as a real non-admin `strategy_office` user, with a draft-model positive control
+returning 1 row so the test could actually fail. **F-4 is discharged** (A2→A3 back-to-back), so the E-2 v2 clone path
+is open.
+
+## ▶ DO THIS NEXT — A3c, then B1. **A3b is BLOCKED on F-9.**
+1. **A3c · `strata_create_threshold_draft_version`** — SAFE and next. `strata_threshold_schemes` has **no aggregate
+   children** (probed: only `strata_kpis`/`strata_scorecard_models` REFERENCE it), so the clone is parent-only and is
+   a near-copy of A3a. **Not blocked by F-9.**
+2. **B1 · `config_versions` completeness** (§4) — needs real versions from A3.
+3. Then R2 → R5 per §5. R5 (J DEF-010 · K · L · M · N · O) may run in parallel throughout.
+
+## ⛔ THE TWO THINGS THAT NEED VIKRAM — everything else is derivable and authorized
+- **F-1 · a NAME.** Who is the `strategy_office_owner` on the three integrity-exception records (SNAP-1, SNAP-1001,
+  B2B v1)? The register table SHIPS and is proven append-only, but `strategy_office_owner` is **NOT NULL by design** —
+  an owner names a person who accepts accountability and cannot be inferred from schema. **The table is empty.** That
+  is honest ("not yet recorded"); a guessed owner would be a fabricated audit trail — the exact failure the register
+  exists to document. The 3 records' content is already written (§3.8) and is **one INSERT away** from a name.
+- **F-9 · KPI revision (A3b) moves official numbers.** `strata_kpis` has definition, relationship AND measurement
+  children; a revision makes a new row with a new id, so on approval v2 would have **no links and no actuals** and
+  every objective would silently lose its measure. D-3 settles the requirement ("preserve logical KPI lineage") but
+  **not the mechanism**, and it is not derivable. 3 options + a recommendation: `09_DECISIONS.md` → F-9.
+  **Do NOT start A3b assuming it mirrors A3a. It does not.**
+
+## F-series: 6 of 8 resolved from the authorization's CONFIRMED PRODUCT RULES (see `09_DECISIONS.md`)
+**F-2** clone-as-is then edit in draft · **F-3** qualification surfaces on packs + exports · **F-4** A2→A3 back-to-back
+(**done**) · **F-5** pre-existing rows NULL not `now()` (**implemented mechanically in P0-C**) · **F-6** benefit values
+get `accepted_with_exception` ONLY, not `quarantined` · **F-7** `owner_confirmed` **COUNTS** (widens
+`strata_calc_benefit_realization`'s `='validated'` whitelist — **this changes live numbers**).
+**F-8 (new, applied):** `strata_element_kpis` is NOT in the P0 draft-gate — see below.
+
+## ⚠️ BLUEPRINT CORRECTIONS PROVEN THIS SESSION — the blueprint is right about the defect, wrong in these details
+1. **§12.2 lists `strata_element_kpis` for the P0 draft-gate. Following it would BREAK EVERY KPI LINK.**
+   `strata_link_element_kpi` **requires** `kpi_status='approved'`, so a draft-gate inverts the rule. It also
+   contradicts §3.7 (relationship ≠ definition) and E-7. Excluded → **F-8 / DRIFT-10**.
+2. **§13.2 is FALSE.** It says the 10 tables that already have `updated_at` "still require" triggers. **They already
+   have them** (census verified). E-4's real scope was exactly §13.1's 4 tables.
+3. **§13.3 is already satisfied.** `strata_audit_events` **already has `before`/`after` jsonb**, and `strata_audit()`
+   already captures old+new+actor+op generically. E-4 needed **one** new function (`strata_touch_updated_by`).
+4. **§12.1's precedent cannot be copied verbatim.** `strata_gate_model_stages_write` authorizes on
+   `created_by = auth.uid() OR strata_is_admin()`, **not** `strategy_office`. Copy the draft-join SHAPE only.
+5. **DEF-010's link layer is PARTIALLY SHIPPED.** `strata_link_element_kpi` already allows draft/pending linking for
+   **strategic** KPIs. Staging: 10 approved · 5 draft non-strategic · **1 draft strategic (linkable TODAY)** · 1
+   pending. The handover's old "6 draft KPIs, **all unlinkable at creation**" is **FALSE**.
+6. **§20 AC-6 was ratified 7/7 OVER the P0 defect** — its fixture was `status:'approved'`, so it asserted that an
+   approved model is keyboard-editable. Fixture corrected to draft; criterion untouched; the rule is now pinned by
+   `p0-approved-model-immutable.test.tsx`. **DRIFT-11.**
+
+## Environment — unchanged, still true
+- **Tests need Node 22:** `PATH="/opt/homebrew/opt/node@22/bin:$PATH" npm test`. Node 20 crashes vitest at startup —
+  a VERSION MISMATCH, not a broken suite.
+- **`npm run scan:components` FAILS** on Node 20 → `PATH="/opt/homebrew/opt/node@22/bin:$PATH" npx tsx scripts/scan-components.ts`.
+  Any new component import breaks `registry-drift` until the map is regenerated. (Not needed this session — no new
+  component imports.)
+- **`catalyst-staging` (`cyijbdeuehohvhnsywig`) IS the live target** (verified ACTIVE_HEALTHY). `catalyst-prod` is a
+  paused SCOPE, not production. No prod migration debt.
+- **Migrations: `execute_sql` + an explicit ledger INSERT.** MCP `apply_migration` stamps its own version and breaks
+  the file↔ledger 1:1 rule. Ledger tail and file tail verified matching at `20260716190000`.
+- **Impersonation idiom for RLS proofs** (this is how every acceptance test above was run):
+  `set_config('role','authenticated',true)` + `set_config('request.jwt.claims','{"sub":"<uuid>","role":"authenticated"}',true)`
+  inside a `DO $$ … $$` block, ending in `RAISE EXCEPTION` to report results AND roll everything back.
+  **Non-admin `strategy_office` on staging: `9537a670-b73e-4905-9835-b68085478cbc`** (`strata_is_admin`=false —
+  an admin bypasses the role predicate and makes the result meaningless). Admin SO: `6bbd0863-2736-42e0-aa9b-c98e946c6fd4`.
+  **Always include a positive control** — a test that cannot fail proves nothing.
+
+## The habit that keeps paying — now **ELEVEN** times
+"Do not inherit a 'can't' (or a 'must') without re-testing it." This session it caught **six** more: §12.2's
+element_kpis gate (would have caused a regression) · §13.2's phantom trigger work · §13.3's phantom audit-store work ·
+§12.1's precedent predicate · DEF-010's "all unlinkable" · AC-6's defect-encoding fixture. **~40% of what the blueprint
+called "build" was already built, and one item it called "fix" would have broken the product.**
+**Before writing "X is impossible" — or "X must be done" — into a Plan Lock, run the one query that tests it.**
+
+═══════════════════════════════════════════════════════════════════════════════════════════════════
+# ⛔ EVERYTHING BELOW HERE IS PRE-AUTHORIZATION (end of session 025). Its gates are STALE. Kept for the audit trail.
+═══════════════════════════════════════════════════════════════════════════════════════════════════
+
 # 🛑 NEW SESSION — READ THIS BLOCK FIRST, THEN STOP AND WAIT FOR VIKRAM'S PROMPT
 > **Written 2026-07-16 (end of session 025) specifically to hand over to a fresh chat that will begin the
 > backend implementation programme. Vikram will supply the implementation prompt in that chat.**
