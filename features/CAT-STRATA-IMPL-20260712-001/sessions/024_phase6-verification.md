@@ -212,3 +212,44 @@ looks like a hex colour** (`RUN-498`), NOT by annotating the scanner into silenc
 that guard's `walk()` excludes `__tests__`, so it is safe.)
 
 Gates: tsc · colors 0/0 · audit 19798/19798 · CRE — all green. Map byte-diff empty.
+
+---
+
+## Slice B1 — backend defect `task_65642237` ✅ FIXED + APPLIED TO STAGING (the live target)
+**Migration:** `supabase/migrations/20260716120000_strata_promote_element_theme_charters_fix.sql`
+
+### The defect is WIDER than the handover recorded — correct the record
+The handover said it "errors for **legacy** elements". It does not. The guard is `el.element_type = 'theme'` — and
+`theme` is the **canonical live type** after the play→theme consolidation. So `strata_promote_element` was broken for
+**every theme**: **11 theme elements** on the live target, none promotable. There are **0** elements of the retired
+`play` type, so nothing depended on the old name — it was never a "legacy" path at all.
+
+### Provenance
+`20260709170000_strata_theme_charter_rename.sql` renamed the table → `strata_theme_charters`. The **later**
+`20260712160000_strata_promote_element_ancestor_gate.sql` re-created the function still carrying the pre-rename name.
+A rename migration outrun by a later function migration.
+
+### Fix
+Repoint the charter read to `strata_theme_charters`. **One line.** Everything else byte-identical to the deployed
+definition (role gate, recursive ancestor gate, missing-requirements accumulation, status update, audit write).
+Verified drop-in: all 5 columns the branch reads (`element_id, hypothesis, scope, value_thesis, owner_id`) exist.
+`strata_promote_element` was the ONLY object in the schema referencing the dropped table (scanned every `pg_proc` def).
+
+### Applied + verified on `cyijbdeuehohvhnsywig` (staging = the live target; there is no production)
+Used `execute_sql` + an **explicit ledger INSERT** rather than MCP `apply_migration`, which stamps its own version and
+would break the file↔ledger 1:1 rule.
+| Check | Result |
+|---|---|
+| ledger row `20260716120000` = file name | ✅ 1:1 |
+| function references dropped table | **false** |
+| function references `strata_theme_charters` | **true** |
+| ANY object still referencing dropped table | **none — defect cleared** |
+| the repaired branch's exact statement | **5 theme charters readable** |
+
+### ⚠️ Honest limit of the runtime probe
+Calling `strata_promote_element` via the MCP connection stops at the **role gate**
+("requires strategy_office or admin role") — which fires BEFORE the charter read — so the runtime probe could NOT
+execute the repaired branch. Note this is also why the defect survived: it only ever manifested for `strategy_office`
+users. Evidence is therefore structural + statement-level (conclusive: the sole failure mode was a missing relation,
+which no longer exists anywhere). **Full runtime confirmation needs a `strategy_office` session promoting a theme via
+the UI** — worth one manual pass.
