@@ -312,3 +312,33 @@ record", etc.) and states plainly: *guarded means a rule constrains them on thei
 combination is illegal; the server never refuses a role combination, so no "conflict" state is claimed here.*
 
 **CONFLICT deliberately absent (F1-D2 deferred).** Gates: tsc · colors 0/0 · audit 19798/19798 · CRE. Suite 10/57. Map untouched.
+
+---
+
+## Slice F2 — View-as audit write ✅ BUILT + VERIFIED (closes P5-D4's flagged gap)
+**Files:** migration `20260716140000_strata_log_view_as.sql` · `domain/index.ts` (+`logViewAs`) ·
+`StrataAccessPage.tsx` (log on engage + corrected banner).
+
+5F shipped View-as with a banner admitting it was "not audit-logged yet" (P5-D4: *audit the view event if a write RPC
+exists; else client-only + FLAG it*). No RPC existed. F2 adds it.
+
+**Why an RPC, not a client insert (probed, not assumed):** `strata_audit_events` has RLS enabled with a **SELECT policy
+only** — there is no INSERT policy for `authenticated`. Audit rows are written solely by SECURITY DEFINER RPCs so the
+actor cannot be forged: `actor_id` comes from `auth.uid()`, never a client argument (verified: the function takes no
+actor param). Gated to `strata_admin` server-side rather than trusting the page's gate.
+
+**Contrast with F1a — the definer choice is deliberate, not habit:** F1a is *not* SECURITY DEFINER (it reads only what
+the caller may already read, so it must not become an escalation seam). F2 *must* be (there is no other write path).
+
+**The preview is gated on the audit succeeding** — if the write fails the preview does not open, so an unaudited view
+cannot happen. `action='RPC:view_as'` follows the table's existing convention (`RPC:assign_role`, `RPC:create_kpi`).
+
+**Verified live — a real row exists:**
+> actor **Vikram Indla** → subject **Vikram Indla** · `profiles` · `RPC:view_as` ·
+> *"read-only access preview opened — no session switch, the viewer's own permissions are unchanged"* · 16:50:12
+
+Banners corrected in both places: the rail now says opening it "is recorded in the audit trail against your account",
+and the preview banner drops the stale "audit-logging … are later features" claim while keeping the honest one —
+**session switching is still not implemented**.
+
+Gates: tsc · colors 0/0 · audit 19798/19798 · CRE. Suite 10 files/57 tests. Map untouched. Ledger 1:1.

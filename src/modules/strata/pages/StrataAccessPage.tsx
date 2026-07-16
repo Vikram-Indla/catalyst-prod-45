@@ -13,8 +13,9 @@
  *    deferred): the server never refuses a role COMBINATION, so claiming one
  *    would assert a check that does not exist.
  *  - "View as" is a READ-ONLY client preview of the person's role assignments +
- *    what those roles permit. It does NOT switch the session, and there is no
- *    audit-write RPC, so the preview says so rather than implying it was logged.
+ *    what those roles permit. It does NOT switch the session. Opening it IS now
+ *    audit-logged server-side (F2, strata_log_view_as) — the actor comes from
+ *    auth.uid() and cannot be forged.
  *  - Assign/revoke DO exist (governanceApi) — the server's refusal text is
  *    surfaced verbatim.
  */
@@ -79,7 +80,7 @@ function PersonRail({ userId, name, email, assignments, canAssign, viewingAs, on
   assignments: RoleAssignmentRow[];
   canAssign: boolean;
   viewingAs: boolean;
-  onViewAs: (userId: string | null) => void;
+  onViewAs: (userId: string | null) => void | Promise<void>;
   onError: OnError;
 }) {
   const invalidate = useInvalidateStrata();
@@ -164,15 +165,15 @@ function PersonRail({ userId, name, email, assignments, canAssign, viewingAs, on
       <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
         <span style={railLabel}>ACTS AS (PREVIEW)</span>
         <span style={metaStyle}>
-          A read-only preview of what {name ?? 'this person'} is assigned — it does not switch your session and is not
-          audit-logged yet.
+          A read-only preview of what {name ?? 'this person'} is assigned — it does not switch your session. Opening it
+          is recorded in the audit trail against your account.
         </span>
       </div>
 
       <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
         <Button
           spacing="compact"
-          onClick={() => onViewAs(viewingAs ? null : userId)}
+          onClick={() => void onViewAs(viewingAs ? null : userId)}
           testId="strata-access-view-as"
         >
           {viewingAs ? 'Exit preview' : `View as ${name ? name.split(' ')[0] : 'person'}`}
@@ -202,6 +203,19 @@ function RoleAssignments({ onError }: { onError: OnError }) {
   const invalidate = useInvalidateStrata();
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
   const [viewAsUserId, setViewAsUserId] = useState<string | null>(null);
+  // F2: audit the preview server-side. Engaging is gated on the write succeeding —
+  // if the audit fails we do NOT show the preview, so an unaudited view cannot happen.
+  const engageViewAs = async (uid: string | null) => {
+    onError(null);
+    if (!uid) { setViewAsUserId(null); return; }
+    try {
+      await governanceApi.logViewAs(uid);
+      setViewAsUserId(uid);
+      invalidate();
+    } catch (e) {
+      onError(e instanceof Error ? e.message : String(e));
+    }
+  };
   const [assignOpen, setAssignOpen] = useState(false);
 
   const assignments = (assignmentsQ.data ?? []) as RoleAssignmentRow[];
@@ -348,7 +362,7 @@ function RoleAssignments({ onError }: { onError: OnError }) {
             assignments={selectedUserId ? (byUser.get(selectedUserId) ?? []) : []}
             canAssign={isStrataAdmin}
             viewingAs={!!selectedUserId && viewAsUserId === selectedUserId}
-            onViewAs={setViewAsUserId}
+            onViewAs={engageViewAs}
             onError={onError}
           />
         </aside>
