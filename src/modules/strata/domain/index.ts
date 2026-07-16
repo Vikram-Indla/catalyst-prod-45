@@ -93,6 +93,13 @@ export const configApi = {
    */
   createModelDraftVersion: (modelId: string, reason: string): Promise<string> =>
     run(typedRpc('strata_create_model_draft_version', { p_model: modelId, p_reason: reason })),
+  /**
+   * D-2's third revision RPC. Separate from the model one by ruling ("dedicated revision RPCs —
+   * NOT one generic polymorphic RPC"), and separate in fact: a threshold scheme has no aggregate
+   * children (its bands are jsonb on the row), so the clone is parent-only.
+   */
+  createThresholdDraftVersion: (schemeId: string, reason: string): Promise<string> =>
+    run(typedRpc('strata_create_threshold_draft_version', { p_scheme: schemeId, p_reason: reason })),
   myRoles: async (userId: string): Promise<StrataRole[]> => {
     const rows: Array<{ role: StrataRole }> = await run(
       typedQuery('strata_role_assignments').select('role').eq('user_id', userId),

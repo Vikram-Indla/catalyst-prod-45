@@ -80,6 +80,7 @@ vi.mock('@/modules/strata/domain', () => ({
     approveScorecardModel: vi.fn(async () => undefined),
     retireRecord: vi.fn(async () => undefined),
     createModelDraftVersion: H.createModelDraftVersion,
+    createThresholdDraftVersion: vi.fn(async () => 't2'),
   },
   scorecardApi: { setModelMeasures: H.setModelMeasures },
   governanceApi: {},

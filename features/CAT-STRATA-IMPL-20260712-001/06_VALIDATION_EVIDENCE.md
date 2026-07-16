@@ -256,3 +256,32 @@ assigned_owner_id all NULL (no person fabricated) : t
 
 **Ledger 1:1:** `20260716200000 · strata_integrity_exceptions_owner_role`.
 **Gates:** tsc clean · colors 0=0 · audit no category above baseline · CRE pass · suite **2,434 passed / 6 failed**.
+
+---
+
+# A3c · AC §8.2 — RAW EVIDENCE
+Real non-admin `strategy_office` user, full governed lifecycle, rolled back.
+```
+=== A3c RESULT (rolled back) ===
+version 2 (expect 2) · status draft · supersedes ok t
+approval reset: approved_at=<NULL> approved_by=<NULL> effective_from=<NULL>
+slug salam-standard-rag-2 (source salam-standard-rag)
+FULL DEFINITION COPIED — bands identical t: tolerance 5.000 conf 0.700 escalation <NULL>
+reason: raise the green band to 90
+PREDECESSOR BYTE-IDENTICAL while draft open: t
+blank reason -> a change reason is required to create a new version
+dup draft    -> a draft version of this threshold scheme already exists (eb157b0b-…)
+SELF-APPROVE -> segregation of duties: the creator cannot approve their own record
+AFTER APPROVE -> predecessor status=superseded effective_to set=t
+```
+| §8.2 clause | Result |
+|---|---|
+| version+1 · supersedes_id · approval reset | ✅ |
+| **complete definition cloned** | ✅ bands **byte-identical** · tolerance 5.000 · confidence 0.700 · escalation NULL |
+| **predecessor byte-identical** | ✅ |
+| approve → predecessor superseded + effective_to (unchanged code) | ✅ |
+| slug contract | ✅ `salam-standard-rag-2` |
+| SoD inherited | ✅ self-approval refused |
+
+**Ledger 1:1:** `20260716210000 · strata_create_threshold_draft_version`. **Gates:** tsc clean · colors 0=0 · audit no
+category above baseline · CRE pass · suite **2,434 passed / 6 failed**.

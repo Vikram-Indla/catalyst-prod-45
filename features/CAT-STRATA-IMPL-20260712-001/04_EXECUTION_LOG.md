@@ -1288,3 +1288,27 @@ both stamp CEO model **v1**. B2B → 3 perspective weights + 2 measures after it
 
 ## Status
 ✅ **DONE** — applied, ledger 1:1, gates green, suite 2,434/6. **F-1 is discharged and is no longer a blocker.**
+
+---
+
+# R1 · A3c — threshold-scheme governed revision (D-2) · migration `20260716210000`
+**`strata_create_threshold_draft_version(p_scheme uuid, p_reason text) RETURNS uuid`**
+
+## Why A3c was safe to land ahead of A3b (probed, not assumed)
+`strata_threshold_schemes` has **no aggregate children**: its bands are a **`bands` jsonb column ON the scheme row**
+(`[{key,label,min_score,appearance}, …]`), and the only FKs pointing at it (`strata_kpis.threshold_scheme_id`,
+`strata_scorecard_models.threshold_scheme_id`) **reference** a scheme — they are not part of its definition. So the
+clone is parent-only. **That is exactly what makes A3b different**: a KPI has relationship AND measurement children
+(F-9). D-2 names all three RPCs in one breath, which implies one shape; **there are two**.
+
+## The full definition is copied — bands, tolerance, confidence_threshold, escalation_rules
+Omitting any would silently produce a v2 that rates differently from v1 for reasons nobody chose: **bands decide every
+rating**, and tolerance/confidence gate whether a value counts.
+
+## UI — a lookup, not a second boolean
+`REVISION_RPC: Record<table, rpc>` drives the "Create new version" CTA, replacing A3a's `isScorecardModel` flag. The
+CTA now appears **only where a revision RPC exists** (models, threshold schemes), so no table can be offered a verb the
+server cannot perform. **`strata_kpis` is absent on purpose** — it joins when A3b lands.
+
+## Status
+✅ **DONE** — applied, ledger 1:1, gates green, suite 2,434/6, §8.2 proven in full with the predecessor byte-identical.

@@ -82,6 +82,18 @@ export function GovEnvelope({ r }: { r: GovernedEnvelope }) {
   );
 }
 
+/**
+ * D-2: which governed tables can be REVISED, and by which dedicated RPC.
+ * Deliberately a lookup rather than a boolean prop: the "Create new version" CTA must appear only
+ * where a revision RPC actually exists, so a table cannot be offered a verb the server has no way
+ * to perform. `strata_kpis` is absent on purpose — A3b is blocked on F-9 (a KPI revision has
+ * relationship and measurement children, so it is not the same shape as these two).
+ */
+const REVISION_RPC: Record<string, ((id: string, reason: string) => Promise<unknown>) | undefined> = {
+  strata_scorecard_models: (id, reason) => configApi.createModelDraftVersion(id, reason),
+  strata_threshold_schemes: (id, reason) => configApi.createThresholdDraftVersion(id, reason),
+};
+
 /** Governance lifecycle actions — RPC-only; DB errors surface verbatim. */
 export function GovActions({ table, record, isScorecardModel, onError, submitBlockedReason }: {
   table: string;
@@ -98,6 +110,7 @@ export function GovActions({ table, record, isScorecardModel, onError, submitBlo
   const [retireReason, setRetireReason] = useState('');
   const [versionOpen, setVersionOpen] = useState(false);
   const [versionReason, setVersionReason] = useState('');
+  const createVersion = REVISION_RPC[table];
   const act = async (fn: () => Promise<unknown>) => {
     setBusy(true);
     onError(null);
@@ -144,10 +157,10 @@ export function GovActions({ table, record, isScorecardModel, onError, submitBlo
     return (
       <>
         {/* D-2/D-3: an approved definition is immutable, so changing it means a new draft version.
-            Only scorecard models have a revision RPC so far (A3a); KPI and threshold revisions are
-            A3b/A3c. Offering the control for a table with no RPC behind it would promise a verb the
-            server cannot perform. */}
-        {isScorecardModel ? (
+            The CTA is driven by REVISION_RPC, so it appears only for tables that actually have one
+            (models A3a, threshold schemes A3c). Offering it for a table with no RPC behind it would
+            promise a verb the server cannot perform. KPIs join when A3b lands (blocked on F-9). */}
+        {createVersion ? (
           <Button
             spacing="compact"
             isDisabled={busy}
@@ -187,7 +200,7 @@ export function GovActions({ table, record, isScorecardModel, onError, submitBlo
               isDisabled={busy || versionReason.trim() === ''}
               onClick={() => {
                 setVersionOpen(false);
-                void act(() => configApi.createModelDraftVersion(record.id, versionReason.trim()));
+                void act(() => createVersion(record.id, versionReason.trim()));
               }}
             >
               Create draft version
