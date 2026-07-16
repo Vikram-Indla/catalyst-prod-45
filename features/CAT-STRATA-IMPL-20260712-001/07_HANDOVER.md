@@ -26,17 +26,33 @@
 > **M-D3 CONFIRMED** — the Save gate treats an EMPTY perspective group as passing (mirrors `ModelIntegrityBand`: one
 > rule for one fact). Shipped as built; no code change followed from the ruling. **M-D4 DEFERRED to its own slice.**
 >
-> ### ⛔ THE ONE THING TO DO NEXT — pick a slice; NONE is pre-specced (2b was the last ready-to-build item)
-> Every remaining item needs its own Plan Lock (and usually a migration). **Do not start one expecting a spec to
-> already exist.** The one item with a written scope is **M-D4** (below) — a ruling, not a spec.
+> ### 🔴 THE ONE THING TO DO NEXT — **R0 / A1: the P0 integrity register.** Blueprint: `03_PLAN_LOCK_BACKEND_PROGRAM.md`
+> **Product policy for ALL 14 remaining capabilities was RULED 2026-07-16 (D-1…D-8). The blueprint is written and
+> awaiting approval — it is NOT approved and NO code/migration may run.** Read it before anything else.
 >
-> **M-D4 · approved-model editability (own slice, per Vikram).** Measures AND perspective weights are editable on an
-> `approved` model, role-gated only (`strategy_office`), no status gate — while STRATA governance is otherwise
-> version-based. `ModelWeights` has done this since 5C, so it is **pre-existing, not a 2b regression**. The slice
-> covers BOTH callers (`ModelWeights` + `MeasureGroups`) and must first RULE the mechanism: block at
-> `status='approved'` · require a new draft version · or accept in-place edits as intended for models. Do not assume
-> the answer. `strata_scorecard_models.status` already exists, so a migration may not be needed — the versioning
-> mechanism might be. See `09_DECISIONS.md` → M-D4.
+> **🔴 P0 — "approved definitions are immutable" is FALSE today (D-1 CONFIRMED, ahead of the whole programme).**
+> Proven at RLS/RPC level, not suspected: `strata_scorecard_models`' own UPDATE RLS gates on `status='draft'`, but
+> its CHILDREN do not — `strata_scorecard_model_perspectives` RLS is role-only and never joins the parent's status
+> (`strata_strategy_scorecard.sql:266-277`), and `strata_set_model_measures` never reads model status
+> (`20260716150000_...sql:62-107`). **An approved model's weights and measures can be rewritten in place, today.**
+> This is M-D4 — **pre-existing since 5C, NOT a 2b regression.**
+>
+> **Integrity audit RESULT (read-only, executed 2026-07-16 — both approved models AND both locked snapshots hit):**
+> CEO Enterprise Scorecard (v1, approved 07-04) → 1 perspective_weight written 07-12 · B2B Sector Scorecard (v1) →
+> 3 perspective_weights + **2 measures** written after approval. SNAP-1 (locked 07-05) and SNAP-1001 (locked 04-08)
+> both stamp "CEO model **v1**" while 1 and 5 child rows were written AFTER lock.
+> **Blast radius is PROVENANCE, not values:** `strata_lock_snapshot` freezes `snapshot_items.payload` and
+> `calcResult` reads it for locked instances, so **no board-pack or snapshot number silently changed**. But
+> re-resolving "CEO model v1" today yields DIFFERENT weights than produced those frozen numbers — so "historical
+> scorecards must resolve against the versions used at calculation time" is **not satisfied for either snapshot**.
+> **Disclosure:** 2 of the affected rows are ours — part 2b's live verification (PR #349) wrote measures onto an
+> approved model *because no gate exists*. The defect demonstrating itself. See blueprint §3.5 / decision E-3.
+> **Detection is a LOWER BOUND:** child tables have `created_at` only (no `updated_at`) and the raw `.update()`
+> writes no audit event, so **in-place UPDATEs are undetectable** (E-4).
+> **Do NOT remediate or rewrite history** — D-1 forbids it; E-1 must be ruled first.
+>
+> **Second defect:** `B2B Sector Scorecard` is `status='approved'` with **`approved_at` NULL** — never approved via
+> `strata_approve_record`. Any control keyed on `approved_at` silently skips it (E-2).
 >
 > ### Environment — READ BEFORE RUNNING ANYTHING
 > - **Tests need Node 22:** `PATH="/opt/homebrew/opt/node@22/bin:$PATH" npm test`. On the global Node 20 vitest dies at
@@ -69,16 +85,29 @@
 >
 > ### ✅ Still open — **THIS BLOCK IS AUTHORITATIVE** (supersedes every debt list lower in this file)
 > **Position at 2026-07-16: no anchor-critical UI scope remains · 0 unanswered product decisions · 8 optional
-> UI-polish items · 14 backend initiatives, none specced.**
+> UI-polish items · **14 product capabilities** (≈24 implementation slices), policy-ruled, blueprint written,
+> NOT approved.**
 >
-> **⚠️ COUNT FLAGGED FOR RATIFICATION — 14, not 13.** Vikram's 2026-07-16 instruction said "13 backend initiatives".
-> That figure counts the 12 legacy deferrals + M-D4, but the SAME instruction ruled DEF-010 and stated it "requires a
-> separately planned backend change and Plan Lock" — which converts DEF-010 from a product decision INTO a backend
-> initiative (session 024 independently concluded "either way it needs a backend change + its own Plan Lock").
-> DEF-010's work has to live somewhere; itemised below it is 14. **Overrule in one word if 13 was intended and the
-> DEF-010 work is meant to fold into an existing item.** Do not "fix" this by deleting an item to reach 13.
+> **✅ COUNT RATIFIED AT 14 (Vikram, D-8):** 13 previously listed + DEF-010. **Measure-level scorecard authoring has
+> SHIPPED (2a `ffb3f8c68` · 2b `96781d601`) and must NOT be counted.** The earlier "13" excluded DEF-010 while it
+> was still a product decision; the ruling made it implementation scope.
+> **⚠️ 14 capabilities ≠ 24 slices.** A capability is not a slice (2-hour rule → ≈24 slices). **Never report slice
+> progress as capability progress.** Decomposition: blueprint §10.
 >
-> **Backend initiatives — each needs its own Plan Lock, and usually a migration. NONE is pre-specced.**
+> **Policy is RULED for all 14 (D-1…D-8, 2026-07-16). Sequencing, reuse-vs-build, schema/RPC/RLS/UI/test, backfill,
+> rollback and acceptance criteria: `03_PLAN_LOCK_BACKEND_PROGRAM.md`. Seven decisions (E-1…E-7) remain open there —
+> none may be assumed.** Release order: **R0 P0 integrity → R1 historical truth → R2 adoption/preview →
+> R3 governance entities → R4 data integrity → R5 independent.** Critical path A1→A2→A3→B1→C1.
+>
+> **⚠️ The probe RESIZED several of these — do not trust the old sizing:** "model draft-create" is ONE cloning RPC
+> (`strata_approve_record` already auto-supersedes the predecessor when `supersedes_id` is set; the column exists on
+> 9+ tables and is **never written**) · "quarantine tier" — exclusion is ALREADY enforced (calcs whitelist
+> `validation_status='validated'`) and the enums exist; only workflow + exception label are missing · "version diff"
+> and score-shift's "old" side are READS over data already stored (`config_versions` populated 2/2;
+> `calculated_values.config_context` on 7,451/7,457 rows) · **mid-period prospective adoption already works**
+> (`effective_from = COALESCE(effective_from, now())` in `strata_approve_record`).
+>
+> **Backend capabilities — each needs its own Plan Lock, and usually a migration.**
 > 1. threshold band-editor authoring (P5, anchor 25)
 > 2. scorecard-model draft-create (P5)
 > 3. preview-with-data (P5)
@@ -91,15 +120,20 @@
 > 10. `strata_reviews` scheduling entity (P4-D1 / DRIFT-9)
 > 11. mapping-memory write (P4-D6)
 > 12. import Matched/Conflict/Unmatched + both-sides diff + 24h undo + run-log ledger (P3-D3 · 3C)
-> 13. **M-D4 · approved-model editability** — product direction APPROVED (Vikram 2026-07-16: "rule separately in its
->     own slice"); **technical specification PENDING.** Covers BOTH `ModelWeights` + `MeasureGroups`. Mechanism still
->     to be specified: block at `status='approved'` · require a new draft version · accept in-place. See M-D4 above.
-> 14. **DEF-010 · draft KPI → strategic-objective linking** — product direction APPROVED (Vikram 2026-07-16);
->     **technical specification PENDING.** NEW to this list — it was a product decision until the ruling landed.
->     See `09_DECISIONS.md` → DEF-010 for the full ruling. Today `strata_link_element_kpi` is gated on `approved`
->     and `strata_kpis.status` defaults to `draft` (6 draft KPIs on staging, all unlinkable at creation), so the
->     link-at-creation path cannot work without this backend change. **Do not auto-approve KPIs** — that is
->     explicitly ruled out.
+> 13. **M-D4 · approved-model editability — 🔴 NOW P0 (D-1), ahead of the whole programme.** Mechanism RULED:
+>     approved definitions are immutable; **editing creates a new draft version** via dedicated revision RPCs (D-2:
+>     `strata_create_model_draft_version` / `..._kpi_...` / `..._threshold_...` — NOT one generic polymorphic RPC,
+>     NOT a mandatory change-request workflow). Protect the COMPLETE aggregate (perspectives, weights, measures,
+>     aggregation, target policies, threshold association) in **RPCs AND at DB/RLS — the UI is not a security
+>     boundary.** D-3 extends the same rule to KPIs, replacing "retire and recreate". Integrity register FIRST.
+> 14. **DEF-010 · draft KPI → strategic-objective linking** — RULED (D-8/DEF-010): draft KPIs MAY link during
+>     authoring · links visibly marked Draft · **excluded from official calculations, health, roll-ups, snapshots,
+>     board packs and executive reporting** · links activate on approval · **NO auto-approve** · links preserved
+>     through retirement and supersession. Today `strata_link_element_kpi` is gated on `approved` and
+>     `strata_kpis.status` defaults `draft` (6 draft KPIs on staging, all unlinkable at creation).
+>     **⚠️ Open (E-7): the exclusion mechanism is undecided** — calcs whitelist `validation_status='validated'` on
+>     *actuals*, not on KPI status, so a draft KPI's approved actuals could still count. Whether DEF-010 is a
+>     link-table change or a calc-engine change turns on this. See `09_DECISIONS.md` → DEF-010.
 >
 > **Product decisions: NONE outstanding.** ~~DEF-010~~ ✅ RULED 2026-07-16 (now backend initiative 14 above).
 > **DEF-013** was ALREADY ruled — parked behind the product-wide multi-tenancy initiative. It is **not** an open

@@ -154,6 +154,53 @@ Plan Lock `03_PLAN_LOCK_PHASE5.md` approved at `3e215d4ed`. All decisions ratifi
   perspective groups — a large surface). **Part 2a shipped `ffb3f8c68`; part 2b BUILT session 025** (gates green,
   live-verified, measures table 0 → 2 rows through the UI). Anchor 05's builder is complete.
 
+## Remaining-backend PROGRAMME — product policy RULED (Vikram, 2026-07-16). Blueprint: `03_PLAN_LOCK_BACKEND_PROGRAM.md`.
+> Applies to all 14 remaining capabilities. **Blueprint is NOT approved — no code, no migrations.** Seven decisions
+> (E-1…E-7) remain open in the blueprint §11 and may not be assumed.
+
+- **D-1 ✅ CONFIRMED — approved-model aggregate immutability is P0**, ahead of the remaining programme. Protect the
+  COMPLETE approved aggregate (perspectives, weights, measures, aggregation settings, target policies, threshold
+  association) in **RPCs AND at the DB/RLS layer — the UI is not a security boundary.** Read-only integrity report
+  FIRST; **do not silently rewrite historical records.**
+  **AUDIT RESULT (executed read-only 2026-07-16): both approved models AND both locked snapshots are affected.**
+  Blast radius is PROVENANCE, not values — frozen `snapshot_items` mean no number changed, but "model v1" no longer
+  re-resolves to the weights that produced those numbers. Detection is a LOWER BOUND (no `updated_at` on child
+  tables; the raw `.update()` writes no audit event → in-place UPDATEs undetectable). See blueprint §3.
+- **D-2 ✅ RULED — dedicated revision RPCs**, not one generic polymorphic RPC and not a mandatory change-request
+  workflow: `strata_create_model_draft_version` · `strata_create_kpi_draft_version` ·
+  `strata_create_threshold_draft_version`. Each clones the complete governed aggregate, increments `version`, sets
+  `supersedes_id`, resets approval fields, copies children, records actor/reason, **leaves the predecessor
+  unchanged**. Reuse `strata_approve_record`'s approval + supersession boundary (it ALREADY auto-supersedes the
+  predecessor when `supersedes_id` is set — `foundation_config_engine.sql:413-418`). `strata_config_change_requests`
+  MAY serve as an OPTIONAL request/audit envelope; **do not create a second mandatory approval lifecycle without
+  evidence it is needed.**
+- **D-3 ✅ CONFIRMED — approved-KPI "retire and recreate" is REPLACED by governed revision.** Retirement remains for
+  genuine discontinuation. Preserve logical KPI lineage + historical resolution for actuals, objectives, Key Results,
+  scorecards, snapshots, board packs. (Changes `strata_update_kpi`'s explicit "retire and recreate to change an
+  approved KPI" — `authoring_write_paths.sql:615-616`. Supersedes the [[strata-governance-version-based]] habit.)
+- **D-4 ✅ RULED — replace misleading Finance terminology.** Neutral assurance states: **Reported · Owner confirmed ·
+  Independently validated · Rejected.** Stop writing `finance_validated`; migrate the vocabulary to
+  `independently_validated`, preserving original actors and audit events. **Do not claim historical Finance
+  assurance.** (Probe: **no Finance role or actor exists anywhere in STRATA** — `strata_validate_benefit_value`
+  hardcodes `lifecycle_stage='finance_validated'` on any validator's verdict — `strata_execution_value.sql:409-414`.
+  The label is a lie today.)
+- **D-5 ✅ RULED — accepted-with-exception MAY count after Strategy Office authorization.** Quarantined stays
+  excluded. Submitter cannot authorize their own exception. Preserve exception reason, original validation failures,
+  authorizer, timestamp, evidence, source run. Scorecards/snapshots/board packs must **retain and visibly expose**
+  the exception flag. **Never silently convert exception-authorized data into ordinary Validated data.**
+- **D-6 ✅ RULED — persisted reviews COEXIST with the derived model during transition.** `strata_reviews` is
+  authoritative going forward; backfill ONE Closed historical review per existing locked snapshot, marked
+  migrated/historical. **Do not invent chair, participants, agenda or meeting details that were never recorded.**
+  Derived logic retained temporarily as compatibility/verification support, not as the system of record.
+- **D-7 ✅ RULED — undo = immutable supersession + reversal ledger**, NOT negative/offsetting KPI measurements.
+  Preserve the original run and actuals; compensating reversal run references the original; mark affected actuals
+  reversed/superseded; restore the prior effective state where one existed. Allowed only within 24h · before a locked
+  snapshot · before dependent board-pack issuance · before a later run makes reversal unsafe. **Prefer atomic
+  reversal; never silently leave a partially reversed run.**
+- **D-8 ✅ RULED — the count is 14.** 13 previously listed + DEF-010. **Measure-level scorecard authoring has SHIPPED
+  and must not be counted.** 14 product capabilities ≈ 24 implementation slices — never report slice progress as
+  capability progress.
+
 ## DEF-010 — RULED (Vikram, 2026-07-16). Was the last open product decision; there are now NONE.
 - **DEF-010 ✅ RULED — draft KPIs MAY be linked to strategic objectives during authoring, but never count.**
   Recorded verbatim:
