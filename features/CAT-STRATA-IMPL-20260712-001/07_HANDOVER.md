@@ -28,18 +28,18 @@
 >
 > **⚠️ LIVE OPS + VERIFICATION DEBT — STILL OPEN. Do NOT lose: it is duplicated below the `# ARCHIVE` marker, where it
 > reads as history. This block is the authoritative copy.**
-> 1. **Prod migrations parked** — `20260713100000` (plan-variance) + `20260713110000` (saved-views + bulk-update) are
->    applied to **staging (`cyijbdeuehohvhnsywig`) ONLY**. Until applied, Scorecards-Index "Vs plan" and any
->    bulk/saved-view write **error-degrade on prod only**. Apply with an explicit ledger INSERT (MCP `apply_migration`
->    stamps its own version).
->    **PROD ACCESS — RE-VERIFIED 2026-07-16 (fact, not assumption):** `list_projects` on the configured Supabase MCP
->    returns **exactly one project — `catalyst-staging`**. Prod `lmqwtldpfacrrlvdnmld` is NOT in the connector's token
->    scope, so prod is genuinely unreachable from this session — no amount of retrying changes it. **To unblock, the
->    prod-scoped credential must be added to the MCP connector's own config by the operator**; do NOT paste a token into
->    chat (it would enter the transcript/context and require rotation). Once configured, the tool works without the
->    secret ever being visible to the agent — which is how staging already works.
->    ⚠️ When prod access does exist, honour the CONCURRENT SESSIONS / DB-TARGETING **HARD STOP** in CLAUDE.md: assert the
->    project-ref before EVERY DDL batch, use a disposable linked directory, never the shared checkout.
+> 1. ~~**Prod migrations parked**~~ — **DISSOLVED 2026-07-16 (Vikram): `catalyst-prod` is only a SCOPE/placeholder
+>    project, NOT a live production system.** There is no production environment to migrate to, so this was never real
+>    debt. `20260713100000` (plan-variance) + `20260713110000` (saved-views + bulk-update) are applied to
+>    **`catalyst-staging` (`cyijbdeuehohvhnsywig`) — which IS the live target**, so nothing is degraded anywhere.
+>    Evidence: Management API reports `catalyst-prod` (`lmqwtldpfacrrlvdnmld`, org `wxrdscstztinvcjdcgka`) =
+>    **status INACTIVE / paused**, in a DIFFERENT org from staging (`xtrdfmquqljdkpxyltmn`); `supabase link` refuses with
+>    "project is paused". The long-standing note "prod unreachable via the Supabase MCP" was a true observation with the
+>    wrong conclusion — the MCP token is staging-scoped AND the project is paused AND it isn't production anyway.
+>    **CONSEQUENCE — the "hold backend features until prod access" recommendation is WITHDRAWN.** It rested on avoiding a
+>    growing prod-parked migration queue. No prod ⇒ no queue. Backend features ship to staging like everything else.
+>    If a real production project is ever stood up, THEN re-apply the full migration ledger to it and re-instate the
+>    CONCURRENT SESSIONS / DB-TARGETING hard stop for prod DDL.
 > 2. **Backend defect `task_65642237`** — `strata_promote_element` references the dropped `strata_play_charters` table and
 >    errors for legacy elements. Pre-existing backend bug, not a UI regression (the Promote UI surfaces the rejection).
 > 3. **`task_70e821ad`** — data-source freshness/staleness column (schema gap). This is why 5E's registry shows
