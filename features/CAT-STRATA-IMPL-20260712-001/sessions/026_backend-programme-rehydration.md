@@ -168,3 +168,34 @@ which makes the answer derivable. Measured 3,210 → **0**. Flagged for override
 **Next: 6c** — wire `strata_calc_scorecard_instance` · `strata_calc_period` · `strata_calc_benefit_realization` to the
 canonical resolver, exactly as 6a wired `strata_calc_kpi_achievement`. The 20 `items_without_full_provenance` counted
 in every new snapshot **is** that to-do list. Then step 7 (materiality consumer behaviour), then R2→R5.
+
+---
+
+# SESSION 026 (part 5) — step 6c; STEP 6 COMPLETE
+
+**2026-07-17.** `71cffc658` (`20260717120000`). **Session total: 13 slices.** Suite 2,434/6; gates green; ledger 1:1.
+
+## Step 6 closed itself, by design
+6b's `provenance_completeness` counter WAS 6c's to-do list: **8/28 → 42/43**. The metric was built to be honest about
+what it did not know, and that honesty is what made the next slice's scope self-evident rather than guessed.
+The final 1 is stale data (an instance that no longer calculates), not an unwired calc — and the metric still reports
+LOWER BOUND rather than rounding up to "complete".
+
+## Two bugs found by wiring, not by reading
+1. **`strata_calc_period` would have silently vanished historical numbers** the moment any lineage had 2 versions: it
+   joined targets on the approved row's id, so an old period whose target sits on v1 finds none on v2 → the KPI is
+   never iterated. Fixed to iterate by lineage.
+2. **6b's own completeness metric was KPI-centric** — benefit values have no KPI, so they'd have counted as
+   "incomplete" forever and the metric could never reach 0. Replaced the key with a general `provenance_schema: 1`
+   marker (a version number, not a boolean, so future provenance changes are detectable).
+
+## Zero numbers moved, across all of step 6
+18/18 KPI results · 11/11 instance+benefit results · locked snapshots `md5 128b14af…` — all byte-identical.
+
+## Status
+⏸ **Stopped at context limit on a committed+pushed boundary. STEP 6 COMPLETE.**
+**Next: step 7** — materiality CONSUMER behaviour (methodology break for `material`; continuous trend + exact
+provenance for `non_material`). The data is already in place: `kpi_revision_class` rides in every calculated value's
+`config_context` and in the snapshot's `used.kpis[]`. It is a read/render slice.
+**Then R2→R5.** Carry-forward debt (both R4, both live-numbers): benefit realization ignores `owner_confirmed` (F-7);
+KPI achievement counts `pending` actuals (E-7 condition 3).

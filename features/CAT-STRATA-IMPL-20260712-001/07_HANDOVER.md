@@ -40,19 +40,36 @@ Baseline on entry was 2,426/6 → **+8 tests, 0 new failures.** Raw evidence: `0
 returning 1 row so the test could actually fail. **F-4 is discharged** (A2→A3 back-to-back), so the E-2 v2 clone path
 is open.
 
-## 🔴 STEP 6 IS HALF DONE — 6a + 6b shipped, **6c is the next action**
+## ✅ STEP 6 IS COMPLETE — 6a + 6b + 6c shipped
 | | commit | migration |
 |---|---|---|
 | **6a** calc lineage resolution + full provenance (F-9 + B1) | `23a5ac938` | `20260717100000` |
 | **6b** snapshot config-version completeness (§4) | `04ef41fb4` | `20260717110000` |
+| **6c** remaining calcs wired; step 6 complete | `71cffc658` | `20260717120000` |
 
-**⚠️ 6c — the remaining calcs are NOT wired to the canonical resolver:**
-`strata_calc_scorecard_instance` · `strata_calc_period` · `strata_calc_benefit_realization`.
-They still write a `config_context` **without version identifiers**, which is why every new snapshot's `used` block
-honestly reports `provenance_completeness: {items_with_full_provenance: 8, items_without_full_provenance: 20}`.
-**That count of 20 IS the to-do list.** Wire them exactly as 6a wired `strata_calc_kpi_achievement`:
-resolve at the **period's end date** via `strata_resolve_kpi_effective`, then record the full provenance block.
-Until then the snapshot's own `note` says LOWER BOUND — which is honest, but it is not done.
+**Provenance completeness went 8/28 → 42/43** (kpi 20/20 · scorecard_line 12/12 · scorecard_instance 2/2 ·
+perspective 8/9). The last 1 is **stale data, not an unwired calc** — the two live instances' models have 5 + 3 = 8
+perspectives, so everything actually calculated is covered. The metric still says LOWER BOUND, correctly.
+**Zero numbers moved at any point: 18/18 KPI results and 11/11 instance+benefit results byte-identical to baseline;
+locked snapshots byte-identical (`md5 128b14af…`).**
+
+## ▶ DO THIS NEXT — **step 7: materiality CONSUMER behaviour**
+The `revision_class` column is shipped and DB-enforced (A3b), and the calc already returns **Missing** rather than
+carrying an old actual forward (proven). **What remains is the UI/reporting side of the F-9 ruling:**
+- **material** ⇒ **display a methodology break**; do not imply comparability; never present v1 and v2 as one trend
+  without an approved bridge.
+- **non_material** ⇒ continuous trend permitted, **with exact provenance**.
+- `kpi_revision_class` is already carried in every calculated value's `config_context` **and** in the snapshot's
+  `used.kpis[]` — the data a consumer needs is already there. This is a **read/render** slice, not a schema one.
+
+## ⚠️ CARRY-FORWARD DEBT — deliberate, logged, and NOT forgotten
+1. **`strata_calc_benefit_realization` still counts ONLY `validation_status='validated'`.** **F-7 rules
+   `owner_confirmed` COUNTS** — widening it **WILL move live benefit numbers**. That is **R4 (E-6/F-7)**. The rule is
+   now recorded in each benefit value's provenance, so the change will be visible and dated rather than silently
+   rewriting what past numbers meant.
+2. **`strata_calc_kpi_achievement` falls back to `pending` actuals** (confidence × 0.6). **§2.1's "validated
+   whitelist" claim is FALSE.** Quarantined is still excluded, but pending counts today — a gap against E-7 condition
+   3. Also **R4 (G1/E-6)**.
 
 ### 🔴 F-10 — READ THIS BEFORE TOUCHING ANY CALC (`09_DECISIONS.md` → F-10)
 **`effective_from` holds the APPROVAL timestamp, not a business-effective date.** 8 approved KPIs have
