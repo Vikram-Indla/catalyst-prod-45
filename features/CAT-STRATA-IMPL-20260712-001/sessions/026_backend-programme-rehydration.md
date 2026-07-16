@@ -199,3 +199,38 @@ provenance for `non_material`). The data is already in place: `kpi_revision_clas
 `config_context` and in the snapshot's `used.kpis[]`. It is a read/render slice.
 **Then R2→R5.** Carry-forward debt (both R4, both live-numbers): benefit realization ignores `owner_confirmed` (F-7);
 KPI achievement counts `pending` actuals (E-7 condition 3).
+
+---
+
+# SESSION 026 (part 6) — step 7: materiality consumer behaviour
+
+**2026-07-17.** `51034bc94` (no migration). **Session total: 14 slices.** Suite **2,442 passed / 6 failed** (+8).
+
+## The ruling's step 7 had a hidden prerequisite
+"Display a methodology break" had **nowhere to appear**: `id` identifies a version, and the trend was built from ONE
+`kpiId`, so a revision made the KPI's history silently restart. Step 7 = make the trend span the **lineage**, THEN
+mark the break. The second is meaningless without the first.
+
+## The rule is shared, deliberately
+`domain/materiality.ts` → `methodologyBreaks(points)`. Same argument as the DB resolver: the ruling forbids surfaces
+inventing their own version handling, and scorecard detail + board packs need the same answer (F-3). Testing the
+shared rule tests it for all callers; testing it through one page would only ever prove that page.
+
+## 🔴 F-11 — the biggest finding of the session, and it is about my own gate
+**`npx tsc --noEmit` checks NOTHING** — root tsconfig is `files: []` + references. A deliberate
+`const x: number = "definitely not a number"` produced zero errors. **The "tsc clean" gate I reported on all 13 prior
+slices was vacuous.** Real check `-p tsconfig.app.json`: **159 pre-existing parse errors in 4 foreign files, 0 in
+ours**. RTK compounded it — its tsc filter prints "TypeScript: No errors found" even for `tsc --version`.
+**No shipped claim rests on tsc** — every claim in `06_VALIDATION_EVIDENCE.md` came from a DB probe or a test. But the
+gate was reported as passing when it never ran, and that is worth correcting loudly. Raised with a recommendation
+(switch the gate, then ratchet at 159 like `lint:colors:gate`); needs a repo-wide ruling. Memory: [[tsc-noemit-is-a-noop]].
+
+## Discipline note
+An interim suite run showed **8** failures. `AgeingPanel.navigate` had timed out at 5000ms under load and **passes in
+isolation**; the re-run was clean at 6. Flagged in the evidence rather than quietly re-running until green.
+
+## Status
+⏸ **Stopped at context limit on a committed+pushed boundary. Steps 1–7 of the F-9 order are COMPLETE.**
+**Next: step 8 — R2 → R5.** Carry-forward debt (both R4, both move live numbers): benefit realization ignores
+`owner_confirmed` (F-7 rules it COUNTS); KPI achievement counts `pending` actuals (E-7 condition 3). Both are now
+recorded in each calculated value's provenance, so when they change the change will be visible and dated.

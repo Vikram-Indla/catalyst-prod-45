@@ -53,7 +53,21 @@ perspectives, so everything actually calculated is covered. The metric still say
 **Zero numbers moved at any point: 18/18 KPI results and 11/11 instance+benefit results byte-identical to baseline;
 locked snapshots byte-identical (`md5 128b14af…`).**
 
-## ▶ DO THIS NEXT — **step 7: materiality CONSUMER behaviour**
+## ✅ STEP 7 SHIPPED — `51034bc94` (no migration)
+Lineage-aware trend + Version provenance column + methodology-break band, driven by the **shared** rule
+`domain/materiality.ts` → `methodologyBreaks()` (shared for the same reason as the DB resolver: scorecard detail and
+board packs need the same answer — F-3 — and page-local re-derivations drift). 8 tests, incl. a positive control.
+**The trend now spans the LINEAGE** — previously it read one `kpiId`, so a revision made the KPI's history vanish.
+
+## 🔴 F-11 — **THE `tsc` GATE IS A NO-OP. Stop reporting "tsc clean".**
+`tsconfig.json` is a solution config (`files: []` + references) ⇒ **`npx tsc --noEmit` compiles NOTHING**. Proven with
+a deliberate `const x: number = "string"` → zero errors. **Use `npx tsc --noEmit -p tsconfig.app.json`** and grep for
+your own paths: it reports **159 pre-existing parse errors in 4 foreign files** (CapacityHeatmap · icon-registry ·
+RichTextCommentEditor · SortableColumn) and **0 in this feature's files**. Even then, `strict:false` means property
+access on page objects is unchecked — **tsc green is not evidence for STRATA page code; tests and DB probes are.**
+Needs a repo-wide ruling (recommendation in `09_DECISIONS.md` → F-11: switch the gate, then ratchet at 159).
+
+## ▶ DO THIS NEXT — **step 8: R2 → R5**
 The `revision_class` column is shipped and DB-enforced (A3b), and the calc already returns **Missing** rather than
 carrying an old actual forward (proven). **What remains is the UI/reporting side of the F-9 ruling:**
 - **material** ⇒ **display a methodology break**; do not imply comparability; never present v1 and v2 as one trend
