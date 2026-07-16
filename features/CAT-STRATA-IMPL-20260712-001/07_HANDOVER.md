@@ -5,11 +5,13 @@
 > 25 (threshold bands 5D) · 26 (data & integration 5E) · 27 (roles & access 5F) · 28 (canonical system states 5G).**
 > **NEXT = Phase 6 per HANDOFF build-order — needs its OWN Plan Lock before any code.**
 >
-> **⚠️ CARRIED DEBT — 5G-2 NOTIFICATION LANDING (anchor 28 state 3) DEFERRED (a split, not a drop).** `strata_notifications`
-> has `entity_table` + `entity_id` (UUID) but no slug, and the SLUG CONTRACT forbids UUID route params ⇒ needs
-> entity_id→slug resolution per entity type + a dismissible provenance band wired into every object page + expired-state
-> detection ("validated by X while the notification waited"). Same bucket: anchor 28's panel-scale "object deleted
-> mid-session" variant. >2h, multi-file — give it its own slice/Plan Lock.
+> **✅ 5G-2 NOTIFICATION LANDING SHIPPED** (`ceb99e56f`) — the earlier "UUIDs can't build slug routes" blocker was wrong in
+> its conclusion: there is no link column, but every entity_table can be hopped id→slug, and the same hop returns the
+> resolution state. `governanceApi.resolveNotificationTarget(n)` → `{ key, done }` (kpis→slug · benefit_values→benefit.slug ·
+> decisions→snapshot.snapshot_key · dependencies→requesting_id→project_card.slug). The bell lands on the OBJECT with
+> `?n=<id>` and falls back to the area landing when `key` is null (one seeded decision is orphaned). `StrataNotificationBand`
+> is mounted ONCE in `StrataPageShell` → every object page shows the "why am I here" band; live + expired variants.
+> **No Phase-5 UI debt remains.** Anchor 28's panel-scale "object deleted mid-session" variant was never in Phase-5 scope.
 >
 > **Phase-5 DEFERRED backend features (each needs its own migration + Plan Lock):** threshold band-editor authoring ·
 > scorecard-model draft-create · model measure-level authoring (no model-measure table exists) · preview-with-data ·

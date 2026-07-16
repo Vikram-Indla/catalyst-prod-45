@@ -124,3 +124,9 @@ Plan Lock `03_PLAN_LOCK_PHASE5.md` approved at `3e215d4ed`. All decisions ratifi
   a provenance band on every object page, and expired-state detection. Shipped 5G `aedfcb6fd`.
 - **P5-D6 CONFIRMED** — no migration this phase. Held: the only DB additions were two plain-select readers
   (`allModelPerspectives`; `email` on the existing profiles select). No new RPC was needed or invented.
+- **P5-D5 addendum (5G-2 SHIPPED `ceb99e56f`)** — the notification landing split was resolved, not dropped. The blocker
+  ("entity_id is a UUID and routes are slug-only") was real but not fatal: probing staging showed each entity_table hops
+  id→slug, and the same hop yields the resolution state, so the expired variant came nearly free. No migration, no new RPC
+  (P5-D6 held). One seeded decision is orphaned (null snapshot) → the bell falls back to the area landing rather than build
+  a broken link. Lesson: probe the data before accepting a stated constraint as a scope boundary — the bell's own header
+  comment had encoded the same wrong conclusion.
