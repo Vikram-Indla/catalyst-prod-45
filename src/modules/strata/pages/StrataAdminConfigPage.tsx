@@ -25,7 +25,7 @@ import {
 import Toggle from '@atlaskit/toggle';
 import { configApi, governanceApi } from '@/modules/strata/domain';
 import {
-  useChangeRequests, useGateModels, useInvalidateStrata, useKpiTypes, useModelPerspectives,
+  useAllModelPerspectives, useChangeRequests, useGateModels, useInvalidateStrata, useKpiTypes, useModelPerspectives,
   usePerspectives, useProfileNames, useProjectCardFieldConfigs, useProjectCardPicklists,
   useProjectCardSectionConfigs, useProjectCardTabConfigs, useRoleAssignments, useScorecardModels,
   useStrataAudit, useStrataNotificationRules, useStrataRoles, useThresholdSchemes, useUploadTemplates, useValueCategories,
@@ -81,11 +81,14 @@ export function GovEnvelope({ r }: { r: GovernedEnvelope }) {
 }
 
 /** Governance lifecycle actions — RPC-only; DB errors surface verbatim. */
-export function GovActions({ table, record, isScorecardModel, onError }: {
+export function GovActions({ table, record, isScorecardModel, onError, submitBlockedReason }: {
   table: string;
   record: { id: string; status: GovernedStatus };
   isScorecardModel?: boolean;
   onError: OnError;
+  /** When set, the draft "Submit for approval" action is disabled and the
+   * reason is shown inline (never a silent disable — anchor 05 states rule). */
+  submitBlockedReason?: string | null;
 }) {
   const invalidate = useInvalidateStrata();
   const [busy, setBusy] = useState(false);
@@ -105,9 +108,18 @@ export function GovActions({ table, record, isScorecardModel, onError }: {
   };
   if (record.status === 'draft') {
     return (
-      <Button spacing="compact" isDisabled={busy} onClick={() => void act(() => configApi.submitRecord(table, record.id))}>
-        Submit for approval
-      </Button>
+      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+        <Button
+          spacing="compact"
+          isDisabled={busy || !!submitBlockedReason}
+          onClick={() => void act(() => configApi.submitRecord(table, record.id))}
+        >
+          Submit for approval
+        </Button>
+        {submitBlockedReason ? (
+          <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-danger)' }}>{submitBlockedReason}</span>
+        ) : null}
+      </span>
     );
   }
   if (record.status === 'pending_approval') {
@@ -167,7 +179,7 @@ export function GovActions({ table, record, isScorecardModel, onError }: {
 }
 
 /** Card wrapper for one governed record: name + envelope + lifecycle actions. */
-function GovRecordCard({ name, table, record, isScorecardModel, onError, headerActions, children }: {
+function GovRecordCard({ name, table, record, isScorecardModel, onError, headerActions, submitBlockedReason, children }: {
   name: string;
   table: string;
   record: GovernedEnvelope & { id: string };
@@ -175,6 +187,8 @@ function GovRecordCard({ name, table, record, isScorecardModel, onError, headerA
   onError: OnError;
   /** Extra header controls (e.g. Edit) shown alongside the lifecycle actions. */
   headerActions?: React.ReactNode;
+  /** Forwarded to GovActions — blocks Submit with a visible reason. */
+  submitBlockedReason?: string | null;
   children?: React.ReactNode;
 }) {
   return (
@@ -189,7 +203,7 @@ function GovRecordCard({ name, table, record, isScorecardModel, onError, headerA
         <strong style={{ fontSize: 'var(--ds-font-size-200)', color: T.text }}>{name}</strong>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
           {headerActions}
-          <GovActions table={table} record={record} isScorecardModel={isScorecardModel} onError={onError} />
+          <GovActions table={table} record={record} isScorecardModel={isScorecardModel} onError={onError} submitBlockedReason={submitBlockedReason} />
         </div>
       </div>
       <GovEnvelope r={record} />
@@ -488,26 +502,85 @@ function ModelWeights({ model, canEditWeights }: { model: StrataScorecardModel; 
   );
 }
 
+/** Tri-state model integrity band (anchor 05) — perspective weights must total
+ * 100 before a draft model can be submitted. Glyph + word carry state (never
+ * color alone). Measure-level checks are a later feature (no measures table). */
+function ModelIntegrityBand({ sum, count }: { sum: number; count: number }) {
+  const ok = count > 0 && sum === 100;
+  return (
+    <div
+      style={{
+        display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap',
+        padding: '8px 12px', border: `1px solid ${T.border}`, borderRadius: 6,
+        background: T.sunken, fontSize: 'var(--ds-font-size-100)',
+      }}
+    >
+      <span style={{ fontWeight: 700, letterSpacing: '0.04em', color: T.subtlest }}>MODEL INTEGRITY</span>
+      {count === 0 ? (
+        <span style={{ color: 'var(--ds-text-warning)', fontWeight: 600 }}>△ No perspective weights configured yet</span>
+      ) : ok ? (
+        <span style={{ color: 'var(--ds-text-success)', fontWeight: 600 }}>✓ Perspective weights total 100</span>
+      ) : (
+        <span style={{ color: 'var(--ds-text-danger)', fontWeight: 600 }}>
+          ✕ Perspective weights total {sum} — {sum < 100 ? `assign the remaining ${100 - sum}` : `remove ${sum - 100}`}
+        </span>
+      )}
+      {!ok ? <span style={{ marginLeft: 'auto', color: T.subtlest }}>Cannot submit until integrity passes</span> : null}
+    </div>
+  );
+}
+
 export function ScorecardModelsSection({ onError }: { onError: OnError }) {
   const q = useScorecardModels();
+  const allMP = useAllModelPerspectives();
   const roles = useStrataRoles();
   const list = q.data ?? [];
   // strata_scorecard_model_perspectives write is strategy_office (matches RLS).
   const canEditWeights = (roles.data ?? []).includes('strategy_office');
+
+  // Per-model perspective-weight sum + count (config integrity), client-derived.
+  const weightByModel = new Map<string, number>();
+  const countByModel = new Map<string, number>();
+  for (const mp of allMP.data ?? []) {
+    weightByModel.set(mp.model_id, (weightByModel.get(mp.model_id) ?? 0) + mp.weight);
+    countByModel.set(mp.model_id, (countByModel.get(mp.model_id) ?? 0) + 1);
+  }
+
   return (
     <StrataPanel title="Scorecard models" icon={<Scale size={16} />} count={list.length} testId="strata-admin-scorecard-models">
+      <p style={captionStyle}>
+        The builder governs perspective weights, integrity and lifecycle — a model's perspective weights must total 100
+        before it can be submitted for approval. Measure-level authoring, preview-with-data and version diff are later features.
+      </p>
       <SectionState query={q} empty={list.length === 0}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-          {list.map((m) => (
-            <GovRecordCard key={m.id} name={m.name} table="strata_scorecard_models" record={m} isScorecardModel onError={onError}>
-              <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-                <span style={metaStyle}>Scope {labelize(m.owner_scope_type)}</span>
-                <span style={metaStyle}>Rollup {labelize(m.rollup_method)}</span>
-                <span style={metaStyle}>Granularity {labelize(m.period_granularity)}</span>
-              </div>
-              <ModelWeights model={m} canEditWeights={canEditWeights} />
-            </GovRecordCard>
-          ))}
+          {list.map((m) => {
+            const wsum = weightByModel.get(m.id) ?? 0;
+            const wcount = countByModel.get(m.id) ?? 0;
+            const integrityOk = wcount > 0 && wsum === 100;
+            const submitBlockedReason = m.status === 'draft' && !integrityOk
+              ? (wcount === 0 ? 'Add perspective weights totalling 100 first' : `Weights total ${wsum} — must total 100`)
+              : undefined;
+            return (
+              <GovRecordCard
+                key={m.id}
+                name={m.name}
+                table="strata_scorecard_models"
+                record={m}
+                isScorecardModel
+                onError={onError}
+                submitBlockedReason={submitBlockedReason}
+              >
+                <ModelIntegrityBand sum={wsum} count={wcount} />
+                <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+                  <span style={metaStyle}>Scope {labelize(m.owner_scope_type)}</span>
+                  <span style={metaStyle}>Rollup {labelize(m.rollup_method)}</span>
+                  <span style={metaStyle}>Granularity {labelize(m.period_granularity)}</span>
+                </div>
+                <ModelWeights model={m} canEditWeights={canEditWeights} />
+              </GovRecordCard>
+            );
+          })}
         </div>
       </SectionState>
     </StrataPanel>

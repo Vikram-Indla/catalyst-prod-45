@@ -50,4 +50,22 @@ adminData/adminAccess builders) · `domain/index.ts` (+`allModelPerspectives` re
   (fixed initial dup). Console errors all pre-existing/unrelated (`/src/pages/admin/components/*` routeSmokeCheck). No
   error boundary. Map untouched.
 
-## ⏭ NEXT: 5C — Model Builder (anchor 05, scoped P5-D3). Re-read anchor 05 in full at slice start (HANDOFF one-liner only).
+## Slice 5C — Model Builder (anchor 05, scoped P5-D3) ✅ built + gate-green + live-verified
+**File:** `StrataAdminConfigPage.tsx` (only — enhances `ScorecardModelsSection`, shown in BOTH the measurement shell and
+the old tab).
+- **Anchor 05 re-read IN FULL via DesignSync** (was HANDOFF one-liner). Signature element = tri-state MODEL INTEGRITY band
+  ("Cannot submit until integrity checks pass"); draft-first builder with perspective groups → measures. **Backend reality:
+  no model-measure table exists** (grep confirmed) + no draft-create/preview/diff RPC → per P5-D3 the measure-level builder,
+  preview-with-data and version-diff are DEFERRED (labelled), and the backed core is built.
+- Added `ModelIntegrityBand` (tri-state from perspective-weight sum via `useAllModelPerspectives`): △ none / ✓ total 100 /
+  ✕ total N — assign/remove; glyph+word carry state (no color-alone). "Cannot submit until integrity passes" when invalid.
+- `GovActions` + `GovRecordCard` gained `submitBlockedReason` — draft Submit is disabled WITH a visible inline reason
+  (anchor 05 "never a silent disable") when a model's weights ≠ 100. Approve stays DB-SoD-gated.
+- Section intro states the governed scope + names the deferred features honestly.
+- Reuses existing `ModelWeights` editor (weights authoring already backed by `setModelPerspectiveWeights`).
+- Gates: tsc clean · colors 0/0 · audit 19798/19798 (no increase) · CRE passed.
+- Live: measurement shell → Scorecard models nav → both approved models show MODEL INTEGRITY ✓ total 100 (40/35/25 and
+  30/25/10/20/15), WEIGHTS VALID, Edit weights, Retire; intro deferral note visible. No console errors, no error boundary.
+  Map untouched.
+
+## ⏭ NEXT: 5D — Threshold Schemes (anchor 25, scoped P5-D3). Re-read anchor 25 in full at slice start.
