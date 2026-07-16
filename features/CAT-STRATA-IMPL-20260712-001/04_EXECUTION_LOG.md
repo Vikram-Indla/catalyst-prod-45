@@ -1620,3 +1620,38 @@ to name superseded explicitly.
 ✅ **DONE** — applied, ledger 1:1, gates green. All rules proven (backfill · participants 0 · cadence defaults ·
 readiness both ways · cannot close without a snapshot · cannot close on a non-locked snapshot · closed review immutable).
 **Next: F1 board-pack issue/supersede — it needs E1, which now exists.**
+
+---
+
+# R2 · F1 — board-pack editorial lifecycle, issuance + supersession · migration `20260717140000`
+
+## F-12 — `status` was already taken
+`status` is the **generation** lifecycle (`pending|generating|ready|failed`), not an editorial one. Adding
+`issued/superseded` there (as §6 says) would conflate "did the file render?" with "did the board approve it?", and an
+`issued` pack would lose its generation state. New **`issue_status`** carries `draft|in_review|approved|issued|
+superseded`; existing rows default to `draft` — the truth. See `09_DECISIONS.md` → **F-12**.
+
+## Immutability is a TRIGGER, not a policy
+RLS gates *whether a row is writable*, not *which fields changed* — and both RPCs are SECURITY DEFINER, so they bypass
+RLS anyway. A BEFORE UPDATE trigger is the only layer that sees OLD vs NEW and binds every writer. Exactly one
+transition is permitted on an issued pack (`issued → superseded`) and it must leave snapshot, storage_path, sections,
+title, version, issued_by/at and format **byte-identical** — proven. DELETE of an issued/superseded pack is refused
+too: deleting it would erase the record of what a board received.
+
+## §8.7 in full
+Correction = **new version**, never an edit. `snapshot_id` is **copied, never re-pointed**: a corrected pack reports the
+SAME numbers, corrected in presentation. If the numbers themselves changed, that is a new snapshot and a new pack —
+re-pointing a pack at different numbers while keeping its identity is the precise lie this programme exists to prevent.
+**SoD added** (approver ≠ issuer), mirroring `strata_approve_record` — issuance is what makes a pack a board record.
+
+## F-3 discharged at DB level
+`strata_board_pack_qualification` — **derived** from `strata_integrity_exceptions`, never copied onto the pack: a copy
+goes stale the moment the register changes, and the stale copy is what would get **printed on a board pack**. It states
+the distinction that matters: *the figures are OFFICIAL and UNCHANGED; what is qualified is their PROVENANCE.*
+Issuance also stamps the qualification into the audit trail — the point-in-time fact of what was known when the board
+received it. Proven live against **SNAP-1**, a genuinely qualified snapshot.
+
+## Status
+✅ **DONE** — applied, ledger 1:1, gates green, suite **2,442 / 6** (the clean end of the flaky range).
+**Remaining in R2: the editorial builder UI** (`title`/`sections` columns + RPCs exist; no UI yet) — DB-complete,
+UI-pending. Then R3 → R4 → R5.

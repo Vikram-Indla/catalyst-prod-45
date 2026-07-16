@@ -575,3 +575,35 @@ Persisted backfill (committed): `REV-1 Q1 FY2026 Executive Review` · `REV-2 Q1 
 vitest.** The 8 = **6 pre-existing foreign ChatDock** + **2 load-flaky** (`AgeingPanel.navigate`,
 `registry-drift`) which **PASS in isolation** and time out only under full-suite load on this machine. Step 7's
 "2,442 / 6" was the lucky run; 8 is the more common reading. Recorded rather than re-run until green.
+
+---
+
+# F1 · board packs — RAW EVIDENCE (rolled back)
+Driven over **SNAP-1**, a genuinely integrity-qualified snapshot, so F-3 is exercised for real rather than simulated.
+```
+=== F1 BOARD PACKS (rolled back) ===
+issue unapproved      -> a board pack must be approved before it is issued (current: draft)
+SoD approver=issuer   -> segregation of duties: the approver cannot also issue the pack
+ISSUED pack: title UPDATE -> board pack … is ISSUED and cannot be changed — the board received this artefact.
+ISSUED pack: DELETE   -> board pack … was issued to a board and cannot be deleted
+supersede w/o reason  -> a reason is required … the board must be told why it changed
+supersede unissued    -> only an ISSUED pack can be superseded (current: draft)
+reinstate superseded  -> board pack … is superseded — its successor is the current version
+CORRECTION: v2 version=2 supersedes ok=t issue_status=draft snapshot UNCHANGED=t
+PREDECESSOR after supersede: issue_status=superseded · everything else byte-identical=t
+F-3 QUALIFICATION on a pack over SNAP-1: is_qualified=t values_changed=f reproducibility=incomplete
+  note: The figures in this pack are OFFICIAL and UNCHANGED — they were frozen when the snapshot was locked. What is q…
+```
+| §8.7 / authorization clause | Result |
+|---|---|
+| **an issued pack cannot be mutated** | ✅ UPDATE and DELETE both refused |
+| **a correction produces a superseding version** | ✅ v2, `supersedes_id` set |
+| **`snapshot_id` unchanged** | ✅ copied, never re-pointed |
+| predecessor otherwise byte-identical | ✅ only `issue_status` moved |
+| Strategy Office issuance | ✅ role-gated **+ SoD (approver ≠ issuer)** |
+| **F-3 — qualification on packs/exports** | ✅ derived view + stamped into the audit trail at issuance |
+
+## Gates (F-11: `npx tsc --noEmit` is a no-op)
+`tsc -p tsconfig.app.json`: **0 errors under `src/modules/strata`** · colors 0=0 · audit no category above baseline ·
+CRE pass · suite **2,442 passed / 6 failed** (this run landed at the clean end of the flaky range; see the corrected
+baseline note — 2 load-flaky tests pass in isolation).

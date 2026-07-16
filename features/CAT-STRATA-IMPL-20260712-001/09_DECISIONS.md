@@ -439,3 +439,26 @@ every claim in `06_VALIDATION_EVIDENCE.md` was actually established, so no shipp
    immediately without demanding a 159-error cleanup first.
 **Until then, report the gate honestly:** "tsc: no errors in touched files (`-p tsconfig.app.json`); 159 pre-existing
 errors in 4 foreign files" — **never a bare "tsc clean"**.
+
+## F-12 · APPLIED (session 026, 2026-07-17) — board-pack issuance gets its OWN column; `status` is left alone
+> Deviation from blueprint §6's literal wording. Derived from the authorization's own capability list + the shipped
+> schema. Logged, not silently adapted. **Flagged for override.**
+
+**§6 says:** `strata_board_packs` status "+issued, superseded".
+**Probed:** `status` is already a **GENERATION** lifecycle — `CHECK (pending | generating | ready | failed)`. It tracks
+whether the *artefact rendered*. 3 existing rows use `pending`/`ready`.
+**The authorization asks for more than §6 did:** an editorial *builder*, *review*, *approval* **and** issuance —
+i.e. `draft → in_review → approved → issued → superseded`.
+
+**Why not one column.** Piling those onto `status` conflates two **orthogonal** facts: *"has the file rendered?"* and
+*"has the Strategy Office approved and issued it?"*. `generating` and `in_review` are not comparable states, and a pack
+reading `issued` would have **lost** its generation state — you could no longer tell whether the artefact exists. It
+would also silently redefine the meaning of a column already in use by 3 rows.
+
+**Taken:** `status` untouched (keeps its meaning and its rows); new **`issue_status`** carries the editorial lifecycle,
+defaulting existing rows to `draft` — which is the truth: they were generated, never issued. Smallest design that
+satisfies the approved operating model without destroying a meaning already in use.
+
+**Also applied:** immutability is a **BEFORE UPDATE trigger**, not RLS. RLS gates *whether a row is writable*, not
+*which fields changed*, and the issue/supersede RPCs are SECURITY DEFINER so they bypass RLS entirely. The trigger is
+the only layer that sees old vs new and binds **every** writer — RPC, client, and future migrations alike.
