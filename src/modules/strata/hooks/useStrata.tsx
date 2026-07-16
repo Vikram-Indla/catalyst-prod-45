@@ -264,6 +264,13 @@ export const useModelPerspectives = (modelId?: string) =>
     enabled: !!modelId,
     staleTime: STALE,
   });
+export const useRoleSod = (userId?: string) =>
+  useQuery({
+    queryKey: ['strata', 'role-sod', userId],
+    queryFn: () => governanceApi.checkRoleSod(userId!),
+    enabled: !!userId,
+    staleTime: STALE,
+  });
 export const useAllModelPerspectives = () =>
   useQuery({ queryKey: ['strata', 'model-perspectives-all'], queryFn: scorecardApi.allModelPerspectives, staleTime: STALE });
 export const useScorecardInstances = (cycleId?: string) =>

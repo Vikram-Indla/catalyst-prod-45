@@ -1,6 +1,6 @@
 # 03 — PLAN LOCK · F1 · Server SoD-check RPC (closes anchor 27's CLEAN/GUARDED/CONFLICT column)
 
-> STATUS: **PROPOSED — awaiting Vikram. NO CODE until approved.** Target: `catalyst-staging` (the live target;
+> STATUS: **F1a ✅ BUILT + APPLIED + VERIFIED (2026-07-16). F1b DEFERRED.** Target: `catalyst-staging` (the live target;
 > `catalyst-prod` is a scope, not production). Migration: **yes, one** (F1a). PR-based (no direct push to main).
 
 ## Why this exists
@@ -48,7 +48,10 @@ be, at any time, regardless of role set. Therefore **GUARDED is not a role-COMBI
 This is a *stronger* mirror than the original F1a sketch (which assumed submit-role + validate-role overlap, e.g.
 `kpi_owner + vmo_validator`). That assumption was wrong: `kpi_owner` appears in **none** of the four gates.
 
-**⛔ NOT STARTED — insufficient context budget remained to build + verify honestly.** Ship it as its own slice.
+**✅ BUILT.** Migration `20260716130000_strata_check_role_sod.sql` (applied to staging + explicit ledger INSERT, 1:1).
+`governanceApi.checkRoleSod` → `useQueries` per person → SoD column + rail. Verified live against the engine:
+Vikram/strategy_office=GUARDED · Jahanara/strategy_office=GUARDED · Jahanara/**kpi_owner=CLEAN** · Jahanara/vmo_validator=GUARDED
+— identical to the RPC. Rail quotes all four rules verbatim. Gates green; STRATA suite 10 files/57 tests; map untouched.
 
 ## F1a — GUARDED/CLEAN · **mirrorable, no new policy** → APPROVED (build per the refined design above)
 An RPC that *projects the four existing rules* onto a person's role set. It invents nothing:

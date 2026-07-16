@@ -15,7 +15,7 @@ import type {
   StrataKpiTypeConfig, StrataMapEdge, StrataMilestone, StrataModelPerspective, StrataNotification, StrataNotificationRule, StrataOkr,
   StrataPeriod, StrataPerspective, StrataThemeCharter, StrataPortfolio, StrataProjectCard,
   StrataProjectCardFieldConfig, StrataProjectCardPicklist, StrataProjectCardSectionConfig,
-  StrataNotificationTarget, StrataProjectCardTabConfig, StrataRisk, StrataRole, StrataScorecardInstance, StrataScorecardLine,
+  StrataNotificationTarget, StrataProjectCardTabConfig, StrataRoleSod, StrataRisk, StrataRole, StrataScorecardInstance, StrataScorecardLine,
   StrataScorecardModel, StrataSnapshot, StrataStagingRow, StrataStrategyElement, StrataThresholdScheme,
   StrataUploadRun, StrataUploadTemplate, StrataValidationResult, StrataValueCategory,
   StrataWorkflowConfig,
@@ -1219,6 +1219,17 @@ export const governanceApi = {
     })),
   roleAssignments: () =>
     run(typedQuery('strata_role_assignments').select('*').order('granted_at', { ascending: false })),
+  /**
+   * SoD verdict per role the person holds (F1a, anchor 27). PROJECTS the four
+   * SoD rules the engine already enforces — it invents no policy. 'guarded' =
+   * the role is gated by a real rule, so that rule WILL refuse them on their own
+   * records; 'clean' = no rule can bite them. `rules` are quoted verbatim from
+   * the engine. CONFLICT is deliberately absent (F1-D2 deferred): the server
+   * never refuses a role COMBINATION, so claiming one would assert a check that
+   * does not exist.
+   */
+  checkRoleSod: (userId: string): Promise<StrataRoleSod[]> =>
+    run(typedRpc('strata_check_role_sod', { p_user: userId })),
   assignRole: (userId: string, role: StrataRole, scopeType = 'global', scopeEntityId?: string): Promise<string> =>
     run(typedRpc('strata_assign_role', {
       p_user: userId, p_role: role, p_scope_type: scopeType,

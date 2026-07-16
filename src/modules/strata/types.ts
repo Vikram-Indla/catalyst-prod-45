@@ -799,6 +799,16 @@ export interface StrataNotification {
   created_at: string;
 }
 
+/** SoD verdict for ONE role a person holds (F1a). Projection of the engine's
+ *  four record-scoped rules — never a new policy. No 'conflict': the server does
+ *  not refuse role combinations (F1-D2 deferred). */
+export interface StrataRoleSod {
+  role_key: string;
+  verdict: 'clean' | 'guarded';
+  /** The engine's rule text, verbatim — the rail quotes rather than paraphrases. */
+  rules: string[];
+}
+
 /** Where a notification's object lives, and whether its ask is already done. */
 export interface StrataNotificationTarget {
   /** Slug / display key for the object's route; null when it cannot be resolved. */
