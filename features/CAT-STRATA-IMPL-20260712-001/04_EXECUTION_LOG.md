@@ -1258,3 +1258,33 @@ moment a name is given; their content is already written and evidenced in bluepr
 
 ## Status
 ✅ **TABLE DONE** — applied, ledger 1:1, gates green, suite 2,434/6. ⛔ **RECORDS PENDING F-1.**
+
+---
+
+# R0 · P0-D2 — F-1 correction + the three exception records · migration `20260716200000`
+**Alignment with the approved F-1 ruling. Not a new product decision.**
+
+## What changed
+`owner_role` (NOT NULL, DEFAULT `strategy_office`, CHECK over the six shipped roles — vocabulary copied from
+`strata_role_assignments`' own CHECK, not invented) · `strategy_office_owner` → **renamed** `assigned_owner_id` and
+made **nullable** · `status` (open|in_progress|closed) + `due_on` added alongside the existing `resolution` ·
+`UNIQUE … NULLS NOT DISTINCT` · **the three records filed**.
+
+## The correction
+Session 026 modelled the owner as a required individual and left the register empty, calling F-1 a blocker. The ruling
+is the opposite: the **role** is accountable. The register was blocked **by its own schema**, not by a missing fact.
+Safe to restructure because the table was empty (0 rows), so the rename lost nothing and needed no backfill.
+
+## Records filed (all `owner_role='strategy_office'`, `assigned_owner_id=NULL`, `detection_is_lower_bound=true`)
+| class | subject | v | status | resolution |
+|---|---|---|---|---|
+| snapshot_provenance | SNAP-1 · CEO Enterprise Scorecard | 1 | open | preserved_with_qualification |
+| snapshot_provenance | SNAP-1001 · CEO Enterprise Scorecard | 1 | open | preserved_with_qualification |
+| model_approval_provenance | B2B Sector Scorecard (approved_at NULL) | 1 | open | superseded_prospectively |
+
+**Every figure re-probed 2026-07-16, not copied from prose:** SNAP-1 → 1 post-lock perspective row; SNAP-1001 → 5;
+both stamp CEO model **v1**. B2B → 3 perspective weights + 2 measures after it became effective.
+`created_by` is NULL by design: these were filed **by a migration, not a person**. Do not stamp an actor who did not file them.
+
+## Status
+✅ **DONE** — applied, ledger 1:1, gates green, suite 2,434/6. **F-1 is discharged and is no longer a blocker.**

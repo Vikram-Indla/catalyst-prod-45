@@ -355,3 +355,24 @@ revision.** The *mechanism* is not, and it is not derivable from the blueprint.
 are not.** `strata_create_threshold_draft_version` (A3c) is closer to A3a — `strata_threshold_schemes` has no
 aggregate children at all (only `strata_kpis`/`strata_scorecard_models` REFERENCE it), so its clone is parent-only and
 should be safe. **A3c is not blocked by F-9; A3b is.**
+
+## F-1 ✅ RULED (Vikram, 2026-07-16) — accountability is the ROLE; a named person is OPTIONAL
+- **Ruling:** "Accountability belongs to the Strategy Office role; a named person is optional." Add required
+  `owner_role` (constrained to the supported role vocabulary, defaulted `strategy_office`); make the personal owner
+  **nullable** as `assigned_owner_id`; retain append-only + status/due-date/resolution; **do not fabricate a person**;
+  **file the three records** with `owner_role='strategy_office'` and no individual.
+  **Recorded as ALIGNMENT with the already-approved F-1 decision — NOT a new product decision.**
+- **What session 026 got wrong:** it read F-1 as "a name is required and cannot be inferred", and modelled
+  `strategy_office_owner NOT NULL`. That **contradicted** the ruling and made the register unfillable — the register
+  was blocked **by its own schema**, not by a missing fact. Corrected by `20260716200000` (P0-D2).
+- **The zero-assumption principle still holds, and is now expressed more precisely:** `assigned_owner_id IS NULL`
+  means **"no individual assigned; accountability rests with owner_role"** — it does **not** mean "owner unknown".
+  That is why the role field is NOT NULL and the personal field is nullable. Guessing a person remains banned.
+- **`status` vs `resolution` are deliberately separate** (both retained per the ruling). `resolution` is the RULED
+  disposition (E-1 preserve-with-qualification; E-2 supersede-prospectively) and is fixed when the record is filed.
+  `status` is whether it has been CARRIED OUT. **B2B v1 proves why:** resolution `superseded_prospectively` (ruled) but
+  status `open` (v2 does not exist yet). Collapsing them would let a ruled-but-unperformed remediation read as done.
+- **Bug found and fixed in P0-D's own design while applying this:** `UNIQUE(exception_class, affected_snapshot_id, …)`
+  treats NULLs as DISTINCT, so **model_approval_provenance records (snapshot NULL) could be filed repeatedly** — the
+  one class the duplicate guard most needed to cover was the one it did not. Rebuilt as
+  `UNIQUE NULLS NOT DISTINCT` (PG15+; staging runs 17.6). Proven rejected.

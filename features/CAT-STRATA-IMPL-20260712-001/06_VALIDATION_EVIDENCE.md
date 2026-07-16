@@ -230,3 +230,29 @@ detection_is_lower_bound default : t
 
 **Ledger 1:1:** `20260716190000 · strata_integrity_exceptions`. **Gates:** tsc clean · colors 0=0 · audit no category
 above baseline · CRE pass · suite **2,434 passed / 6 failed**.
+
+---
+
+# P0-D2 · F-1 correction — RAW EVIDENCE
+```
+=== F-1 CORRECTION (rolled back) ===
+records filed            : 3
+UPDATE  (append-only)    -> permission denied for table strata_integrity_exceptions
+DELETE  (append-only)    -> permission denied for table strata_integrity_exceptions
+dup model-class (NULL snap) -> duplicate key value violates unique constraint "strata_integrity_exceptions_unique"
+bad owner_role           -> violates check constraint "strata_integrity_exceptions_owner_role_check"
+LOCKED SNAPSHOTS BYTE-IDENTICAL : t
+assigned_owner_id all NULL (no person fabricated) : t
+```
+| Ruling clause | Result |
+|---|---|
+| three records filed with `owner_role='strategy_office'`, no individual | ✅ 3 rows, `assigned_owner_id` all NULL |
+| **do not fabricate a person** | ✅ |
+| append-only retained through the restructure | ✅ UPDATE + DELETE both denied |
+| status / due-date / resolution retained | ✅ (`status` open · `due_on` nullable · `resolution` unchanged) |
+| owner_role constrained to the supported vocabulary | ✅ `chief_vibes_officer` rejected |
+| duplicate guard now covers NULL-snapshot records | ✅ rejected (it did not before — P0-D bug, fixed here) |
+| **locked snapshots untouched** | ✅ byte-identical (`jsonb_agg(to_jsonb(s))` compare) |
+
+**Ledger 1:1:** `20260716200000 · strata_integrity_exceptions_owner_role`.
+**Gates:** tsc clean · colors 0=0 · audit no category above baseline · CRE pass · suite **2,434 passed / 6 failed**.
