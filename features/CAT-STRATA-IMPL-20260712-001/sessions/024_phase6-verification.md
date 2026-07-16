@@ -66,3 +66,28 @@ slug routes" blocker — **a true premise with a wrong conclusion, inherited and
 - **6C** — STRATA Phase-5 regression tests (`resolveNotificationTarget`, `bandRows` range derivation, model-integrity
   sums, `countPending` — all pure functions).
 - **6D** — retest E2E defects 010 & 013.
+
+---
+
+## Slice 6B — Close AC-6 (keyboard-only) ✅ weight-change PROVEN (1 of 4 verbs)
+**Files:** `src/modules/strata/__tests__/ac6-keyboard-weight-change.test.tsx` (NEW) · `package.json`
+(declare `@testing-library/user-event ^14.6.1` — it was present in node_modules only transitively).
+
+- §20 AC-6 was NOT VERIFIED because the browser harness could not deliver keystrokes. **6A removed that constraint**, so
+  the harness was swapped: `userEvent.tab()` performs real sequential focus navigation in jsdom.
+- **2 tests, both green:**
+  1. Whole verb, zero mouse events: Tab→`Edit weights`→**Enter**→Tab→input→type `30`→Tab→input→type `45`→Tab→`Save
+     weights`→**Enter** ⇒ `setModelPerspectiveWeights('m1',[{p1:30},{p2:45},{p3:25}])` fired once with the
+     keyboard-typed values.
+  2. Integrity rule holds from the keyboard: at 70, Save is disabled, reason **visible**, Enter cannot commit.
+- **The component was vindicated by a failure.** Inputs `30,35,25` + Save disabled looked like a bug; it was my test's
+  arithmetic (30+35+25=90). The component correctly rendered "Total 90%" and blocked Save. Rebalanced to 30/45/25 = 100,
+  which additionally proves Tab traversal BETWEEN inputs.
+- Test-authoring notes for reuse: `vi.mock` factories are hoisted ⇒ all fixtures live in `vi.hoisted()`; match controls by
+  `data-testid` (text matching is brittle — `StatusLozenge` renders its label more than once); `src/test/setup.ts`
+  auto-wraps every render in QueryClientProvider + stub auth, so no manual providers are needed.
+- STRATA suite: 7 files / 25 tests green. Gates: tsc · colors 0/0 · audit 19798/19798 · CRE — all green.
+
+### ⚠️ AC-6 is 1 of 4 — NOT green
+`validate`, `resolve` and `record` remain unproven. The reusable pattern (`tabUntilFocused` + hoisted hook mocks) is in
+place for them.
