@@ -1186,3 +1186,41 @@ RPC-only (`strata_submit_record`). Re-run through the real governed lifecycle: d
 ## Status
 ✅ **DONE** — applied to staging, ledger 1:1, gates green, §8.2 proven in full with the predecessor byte-identical.
 **F-4 is now discharged: A2→A3 landed back-to-back, and the E-2 v2 clone path is unblocked.**
+
+---
+
+# R0 · P0-C / E-4 — governed-child auditability · migration `20260716180000`
+
+## Census FIRST (verified against pg_trigger + information_schema — this shrank the slice)
+| | tables |
+|---|---|
+| Already have `updated_at` + touch trigger + **`strata_audit` trigger** | **10** — kpi_actuals · kpi_targets · kpi_formula_versions · scorecard_lines · key_results · gate_model_stages · scorecard_instances · theme_charters · upload_runs · benefit_values |
+| Have **none** of the three | **4** — model_perspectives · model_measures · element_kpis · initiative_kpis |
+
+**Blueprint §13.2 is WRONG:** it says the 10 "already have `updated_at` — **triggers still required**". They already
+have the triggers too. Nothing was done to them. E-4's real scope is exactly §13.1's 4 tables.
+
+## Reuse — E-4 needed almost no new code
+- **`strata_audit()` is already exactly what E-4 specifies**: `(entity_table, entity_id, TG_OP, auth.uid(),
+  before=to_jsonb(OLD), after=to_jsonb(NEW))`, generic over any table with an `id`. The **parent** travels inside the
+  payload (`model_id`/`kpi_id`/`element_id`), so "capture … parent" needs no extra column.
+- **`strata_audit_events` already has `before` + `after` jsonb.** §13.3's "extend it rather than mint a second audit
+  store" is satisfied by the shipped shape — no ALTER, no second store.
+- **`strata_touch_updated_at()` reused verbatim** (§13.3 explicitly requires this).
+- **One** new function: `strata_touch_updated_by()`. It is deliberately NOT folded into
+  `strata_touch_updated_at` — that function is shared by 10 tables with no `updated_by` column, and assigning
+  `NEW.updated_by` there would break every one of them.
+
+## F-5 honoured mechanically, not just documented
+`ADD COLUMN updated_at timestamptz` (no default) → existing rows **NULL**; `ALTER … SET DEFAULT now()` afterwards →
+only NEW rows stamped. Same for `created_by`. A single `ADD COLUMN … DEFAULT now()` would have backfilled `now()` onto
+all 8 legacy rows — asserting a change time that never happened, on the very rows under investigation. A
+`COMMENT ON COLUMN` on each table carries F-5's marker: **NULL means UNKNOWN, never UNCHANGED.**
+
+## Consequence for the register (§13.4)
+The register is a LOWER BOUND **for everything before 2026-07-16** and becomes a true census **prospectively only**.
+It can never retroactively recover the undetectable past. That wording stays mandatory on every run.
+
+## Status
+✅ **DONE** — applied, ledger 1:1, gates green, suite 2,434/6. The in-place child UPDATE that was undetectable is now
+captured with old+new values, parent, actor and timestamp.

@@ -179,3 +179,29 @@ AFTER APPROVE -> predecessor status=superseded effective_to set=t
 
 **Gates:** tsc clean · `lint:colors:gate` 0=0 · `audit:ads:gate` no category above baseline · `lint:cre` pass ·
 Node-22 suite **2,434 passed · 6 failed · 16 skipped / 2,456** (the 6 = pre-existing foreign ChatDock).
+
+---
+
+# P0-C / E-4 — RAW EVIDENCE
+Driven as a real non-admin `strategy_office` user; rolled back — no staging data written.
+```
+=== P0-C / E-4 RESULT (rolled back) ===
+audit events: INSERT=1 UPDATE=1 DELETE=1 (expect 1/1/1)
+old weight -> new weight : 40.000 -> 99.000  (old+new value capture)
+parent captured in payload (model_id) : t
+actor_id captured : t
+updated_at stamped on UPDATE : t
+updated_by stamped on UPDATE : t
+F-5: pre-existing perspective rows with updated_at NULL (expect all legacy rows) : 8
+```
+| E-4 clause | Result |
+|---|---|
+| INSERT **and** UPDATE **and** DELETE audited | ✅ 1/1/1 (a DELETE-blind audit cannot tell "never existed" from "removed") |
+| old + new values | ✅ 40.000 → 99.000 — **the exact in-place UPDATE that was undetectable before this slice** |
+| parent · actor · timestamp · operation | ✅ all four |
+| `updated_at` / `updated_by` on UPDATE | ✅ / ✅ |
+| **F-5 — no fabricated timestamps** | ✅ 8 legacy rows NULL (5 CEO + 3 B2B perspectives), not `now()` |
+| second audit store minted | ✅ none — `strata_audit_events` reused as shipped |
+
+**Ledger 1:1:** `20260716180000 · strata_child_auditability`.
+**Gates:** tsc clean · colors 0=0 · audit no category above baseline · CRE pass · suite **2,434 passed / 6 failed**.
