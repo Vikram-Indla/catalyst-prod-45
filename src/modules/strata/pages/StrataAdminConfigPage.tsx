@@ -10,7 +10,7 @@ import React, { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import Tabs, { Tab, TabList, TabPanel } from '@atlaskit/tabs';
 import {
-  Button, CatalystInlineCode, CatalystTag, EmptyState, Modal, ModalBody, ModalFooter,
+  Button, CatalystInlineCode, CatalystTag, EmptyState, Lozenge, Modal, ModalBody, ModalFooter,
   ModalHeader, ModalTitle, SectionMessage, Spinner, Textfield,
 } from '@/components/ads';
 import { JiraTable } from '@/components/shared/JiraTable';
@@ -1310,6 +1310,182 @@ const SECTIONS: Array<{
   { key: 'change-log', label: 'Change log', icon: Clock, render: () => <ChangeLogSection /> },
 ];
 
+// ── Config landing (anchor 03) — governed control plane, bare /strata/admin ──
+// Reorganises the 12 config sections by CONSEQUENCE. Each domain card routes to
+// its primary section today (:section); measurement/data/access repoint to their
+// own domain pages as those slices land. Pending counts + change log are the
+// governance signal — nothing is fabricated.
+const DOMAINS: Array<{
+  key: string;
+  name: string;
+  icon: React.ComponentType<{ size?: number }>;
+  governs: string;
+  to: string;
+  sectionLabels: string[];
+}> = [
+  {
+    key: 'strategy-framework', name: 'Strategy framework', icon: Layers,
+    governs: 'Perspectives — the scoring lens every scorecard rolls up through.',
+    to: Routes.strata.adminSection('perspectives'), sectionLabels: ['Perspectives'],
+  },
+  {
+    key: 'measurement', name: 'Measurement', icon: Scale,
+    governs: 'Scorecard models, threshold bands and KPI formulas — how performance is calculated and rated.',
+    to: Routes.strata.adminSection('scorecard-models'), sectionLabels: ['Scorecard models', 'Thresholds', 'KPI types'],
+  },
+  {
+    key: 'value-governance', name: 'Value & governance', icon: Gem,
+    governs: 'Benefit taxonomy and stage-gate models — how value is classified and approved.',
+    to: Routes.strata.adminSection('value-taxonomy'), sectionLabels: ['Value taxonomy', 'Gates'],
+  },
+  {
+    key: 'data-integration', name: 'Data & integration', icon: Upload,
+    governs: 'Upload templates and the ingestion contracts that feed actuals into STRATA.',
+    to: Routes.strata.adminSection('upload-templates'), sectionLabels: ['Upload templates'],
+  },
+  {
+    key: 'workflow-access', name: 'Workflow & access', icon: Users,
+    governs: 'Lifecycle workflows and the role assignments that decide who can act.',
+    to: Routes.strata.adminSection('roles'), sectionLabels: ['Workflows', 'Roles'],
+  },
+  {
+    key: 'reference-display', name: 'Reference & display', icon: Rocket,
+    governs: 'Project Card layout and notification rules — how configuration surfaces to end users.',
+    to: Routes.strata.adminSection('project-card'), sectionLabels: ['Project Card', 'Notifications'],
+  },
+];
+
+const countPending = (rows?: ReadonlyArray<{ status: GovernedStatus }>): number =>
+  (rows ?? []).filter((r) => r.status === 'pending_approval').length;
+
+function DomainCard({ domain, pending, onOpen }: {
+  domain: (typeof DOMAINS)[number];
+  pending: number;
+  onOpen: () => void;
+}) {
+  const Icon = domain.icon;
+  return (
+    <button
+      type="button"
+      className="strata-domain-card"
+      onClick={onOpen}
+      data-testid={`strata-admin-domain-${domain.key}`}
+      style={{
+        display: 'flex', flexDirection: 'column', gap: 8, textAlign: 'left', width: '100%',
+        border: `1px solid ${T.border}`, borderRadius: 8, padding: 16, cursor: 'pointer',
+        background: T.raised, color: T.text, font: 'inherit',
+      }}
+    >
+      <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
+        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+          <span aria-hidden style={{ display: 'inline-flex', color: T.subtle }}><Icon size={18} /></span>
+          <strong style={{ fontSize: 'var(--ds-font-size-200)', color: T.text }}>{domain.name}</strong>
+        </span>
+        {pending > 0 ? (
+          <Lozenge appearance="moved">{pending} pending</Lozenge>
+        ) : null}
+      </span>
+      <span style={{ fontSize: 'var(--ds-font-size-100)', color: T.subtle, lineHeight: 'var(--ds-line-height-body)' }}>
+        {domain.governs}
+      </span>
+      <span style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginTop: 4 }}>
+        {domain.sectionLabels.map((l) => <CatalystTag key={l} text={l} />)}
+      </span>
+    </button>
+  );
+}
+
+function AdminLanding() {
+  const navigate = useNavigate();
+  const perspectives = usePerspectives();
+  const models = useScorecardModels();
+  const thresholds = useThresholdSchemes();
+  const valueCats = useValueCategories();
+  const gates = useGateModels();
+  const kpiTypes = useKpiTypes();
+  const templates = useUploadTemplates();
+  const workflows = useWorkflowConfigs();
+  const roles = useStrataRoles();
+
+  const pendingByDomain: Record<string, number> = {
+    'strategy-framework': countPending(perspectives.data),
+    measurement: countPending(models.data) + countPending(thresholds.data) + countPending(kpiTypes.data),
+    'value-governance': countPending(valueCats.data) + countPending(gates.data),
+    'data-integration': countPending(templates.data),
+    'workflow-access': countPending(workflows.data),
+    'reference-display': 0,
+  };
+  const totalPending = Object.values(pendingByDomain).reduce((a, b) => a + b, 0);
+  const isStrataAdmin = (roles.data ?? []).includes('strata_admin');
+  const pendingDomains = DOMAINS.filter((d) => pendingByDomain[d.key] > 0);
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 16, paddingTop: 8 }}>
+      <style>{
+        '.strata-domain-card:hover{background:var(--ds-surface-raised-hovered);border-color:var(--ds-border-bold);}'
+        + '.strata-domain-card:focus-visible{outline:2px solid var(--ds-border-focused);outline-offset:2px;}'
+      }</style>
+
+      {/* Governance context line */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
+        <Lozenge appearance="new" isBold>Governed control plane</Lozenge>
+        <span style={{ fontSize: 'var(--ds-font-size-200)', color: T.subtle }}>
+          {isStrataAdmin
+            ? 'You are strata_admin — every change here is versioned, approved and audited.'
+            : 'Every change here is versioned, approved and audited.'}
+        </span>
+      </div>
+
+      {/* Approval band — real pending_approval counts, routed to where they're actioned */}
+      <div
+        data-testid="strata-admin-approval-band"
+        style={{
+          display: 'flex', flexDirection: 'column', gap: 8,
+          border: `1px solid ${T.border}`, borderRadius: 8, padding: 16, background: T.sunken,
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+          {totalPending > 0
+            ? <Lozenge appearance="moved" isBold>Awaiting approval</Lozenge>
+            : <Lozenge appearance="success" isBold>All approved</Lozenge>}
+          <strong style={{ fontSize: 'var(--ds-font-size-200)', color: T.text }}>
+            {totalPending > 0
+              ? `${totalPending} governed change${totalPending === 1 ? '' : 's'} need an independent approver`
+              : 'Nothing is awaiting review'}
+          </strong>
+        </div>
+        <span style={{ fontSize: 'var(--ds-font-size-100)', color: T.subtle }}>
+          Segregation of duties is enforced in the database — the person who drafted a change cannot approve it.
+        </span>
+        {pendingDomains.length > 0 ? (
+          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 4 }}>
+            {pendingDomains.map((d) => (
+              <Button
+                key={d.key}
+                spacing="compact"
+                onClick={() => navigate(d.to)}
+                testId={`strata-admin-approval-jump-${d.key}`}
+              >
+                {d.name} · {pendingByDomain[d.key]}
+              </Button>
+            ))}
+          </div>
+        ) : null}
+      </div>
+
+      {/* Consequence-domain cards */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 12 }}>
+        {DOMAINS.map((d) => (
+          <DomainCard key={d.key} domain={d} pending={pendingByDomain[d.key]} onOpen={() => navigate(d.to)} />
+        ))}
+      </div>
+
+      {/* Change log + audit trail (reused canonical) */}
+      <ChangeLogSection />
+    </div>
+  );
+}
+
 export default function StrataAdminConfigPage() {
   const { section } = useParams<{ section?: string }>();
   const navigate = useNavigate();
@@ -1320,6 +1496,15 @@ export default function StrataAdminConfigPage() {
   // Deep-linked section (/strata/admin/:section) is a detail sub-view — the
   // breadcrumb carries "Administration / <Section>"; bare /strata/admin is index.
   const sectionEntry = section && idx >= 0 ? SECTIONS[idx] : null;
+
+  // Bare /strata/admin → governed control-plane landing (anchor 03, P5-D0).
+  if (!section) {
+    return (
+      <StrataPageShell title="Configuration" docTitle="Configuration" testId="strata-admin-chrome">
+        <AdminLanding />
+      </StrataPageShell>
+    );
+  }
 
   return (
     <StrataPageShell
