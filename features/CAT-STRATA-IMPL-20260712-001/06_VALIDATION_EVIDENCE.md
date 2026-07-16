@@ -540,3 +540,38 @@ CURRENT period (ends 2026-06-30): resolved=v2  achievement=<NULL> reason=no_actu
 - Suite **2,442 passed · 6 failed · 16 skipped / 2,464**. Baseline 2,434 → **+8, 0 new failures**.
   ⚠️ An interim run showed 8 failures — `AgeingPanel.navigate` timed out at 5000ms under load and **passes in
   isolation**. Re-run clean. Flagged rather than quietly re-run until green.
+
+---
+
+# E1 · reviews — RAW EVIDENCE (rolled back)
+```
+=== E1 REVIEWS (rolled back) ===
+BACKFILL: 2 migrated closed / 2 locked snapshots (expect equal)
+  participants on migrated rows: 0 (expect 0 — never invented)
+CADENCE DEFAULTS: departmental -> monthly (expect monthly) · executive -> quarterly (expect quarterly)
+bad review_type -> review type must be departmental or executive
+READINESS scheduled/no snapshot : is_ready=f reasons={"no snapshot attached","no board pack attached"}
+READINESS migrated/locked snap : is_ready=t reasons={"no board pack attached"}
+cannot close w/o snapshot     -> a review cannot close without a snapshot — there would be no record of which numbers it reviewed
+cannot close on non-locked    -> a review cannot close on a snapshot that is not locked (it is superseded) …
+closed review not editable    -> this review is closed — a closed review records a meeting that already happened …
+```
+Persisted backfill (committed): `REV-1 Q1 FY2026 Executive Review` · `REV-2 Q1 FY2027 Review (proof)` — both
+`closed` / `migrated`, chair+agenda+scheduled_for NULL.
+
+| §8.6 / D-6 clause | Result |
+|---|---|
+| 1 Closed migrated review per locked snapshot | ✅ 2/2 |
+| **chair / agenda / participants NULL, not invented** | ✅ (participants = 0 rows) |
+| marked historical | ✅ `origin='migrated'` + a note stating what was assumed vs recorded |
+| derived registry still available (compatibility) | ✅ untouched — D-6 coexistence |
+| monthly departmental / quarterly executive defaults | ✅ as defaults, overridable |
+| review readiness | ✅ derived view, names every blocking reason |
+
+## Gates — reported honestly (F-11)
+`tsc -p tsconfig.app.json`: **0 errors under `src/modules/strata`** (159 pre-existing foreign, unchanged) ·
+`lint:colors:gate` 0=0 · `audit:ads:gate` no category above baseline · `lint:cre` pass.
+**Suite: 2,440 passed · 8 failed.** ⚠️ **This slice changed ZERO `src` files (migration-only), so it cannot affect
+vitest.** The 8 = **6 pre-existing foreign ChatDock** + **2 load-flaky** (`AgeingPanel.navigate`,
+`registry-drift`) which **PASS in isolation** and time out only under full-suite load on this machine. Step 7's
+"2,442 / 6" was the lucky run; 8 is the more common reading. Recorded rather than re-run until green.

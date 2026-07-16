@@ -1579,3 +1579,44 @@ tsc** — every claim in `06_VALIDATION_EVIDENCE.md` was established by DB probe
 ✅ **DONE** — gates green, **8 new tests**, suite **2,442 passed / 6 failed** (baseline 2,434 → +8; the 6 are the
 pre-existing foreign ChatDock failures). `usage-map.generated.ts` regenerated for the new import.
 **Step 7's DB half was already proven in 6a** (material revision ⇒ Missing, never a carried-forward value).
+
+---
+
+# R2 · E1 — persisted review scheduling entity (D-6) · migration `20260717130000`
+`strata_reviews` + `strata_review_participants` + `strata_review_readiness` (view) +
+`strata_schedule_review` / `strata_update_review` + the D-6 backfill.
+
+## What already existed — and it shrank the slice
+**`strata_decisions` already has `snapshot_id` + `forum`; `strata_actions` already has `decision_id`.** So the
+authorization's "snapshot, agenda, decision and action relationships" is **already expressed** as
+snapshot ← decisions ← actions. E1 therefore **joins that chain at the snapshot** and does **NOT** add `review_id` to
+decisions/actions: a second path to the same fact lets the two disagree, and the existing chain answers every
+question. **Only `agenda` was genuinely absent, so only `agenda` was added.** `strata_reviews` itself was correctly
+reported absent by §9.
+
+## D-6 honoured literally
+Backfill = **2 migrated Closed reviews / 2 locked snapshots**. `chair_id`, `agenda`, `scheduled_for` and participants
+are **NULL/empty — never invented**. Participants are ROWS rather than a jsonb blob precisely so nobody can write `[]`
+and call it attendance. Each migrated row's `note` states the derivation **on the row**, including that
+`review_type`/`cadence` (executive/quarterly) are **an assumption of the migration, not a recorded fact** — a reader
+is never left guessing which fields were recorded.
+
+## The two defaults, as defaults
+`departmental → monthly`, `executive → quarterly`, applied via COALESCE in `strata_schedule_review`, **not** a CHECK.
+A CHECK forcing departmental⇒monthly would make a genuinely ad-hoc departmental review unrepresentable, and the system
+would then be lying about a meeting that really happened.
+
+## Readiness is DERIVED, never stored
+`strata_review_readiness` view. Storing it would create a second source of truth that goes stale the moment a snapshot
+locks — and someone would eventually trust the stale copy. `blocking_reasons` is an array so the UI can state **why**
+rather than render a bare red dot.
+
+## Probe finding
+**`strata_snapshots.status` CHECK is `locked | superseded` only** — a snapshot is locked by construction; there is no
+unlocked state. My first error message said "unlocked snapshot", describing a state that cannot exist. **Corrected**
+to name superseded explicitly.
+
+## Status
+✅ **DONE** — applied, ledger 1:1, gates green. All rules proven (backfill · participants 0 · cadence defaults ·
+readiness both ways · cannot close without a snapshot · cannot close on a non-locked snapshot · closed review immutable).
+**Next: F1 board-pack issue/supersede — it needs E1, which now exists.**
