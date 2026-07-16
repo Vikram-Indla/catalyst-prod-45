@@ -179,3 +179,36 @@ multi-tenancy initiative. Phase 6 carries no schema, so neither is in scope here
 - **AC-6 remainder**: `validate` / `resolve` / `record` keyboard proofs (pattern is in place).
 - **6 pre-existing ChatDock test failures** — foreign module, deliberately untouched.
 - Phase 7 (bugs) / Phase 8 (15 backend features — **gated on prod access**) / Phase 9 (UI polish).
+
+---
+
+## Slice 6E — AC-6 remaining verbs: validate · resolve · record ✅ **AC-6 NOW PASSES (4 of 4)**
+**File:** `src/modules/strata/__tests__/ac6-keyboard-decision-verbs.test.tsx` (NEW, 6 tests).
+**STRATA suite: 9 files / 51 tests → 10 files / 57 tests, all green.**
+
+The canonical-component rule paid off: the three verbs complete through only **two** shared modals, so the keyboard
+contract has two chokepoints, not three bespoke page flows.
+- validate → `StrataDecisionModal` (VmoPage → `validateBenefitValue`)
+- record → `StrataFormModal` (ReviewsPage → `createDecision`)
+- resolve → `StrataFormModal` (ProjectCardDetailView → `updateDependency`)
+
+**validate (3):** Tab to the NON-default verdict → Enter → Tab to note → type → Tab to Confirm → Enter ⇒
+`onConfirm('rejected', '<typed note>')`; `requireNote` gates Confirm and the requirement is **visible on the field**;
+a server/SoD rejection renders **verbatim and does not close the modal**.
+**record + resolve (3):** Tab → type → Tab to submit → Enter ⇒ `onSubmit` with the typed payload (specs mirror the real
+call sites); rejection surfaces without closing.
+
+### ⚖️ Scope of the PASS (stated, not glossed)
+Proven: every control keyboard-reachable/operable with zero mouse events + the typed payload reaches the submit boundary
++ rejections surface. **weight-change is stronger** — proven end-to-end to the real RPC. **Inferred for the other three:**
+the page's one-line payload→RPC handler (read, not executed) and the modal-open trigger (the same canonical ADS Button
+proven reachable in the weight-change path).
+
+### The gates caught me again — a false positive I authored
+My test copy said `run #498`; `#498` matches the hex-colour pattern, so `lint:colors:gate` went 0 → **+2** (the literal
+appears in both the input and the assertion) and `audit:ads:gate` 19798 → 19800. **Fixed by not writing test prose that
+looks like a hex colour** (`RUN-498`), NOT by annotating the scanner into silence. Both gates back to baseline.
+(Bullet dodged: `strata_play_charters` appears in a rejection-message fixture, which would trip the REQ-003 guard — but
+that guard's `walk()` excludes `__tests__`, so it is safe.)
+
+Gates: tsc · colors 0/0 · audit 19798/19798 · CRE — all green. Map byte-diff empty.
