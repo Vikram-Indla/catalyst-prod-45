@@ -27,7 +27,12 @@ dist-ssr
 *.sln
 *.sw?
 supabase/.temp/
+# Secrets: ignore every .env variant, keep the checked-in examples.
+# Bare `.env` alone left `.env.prod` / `.env.secrets` committable — and a
+# GitHub Desktop process in this repo auto-commits the working tree.
 .env
+.env*
+!.env.example*
 
 # Storybook build output (generated from source by `npm run build-storybook`)
 storybook-static/
