@@ -25,6 +25,7 @@ import type { Column } from '@/components/shared/JiraTable';
 import { kpiApi } from '../domain';
 import { useBandResolver, useStrataContext } from '../hooks/useStrata';
 import { StrataNotificationBell } from './StrataNotificationBell';
+import { StrataNotificationBand } from './StrataSystemStates';
 import { fmtDate, fmtPct, fmtRatioPct, fmtSarCompact, fmtScore, fmtUnit, labelize } from './format';
 import type { DataState, StrataDependency, StrataKeyResult, StrataOkr, StrataProjectCard, ThresholdBand } from '../types';
 
@@ -525,6 +526,10 @@ export function StrataPageShell({
           </>
         } state={state} />
       </div>
+      {/* "Why am I here" band for notification deep-links (anchor 28 state 3).
+        * Mounted once here so every STRATA object page gets it; renders nothing
+        * unless the URL carries ?n=<notificationId>. */}
+      <StrataNotificationBand />
       {children}
     </div>
   );

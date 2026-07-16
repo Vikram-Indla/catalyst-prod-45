@@ -160,7 +160,38 @@ canonical `StrataRestricted`).
   `StrataRestricted` verified by construction (session holds strata_admin, so the gate does not trigger). No console errors,
   no error boundary. Map untouched.
 
+## Slice 5G-2 — Notification landing (anchor 28 state 3, P5-D5) ✅ built + gate-green + live-verified
+**Files:** `types.ts` (+`StrataNotificationTarget`) · `domain/index.ts` (+`resolveNotificationTarget`) ·
+`components/StrataSystemStates.tsx` (+`StrataNotificationBand`) · `components/StrataNotificationBell.tsx` (object deep-link)
+· `components/shared.tsx` (mount band in `StrataPageShell`).
+- **The split's blocker was solved by probing staging, not by assuming.** Prior belief (and the bell's own header comment):
+  "entity ids are UUIDs and cannot build slug routes → navigate to the AREA". True that there's no link column — but each
+  entity_table CAN be hopped id→slug, and **the same hop also returns the resolution state**, which made the expired variant
+  nearly free. Probe: all 4 live event types resolve — `strata_kpis`→slug · `strata_benefit_values`→benefit.slug ·
+  `strata_decisions`→snapshot.snapshot_key · `strata_dependencies`→requesting_id→project_card.slug (matched for 32/32 rows).
+  **6 of 7 notifications resolve; 1 decision is orphaned (null snapshot) → falls back to the area, never a broken link.**
+- `governanceApi.resolveNotificationTarget(n)` → `{ key, done }`. `done` is real, per type: kpi.status='approved' ·
+  benefit_value.validated_at · decision.decided_at · dependency.status ∈ (resolved, cancelled). NO migration, NO new RPC —
+  plain selects only (P5-D6 held).
+- Bell now lands on the **OBJECT** (`/strata/execution/<card-slug>` etc.) with `?n=<id>`, falling back to the area landing
+  when `key` is null.
+- **`StrataNotificationBand`** mounted ONCE in `StrataPageShell` → every STRATA object page gets it; renders nothing without
+  `?n=`. Two designed variants (canonical `SectionMessage`): **live** (notification title + body + "You arrived here from
+  this notification" + Dismiss) and **expired** ("Already handled — nothing is due from you … was completed while the
+  notification waited") — the reader is released, never dead-ended. Dismiss strips `?n=` with `replace` (no history entry).
+- **Honest omission:** the anchor's expired copy names WHO resolved it ("validated by O. Al-Dossary on 11 Jul"); that needs
+  a per-type actor lookup we don't run, so the band states the fact without inventing an actor (zero-assumption).
+- Gates: tsc clean · colors 0/0 · audit 19798/19798 (no increase) · CRE passed.
+- **Live-verified against a DB oracle** (queried expected route + expected `done` per notification, then compared):
+  · "Blocker: ZZTEST-STRATA-E2E-Project-B-Blocker" → landed `/strata/execution/zztest-strata-e2e-project-b?n=…` on the real
+    card (PRJ-00031) + **EXPIRED** band — matches `dependency.status='resolved'` ✓
+  · "Validate Realized value" → `/strata/portfolio/benefits/ops-cost-reduction-automation?n=…` + **LIVE** band, benefit
+    highlighted in the register — matches `validated_at IS NULL` ✓
+  · Dismiss → `?n=` stripped, band gone, object page intact ✓
+  Orphan fallback + kpi/decision paths verified by construction (same tsc-checked switch). No console errors. Map untouched.
+
 ---
 
-# PHASE 5 COMPLETE (5A–5G) — 5G-2 notification landing carried as debt.
-All seven slices committed + fast-forward-merged to `main`. Every slice: gates green + live-verified + map byte-untouched.
+# PHASE 5 COMPLETE (5A–5G **+ 5G-2**) — anchor 28 fully delivered; no Phase-5 UI debt remains.
+All eight slices committed + fast-forward-merged to `main`. Every slice: gates green + live-verified + map byte-untouched.
+Deferred items are all BACKEND features (own migration + Plan Lock) — see `07_HANDOVER.md`.

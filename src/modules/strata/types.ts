@@ -799,6 +799,14 @@ export interface StrataNotification {
   created_at: string;
 }
 
+/** Where a notification's object lives, and whether its ask is already done. */
+export interface StrataNotificationTarget {
+  /** Slug / display key for the object's route; null when it cannot be resolved. */
+  key: string | null;
+  /** True when the requested action has already happened (expired variant). */
+  done: boolean;
+}
+
 export interface StrataNotificationRule {
   id: string;
   event_type: string;

@@ -17,11 +17,14 @@
  * UUID routes) plus a provenance band wired into every object page.
  */
 import React from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { Button, CatalystInlineCode, EmptyState } from '@/components/ads';
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
+import { Button, CatalystInlineCode, EmptyState, SectionMessage } from '@/components/ads';
 import { Routes } from '@/lib/routes';
-import { useStrataRoles } from '@/modules/strata/hooks/useStrata';
+import { governanceApi } from '@/modules/strata/domain';
+import { useStrataNotifications, useStrataRoles } from '@/modules/strata/hooks/useStrata';
 import { labelize } from '@/modules/strata/components/format';
+import type { StrataNotification } from '@/modules/strata/types';
 
 /** The owning area for a failed /strata/<area>/... route — the first exit. */
 const AREAS: Record<string, { label: string; to: string }> = {
@@ -67,6 +70,55 @@ export function StrataNotFound({ cause, testId }: {
           : undefined}
         testId={testId ?? 'strata-not-found'}
       />
+    </div>
+  );
+}
+
+/**
+ * Provenance band for a notification deep-link (anchor 28 state 3) — "why am I
+ * here". Mounted once in StrataPageShell, so it appears on whichever object the
+ * bell resolved to; renders nothing unless the URL carries `?n=<notificationId>`.
+ *
+ * Two designed variants: the live ask, and the EXPIRED one — when the action
+ * already happened while the notification waited, the band releases the reader
+ * instead of dead-ending them on an unchanged page. Who resolved it is not named:
+ * that would need a per-type actor lookup we do not run (zero-assumption).
+ */
+export function StrataNotificationBand() {
+  const [params, setParams] = useSearchParams();
+  const id = params.get('n');
+  const q = useStrataNotifications();
+  const n = id ? (q.data ?? []).find((x) => x.id === id) ?? null : null;
+  const targetQ = useQuery({
+    queryKey: ['strata', 'notification-target', id],
+    queryFn: () => governanceApi.resolveNotificationTarget(n as StrataNotification),
+    enabled: !!n,
+    staleTime: 60_000,
+  });
+
+  const dismiss = () => {
+    const next = new URLSearchParams(params);
+    next.delete('n');
+    setParams(next, { replace: true });
+  };
+
+  if (!id || !n) return null;
+  const done = targetQ.data?.done ?? false;
+
+  return (
+    <div style={{ marginBottom: 16 }} data-testid="strata-notification-band">
+      {done ? (
+        <SectionMessage appearance="success" title="Already handled — nothing is due from you">
+          <p>“{n.title}” was completed while the notification waited. You are seeing the object as it stands now.</p>
+          <Button spacing="compact" onClick={dismiss} testId="strata-notification-band-dismiss">Dismiss</Button>
+        </SectionMessage>
+      ) : (
+        <SectionMessage appearance="information" title={n.title}>
+          {n.body ? <p>{n.body}</p> : null}
+          <p>You arrived here from this notification.</p>
+          <Button spacing="compact" onClick={dismiss} testId="strata-notification-band-dismiss">Dismiss</Button>
+        </SectionMessage>
+      )}
     </div>
   );
 }

@@ -15,7 +15,7 @@ import type {
   StrataKpiTypeConfig, StrataMapEdge, StrataMilestone, StrataModelPerspective, StrataNotification, StrataNotificationRule, StrataOkr,
   StrataPeriod, StrataPerspective, StrataThemeCharter, StrataPortfolio, StrataProjectCard,
   StrataProjectCardFieldConfig, StrataProjectCardPicklist, StrataProjectCardSectionConfig,
-  StrataProjectCardTabConfig, StrataRisk, StrataRole, StrataScorecardInstance, StrataScorecardLine,
+  StrataNotificationTarget, StrataProjectCardTabConfig, StrataRisk, StrataRole, StrataScorecardInstance, StrataScorecardLine,
   StrataScorecardModel, StrataSnapshot, StrataStagingRow, StrataStrategyElement, StrataThresholdScheme,
   StrataUploadRun, StrataUploadTemplate, StrataValidationResult, StrataValueCategory,
   StrataWorkflowConfig,
@@ -1121,6 +1121,60 @@ export const governanceApi = {
     run(typedRpc('strata_mark_notification_read', { p_id: id })),
   markAllNotificationsRead: (): Promise<void> =>
     run(typedRpc('strata_mark_all_notifications_read', {})),
+  /**
+   * Resolve a notification to its OBJECT + whether its ask is already satisfied
+   * (anchor 28 state 3). strata_notifications stores entity_id as a UUID while
+   * STRATA routes are slug-only (SLUG CONTRACT), so every entity_table needs its
+   * own id→slug hop — there is no generic link column.
+   *
+   * `key` is null when the object is gone or orphaned (e.g. a decision whose
+   * snapshot was removed): callers fall back to the area landing rather than
+   * build a broken link. `done` reports that the requested action already
+   * happened, so the landing can release the reader instead of dead-ending.
+   */
+  resolveNotificationTarget: async (n: StrataNotification): Promise<StrataNotificationTarget> => {
+    const none: StrataNotificationTarget = { key: null, done: false };
+    if (!n.entity_id) return none;
+    switch (n.entity_table) {
+      case 'strata_kpis': {
+        const r = await run<{ slug: string | null; status: string } | null>(
+          typedQuery('strata_kpis').select('slug, status').eq('id', n.entity_id).maybeSingle());
+        return r ? { key: r.slug, done: r.status === 'approved' } : none;
+      }
+      case 'strata_benefit_values': {
+        const bv = await run<{ benefit_id: string; validated_at: string | null } | null>(
+          typedQuery('strata_benefit_values').select('benefit_id, validated_at').eq('id', n.entity_id).maybeSingle());
+        if (!bv) return none;
+        const b = await run<{ slug: string | null } | null>(
+          typedQuery('strata_benefits').select('slug').eq('id', bv.benefit_id).maybeSingle());
+        return { key: b?.slug ?? null, done: bv.validated_at != null };
+      }
+      case 'strata_decisions': {
+        const d = await run<{ snapshot_id: string | null; decided_at: string | null } | null>(
+          typedQuery('strata_decisions').select('snapshot_id, decided_at').eq('id', n.entity_id).maybeSingle());
+        if (!d) return none;
+        const done = d.decided_at != null;
+        if (!d.snapshot_id) return { key: null, done };
+        const s = await run<{ snapshot_key: string | null } | null>(
+          typedQuery('strata_snapshots').select('snapshot_key').eq('id', d.snapshot_id).maybeSingle());
+        return { key: s?.snapshot_key ?? null, done };
+      }
+      case 'strata_dependencies': {
+        const dep = await run<{ requesting_id: string | null; status: string } | null>(
+          typedQuery('strata_dependencies').select('requesting_id, status').eq('id', n.entity_id).maybeSingle());
+        if (!dep) return none;
+        // A blocker is finished when it is resolved or cancelled; open/blocked/
+        // at_risk all still want the reader.
+        const done = dep.status === 'resolved' || dep.status === 'cancelled';
+        if (!dep.requesting_id) return { key: null, done };
+        const c = await run<{ slug: string | null } | null>(
+          typedQuery('strata_project_cards').select('slug').eq('id', dep.requesting_id).maybeSingle());
+        return { key: c?.slug ?? null, done };
+      }
+      default:
+        return none;
+    }
+  },
   notificationRules: (): Promise<StrataNotificationRule[]> =>
     run(typedQuery('strata_notification_rules').select('*').order('label')),
   setNotificationRule: (eventType: string, enabled: boolean, reason?: string): Promise<void> =>

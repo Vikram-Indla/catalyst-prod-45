@@ -18,8 +18,8 @@ import { useStrataNotifications, useInvalidateStrata } from '@/modules/strata/ho
 import { fmtDateTime } from '@/modules/strata/components/format';
 import type { StrataNotification } from '@/modules/strata/types';
 
-/** entity_table → area landing (honest area-level deep link; see file header). */
-function targetFor(n: StrataNotification): string {
+/** entity_table → area landing. The fallback when the object can't be resolved. */
+function areaFor(n: StrataNotification): string {
   switch (n.entity_table) {
     case 'strata_decisions':
     case 'strata_actions':
@@ -28,9 +28,22 @@ function targetFor(n: StrataNotification): string {
       return Routes.strata.execution();
     case 'strata_benefit_values':
       return Routes.strata.portfolio();
+    case 'strata_kpis':
+      return Routes.strata.kpis();
     default:
       // config_pending_approval and anything else → the admin change log.
       return Routes.strata.adminSection('change-log');
+  }
+}
+
+/** entity_table + resolved slug/key → the OBJECT route (anchor 28 state 3). */
+function objectRouteFor(n: StrataNotification, key: string): string | null {
+  switch (n.entity_table) {
+    case 'strata_kpis': return Routes.strata.kpi(key);
+    case 'strata_benefit_values': return Routes.strata.benefit(key);
+    case 'strata_decisions': return Routes.strata.review(key);
+    case 'strata_dependencies': return Routes.strata.projectCard(key);
+    default: return null;
   }
 }
 
@@ -47,7 +60,16 @@ export function StrataNotificationBell() {
     if (!n.read_at) {
       try { await governanceApi.markNotificationRead(n.id); invalidate(); } catch { /* non-blocking */ }
     }
-    navigate(targetFor(n));
+    // Land on the OBJECT when its slug resolves; fall back to the area landing
+    // when it doesn't (orphaned/deleted entity) rather than build a broken link.
+    let path = areaFor(n);
+    try {
+      const t = await governanceApi.resolveNotificationTarget(n);
+      const objectPath = t.key ? objectRouteFor(n, t.key) : null;
+      if (objectPath) path = objectPath;
+    } catch { /* resolution is best-effort — the area landing still works */ }
+    // ?n= lets StrataPageShell render the "why am I here" provenance band.
+    navigate(`${path}${path.includes('?') ? '&' : '?'}n=${encodeURIComponent(n.id)}`);
   };
 
   const markAll = async () => {
