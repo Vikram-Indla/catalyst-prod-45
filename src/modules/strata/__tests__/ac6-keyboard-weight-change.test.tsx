@@ -48,6 +48,8 @@ const { setModelPerspectiveWeights, invalidate } = H;
 vi.mock('@/modules/strata/hooks/useStrata', () => ({
   useScorecardModels: () => H.ok([H.MODEL]),
   useAllModelPerspectives: () => H.ok(H.MODEL_PERSPECTIVES),
+  useAllModelMeasures: () => H.ok([]),
+  useKpis: () => H.ok([]),
   useModelPerspectives: () => H.ok(H.MODEL_PERSPECTIVES),
   usePerspectives: () => H.ok(H.PERSPECTIVES),
   // strategy_office is the role the weights editor gates on (matches RLS).

@@ -25,7 +25,7 @@ import {
 import Toggle from '@atlaskit/toggle';
 import { configApi, governanceApi } from '@/modules/strata/domain';
 import {
-  useAllModelPerspectives, useChangeRequests, useGateModels, useInvalidateStrata, useKpiTypes, useModelPerspectives,
+  useAllModelMeasures, useAllModelPerspectives, useChangeRequests, useGateModels, useInvalidateStrata, useKpiTypes, useKpis, useModelPerspectives,
   usePerspectives, useProfileNames, useProjectCardFieldConfigs, useProjectCardPicklists,
   useProjectCardSectionConfigs, useProjectCardTabConfigs, useRoleAssignments, useScorecardModels,
   useStrataAudit, useStrataNotificationRules, useStrataRoles, useThresholdSchemes, useUploadTemplates, useValueCategories,
@@ -37,7 +37,7 @@ import { StrataFormModal, str } from '@/modules/strata/components/authoring';
 import { fmtDate, fmtDateTime, labelize } from '@/modules/strata/components/format';
 import type {
   GovernedEnvelope, GovernedStatus, StrataChangeRequest, StrataNotificationRule, StrataPerspective,
-  StrataProjectCardFieldConfig, StrataProjectCardPicklist, StrataRole, StrataScorecardModel, ThresholdBand,
+  StrataModelMeasure, StrataProjectCardFieldConfig, StrataProjectCardPicklist, StrataRole, StrataScorecardModel, ThresholdBand,
 } from '@/modules/strata/types';
 
 type OnError = (msg: string | null) => void;
@@ -506,7 +506,11 @@ function ModelWeights({ model, canEditWeights }: { model: StrataScorecardModel; 
 /** Tri-state model integrity band (anchor 05) — perspective weights must total
  * 100 before a draft model can be submitted. Glyph + word carry state (never
  * color alone). Measure-level checks are a later feature (no measures table). */
-function ModelIntegrityBand({ sum, count }: { sum: number; count: number }) {
+function ModelIntegrityBand({ sum, count, measureIssues }: {
+  sum: number; count: number;
+  /** Per-perspective measure-weight failures, e.g. "Customer measure weights total 90 — assign the remaining 10". */
+  measureIssues?: string[];
+}) {
   const ok = count > 0 && sum === 100;
   return (
     <div
@@ -526,7 +530,78 @@ function ModelIntegrityBand({ sum, count }: { sum: number; count: number }) {
           ✕ Perspective weights total {sum} — {sum < 100 ? `assign the remaining ${100 - sum}` : `remove ${sum - 100}`}
         </span>
       )}
-      {!ok ? <span style={{ marginLeft: 'auto', color: T.subtlest }}>Cannot submit until integrity passes</span> : null}
+      {(measureIssues ?? []).map((m) => (
+        <span key={m} style={{ color: 'var(--ds-text-danger)', fontWeight: 600 }}>✕ {m}</span>
+      ))}
+      {!ok || (measureIssues ?? []).length > 0
+        ? <span style={{ marginLeft: 'auto', color: T.subtlest }}>Cannot submit until integrity passes</span>
+        : null}
+    </div>
+  );
+}
+
+/**
+ * Anchor-05 measures builder — perspective groups, each listing its measure
+ * ASSIGNMENTS (M-D0). Every identity column (Measure / Direction / Threshold
+ * scheme / Unit) is READ from the KPI dictionary via kpi_id and is never
+ * re-entered here — storing them on the assignment would be the
+ * two-competing-dictionaries bug M-D0 exists to prevent. Only the assignment's
+ * own facts (weight, required, aggregation) belong to the measure row.
+ */
+function MeasureGroups({ modelId, measures }: { modelId: string; measures: StrataModelMeasure[] }) {
+  const perspectives = usePerspectives();
+  const mp = useModelPerspectives(modelId);
+  const kpis = useKpis();
+  const kpiTypes = useKpiTypes();
+
+  const pName = new Map((perspectives.data ?? []).map((p) => [p.id, p.name]));
+  const kpiById = new Map((kpis.data ?? []).map((k) => [k.id, k]));
+  const typeById = new Map((kpiTypes.data ?? []).map((t) => [t.id, t]));
+  const groups = (mp.data ?? []);
+
+  if (groups.length === 0) return null;
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+      {groups.map((g) => {
+        const rows = measures.filter((m) => m.perspective_id === g.perspective_id)
+          .sort((a, b) => a.order_index - b.order_index);
+        const total = rows.reduce((a, m) => a + Number(m.weight ?? 0), 0);
+        return (
+          <div key={g.id} style={{ border: `1px solid ${T.border}`, borderRadius: 6, overflow: 'hidden' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap', padding: '8px 12px', background: T.sunken }}>
+              <strong style={{ fontSize: 'var(--ds-font-size-200)', color: T.text }}>{pName.get(g.perspective_id) ?? '—'}</strong>
+              <span style={metaStyle}>perspective weight <strong style={{ color: T.text }}>{g.weight}</strong></span>
+              {rows.length === 0 ? (
+                <span style={{ ...metaStyle, marginLeft: 'auto' }}>No measures assigned</span>
+              ) : (
+                <span style={{ marginLeft: 'auto', fontSize: 'var(--ds-font-size-100)', fontWeight: 600,
+                  color: total === 100 ? 'var(--ds-text-success)' : 'var(--ds-text-danger)' }}>
+                  {total === 100 ? '✓ measure weights total 100' : `✕ measure weights total ${total}`}
+                </span>
+              )}
+            </div>
+            {rows.length > 0 ? (
+              <div style={{ display: 'flex', flexDirection: 'column' }}>
+                {rows.map((m) => {
+                  const k = kpiById.get(m.kpi_id);
+                  const dir = k?.kpi_type_id ? typeById.get(k.kpi_type_id)?.directionality : undefined;
+                  return (
+                    <div key={m.id} style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap',
+                      padding: '8px 12px', borderTop: `1px solid ${T.border}`, fontSize: 'var(--ds-font-size-100)' }}>
+                      <span style={{ ...bodyStyle, fontWeight: 600, flex: '1 1 180px', minWidth: 0 }}>{k?.name ?? '—'}</span>
+                      <span style={{ ...metaStyle, fontVariantNumeric: 'tabular-nums' }}>{m.weight}%</span>
+                      <span style={metaStyle}>{dir ? (DIRECTIONALITY_LABEL[dir] ?? labelize(dir)) : '—'}</span>
+                      {m.required ? <CatalystTag text="Required" /> : null}
+                      <span style={metaStyle}>{labelize(m.aggregation_method)}</span>
+                    </div>
+                  );
+                })}
+              </div>
+            ) : null}
+          </div>
+        );
+      })}
     </div>
   );
 }
@@ -534,10 +609,14 @@ function ModelIntegrityBand({ sum, count }: { sum: number; count: number }) {
 export function ScorecardModelsSection({ onError }: { onError: OnError }) {
   const q = useScorecardModels();
   const allMP = useAllModelPerspectives();
+  const allMeasures = useAllModelMeasures();
   const roles = useStrataRoles();
   const list = q.data ?? [];
   // strata_scorecard_model_perspectives write is strategy_office (matches RLS).
   const canEditWeights = (roles.data ?? []).includes('strategy_office');
+
+  const perspectivesForNames = usePerspectives();
+  const perspectiveNameById = new Map((perspectivesForNames.data ?? []).map((p) => [p.id, p.name]));
 
   // Per-model perspective-weight sum + count (config integrity), client-derived.
   const weightByModel = new Map<string, number>();
@@ -550,8 +629,10 @@ export function ScorecardModelsSection({ onError }: { onError: OnError }) {
   return (
     <StrataPanel title="Scorecard models" icon={<Scale size={16} />} count={list.length} testId="strata-admin-scorecard-models">
       <p style={captionStyle}>
-        The builder governs perspective weights, integrity and lifecycle — a model's perspective weights must total 100
-        before it can be submitted for approval. Measure-level authoring, preview-with-data and version diff are later features.
+        The builder governs perspective weights, measures, integrity and lifecycle. Perspective weights must total 100,
+        and each perspective's measure weights must total 100, before a model can be submitted for approval. A measure is
+        an assignment of an existing KPI — its name, direction and threshold scheme are read from the KPI, never re-entered
+        here. Assigning measures from this screen, preview-with-data and version diff are later slices.
       </p>
       <SectionState query={q} empty={list.length === 0}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
@@ -559,6 +640,20 @@ export function ScorecardModelsSection({ onError }: { onError: OnError }) {
             const wsum = weightByModel.get(m.id) ?? 0;
             const wcount = countByModel.get(m.id) ?? 0;
             const integrityOk = wcount > 0 && wsum === 100;
+            const myMeasures = (allMeasures.data ?? []).filter((x) => x.model_id === m.id);
+            // Anchor-05 band: per-perspective measure-weight failures, named.
+            const measureIssues: string[] = [];
+            for (const g of (allMP.data ?? []).filter((x) => x.model_id === m.id)) {
+              const rows = myMeasures.filter((x) => x.perspective_id === g.perspective_id);
+              if (rows.length === 0) continue;
+              const t = rows.reduce((a, x) => a + Number(x.weight ?? 0), 0);
+              if (t !== 100) {
+                const pn = (perspectiveNameById.get(g.perspective_id) ?? 'perspective');
+                measureIssues.push(t < 100
+                  ? `${pn} measure weights total ${t} — assign the remaining ${100 - t}`
+                  : `${pn} measure weights total ${t} — remove ${t - 100}`);
+              }
+            }
             const submitBlockedReason = m.status === 'draft' && !integrityOk
               ? (wcount === 0 ? 'Add perspective weights totalling 100 first' : `Weights total ${wsum} — must total 100`)
               : undefined;
@@ -572,13 +667,14 @@ export function ScorecardModelsSection({ onError }: { onError: OnError }) {
                 onError={onError}
                 submitBlockedReason={submitBlockedReason}
               >
-                <ModelIntegrityBand sum={wsum} count={wcount} />
+                <ModelIntegrityBand sum={wsum} count={wcount} measureIssues={measureIssues} />
                 <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
                   <span style={metaStyle}>Scope {labelize(m.owner_scope_type)}</span>
                   <span style={metaStyle}>Rollup {labelize(m.rollup_method)}</span>
                   <span style={metaStyle}>Granularity {labelize(m.period_granularity)}</span>
                 </div>
                 <ModelWeights model={m} canEditWeights={canEditWeights} />
+                <MeasureGroups modelId={m.id} measures={myMeasures} />
               </GovRecordCard>
             );
           })}
