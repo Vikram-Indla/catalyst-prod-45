@@ -292,6 +292,10 @@ export const strataRoutes = {
   boardPack: (snapshotKey: string) => `/strata/reviews/${snapshotKey}/pack`,
   admin: () => '/strata/admin',
   adminSection: (section: string) => `/strata/admin/${section}`,
+  // Consequence-domain pages (Phase 5) — governed control plane, left section-nav.
+  adminMeasurement: () => '/strata/admin/measurement',
+  adminData: () => '/strata/admin/data',
+  adminAccess: () => '/strata/admin/access',
 };
 
 // ---------------------------------------------------------------------------

@@ -25,6 +25,7 @@ const UploadWizardPage = lazy(() => import('./pages/StrataUploadWizardPage'));
 const ReviewsPage = lazy(() => import('./pages/StrataReviewsPage'));
 const BoardPackPage = lazy(() => import('./pages/StrataBoardPackPage'));
 const AdminConfigPage = lazy(() => import('./pages/StrataAdminConfigPage'));
+const MeasurementPage = lazy(() => import('./pages/StrataMeasurementPage'));
 const EvidencePage = lazy(() => import('./pages/StrataEvidencePage'));
 
 // CAT-0016: the wildcard route used to silently render CommandCenterPage for
@@ -82,6 +83,9 @@ export function StrataRoutesShell() {
         <Route path="reviews/:snapshotKey/pack" element={<S><BoardPackPage /></S>} />
         <Route path="reviews/:snapshotKey" element={<S><ReviewsPage /></S>} />
         <Route path="admin" element={<S><AdminConfigPage /></S>} />
+        {/* Consequence-domain pages (Phase 5). Static segments outrank
+            admin/:section by React Router specificity — no shadow. */}
+        <Route path="admin/measurement" element={<S><MeasurementPage /></S>} />
         <Route path="admin/:section" element={<S><AdminConfigPage /></S>} />
         <Route path="*" element={<S><StrataNotFound /></S>} />
       </Routes>

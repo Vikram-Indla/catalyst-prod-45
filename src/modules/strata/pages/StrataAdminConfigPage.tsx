@@ -61,12 +61,12 @@ const DIRECTIONALITY_LABEL: Record<string, string> = {
   manual: 'Manual',
 };
 
-function GovStatusLozenge({ status }: { status: GovernedStatus }) {
+export function GovStatusLozenge({ status }: { status: GovernedStatus }) {
   return <StatusLozenge status={status} label={labelize(status)} appearance={GOV_LOZENGE[status] ?? 'default'} />;
 }
 
 /** The governance envelope — shown prominently on every governed record. */
-function GovEnvelope({ r }: { r: GovernedEnvelope }) {
+export function GovEnvelope({ r }: { r: GovernedEnvelope }) {
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
       <CatalystTag text={`v${r.version}`} />
@@ -81,7 +81,7 @@ function GovEnvelope({ r }: { r: GovernedEnvelope }) {
 }
 
 /** Governance lifecycle actions — RPC-only; DB errors surface verbatim. */
-function GovActions({ table, record, isScorecardModel, onError }: {
+export function GovActions({ table, record, isScorecardModel, onError }: {
   table: string;
   record: { id: string; status: GovernedStatus };
   isScorecardModel?: boolean;
@@ -488,7 +488,7 @@ function ModelWeights({ model, canEditWeights }: { model: StrataScorecardModel; 
   );
 }
 
-function ScorecardModelsSection({ onError }: { onError: OnError }) {
+export function ScorecardModelsSection({ onError }: { onError: OnError }) {
   const q = useScorecardModels();
   const roles = useStrataRoles();
   const list = q.data ?? [];
@@ -514,7 +514,7 @@ function ScorecardModelsSection({ onError }: { onError: OnError }) {
   );
 }
 
-function ThresholdsSection({ onError }: { onError: OnError }) {
+export function ThresholdsSection({ onError }: { onError: OnError }) {
   const q = useThresholdSchemes();
   const list = q.data ?? [];
   return (
@@ -595,7 +595,7 @@ function GatesSection({ onError }: { onError: OnError }) {
   );
 }
 
-function KpiTypesSection({ onError }: { onError: OnError }) {
+export function KpiTypesSection({ onError }: { onError: OnError }) {
   const q = useKpiTypes();
   const list = q.data ?? [];
   return (
@@ -1331,7 +1331,7 @@ const DOMAINS: Array<{
   {
     key: 'measurement', name: 'Measurement', icon: Scale,
     governs: 'Scorecard models, threshold bands and KPI formulas — how performance is calculated and rated.',
-    to: Routes.strata.adminSection('scorecard-models'), sectionLabels: ['Scorecard models', 'Thresholds', 'KPI types'],
+    to: Routes.strata.adminMeasurement(), sectionLabels: ['Perspectives', 'Scorecard models', 'Thresholds', 'KPI types'],
   },
   {
     key: 'value-governance', name: 'Value & governance', icon: Gem,

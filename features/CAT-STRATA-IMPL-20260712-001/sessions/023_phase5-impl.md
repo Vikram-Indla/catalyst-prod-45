@@ -27,4 +27,27 @@ Merge: push branch → `git push origin <sha>:main` (fast-forward). Map protecti
   session-timeout noise + `/src/pages/admin/components/*` routeSmokeCheck — different admin area). No error boundary.
 - Map untouched (bare route + landing only; no map import).
 
-## ⏭ NEXT: 5B — Measurement domain page + Taxonomy (anchor 04). Re-read anchor 04 (digested) at slice start.
+## Slice 5B — Measurement domain + Taxonomy (anchor 04, P5-D1/D2/D3) ✅ built + gate-green + live-verified
+**Files:** `StrataMeasurementPage.tsx` (NEW) · `StrataAdminConfigPage.tsx` (export Gov* + 3 sections, repoint measurement
+card) · `StrataRoutes.tsx` (+`admin/measurement` route, static, outranks `:section`) · `routes.ts` (+adminMeasurement/
+adminData/adminAccess builders) · `domain/index.ts` (+`allModelPerspectives` reader) · `hooks/useStrata.tsx`
+(+`useAllModelPerspectives`).
+- `/strata/admin/measurement`: left section-nav (Perspectives & taxonomy / Scorecard models / KPI types & formulas /
+  Threshold schemes) + "← Configuration" back. Per-nav pending badges. Units & currencies omitted (no backing data —
+  zero-assumption).
+- **Perspectives sub-view (anchor 04):** JiraTable (Perspective name+desc · Weight · **Used by** [client-derived model
+  count from new reader, P5-D2] · Lifecycle) + **weight-integrity header** ("WEIGHTS TOTAL 100" — sums APPROVED
+  perspectives; retired ESG excluded, verified = 100) + retired footer + **360px edit rail** (select row → name/desc,
+  GovEnvelope [v·status·effective·approved·reason], fields, **IMPACT PREVIEW** = usage count + immutable-history note +
+  "score-shift preview not yet available", GovActions lifecycle, + approved-record "revising creates a new version — later
+  feature, retire+recreate" note per P5-D3).
+- Scorecard models / KPI types / Threshold schemes nav items reuse the existing governed sections (5C/5D refine in place).
+- **New reader `allModelPerspectives`** = plain unfiltered select on `strata_scorecard_model_perspectives` (same table+RLS
+  as modelPerspectives) — no migration, allowed by Plan Lock "thin additive reader".
+- Gates: tsc clean · colors 0/0 · audit 19798/19798 (no increase) · CRE passed.
+- Live (localhost:8080): light + dark clean; nav switches sections; Financial row → rail shows v1·APPROVED envelope,
+  "Used by 2 scorecard models", honest deferral notes, Retire action; breadcrumb "STRATA / Administration / Measurement"
+  (fixed initial dup). Console errors all pre-existing/unrelated (`/src/pages/admin/components/*` routeSmokeCheck). No
+  error boundary. Map untouched.
+
+## ⏭ NEXT: 5C — Model Builder (anchor 05, scoped P5-D3). Re-read anchor 05 in full at slice start (HANDOFF one-liner only).

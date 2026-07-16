@@ -264,6 +264,8 @@ export const useModelPerspectives = (modelId?: string) =>
     enabled: !!modelId,
     staleTime: STALE,
   });
+export const useAllModelPerspectives = () =>
+  useQuery({ queryKey: ['strata', 'model-perspectives-all'], queryFn: scorecardApi.allModelPerspectives, staleTime: STALE });
 export const useScorecardInstances = (cycleId?: string) =>
   useQuery({
     queryKey: ['strata', 'scorecard-instances', cycleId],

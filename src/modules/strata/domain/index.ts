@@ -264,6 +264,11 @@ export const scorecardApi = {
     run(typedQuery('strata_scorecard_models').select('*').order('name')),
   modelPerspectives: (modelId: string): Promise<StrataModelPerspective[]> =>
     run(typedQuery('strata_scorecard_model_perspectives').select('*').eq('model_id', modelId).order('order_index')),
+  // Every model→perspective link, unfiltered — lets the measurement domain page
+  // derive per-perspective usage ("Used by N models") client-side (P5-D2). No
+  // migration: same table + RLS as modelPerspectives, just no model_id filter.
+  allModelPerspectives: (): Promise<StrataModelPerspective[]> =>
+    run(typedQuery('strata_scorecard_model_perspectives').select('*')),
   instances: (cycleId?: string): Promise<StrataScorecardInstance[]> => {
     let q = typedQuery('strata_scorecard_instances').select('*').order('created_at', { ascending: false });
     if (cycleId) q = q.eq('cycle_id', cycleId);
