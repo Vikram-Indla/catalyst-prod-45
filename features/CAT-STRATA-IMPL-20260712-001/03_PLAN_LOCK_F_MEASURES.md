@@ -1,6 +1,6 @@
 # 03 — PLAN LOCK · Model measure-level authoring (`strata_scorecard_model_measures`)
 
-> STATUS: **PROPOSED — awaiting Vikram. NO CODE until approved.** Target: `catalyst-staging` (the live target).
+> STATUS: **M-D0/M-D1/M-D2 APPROVED. Slice 1 (table + RPC + reader) ✅ BUILT + APPLIED + VERIFIED. Builder UI = next slice.** Target: `catalyst-staging` (the live target).
 > Migration: **yes, one** (new association table). PR-based. Unblocks one of the 15 backend features (anchor 05).
 
 ## The decision (Vikram, 2026-07-16) — recorded verbatim

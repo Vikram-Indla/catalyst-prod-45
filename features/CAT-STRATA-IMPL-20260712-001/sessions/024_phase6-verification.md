@@ -342,3 +342,30 @@ and the preview banner drops the stale "audit-logging … are later features" cl
 **session switching is still not implemented**.
 
 Gates: tsc · colors 0/0 · audit 19798/19798 · CRE. Suite 10 files/57 tests. Map untouched. Ledger 1:1.
+
+---
+
+## Slice — model measure-level authoring, part 1 (table + RPC + reader) ✅ BUILT + VERIFIED
+**Migration:** `20260716150000_strata_scorecard_model_measures.sql` · `types.ts` (+`StrataModelMeasure`) ·
+`domain/index.ts` (+`modelMeasures`/`allModelMeasures`/`setModelMeasures`) · `hooks/useStrata.tsx` (+2 hooks).
+
+Unblocked by M-D0: **a measure is a KPI ASSIGNMENT, not a master object.** Association table only —
+`model_id · perspective_id · kpi_id · weight · order_index · required · aggregation_method · target_policy`.
+This settles what forced P5-D3 to defer anchor 05's measures builder in 5C.
+
+**Verified invariants (the whole point of the ruling):**
+| Invariant | Result |
+|---|---|
+| No duplicated KPI dictionary fields | **(none — identity stays in `strata_kpis`)** ✅ |
+| `strata_measures` master | **absent, and must stay absent** ✅ |
+| M-D1 one vocabulary | measures `aggregation_method` CHECK **== models `rollup_method` CHECK** = `weighted_average\|sum\|min\|custom` ✅ |
+| `strata_scorecard_lines` | instance-level, **untouched** ✅ |
+| RLS mirrors the sibling | `SELECT => current_user_is_approved()` + `ALL => strata_has_role(['strategy_office'])` ✅ |
+| Ledger | 1:1 ✅ |
+
+**Design calls worth keeping:** `strata_set_model_measures` is replace-set (mirrors
+`setModelPerspectiveWeights`) and rejects a perspective that isn't on the model — a FK can't express that.
+It does **NOT** hard-enforce measure weights totalling 100: anchor 05 gates **submit**, not save, and blocking saves
+would make a work-in-progress draft unsavable. The integrity band + submit gate own the arithmetic.
+
+Gates green · suite 10/57 · map untouched · staging only. **NEXT: the anchor-05 measures builder UI (own slice).**
