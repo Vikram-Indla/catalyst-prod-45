@@ -49,10 +49,33 @@
 > approved model *because no gate exists*. The defect demonstrating itself. See blueprint §3.5 / decision E-3.
 > **Detection is a LOWER BOUND:** child tables have `created_at` only (no `updated_at`) and the raw `.update()`
 > writes no audit event, so **in-place UPDATEs are undetectable** (E-4).
-> **Do NOT remediate or rewrite history** — D-1 forbids it; E-1 must be ruled first.
+> **Integrity report ACCEPTED; E-1…E-7 RULED (2026-07-16).** **E-1: preserve + annotate both snapshots — do NOT
+> restate** (historical child config is not reliably reconstructable); values stay official, provenance is qualified;
+> **never modify the locked payload.** **E-3: RETAIN our 2 measure rows** — no in-place "cleaning"; v1 is marked
+> integrity-qualified and the measures are included/excluded **deliberately** in a clean v2.
 >
-> **Second defect:** `B2B Sector Scorecard` is `status='approved'` with **`approved_at` NULL** — never approved via
-> `strata_approve_record`. Any control keyed on `approved_at` silently skips it (E-2).
+> **Second defect — E-2 RULED:** `B2B Sector Scorecard` is `status='approved'` with **`approved_at` NULL** (never
+> approved via `strata_approve_record`; any control keyed on `approved_at` silently skips it). **Do NOT backfill or
+> infer it.** Classify as legacy/unverified approval provenance → freeze → clone to **v2 Draft** → proper SO approval
+> → explicit effective date → **supersede v1 prospectively.**
+>
+> **P0+ BROADER AUDIT — RESULT (all 9 governed parents × aggregate children, read-only):** the violation set is
+> **CONFINED to the scorecard-model aggregate** (3 records). Every other governed aggregate is clean.
+> `strata_gate_model_stages` is clean **because its RLS already gates on the parent's draft status** — **the shipped
+> precedent the P0 fix must copy, not invent** (all 9 governed PARENTS already gate UPDATE+DELETE on draft; only
+> children are exposed: `model_perspectives` ❌ · `model_measures` ❌ · `element_kpis` ❌).
+> **`element_kpis` rows created after KPI approval are NOT violations** — post-approval linking is the intended path
+> ([[strata-kpi-link-requires-approved]]); relationship ≠ definition. They ARE unaudited, so they are in E-4 scope.
+> **The register is a LOWER BOUND, not a census** — absence of a row is NOT evidence of integrity (E-4 §13).
+>
+> **E-4 census (probed): exactly 4 child tables lack `updated_at`** — `strata_scorecard_model_perspectives` ·
+> `strata_scorecard_model_measures` · `strata_element_kpis` · `strata_initiative_kpis`. All four affect official
+> results. Reuse `strata_audit_events` + `strata_touch_updated_at()` — do not mint a second audit store.
+>
+> **⚠️ ORDERING HAZARD (F-4):** the P0 RLS fix freezes children on approved parents, which **blocks E-2's v2 clone
+> until the revision RPC (A3/D-2) exists.** A2 → A3 must land back-to-back, or E-2 remediation stalls.
+> **7 NEW decisions (F-1…F-7) are open — blueprint §11. F-1 (no Strategy Office owner named for the exception
+> records) BLOCKS building the register.**
 >
 > ### Environment — READ BEFORE RUNNING ANYTHING
 > - **Tests need Node 22:** `PATH="/opt/homebrew/opt/node@22/bin:$PATH" npm test`. On the global Node 20 vitest dies at

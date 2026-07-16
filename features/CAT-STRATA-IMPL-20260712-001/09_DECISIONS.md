@@ -201,6 +201,49 @@ Plan Lock `03_PLAN_LOCK_PHASE5.md` approved at `3e215d4ed`. All decisions ratifi
   and must not be counted.** 14 product capabilities ≈ 24 implementation slices — never report slice progress as
   capability progress.
 
+## Integrity-exception handling — E-1…E-7 RULED (Vikram, 2026-07-16). Integrity report ACCEPTED.
+> Blueprint §1.1 / §3.7 / §3.8 / §12 / §13 / §14. **Still NOT approved for implementation.** Seven NEW decisions
+> (F-1…F-7) arose from these rulings — blueprint §11.
+
+- **E-1 ✅ RULED — preserve and annotate both affected locked snapshots; do NOT restate** (the exact historical child
+  configuration cannot be reconstructed reliably). Frozen values remain **official and unchanged**; provenance is
+  **qualified**. Integrity-exception record: affected snapshot · model/version · discovery date · known post-approval/
+  post-lock child changes · **values changed: NO** · **provenance reproducibility: INCOMPLETE** · Strategy Office
+  owner · **resolution: preserved with qualification**. **Never modify the locked payload.**
+- **E-2 ✅ RULED — do NOT backfill or infer `approved_at`.** B2B Sector Scorecard v1 = **legacy/unverified approval
+  provenance**. Prevent further edits → clone intended current config to **v2 Draft** → proper SO approval → explicit
+  effective date → **supersede v1 prospectively**. Clean approval requires agreement among: approved status ·
+  `approved_at` · `approved_by` · approval audit event · successful integrity checks.
+- **E-3 ✅ RULED — retain the 2 verification measure rows.** No in-place "cleaning" of the approved model. Preserve
+  rows + audit evidence; mark v1 integrity-qualified; include/exclude the measures **deliberately** in the clean v2.
+- **E-4 ✅ RULED — full DB-level child auditability.** `updated_at`, actor fields, INSERT/UPDATE/DELETE audit triggers
+  on every governed child table affecting calculations; capture old+new values, parent, actor, timestamp, operation,
+  correlation/request context. **For approved parents reject child UPDATE and DELETE at BOTH RPC and DB/RLS layers.**
+  **Census (probed): exactly 4 child tables lack `updated_at`** — `strata_scorecard_model_perspectives` ·
+  `strata_scorecard_model_measures` · `strata_element_kpis` · `strata_initiative_kpis`.
+- **E-5 ✅ RULED — import reversal restores the previous validated effective state.** Mark imported actuals reversed/
+  superseded; restore a prior valid non-reversed actual for the same KPI/period/source context as effective, else
+  **leave no effective value**. **Never create zero, negative or artificial offset measurements.** Recalculate
+  **unlocked results only**.
+- **E-6 ✅ RULED — accepted-with-exception governance spans KPI actuals AND benefit values.** Both: quarantined +
+  rejected don't count · validated counts · SO-authorized `accepted_with_exception` **counts** · no self-authorization
+  · exception reason/original failures/evidence/actor/timestamp visible downstream. **Benefit assurance stays
+  separate** (Reported · Owner confirmed · Independently validated). **Acceptance for calculation ≠ independent
+  validation.**
+- **E-7 ✅ RULED — draft-KPI exclusion enforced at BOTH relationship and calculation layers.** Draft/pending linkable
+  for authoring, visible, excluded from official reporting; approved+effective ⇒ reportable; superseded/retired ⇒
+  historical only. **No independent link-status state machine** — derive reportability from KPI lifecycle + effective
+  dates. Every official calculation independently requires: approved+effective KPI · reportable relationship ·
+  validated-or-accepted-with-exception actual · correct scope+period · captured config versions. Draft previews only
+  in clearly labelled, non-persistent simulations. **DEF-010 is a relationship-authoring + calculation-eligibility +
+  snapshot-context + audit + testing change — NOT a UI-only or link-table-only fix.**
+- **P0+ ✅ RULED — broaden the integrity audit** across every governed parent/child aggregate affecting official
+  results; **label it explicitly a LOWER-BOUND EVIDENCE REGISTER** (historical updates may be undetectable).
+  **RESULT (probed 2026-07-16, all 9 governed parents × their aggregate children): the violation set is CONFINED to
+  the scorecard-model aggregate** — 3 records. `element_kpis` rows written after KPI approval are **legitimate
+  post-approval linking, NOT violations** (relationship ≠ definition). `gate_model_stages` is clean **because it is
+  already correctly gated** — the shipped precedent the P0 fix must copy.
+
 ## DEF-010 — RULED (Vikram, 2026-07-16). Was the last open product decision; there are now NONE.
 - **DEF-010 ✅ RULED — draft KPIs MAY be linked to strategic objectives during authoring, but never count.**
   Recorded verbatim:

@@ -27,6 +27,19 @@ draft KPIs are excluded from official calculations, health, roll-ups, snapshots,
 eligible links become effective when the KPI is approved · **do not auto-approve** · preserve historical links through
 retirement and supersession.
 
+### 1.1 E-SERIES RULINGS (Vikram, 2026-07-16) — integrity-exception handling
+
+| ID | Ruling |
+|---|---|
+| **E-1** | **Preserve and annotate both affected locked snapshots. Do NOT restate** — the exact historical child configuration cannot be reconstructed reliably. Frozen values remain **official and unchanged**; their configuration provenance is **qualified**. Create an integrity-exception record (§3.8). **Never modify the locked payload.** |
+| **E-2** | **Do NOT backfill or infer `approved_at`.** Classify B2B Sector Scorecard v1 as **legacy/unverified approval provenance**. Prevent further edits → clone its intended current configuration into **v2 Draft** → obtain proper Strategy Office approval → set an explicit effective date → **supersede v1 prospectively**. Future clean approval requires agreement among: approved status · `approved_at` · `approved_by` · approval audit event · successful integrity checks. |
+| **E-3** | **Retain** the two verification measure rows. **Do not delete or "clean" the approved model in place.** Preserve rows + audit evidence; mark v1 integrity-qualified; then **deliberately** include or exclude the measures in the clean v2 reviewed by Strategy Office. |
+| **E-4** | **Add full database-level child auditability.** `updated_at`, actor fields, and INSERT/UPDATE/DELETE audit triggers on **every governed child table that can affect calculations**. Audit old + new values, parent, actor, timestamp, operation, correlation/request context. **For approved parents, reject child UPDATE and DELETE at both RPC and DB/RLS layers.** |
+| **E-5** | **Import reversal restores the previous validated effective state.** Mark imported actuals reversed/superseded. If a prior valid, non-reversed actual exists for the same KPI/period/applicable source context → **restore it as effective**; otherwise **leave no effective value**. **Never create zero, negative or artificial offset measurements.** Recalculate **unlocked results only**. |
+| **E-6** | **Extend accepted-with-exception governance to BOTH KPI actuals and benefit values.** Both: quarantined + rejected do NOT count · validated counts · SO-authorized `accepted_with_exception` **counts** · submitters cannot authorize their own exceptions · exception reason, original failures, evidence, actor, timestamp remain **visible downstream**. **Benefit assurance stays separate** (Reported · Owner confirmed · Independently validated). **Acceptance for calculation does NOT imply independent validation.** |
+| **E-7** | **Enforce draft-KPI exclusion at BOTH the relationship and calculation layers.** Draft/pending KPIs may be linked for authoring; visible but excluded from official reporting. Approved+effective ⇒ reportable. Superseded/retired ⇒ historical only. **Do NOT add an independent link-status state machine unless relationship approval is genuinely separate from KPI approval — prefer deriving reportability from KPI lifecycle + effective dates.** Every official calculation must **independently** require: approved+effective KPI · reportable model-measure/objective relationship · validated-or-accepted-with-exception actual · correct scope+period · captured configuration versions. Draft previews may use draft KPIs **only in clearly labelled, non-persistent simulations**. |
+| **P0+** | **Broaden the integrity audit** across **every governed parent/child aggregate that can affect official results**, not only scorecard models. Because historical updates may be undetectable, **label the report explicitly as a LOWER-BOUND EVIDENCE REGISTER.** |
+
 ---
 
 ## 2. REUSE-VERSUS-BUILD MATRIX (evidence-backed)
@@ -121,7 +134,73 @@ snapshot number silently changed**.
 version increment, **re-resolving "CEO model v1" today yields different weights than produced the frozen numbers**.
 The policy "historical scorecards must continue to resolve against the … model versions used at calculation time" is
 therefore **not satisfied for either locked snapshot**. The numbers can be shown; the configuration that produced
-them can no longer be proven. **No remediation is proposed here (D-1: do not silently rewrite history)** — see E-1.
+them can no longer be proven. **E-1: preserve + annotate. Do NOT restate — the exact historical child configuration
+cannot be reconstructed reliably. Never modify the locked payload.**
+
+---
+
+### 3.7 BROADER AUDIT (P0+) — **LOWER-BOUND EVIDENCE REGISTER**, all governed aggregates, read-only 2026-07-16
+
+> **⚠️ THIS IS A LOWER BOUND, NOT A CENSUS.** In-place UPDATEs are **undetectable** on the four child tables that
+> lack `updated_at`, and `setModelPerspectiveWeights`' raw `.update()` writes **no audit event**. Absence of a row
+> below is **NOT evidence of integrity** — it is evidence of *no detectable INSERT*. This label is mandatory on every
+> future run until E-4 lands.
+
+**Scope covered:** all **9** governed parents (`strata_governed_tables()`: `gate_models · kpi_type_configs · kpis ·
+perspectives · scorecard_models · threshold_schemes · upload_templates · value_categories · workflow_configs`) ×
+their aggregate children (`model_perspectives · model_measures · gate_model_stages · kpi_formula_versions ·
+element_kpis`).
+
+**Result — the violation set is CONFINED to the scorecard-model aggregate:**
+
+| Governed parent | Record | v | Child aggregate | Rows after approval | Classification |
+|---|---|---|---|---|---|
+| `strata_scorecard_models` | B2B Sector Scorecard (**approved_at NULL**) | 1 | model_measures | 2 | 🔴 **VIOLATION** (E-3: retain) |
+| `strata_scorecard_models` | B2B Sector Scorecard | 1 | model_perspectives | 3 | 🔴 **VIOLATION** |
+| `strata_scorecard_models` | CEO Enterprise Scorecard | 1 | model_perspectives | 1 | 🔴 **VIOLATION** |
+| `strata_kpis` | Churn Rate | 1 | element_kpis | 1 | ✅ **NOT a violation** — see below |
+| `strata_kpis` | Enterprise Revenue Growth (proof) | 1 | element_kpis | 1 | ✅ **NOT a violation** |
+| `strata_gate_models` | (all) | — | gate_model_stages | **0** | ✅ clean — **and correctly gated** |
+| `strata_kpis` | (all) | — | kpi_formula_versions | **0** | ✅ clean |
+| `strata_perspectives` · `strata_threshold_schemes` | (all) | — | — | **0** | ✅ clean |
+
+**Aggregate-definition children vs relationship/operational children — do not conflate.**
+`element_kpis` rows created after KPI approval are **legitimate and intended**: linking is *supposed* to happen
+post-approval (`strata_link_element_kpi` requires `approved`; linking lives on the Strategy Room `KpiLinksModal` —
+[[strata-kpi-link-requires-approved]]). They are **not** part of the KPI's definition, so they do not violate
+immutability. **But they DO affect official results** (objective roll-up/health) and are **unaudited** (no
+`updated_at`) — so they are in scope for **E-4 trigger coverage** and **NOT** in the violation register.
+Reporting them as violations would be a false positive.
+
+**The reassuring finding:** broadening the audit did **not** widen the blast radius. Every other governed aggregate is
+clean, and `strata_gate_model_stages` is clean **because it is already correctly gated** (§6.1) — the one child
+aggregate whose RLS joins the parent's draft status. The defect is specific, not systemic.
+
+---
+
+### 3.8 INTEGRITY-EXCEPTION MODEL (E-1) — design, not yet built
+
+A first-class, append-only register. **Never modifies the locked payload; never restates.**
+
+| Field | Value for the two records |
+|---|---|
+| `affected_snapshot` | SNAP-1 · SNAP-1001 |
+| `affected_model` / `version` | CEO Enterprise Scorecard / v1 (both) |
+| `discovery_date` | 2026-07-16 |
+| `known_child_changes` | SNAP-1: 1 model_perspective row written post-lock (`2026-07-12 07:02:46`). SNAP-1001: 5 rows post-lock. **Detection is a lower bound (§3.7).** |
+| `values_changed` | **NO** — `snapshot_items.payload` frozen at lock; `calcResult` reads the frozen payload for locked instances |
+| `provenance_reproducibility` | **INCOMPLETE** — "model v1" no longer re-resolves to the weights that produced the frozen numbers |
+| `strategy_office_owner` | **UNASSIGNED — required before the register is built (F-1)** |
+| `resolution` | **PRESERVED WITH QUALIFICATION** |
+
+**Surfacing rule:** wherever a qualified snapshot's numbers appear (scorecard detail, review cockpit, board pack),
+the qualification is **visible** — the values are official; the provenance is qualified. Zero-assumption: never render
+a provenance claim the register does not support.
+
+**A third exception class (E-2):** B2B Sector Scorecard v1 = **legacy/unverified approval provenance**
+(`status='approved'`, `approved_at` NULL — never approved via `strata_approve_record`). Not a snapshot exception;
+a *model* exception. Resolution path is E-2's: freeze v1 → clone to v2 Draft → proper SO approval → explicit
+effective date → **prospective** supersession. **No backfill, no inference.**
 
 ---
 
@@ -269,21 +348,137 @@ schema · G1b workflow+exception UI · H1a reversal schema · H1b atomic reverse
 
 ---
 
-## 11. GENUINE REMAINING DECISIONS (E-series) — none may be assumed
-- **E-1 · The two affected locked snapshots (§3.6).** Numbers are safe; provenance is not. Options: (a) annotate in
-  the integrity register, leave untouched — **recommend**, honours D-1; (b) supersede + restate via
-  `strata_supersede_snapshot`; (c) accept + document. **Requires a ruling — no code either way.**
-- **E-2 · `approved_at IS NULL` on an approved model (§3.4).** Backfill from `effective_from`, or leave and treat as
-  its own integrity class? Any control keyed on `approved_at` silently skips it.
-- **E-3 · This session's 2 measure rows on the approved B2B model (§3.5).** Remove, or retain as coherent seed?
-- **E-4 · Detection blind spot (§3.2).** In-place UPDATEs are undetectable (no `updated_at`, no audit on the raw
-  `.update()`). Add `updated_at` + audit triggers to child tables so the census can ever be complete? Recommend yes —
-  otherwise A1's register stays a lower bound forever.
-- **E-5 · "Restore the prior effective state where one existed" (D-7).** `strata_promote_run` writes NEW actuals; the
-  "prior state" may be no row at all. Confirm: restore = revert to previous validated actual if one exists, else mark
-  reversed with no replacement?
-- **E-6 · Does `accepted_with_exception` flow into `strata_benefit_values` too**, or KPI actuals only? D-5 says
-  "data"; benefit values have no `quarantined` state today.
-- **E-7 · DEF-010 exclusion mechanism.** Calcs whitelist `validation_status='validated'` on *actuals*, not on KPI
-  status — a draft KPI's approved actuals could still count. Exclude by KPI status at calc time, or by link status?
-  **This determines whether DEF-010 is a link-table change or a calc-engine change.**
+## 12. EXACT P0 SCOPE (R0) — migration · RLS · RPC
+
+### 12.1 The precedent to copy (do NOT invent a pattern)
+**`strata_gate_model_stages_write` ALREADY gates its child on the parent's draft status** — verified via `pg_policies`
+(`gates_on_draft_status = true`), and that aggregate is **clean in the audit**. It is the only correctly-gated child
+aggregate. **Copy its shape.** All **9 governed PARENTS** already gate UPDATE + DELETE on draft — parents are fine;
+only children are exposed.
+
+### 12.2 Exposed children (verified via `pg_policies`)
+| Child table | Policy | Gates on parent draft? | Action |
+|---|---|---|---|
+| `strata_scorecard_model_perspectives` | `..._write` (ALL) | ❌ **false** | P0 fix |
+| `strata_scorecard_model_measures` | `strata_model_measures_write` (ALL) | ❌ **null** (no status predicate) | P0 fix |
+| `strata_element_kpis` | `strata_element_kpis_write` (ALL) | ❌ **false** | P0 fix + DEF-010 (E-7) |
+| `strata_gate_model_stages` | `..._write` (ALL) | ✅ **true** | none — precedent |
+
+### 12.3 P0 migration scope (additive; one migration, ships alone, first)
+1. **RLS** — rewrite the three exposed child write policies to join the parent and require `status='draft'`, modelled
+   on `strata_gate_model_stages_write`. Covers INSERT/UPDATE/DELETE (E-4: reject child UPDATE **and** DELETE for
+   approved parents).
+2. **RPC** — add a parent-status guard inside `strata_set_model_measures` (belt **and** braces: E-4 requires **both**
+   RPC and DB/RLS; the UI is not a security boundary).
+3. **Aggregate completeness (D-1)** — the guard must protect the **complete** aggregate: perspectives, weights,
+   measures, aggregation settings, target policies, **threshold association** (`strata_scorecard_models
+   .threshold_scheme_id` — already covered by the parent's own draft-gated UPDATE policy; verify, do not assume).
+4. **E-4 columns + triggers** — see §13.
+5. **Integrity-exception register** (§3.8) — append-only table + the 3 records (2 snapshot + 1 model/E-2).
+   **`strategy_office_owner` is required and unassigned → F-1 blocks this.**
+6. **NOT in P0:** revision RPCs (A3/D-2 — next slice), any remediation of existing records, any history rewrite.
+
+**Ordering hazard:** the RLS fix (12.3.1) **blocks the B2B v2 clone path (E-2)** until the revision RPC (A3) exists —
+once children are frozen on approved parents, v1's configuration cannot be edited *and* cannot yet be cloned. **A3
+must land immediately after A2, or E-2 stalls.** Flagged as F-4.
+
+---
+
+## 13. COMPLETE AUDIT-TRIGGER COVERAGE (E-4)
+
+**Coverage rule:** every governed child table that can affect official results gets `updated_at`, actor fields, and
+INSERT/UPDATE/DELETE audit triggers capturing **old + new values, parent, actor, timestamp, operation, and
+correlation/request context**.
+
+### 13.1 Gap census (verified against `information_schema`) — exactly 4 tables lack `updated_at`
+| Child table | Parent | `updated_at` | Affects official results? | Action |
+|---|---|---|---|---|
+| `strata_scorecard_model_perspectives` | scorecard_models | ❌ | **YES** — weights | **+updated_at, +actor, +triggers** |
+| `strata_scorecard_model_measures` | scorecard_models / kpis / perspectives | ❌ | **YES** — measure weights | **+updated_at, +actor, +triggers** |
+| `strata_element_kpis` | kpis / strategy_elements | ❌ | **YES** — objective roll-up + DEF-010 | **+updated_at, +actor, +triggers** |
+| `strata_initiative_kpis` | kpis | ❌ | **YES** — initiative roll-up | **+updated_at, +actor, +triggers** |
+
+### 13.2 Already have `updated_at` — triggers still required where they affect results
+`strata_kpi_actuals` · `strata_kpi_targets` · `strata_kpi_formula_versions` · `strata_scorecard_lines` ·
+`strata_key_results` · `strata_gate_model_stages` · `strata_scorecard_instances` · `strata_theme_charters` ·
+`strata_upload_runs` · `strata_benefit_values`. **`updated_at` alone is not auditability** — it records *that*
+something changed, never *what*, *by whom*, or *from what*. Old/new-value capture is the point.
+
+### 13.3 Reuse
+`strata_audit_events` (entity_table, entity_id, action, actor_id, note) already exists and is written by every
+governed RPC — **extend it (old/new payload + correlation context) rather than minting a second audit store.**
+`strata_touch_updated_at()` already exists as the `updated_at` trigger function — reuse verbatim.
+
+### 13.4 Consequence for the register
+Until 13.1 lands, **every integrity audit is a lower bound** (§3.7) and must say so. After it lands, the register
+becomes a true census **prospectively only** — it can never retroactively recover the undetectable past.
+
+---
+
+## 14. REVISED DEF-010 ACCEPTANCE CRITERIA (E-7)
+
+**Scope restated:** DEF-010 is **a relationship-authoring + calculation-eligibility + snapshot-context + audit +
+testing change — NOT a UI-only or link-table-only fix.**
+
+**Design rule (E-7):** do **not** add an independent link-status state machine. Relationship approval is **not**
+separate from KPI approval, so **derive reportability from KPI lifecycle + effective dates**. `strata_element_kpis`
+gets audit columns (§13.1) — **not** a parallel approval lifecycle.
+
+**Reportability matrix (derived, not stored):**
+| KPI lifecycle | Linkable | Visible | Counts in official results |
+|---|---|---|---|
+| draft / pending_approval | ✅ (authoring) | ✅ marked **Draft** | ❌ **never** |
+| approved **and** effective | ✅ | ✅ | ✅ |
+| approved, not yet effective | ✅ | ✅ | ❌ (until effective date) |
+| superseded / retired | — | ✅ historical | **historical only** |
+
+**Every official calculation must INDEPENDENTLY require all five:**
+1. approved **and effective** KPI · 2. reportable model-measure/objective relationship · 3. validated **or
+accepted-with-exception** actual (E-6) · 4. correct scope + period · 5. captured configuration versions.
+
+**Acceptance criteria (binary):**
+1. A draft KPI can be linked to an objective; the link renders a **Draft** marker.
+2. A draft-linked KPI moves **NO** official number: calculation · health · roll-up · **snapshot** · **board pack** ·
+   executive reporting. Probe each of the six independently — **not** one calc as a proxy for all.
+3. **The 5-condition gate is enforced independently, not as a proxy chain.** Today calcs whitelist
+   `validation_status='validated'` on *actuals* — **an approved actual belonging to a draft KPI would still count**.
+   Condition 1 must be enforced at calc time in its own right.
+4. On approval, eligible links become effective **without any auto-approval of the KPI**.
+5. Links survive retirement + supersession and remain resolvable as historical.
+6. Snapshot `config_versions` records the draft-exclusion applied (§4), so exclusion is provable after the fact.
+7. Draft previews using draft KPIs are **clearly labelled and non-persistent** — assert zero rows written.
+8. Audit: link create/update/delete captured with actor + old/new (§13.1).
+
+---
+
+## 11. GENUINE REMAINING DECISIONS (F-series) — none may be assumed
+> **E-1 … E-7 are RULED (§1.1) and are no longer open.** The following arose FROM those rulings.
+
+- **F-1 · Who is the `strategy_office_owner` on the three integrity-exception records?** (§3.8). E-1 mandates the
+  field; no owner is assigned. **This blocks building the register** — a NULL owner on an accountability record is
+  the zero-assumption violation the register exists to prevent. **A name is required.**
+- **F-2 · E-2's v2 clone — what is "its intended current configuration"?** B2B v1's current children include the two
+  verification measures (E-3) and 3 post-approval perspective weights. E-3 says include/exclude them **deliberately**
+  in v2. Clone-as-is then edit in draft (**recommend** — v2 is a draft, freely editable, and the deliberate choice is
+  recorded at approval), or clone selectively? **Strategy Office must review the v2 content either way.**
+- **F-3 · Does the qualification surface on the BOARD PACK** for SNAP-1/SNAP-1001, or only in admin/registry views?
+  §3.8's surfacing rule says wherever the numbers appear. Board packs are the highest-stakes surface and are
+  **issued** artefacts — confirm they carry the qualification.
+- **F-4 · P0 ordering hazard (§12.3).** The RLS fix (A2) freezes children on approved parents, which **blocks E-2's
+  v2 clone until the revision RPC (A3) exists**. Options: (a) A2 → A3 back-to-back before E-2 remediation —
+  **recommend**; (b) a one-time, audited exception for the B2B clone; (c) A3 before A2 (leaves the P0 hole open
+  longer). **Do not discover this mid-slice.**
+- **F-5 · E-4 retrofit scope on existing rows.** Adding `updated_at` to the 4 tables: default `now()` on backfill
+  would **assert a change time that never happened** (false provenance on the very rows under investigation).
+  Recommend `NULL`/`created_at` for pre-existing rows + an explicit "unaudited before <date>" marker. **Confirm** —
+  this decides whether the register can ever distinguish "unchanged" from "changed before auditing existed".
+- **F-6 · E-6 benefit-value exception states.** Benefit values have **no `quarantined` state today**
+  (`pending|validated|rejected`) while KPI actuals do. E-6 requires exception governance in both. Add both
+  `quarantined` **and** `accepted_with_exception` to benefit values, or only the latter? Adding `quarantined`
+  implies a benefit-value quarantine workflow that does not exist and was not asked for.
+- **F-7 · D-4 × E-6 interaction — the 4-state assurance vs the counting rule.** D-4 states are **Reported · Owner
+  confirmed · Independently validated · Rejected**; E-6 says validated **and** accepted-with-exception count, and
+  "acceptance for calculation does not imply independent validation". **Does `owner_confirmed` count?** It is neither
+  rejected nor independently validated. Today `strata_calc_benefit_realization` whitelists `='validated'`, so
+  owner-confirmed would **not** count unless added. **This decides whether benefit realization changes for existing
+  data** — a live-numbers question, not a labelling one.
