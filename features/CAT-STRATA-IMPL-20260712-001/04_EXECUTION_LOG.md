@@ -1120,3 +1120,36 @@ strip; 2E-3 charter/OKR restyle + promote + states.
 - Deferred P4-D2 (no fabrication): editorial builder + Issue + draft numbers + compare-since-freeze.
 - GATES: tsc · colors 0=0 · audit 19798/19798 · CRE green. Live-verified light+dark (editorial arc grounded, present-mode
   nav + Esc). Map untouched; console clean. **PHASE 4 (governance & data) COMPLETE — anchors 23·10·24·09·19·20 + 4A.**
+
+---
+
+# R0 · P0-A — approved-model aggregate immutability (D-1) · migration `20260716160000`
+**Session 026 · branch `strata/measures-2b` · target `catalyst-staging` (cyijbdeuehohvhnsywig, ACTIVE_HEALTHY, verified)**
+
+## What shipped
+1. **RLS** — `strata_scorecard_model_perspectives_write` and `strata_model_measures_write` rewritten to
+   `strata_has_role(['strategy_office']) AND EXISTS(parent WHERE status='draft')`, stated in **both** USING and
+   WITH CHECK (covers INSERT/UPDATE/DELETE per E-4). The measures policy previously had `with_check` NULL.
+2. **RPC** — `strata_set_model_measures` gains a parent-status guard. Body otherwise byte-identical to `20260716150000`.
+3. **Client** — `configApi.setModelPerspectiveWeights` now throws when an UPDATE matches zero rows.
+4. **UI** — `canAuthor = hasAuthorRole && m.status === 'draft'`; approved models render a visible immutability reason.
+5. **Tests** — AC-6 fixture corrected to `draft` (DRIFT-11); new `p0-approved-model-immutable.test.tsx` (4 tests).
+
+## Why BOTH layers (neither is redundant — each is the sole guard for one writer)
+- Perspective weights have **no RPC**: `domain/index.ts:159` does a raw `.update()` as `authenticated`. **RLS is the
+  only enforcement point for that path.**
+- `strata_set_model_measures` is **SECURITY DEFINER** → runs as table owner → **bypasses RLS**. **The in-RPC guard is
+  the only enforcement point for that path.**
+
+## The silent-failure hazard this slice had to close
+An RLS-filtered UPDATE matches **zero rows and raises nothing**. Without the row-count check, `setModelPerspectiveWeights`
+would have reported success having written nothing — the UI would lie about a governed write. The count is load-bearing.
+
+## Scope correction
+`strata_element_kpis` is **excluded** from the draft-gate — see **F-8** / **DRIFT-10**. Gating it would break every KPI
+link (`strata_link_element_kpi` requires `approved`).
+
+## Status
+✅ **DONE** — applied to staging, ledger 1:1, gates green, AC-1 (§8.1) proven at RLS **and** RPC with a positive control.
+**Follows immediately: P0-B / A3 revision RPCs (F-4 — A2→A3 back-to-back; until A3 lands, no model is editable,
+because both staging models are approved. That freeze is correct and intended, and A3 restores the path via versioning.)**

@@ -284,3 +284,37 @@ Plan Lock `03_PLAN_LOCK_PHASE5.md` approved at `3e215d4ed`. All decisions ratifi
   it needs its own Plan Lock + a ruling on the mechanism (block editing at `status='approved'` vs require a new draft
   version vs accept in-place edits as intended for models). Do NOT start it assuming the answer. No migration is
   obviously required — `strata_scorecard_models.status` already exists — but the versioning mechanism might need one.
+
+---
+
+## Backend programme AUTHORIZED (Vikram, 2026-07-16) — full continuous execution through Release 5
+> "The complete backend-programme Plan Lock, D-series, E-series and F-series rulings are approved. Implementation is
+> authorized for all dependency-ordered releases and all 14 product capabilities." PR #349 stays open/unmerged.
+> Blueprint `03_PLAN_LOCK_BACKEND_PROGRAM.md` is **APPROVED**. Each slice: implement → migrate staging → test →
+> evidence → logs → commit → next dependency-safe slice. Stop only for a hard blocker (list in the authorization).
+
+### F-SERIES — resolved from the authorization's CONFIRMED PRODUCT RULES (not assumed)
+| ID | Resolution | Derived from |
+|---|---|---|
+| **F-1** | ⛔ **STILL OPEN — the ONE thing not derivable.** No Strategy Office owner is named for the three integrity-exception records. E-1 mandates the field. A name cannot be inferred from schema, and inventing one is the exact zero-assumption violation the register exists to prevent. **Does NOT block the programme:** the register ships with `strategy_office_owner NOT NULL`; the three records are the only deferred item. | — |
+| **F-2** | **Clone-as-is, then edit in draft.** v2 is a draft and freely editable; the deliberate include/exclude choice (E-3) is recorded at approval, where SO reviews it anyway. | blueprint §11 recommendation + "choose the smallest design" |
+| **F-3** | **Qualification surfaces on board packs and exports**, not only admin/registry. | authorization R2: "Snapshot-integrity qualification on future packs and exports" |
+| **F-4** | **A2 → A3 back-to-back**, before E-2 remediation. No one-time exception, no A3-before-A2. | authorization: "Maintain dependency order" + §11 recommendation |
+| **F-5** | **Pre-existing rows get NULL `updated_at`**, never `now()`, plus an explicit "unaudited before <date>" marker. Defaulting to `now()` would assert a change time that never happened — false provenance on the very rows under investigation. | authorization: "Do not fabricate historical approval dates or update timestamps" |
+| **F-6** | **Benefit values get `accepted_with_exception` ONLY — not `quarantined`.** The authorization's benefit assurance list names Reported · Owner confirmed · Independently validated · Accepted with exception · Rejected · Reversed/superseded, and no quarantine. Adding `quarantined` would imply a benefit-value quarantine workflow that does not exist and was not asked for. | authorization: benefit assurance state list |
+| **F-7** | **`owner_confirmed` COUNTS in benefit realization.** This changes live numbers — `strata_calc_benefit_realization` currently whitelists `='validated'`, so the whitelist must be widened. Acceptance for calculation still does NOT imply independent validation (E-6); the state stays visibly distinct. | authorization: "Owner-confirmed benefits count" |
+| **F-8** | 🆕 **`strata_element_kpis` is NOT part of the P0 draft-gate.** Blueprint §12.2 lists it, but that contradicts §3.7 (relationship ≠ definition; post-approval linking is intended) and E-7 (no independent link-status state machine), and `strata_link_element_kpi` REQUIRES `approved` — so a draft-gate would invert the rule and break every KPI link. It is not a child of the scorecard-model aggregate at all. It receives E-4 audit coverage + the DEF-010 relaxation instead. **Derived from approved rules + the regression ban; raised as DRIFT-10, not silently adapted.** | §3.7 + E-7 + probe of the RPC body |
+
+### Probe corrections to the blueprint/handover (evidence-backed, this session)
+- **DEF-010's link layer is PARTIALLY SHIPPED.** `strata_link_element_kpi` already permits draft/pending linking when
+  `is_strategic` is true. Staging: 10 approved · 5 draft non-strategic · **1 draft STRATEGIC** · 1 pending_approval.
+  The handover's "6 draft KPIs on staging, **all unlinkable at creation**" is **FALSE** — the strategic one is linkable
+  today. DEF-010 extends a shipped pattern rather than inventing one.
+- **E-4's old/new value capture needs NO new columns.** `strata_audit_events` **already has `before` and `after` jsonb**
+  (probed). Blueprint §13.3's "extend it rather than mint a second audit store" is satisfied by the existing shape;
+  only correlation context is genuinely absent.
+- **The §12.1 precedent cannot be copied verbatim.** `strata_gate_model_stages_write` authorizes on
+  `(created_by = auth.uid() OR strata_is_admin())`, **not** `strategy_office`. Copying it wholesale would silently
+  change who may author measures. P0-A copies the draft-join SHAPE and preserves the existing role predicate.
+- **§12.3.3 verified, not assumed:** `strata_scorecard_models_update` gates on `status='draft'`, so the threshold
+  association (`threshold_scheme_id`, on the parent) is already protected. No work needed.

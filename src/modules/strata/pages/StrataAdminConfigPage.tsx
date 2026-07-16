@@ -831,7 +831,9 @@ export function ScorecardModelsSection({ onError }: { onError: OnError }) {
   const roles = useStrataRoles();
   const list = q.data ?? [];
   // strata_scorecard_model_perspectives write is strategy_office (matches RLS).
-  const canEditWeights = (roles.data ?? []).includes('strategy_office');
+  // Role is necessary but NOT sufficient: RLS + the set_model_measures RPC also require the parent
+  // model to be status='draft' (P0-A, D-1). Authoring is gated per-model below, not here.
+  const hasAuthorRole = (roles.data ?? []).includes('strategy_office');
 
   const perspectivesForNames = usePerspectives();
   const perspectiveNameById = new Map((perspectivesForNames.data ?? []).map((p) => [p.id, p.name]));
@@ -875,6 +877,10 @@ export function ScorecardModelsSection({ onError }: { onError: OnError }) {
             const submitBlockedReason = m.status === 'draft' && !integrityOk
               ? (wcount === 0 ? 'Add perspective weights totalling 100 first' : `Weights total ${wsum} — must total 100`)
               : undefined;
+            // D-1: only a DRAFT model's aggregate may be authored. Enforced at RLS and in the
+            // set_model_measures RPC; mirrored here so the reason is visible up front rather than
+            // discovered as a failed save. The UI is not the boundary — it is the explanation.
+            const canAuthor = hasAuthorRole && m.status === 'draft';
             return (
               <GovRecordCard
                 key={m.id}
@@ -886,13 +892,19 @@ export function ScorecardModelsSection({ onError }: { onError: OnError }) {
                 submitBlockedReason={submitBlockedReason}
               >
                 <ModelIntegrityBand sum={wsum} count={wcount} measureIssues={measureIssues} />
+                {hasAuthorRole && m.status !== 'draft' ? (
+                  <span style={metaStyle} data-testid="strata-model-immutable-note">
+                    {labelize(m.status)} definitions are immutable — this model&apos;s perspective weights and
+                    measures cannot be edited.
+                  </span>
+                ) : null}
                 <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
                   <span style={metaStyle}>Scope {labelize(m.owner_scope_type)}</span>
                   <span style={metaStyle}>Rollup {labelize(m.rollup_method)}</span>
                   <span style={metaStyle}>Granularity {labelize(m.period_granularity)}</span>
                 </div>
-                <ModelWeights model={m} canEditWeights={canEditWeights} />
-                <MeasureGroups modelId={m.id} measures={myMeasures} canEdit={canEditWeights} />
+                <ModelWeights model={m} canEditWeights={canAuthor} />
+                <MeasureGroups modelId={m.id} measures={myMeasures} canEdit={canAuthor} />
               </GovRecordCard>
             );
           })}

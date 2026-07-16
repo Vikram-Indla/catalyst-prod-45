@@ -90,3 +90,52 @@ payload (field specs mirror the real call sites). Server rejection likewise surf
 - ~~vitest cannot run~~ → **RESOLVED in 6A.** The suite runs on Node 22: **964 suites / 2,414 tests, 2,392 passing.**
   6 failures remain, all pre-existing ChatDock (`src/components/chat/dock/`), untouched by this feature.
 - The 6 ChatDock failures (foreign module — deliberately not touched).
+
+---
+
+# P0-A · AC-1 (blueprint §8.1) — RAW EVIDENCE
+> §8.1: "an approved model rejects a weight write AND a measure write, at the RPC **and** via a direct table write
+> (UI is not the boundary)."
+
+## Method — a test that could actually fail
+Run as a **real, non-admin `strategy_office` user** (`9537a670-b73e-4905-9835-b68085478cbc`; `strata_is_admin` = false,
+verified — an admin would bypass the role predicate and make the result meaningless) via
+`set_config('role','authenticated')` + `set_config('request.jwt.claims', …)`. A **positive control** (draft parent, same
+identity, same statement) is included so a uniformly-blocking policy cannot masquerade as a pass. Everything is rolled
+back by a terminal RAISE — **no staging data was written**.
+
+## Raw output (2026-07-16)
+```
+ERROR:  P0001: === P0-A RESULT (all changes rolled back) ===
+RLS approved-parent child UPDATE : 0 rows (expect 0)
+RLS draft-parent  child UPDATE : 1 rows (expect 1 = positive control)
+RPC on approved model          : scorecard model is approved — approved definitions are immutable;
+                                 create a new draft version to change its measures
+```
+| §8.1 clause | Result |
+|---|---|
+| approved model rejects a **weight** write via **direct table write** | ✅ 0 rows |
+| approved model rejects a **measure** write via the **RPC** | ✅ raises `check_violation` with a named, honest reason |
+| draft model still writable (control — proves the test can fail) | ✅ 1 row |
+| staging data mutated by the test | ✅ none — rolled back |
+
+## Policy state after migration (pg_policies)
+| table | policy | USING gates draft | WITH CHECK gates draft |
+|---|---|---|---|
+| `strata_scorecard_model_perspectives` | `..._write` | ✅ true | ✅ true |
+| `strata_scorecard_model_measures` | `strata_model_measures_write` | ✅ true | ✅ true |
+
+## Ledger 1:1
+`supabase_migrations.schema_migrations` → `20260716160000 · strata_p0_aggregate_immutability`, matching the committed
+file `supabase/migrations/20260716160000_strata_p0_aggregate_immutability.sql`. Applied via `execute_sql` + explicit
+ledger INSERT (MCP `apply_migration` stamps its own version and breaks the 1:1 rule).
+
+## E-3 preserved
+The two verification measure rows on B2B Sector Scorecard are **retained** (measures = 2 before and after). No in-place
+cleaning. The migration deletes nothing.
+
+## Gates
+`npx tsc --noEmit` → **No errors found** · `lint:colors:gate` → **0 = baseline 0** · `audit:ads:gate` → **no category
+above baseline** (tokens 19798/19798, typography 1366/1366, spacing 0/0, fontImports 0/0) · `lint:cre` → **passed** ·
+`PATH=node@22 npm test` → **2,430 passed · 6 failed · 16 skipped / 2,452**. The 6 are pre-existing foreign ChatDock
+failures (unchanged). Baseline before this slice: 2,426 passed / 6 failed → **+4 tests, 0 new failures.**

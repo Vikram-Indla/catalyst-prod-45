@@ -114,3 +114,37 @@ Deviations from the anchor that were taken deliberately (with rationale), pendin
 - **Status:** low-risk refinement; component is tsc + gates green, live-verified when first consumed. **Flagged to
   Vikram** — not silently adapted. If Vikram wants the consumers swapped in 4A regardless (accepting the current-colour
   shift), say so and I will.
+
+---
+
+## DRIFT-10 · P0-A — blueprint §12.2 lists `strata_element_kpis` for the P0 draft-gate. Following it would REGRESS the product. (RAISED → corrected as F-8)
+- **Plan Lock said** (§12.2 table): `strata_element_kpis` → "❌ false → **P0 fix** + DEF-010 (E-7)", i.e. rewrite its
+  write policy to require the parent's `status='draft'`, exactly as for the two model children.
+- **Reality probed on staging (2026-07-16, this session):** `strata_link_element_kpi`'s body **requires**
+  `kpi_status = 'approved'` — `IF kpi_status <> 'approved' AND NOT (is_strategic AND kpi_status IN ('draft',
+  'pending_approval')) THEN RAISE`. Gating element_kpis writes on a **draft** parent therefore **inverts** the rule
+  and **breaks every KPI link in the product**. That is a REGRESSION, which is banned.
+- **The blueprint contradicts itself, not just the schema.** §3.7 already rules that `element_kpis` rows created after
+  KPI approval are "**legitimate and intended** … relationship ≠ definition … **NOT** in the violation register", and
+  E-7 rules "**do NOT add an independent link-status state machine**". §12.2's row contradicts both. Further,
+  `element_kpis` is not a child of the scorecard-model aggregate at all — it has two parents (`strata_kpis`,
+  `strata_strategy_elements`) and neither makes it part of a governed *definition*.
+- **Taken (derivable from approved rules; no new product decision):** P0-A gates the two **definition** children —
+  `strata_scorecard_model_perspectives` + `strata_scorecard_model_measures`. `strata_element_kpis` is excluded from the
+  draft-gate and instead receives **E-4 audit coverage** (§13.1, still in scope) and the **DEF-010 relaxation** (§14).
+- **Status:** applied as **F-8** (09_DECISIONS.md). Logged, not silently adapted.
+
+## DRIFT-11 · §20 AC-6 was ratified 7/7 over the P0 defect — its fixture asserted approved-model editability (RAISED, corrected)
+- **Found at P0-A gate time:** `src/modules/strata/__tests__/ac6-keyboard-weight-change.test.tsx` seeded its model as
+  `status: 'approved'`, so the test asserted that an **approved** model's perspective weights are keyboard-editable and
+  that the governed write fires. It passed **because the P0 hole existed**. §20 AC-6 ("keyboard-only weight-change")
+  therefore read PASS over the exact defect D-1 declares P0. Nobody faked it — the fixture simply mirrored staging,
+  where both models are approved and both were (wrongly) editable.
+- **Taken:** the fixture's governance state is corrected to `draft` (+ coherent `approved_at`/`effective_from` = null).
+  **AC-6's criterion is untouched** — the keyboard-only verb is still driven end-to-end and still asserts the write
+  fires with the typed values. The verb is legitimate on a draft; only the fixture was wrong.
+- **Hardening added, not just a fixture edit:** `p0-approved-model-immutable.test.tsx` now pins the rule itself
+  (approved → no authoring control + a visible reason; draft → control present, as a positive control). The DB is the
+  real boundary and is proven by probe; this guards the UI's obligation not to offer a control the server will refuse.
+- **Status:** AC-6 still passes and now passes for the right reason. Re-verified 2,430 passed / 6 failed (the 6 are
+  pre-existing foreign ChatDock).

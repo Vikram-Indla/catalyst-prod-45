@@ -156,15 +156,26 @@ export const configApi = {
   // Edits the weight (+ optional order) of EXISTING model↔perspective rows only —
   // strategy_office has full write on strata_scorecard_model_perspectives. Does not
   // add/remove perspectives from the model. Errors surface verbatim to the caller.
+  //
+  // There is no RPC behind this path, so RLS is its only guard (P0-A). RLS now also requires the
+  // parent model to be status='draft' — and a row filtered out by RLS makes UPDATE match zero
+  // rows WITHOUT raising, so an unchecked call would report success having written nothing.
+  // The row count is therefore load-bearing, not a sanity check.
   setModelPerspectiveWeights: async (
     modelId: string,
     rows: Array<{ perspectiveId: string; weight: number; orderIndex?: number }>,
   ): Promise<void> => {
     for (const r of rows) {
-      await run(typedQuery('strata_scorecard_model_perspectives').update({
+      const updated = await run<Array<{ id: string }>>(typedQuery('strata_scorecard_model_perspectives').update({
         weight: r.weight,
         ...(r.orderIndex !== undefined ? { order_index: r.orderIndex } : {}),
       }).eq('model_id', modelId).eq('perspective_id', r.perspectiveId).select('id'));
+      if ((updated?.length ?? 0) === 0) {
+        throw new Error(
+          'Weight update was rejected — no rows changed. Approved definitions are immutable; '
+          + 'if this model is approved, create a new draft version to change its weights.',
+        );
+      }
     }
   },
 };
