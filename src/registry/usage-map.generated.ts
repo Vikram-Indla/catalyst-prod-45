@@ -4,7 +4,7 @@
  * Do NOT edit by hand. Run `npx tsx scripts/scan-components.ts` to regenerate
  * after changing any import in src/.
  *
- * Captured: 2026-07-16T18:12:28.590Z
+ * Captured: 2026-07-16T22:09:05.303Z
  * Stats: 4034 components observed (662 atlaskit, 3372 internal).
  */
 
@@ -48249,7 +48249,7 @@ export const usageMapStats = {
   total: 4034,
   atlaskit: 662,
   internal: 3372,
-  generatedAt: '2026-07-16T18:12:28.595Z',
+  generatedAt: '2026-07-16T22:09:05.308Z',
 };
 
 /**

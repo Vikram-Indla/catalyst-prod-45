@@ -327,6 +327,22 @@ export interface StrataKpi extends GovernedEnvelope {
   escalation_owner_id: string | null;
   data_source_id: string | null;
   threshold_scheme_id: string | null;
+  /**
+   * F-9: stable logical KPI identity, shared by EVERY version of this KPI and unchanged across a
+   * revision. `id` identifies a VERSION (a governed definition); `lineage_id` identifies the KPI as
+   * a continuing business concept. Relationships resolve through it to the version effective for a
+   * date; historical facts keep their own version id and are never repointed.
+   */
+  lineage_id: string;
+  /**
+   * F-9 revision materiality, RELATIVE TO the version this row supersedes.
+   * NULL ⇔ this row is not a revision — it never means "unclassified" (DB CHECK:
+   * supersedes_id IS NULL OR revision_class IS NOT NULL).
+   * `material` = formula/unit/direction/scope/source-semantic change: consumers MUST show a
+   * methodology break and must not imply comparability. `non_material` = wording/owner/metadata
+   * only: continuous trend permitted, with exact provenance.
+   */
+  revision_class: 'material' | 'non_material' | null;
 }
 
 export interface StrataKpiFormulaVersion {

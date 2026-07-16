@@ -1545,3 +1545,37 @@ past numbers meant.
 ## Status
 ✅ **DONE — STEP 6 IS COMPLETE.** Applied, ledger 1:1, gates green, suite 2,434/6.
 **Scorecard instance + benefit results byte-identical to baseline. Zero numbers moved.**
+
+---
+
+# Step 7 · revision materiality — CONSUMER behaviour (F-9) · NO migration
+
+## The problem underneath the ruling
+`id` identifies a **version**. The KPI detail trend was built from **one** `kpiId`'s targets and actuals, so after a
+revision the trend **silently restarts** and the KPI's history looks like it never happened. **"Display a methodology
+break" had nowhere to appear, because the trend never spanned versions.** So step 7 is two things, and the second is
+meaningless without the first.
+
+## What shipped
+1. **Lineage-aware history** — `kpiApi.lineageVersions/targetsForKpis/actualsForKpis`; `useKpiDetail(kpiId, lineageId)`
+   now reads the **whole lineage** and returns `versions`. Facts keep their own `kpi_id` — **nothing is repointed**.
+2. **Exact provenance per point** — each `TrendRow` carries `kpiVersion` + `revisionClass`, **read from the row's own
+   `kpi_id`** (provenance, not inference). New **Version** column (`v2 ⚠`); unknown version renders a dash, never a guess.
+   This is the ruling's "non_material continuity retains **exact provenance**".
+3. **Methodology break** — an ADS `SectionMessage appearance="warning"` above the chart, naming **which version** and
+   **from which period**, and the semantics that changed. Only `material` raises it.
+4. **The rule is SHARED, not local** — `domain/materiality.ts` → `methodologyBreaks(points)`. Same reasoning as the DB
+   resolver: the ruling forbids surfaces inventing their own version handling, and scorecard detail + board packs need
+   the same answer (F-3). A page-local re-derivation would drift.
+
+## 🔴 F-11 — found while verifying this slice: **the `tsc` gate is a no-op**
+`tsconfig.json` is a solution config (`files: []` + references), so **`npx tsc --noEmit` compiles nothing**. A
+deliberate `const x: number = "string"` in the page produced **no error**. The gate reported on every slice of this
+feature has been **vacuous**. The real check (`-p tsconfig.app.json`) shows **159 pre-existing errors in 4 foreign
+files** and **0 in ours**. Full detail + recommendation: `09_DECISIONS.md` → **F-11**. **No shipped claim rests on
+tsc** — every claim in `06_VALIDATION_EVIDENCE.md` was established by DB probe or test.
+
+## Status
+✅ **DONE** — gates green, **8 new tests**, suite **2,442 passed / 6 failed** (baseline 2,434 → +8; the 6 are the
+pre-existing foreign ChatDock failures). `usage-map.generated.ts` regenerated for the new import.
+**Step 7's DB half was already proven in 6a** (material revision ⇒ Missing, never a carried-forward value).

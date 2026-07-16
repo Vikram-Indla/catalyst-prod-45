@@ -24,6 +24,7 @@ import { JiraTable } from '@/components/shared/JiraTable';
 import type { Column } from '@/components/shared/JiraTable';
 import { Routes } from '@/lib/routes';
 import { configApi, kpiApi, strategyApi } from '@/modules/strata/domain';
+import { methodologyBreaks } from '@/modules/strata/domain/materiality';
 import {
   useBandResolver, useDataSources, useElementKpis, useInvalidateStrata, useKpiAchievement, useKpiBySlug,
   useKpiDetail, useKpiEvidenceChain, useKpiTypes,
@@ -309,6 +310,11 @@ interface TrendRow {
   period: { name: string; starts_on?: string | null } | null;
   target: StrataKpiTarget | null;
   actual: StrataKpiActual | null;
+  /** F-9: which KPI VERSION produced this point. Facts are never repointed, so this is read from
+   *  the row's own kpi_id — it is provenance, not an inference. */
+  kpiVersion: number | null;
+  /** 'material' on the version that INTRODUCED a comparability break; null when not a revision. */
+  revisionClass: string | null;
 }
 
 export default function StrataKpiDetailPage() {
@@ -318,7 +324,8 @@ export default function StrataKpiDetailPage() {
 
   const kpiQ = useKpiBySlug(slug);
   const kpi = kpiQ.data ?? null;
-  const detailQ = useKpiDetail(kpi?.id);
+  // F-9: pass the lineage so the trend spans every version of this KPI, not just the open one.
+  const detailQ = useKpiDetail(kpi?.id, kpi?.lineage_id ?? undefined);
   const achievementQ = useKpiAchievement(kpi?.id, activePeriod?.id);
   const uploadRunsQ = useUploadRuns();
   const profilesQ = useProfileNames();
@@ -390,15 +397,39 @@ export default function StrataKpiDetailPage() {
     // actuals arrive ordered by submitted_at desc — keep the latest per period.
     actuals.forEach((a) => { if (!actualByPeriod.has(a.period_id)) actualByPeriod.set(a.period_id, a); });
     const periodIds = new Set<string>([...targetByPeriod.keys(), ...actualByPeriod.keys()]);
+    // F-9 provenance: attribute each point to the version that produced it, read from the row's own
+    // kpi_id. The actual is preferred over the target because the actual IS the measurement.
+    const versionByKpiId = new Map((detailQ.data?.versions ?? []).map((v) => [v.id, v]));
     return [...periodIds]
-      .map((pid) => ({
-        periodId: pid,
-        period: periodById.get(pid) ?? null,
-        target: targetByPeriod.get(pid) ?? null,
-        actual: actualByPeriod.get(pid) ?? null,
-      }))
+      .map((pid) => {
+        const actual = actualByPeriod.get(pid) ?? null;
+        const target = targetByPeriod.get(pid) ?? null;
+        const owner = versionByKpiId.get(actual?.kpi_id ?? target?.kpi_id ?? '') ?? null;
+        return {
+          periodId: pid,
+          period: periodById.get(pid) ?? null,
+          target,
+          actual,
+          kpiVersion: owner?.version ?? null,
+          revisionClass: owner?.revision_class ?? null,
+        };
+      })
       .sort((a, b) => (a.period?.starts_on ?? '').localeCompare(b.period?.starts_on ?? ''));
-  }, [detailQ.data?.targets, detailQ.data?.actuals, periodById]);
+  }, [detailQ.data?.targets, detailQ.data?.actuals, detailQ.data?.versions, periodById]);
+
+  /**
+   * F-9 materiality — the shared rule (domain/materiality), not a local re-derivation. Scorecard
+   * detail and board packs need the same answer (F-3), and surfaces that each decide "is this
+   * comparable?" would disagree.
+   */
+  const breaks = useMemo(
+    () => methodologyBreaks(trendRows.map((r) => ({
+      kpiVersion: r.kpiVersion,
+      revisionClass: r.revisionClass,
+      label: r.period?.name ?? null,
+    }))),
+    [trendRows],
+  );
 
   const chartData = useMemo(() => trendRows.map((r) => ({
     name: r.period?.name ?? '—',
@@ -410,6 +441,26 @@ export default function StrataKpiDetailPage() {
 
   const trendColumns = useMemo<Column<TrendRow>[]>(() => [
     { id: 'period', label: 'Period', flex: true, cell: ({ row }) => (row.period?.name ? <span style={{ color: T.text }}>{row.period.name}</span> : <Dash />) },
+    {
+      // F-9: "non_material continuity retains EXACT provenance". The trend now spans versions, so
+      // every point must say which definition produced it — otherwise a continuous line silently
+      // mixes definitions. Zero-assumption: a point whose owning version cannot be resolved renders
+      // a dash, never a guessed version.
+      id: 'version',
+      label: 'Version',
+      width: 12,
+      cell: ({ row }) => (row.kpiVersion === null
+        ? <Dash />
+        : (
+          <span
+            style={{ fontVariantNumeric: 'tabular-nums', color: T.subtle }}
+            data-testid={`strata-kpi-trend-version-${row.periodId}`}
+          >
+            v{row.kpiVersion}
+            {row.revisionClass === 'material' ? ' ⚠' : ''}
+          </span>
+        )),
+    },
     {
       id: 'target', label: 'Target', width: 18,
       cell: ({ row }) => (row.target ? <span style={{ fontVariantNumeric: 'tabular-nums' }}>{fmtUnit(row.target.target, kpi?.unit)}</span> : <Dash />),
@@ -745,6 +796,24 @@ export default function StrataKpiDetailPage() {
             </>
           }
         >
+          {/* F-9: a material revision breaks comparability, so the trend must SAY SO rather than
+              draw one continuous line across two different definitions. Shown above the chart
+              because it changes how every point after the break should be read. Only `material`
+              raises it — `non_material` is permitted to trend continuously, with the Version column
+              carrying the exact provenance. */}
+          {breaks.length > 0 ? (
+            <div style={{ marginBottom: 12 }} data-testid="strata-kpi-methodology-break">
+              <SectionMessage appearance="warning" title="Methodology break — values are not directly comparable">
+                <p>
+                  {breaks.map((b) => `v${b.version} (from ${b.label})`).join(", ")}
+                  {breaks.length > 1 ? ' introduced material changes' : ' introduced a material change'}
+                  {' '}to how this KPI is measured — its formula, unit, direction, scope or source semantics.
+                  Points before and after are measured differently and should not be read as one trend
+                  without an approved bridge.
+                </p>
+              </SectionMessage>
+            </div>
+          ) : null}
           {detailQ.isLoading ? (
             <Spinner size="medium" aria-label="Loading trend" />
           ) : detailQ.isError ? (

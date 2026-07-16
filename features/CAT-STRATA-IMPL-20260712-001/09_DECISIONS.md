@@ -411,3 +411,31 @@ governed history and keeps the ruling's actual intent (choose correctly among **
 **If Vikram wants the literal rule instead**, the consequence must be stated plainly: 3,210 historical results become
 Missing on the next recalculation of any unlocked period, and the fix would be to backfill true business-effective
 dates onto the KPIs — which **cannot be inferred** and would be exactly the fabricated-timestamp failure F-5 forbids.
+
+## F-11 · 🔴 RAISED (session 026, 2026-07-17) — **`npx tsc --noEmit` is a NO-OP. The "tsc clean" gate has been vacuous.**
+> **This invalidates a gate reported on every slice of this feature, including all 13 shipped this session.**
+> Not a STRATA defect — a repo-wide tooling defect. Raised, not silently worked around.
+
+**Proof:** `tsconfig.json` is a **solution-style config** — `"files": []` plus `"references"` to `tsconfig.app.json`
+and `tsconfig.node.json`. `tsc --noEmit` against it compiles **nothing**. Demonstrated: a deliberate
+`const x: number = "definitely not a number";` inserted into `StrataKpiDetailPage.tsx` produces **zero** errors from
+`npx tsc --noEmit`. (Separately, RTK's tsc filter prints "TypeScript: No errors found" for any output without error
+lines — it says the same for `tsc --version` — so the reassuring message came from the filter, not from tsc.)
+
+**The real check is `npx tsc --noEmit -p tsconfig.app.json`** (or `tsc --build`). It reports **159 pre-existing errors
+across exactly 4 foreign files** — `CapacityHeatmap.tsx` · `icon-registry.ts` · `RichTextCommentEditor.tsx` ·
+`SortableColumn.tsx`. They are **parse** errors (TS1005/TS1136/TS1161), which Vite never surfaces because esbuild
+strips types without checking. **ZERO are in any file this feature has touched** — verified per slice.
+
+**Second, narrower finding:** even under the real check, `kpi?.BOGUS_FIELD_XYZ` on the KPI object is **not** flagged,
+so property access there is effectively unchecked. `tsconfig.app.json` sets `strict: false` + `noImplicitAny: false`.
+**Consequence: for STRATA page code, tsc green is not evidence.** Tests and DB probes are the evidence — which is how
+every claim in `06_VALIDATION_EVIDENCE.md` was actually established, so no shipped claim rests on tsc.
+
+**Recommended (needs a ruling — it is a repo-wide change, outside this feature's scope):**
+1. Change the CLAUDE.md gate from `npx tsc --noEmit` to **`npx tsc --noEmit -p tsconfig.app.json`**.
+2. Fix or exclude the 4 foreign files so the real gate can be made blocking (today it cannot: it fails on arrival).
+3. Consider a ratchet, exactly like `lint:colors:gate` — baseline 159, fail on increase. That makes the gate useful
+   immediately without demanding a 159-error cleanup first.
+**Until then, report the gate honestly:** "tsc: no errors in touched files (`-p tsconfig.app.json`); 159 pre-existing
+errors in 4 foreign files" — **never a bare "tsc clean"**.

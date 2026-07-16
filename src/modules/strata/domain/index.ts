@@ -403,6 +403,21 @@ export const kpiApi = {
     run(typedQuery('strata_kpi_targets').select('*').eq('kpi_id', kpiId)),
   actuals: (kpiId: string): Promise<StrataKpiActual[]> =>
     run(typedQuery('strata_kpi_actuals').select('*').eq('kpi_id', kpiId).order('submitted_at', { ascending: false })),
+  /**
+   * F-9: every version of one logical KPI, oldest first. `id` identifies a VERSION; `lineage_id`
+   * identifies the KPI as a continuing business concept, so a trend that reads one `id` shows one
+   * version's history and silently restarts at a revision.
+   */
+  lineageVersions: (lineageId: string): Promise<StrataKpi[]> =>
+    run(typedQuery('strata_kpis').select('*').eq('lineage_id', lineageId).order('version')),
+  /** Targets across every version of a lineage. Each row keeps its own kpi_id — never repointed. */
+  targetsForKpis: (kpiIds: string[]): Promise<StrataKpiTarget[]> =>
+    kpiIds.length === 0 ? Promise.resolve([])
+      : run(typedQuery('strata_kpi_targets').select('*').in('kpi_id', kpiIds)),
+  /** Actuals across every version of a lineage. Each row keeps its own kpi_id — never repointed. */
+  actualsForKpis: (kpiIds: string[]): Promise<StrataKpiActual[]> =>
+    kpiIds.length === 0 ? Promise.resolve([])
+      : run(typedQuery('strata_kpi_actuals').select('*').in('kpi_id', kpiIds).order('submitted_at', { ascending: false })),
   actualsForPeriod: (periodId: string): Promise<StrataKpiActual[]> =>
     run(typedQuery('strata_kpi_actuals').select('*').eq('period_id', periodId)),
   achievement: (kpiId: string, periodId: string) =>

@@ -508,3 +508,35 @@ correctly still reports LOWER BOUND rather than claiming a census.
 
 **Ledger 1:1:** `20260717120000 · strata_calc_provenance_remaining`. **Gates:** tsc clean · colors 0=0 · audit no
 category above baseline · CRE pass · suite **2,434 passed / 6 failed**.
+
+---
+
+# Step 7 · revision materiality — EVIDENCE
+
+## The DB half (already proven, 6a)
+```
+CURRENT period (ends 2026-06-30): resolved=v2  achievement=<NULL> reason=no_actual
+  -> v2 effective, NO actual of its own; v1 HAS one (90). Carried forward? no — correct
+```
+
+## The display half — `methodologyBreaks()`, 8 tests, all passing
+| Ruling clause | Test |
+|---|---|
+| **material ⇒ show a methodology break** | break reported at the boundary, naming version **and** period |
+| every break reported (revised twice) | `[2, 3]` |
+| break at the **boundary only**, not on every later point | 1 break across v2's Q2/Q3/Q4 |
+| **non_material ⇒ continuous trend permitted** | **NO** break — *positive control*: identical trend, differing only in `revision_class` |
+| no break within one version | ✅ |
+| **zero-assumption: unknown version ⇒ never assert a break** | ✅ both directions |
+| `revision_class` NULL = "not a revision", never "unclassified" | ✅ (DB CHECK guarantees a revision is always classified) |
+| empty / single-point trend | no invented break |
+
+## Gates — reported honestly (see F-11)
+- **tsc:** `npx tsc --noEmit` is a **NO-OP** (solution config, `files: []`). Real check
+  `npx tsc --noEmit -p tsconfig.app.json`: **0 errors in touched files**; 159 pre-existing in 4 foreign files
+  (`CapacityHeatmap` · `icon-registry` · `RichTextCommentEditor` · `SortableColumn`).
+- `lint:colors:gate` **0 = baseline 0** · `audit:ads:gate` **no category above baseline** · `lint:cre` **pass**
+- `scan-components` regenerated (662 atlaskit + 3372 internal = 4034)
+- Suite **2,442 passed · 6 failed · 16 skipped / 2,464**. Baseline 2,434 → **+8, 0 new failures**.
+  ⚠️ An interim run showed 8 failures — `AgeingPanel.navigate` timed out at 5000ms under load and **passes in
+  isolation**. Re-run clean. Flagged rather than quietly re-run until green.
