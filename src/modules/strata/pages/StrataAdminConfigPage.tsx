@@ -11,8 +11,9 @@ import { useNavigate, useParams } from 'react-router-dom';
 import Tabs, { Tab, TabList, TabPanel } from '@atlaskit/tabs';
 import {
   Button, CatalystInlineCode, CatalystTag, EmptyState, Lozenge, Modal, ModalBody, ModalFooter,
-  ModalHeader, ModalTitle, SectionMessage, Spinner, Textfield,
+  ModalHeader, ModalTitle, SectionMessage, Select, Spinner, Textfield,
 } from '@/components/ads';
+import type { SelectOption } from '@/components/ads';
 import { JiraTable } from '@/components/shared/JiraTable';
 import type { Column } from '@/components/shared/JiraTable';
 import { StatusLozenge } from '@/components/shared/StatusLozenge';
@@ -23,7 +24,7 @@ import {
   MoveRight, Rocket, Scale, ShieldCheck, Upload, Users,
 } from '@/lib/atlaskit-icons';
 import Toggle from '@atlaskit/toggle';
-import { configApi, governanceApi } from '@/modules/strata/domain';
+import { configApi, governanceApi, scorecardApi } from '@/modules/strata/domain';
 import {
   useAllModelMeasures, useAllModelPerspectives, useChangeRequests, useGateModels, useInvalidateStrata, useKpiTypes, useKpis, useModelPerspectives,
   usePerspectives, useProfileNames, useProjectCardFieldConfigs, useProjectCardPicklists,
@@ -540,6 +541,26 @@ function ModelIntegrityBand({ sum, count, measureIssues }: {
   );
 }
 
+/** M-D1 — the ONE aggregation vocabulary, byte-identical to
+ * strata_scorecard_models.rollup_method's CHECK. Never mint a fifth value here:
+ * a second dictionary one level down is the exact failure M-D0/M-D1 prevent. */
+const AGGREGATION_METHODS: StrataModelMeasure['aggregation_method'][] = [
+  'weighted_average', 'sum', 'min', 'custom',
+];
+const AGGREGATION_OPTIONS: SelectOption[] = AGGREGATION_METHODS.map((v) => ({ value: v, label: labelize(v) }));
+
+/** One editable measure ASSIGNMENT. Carries only the assignment's own facts —
+ * name/direction/unit/scheme are read from the KPI and are never drafted here. */
+interface MeasureDraft {
+  perspectiveId: string;
+  kpiId: string;
+  /** String while editing: an emptied number field must stay empty, not snap to 0. */
+  weight: string;
+  required: boolean;
+  aggregationMethod: StrataModelMeasure['aggregation_method'];
+  targetPolicy: StrataModelMeasure['target_policy'];
+}
+
 /**
  * Anchor-05 measures builder — perspective groups, each listing its measure
  * ASSIGNMENTS (M-D0). Every identity column (Measure / Direction / Threshold
@@ -547,12 +568,26 @@ function ModelIntegrityBand({ sum, count, measureIssues }: {
  * re-entered here — storing them on the assignment would be the
  * two-competing-dictionaries bug M-D0 exists to prevent. Only the assignment's
  * own facts (weight, required, aggregation) belong to the measure row.
+ *
+ * Authoring (part 2b) mirrors ModelWeights: local draft, editing flag,
+ * Save/Cancel, Save disabled while integrity fails, DB error surfaced verbatim.
+ * Save is a REPLACE-SET — it sends the full set across every group, so the draft
+ * is held flat and `order_index` is re-derived from position within each group.
+ * The 100-per-group rule is gated CLIENT-side only: the RPC deliberately does
+ * not enforce it, because anchor 05 gates *submit*, not *save*.
  */
-function MeasureGroups({ modelId, measures }: { modelId: string; measures: StrataModelMeasure[] }) {
+function MeasureGroups({ modelId, measures, canEdit }: {
+  modelId: string; measures: StrataModelMeasure[]; canEdit: boolean;
+}) {
   const perspectives = usePerspectives();
   const mp = useModelPerspectives(modelId);
   const kpis = useKpis();
   const kpiTypes = useKpiTypes();
+  const invalidate = useInvalidateStrata();
+  const [editing, setEditing] = useState(false);
+  const [draft, setDraft] = useState<MeasureDraft[]>([]);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const pName = new Map((perspectives.data ?? []).map((p) => [p.id, p.name]));
   const kpiById = new Map((kpis.data ?? []).map((k) => [k.id, k]));
@@ -561,18 +596,88 @@ function MeasureGroups({ modelId, measures }: { modelId: string; measures: Strat
 
   if (groups.length === 0) return null;
 
+  const startEdit = () => {
+    setDraft([...measures]
+      .sort((a, b) => a.order_index - b.order_index)
+      .map((m) => ({
+        perspectiveId: m.perspective_id,
+        kpiId: m.kpi_id,
+        weight: String(m.weight),
+        required: m.required,
+        aggregationMethod: m.aggregation_method,
+        targetPolicy: m.target_policy,
+      })));
+    setError(null);
+    setEditing(true);
+  };
+  // Cancel restores the persisted values by dropping the draft.
+  const cancel = () => { setEditing(false); setError(null); };
+
+  const patchRow = (kpiId: string, patch: Partial<MeasureDraft>) =>
+    setDraft((prev) => prev.map((d) => (d.kpiId === kpiId ? { ...d, ...patch } : d)));
+  const removeRow = (kpiId: string) => setDraft((prev) => prev.filter((d) => d.kpiId !== kpiId));
+  const addRow = (perspectiveId: string, kpiId: string) => setDraft((prev) => [...prev, {
+    perspectiveId, kpiId, weight: '0', required: false,
+    aggregationMethod: 'weighted_average', targetPolicy: 'default',
+  }]);
+
+  const draftRowsFor = (pid: string) => draft.filter((d) => d.perspectiveId === pid);
+  const draftTotalFor = (pid: string) => draftRowsFor(pid).reduce((a, d) => a + (Number(d.weight) || 0), 0);
+  // A group with no measures is not a failure — it mirrors ModelIntegrityBand,
+  // which flags only groups that HAVE measures. Blocking on empty groups would
+  // make the first save of a part-built model impossible (replace-set sends all).
+  const failingGroups = groups
+    .filter((g) => draftRowsFor(g.perspective_id).length > 0 && draftTotalFor(g.perspective_id) !== 100)
+    .map((g) => pName.get(g.perspective_id) ?? '—');
+  // A KPI is assigned at most once per MODEL, so the picker offers the rest.
+  const assigned = new Set(draft.map((d) => d.kpiId));
+  const kpiOptions: SelectOption[] = (kpis.data ?? [])
+    .filter((k) => !assigned.has(k.id))
+    .map((k) => ({ value: k.id, label: k.name }));
+
+  const save = async () => {
+    setSaving(true);
+    setError(null);
+    try {
+      const seen = new Map<string, number>();
+      await scorecardApi.setModelMeasures(modelId, draft.map((d) => {
+        const idx = seen.get(d.perspectiveId) ?? 0;
+        seen.set(d.perspectiveId, idx + 1);
+        return {
+          perspectiveId: d.perspectiveId,
+          kpiId: d.kpiId,
+          weight: Number(d.weight) || 0,
+          orderIndex: idx,
+          required: d.required,
+          aggregationMethod: d.aggregationMethod,
+          targetPolicy: d.targetPolicy,
+        };
+      }));
+      invalidate();
+      setEditing(false);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : String(e));
+    } finally {
+      setSaving(false);
+    }
+  };
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
       {groups.map((g) => {
         const rows = measures.filter((m) => m.perspective_id === g.perspective_id)
           .sort((a, b) => a.order_index - b.order_index);
-        const total = rows.reduce((a, m) => a + Number(m.weight ?? 0), 0);
+        const drows = draftRowsFor(g.perspective_id);
+        const total = editing
+          ? draftTotalFor(g.perspective_id)
+          : rows.reduce((a, m) => a + Number(m.weight ?? 0), 0);
+        const count = editing ? drows.length : rows.length;
         return (
           <div key={g.id} style={{ border: `1px solid ${T.border}`, borderRadius: 6, overflow: 'hidden' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap', padding: '8px 12px', background: T.sunken }}>
               <strong style={{ fontSize: 'var(--ds-font-size-200)', color: T.text }}>{pName.get(g.perspective_id) ?? '—'}</strong>
               <span style={metaStyle}>perspective weight <strong style={{ color: T.text }}>{g.weight}</strong></span>
-              {rows.length === 0 ? (
+              {count === 0 ? (
                 <span style={{ ...metaStyle, marginLeft: 'auto' }}>No measures assigned</span>
               ) : (
                 <span style={{ marginLeft: 'auto', fontSize: 'var(--ds-font-size-100)', fontWeight: 600,
@@ -581,7 +686,84 @@ function MeasureGroups({ modelId, measures }: { modelId: string; measures: Strat
                 </span>
               )}
             </div>
-            {rows.length > 0 ? (
+            {editing ? (
+              <div style={{ display: 'flex', flexDirection: 'column' }}>
+                {drows.map((d) => {
+                  const k = kpiById.get(d.kpiId);
+                  const dir = k?.kpi_type_id ? typeById.get(k.kpi_type_id)?.directionality : undefined;
+                  const kName = k?.name ?? '—';
+                  return (
+                    <div key={d.kpiId} style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap',
+                      padding: '8px 12px', borderTop: `1px solid ${T.border}`, fontSize: 'var(--ds-font-size-100)' }}>
+                      <span style={{ ...bodyStyle, fontWeight: 600, flex: '1 1 180px', minWidth: 0 }}>{kName}</span>
+                      <div style={{ width: 96 }}>
+                        <Textfield
+                          type="number"
+                          spacing="compact"
+                          value={d.weight}
+                          onChange={(e) => patchRow(d.kpiId, { weight: e.target.value })}
+                          aria-label={`Weight for ${kName}`}
+                          elemAfterInput={<span style={{ paddingRight: 'var(--ds-space-050)', color: T.subtlest }}>%</span>}
+                          testId={`strata-measure-weight-${d.kpiId}`}
+                        />
+                      </div>
+                      {/* Direction is READ from the KPI (M-D0) — never an input. */}
+                      <span style={metaStyle}>{dir ? (DIRECTIONALITY_LABEL[dir] ?? labelize(dir)) : '—'}</span>
+                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                        <Toggle
+                          isChecked={d.required}
+                          isDisabled={saving}
+                          onChange={() => patchRow(d.kpiId, { required: !d.required })}
+                          label={`Required — ${kName}`}
+                          testId={`strata-measure-required-${d.kpiId}`}
+                        />
+                        <span style={metaStyle}>Required</span>
+                      </span>
+                      <div style={{ width: 180 }}>
+                        <Select
+                          options={AGGREGATION_OPTIONS}
+                          value={AGGREGATION_OPTIONS.find((o) => o.value === d.aggregationMethod) ?? null}
+                          onChange={(o) => o && patchRow(d.kpiId, {
+                            aggregationMethod: o.value as StrataModelMeasure['aggregation_method'],
+                          })}
+                          isDisabled={saving}
+                          isSearchable={false}
+                          usePortal
+                          aria-label={`Aggregation for ${kName}`}
+                          testId={`strata-measure-aggregation-${d.kpiId}`}
+                        />
+                      </div>
+                      <Button
+                        spacing="compact"
+                        appearance="subtle"
+                        isDisabled={saving}
+                        onClick={() => removeRow(d.kpiId)}
+                        testId={`strata-measure-remove-${d.kpiId}`}
+                      >
+                        Remove
+                      </Button>
+                    </div>
+                  );
+                })}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap',
+                  padding: '8px 12px', borderTop: `1px solid ${T.border}` }}>
+                  <span style={metaStyle}>+ Add measure</span>
+                  <div style={{ minWidth: 240 }}>
+                    <Select
+                      options={kpiOptions}
+                      value={null}
+                      onChange={(o) => o && addRow(g.perspective_id, o.value)}
+                      isDisabled={saving || kpiOptions.length === 0}
+                      isLoading={kpis.isLoading}
+                      usePortal
+                      placeholder={kpiOptions.length === 0 ? 'Every KPI is already assigned' : 'Select a KPI…'}
+                      aria-label={`Add measure to ${pName.get(g.perspective_id) ?? 'perspective'}`}
+                      testId={`strata-measure-add-${g.perspective_id}`}
+                    />
+                  </div>
+                </div>
+              </div>
+            ) : rows.length > 0 ? (
               <div style={{ display: 'flex', flexDirection: 'column' }}>
                 {rows.map((m) => {
                   const k = kpiById.get(m.kpi_id);
@@ -602,6 +784,42 @@ function MeasureGroups({ modelId, measures }: { modelId: string; measures: Strat
           </div>
         );
       })}
+      {editing ? (
+        <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'center' }}>
+          <Button
+            spacing="compact"
+            appearance="primary"
+            isDisabled={saving || failingGroups.length > 0}
+            onClick={() => void save()}
+            testId={`strata-model-measures-save-${modelId}`}
+          >
+            {saving ? 'Saving…' : 'Save measures'}
+          </Button>
+          <Button spacing="compact" appearance="subtle" isDisabled={saving} onClick={cancel}>Cancel</Button>
+          {/* The block always states its reason — never a silent disable (anchor 05). */}
+          {failingGroups.length > 0 ? (
+            <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--ds-text-danger)' }}>
+              {failingGroups.join(', ')} must total 100 before saving
+            </span>
+          ) : null}
+        </div>
+      ) : canEdit ? (
+        <div>
+          <Button
+            spacing="compact"
+            appearance="subtle"
+            onClick={startEdit}
+            testId={`strata-model-measures-edit-${modelId}`}
+          >
+            Edit measures
+          </Button>
+        </div>
+      ) : null}
+      {error ? (
+        <SectionMessage appearance="error" title="Action rejected">
+          <p style={{ whiteSpace: 'pre-wrap' }}>{error}</p>
+        </SectionMessage>
+      ) : null}
     </div>
   );
 }
@@ -632,7 +850,7 @@ export function ScorecardModelsSection({ onError }: { onError: OnError }) {
         The builder governs perspective weights, measures, integrity and lifecycle. Perspective weights must total 100,
         and each perspective's measure weights must total 100, before a model can be submitted for approval. A measure is
         an assignment of an existing KPI — its name, direction and threshold scheme are read from the KPI, never re-entered
-        here. Assigning measures from this screen, preview-with-data and version diff are later slices.
+        here. Preview-with-data and version diff are later slices.
       </p>
       <SectionState query={q} empty={list.length === 0}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
@@ -674,7 +892,7 @@ export function ScorecardModelsSection({ onError }: { onError: OnError }) {
                   <span style={metaStyle}>Granularity {labelize(m.period_granularity)}</span>
                 </div>
                 <ModelWeights model={m} canEditWeights={canEditWeights} />
-                <MeasureGroups modelId={m.id} measures={myMeasures} />
+                <MeasureGroups modelId={m.id} measures={myMeasures} canEdit={canEditWeights} />
               </GovRecordCard>
             );
           })}

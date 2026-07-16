@@ -28,6 +28,7 @@ const H = vi.hoisted(() => {
   };
   return {
     setModelPerspectiveWeights: vi.fn(async () => undefined),
+    setModelMeasures: vi.fn(async () => undefined),
     invalidate: vi.fn(),
     MODEL,
     PERSPECTIVES: [
@@ -81,6 +82,8 @@ vi.mock('@/modules/strata/domain', () => ({
     approveScorecardModel: vi.fn(async () => undefined),
     retireRecord: vi.fn(async () => undefined),
   },
+  // The measures builder writes through scorecardApi, not configApi.
+  scorecardApi: { setModelMeasures: H.setModelMeasures },
   governanceApi: {},
 }));
 

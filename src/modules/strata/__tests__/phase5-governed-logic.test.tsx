@@ -57,6 +57,7 @@ vi.mock('@/modules/strata/domain', () => ({
     setModelPerspectiveWeights: vi.fn(), submitRecord: vi.fn(), approveRecord: vi.fn(),
     approveScorecardModel: vi.fn(), retireRecord: vi.fn(),
   },
+  scorecardApi: { setModelMeasures: vi.fn() },
   governanceApi: {},
 }));
 

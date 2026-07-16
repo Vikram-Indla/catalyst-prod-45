@@ -151,4 +151,19 @@ Plan Lock `03_PLAN_LOCK_PHASE5.md` approved at `3e215d4ed`. All decisions ratifi
   `rollup_method` CHECK are **byte-identical**.
 - **M-D2 ✅ RULED (Vikram 2026-07-16): SPLIT the slice.** Table + RPC + reader shipped first
   (`20260716150000`); the anchor-05 measures **builder UI** is its own slice (it replaces 5C's card layout with
-  perspective groups — a large surface).
+  perspective groups — a large surface). **Part 2a shipped `ffb3f8c68`; part 2b BUILT session 025** (gates green,
+  live-verified, measures table 0 → 2 rows through the UI). Anchor 05's builder is complete.
+
+## Part 2b — raised, PROPOSED (need a Vikram ruling; nothing was silently adapted)
+- **M-D3 · PROPOSED — the Save gate treats an EMPTY perspective group as PASSING.** Plan Lock 2b says "gate Save on
+  every group totalling 100". Read literally that includes groups with zero measures — but `setModelMeasures` is a
+  REPLACE-SET (the save sends the FULL set across all groups), so the literal rule makes the FIRST save of a
+  part-built model impossible, and it contradicts `ModelIntegrityBand` (2a), which flags only groups that HAVE
+  measures. Implemented to mirror the band. → **Recommend CONFIRM** (one rule for one fact).
+  **Consequence, logged honestly:** the band's ✕ measure state is now unreachable *through the UI*; it still guards
+  non-UI writes (RPC/seed/other clients), which is how it was verified. See `sessions/025_…` findings 1–2.
+- **M-D4 · PROPOSED — measures are editable on an APPROVED model (role-gated only, no status gate).** `ModelWeights`
+  already behaves exactly this way, so 2b introduced nothing new — but STRATA governance is version-based, so in-place
+  edits to an approved model arguably bypass versioning for BOTH weights and measures. → **Recommend: rule separately**
+  (it is a pre-existing question about `ModelWeights` as much as about measures, and a status gate belongs in its own
+  slice, not smuggled into 2b).

@@ -72,6 +72,29 @@ Format per loop: Hypothesis → Experiment → Measure → Keep/Discard → Log.
 - **Keep:** Honest scoped build (P4-D2…D8): render on the existing backend, zero-assumption gaps, split anchor-24
   editorial builder + Issue to a separate backend feature (own migration + Plan Lock).
 
+## Measures builder part 2b (session 025, 2026-07-16)
+
+### K-M-1 · Does the Save gate's literal reading survive contact with the replace-set contract?
+- **Hypothesis:** "gate Save on every group totalling 100" (Plan Lock) is directly implementable as written.
+- **Experiment:** traced it against the two shipped facts — `setModelMeasures` is a REPLACE-SET (sends the full set
+  across every group), and `ModelIntegrityBand` (2a) flags only groups that HAVE measures.
+- **Measure:** the literal reading is unimplementable in practice: with 3 empty groups, a model could never take its
+  FIRST save (you'd have to fill every perspective in one sitting), and it would contradict the band's own rule — two
+  different answers to "is this group OK?".
+- **Keep:** gate on groups that HAVE measures; mirror the band exactly. RAISED as finding 1 for ratification rather
+  than silently adapted. Consequence logged honestly: the band's ✕ measure state is now unreachable via the UI (it
+  still guards non-UI writes — which is how it was verified).
+
+### K-M-2 · Was the suite baseline ("2,426 green, 6 ChatDock failures") actually true at HEAD?
+- **Hypothesis:** the 7th failure in my first run was mine.
+- **Experiment:** ran the suite, attributed each changed line of `usage-map.generated.ts` to its component key, then
+  `git log -S` on the foreign entry.
+- **Measure:** only ONE of the two stale entries was mine (`Select` ← my import). The other
+  (`StrataFreshnessGlyph` ← `StrataDataIntegrationPage`) landed in `def869232` (B2 freshness) — earlier this feature,
+  never regenerated. **`registry-drift` was already red on `main`;** the recorded baseline predated B2.
+- **Keep:** regenerate the map (repairs both). Do not inherit a stated baseline without re-running it — the same
+  "true observation, wrong conclusion" pattern the handover warns about, this time in a number rather than a claim.
+
 ## K-P4-5 · Slice 4B — is the review registry derivable honestly without a strata_reviews table? (2026-07-15)
 - **Hypothesis:** anchor 23's review registry can be composed from snapshots + decisions + actions + board-packs
   (P4-D1), with "review == current non-superseded snapshot" as the key, and lifecycle/stage derived transparently.

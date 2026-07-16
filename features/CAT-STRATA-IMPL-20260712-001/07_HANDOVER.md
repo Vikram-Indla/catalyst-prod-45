@@ -13,12 +13,23 @@
 > ## ▶ START HERE — resume point (2026-07-16, PR #348 merged to `main` @ `77fd5c26a`)
 > **Design pack 28/28 anchors · §20 acceptance 7/7 · suite 2,426/2,448 green · map never touched in the entire feature.**
 >
-> ### ⛔ THE ONE THING TO DO NEXT — measures builder **part 2b** (spec is DONE, no decisions left)
-> Read **`03_PLAN_LOCK_F_MEASURES.md` → section "PART 2b — READY TO BUILD"**. It names the exact component to copy
-> (`ModelWeights`, same file), the save contract (replace-set, send the FULL set), the client-only integrity gate, the
-> M-D0 rule (never render an input for name/direction/unit/scheme), and the 4 gotchas that cost time. **Build, don't
-> re-derive.** 2b is SELF-VERIFYING: using it as `strategy_office` fills the empty measures table, which also closes
-> part 2a's only gap (populated rows are currently verified by construction only).
+> ### ✅ measures builder **part 2b** — DONE (session 025, 2026-07-16). Anchor 05's builder is COMPLETE.
+> Built as specced; gates green; live-verified on staging. The measures table went **0 → 2 rows** through the new UI as
+> `strategy_office`, which also closed part 2a's only gap (populated rows had been verified by construction only).
+> Proven end-to-end: replace-set (2nd save → still 2 rows, not 4) · order_index re-derived from position · draft seeds
+> from persisted rows · group verdict flips ✕0→✕60→✓100→✕90 live · **the anchor-05 band renders "✕ Financial measure
+> weights total 90 — assign the remaining 10"** (the exact band P5-D3 could not build) · Save blocked at ≠100 with a
+> VISIBLE named reason · M-D0 held (direction READ per KPI: "Higher is better" vs "Lower is better") · M-D1 held (exactly
+> four aggregation values) · light + dark. Evidence + **4 raised findings**: `sessions/025_measures-builder-part2b.md`.
+>
+> **⛔ ONE THING TO RATIFY before treating 2b as closed:** the Save gate treats an EMPTY perspective group as PASSING.
+> The Plan Lock's literal "gate Save on every group totalling 100" would include empty groups — but Save is a
+> replace-set (sends the FULL set), so that reading makes the first save of a part-built model impossible. Implemented
+> to mirror `ModelIntegrityBand`, which flags only groups that HAVE measures. Confirm or overrule.
+>
+> ### ⛔ THE ONE THING TO DO NEXT — pick from the backend-feature list below (no slice is pre-selected)
+> Nothing is queued. Every remaining item needs its own migration + Plan Lock. **Do not start one expecting a spec to
+> already exist** — 2b was the last item with a ready-to-build spec.
 >
 > ### Environment — READ BEFORE RUNNING ANYTHING
 > - **Tests need Node 22:** `PATH="/opt/homebrew/opt/node@22/bin:$PATH" npm test`. On the global Node 20 vitest dies at
@@ -48,12 +59,20 @@
 > first design. **Every one was a true observation with a wrong conclusion, carried forward because nobody re-ran the
 > check.** Before you write "X is impossible" into a Plan Lock, run the one query/command that tests it.
 >
-> ### Still open (nothing blocks 2b)
-> Backend features remaining: band-editor · model draft-create · preview-with-data · version diff · score-shift impact ·
-> source register/retire · board-pack editorial+Issue · blast-radius · quarantine tier · `strata_reviews` entity ·
-> mapping-memory · import 3-way+diff+undo+ledger. **DEF-010** needs a product decision (draft linking vs post-approval).
-> **DEF-013** is parked behind the multi-tenancy initiative (already ruled). 6 pre-existing ChatDock test failures are
-> NOT ours (foreign module, predate this feature).
+> ### Still open
+> Backend features remaining (2b is now OFF this list): band-editor · model draft-create · preview-with-data ·
+> version diff · score-shift impact · source register/retire · board-pack editorial+Issue · blast-radius ·
+> quarantine tier · `strata_reviews` entity · mapping-memory · import 3-way+diff+undo+ledger. **DEF-010** needs a
+> product decision (draft linking vs post-approval). **DEF-013** is parked behind the multi-tenancy initiative
+> (already ruled). 6 pre-existing ChatDock test failures are NOT ours (foreign module, predate this feature).
+>
+> ### ⚠️ Suite baseline correction (session 025)
+> "2,426/2,448 green" was recorded BEFORE `def869232` (B2 freshness) landed. That commit added a
+> `StrataFreshnessGlyph` usage without regenerating `usage-map.generated.ts`, so **`registry-drift` was failing on
+> `main`** — a 7th failure nobody had attributed. Session 025 regenerated the map, repairing it. Back to 2,426 passed /
+> 6 failed (all ChatDock). **`npm run scan:components` FAILS** (`tsx` is not on the global Node 20 PATH) — run
+> `PATH="/opt/homebrew/opt/node@22/bin:$PATH" npx tsx scripts/scan-components.ts` instead. Adding any new component
+> import to a page makes this test fail until the map is regenerated.
 
 ---
 

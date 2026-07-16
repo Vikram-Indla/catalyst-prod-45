@@ -83,7 +83,14 @@ create table public.strata_scorecard_model_measures (
 
 ---
 
-# PART 2b — measure ASSIGNMENT UI · READY TO BUILD (spec is complete; no decisions outstanding)
+# PART 2b — measure ASSIGNMENT UI · ✅ BUILT (session 025, 2026-07-16) — gates green, live-verified
+> Built exactly as specced below. The measures table went 0 → 2 rows through the new UI as
+> `strategy_office`, which also closed part 2a's "populated rows verified by construction only" gap.
+> Evidence + 4 raised findings: `sessions/025_measures-builder-part2b.md`.
+> One interpretation to ratify: the Save gate treats an EMPTY perspective group as passing (mirrors
+> `ModelIntegrityBand`, which flags only groups that HAVE measures) — otherwise the replace-set save
+> could never persist a part-built model. See finding 1.
+
 Everything 2b needs already exists and is verified. This is a build-only slice — do not re-derive any of it.
 
 ## Already shipped (do not rebuild)
