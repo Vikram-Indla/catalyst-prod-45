@@ -768,7 +768,7 @@ const TEMPLATE_COLUMNS: Column<TemplateColumnRow>[] = [
   },
 ];
 
-function UploadTemplatesSection({ onError }: { onError: OnError }) {
+export function UploadTemplatesSection({ onError }: { onError: OnError }) {
   const q = useUploadTemplates();
   const list = q.data ?? [];
   return (
@@ -1467,8 +1467,8 @@ const DOMAINS: Array<{
   },
   {
     key: 'data-integration', name: 'Data & integration', icon: Upload,
-    governs: 'Upload templates and the ingestion contracts that feed actuals into STRATA.',
-    to: Routes.strata.adminSection('upload-templates'), sectionLabels: ['Upload templates'],
+    governs: 'Registered sources and the upload templates/contracts that feed actuals into STRATA.',
+    to: Routes.strata.adminData(), sectionLabels: ['Sources', 'Upload templates'],
   },
   {
     key: 'workflow-access', name: 'Workflow & access', icon: Users,

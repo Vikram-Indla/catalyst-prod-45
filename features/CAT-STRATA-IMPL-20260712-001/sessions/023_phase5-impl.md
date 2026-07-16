@@ -86,4 +86,26 @@ the old tab).
 - Live: measurement shell → Threshold schemes nav → "Salam Standard RAG" v1 APPROVED, bands table with correct From/To
   ranges, RAG lozenges, tolerance/confidence, Retire. No console errors, no error boundary. Map untouched.
 
-## ⏭ NEXT: 5E — Data & Integration (anchor 26, scoped P5-D3). New `/strata/admin/data` domain page. Re-read anchor 26 in full.
+## Slice 5E — Data & Integration (anchor 26, scoped P5-D3) ✅ built + gate-green + live-verified
+**Files:** `StrataDataIntegrationPage.tsx` (NEW) · `StrataAdminConfigPage.tsx` (export `UploadTemplatesSection`, repoint
+data card) · `StrataRoutes.tsx` (+`admin/data` route).
+- **Anchor 26 re-read IN FULL via DesignSync.** Signature = sources registry (owner · kind · contract · **Feeds** · health)
+  + templates/contracts table + CHANGE RULE band. **Backend reality:** `strata_data_sources` = {name, system_type, owner_id,
+  refresh_cadence, status, health} — status-only, NO governed envelope, NO admin authoring RPC, **no last-refresh timestamp**
+  (so `StrataFreshnessGlyph`, which needs one, is NOT usable) and **no per-source "feeds" mapping**. Per zero-assumption +
+  P5-D3: Feeds column OMITTED (not fabricated), freshness glyph replaced by real status+health lozenges, and register/retire
+  DEFERRED (labelled "read-only registry", never a dead form).
+- `/strata/admin/data`: left section-nav (Sources · Upload templates) + "← Configuration". Sources = read-only JiraTable
+  (Source name + owner·cadence subline · Kind · Status+health) + "READ-ONLY REGISTRY" lozenge + honest intro + **CHANGE RULE
+  band** (immutable promoted history + retire-needs-dependents-check). Upload templates = reused governed
+  `UploadTemplatesSection` (envelope + column-schema contract).
+- Validation rules / Connectors nav items omitted — no separate backing (validation_rules live inside templates;
+  connectors are just source system_types). Zero-assumption.
+- **Audit gate caught +1** (`HARDCODED_PX` line 116: `padding:'10px 16px'` — 10px off-grid) → fixed to `12px 16px`;
+  re-ran clean.
+- Gates: tsc clean · colors 0/0 · audit 19798/19798 (no increase) · CRE passed.
+- Live: dev server had died (restarted); `/strata/admin/data` renders — Salam BI Extract · Monthly · **BI** · REGISTERED and
+  Salam Finance Excel · Quarterly · **Excel upload** · ACTIVE (owner/health null → correctly omitted). Upload-templates nav →
+  "KPI Actuals (Quarterly)" v1 APPROVED + column schema + Retire. No error boundary. Map untouched.
+
+## ⏭ NEXT: 5F — Roles & Access (anchor 27). New `/strata/admin/access` domain page (anchor 27 already digested in full).
