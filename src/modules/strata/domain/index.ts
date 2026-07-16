@@ -1230,6 +1230,14 @@ export const governanceApi = {
    */
   checkRoleSod: (userId: string): Promise<StrataRoleSod[]> =>
     run(typedRpc('strata_check_role_sod', { p_user: userId })),
+  /**
+   * Audit that a read-only View-as preview was opened (F2, anchor 27). The actor
+   * is taken from auth.uid() server-side and cannot be forged; strata_audit_events
+   * has no INSERT policy, so this is the only write path. Records that a preview
+   * was OPENED — never a session switch.
+   */
+  logViewAs: (subjectUserId: string): Promise<void> =>
+    run(typedRpc('strata_log_view_as', { p_subject: subjectUserId })),
   assignRole: (userId: string, role: StrataRole, scopeType = 'global', scopeEntityId?: string): Promise<string> =>
     run(typedRpc('strata_assign_role', {
       p_user: userId, p_role: role, p_scope_type: scopeType,
