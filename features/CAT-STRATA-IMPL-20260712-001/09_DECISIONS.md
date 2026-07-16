@@ -130,3 +130,21 @@ Plan Lock `03_PLAN_LOCK_PHASE5.md` approved at `3e215d4ed`. All decisions ratifi
   (P5-D6 held). One seeded decision is orphaned (null snapshot) → the bell falls back to the area landing rather than build
   a broken link. Lesson: probe the data before accepting a stated constraint as a scope boundary — the bell's own header
   comment had encoded the same wrong conclusion.
+
+---
+
+## Measure-level authoring — data model RULED (Vikram, 2026-07-16). Unblocks 1 of the 15.
+- **M-D0 CONFIRMED — a measure is a KPI ASSIGNMENT, not a master object.** Author it via an association table
+  `strata_scorecard_model_measures` (model_id · perspective_id · kpi_id · weight · order_index · required ·
+  aggregation_method · target_policy · created_at). **NO `strata_measures` master table** — duplicating KPI names,
+  formulas, owners, units and sources would create two competing measurement dictionaries.
+- `strata_scorecard_lines` stays as-is: it is **instance-level** (verified: scoped by `instance_id`; CHECK permits
+  `kpi|objective|benefit`) and is not an adequate model-authoring structure. Reusable measures are defined at MODEL
+  level first; lines remain the generated/live result structure.
+- This settles the question that blocked anchor 05's measures builder in 5C (P5-D3 deferred it precisely because no
+  measure structure existed). Plan Lock: `03_PLAN_LOCK_F_MEASURES.md`.
+- **⚠️ OPEN — M-D1 (aggregation vocabulary).** `strata_scorecard_models.rollup_method` already CHECKs
+  `weighted_average|sum|min|custom`. The suggested measure values ("minimum", "latest") do not match (`min`; and
+  `latest` is absent). Minting them at measure level = a SECOND aggregation dictionary — the same failure M-D0 exists
+  to prevent, one level down. **Recommend: reuse the existing four; if `latest` is needed, add it to BOTH tables in the
+  same migration.** Awaiting ruling.
