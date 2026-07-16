@@ -285,3 +285,30 @@ Caught in passing: `useMemo` used without importing it — **tsc reported clean*
 runtime. Found by re-reading the import rather than trusting the gate. cf. [[tsc-misses-tdz-in-memo-dep]].
 
 Gates: tsc · colors 0/0 · audit 19798/19798 · CRE — all green. STRATA suite 10 files / 57 tests. Map untouched.
+
+---
+
+## Slice F1a — SoD-check RPC ✅ BUILT + VERIFIED (closes anchor 27's column)
+**Files:** migration `20260716130000_strata_check_role_sod.sql` · `types.ts` (+`StrataRoleSod`) · `domain/index.ts`
+(+`checkRoleSod`) · `hooks/useStrata.tsx` (+`useRoleSod`) · `StrataAccessPage.tsx` (SoD column + rail).
+
+**Design was refined TWICE by reading the engine, not the anchor.** Final, correct mechanism: the constrained side of
+all four rules is *being that record's submitter/creator/owner* — not a role. So **GUARDED ⇔ the person holds a role a
+real rule GATES** (`strategy_office`, `vmo_validator`, or a role in some gate stage's `approval_roles` — read from
+`strata_gate_model_stages`, never hard-coded). **CLEAN ⇔ no such role ⇒ no rule can bite them.** The RPC projects; it
+invents nothing. Not SECURITY DEFINER — it reads only what the caller may already read, so it can't become an
+escalation seam.
+
+**Verified live, UI == engine:**
+| Person · Role | RPC | UI |
+|---|---|---|
+| Vikram · strategy_office | guarded | **GUARDED** ✅ |
+| Jahanara · strategy_office | guarded | **GUARDED** ✅ |
+| Jahanara · **kpi_owner** | clean | **CLEAN** ✅ |
+| Jahanara · vmo_validator | guarded | **GUARDED** ✅ |
+
+Rail COMBINED EFFECT quotes all four rules **verbatim** ("segregation of duties: the creator cannot approve their own
+record", etc.) and states plainly: *guarded means a rule constrains them on their own records — not that the
+combination is illegal; the server never refuses a role combination, so no "conflict" state is claimed here.*
+
+**CONFLICT deliberately absent (F1-D2 deferred).** Gates: tsc · colors 0/0 · audit 19798/19798 · CRE. Suite 10/57. Map untouched.

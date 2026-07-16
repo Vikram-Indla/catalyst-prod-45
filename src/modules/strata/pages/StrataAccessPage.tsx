@@ -4,11 +4,14 @@
  * transitions (reused governed section).
  *
  * Scoped honestly (P5-D4 / zero-assumption):
- *  - There is NO SoD table, no per-assignment SoD field and no server SoD-check
- *    RPC. SoD is enforced INSIDE the lifecycle/assign RPCs at the moment of
- *    action. P5-D4 forbids a client SoD engine, so the anchor's per-row
- *    CLEAN/GUARDED/CONFLICT column is NOT rendered — a fabricated "CLEAN" would
- *    assert a check that never ran. It is deferred with a labelled note.
+ *  - SoD column (F1a): the verdict comes from the ENGINE via
+ *    strata_check_role_sod, which PROJECTS the four record-scoped rules the DB
+ *    already enforces onto a person's role set. Nothing is computed here — P5-D4
+ *    forbids a client SoD engine. 'guarded' = they hold a role a real rule gates,
+ *    so it WILL refuse them on their own records; 'clean' = no rule can bite them.
+ *    Rule text is quoted verbatim. CONFLICT is deliberately absent (F1-D2
+ *    deferred): the server never refuses a role COMBINATION, so claiming one
+ *    would assert a check that does not exist.
  *  - "View as" is a READ-ONLY client preview of the person's role assignments +
  *    what those roles permit. It does NOT switch the session, and there is no
  *    audit-write RPC, so the preview says so rather than implying it was logged.
@@ -16,6 +19,7 @@
  *    surfaced verbatim.
  */
 import React, { useMemo, useState } from 'react';
+import { useQueries } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { Button, CatalystTag, EmptyState, Lozenge, SectionMessage, Spinner } from '@/components/ads';
 import { JiraTable } from '@/components/shared/JiraTable';
@@ -32,7 +36,7 @@ import { StrataRestricted } from '@/modules/strata/components/StrataSystemStates
 import { StrataFormModal } from '@/modules/strata/components/authoring';
 import { fmtDate, labelize } from '@/modules/strata/components/format';
 import { ROLE_DOCS, WorkflowsSection } from './StrataAdminConfigPage';
-import type { StrataRole } from '@/modules/strata/types';
+import type { StrataRole, StrataRoleSod } from '@/modules/strata/types';
 
 type OnError = (msg: string | null) => void;
 
@@ -67,7 +71,8 @@ const NAV = [
 ] as const;
 
 // ── Person rail (anchor 27: consequences, not role keys) ─────────────────────
-function PersonRail({ userId, name, email, assignments, canAssign, viewingAs, onViewAs, onError }: {
+function PersonRail({ userId, name, email, assignments, canAssign, viewingAs, onViewAs, onError, sod }: {
+  sod: StrataRoleSod[];
   userId: string | null;
   name: string | null;
   email: string | null;
@@ -79,6 +84,8 @@ function PersonRail({ userId, name, email, assignments, canAssign, viewingAs, on
 }) {
   const invalidate = useInvalidateStrata();
   const [busyId, setBusyId] = useState<string | null>(null);
+  // Rule text comes from the engine, quoted — never paraphrased (anchor 27).
+  const guardedRules = [...new Set(sod.filter((r) => r.verdict === 'guarded').flatMap((r) => r.rules))];
 
   if (!userId) {
     return (
@@ -129,13 +136,27 @@ function PersonRail({ userId, name, email, assignments, canAssign, viewingAs, on
       {/* Combined effect — the DOCUMENTED, DB-enforced rule. Not a client verdict. */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 4, border: `1px solid ${T.border}`, borderRadius: 6, padding: 12, background: T.sunken }}>
         <span style={railLabel}>COMBINED EFFECT</span>
-        <span style={metaStyle}>
-          Segregation of duties is enforced in the database at the moment of action: creators cannot approve their own
-          records, and submitters cannot validate their own actuals. If a role combination breaks a rule, the server
-          refuses the action and the refusal is shown here verbatim.
-        </span>
+        {guardedRules.length > 0 ? (
+          <>
+            <span style={metaStyle}>
+              These roles let {name ?? 'this person'} approve or validate, so the database will refuse them on their
+              OWN records. The rules that constrain them, quoted from the engine:
+            </span>
+            <ul style={{ margin: '4px 0 0', paddingLeft: 16 }}>
+              {guardedRules.map((r) => (
+                <li key={r} style={{ ...metaStyle, marginBottom: 4 }}>“{r}”</li>
+              ))}
+            </ul>
+          </>
+        ) : (
+          <span style={metaStyle}>
+            Clean — {name ?? 'this person'} holds no role that the segregation-of-duties rules gate, so none of them can
+            constrain their actions.
+          </span>
+        )}
         <span style={{ fontSize: 'var(--ds-font-size-100)', color: T.subtlest }}>
-          A per-assignment SoD status (clean / guarded / conflict) needs a server SoD-check RPC — that check is a later feature.
+          Guarded means a rule constrains them on their own records — not that the combination is illegal. The server
+          never refuses a role combination, so no "conflict" state is claimed here.
         </span>
       </div>
 
@@ -197,6 +218,28 @@ function RoleAssignments({ onError }: { onError: OnError }) {
     return m;
   }, [assignments]);
 
+  // F1a: the SoD verdict comes from the ENGINE (strata_check_role_sod), which
+  // projects the four real rules. Never computed here — P5-D4 bans a client engine.
+  const userIds = useMemo(() => [...byUser.keys()], [byUser]);
+  const sodQueries = useQueries({
+    queries: userIds.map((uid) => ({
+      queryKey: ['strata', 'role-sod', uid],
+      queryFn: () => governanceApi.checkRoleSod(uid),
+      staleTime: 30_000,
+    })),
+  });
+  const sodByUserRole = useMemo(() => {
+    const m = new Map<string, 'clean' | 'guarded'>();
+    userIds.forEach((uid, i) => {
+      for (const r of (sodQueries[i]?.data ?? [])) m.set(`${uid}|${r.role_key}`, r.verdict);
+    });
+    return m;
+  }, [userIds, sodQueries]);
+  const sodRulesFor = (uid: string | null) => {
+    const i = uid ? userIds.indexOf(uid) : -1;
+    return i < 0 ? [] : (sodQueries[i]?.data ?? []);
+  };
+
   const distinctPeople = byUser.size;
   const selected = selectedUserId ? profile(selectedUserId) : null;
   const viewAs = viewAsUserId ? profile(viewAsUserId) : null;
@@ -219,6 +262,16 @@ function RoleAssignments({ onError }: { onError: OnError }) {
     {
       id: 'role', label: 'Role', width: 20,
       cell: ({ row }) => <StatusLozenge status={row.role} label={labelize(row.role)} appearance="default" />,
+    },
+    {
+      id: 'sod', label: 'SoD', width: 16,
+      cell: ({ row }) => {
+        const v = sodByUserRole.get(`${row.user_id}|${row.role}`);
+        if (!v) return <span style={{ color: T.subtlest }}>—</span>;
+        return v === 'guarded'
+          ? <StatusLozenge status="guarded" label="Guarded" appearance="moved" />
+          : <StatusLozenge status="clean" label="Clean" appearance="success" />;
+      },
     },
     {
       id: 'scope', label: 'Scope', width: 18,
@@ -288,6 +341,7 @@ function RoleAssignments({ onError }: { onError: OnError }) {
 
         <aside style={{ flex: '0 1 360px', minWidth: 280 }}>
           <PersonRail
+            sod={sodRulesFor(selectedUserId)}
             userId={selectedUserId}
             name={selected?.name ?? null}
             email={selected?.email ?? null}
