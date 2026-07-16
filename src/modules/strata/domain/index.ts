@@ -15,7 +15,7 @@ import type {
   StrataKpiTypeConfig, StrataMapEdge, StrataMilestone, StrataModelPerspective, StrataNotification, StrataNotificationRule, StrataOkr,
   StrataPeriod, StrataPerspective, StrataThemeCharter, StrataPortfolio, StrataProjectCard,
   StrataProjectCardFieldConfig, StrataProjectCardPicklist, StrataProjectCardSectionConfig,
-  StrataNotificationTarget, StrataProjectCardTabConfig, StrataRoleSod, StrataRisk, StrataRole, StrataScorecardInstance, StrataScorecardLine,
+  StrataModelMeasure, StrataNotificationTarget, StrataProjectCardTabConfig, StrataRoleSod, StrataRisk, StrataRole, StrataScorecardInstance, StrataScorecardLine,
   StrataScorecardModel, StrataSnapshot, StrataStagingRow, StrataStrategyElement, StrataThresholdScheme,
   StrataUploadRun, StrataUploadTemplate, StrataValidationResult, StrataValueCategory,
   StrataWorkflowConfig,
@@ -269,6 +269,25 @@ export const scorecardApi = {
   // migration: same table + RLS as modelPerspectives, just no model_id filter.
   allModelPerspectives: (): Promise<StrataModelPerspective[]> =>
     run(typedQuery('strata_scorecard_model_perspectives').select('*')),
+  /** Measure ASSIGNMENTS for one model (M-D0). KPI identity is read separately via kpi_id. */
+  modelMeasures: (modelId: string): Promise<StrataModelMeasure[]> =>
+    run(typedQuery('strata_scorecard_model_measures').select('*').eq('model_id', modelId).order('order_index')),
+  allModelMeasures: (): Promise<StrataModelMeasure[]> =>
+    run(typedQuery('strata_scorecard_model_measures').select('*')),
+  /** Replace-set the model's measure assignments. Server rejects a perspective not on the model. */
+  setModelMeasures: (modelId: string, measures: Array<{
+    perspectiveId: string; kpiId: string; weight: number; orderIndex?: number;
+    required?: boolean; aggregationMethod?: string; targetPolicy?: string;
+  }>): Promise<void> =>
+    run(typedRpc('strata_set_model_measures', {
+      p_model: modelId,
+      p_measures: measures.map((m) => ({
+        perspective_id: m.perspectiveId, kpi_id: m.kpiId, weight: m.weight,
+        order_index: m.orderIndex ?? 0, required: m.required ?? false,
+        aggregation_method: m.aggregationMethod ?? 'weighted_average',
+        target_policy: m.targetPolicy ?? 'default',
+      })),
+    })),
   instances: (cycleId?: string): Promise<StrataScorecardInstance[]> => {
     let q = typedQuery('strata_scorecard_instances').select('*').order('created_at', { ascending: false });
     if (cycleId) q = q.eq('cycle_id', cycleId);

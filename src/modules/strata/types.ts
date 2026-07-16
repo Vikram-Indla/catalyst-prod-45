@@ -223,6 +223,25 @@ export interface StrataModelPerspective {
   order_index: number;
 }
 
+/**
+ * A measure = an ASSIGNMENT of an existing KPI to a (model, perspective) — M-D0.
+ * Identity (name/formula/unit/owner/source) lives on strata_kpis and is read via
+ * kpi_id. Never add those fields here: that is the two-competing-dictionaries bug.
+ * `aggregation_method` reuses strata_scorecard_models.rollup_method's vocabulary (M-D1).
+ */
+export interface StrataModelMeasure {
+  id: string;
+  model_id: string;
+  perspective_id: string;
+  kpi_id: string;
+  weight: number;
+  order_index: number;
+  required: boolean;
+  aggregation_method: 'weighted_average' | 'sum' | 'min' | 'custom';
+  target_policy: 'default' | 'local';
+  created_at: string;
+}
+
 export interface StrataScorecardInstance {
   id: string;
   model_id: string;

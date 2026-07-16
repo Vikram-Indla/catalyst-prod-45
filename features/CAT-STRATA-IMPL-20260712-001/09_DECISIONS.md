@@ -146,5 +146,9 @@ Plan Lock `03_PLAN_LOCK_PHASE5.md` approved at `3e215d4ed`. All decisions ratifi
 - **⚠️ OPEN — M-D1 (aggregation vocabulary).** `strata_scorecard_models.rollup_method` already CHECKs
   `weighted_average|sum|min|custom`. The suggested measure values ("minimum", "latest") do not match (`min`; and
   `latest` is absent). Minting them at measure level = a SECOND aggregation dictionary — the same failure M-D0 exists
-  to prevent, one level down. **Recommend: reuse the existing four; if `latest` is needed, add it to BOTH tables in the
-  same migration.** Awaiting ruling.
+  to prevent, one level down. **M-D1 ✅ RULED (Vikram 2026-07-16): REUSE the existing four** — `weighted_average|sum|min|custom`.
+  No second dictionary; `minimum`/`latest` not minted. Verified after apply: the measures CHECK and the models
+  `rollup_method` CHECK are **byte-identical**.
+- **M-D2 ✅ RULED (Vikram 2026-07-16): SPLIT the slice.** Table + RPC + reader shipped first
+  (`20260716150000`); the anchor-05 measures **builder UI** is its own slice (it replaces 5C's card layout with
+  perspective groups — a large surface).
