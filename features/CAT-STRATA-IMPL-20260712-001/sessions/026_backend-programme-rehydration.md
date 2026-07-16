@@ -234,3 +234,35 @@ isolation**; the re-run was clean at 6. Flagged in the evidence rather than quie
 **Next: step 8 — R2 → R5.** Carry-forward debt (both R4, both move live numbers): benefit realization ignores
 `owner_confirmed` (F-7 rules it COUNTS); KPI achievement counts `pending` actuals (E-7 condition 3). Both are now
 recorded in each calculated value's provenance, so when they change the change will be visible and dated.
+
+---
+
+# SESSION 026 (part 7) — step 8 begins: R2 / E1 reviews
+
+**2026-07-17.** `519e2af63` (`20260717130000`). **Session total: 15 slices.**
+
+## Probing shrank E1 again
+`strata_decisions` already carries `snapshot_id`+`forum`; `strata_actions` already carries `decision_id`. The
+authorization's "snapshot, agenda, decision and action relationships" was **already built** — E1 joins the existing
+chain at the snapshot rather than minting `review_id` columns that would give two paths to one fact. Only `agenda` was
+genuinely absent. **`strata_reviews` itself was correctly reported absent** — §9's one accurate "genuinely missing".
+
+## D-6 taken literally
+2 migrated Closed reviews / 2 locked snapshots. Chair, agenda, scheduled_for, participants **NULL/empty**. Participants
+are rows, not a jsonb blob, so nobody can write `[]` and call it attendance. Each migrated row's `note` says which
+fields were **assumed by the migration** (review_type/cadence) versus recorded — the reader never has to guess.
+
+## Probe finding + a self-correction
+`strata_snapshots.status` is CHECKed to `locked|superseded` — **a snapshot is locked by construction**. My first error
+message said "unlocked snapshot", describing a state that cannot exist. Corrected before commit.
+
+## ⚠️ Suite baseline corrected — I had been quoting a lucky run
+`AgeingPanel.navigate` and `registry-drift` **pass in isolation** but time out under full-suite load. True baseline =
+**6 real (ChatDock) + 2 load-flaky = 8**. Step 7's "2,442/6" was the lucky run. This slice changed **zero src files**
+(migration-only), which is what proves the 2 are not mine. Recorded rather than re-run until green.
+
+## Status
+⏸ **Stopped at context limit on a committed+pushed boundary.**
+**Next: R2/F1 board-pack issue+supersede** (needed E1; now unblocked). Then R3 → R4 → R5.
+Carry-forward R4 debt unchanged (both move live numbers): benefit realization ignores `owner_confirmed` (F-7);
+KPI achievement counts `pending` actuals (E-7 cond. 3).

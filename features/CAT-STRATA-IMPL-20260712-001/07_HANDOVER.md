@@ -67,7 +67,29 @@ RichTextCommentEditor · SortableColumn) and **0 in this feature's files**. Even
 access on page objects is unchecked — **tsc green is not evidence for STRATA page code; tests and DB probes are.**
 Needs a repo-wide ruling (recommendation in `09_DECISIONS.md` → F-11: switch the gate, then ratchet at 159).
 
-## ▶ DO THIS NEXT — **step 8: R2 → R5**
+## ✅ R2 STARTED — E1 reviews shipped `519e2af63` (`20260717130000`)
+`strata_reviews` + participants + `strata_review_readiness` view + `strata_schedule_review`/`strata_update_review` +
+**the D-6 backfill (2 migrated Closed reviews / 2 locked snapshots; chair, agenda, scheduled_for, participants all
+NULL — never invented)**. Cadence defaults (departmental→monthly, executive→quarterly) are COALESCE defaults, not
+CHECKs. Readiness is derived, never stored.
+
+**E1 was smaller than the blueprint implies:** `strata_decisions` already has `snapshot_id`+`forum` and
+`strata_actions` already has `decision_id`, so decisions/actions reach a review **through the snapshot** — do NOT add
+`review_id` to them. Only `agenda` was genuinely missing.
+
+## ▶ DO THIS NEXT — **R2 / F1: board-pack issue + supersede** (it needed E1, which now exists)
+Blueprint §6 F1: `strata_board_packs` today has ONLY `snapshot_id, format, storage_path, status, generated_by/at`
+(probed — §9 correct). Add `version, supersedes_id, issued_by, issued_at`; status `+issued, superseded`; RPCs
+`strata_issue_board_pack` / `strata_supersede_board_pack`; **issued rows immutable**; `snapshot_id` unchanged on
+correction. **F-3 applies:** the snapshot-integrity qualification must surface on packs and exports — the
+`strata_integrity_exceptions` register (3 rows filed) is the source; SNAP-1 and SNAP-1001 are both qualified.
+Then R3 (data sources) → R4 → R5.
+
+## ⚠️ SUITE BASELINE — corrected, read this before reporting gates
+**True baseline: 6 real failures (foreign ChatDock) + 2 LOAD-FLAKY** (`AgeingPanel.navigate`, `registry-drift`) that
+**pass in isolation** and time out only under full-suite load on this machine. So a full run legitimately reports
+**8 failed / ~2,440 passed**. Step 7's "2,442 / 6" was the lucky run. **Do not chase the 2 flaky ones as regressions,
+and do not re-run until green** — check whether the slice touched `src` at all first.
 The `revision_class` column is shipped and DB-enforced (A3b), and the calc already returns **Missing** rather than
 carrying an old actual forward (proven). **What remains is the UI/reporting side of the F-9 ruling:**
 - **material** ⇒ **display a methodology break**; do not imply comparability; never present v1 and v2 as one trend
