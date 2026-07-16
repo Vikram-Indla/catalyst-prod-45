@@ -29,6 +29,8 @@ const H = vi.hoisted(() => {
 vi.mock('@/modules/strata/hooks/useStrata', () => ({
   useScorecardModels: () => H.ok(H.models),
   useAllModelPerspectives: () => H.ok(H.modelPerspectives),
+  useAllModelMeasures: () => H.ok([]),
+  useKpis: () => H.ok([]),
   useModelPerspectives: () => H.ok(H.modelPerspectives),
   usePerspectives: () => H.ok([{ id: 'p1', name: 'Financial' }, { id: 'p2', name: 'Customer' }]),
   useStrataRoles: () => H.ok(['strata_admin']),

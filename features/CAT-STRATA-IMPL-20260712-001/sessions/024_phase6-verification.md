@@ -369,3 +369,31 @@ It does **NOT** hard-enforce measure weights totalling 100: anchor 05 gates **su
 would make a work-in-progress draft unsavable. The integrity band + submit gate own the arithmetic.
 
 Gates green · suite 10/57 · map untouched · staging only. **NEXT: the anchor-05 measures builder UI (own slice).**
+
+---
+
+## Slice — measures builder UI, part 2a: perspective groups + measure integrity ✅ BUILT + VERIFIED
+**File:** `StrataAdminConfigPage.tsx` (+`MeasureGroups`, `ModelIntegrityBand.measureIssues`) · 2 test files (mocks).
+
+Anchor 05's **perspective-groups-with-measures** layout — the structure P5-D3 could not build in 5C because no measure
+table existed. Each group shows the perspective, its weight, its measure rows and a per-group measure-weight verdict;
+`ModelIntegrityBand` now also names per-perspective failures — *"Customer measure weights total 90 — assign the
+remaining 10"* — the exact anchor-05 band.
+
+**M-D0 enforced in the UI:** every identity column (Measure name · Direction · aggregation) is READ from the KPI
+dictionary via `kpi_id` (`useKpis` → `kpi.name`; `kpi.kpi_type_id` → `useKpiTypes` → `directionality`). Only the
+assignment's own facts (weight, required, aggregation_method) come from the measure row. Nothing is re-entered.
+
+**Verified live:** B2B Sector Scorecard renders Financial(40)/Customer & Market(35)/Digital & Innovation(25) groups,
+each *"No measures assigned"*. **No fabricated measure total appears** because no measures exist yet — the honest empty
+state, not a "100".
+
+### ⚠️ SCOPE — this is part 2a, NOT the full builder
+**Measures DISPLAY; they cannot yet be ASSIGNED from this screen.** Add/remove/reorder + KPI picker + Save (via the
+shipped `setModelMeasures` RPC) is **part 2b**. The section caption says exactly this rather than implying otherwise.
+Consequence: the measure rows themselves are unverified against real data — the table is empty, and seeding it needs
+the authoring UI (2b) or a `strategy_office` session. The GROUPS and EMPTY STATE are verified; the populated row
+rendering is verified by construction only.
+
+**The test suite earned its keep again:** adding `useAllModelMeasures`/`useKpis` to the section broke 8 tests instantly
+(the hook mocks returned undefined) — caught before commit. Also caught an off-grid `6px` by the audit gate → `8px`.
