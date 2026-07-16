@@ -25,7 +25,32 @@ Consequence: anchor 27's column implies a role-combination verdict, but **for CO
 mirror**. Anchor 27 says "the UI mirrors the server role engine, never replaces it"; P5-D4 says "SoD stays DB-enforced,
 no client SoD engine". Inventing a combination rule would violate both. So F1 splits.
 
-## F1a — GUARDED/CLEAN · **mirrorable, no new policy** → RECOMMEND BUILD
+## ⚠️ F1a DESIGN REFINED (2026-07-16, after extracting each rule's actor logic) — APPROVED F1a MUST BUILD *THIS*
+Vikram approved F1a / deferred F1b. Extracting the actor logic from `pg_proc` refined the design a SECOND time — the
+approved intent is unchanged, but the mechanism is not what the anchor implies:
+
+| Rule | Approving side (ROLE-gated) | Constrained side |
+|---|---|---|
+| `approve_record` | `strata_has_role(['strategy_office'])` | `created_by IS NOT DISTINCT FROM auth.uid()` |
+| `attest_actual` | `vmo_validator` **OR** the KPI's `validator_id` | `submitted_by IS NOT DISTINCT FROM auth.uid()` |
+| `validate_benefit_value` | `vmo_validator` **OR** the benefit's `validator_id` | `submitted_by IS NOT DISTINCT FROM auth.uid()` |
+| `decide_gate` | `strata_has_role(stage.approval_roles)` — **DYNAMIC**, per gate-model stage | subject `owner_id = auth.uid()` |
+
+**The constrained side is NOT a role.** It is *being that record's submitter / creator / owner* — which any person can
+be, at any time, regardless of role set. Therefore **GUARDED is not a role-COMBINATION property at all**:
+- **GUARDED** ⇔ the person holds an approving/validating role that one of the four rules gates (`strategy_office`,
+  `vmo_validator`, or a role listed in some gate stage's `approval_roles`) — because they *can* approve, and the rule
+  *will* refuse them on their own records.
+- **CLEAN** ⇔ they hold no such role ⇒ no SoD rule can ever bite them (they cannot approve/validate at all).
+- `decide_gate`'s side is **data-driven** (`strata_gate_model_stages.approval_roles`), so the RPC MUST read it rather
+  than hard-code a role list — otherwise the projection silently drifts from the engine.
+
+This is a *stronger* mirror than the original F1a sketch (which assumed submit-role + validate-role overlap, e.g.
+`kpi_owner + vmo_validator`). That assumption was wrong: `kpi_owner` appears in **none** of the four gates.
+
+**⛔ NOT STARTED — insufficient context budget remained to build + verify honestly.** Ship it as its own slice.
+
+## F1a — GUARDED/CLEAN · **mirrorable, no new policy** → APPROVED (build per the refined design above)
 An RPC that *projects the four existing rules* onto a person's role set. It invents nothing:
 - **GUARDED** = the person holds roles on **both sides of one of the four real rules** — legal today, but that rule
   *will* bite them at action time. E.g. `kpi_owner` (submits actuals) + `vmo_validator` (attests actuals) ⇒ rule 2
@@ -64,6 +89,6 @@ column with zero invention), keep CONFLICT deferred and labelled, and treat F1b 
 - **Stop conditions:** any rule not traceable to a `pg_proc` definition → stop and ask.
 
 ## Decisions needed
-- **F1-D1:** Approve F1a (GUARDED/CLEAN projection of the four real rules)? → **Recommend YES.**
-- **F1-D2:** F1b CONFIRM/CONFLICT policy — answer questions 1–3 above, or confirm CONFLICT stays deferred.
-  → **Recommend DEFER** (action-time enforcement already covers the risk).
+- **F1-D1:** ✅ **APPROVED** by Vikram 2026-07-16 — build F1a per the REFINED design above (not the original sketch).
+- **F1-D2:** ✅ **DEFERRED** by Vikram 2026-07-16 — CONFLICT stays out. Action-time enforcement covers the risk.
+  The 5F column ships GUARDED/CLEAN only, with CONFLICT remaining a labelled gap.
