@@ -154,16 +154,21 @@ Plan Lock `03_PLAN_LOCK_PHASE5.md` approved at `3e215d4ed`. All decisions ratifi
   perspective groups — a large surface). **Part 2a shipped `ffb3f8c68`; part 2b BUILT session 025** (gates green,
   live-verified, measures table 0 → 2 rows through the UI). Anchor 05's builder is complete.
 
-## Part 2b — raised, PROPOSED (need a Vikram ruling; nothing was silently adapted)
-- **M-D3 · PROPOSED — the Save gate treats an EMPTY perspective group as PASSING.** Plan Lock 2b says "gate Save on
-  every group totalling 100". Read literally that includes groups with zero measures — but `setModelMeasures` is a
-  REPLACE-SET (the save sends the FULL set across all groups), so the literal rule makes the FIRST save of a
-  part-built model impossible, and it contradicts `ModelIntegrityBand` (2a), which flags only groups that HAVE
-  measures. Implemented to mirror the band. → **Recommend CONFIRM** (one rule for one fact).
-  **Consequence, logged honestly:** the band's ✕ measure state is now unreachable *through the UI*; it still guards
-  non-UI writes (RPC/seed/other clients), which is how it was verified. See `sessions/025_…` findings 1–2.
-- **M-D4 · PROPOSED — measures are editable on an APPROVED model (role-gated only, no status gate).** `ModelWeights`
-  already behaves exactly this way, so 2b introduced nothing new — but STRATA governance is version-based, so in-place
-  edits to an approved model arguably bypass versioning for BOTH weights and measures. → **Recommend: rule separately**
-  (it is a pre-existing question about `ModelWeights` as much as about measures, and a status gate belongs in its own
-  slice, not smuggled into 2b).
+## Part 2b — RULED (Vikram, 2026-07-16)
+- **M-D3 ✅ CONFIRMED (Vikram 2026-07-16): the Save gate treats an EMPTY perspective group as PASSING.** Plan Lock 2b
+  says "gate Save on every group totalling 100". Read literally that includes groups with zero measures — but
+  `setModelMeasures` is a REPLACE-SET (the save sends the FULL set across all groups), so the literal rule makes the
+  FIRST save of a part-built model impossible, and it contradicts `ModelIntegrityBand` (2a), which flags only groups
+  that HAVE measures. Gate mirrors the band: **one rule for one fact.** Shipped in PR #349 as built — no code change
+  needed from this ruling.
+  **Consequence, ratified with the decision:** the band's ✕ measure state is unreachable *through the UI* (the gate
+  stops you persisting ≠100); it still guards non-UI writes (RPC/seed/other clients), which is how it was verified.
+- **M-D4 ⏸ DEFERRED TO ITS OWN SLICE (Vikram 2026-07-16): "rule separately in its own slice."** The open question:
+  measures — and perspective weights — are editable on an APPROVED model, role-gated only (`strategy_office`), with no
+  status gate, while STRATA governance is otherwise version-based (approved records are re-created, not field-edited;
+  see the governance-is-version-based lesson). **NOT a 2b defect:** `ModelWeights` has behaved this way since 5C, so
+  2b introduced nothing new — which is precisely why the fix does not belong inside 2b.
+  **Scope when it is picked up:** it covers `ModelWeights` + `MeasureGroups` together (same question, two callers), and
+  it needs its own Plan Lock + a ruling on the mechanism (block editing at `status='approved'` vs require a new draft
+  version vs accept in-place edits as intended for models). Do NOT start it assuming the answer. No migration is
+  obviously required — `strata_scorecard_models.status` already exists — but the versioning mechanism might need one.

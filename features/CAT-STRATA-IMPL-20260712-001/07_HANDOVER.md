@@ -22,14 +22,21 @@
 > VISIBLE named reason · M-D0 held (direction READ per KPI: "Higher is better" vs "Lower is better") · M-D1 held (exactly
 > four aggregation values) · light + dark. Evidence + **4 raised findings**: `sessions/025_measures-builder-part2b.md`.
 >
-> **⛔ ONE THING TO RATIFY before treating 2b as closed:** the Save gate treats an EMPTY perspective group as PASSING.
-> The Plan Lock's literal "gate Save on every group totalling 100" would include empty groups — but Save is a
-> replace-set (sends the FULL set), so that reading makes the first save of a part-built model impossible. Implemented
-> to mirror `ModelIntegrityBand`, which flags only groups that HAVE measures. Confirm or overrule.
+> **✅ BOTH 2b RULINGS ARE IN (Vikram, 2026-07-16) — 2b is CLOSED, nothing outstanding on it.**
+> **M-D3 CONFIRMED** — the Save gate treats an EMPTY perspective group as passing (mirrors `ModelIntegrityBand`: one
+> rule for one fact). Shipped as built; no code change followed from the ruling. **M-D4 DEFERRED to its own slice.**
 >
-> ### ⛔ THE ONE THING TO DO NEXT — pick from the backend-feature list below (no slice is pre-selected)
-> Nothing is queued. Every remaining item needs its own migration + Plan Lock. **Do not start one expecting a spec to
-> already exist** — 2b was the last item with a ready-to-build spec.
+> ### ⛔ THE ONE THING TO DO NEXT — pick a slice; NONE is pre-specced (2b was the last ready-to-build item)
+> Every remaining item needs its own Plan Lock (and usually a migration). **Do not start one expecting a spec to
+> already exist.** The one item with a written scope is **M-D4** (below) — a ruling, not a spec.
+>
+> **M-D4 · approved-model editability (own slice, per Vikram).** Measures AND perspective weights are editable on an
+> `approved` model, role-gated only (`strategy_office`), no status gate — while STRATA governance is otherwise
+> version-based. `ModelWeights` has done this since 5C, so it is **pre-existing, not a 2b regression**. The slice
+> covers BOTH callers (`ModelWeights` + `MeasureGroups`) and must first RULE the mechanism: block at
+> `status='approved'` · require a new draft version · or accept in-place edits as intended for models. Do not assume
+> the answer. `strata_scorecard_models.status` already exists, so a migration may not be needed — the versioning
+> mechanism might be. See `09_DECISIONS.md` → M-D4.
 >
 > ### Environment — READ BEFORE RUNNING ANYTHING
 > - **Tests need Node 22:** `PATH="/opt/homebrew/opt/node@22/bin:$PATH" npm test`. On the global Node 20 vitest dies at
@@ -62,9 +69,11 @@
 > ### Still open
 > Backend features remaining (2b is now OFF this list): band-editor · model draft-create · preview-with-data ·
 > version diff · score-shift impact · source register/retire · board-pack editorial+Issue · blast-radius ·
-> quarantine tier · `strata_reviews` entity · mapping-memory · import 3-way+diff+undo+ledger. **DEF-010** needs a
-> product decision (draft linking vs post-approval). **DEF-013** is parked behind the multi-tenancy initiative
-> (already ruled). 6 pre-existing ChatDock test failures are NOT ours (foreign module, predate this feature).
+> quarantine tier · `strata_reviews` entity · mapping-memory · import 3-way+diff+undo+ledger. **Plus governance:
+> M-D4 approved-model editability** (own slice, ruled 2026-07-16 — see the START HERE block).
+> **DEF-010** needs a product decision (draft linking vs post-approval). **DEF-013** is parked behind the
+> multi-tenancy initiative (already ruled). 6 pre-existing ChatDock test failures are NOT ours (foreign module,
+> predate this feature).
 >
 > ### ⚠️ Suite baseline correction (session 025)
 > "2,426/2,448 green" was recorded BEFORE `def869232` (B2 freshness) landed. That commit added a

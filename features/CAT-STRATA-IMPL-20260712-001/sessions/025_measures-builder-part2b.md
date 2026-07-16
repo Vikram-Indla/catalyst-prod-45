@@ -74,19 +74,20 @@ suite **2,426 passed / 6 failed** (the 6 = pre-existing foreign ChatDock failure
 B2B Sector Scorecard · Financial: B2B Revenue Growth 60 (sum) + Churn Rate 40 (weighted_average, required)
 = 100. Coherent, not junk. Say the word and I'll clear it.
 
-## Findings raised (not silently adapted)
-1. **Save gate treats an EMPTY group as passing.** Plan Lock says "gate Save on every group totalling
-   100"; taken literally that includes groups with no measures, which — because Save is a replace-set
-   sending the FULL set — would make the first save of a part-built model impossible. Implemented to
-   mirror `ModelIntegrityBand` exactly (it flags only groups that HAVE measures). Two different rules
-   for the same fact would be incoherent. **Confirm or overrule.**
-2. **The band's ✕ measure state is now unreachable through the UI** — the Save gate stops you persisting
-   ≠100. It still guards non-UI writes (RPC/seed/other clients), which is how it was verified above.
-   Not a defect; noting the tension between the 2a band and the 2b gate.
-3. **Measures are editable on an APPROVED model** (role-gated only, no status gate). `ModelWeights`
-   already behaves exactly this way, so this is pre-existing shipped behaviour, not something 2b
-   introduced — but STRATA governance is version-based, so in-place edits of an approved model may
-   warrant a status gate. Out of 2b scope; flagging for a ruling.
+## Findings raised (not silently adapted) — ALL RULED by Vikram 2026-07-16
+1. ✅ **M-D3 CONFIRMED — Save gate treats an EMPTY group as passing.** Plan Lock says "gate Save on every
+   group totalling 100"; taken literally that includes groups with no measures, which — because Save is a
+   replace-set sending the FULL set — would make the first save of a part-built model impossible. Built to
+   mirror `ModelIntegrityBand` exactly (it flags only groups that HAVE measures). Two rules for one fact
+   would be incoherent. **Ruled as built — no code change followed.**
+2. ✅ **Ratified with M-D3: the band's ✕ measure state is unreachable through the UI** — the Save gate stops
+   you persisting ≠100. It still guards non-UI writes (RPC/seed/other clients), which is how it was verified
+   above. Accepted as the cost of one coherent rule.
+3. ⏸ **M-D4 DEFERRED to its own slice ("rule separately", Vikram).** Measures — and perspective weights — are
+   editable on an APPROVED model, role-gated only, no status gate, while STRATA governance is version-based.
+   `ModelWeights` has behaved this way since 5C, so it is pre-existing, not a 2b regression — which is why the
+   fix does not belong in 2b. The slice covers BOTH callers and must first rule the mechanism (block at
+   approved / require a draft version / accept in-place). See `09_DECISIONS.md` → M-D4.
 4. **`registry-drift` was ALREADY failing on `main`** — `def869232` (B2 freshness) added a
    `StrataFreshnessGlyph` usage without regenerating `usage-map.generated.ts`. My `npm run scan:components`
    repairs that entry alongside my own `Select` entry. The handover's "2,426/2,448 green" predates B2.
