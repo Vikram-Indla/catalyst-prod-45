@@ -205,3 +205,28 @@ F-5: pre-existing perspective rows with updated_at NULL (expect all legacy rows)
 
 **Ledger 1:1:** `20260716180000 · strata_child_auditability`.
 **Gates:** tsc clean · colors 0=0 · audit no category above baseline · CRE pass · suite **2,434 passed / 6 failed**.
+
+---
+
+# P0-D · integrity-exception register — RAW EVIDENCE
+Real non-admin `strategy_office` user; rolled back.
+```
+=== P0-D REGISTER (rolled back) ===
+F-1 owner NULL      -> null value in column "strategy_office_owner" violates not-null constraint
+shape violation     -> violates check constraint "strata_integrity_exceptions_snapshot_shape"
+duplicate record    -> duplicate key value violates unique constraint "strata_integrity_exceptions_unique"
+UPDATE (append-only)-> permission denied for table strata_integrity_exceptions
+DELETE (append-only)-> permission denied for table strata_integrity_exceptions
+detection_is_lower_bound default : t
+```
+| Guarantee | Result |
+|---|---|
+| **F-1: an owner-less record is impossible** | ✅ NOT NULL rejects it |
+| a model-class record cannot carry a snapshot (and vice versa) | ✅ CHECK rejects |
+| re-running the audit cannot duplicate a record | ✅ UNIQUE rejects |
+| **append-only — UPDATE denied** | ✅ permission denied |
+| **append-only — DELETE denied** | ✅ permission denied |
+| lower-bound label mandatory | ✅ NOT NULL DEFAULT true |
+
+**Ledger 1:1:** `20260716190000 · strata_integrity_exceptions`. **Gates:** tsc clean · colors 0=0 · audit no category
+above baseline · CRE pass · suite **2,434 passed / 6 failed**.

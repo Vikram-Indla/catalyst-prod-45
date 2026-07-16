@@ -1224,3 +1224,37 @@ It can never retroactively recover the undetectable past. That wording stays man
 ## Status
 ✅ **DONE** — applied, ledger 1:1, gates green, suite 2,434/6. The in-place child UPDATE that was undetectable is now
 captured with old+new values, parent, actor and timestamp.
+
+---
+
+# R0 · P0-D / A1 — integrity-exception register (E-1/E-2) · migration `20260716190000`
+**`strata_integrity_exceptions` — append-only. TABLE SHIPPED · THE THREE RECORDS ARE BLOCKED ON F-1.**
+
+## What this register does and does not do
+It is **additive and append-only**. It touches no snapshot, no `snapshot_items.payload`, no model, no calculated
+value. That is the whole point: §3.6 established the **numbers are safe** (the payload is frozen at lock and
+`calcResult` reads the frozen payload), so what is broken is **resolution**, not values. The register **qualifies the
+provenance claim** and leaves the official numbers exactly where they are. **The locked payload is never modified.**
+
+## Shape (§3.8) + the two classes
+`exception_class ∈ snapshot_provenance | model_approval_provenance` — E-2's B2B record is a **model** exception, not a
+snapshot one, so a CHECK enforces that a snapshot record HAS a snapshot and a model record does NOT. `values_changed`
+is a column, not an assumption (FALSE for both known records — but a future exception might not be so lucky).
+`detection_is_lower_bound` is NOT NULL DEFAULT true per §3.7/§13.4.
+
+## Append-only enforced, not intended
+SELECT + INSERT policies only; **no UPDATE policy, no DELETE policy**, plus an explicit
+`REVOKE UPDATE, DELETE … FROM authenticated`. Proven: both return **permission denied**. An accountability record that
+can be edited or deleted is not evidence of anything. SELECT is `current_user_is_approved()` (not strategy_office):
+§3.8/F-3 require the qualification to be visible wherever the qualified numbers appear, which a
+strategy_office-only register could not satisfy.
+
+## ⛔ F-1 — the ONE thing blocking the three records
+`strategy_office_owner` is **NOT NULL by design**. E-1 mandates the field; an owner names a **person who accepts
+accountability** and cannot be inferred from schema. **The table ships empty.** That is the honest state: zero rows
+reads as "not yet recorded", whereas rows carrying a guessed or NULL owner would be a **fabricated audit trail** — the
+exact failure this register exists to document. The three records (SNAP-1, SNAP-1001, B2B v1) are one INSERT away the
+moment a name is given; their content is already written and evidenced in blueprint §3.8.
+
+## Status
+✅ **TABLE DONE** — applied, ledger 1:1, gates green, suite 2,434/6. ⛔ **RECORDS PENDING F-1.**
