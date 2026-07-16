@@ -798,7 +798,7 @@ export function UploadTemplatesSection({ onError }: { onError: OnError }) {
   );
 }
 
-function WorkflowsSection({ onError }: { onError: OnError }) {
+export function WorkflowsSection({ onError }: { onError: OnError }) {
   const q = useWorkflowConfigs();
   const list = q.data ?? [];
   return (
@@ -833,7 +833,7 @@ function WorkflowsSection({ onError }: { onError: OnError }) {
   );
 }
 
-const ROLE_DOCS: Array<{ role: StrataRole; purpose: string }> = [
+export const ROLE_DOCS: Array<{ role: StrataRole; purpose: string }> = [
   { role: 'strata_admin', purpose: 'Owns the configuration engine — creates and maintains governed config records.' },
   { role: 'strategy_office', purpose: 'Curates strategy elements, scorecard models and the review cadence.' },
   { role: 'executive_viewer', purpose: 'Read-only consumption of scorecards, reviews and board packs.' },
@@ -1473,7 +1473,7 @@ const DOMAINS: Array<{
   {
     key: 'workflow-access', name: 'Workflow & access', icon: Users,
     governs: 'Lifecycle workflows and the role assignments that decide who can act.',
-    to: Routes.strata.adminSection('roles'), sectionLabels: ['Workflows', 'Roles'],
+    to: Routes.strata.adminAccess(), sectionLabels: ['Role assignments', 'Workflow transitions'],
   },
   {
     key: 'reference-display', name: 'Reference & display', icon: Rocket,

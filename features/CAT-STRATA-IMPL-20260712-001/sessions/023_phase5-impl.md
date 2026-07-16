@@ -108,4 +108,28 @@ data card) · `StrataRoutes.tsx` (+`admin/data` route).
   Salam Finance Excel · Quarterly · **Excel upload** · ACTIVE (owner/health null → correctly omitted). Upload-templates nav →
   "KPI Actuals (Quarterly)" v1 APPROVED + column schema + Retire. No error boundary. Map untouched.
 
-## ⏭ NEXT: 5F — Roles & Access (anchor 27). New `/strata/admin/access` domain page (anchor 27 already digested in full).
+## Slice 5F — Roles & Access (anchor 27, P5-D4) ✅ built + gate-green + live-verified
+**Files:** `StrataAccessPage.tsx` (NEW) · `StrataAdminConfigPage.tsx` (export `ROLE_DOCS` + `WorkflowsSection`, repoint
+workflow-access card) · `StrataRoutes.tsx` (+`admin/access`) · `hooks/useStrata.tsx` (`StrataProfileRef` +`email`).
+- **Anchor 27 re-read IN FULL via DesignSync.** Centerpiece = per-row **SoD column (CLEAN/GUARDED/CONFLICT)** + consequence
+  rail + View-as. **Backend reality (probed):** NO SoD table, NO per-assignment SoD field, NO server SoD-check RPC — SoD is
+  enforced *inside* the lifecycle/assign RPCs at the moment of action. P5-D4 forbids a client SoD engine ⇒ **the SoD column
+  is NOT rendered**: a fabricated per-row "CLEAN" would assert a check that never ran (zero-assumption). Deferred with a
+  labelled note in the rail. Also NO audit-write RPC ⇒ View-as says plainly it is not audit-logged yet.
+- `/strata/admin/access` (strata_admin-only, **restricted state explained, never a bare 403** — names the owning role +
+  back link): left nav (Role assignments · Workflow transitions [reused governed section]); SoD rules / Approval
+  authorities omitted (no backing).
+- **Assignments JiraTable**: Person (name + **email** — added `email` to `StrataProfileRef`; the query already selected it,
+  purely additive) · Role lozenge · Scope chip · Since. Row → **360px person rail**: role count, **WHAT THESE ROLES MEAN**
+  (real ROLE_DOCS domain language, not role keys), **COMBINED EFFECT** (the documented DB-enforced rule + honest SoD-RPC
+  deferral — not a client verdict), **ACTS AS (PREVIEW)**, per-role Remove + View as.
+- **View as** = read-only client preview + **persistent banner** ("your session and permissions are unchanged; switching
+  sessions and audit-logging are later features") + Exit (P5-D4).
+- Assign-role modal reuses `StrataFormModal` + `governanceApi.assignRole`; server refusal surfaces verbatim.
+- Gates: tsc clean · colors 0/0 · audit 19798/19798 (no increase) · CRE passed.
+- Live: 4 assignments / 2 people; Jahanara Khan row → rail shows 3 roles with purposes, combined-effect + SoD deferral,
+  Remove ×3, View as → banner renders. Emails render. No error boundary. Map untouched.
+- Known cosmetic (pre-existing, not introduced): `labelize` renders "Kpi owner"/"Vmo validator" — same as the legacy roles
+  tab; left consistent rather than diverging.
+
+## ⏭ NEXT: 5G — System States (anchor 28). Canonical StrataNotFound + StrataRestricted + notification landing.

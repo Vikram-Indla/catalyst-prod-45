@@ -182,7 +182,7 @@ export function useStrataUserId() {
 }
 
 // ── Identity: owner/actor UUID → display name (zero-assumption: unknown → null) ─
-export interface StrataProfileRef { name: string | null; avatarUrl: string | null }
+export interface StrataProfileRef { name: string | null; email: string | null; avatarUrl: string | null }
 export function useProfileNames() {
   return useQuery({
     queryKey: ['strata', 'profile-names'],
@@ -193,7 +193,7 @@ export function useProfileNames() {
       if (error) throw error;
       const m = new Map<string, StrataProfileRef>();
       (data ?? []).forEach((p) => {
-        m.set(p.id, { name: p.full_name || p.email || null, avatarUrl: p.avatar_url ?? null });
+        m.set(p.id, { name: p.full_name || p.email || null, email: p.email ?? null, avatarUrl: p.avatar_url ?? null });
       });
       return m;
     },
