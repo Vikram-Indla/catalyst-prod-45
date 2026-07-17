@@ -375,6 +375,19 @@ export const useKpiSubmissionBlockers = (kpiId?: string, enabled = true) =>
   });
 /** KO-DEF-002 — dependency impact for a KPI. Fetched on demand (retire/revise modal), not
  *  on every KPI page load, so the join scan runs only when a governed action needs it. */
+/** KO-DEF-003 — server-resolved KR reportability (never recomputed client-side). */
+export const useKrReportability = (krId?: string) =>
+  useQuery({
+    queryKey: ['strata', 'kr-reportability', krId],
+    queryFn: () => kpiApi.krReportability(krId!),
+    enabled: !!krId, staleTime: 0,
+  });
+export const useOkrOfficialProgress = (okrId?: string, enabled = true) =>
+  useQuery({
+    queryKey: ['strata', 'okr-progress', okrId],
+    queryFn: () => kpiApi.okrOfficialProgress(okrId!),
+    enabled: !!okrId && enabled, staleTime: 0,
+  });
 export const useKpiDependencyImpact = (kpiId?: string, enabled = true) =>
   useQuery({
     queryKey: ['strata', 'kpi-dep-impact', kpiId],

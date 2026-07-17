@@ -41,6 +41,23 @@ export interface StrataKpiDependencyImpact {
   active_total: number;
 }
 
+/** KO-DEF-003 KR reportability (server-resolved). */
+export interface StrataKrReportability {
+  reportable: boolean;
+  kind: 'standalone' | 'kpi_backed';
+  label: string;
+  qualified: boolean;
+  kpi_state?: string | null;
+  kpi_id?: string | null;
+  kpi_name?: string | null;
+  resolved_kpi_id?: string | null;
+  actual_status?: string | null;
+  reason?: string | null;
+}
+export interface StrataOkrOfficialProgress {
+  okr_id: string; reportable_krs: number; excluded_krs: number; official_progress: number | null;
+}
+
 /** Maps known Postgres/RPC errors to business-facing copy so schema, table and
  * constraint identifiers never reach the UI (V6-OPEN-024). Every domain call
  * funnels through run(), so this one map covers the whole STRATA module. Unknown
@@ -688,6 +705,22 @@ export const kpiApi = {
       p_target: input.target ?? null, p_current_value: input.currentValue ?? null,
       p_direction: input.direction ?? 'higher_better',
     })),
+  /** KO-DEF-003 OKR lifecycle — server-governed (Draft→Active→Closed). Errors surface verbatim. */
+  updateOkr: (okrId: string, patch: { ownerId?: string; objectiveElementId?: string; cycleId?: string; periodId?: string }) =>
+    run(typedRpc('strata_update_okr', {
+      p_okr: okrId, p_owner: patch.ownerId ?? null, p_objective: patch.objectiveElementId ?? null,
+      p_cycle: patch.cycleId ?? null, p_period: patch.periodId ?? null,
+    })),
+  activateOkr: (okrId: string) => run(typedRpc('strata_activate_okr', { p_okr: okrId })),
+  linkOkrReview: (okrId: string, reviewId: string) =>
+    run(typedRpc('strata_link_okr_review', { p_okr: okrId, p_review: reviewId })),
+  closeOkr: (okrId: string, finalStatus: string, reason: string) =>
+    run(typedRpc('strata_close_okr', { p_okr: okrId, p_final_status: finalStatus, p_reason: reason })),
+  /** KR reportability — the single server definition; never recomputed client-side (KO-DEF-003). */
+  krReportability: (krId: string): Promise<StrataKrReportability> =>
+    run(typedRpc('strata_kr_reportability', { p_kr: krId })) as Promise<StrataKrReportability>,
+  okrOfficialProgress: (okrId: string): Promise<StrataOkrOfficialProgress> =>
+    run(typedRpc('strata_okr_official_progress', { p_okr: okrId })) as Promise<StrataOkrOfficialProgress>,
   updateKeyResult: (krId: string, patch: {
     currentValue?: number; name?: string; target?: number; status?: string; kpiId?: string;
   }) =>
