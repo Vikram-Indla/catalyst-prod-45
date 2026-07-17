@@ -25,7 +25,7 @@ import type { Column } from '@/components/shared/JiraTable';
 import { Routes } from '@/lib/routes';
 import { executionApi, valueApi } from '../domain';
 import {
-  useBenefitProjectCards, useDependencies, useExecutionLinks, useMilestones, useProfileNames,
+  useBenefitProjectCards, useBenefits, useCardAudit, useDependencies, useExecutionLinks, useMilestones, useProfileNames,
   useProjectCardFieldConfigs, useProjectCardPicklists, useProjectCardSectionConfigs, useProjectKpis,
   useProjectObjectives, useInvalidateStrata, useKpis, useRisks, useStrataContext, useStrataRoles,
   useStrategyElements,
@@ -146,7 +146,7 @@ function RailField({ k, children }: { k: string; children: React.ReactNode }) {
 }
 
 type FormKey =
-  | 'edit' | 'archive' | 'complete' | 'cancel' | 'set-objective'
+  | 'edit' | 'archive' | 'complete' | 'cancel' | 'set-objective' | 'link-benefit'
   | 'new-milestone' | 'edit-milestone'
   | 'new-dependency' | 'edit-dependency' | 'new-blocker'
   | 'new-risk' | 'edit-risk'
@@ -299,6 +299,13 @@ export function ProjectCardDetailView({ card, theme }: {
   // linked benefits (benefit_project_cards ⋈ benefit_values × attribution share,
   // active period else first). Zero-assumption: dash per kind when absent. ──────
   const benefitLinks = useBenefitProjectCards().data ?? [];
+  // PC-DEF-005 — governed benefit linkage, per-card audit history, effective context.
+  const allBenefits = useBenefits().data ?? [];
+  const benefitNameById = useMemo(() => new Map(allBenefits.map((b) => [b.id, b.name])), [allBenefits]);
+  const linkedBenefits = useMemo(() => benefitLinks.filter((l) => l.project_card_id === card.id), [benefitLinks, card.id]);
+  const auditQ = useCardAudit(card.id);
+  const auditEvents = auditQ.data ?? [];
+  const closure = (card.optional_fields?.closure ?? null) as { type?: string; reason?: string; actor?: string; at?: string } | null;
   const cardBenefitIds = useMemo(
     () => Array.from(new Set(benefitLinks.filter((l) => l.project_card_id === card.id).map((l) => l.benefit_id))),
     [benefitLinks, card.id],
@@ -597,6 +604,59 @@ export function ProjectCardDetailView({ card, theme }: {
               </TabSection>
             ) : null}
 
+            {/* PC-DEF-005 — Linked Benefits (distinct from KPIs / objectives / milestones) */}
+            <TabSection
+              title={`Linked Benefits (${linkedBenefits.length})`}
+              action={canWrite && !isTerminal ? <Button spacing="compact" onClick={() => setForm('link-benefit')} testId="strata-link-benefit-open">Link benefit</Button> : undefined}
+            >
+              {linkedBenefits.length === 0 ? (
+                <EmptyState size="compact" header="No linked benefits" description="Link an existing governed benefit to attribute value to this project. Benefit definitions are never created here." />
+              ) : linkedBenefits.map((l) => (
+                <LinkedRow
+                  key={l.id}
+                  primary={benefitNameById.get(l.benefit_id) ?? '—'}
+                  meta={l.attribution_share != null ? `Attribution ${l.attribution_share}%` : 'No attribution share set'}
+                  canAct={canWrite && !isTerminal}
+                  onAction={() => { void executionApi.unlinkBenefitProjectCard(l.benefit_id, card.id).then(() => invalidate()); }}
+                />
+              ))}
+            </TabSection>
+
+            {/* PC-DEF-005 — Version & effective context (truthful existing fields only) */}
+            <TabSection title="Version & Effective Context">
+              <div style={{ display: 'grid', gridTemplateColumns: isNarrow ? '1fr' : '1fr 1fr', gap: 12 }}>
+                <SummaryField label="Reference">{card.reference_id ?? <Dash />}</SummaryField>
+                <SummaryField label="Lifecycle Stage">{card.stage ? labelize(card.stage) : <Dash />}</SummaryField>
+                <SummaryField label="Effective Cycle">{activeCycle?.name ?? <Dash />}</SummaryField>
+                <SummaryField label="Effective Period">{activePeriod?.name ?? <Dash />}</SummaryField>
+                <SummaryField label="Created">{card.created_at ? fmtDate(card.created_at) : <Dash />}</SummaryField>
+                <SummaryField label="Last Updated">{card.updated_at ? fmtDate(card.updated_at) : <Dash />}</SummaryField>
+                {closure ? (
+                  <SummaryField label="Closure">{`${labelize(closure.type ?? '')}${closure.reason ? ` · ${closure.reason}` : ''}${closure.at ? ` · ${fmtDate(closure.at)}` : ''}`}</SummaryField>
+                ) : null}
+              </div>
+            </TabSection>
+
+            {/* PC-DEF-005 — Audit history (read preserved for terminal cards) */}
+            <TabSection title={`Audit History (${auditEvents.length})`}>
+              {auditQ.isLoading ? (
+                <span style={{ color: T.subtle, fontSize: 'var(--ds-font-size-100)' }}>Loading audit history…</span>
+              ) : auditEvents.length === 0 ? (
+                <EmptyState size="compact" header="No audit history" description="Governed actions on this project will appear here." />
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                  {auditEvents.map((e) => (
+                    <div key={e.id} style={{ borderLeft: `2px solid ${T.border}`, paddingLeft: 10 }}>
+                      <div style={{ fontSize: 'var(--ds-font-size-100)', color: T.text }}>{labelize(String(e.action ?? '').replace(/^RPC:/, ''))}</div>
+                      <div style={{ fontSize: 'var(--ds-font-size-075)', color: T.subtle }}>
+                        {(profileName(e.actor_id) ?? 'System')}{e.created_at ? ` · ${fmtDate(e.created_at)}` : ''}{e.note ? ` · ${e.note}` : ''}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </TabSection>
+
             {sectionVisible('scope_measures', 'target_outcomes') ? (
               <SummaryField label="Target Outcomes">{card.target_outcomes ?? <Dash />}</SummaryField>
             ) : null}
@@ -815,6 +875,27 @@ export function ProjectCardDetailView({ card, theme }: {
         initial={card.objective_element_id ? { objectiveId: card.objective_element_id } : undefined}
         onSubmit={submitAndRefresh((v) => executionApi.linkCardObjective(card.id, String(v.objectiveId ?? '')))}
         testId="strata-project-set-objective-modal"
+      />
+
+      <StrataFormModal
+        open={form === 'link-benefit'}
+        onClose={() => setForm(null)}
+        title="Link governed benefit"
+        description="Attribute value to this project by linking an existing governed benefit. Benefit definitions and realized values are never changed here."
+        submitLabel="Link benefit"
+        fields={[
+          {
+            key: 'benefitId', label: 'Governed benefit', kind: 'select', required: true,
+            options: allBenefits.filter((b) => !linkedBenefits.some((l) => l.benefit_id === b.id)).map((b) => ({ value: b.id, label: b.name })),
+            helper: allBenefits.length === 0 ? 'No governed benefits are available to link.' : 'Select an existing benefit from the governed dictionary.',
+          },
+          { key: 'attributionShare', label: 'Attribution share (%)', kind: 'text', helper: 'Optional — 0 to 100.' },
+        ]}
+        onSubmit={submitAndRefresh((v) => executionApi.linkBenefitProjectCard(
+          String(v.benefitId ?? ''), card.id,
+          fvStr(v.attributionShare) ? Number(fvStr(v.attributionShare)) : undefined,
+        ))}
+        testId="strata-project-link-benefit-modal"
       />
 
       <StrataFormModal

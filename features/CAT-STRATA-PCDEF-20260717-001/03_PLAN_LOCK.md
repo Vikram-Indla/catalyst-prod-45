@@ -19,8 +19,13 @@ Add **server-enforced** governance controls (RLS/RPC/state) for the five confirm
 - **PC-DEF-003 — Completion governance.** `strata_complete_project_card(project, reason)` enforces alignment + ownership (Business Owner + PM) + baselined dates + all milestones resolved + no open risks/blocking dependencies + separation of duties (completer ≠ creator) + reason + actor + audit. Direct Planning→Completed via the edit form is blocked (trigger + GUC-gated transition; terminal values removed from the editable status select). Client: governed "Complete" modal.
 - **PC-DEF-005 — Governed lifecycle surfaces.** Governed `strata_cancel_project_card` (+ new `cancelled` delivery_status value), governed reversible `strata_link_benefit_project_card`/`unlink`, and terminal-immutability on the card row itself (closes the gap where a completed card's fields/objective were still editable). Client: "Cancel project" modal, terminal "Locked" state hides mutating actions; `executionApi.cardAuditHistory` (per-card audit read) added.
 
-## Deferred (remaining) — reported
-- **PC-DEF-005 sub-items:** dedicated **audit-history panel** and **benefit-linkage modal** in the detail UI (server verbs `cardAuditHistory` / `strata_link_benefit_project_card` exist and are reachable via the API; the visual panels are not yet mounted). Full **submit→approve** workflow with a distinct approver (SoD is enforced at completion; a separate approval gate is not yet modelled). **Version/effective-context** surfacing.
+## Scope delivered — slice 3 (PC-DEF-005 reachable surfaces, UI)
+- **Benefit-linkage UI** — Scope & Measures "Linked Benefits" panel: governed benefit picker → `executionApi.linkBenefitProjectCard` (RPC), unlink per row, distinct from KPIs/objectives/milestones, mutation hidden on terminal cards (read preserved). No benefit master created here.
+- **Audit-history UI** — "Audit History" panel via `useCardAudit`/`cardAuditHistory` (action, actor, timestamp, note). Read preserved for terminal cards.
+- **Version & effective context** — panel showing truthful existing fields only (reference, stage, effective cycle/period, created/updated, closure reason/actor/at). No fabricated versions/dates.
+
+## Not completed — reported blocker
+- **Submit/approve governance with server SoD (PC-DEF-005).** BLOCKER: `strata_project_cards` has no approval-state model — no `approval_status` / `submitted_by` / `approved_by` columns, and the generic `strata_submit_record`/`strata_approve_record` operate on a `status` (draft/pending_approval/approved) field the card table does not have. Not faked per instruction. **Minimum remaining change:** add `approval_status text`, `submitted_by uuid`, `approved_by uuid` to `strata_project_cards`; add `strata_submit_project_card` + `strata_approve_project_card` RPCs enforcing approver ≠ submitter AND approver ≠ creator (SoD) server-side; wire Submit/Approve actions in the detail header. (SoD is already enforced at completion: completer ≠ creator.)
 
 ## Safety
 - No linked Supabase project in this worktree → no live DDL applied; migrations run in CI/staging under Codex regression ("zero-rows on rejected write" verified there).
