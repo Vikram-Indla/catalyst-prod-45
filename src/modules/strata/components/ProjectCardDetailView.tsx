@@ -28,7 +28,7 @@ import {
   useBenefitProjectCards, useBenefits, useCardAudit, useDependencies, useExecutionLinks, useMilestones, useProfileNames,
   useProjectCardFieldConfigs, useProjectCardPicklists, useProjectCardSectionConfigs, useProjectKpis,
   useProjectObjectives, useInvalidateStrata, useKpis, useRisks, useStrataContext, useStrataRoles,
-  useStrategyElements,
+  useStrataUserId, useStrategyElements,
 } from '../hooks/useStrata';
 import type {
   StrataBenefitValue, StrataDependency, StrataMilestone, StrataProjectCard, StrataRisk, StrataRole,
@@ -146,7 +146,7 @@ function RailField({ k, children }: { k: string; children: React.ReactNode }) {
 }
 
 type FormKey =
-  | 'edit' | 'archive' | 'complete' | 'cancel' | 'set-objective' | 'link-benefit'
+  | 'edit' | 'archive' | 'complete' | 'cancel' | 'set-objective' | 'link-benefit' | 'submit' | 'approve'
   | 'new-milestone' | 'edit-milestone'
   | 'new-dependency' | 'edit-dependency' | 'new-blocker'
   | 'new-risk' | 'edit-risk'
@@ -306,6 +306,16 @@ export function ProjectCardDetailView({ card, theme }: {
   const auditQ = useCardAudit(card.id);
   const auditEvents = auditQ.data ?? [];
   const closure = (card.optional_fields?.closure ?? null) as { type?: string; reason?: string; actor?: string; at?: string } | null;
+  // PC-DEF-005 submit/approve governance — new columns not yet in generated types.
+  const approval = card as unknown as {
+    approval_status?: string | null; submitted_by?: string | null; approved_by?: string | null;
+    submitted_at?: string | null; approved_at?: string | null; created_by?: string | null;
+  };
+  const currentUserId = useStrataUserId().data ?? null;
+  const canSubmit = canWrite && !isTerminal && approval.approval_status !== 'approved' && approval.approval_status !== 'submitted';
+  // Hide the guaranteed-to-fail approve action (SoD: approver ≠ creator ≠ submitter); server still enforces.
+  const canApprove = canArchive && !isTerminal && approval.approval_status === 'submitted'
+    && currentUserId != null && currentUserId !== approval.created_by && currentUserId !== approval.submitted_by;
   const cardBenefitIds = useMemo(
     () => Array.from(new Set(benefitLinks.filter((l) => l.project_card_id === card.id).map((l) => l.benefit_id))),
     [benefitLinks, card.id],
@@ -410,6 +420,8 @@ export function ProjectCardDetailView({ card, theme }: {
             <CatalystTag text={`Locked · ${labelize(card.stage)}`} />
           ) : (
             <>
+              {canSubmit ? <Button spacing="compact" onClick={() => setForm('submit')} testId="strata-project-submit-open">Submit for approval</Button> : null}
+              {canApprove ? <Button spacing="compact" appearance="primary" onClick={() => setForm('approve')} testId="strata-project-approve-open">Approve</Button> : null}
               {canWrite ? <Button spacing="compact" onClick={() => setForm('edit')} testId="strata-project-edit-open">Edit</Button> : null}
               {canArchive ? <Button spacing="compact" onClick={() => setForm('complete')} testId="strata-project-complete-open">Complete</Button> : null}
               {canArchive ? <Button spacing="compact" appearance="subtle" onClick={() => setForm('cancel')} testId="strata-project-cancel-open">Cancel project</Button> : null}
@@ -631,6 +643,13 @@ export function ProjectCardDetailView({ card, theme }: {
                 <SummaryField label="Effective Period">{activePeriod?.name ?? <Dash />}</SummaryField>
                 <SummaryField label="Created">{card.created_at ? fmtDate(card.created_at) : <Dash />}</SummaryField>
                 <SummaryField label="Last Updated">{card.updated_at ? fmtDate(card.updated_at) : <Dash />}</SummaryField>
+                <SummaryField label="Approval">{approval.approval_status ? labelize(approval.approval_status) : 'Unsubmitted'}</SummaryField>
+                {approval.submitted_by ? (
+                  <SummaryField label="Submitted By">{`${profileName(approval.submitted_by) ?? '—'}${approval.submitted_at ? ` · ${fmtDate(approval.submitted_at)}` : ''}`}</SummaryField>
+                ) : null}
+                {approval.approved_by ? (
+                  <SummaryField label="Approved By">{`${profileName(approval.approved_by) ?? '—'}${approval.approved_at ? ` · ${fmtDate(approval.approved_at)}` : ''}`}</SummaryField>
+                ) : null}
                 {closure ? (
                   <SummaryField label="Closure">{`${labelize(closure.type ?? '')}${closure.reason ? ` · ${closure.reason}` : ''}${closure.at ? ` · ${fmtDate(closure.at)}` : ''}`}</SummaryField>
                 ) : null}
@@ -896,6 +915,28 @@ export function ProjectCardDetailView({ card, theme }: {
           fvStr(v.attributionShare) ? Number(fvStr(v.attributionShare)) : undefined,
         ))}
         testId="strata-project-link-benefit-modal"
+      />
+
+      <StrataFormModal
+        open={form === 'submit'}
+        onClose={() => setForm(null)}
+        title="Submit project for approval"
+        description="Submits this project for governance approval. The server requires a primary Strategic Objective, a Business Owner and a Project Manager first. The approver must be someone other than you and the creator."
+        submitLabel="Submit for approval"
+        fields={[{ key: 'reason', label: 'Submission reason', kind: 'textarea', required: true }]}
+        onSubmit={submitAndRefresh((v) => executionApi.submitProjectCard(card.id, String(v.reason ?? '').trim()))}
+        testId="strata-project-submit-modal"
+      />
+
+      <StrataFormModal
+        open={form === 'approve'}
+        onClose={() => setForm(null)}
+        title="Approve project"
+        description="Approves this submitted project. Segregation of duties is enforced on the server — you cannot approve a project you created or submitted. A reason is recorded to the audit trail."
+        submitLabel="Approve project"
+        fields={[{ key: 'reason', label: 'Approval reason', kind: 'textarea', required: true }]}
+        onSubmit={submitAndRefresh((v) => executionApi.approveProjectCard(card.id, String(v.reason ?? '').trim()))}
+        testId="strata-project-approve-modal"
       />
 
       <StrataFormModal

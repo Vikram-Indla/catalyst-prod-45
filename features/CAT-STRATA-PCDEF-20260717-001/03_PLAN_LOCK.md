@@ -24,8 +24,16 @@ Add **server-enforced** governance controls (RLS/RPC/state) for the five confirm
 - **Audit-history UI** — "Audit History" panel via `useCardAudit`/`cardAuditHistory` (action, actor, timestamp, note). Read preserved for terminal cards.
 - **Version & effective context** — panel showing truthful existing fields only (reference, stage, effective cycle/period, created/updated, closure reason/actor/at). No fabricated versions/dates.
 
-## Not completed — reported blocker
-- **Submit/approve governance with server SoD (PC-DEF-005).** BLOCKER: `strata_project_cards` has no approval-state model — no `approval_status` / `submitted_by` / `approved_by` columns, and the generic `strata_submit_record`/`strata_approve_record` operate on a `status` (draft/pending_approval/approved) field the card table does not have. Not faked per instruction. **Minimum remaining change:** add `approval_status text`, `submitted_by uuid`, `approved_by uuid` to `strata_project_cards`; add `strata_submit_project_card` + `strata_approve_project_card` RPCs enforcing approver ≠ submitter AND approver ≠ creator (SoD) server-side; wire Submit/Approve actions in the detail header. (SoD is already enforced at completion: completer ≠ creator.)
+## Scope delivered — slice 4 (`20260718130000_strata_pc_def_005_submit_approve_sod.sql` + client)
+- **Submit/approve governance with server SoD (PC-DEF-005).** DELIVERED.
+  - Truthful nullable columns on `strata_project_cards`: `approval_status` (NULL = legacy/unsubmitted → `submitted` → `approved`/`rejected`), `submitted_by/at`, `approved_by/at`, `submission_reason`. No historical values fabricated.
+  - `strata_submit_project_card(project, reason)` — non-terminal only; requires primary objective + Business Owner + PM + reason; clears any prior approval on re-submission; actor + before/after audit.
+  - `strata_approve_project_card(project, reason)` — submitted-only; **server SoD: approver ≠ creator AND ≠ submitter**; actor + before/after audit.
+  - `strata_guard_card_approval()` BEFORE UPDATE trigger — an approved card's approval record cannot be silently altered/downgraded (only a governed re-submission moves it back).
+  - UI: reachable "Submit for approval" + "Approve" actions in the detail header (guaranteed-fail Approve hidden when the actor is the creator/submitter — server still enforces); approval status + submitter/approver surfaced in the Version & Effective Context panel. Terminal cards remain locked.
+
+## Remaining
+- None of the four PC-DEF-005 surfaces outstanding. A dedicated "rejected"/reject action verb and a version-number scheme were out of scope (not required by the register). Live regression + closure owned by Codex.
 
 ## Safety
 - No linked Supabase project in this worktree → no live DDL applied; migrations run in CI/staging under Codex regression ("zero-rows on rejected write" verified there).

@@ -714,6 +714,13 @@ export const executionApi = {
   /** PC-DEF-005 — governed cancellation of an abandoned project (reason + actor + audit). */
   cancelProjectCard: (projectId: string, reason: string) =>
     run(typedRpc('strata_cancel_project_card', { p_project: projectId, p_reason: reason })),
+  /** PC-DEF-005 — submit a non-terminal card for approval (requires primary objective +
+   * Business Owner + PM + reason). */
+  submitProjectCard: (projectId: string, reason: string) =>
+    run(typedRpc('strata_submit_project_card', { p_project: projectId, p_reason: reason })),
+  /** PC-DEF-005 — approve a submitted card. Server enforces SoD (approver ≠ creator ≠ submitter). */
+  approveProjectCard: (projectId: string, reason: string) =>
+    run(typedRpc('strata_approve_project_card', { p_project: projectId, p_reason: reason })),
   /** PC-DEF-005 — governed, reversible benefit ↔ project-card linkage. Does not alter
    * benefit definitions or realized values. */
   linkBenefitProjectCard: (benefitId: string, projectId: string, attributionShare?: number) =>
