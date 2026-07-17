@@ -146,12 +146,14 @@ function RailField({ k, children }: { k: string; children: React.ReactNode }) {
 }
 
 type FormKey =
-  | 'edit' | 'archive'
+  | 'edit' | 'archive' | 'complete' | 'cancel' | 'set-objective'
   | 'new-milestone' | 'edit-milestone'
   | 'new-dependency' | 'edit-dependency' | 'new-blocker'
   | 'new-risk' | 'edit-risk'
   | 'new-objective' | 'new-kpi'
   | null;
+
+const TERMINAL_STAGES = ['completed', 'cancelled', 'archived'];
 
 export function ProjectCardDetailView({ card, theme }: {
   card: StrataProjectCard;
@@ -163,6 +165,8 @@ export function ProjectCardDetailView({ card, theme }: {
   const canWriteKpi = roles.some((r) => KPI_WRITE_ROLES.includes(r));
   const canWriteObjective = roles.some((r) => OBJECTIVE_WRITE_ROLES.includes(r));
   const canArchive = roles.some((r) => ARCHIVE_ROLES.includes(r));
+  // PC-DEF-004/003/005: a terminal project card is frozen — no edit / lifecycle action.
+  const isTerminal = TERMINAL_STAGES.includes(card.stage);
   const { activeCycle, activePeriod } = useStrataContext();
 
   const milestonesQ = useMilestones(card.id);
@@ -395,8 +399,16 @@ export function ProjectCardDetailView({ card, theme }: {
         {card.reference_id ? <CatalystTag text={card.reference_id} /> : null}
         <StrataExecutionHealthLozenge health={card.calculated_health} />
         <span style={{ marginLeft: 'auto', display: 'flex', gap: 8 }}>
-          {canWrite ? <Button spacing="compact" onClick={() => setForm('edit')} testId="strata-project-edit-open">Edit</Button> : null}
-          {canArchive ? <Button spacing="compact" appearance="subtle" onClick={() => setForm('archive')}>Archive</Button> : null}
+          {isTerminal ? (
+            <CatalystTag text={`Locked · ${labelize(card.stage)}`} />
+          ) : (
+            <>
+              {canWrite ? <Button spacing="compact" onClick={() => setForm('edit')} testId="strata-project-edit-open">Edit</Button> : null}
+              {canArchive ? <Button spacing="compact" onClick={() => setForm('complete')} testId="strata-project-complete-open">Complete</Button> : null}
+              {canArchive ? <Button spacing="compact" appearance="subtle" onClick={() => setForm('cancel')} testId="strata-project-cancel-open">Cancel project</Button> : null}
+              {canArchive ? <Button spacing="compact" appearance="subtle" onClick={() => setForm('archive')}>Archive</Button> : null}
+            </>
+          )}
         </span>
       </div>
 
@@ -481,14 +493,21 @@ export function ProjectCardDetailView({ card, theme }: {
                 : <Dash />}
             </SummaryField>
             <SummaryField label="Linked Strategic Objective">
-              {(() => {
-                const obj = card.objective_element_id
-                  ? themeObjectives.find((o) => o.id === card.objective_element_id) ?? null
-                  : null;
-                return obj
-                  ? <Button appearance="subtle" spacing="compact" onClick={() => window.location.assign(Routes.strata.strategy())}>{obj.name}</Button>
-                  : <Dash />;
-              })()}
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
+                {(() => {
+                  const obj = card.objective_element_id
+                    ? themeObjectives.find((o) => o.id === card.objective_element_id) ?? null
+                    : null;
+                  return obj
+                    ? <Button appearance="subtle" spacing="compact" onClick={() => window.location.assign(Routes.strata.strategy())}>{obj.name}</Button>
+                    : <Dash />;
+                })()}
+                {canWriteObjective && !isTerminal ? (
+                  <Button appearance="subtle" spacing="compact" onClick={() => setForm('set-objective')} testId="strata-set-objective-open">
+                    {card.objective_element_id ? 'Change' : 'Set objective'}
+                  </Button>
+                ) : null}
+              </span>
             </SummaryField>
             <SummaryField label="Business Owner">
               {profileName(card.business_owner_id) ? (
@@ -715,7 +734,7 @@ export function ProjectCardDetailView({ card, theme }: {
           { key: 'leadBusinessUnit', label: 'Lead Business Unit', kind: 'select', options: (lobPicklistQ.data ?? []).map((p) => ({ value: p.value, label: p.label })) },
           { key: 'deliveryTeam', label: 'Delivery Team', kind: 'select', options: (teamPicklistQ.data ?? []).map((p) => ({ value: p.value, label: p.label })) },
           { key: 'sector', label: 'Department / Sector', kind: 'select', options: (sectorPicklistQ.data ?? []).map((p) => ({ value: p.value, label: p.label })) },
-          { key: 'stage', label: 'Delivery Status', kind: 'select', options: (deliveryStatusPicklistQ.data ?? []).map((p) => ({ value: p.value, label: p.label })) },
+          { key: 'stage', label: 'Delivery Status', kind: 'select', options: (deliveryStatusPicklistQ.data ?? []).filter((p) => !TERMINAL_STAGES.includes(p.value)).map((p) => ({ value: p.value, label: p.label })), helper: 'Completion, cancellation and archival are governed actions — use the buttons above.' },
           { key: 'baselineStart', label: 'Baseline start', kind: 'date' },
           { key: 'baselineEnd', label: 'Baseline end', kind: 'date' },
           { key: 'forecastEnd', label: 'Forecast end', kind: 'date' },
@@ -758,6 +777,44 @@ export function ProjectCardDetailView({ card, theme }: {
         fields={[{ key: 'reason', label: 'Reason', kind: 'textarea', required: true }]}
         onSubmit={submitAndRefresh((v) => executionApi.archiveProjectCard(card.id, String(v.reason ?? '').trim()))}
         testId="strata-project-archive-modal"
+      />
+
+      <StrataFormModal
+        open={form === 'complete'}
+        onClose={() => setForm(null)}
+        title="Complete project"
+        description="Governed closure. The server verifies alignment (primary objective), ownership (Business Owner + PM), baselined dates, all milestones resolved, no open risks or blocking dependencies, and separation of duties before the project is completed. A reason is required and audited."
+        submitLabel="Complete project"
+        fields={[{ key: 'reason', label: 'Completion reason', kind: 'textarea', required: true }]}
+        onSubmit={submitAndRefresh((v) => executionApi.completeProjectCard(card.id, String(v.reason ?? '').trim()))}
+        testId="strata-project-complete-modal"
+      />
+
+      <StrataFormModal
+        open={form === 'cancel'}
+        onClose={() => setForm(null)}
+        title="Cancel project"
+        description="Governed cancellation of an abandoned project. Records the reason, actor and audit, and freezes the project history (terminal). Distinct from archive."
+        submitLabel="Cancel project"
+        fields={[{ key: 'reason', label: 'Cancellation reason', kind: 'textarea', required: true }]}
+        onSubmit={submitAndRefresh((v) => executionApi.cancelProjectCard(card.id, String(v.reason ?? '').trim()))}
+        testId="strata-project-cancel-modal"
+      />
+
+      <StrataFormModal
+        open={form === 'set-objective'}
+        onClose={() => setForm(null)}
+        title="Set primary Strategic Objective"
+        description="A governed project must align to exactly one primary Strategic Objective within its Theme; the Theme is retained as context. A project cannot advance beyond planning until aligned."
+        submitLabel="Link objective"
+        fields={[{
+          key: 'objectiveId', label: 'Strategic Objective', kind: 'select', required: true,
+          options: themeObjectives.filter((o) => o.parent_id === card.theme_id).map((o) => ({ value: o.id, label: o.name })),
+          helper: 'Only objectives within this project’s Theme are eligible.',
+        }]}
+        initial={card.objective_element_id ? { objectiveId: card.objective_element_id } : undefined}
+        onSubmit={submitAndRefresh((v) => executionApi.linkCardObjective(card.id, String(v.objectiveId ?? '')))}
+        testId="strata-project-set-objective-modal"
       />
 
       <StrataFormModal

@@ -706,6 +706,27 @@ export const executionApi = {
     run(typedRpc('strata_link_card_objective', { p_card: projectId, p_objective: objectiveElementId })),
   unlinkCardObjective: (projectId: string) =>
     run(typedRpc('strata_unlink_card_objective', { p_card: projectId })),
+  /** PC-DEF-003 — governed completion. Server enforces alignment (primary objective),
+   * ownership (business owner + PM), baselined dates, all milestones resolved, no open
+   * risks / blocking dependencies, separation of duties, reason and audit. */
+  completeProjectCard: (projectId: string, reason: string) =>
+    run(typedRpc('strata_complete_project_card', { p_project: projectId, p_reason: reason })),
+  /** PC-DEF-005 — governed cancellation of an abandoned project (reason + actor + audit). */
+  cancelProjectCard: (projectId: string, reason: string) =>
+    run(typedRpc('strata_cancel_project_card', { p_project: projectId, p_reason: reason })),
+  /** PC-DEF-005 — governed, reversible benefit ↔ project-card linkage. Does not alter
+   * benefit definitions or realized values. */
+  linkBenefitProjectCard: (benefitId: string, projectId: string, attributionShare?: number) =>
+    run(typedRpc('strata_link_benefit_project_card', {
+      p_benefit: benefitId, p_project: projectId, p_attribution_share: attributionShare ?? null,
+    })),
+  unlinkBenefitProjectCard: (benefitId: string, projectId: string) =>
+    run(typedRpc('strata_unlink_benefit_project_card', { p_benefit: benefitId, p_project: projectId })),
+  /** PC-DEF-005 — per-card governed audit history (actor / time / before-after). */
+  cardAuditHistory: (projectId: string, limit = 50) =>
+    run(typedQuery('strata_audit_events').select('*')
+      .eq('entity_table', 'strata_project_cards').eq('entity_id', projectId)
+      .order('created_at', { ascending: false }).limit(limit)),
   createProjectCard: (input: {
     name: string; sourceSystem?: 'manual' | 'upload' | 'api' | 'jira'; sourceKey?: string;
     pmId?: string; sector?: string; budget?: number; baselineStart?: string;
