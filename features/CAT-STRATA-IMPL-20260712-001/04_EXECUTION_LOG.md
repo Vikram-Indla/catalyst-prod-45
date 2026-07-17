@@ -1840,3 +1840,34 @@ until attested. Correct: nobody has checked it yet.
 accept_with_exception → counts=true, flagged, reason + original failures preserved, calc 83.33/conf 0.540 ·
 re-resolving a non-quarantined row refused · correct → pending/99 · reject → counts=false.
 ✅ **DONE** — applied, ledger 1:1.
+
+---
+
+# R4d · 24-hour import reversal (D-7/E-5) · migration `20260717190000`
+`strata_run_reversal_eligibility(run)` (asks BEFORE offering the verb; returns **every** blocking reason, not the
+first — telling someone "locked snapshot", then "issued pack" after they fix it, misleads them twice) +
+`strata_reverse_run(run, reason)`.
+
+## Supersession, never an offsetting entry (D-7)
+A `-100` correction is **a measurement that never happened** — it would sit in the ledger as though someone observed
+-100, and every downstream average, trend and audit would read it as data. Instead the original actual is marked
+`reversed` (already excluded by R4b's eligible set) and the prior validated actual becomes effective again.
+
+## Reuse — no new state machine
+`reversed` already existed in the CHECK (R4a) and was already excluded from calcs (R4b). `strata_calc_kpi_achievement`
+already picks the most recent **eligible** actual, so "restoring" needs **no repointing**: removing the newer row from
+the eligible set lets the older validated one win again.
+
+## PROVEN
+`reversed=2 restored_prior=1 left_without_value=1 recalculated=2` · **BLOCK >24h** · **BLOCK locked snapshot** ·
+**BLOCK reverse-twice** · **BLOCK reverse-a-reversal** · original run preserved · **actuals 19→19 (nothing deleted)** ·
+**0 rows with value ≤ 0 (no artificial offsets)**.
+**E-5 restore, proven directly:** prior 80, reversed 95 → **effective actual after reversal = 80**, reversed row still
+present and marked `reversed`. **E-5 no-prior:** → `no_eligible_actual` (left EMPTY, never zeroed).
+
+## Own-bug caught by testing
+`reasons := reasons || 'literal'` raised **"malformed array literal"** at runtime: an untyped literal on the right of
+`||` makes Postgres choose `array||array` and try to PARSE the sentence as an array. It bit only the plain-string
+reasons — the `format()`-built one is explicitly `text` — so **"already reversed" and "is a reversal" crashed with an
+opaque error exactly where a clean reason was the entire point**. Fixed with `array_append`.
+✅ **DONE** — applied, ledger 1:1.
