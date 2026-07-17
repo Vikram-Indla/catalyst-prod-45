@@ -319,3 +319,31 @@ constructed case (SNAP-1001); comment corrected before commit.
 ⏸ **Stopped at context limit on a committed+pushed boundary. R2 and R3 are DB-COMPLETE with NO UI.**
 **Next: R4** — quarantine/exception workflow, benefit assurance, mapping memory, reconciliation, 24h import reversal.
 **Both live-numbers debts land in R4.** Then R5 + the 14/14 matrix.
+
+---
+
+# SESSION 026 (part 10) — R4a assurance vocabulary; DEBT #1 discharged
+
+**2026-07-17.** `28e2c1bbf` (`20260717160000`) + `b1481249c` (client realign). **Session total: 19 slices.**
+
+## The Finance lie is gone
+`finance_validated` lived on **`strata_benefits.lifecycle_stage`** (the blueprint pointed at the wrong table) and was
+stamped on **any** validator's verdict — while **no Finance role exists anywhere in STRATA**. Now unrepresentable.
+The migration is a **relabel, not a re-assertion**: same rows, same counts, actors and audit untouched.
+
+## F-7 shipped without moving a number — deliberately
+9/9 benefits byte-identical. `owner_confirmed`/`accepted_with_exception` had **0 rows**, so widening the whitelist
+changed nothing *today* while putting the rule in force. Proven to have teeth (0.0000 → 0.4000 once a value is
+confirmed). **A change that moved numbers on the day it shipped would have been a silent restatement of history.**
+
+## The follow-up that mattered more than the migration
+R4a **broke a governed write path**: `validateBenefitValue(id,'validated')` now throws, so the VMO page's Validate
+button was dead. **Neither tsc invocation could see it** — `--noEmit` is a no-op (F-11) and `-p tsconfig.app.json`
+leaves these property accesses unchecked at `strict:false`. **Grep found it.** Fixed with TWO buttons, not one
+relabelled: *owner confirmed* and *independently validated* are different claims, and merging them would have
+recreated the exact lie D-4 removed.
+
+## Status
+⏸ **Stopped at context limit on a committed+pushed boundary. DEBT #1 discharged; DEBT #2 open.**
+**Next:** quarantine workflow RPC (states + columns already exist) → **DEBT #2: pending actuals counting (E-7 cond. 3)
+— this one WILL move live numbers, unlike F-7; baseline first** → mapping memory/reconciliation → 24h reversal → R5.

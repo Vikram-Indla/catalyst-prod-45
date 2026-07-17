@@ -98,10 +98,28 @@ snapshot → pack`) is **expressible and proven to fire**, but yields **0 on rea
 `snapshot_id` and `source_run_ids` = **0**. The two populations never intersect. Do not "fix" the empty `historical`;
 it is correct.
 
-## ▶ DO THIS NEXT
-1. **R4 — validation & reconciliation.** ⚠️ **The two live-numbers debts land here** (below). Quarantine
-   accept/correct/reject · accepted-with-exception (SO-authorized, no self-authorization) · benefit assurance states ·
-   mapping-memory · Matched/New/Conflict/Invalid · immutable run ledger · **24h import reversal** (D-7/E-5).
+## ✅ R4a SHIPPED — assurance vocabulary + exception governance (`28e2c1bbf`, `20260717160000`) + client realign (`b1481249c`)
+**DEBT #1 IS DISCHARGED.** `finance_validated` is **unrepresentable** (D-4 — no Finance role has ever existed in
+STRATA; the label claimed an assurance nobody performed). Benefit values now carry the six D-4/E-6 states
+(`reported | owner_confirmed | independently_validated | accepted_with_exception | rejected | reversed`).
+**F-7 is live and moved ZERO numbers** — 9/9 benefits byte-identical, because `owner_confirmed` had 0 rows; proven to
+have teeth (one value → index 0.0000 → 0.4000). Exception governance (reason + authorizer + **no self-authorization**)
+is enforced **at the DB**, not just in RPCs. Assurance composition is broken out per state.
+**⚠️ The client had to be realigned in a follow-up** — `validateBenefitValue(id,'validated')` now **throws**; the VMO
+page has two buttons (Independently validate / Owner confirm) because they are **different claims**. tsc could not see
+this break (F-11); grep found it.
+
+## ▶ DO THIS NEXT — R4 remainder
+1. **Quarantine accept/correct/reject RPC** (D-5) — `quarantined` + `accepted_with_exception` states and the exception
+   columns **already exist** on `strata_kpi_actuals`; only the workflow RPC is missing.
+2. **DEBT #2 — `strata_calc_kpi_achievement` still counts `pending` actuals** (confidence ×0.6). §2.1's "validated
+   whitelist" claim is FALSE. Gap against **E-7 condition 3** ("validated **or** accepted-with-exception").
+   ⚠️ **This one WILL move live numbers** — unlike F-7, `pending` actuals exist today. Baseline first.
+3. **Mapping-memory · Matched/New/Conflict/Invalid · both-side diffs · immutable run ledger.**
+4. **24h import reversal (D-7/E-5)** — reversal restores the prior validated effective state; **never** zero/negative
+   offsets; blocked by locked snapshot / locked period / issued pack / unsafe later run. `reversed` states are already
+   in both CHECKs.
+5. **R5 — hardening/closeout + the final 14/14 capability matrix.**
 2. **R5 — hardening/closeout + the final 14/14 capability matrix.**
 3. **UI DEBT — the honest gap.** R2 and R3 are **DB-complete with NO screens**: board-pack editorial builder
    (`title`/`sections` + RPCs exist), reviews (E1), the pack version chain, and every R3 surface. R1's KPI-detail
