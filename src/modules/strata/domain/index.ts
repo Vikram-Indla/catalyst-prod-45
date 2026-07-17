@@ -21,7 +21,7 @@ import type {
   StrataModelMeasure, StrataNotificationTarget, StrataProjectCardTabConfig, StrataRoleSod, StrataRisk, StrataRole, StrataScorecardInstance, StrataScorecardLine,
   StrataScorecardModel, StrataSnapshot, StrataStagingRow, StrataStrategyElement, StrataThresholdScheme,
   StrataUploadRun, StrataUploadTemplate, StrataValidationResult, StrataValueCategory,
-  StrataWorkflowConfig,
+  StrataWorkflowConfig, ThresholdBand,
 } from '../types';
 
 /** Maps known Postgres/RPC errors to business-facing copy so schema, table and
@@ -103,6 +103,36 @@ export const configApi = {
    */
   createThresholdDraftVersion: (schemeId: string, reason: string): Promise<string> =>
     run(typedRpc('strata_create_threshold_draft_version', { p_scheme: schemeId, p_reason: reason })),
+  /**
+   * R5 — the band editor's write path. There is deliberately NO RPC here: bands are a jsonb column
+   * on the scheme row, and RLS is the entire gate. Probed 2026-07-17 on staging
+   * (policy strata_threshold_schemes_update):
+   *     USING  (status = 'draft' AND (created_by = auth.uid() OR strata_is_admin()))
+   *     CHECK  (status = 'draft')
+   * — note this is authorship-based, NOT the strategy_office role gate the revision RPC uses. A
+   * strategy_office user who did not author the draft is refused. The UI mirrors this exact
+   * predicate; it does not mirror the RPC's role gate, because it is not the rule in force here.
+   *
+   * `.select()` is load-bearing, not decoration. An UPDATE filtered out by RLS matches zero rows
+   * and returns NO error — a silent no-op. Without reading the rows back, this would resolve
+   * successfully and the UI would report a save that never happened. Zero rows = the server
+   * declined; we say so rather than invent a success.
+   */
+  updateThresholdBands: async (schemeId: string, bands: ThresholdBand[]): Promise<StrataThresholdScheme> => {
+    const rows: StrataThresholdScheme[] = await run(
+      typedQuery('strata_threshold_schemes').update({ bands }).eq('id', schemeId).select(),
+    );
+    if (!rows || rows.length === 0) {
+      // The server said nothing at all, so there is no server text to surface verbatim. This
+      // states the policy that produced the silence — the two readings of zero rows — without
+      // claiming which one applied.
+      throw new Error(
+        'The database applied no change. A threshold scheme’s bands are editable only while it is a draft, '
+        + 'and only by the draft’s author or a strata_admin — or this scheme no longer exists. Refresh and check its status.',
+      );
+    }
+    return rows[0];
+  },
   myRoles: async (userId: string): Promise<StrataRole[]> => {
     const rows: Array<{ role: StrataRole }> = await run(
       typedQuery('strata_role_assignments').select('role').eq('user_id', userId),

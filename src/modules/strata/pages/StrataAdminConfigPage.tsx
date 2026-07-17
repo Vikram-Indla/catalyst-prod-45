@@ -29,7 +29,7 @@ import {
   useAllModelMeasures, useAllModelPerspectives, useChangeRequests, useGateModels, useInvalidateStrata, useKpiTypes, useKpis, useModelPerspectives,
   usePerspectives, useProfileNames, useProjectCardFieldConfigs, useProjectCardPicklists,
   useProjectCardSectionConfigs, useProjectCardTabConfigs, useRoleAssignments, useScorecardModels,
-  useStrataAudit, useStrataNotificationRules, useStrataRoles, useThresholdSchemes, useUploadTemplates, useValueCategories,
+  useStrataAudit, useStrataNotificationRules, useStrataRoles, useStrataUserId, useThresholdSchemes, useUploadTemplates, useValueCategories,
   useWorkflowConfigs,
 } from '@/modules/strata/hooks/useStrata';
 import { StrataPageShell, StrataPanel, T } from '@/modules/strata/components/shared';
@@ -38,7 +38,8 @@ import { StrataFormModal, str } from '@/modules/strata/components/authoring';
 import { fmtDate, fmtDateTime, labelize } from '@/modules/strata/components/format';
 import type {
   GovernedEnvelope, GovernedStatus, StrataChangeRequest, StrataNotificationRule, StrataPerspective,
-  StrataModelMeasure, StrataProjectCardFieldConfig, StrataProjectCardPicklist, StrataRole, StrataScorecardModel, ThresholdBand,
+  StrataModelMeasure, StrataProjectCardFieldConfig, StrataProjectCardPicklist, StrataRole, StrataScorecardModel,
+  StrataThresholdScheme, ThresholdBand,
 } from '@/modules/strata/types';
 
 type OnError = (msg: string | null) => void;
@@ -1006,9 +1007,215 @@ export function bandRows(bands: ThresholdBand[]): BandRow[] {
   }));
 }
 
+/**
+ * R5 — band editor.
+ *
+ * Every rule below is sourced from the DB, not invented (probed on staging 2026-07-17):
+ *
+ *  - SHAPE: bands is `[{key,label,min_score,appearance?}, …]`. There is NO `max`/upper bound on a
+ *    band — a band is a FLOOR only. The "To <" shown is derived, never stored.
+ *  - RESOLUTION: strata_band_from_score() picks `min_score <= score ORDER BY min_score DESC LIMIT 1`,
+ *    falling back to the LOWEST min_score band when the score is under every floor. So array order
+ *    is irrelevant (the resolver sorts), and there is no gap or overlap to police — floors alone
+ *    cannot overlap, and the bottom is covered by that fallback.
+ *  - CONSTRAINT: the ONLY DB check on the column is `jsonb_typeof(bands) = 'array'`. The database
+ *    does NOT enforce ordering, coverage, non-overlap, unique keys or unique floors.
+ *
+ * Because of that last point the editor blocks ONLY what is needed to construct a band at all
+ * (a key, a label, a numeric floor — form-level requirements). It does NOT invent a governance
+ * rule the server would happily accept. Where a saveable configuration is nonetheless ambiguous
+ * (two bands sharing a floor => the resolver's LIMIT 1 picks between them non-deterministically),
+ * the editor says so as an ADVISORY and still lets it save — the server is the authority on what
+ * is legal, and pretending otherwise would be a rule we made up.
+ */
+const BAND_APPEARANCES: LozengeAppearance[] = ['default', 'inprogress', 'success', 'removed', 'moved', 'new'];
+/** Options are the ADS lozenge appearance NAMES — the component owns the colour, we never map one.
+ * The preview renders a real StatusLozenge so the author sees the colour ADS will actually use. */
+const APPEARANCE_OPTIONS: SelectOption[] = BAND_APPEARANCES.map((a) => ({
+  value: a, label: <StatusLozenge status={a} label={a} appearance={a} />,
+}));
+
+/** One editable band. min_score is held as a string while typing (an empty field is not 0). */
+interface BandDraft { rowId: string; key: string; label: string; minScore: string; appearance: string | null }
+
+const toDraft = (bands: ThresholdBand[]): BandDraft[] =>
+  [...bands]
+    .sort((a, b) => b.min_score - a.min_score)
+    .map((b, i) => ({
+      rowId: `${b.key}-${i}`, key: b.key, label: b.label,
+      minScore: String(b.min_score), appearance: b.appearance ?? null,
+    }));
+
+/** Exported for tests: the draft→payload mapping and the blocking rules, in one place.
+ * `blocked` is the list of things that make a band unconstructable — NOT a policy opinion. */
+export function bandDraftToPayload(draft: BandDraft[]): { bands: ThresholdBand[]; blocked: string[]; advisories: string[] } {
+  const blocked: string[] = [];
+  const advisories: string[] = [];
+  if (draft.length === 0) blocked.push('A scheme with no bands can never rate anything — add at least one band.');
+  draft.forEach((d, i) => {
+    const where = d.label.trim() || d.key.trim() || `Band ${i + 1}`;
+    if (d.key.trim() === '') blocked.push(`${where}: a band key is required — it is the value stored against every rated KPI.`);
+    if (d.label.trim() === '') blocked.push(`${where}: a band label is required.`);
+    if (d.minScore.trim() === '' || !Number.isFinite(Number(d.minScore))) {
+      blocked.push(`${where}: the floor must be a number — the rating query casts it to numeric.`);
+    }
+  });
+  const keys = draft.map((d) => d.key.trim()).filter((k) => k !== '');
+  const dupKeys = keys.filter((k, i) => keys.indexOf(k) !== i);
+  for (const k of [...new Set(dupKeys)]) {
+    blocked.push(`Two bands share the key “${k}” — a rated KPI stores only the key, so the two would be indistinguishable.`);
+  }
+  const floors = draft.map((d) => Number(d.minScore)).filter((n) => Number.isFinite(n));
+  const dupFloors = floors.filter((n, i) => floors.indexOf(n) !== i);
+  for (const f of [...new Set(dupFloors)]) {
+    // Advisory, not blocked: the database accepts this. It is the resolver's ORDER BY … LIMIT 1
+    // that becomes arbitrary between the tied bands, and that is worth saying out loud.
+    advisories.push(`Two bands start at ${f}. The database accepts this, but the rating query takes the highest floor at or below a score and stops at the first match — with a tie, which of the two wins is not determined.`);
+  }
+  const bands: ThresholdBand[] = draft.map((d) => ({
+    key: d.key.trim(),
+    label: d.label.trim(),
+    min_score: Number(d.minScore),
+    // Zero-assumption: an unset appearance stays unset. We do not default it to a colour.
+    ...(d.appearance ? { appearance: d.appearance } : {}),
+  }));
+  return { bands, blocked, advisories };
+}
+
+/** The band editor for a DRAFT scheme. Rendered only where RLS would permit the write. */
+export function ThresholdBandEditor({ scheme, onDone }: { scheme: StrataThresholdScheme; onDone: () => void }) {
+  const invalidate = useInvalidateStrata();
+  const [draft, setDraft] = useState<BandDraft[]>(() => toDraft(scheme.bands ?? []));
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const { bands, blocked, advisories } = bandDraftToPayload(draft);
+  const patch = (rowId: string, p: Partial<BandDraft>) =>
+    setDraft((prev) => prev.map((d) => (d.rowId === rowId ? { ...d, ...p } : d)));
+
+  const save = async () => {
+    setSaving(true);
+    setError(null);
+    try {
+      await configApi.updateThresholdBands(scheme.id, bands);
+      invalidate();
+      onDone();
+    } catch (e) {
+      // Verbatim — never re-worded.
+      setError(e instanceof Error ? e.message : String(e));
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--ds-space-100)' }} data-testid={`strata-band-editor-${scheme.id}`}>
+      {draft.map((d, i) => (
+        <div key={d.rowId} style={{ display: 'flex', alignItems: 'center', gap: 'var(--ds-space-100)', flexWrap: 'wrap' }}>
+          <div style={{ width: 120 }}>
+            <Textfield
+              spacing="compact" value={d.key} isDisabled={saving}
+              onChange={(e) => patch(d.rowId, { key: e.target.value })}
+              aria-label={`Key for band ${i + 1}`} placeholder="Key"
+              testId={`strata-band-key-${i}`}
+            />
+          </div>
+          <div style={{ width: 160 }}>
+            <Textfield
+              spacing="compact" value={d.label} isDisabled={saving}
+              onChange={(e) => patch(d.rowId, { label: e.target.value })}
+              aria-label={`Label for band ${i + 1}`} placeholder="Label"
+              testId={`strata-band-label-${i}`}
+            />
+          </div>
+          <div style={{ width: 120 }}>
+            <Textfield
+              type="number" spacing="compact" value={d.minScore} isDisabled={saving}
+              onChange={(e) => patch(d.rowId, { minScore: e.target.value })}
+              aria-label={`Floor score for band ${i + 1}`} placeholder="From ≥"
+              testId={`strata-band-min-${i}`}
+            />
+          </div>
+          <div style={{ width: 170 }}>
+            <Select
+              options={APPEARANCE_OPTIONS}
+              value={APPEARANCE_OPTIONS.find((o) => o.value === d.appearance) ?? null}
+              onChange={(o) => patch(d.rowId, { appearance: o ? String(o.value) : null })}
+              isDisabled={saving} isSearchable={false} usePortal isClearable
+              placeholder="Appearance"
+              aria-label={`Appearance for band ${i + 1}`}
+            />
+          </div>
+          <Button
+            spacing="compact" appearance="subtle" isDisabled={saving}
+            onClick={() => setDraft((prev) => prev.filter((x) => x.rowId !== d.rowId))}
+            testId={`strata-band-remove-${i}`}
+          >
+            Remove
+          </Button>
+        </div>
+      ))}
+      <div>
+        <Button
+          spacing="compact" isDisabled={saving}
+          onClick={() => setDraft((prev) => [...prev, {
+            rowId: `new-${prev.length}-${Date.now()}`, key: '', label: '', minScore: '', appearance: null,
+          }])}
+          testId={`strata-band-add-${scheme.id}`}
+        >
+          Add band
+        </Button>
+      </div>
+      {/* The resolver's semantics, made visible: the same derivation the read-only table uses. */}
+      {blocked.length === 0 && bands.length > 0 ? (
+        <JiraTable<BandRow>
+          columns={THRESHOLD_BAND_COLUMNS}
+          data={bandRows(bands)}
+          getRowId={(b) => b.key}
+          showRowCount={false}
+          ariaLabel={`Resulting bands for ${scheme.name}`}
+        />
+      ) : null}
+      {blocked.length > 0 ? (
+        <SectionMessage appearance="error" title="Cannot save yet">
+          <ul style={{ margin: 0, paddingLeft: 'var(--ds-space-200)' }}>
+            {blocked.map((b) => <li key={b}>{b}</li>)}
+          </ul>
+        </SectionMessage>
+      ) : null}
+      {advisories.length > 0 ? (
+        <SectionMessage appearance="warning" title="Saveable, but ambiguous">
+          <ul style={{ margin: 0, paddingLeft: 'var(--ds-space-200)' }}>
+            {advisories.map((a) => <li key={a}>{a}</li>)}
+          </ul>
+        </SectionMessage>
+      ) : null}
+      <div style={{ display: 'flex', gap: 'var(--ds-space-100)', flexWrap: 'wrap' }}>
+        <Button
+          spacing="compact" appearance="primary" isDisabled={saving || blocked.length > 0}
+          onClick={() => void save()} testId={`strata-band-save-${scheme.id}`}
+        >
+          {saving ? 'Saving…' : 'Save bands'}
+        </Button>
+        <Button spacing="compact" appearance="subtle" isDisabled={saving} onClick={onDone}>Cancel</Button>
+      </div>
+      {error ? (
+        <SectionMessage appearance="error" title="Action rejected">
+          <p style={{ whiteSpace: 'pre-wrap' }}>{error}</p>
+        </SectionMessage>
+      ) : null}
+    </div>
+  );
+}
+
 export function ThresholdsSection({ onError }: { onError: OnError }) {
   const q = useThresholdSchemes();
+  const roles = useStrataRoles();
+  const userId = useStrataUserId();
+  const [editingId, setEditingId] = useState<string | null>(null);
   const list = q.data ?? [];
+  // Mirrors strata_is_admin() — useStrataRoles already folds the platform-admin RPC into the
+  // role list, so this is the server's own predicate, not an approximation of it.
+  const isStrataAdmin = (roles.data ?? []).includes('strata_admin');
   const pending = list.filter((s) => s.status === 'pending_approval');
   // Sibling-version count per name → surfaces "compare versions" affordance honestly.
   const versionsByName = new Map<string, number>();
@@ -1018,8 +1225,9 @@ export function ThresholdsSection({ onError }: { onError: OnError }) {
     <StrataPanel title="Threshold schemes" icon={<BarChart3 size={16} />} count={list.length} testId="strata-admin-thresholds">
       <p style={captionStyle}>
         A threshold scheme turns an achievement score into a rating — the bands below are governed policy, effective-dated so
-        past periods keep their scheme version. Editing bands and the server-calculated impact preview are later features;
-        today you can review the boundaries, compare versions and manage lifecycle.
+        past periods keep their scheme version. A band is a floor: a score is rated by the highest floor at or below it, so
+        bands need no upper bound. Draft bands are editable; an approved scheme is immutable and changing it means a new
+        version. The server-calculated impact preview is a later feature.
       </p>
       {pending.length > 0 ? (
         <div style={{ marginBottom: 12 }}>
@@ -1033,15 +1241,38 @@ export function ThresholdsSection({ onError }: { onError: OnError }) {
       ) : null}
       <SectionState query={q} empty={list.length === 0}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-          {list.map((s) => (
-            <GovRecordCard key={s.id} name={s.name} table="strata_threshold_schemes" record={s} onError={onError}>
+          {list.map((s) => {
+            // The RLS UPDATE predicate, mirrored exactly: status='draft' AND (created_by = auth.uid()
+            // OR strata_is_admin()). Deliberately NOT the revision RPC's strategy_office gate — that
+            // rule governs cloning an approved scheme, not editing a draft's bands.
+            const isAuthor = s.created_by != null && userId.data != null && s.created_by === userId.data;
+            const canEditBands = s.status === 'draft' && (isAuthor || isStrataAdmin);
+            // Why the control is absent — never a silent hide (anchor 05 states rules).
+            const noEditReason = s.status !== 'draft'
+              ? `${labelize(s.status)} definitions are immutable — to change these bands, use Create new version. Version ${s.version} keeps producing ratings until the new draft is approved.`
+              : (roles.isLoading || userId.isLoading
+                ? null
+                : 'Only this draft’s author or a strata_admin can edit its bands — the database refuses anyone else.');
+            return (
+            <GovRecordCard key={s.id} name={s.name} table="strata_threshold_schemes" record={s} onError={onError}
+              headerActions={canEditBands && editingId !== s.id ? (
+                <Button spacing="compact" onClick={() => setEditingId(s.id)} testId={`strata-band-edit-${s.id}`}>
+                  Edit bands
+                </Button>
+              ) : null}
+            >
               {s.description ? <span style={metaStyle}>{s.description}</span> : null}
               {(versionsByName.get(s.name) ?? 0) > 1 ? (
                 <span style={{ fontSize: 'var(--ds-font-size-100)', color: T.subtlest }}>
                   Multiple versions of “{s.name}” exist — compare the bands across the cards to see what a version changes.
                 </span>
               ) : null}
-              {(s.bands ?? []).length > 0 ? (
+              {!canEditBands && noEditReason ? (
+                <span style={metaStyle} data-testid={`strata-band-noedit-${s.id}`}>{noEditReason}</span>
+              ) : null}
+              {editingId === s.id ? (
+                <ThresholdBandEditor scheme={s} onDone={() => setEditingId(null)} />
+              ) : (s.bands ?? []).length > 0 ? (
                 <JiraTable<BandRow>
                   columns={THRESHOLD_BAND_COLUMNS}
                   data={bandRows(s.bands)}
@@ -1055,7 +1286,8 @@ export function ThresholdsSection({ onError }: { onError: OnError }) {
                 <span style={metaStyle}>Confidence threshold {s.confidence_threshold ?? '—'}</span>
               </div>
             </GovRecordCard>
-          ))}
+            );
+          })}
         </div>
       </SectionState>
     </StrataPanel>
