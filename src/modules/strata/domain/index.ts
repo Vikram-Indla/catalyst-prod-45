@@ -697,6 +697,15 @@ export const executionApi = {
     })),
   unlinkInitiativeProject: (initiativeId: string, projectId: string) =>
     run(typedRpc('strata_unlink_initiative_project', { p_initiative: initiativeId, p_project: projectId })),
+  /**
+   * Project Card ↔ Strategic Objective edge (SR-DEF-003). Server enforces locked rules
+   * 5–6: the target must be a theme-context objective belonging to the card's own Theme.
+   * Unlink clears the edge only — neither the card nor the objective is deleted.
+   */
+  linkCardObjective: (projectId: string, objectiveElementId: string) =>
+    run(typedRpc('strata_link_card_objective', { p_card: projectId, p_objective: objectiveElementId })),
+  unlinkCardObjective: (projectId: string) =>
+    run(typedRpc('strata_unlink_card_objective', { p_card: projectId })),
   createProjectCard: (input: {
     name: string; sourceSystem?: 'manual' | 'upload' | 'api' | 'jira'; sourceKey?: string;
     pmId?: string; sector?: string; budget?: number; baselineStart?: string;

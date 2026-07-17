@@ -16,6 +16,7 @@ import {
 import type { SelectOption } from '@/components/ads';
 import TextArea from '@atlaskit/textarea';
 import { DatePicker } from '@atlaskit/datetime-picker';
+import { format as formatDateFns, isValid as isValidDate, parse as parseDateFns } from 'date-fns';
 import { useProfileNames } from '../hooks/useStrata';
 import { useBeforeUnload } from '../hooks/useBeforeUnload';
 import { T } from './shared';
@@ -69,13 +70,132 @@ function FieldLabel({ label, required, helper }: { label: string; required?: boo
   );
 }
 
+/**
+ * STRATA date display/entry format — day-first, matching the module's own date
+ * renderer (`format.ts` fmtDate → `toLocaleDateString('en-GB', …)` → "17 Jul 2026").
+ * @atlaskit/datetime-picker otherwise defaults to locale 'en-US' (month-first), under
+ * which a day-first entry such as "31/12/2027" is an Invalid Date — the second half of
+ * SR-DEF-001. Passing `dateFormat` + `parseInputValue` drives BOTH the picker's parsing
+ * and its display label, so entry and rendering agree regardless of browser locale.
+ */
+/**
+ * TWO dialects, deliberately. @atlaskit/datetime-picker's `dateFormat` prop is in
+ * MOMENT tokens — it runs them through `convertTokens()` before handing them to
+ * date-fns (its own default is 'YYYY/MM/DD'). Passing date-fns tokens there renders
+ * garbage: 'dd' is Moment's weekday, so 01/01/2027 displayed as "Fr/01/yyyy".
+ * Our own parsing calls date-fns directly and therefore uses date-fns tokens.
+ */
+const STRATA_DATE_FORMAT_MOMENT = 'DD/MM/YYYY';
+const STRATA_DATE_FORMAT_DATE_FNS = 'dd/MM/yyyy';
+
+/** Parse a typed STRATA date. Returns an ISO `yyyy-MM-dd` string, or null when unparseable. */
+export function parseStrataDateInput(text: string): string | null {
+  const trimmed = text.trim();
+  if (trimmed === '') return null;
+  const parsed = parseDateFns(trimmed, STRATA_DATE_FORMAT_DATE_FNS, new Date());
+  if (!isValidDate(parsed)) return null;
+  // Format in LOCAL time. `toISOString()` would shift local midnight back a day in
+  // any negative-offset timezone (a real off-by-one: 01/01/2027 → "2026-12-31").
+  return formatDateFns(parsed, 'yyyy-MM-dd');
+}
+
+/**
+ * Date field for StrataFormModal (SR-DEF-001).
+ *
+ * @atlaskit/datetime-picker only invokes `onChange` from three paths — clicking a
+ * calendar day, pressing Enter with the menu open, and the clear control. Typing a
+ * date and then clicking away (the natural flow, and the defect's repro) leaves the
+ * typed text in react-select's uncommitted `inputValue` while the form model keeps
+ * its seeded null — so the field LOOKS filled but submits as empty.
+ *
+ * We observe the typed text via the `input` event bubbling to our own wrapper rather
+ * than passing `selectProps.onInputChange`: DatePicker spreads `selectProps` AFTER its
+ * internal `onInputChange`, so overriding it would suppress the picker's own display
+ * state. On blur we commit the parsed value ourselves.
+ */
+function StrataDateField({
+  field, value, onChange, onValidityChange,
+}: {
+  field: StrataFieldSpec;
+  value: string | null;
+  onChange: (next: string | null) => void;
+  onValidityChange: (invalid: boolean) => void;
+}) {
+  // null = never typed in this field; a string = latest uncommitted text.
+  const typedRef = React.useRef<string | null>(null);
+  const [invalid, setInvalid] = React.useState(false);
+
+  const markInvalid = (next: boolean) => {
+    setInvalid(next);
+    onValidityChange(next);
+  };
+
+  // Committed via calendar select / Enter / clear — the picker's own paths already
+  // carry an ISO value, so drop any stale typed text.
+  const handlePickerChange = (iso: string) => {
+    typedRef.current = null;
+    markInvalid(false);
+    onChange(iso || null);
+  };
+
+  const handleBlur = () => {
+    const typed = typedRef.current;
+    if (typed === null) return; // untouched — never clobber the seeded value
+    if (typed.trim() === '') {
+      // Text deliberately emptied: clear the model so required-validation catches it.
+      typedRef.current = null;
+      markInvalid(false);
+      onChange(null);
+      return;
+    }
+    const iso = parseStrataDateInput(typed);
+    // Zero-assumption: an unparseable date commits null and is flagged — never a guess.
+    markInvalid(iso === null);
+    onChange(iso);
+    if (iso !== null) typedRef.current = null;
+  };
+
+  return (
+    <div
+      onInput={(e) => { typedRef.current = (e.target as HTMLInputElement).value; }}
+      data-testid={`strata-date-field-${field.key}`}
+    >
+      <DatePicker
+        value={value ?? ''}
+        onChange={handlePickerChange}
+        onBlur={handleBlur}
+        isDisabled={field.isDisabled}
+        isInvalid={invalid}
+        shouldShowCalendarButton
+        clearControlLabel={`Clear ${field.label}`}
+        label={field.label}
+        dateFormat={STRATA_DATE_FORMAT_MOMENT}
+        // Overrides the picker's locale-based parsing so typed entry matches the
+        // displayed day-first format. Receives raw text; date-fns tokens apply here.
+        parseInputValue={(date) => parseDateFns(date, STRATA_DATE_FORMAT_DATE_FNS, new Date())}
+        // @atlaskit/datetime-picker falls back to its built-in placeholder
+        // (`new Date(1993, 1, 18)` → "2/18/1993") whenever no `placeholder`
+        // is supplied — an empty string is also treated as absent. Pass a
+        // real hint so empty optional date fields never show the 1993 value.
+        placeholder={field.placeholder ?? 'dd/mm/yyyy'}
+      />
+      {invalid ? (
+        <div style={{ marginTop: 4, fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-danger)' }}>
+          Enter a date as dd/mm/yyyy.
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
 function FieldControl({
-  field, value, onChange, userOptions,
+  field, value, onChange, userOptions, onDateValidityChange,
 }: {
   field: StrataFieldSpec;
   value: string | number | boolean | null;
   onChange: (next: string | number | boolean | null) => void;
   userOptions: SelectOption<string>[];
+  onDateValidityChange: (invalid: boolean) => void;
 }) {
   switch (field.kind) {
     case 'textarea': {
@@ -114,18 +234,11 @@ function FieldControl({
       );
     case 'date':
       return (
-        <DatePicker
-          value={(value as string) ?? ''}
-          onChange={(iso) => onChange(iso || null)}
-          isDisabled={field.isDisabled}
-          shouldShowCalendarButton
-          clearControlLabel={`Clear ${field.label}`}
-          label={field.label}
-          // @atlaskit/datetime-picker falls back to its built-in placeholder
-          // (`new Date(1993, 1, 18)` → "2/18/1993") whenever no `placeholder`
-          // is supplied — an empty string is also treated as absent. Pass a
-          // real hint so empty optional date fields never show the 1993 value.
-          placeholder={field.placeholder ?? 'Select date'}
+        <StrataDateField
+          field={field}
+          value={(value as string) ?? null}
+          onChange={onChange}
+          onValidityChange={onDateValidityChange}
         />
       );
     case 'select': {
@@ -197,7 +310,7 @@ function FieldControl({
 
 export function StrataFormModal({
   open, onClose, title, description, fields, initial, submitLabel = 'Create',
-  onSubmit, width = 'medium', testId,
+  onSubmit, validate, width = 'medium', testId,
 }: {
   open: boolean;
   onClose: () => void;
@@ -208,6 +321,12 @@ export function StrataFormModal({
   submitLabel?: string;
   /** Throws on RPC failure — server validation text renders in the modal. */
   onSubmit: (values: StrataFormValues) => Promise<void>;
+  /**
+   * Optional cross-field check run after required/format validation and before
+   * submit. Return a message to block, or null to allow. The server remains the
+   * source of truth — this only spares the user a round-trip.
+   */
+  validate?: (values: StrataFormValues) => string | null;
   width?: 'small' | 'medium' | 'large' | 'x-large';
   testId?: string;
 }) {
@@ -215,6 +334,8 @@ export function StrataFormModal({
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [confirmDiscard, setConfirmDiscard] = useState(false);
+  // Date fields whose typed text could not be parsed (SR-DEF-001). Keyed by field key.
+  const [invalidDates, setInvalidDates] = useState<Record<string, boolean>>({});
   const { data: profiles } = useProfileNames();
 
   useEffect(() => {
@@ -223,6 +344,7 @@ export function StrataFormModal({
       setError(null);
       setBusy(false);
       setConfirmDiscard(false);
+      setInvalidDates({});
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
@@ -268,9 +390,24 @@ export function StrataFormModal({
     })
     .map((f) => f.label);
 
+  // Unparseable date text blocks with a field-specific message of its own — reporting
+  // it as "Required" would misdescribe a field the user demonstrably filled in.
+  const invalidDateLabels = fields
+    .filter((f) => f.kind === 'date' && invalidDates[f.key])
+    .map((f) => f.label);
+
   const submit = async () => {
+    if (invalidDateLabels.length > 0) {
+      setError(`Enter a valid date (dd/mm/yyyy) for: ${invalidDateLabels.join(', ')}`);
+      return;
+    }
     if (missingRequired.length > 0) {
       setError(`Required: ${missingRequired.join(', ')}`);
+      return;
+    }
+    const crossFieldError = validate?.(values) ?? null;
+    if (crossFieldError) {
+      setError(crossFieldError);
       return;
     }
     setBusy(true);
@@ -302,6 +439,9 @@ export function StrataFormModal({
                 value={values[f.key] ?? null}
                 onChange={(next) => setValues((prev) => ({ ...prev, [f.key]: next }))}
                 userOptions={userOptions}
+                onDateValidityChange={(isInvalid) =>
+                  setInvalidDates((prev) => (prev[f.key] === isInvalid ? prev : { ...prev, [f.key]: isInvalid }))
+                }
               />
             </div>
           ))}

@@ -1086,6 +1086,14 @@ export default function StrataStrategyRoomPage() {
           initial={{ granularity: 'quarter', generatePeriods: true }}
           submitLabel="Create cycle"
           testId="strata-create-cycle-modal"
+          // Mirrors the server rule (`strata_create_cycle`: "cycle end date must be
+          // after start date") so a reversed range is named at the field rather than
+          // costing a round-trip. The RPC still enforces it.
+          validate={(v) =>
+            typeof v.startsOn === 'string' && typeof v.endsOn === 'string' && v.endsOn <= v.startsOn
+              ? 'Ends on must be after Starts on.'
+              : null
+          }
           onSubmit={async (v) => {
             const cycleId = await strategyApi.createCycle({
               name: String(v.name), startsOn: String(v.startsOn), endsOn: String(v.endsOn),
