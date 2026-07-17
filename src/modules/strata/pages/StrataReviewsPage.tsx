@@ -2022,7 +2022,11 @@ export default function StrataReviewsPage() {
                                 </Tooltip>
                               ) : isReady ? (
                                 <Tooltip content="Generated before pack storage existed — regenerate to store a retrievable copy">
-                                  <CatalystTag text="Ready" color="green" />
+                                  {/* Lozenge, not CatalystTag color="green": a bare colour name is a
+                                      hard-coded colour (it breached the strict ratchet and broke CI),
+                                      and every other CatalystTag on this page passes no color at all.
+                                      ADS lets the component own its colour. */}
+                                  <Lozenge appearance="success">Ready</Lozenge>
                                 </Tooltip>
                               ) : null}
                             </div>
