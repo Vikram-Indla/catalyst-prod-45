@@ -373,6 +373,15 @@ export const useKpiSubmissionBlockers = (kpiId?: string, enabled = true) =>
     enabled: !!kpiId && enabled,
     staleTime: 0,
   });
+/** KO-DEF-002 — dependency impact for a KPI. Fetched on demand (retire/revise modal), not
+ *  on every KPI page load, so the join scan runs only when a governed action needs it. */
+export const useKpiDependencyImpact = (kpiId?: string, enabled = true) =>
+  useQuery({
+    queryKey: ['strata', 'kpi-dep-impact', kpiId],
+    queryFn: () => configApi.kpiDependencyImpact(kpiId!),
+    enabled: !!kpiId && enabled,
+    staleTime: 0,
+  });
 /**
  * F-9: targets and actuals are read across the KPI's whole LINEAGE, not just the version whose page
  * is open. `id` identifies a version; `lineage_id` identifies the KPI as a continuing concept, so

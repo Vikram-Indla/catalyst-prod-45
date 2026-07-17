@@ -25,6 +25,22 @@ import type {
   StrataWorkflowConfig, ThresholdBand,
 } from '../types';
 
+/** Shape of strata_kpi_dependency_impact (KO-DEF-002). Counts only; no identifiers leak. */
+export interface StrataKpiDependencyImpact {
+  kpi_id: string;
+  lineage_id: string;
+  versions_in_lineage: number;
+  current: {
+    element_links: number; model_measures: number; scorecard_lines: number;
+    key_results: number; initiative_links: number;
+  };
+  historical: {
+    element_links: number; model_measures: number;
+    scorecard_lines_locked: number; key_results_closed: number;
+  };
+  active_total: number;
+}
+
 /** Maps known Postgres/RPC errors to business-facing copy so schema, table and
  * constraint identifiers never reach the UI (V6-OPEN-024). Every domain call
  * funnels through run(), so this one map covers the whole STRATA module. Unknown
@@ -116,9 +132,25 @@ export const configApi = {
    */
   createKpiDraftVersion: (
     kpiId: string, reason: string, revisionClass: 'non_material' | 'material',
+    effectiveFrom?: string | null,
   ): Promise<string> =>
     run(typedRpc('strata_create_kpi_draft_version', {
       p_kpi: kpiId, p_reason: reason, p_revision_class: revisionClass,
+      p_effective_from: effectiveFrom ?? null,
+    })),
+  /** Dependency impact for a KPI across its lineage (KO-DEF-002). One server definition, shared
+   *  by the retirement gate, the retirement modal and the revision modal — no client duplication. */
+  kpiDependencyImpact: (kpiId: string): Promise<StrataKpiDependencyImpact> =>
+    run(typedRpc('strata_kpi_dependency_impact', { p_kpi: kpiId })) as Promise<StrataKpiDependencyImpact>,
+  /** Prospective governed retirement. Server blocks unless the dependency state is safe, or a
+   *  replacement/exception is supplied; rejection text is surfaced verbatim in the modal. */
+  retireKpi: (input: {
+    kpiId: string; reason: string; effectiveTo: string;
+    replacementId?: string | null; exception?: string | null;
+  }): Promise<unknown> =>
+    run(typedRpc('strata_retire_kpi', {
+      p_kpi: input.kpiId, p_reason: input.reason, p_effective_to: input.effectiveTo,
+      p_replacement: input.replacementId ?? null, p_exception: input.exception ?? null,
     })),
   /**
    * D-2's third revision RPC. Separate from the model one by ruling ("dedicated revision RPCs —

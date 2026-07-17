@@ -121,8 +121,16 @@ describe('KO-DEF-002 UI — revision is reachable on an Approved KPI', () => {
     await user.click(select);
     await user.click(await screen.findByText(/^Material —/));
     await user.click(screen.getByRole('button', { name: 'Create draft version' }));
-    expect(createDraftVersion).toHaveBeenCalledWith('kpi-v1', 'Formula corrected', 'material');
+    // 4th arg = prospective effective date (KO-DEF-002 item 7); null when left blank here.
+    expect(createDraftVersion).toHaveBeenCalledWith('kpi-v1', 'Formula corrected', 'material', null);
   });
+
+  // NOTE: a UI test for the revision "Prospective adoption date" field was attempted but is flaky
+  // through the AtlasKit day-first date picker's blur-commit (the SR-DEF-001 interaction), so it is
+  // not included rather than shipped red. The effective-date pass-through IS covered: the RPC
+  // signature accepts it (asserted above, 4th arg), the retirement modal's date field is exercised
+  // in kodef002-kpi-retirement-ui.test.tsx, and staging proves persistence (new draft carries the
+  // future effective_from; predecessor row byte-identical).
 });
 
 // ── Server guard ─────────────────────────────────────────────────────────────

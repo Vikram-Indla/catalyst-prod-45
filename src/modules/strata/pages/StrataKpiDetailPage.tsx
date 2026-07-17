@@ -27,7 +27,7 @@ import { configApi, kpiApi, strategyApi } from '@/modules/strata/domain';
 import { methodologyBreaks } from '@/modules/strata/domain/materiality';
 import {
   useBandResolver, useDataSources, useElementKpis, useInvalidateStrata, useKpiAchievement, useKpiBySlug,
-  useKpiDetail, useKpiEvidenceChain, useKpiSubmissionBlockers, useKpiTypes,
+  useKpiDetail, useKpiDependencyImpact, useKpiEvidenceChain, useKpis, useKpiSubmissionBlockers, useKpiTypes,
   useProfileNames, useStrataContext, useStrataRoles, useStrategyElements, useThresholdSchemes, useUploadRuns,
 } from '@/modules/strata/hooks/useStrata';
 import type { StrataProfileRef } from '@/modules/strata/hooks/useStrata';
@@ -317,6 +317,170 @@ interface TrendRow {
   revisionClass: string | null;
 }
 
+/** Shared KO-DEF-002 dependency-impact renderer — reused by the retire and revise modals so the
+ *  displayed impact can never diverge from the server's. */
+function DependencyImpactList({ impact, loading }: {
+  impact: import('@/modules/strata/domain').StrataKpiDependencyImpact | undefined;
+  loading: boolean;
+}) {
+  if (loading) return <p style={{ margin: 0, color: T.subtle }}>Checking dependencies…</p>;
+  if (!impact) return null;
+  const c = impact.current; const h = impact.historical;
+  const currentRows: Array<[string, number]> = [
+    ['Strategy / objective links', c.element_links],
+    ['Scorecard model measures', c.model_measures],
+    ['Scorecard instance lines', c.scorecard_lines],
+    ['Key Results', c.key_results],
+    ['Project / initiative links', c.initiative_links],
+  ];
+  const histRows: Array<[string, number]> = [
+    ['Locked scorecard lines', h.scorecard_lines_locked],
+    ['Closed-OKR Key Results', h.key_results_closed],
+    ['Retired-element links', h.element_links],
+    ['Superseded model measures', h.model_measures],
+  ];
+  const cell = { padding: '2px 0', fontSize: 'var(--ds-font-size-100)' } as const;
+  return (
+    <div data-testid="strata-kpi-dependency-impact" style={{ display: 'grid', gap: 8 }}>
+      <div>
+        <div style={{ fontWeight: 600, color: T.subtle, fontSize: 'var(--ds-font-size-050)' }}>
+          ACTIVE DEPENDENCIES ({impact.active_total})
+        </div>
+        {currentRows.map(([label, n]) => (
+          <div key={label} style={{ display: 'flex', justifyContent: 'space-between', ...cell }}>
+            <span style={{ color: T.text }}>{label}</span>
+            <span style={{ fontWeight: 600, color: n > 0 ? T.text : T.subtlest }}>{n}</span>
+          </div>
+        ))}
+      </div>
+      <div>
+        <div style={{ fontWeight: 600, color: T.subtle, fontSize: 'var(--ds-font-size-050)' }}>
+          HISTORICAL (unchanged by this action)
+        </div>
+        {histRows.map(([label, n]) => (
+          <div key={label} style={{ display: 'flex', justifyContent: 'space-between', ...cell }}>
+            <span style={{ color: T.subtle }}>{label}</span>
+            <span style={{ color: T.subtlest }}>{n}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function RetireLabel({ children, required }: { children: React.ReactNode; required?: boolean }) {
+  return (
+    <div style={{ marginBottom: 4, fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: T.subtle }}>
+      {children}{required ? <span style={{ color: 'var(--ds-text-danger)' }}> *</span> : null}
+    </div>
+  );
+}
+
+/** KO-DEF-002 governed retirement modal. Gates are server-enforced by strata_retire_kpi; this
+ *  collects governed inputs, blocks confirmation until they are coherent, and surfaces any server
+ *  rejection verbatim. */
+function RetireKpiModal({ kpi, onClose, onDone }: {
+  kpi: { id: string; name: string; version?: number | null; lineage_id?: string | null };
+  onClose: () => void; onDone: () => void;
+}) {
+  const impactQ = useKpiDependencyImpact(kpi.id, true);
+  const kpisQ = useKpis();
+  const [reason, setReason] = useState('');
+  const [effectiveTo, setEffectiveTo] = useState('');
+  const [replacementId, setReplacementId] = useState<string | null>(null);
+  const [useException, setUseException] = useState(false);
+  const [exception, setException] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const impact = impactQ.data;
+  const active = impact?.active_total ?? 0;
+  const replacementOptions: SelectOption<string>[] = (kpisQ.data ?? [])
+    .filter((k) => k.status === 'approved' && k.id !== kpi.id && k.lineage_id !== kpi.lineage_id)
+    .map((k) => ({ value: k.id, label: `${k.name} (v${k.version})` }));
+
+  const dependencyOk = (impact != null && active === 0) || !!replacementId || (useException && exception.trim() !== '');
+  const canConfirm = !busy && impact != null && reason.trim() !== '' && effectiveTo !== '' && dependencyOk;
+
+  const submit = async () => {
+    setBusy(true); setError(null);
+    try {
+      await configApi.retireKpi({
+        kpiId: kpi.id, reason: reason.trim(), effectiveTo,
+        replacementId: replacementId ?? undefined,
+        exception: useException ? exception.trim() : undefined,
+      });
+      onDone();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : String(e)); // server governance message, verbatim
+      setBusy(false);
+    }
+  };
+
+  return (
+    <Modal isOpen onClose={busy ? () => {} : onClose} width="medium" testId="strata-kpi-retire-modal">
+      <ModalHeader><ModalTitle>Retire “{kpi.name}”</ModalTitle></ModalHeader>
+      <ModalBody>
+        <div style={{ display: 'grid', gap: 14 }}>
+          <SectionMessage appearance="information" title="Historical facts are preserved">
+            <p style={{ margin: 0 }}>
+              Retirement is prospective. The KPI, all its versions and every recorded actual, target
+              and calculation stay exactly as they are — only future adoption stops on the effective date.
+            </p>
+          </SectionMessage>
+          <DependencyImpactList impact={impact} loading={impactQ.isLoading} />
+          {impact != null && active > 0 ? (
+            <SectionMessage appearance="warning" title={`${active} active dependency(ies)`}>
+              <p style={{ margin: 0 }}>Supply a governed replacement KPI or record an authorized exception to retire while these remain.</p>
+            </SectionMessage>
+          ) : null}
+          <div>
+            <RetireLabel required>Retirement reason</RetireLabel>
+            <Textfield value={reason} onChange={(e) => setReason((e.target as HTMLInputElement).value)}
+              placeholder="Why is this KPI being retired?" testId="strata-retire-reason" />
+          </div>
+          <div>
+            <RetireLabel required>Effective date (prospective)</RetireLabel>
+            <Textfield type="date" value={effectiveTo}
+              onChange={(e) => setEffectiveTo((e.target as HTMLInputElement).value)} testId="strata-retire-effective" />
+          </div>
+          <div>
+            <RetireLabel>Replacement KPI (optional)</RetireLabel>
+            <Select options={replacementOptions}
+              value={replacementOptions.find((o) => o.value === replacementId) ?? null}
+              onChange={(o) => setReplacementId(o?.value ?? null)}
+              placeholder="Select a governed replacement…" isClearable usePortal aria-label="Replacement KPI" />
+          </div>
+          <div>
+            <label style={{ display: 'flex', gap: 8, alignItems: 'center', fontSize: 'var(--ds-font-size-100)', color: T.text }}>
+              <input type="checkbox" checked={useException} data-testid="strata-retire-exception-toggle"
+                onChange={(e) => setUseException(e.target.checked)} />
+              Record an authorized exception instead
+            </label>
+            {useException ? (
+              <div style={{ marginTop: 6 }}>
+                <Textfield value={exception} onChange={(e) => setException((e.target as HTMLInputElement).value)}
+                  placeholder="Authorization reference / justification" testId="strata-retire-exception" />
+              </div>
+            ) : null}
+          </div>
+          {error ? (
+            <SectionMessage appearance="error" title="Retirement rejected">
+              <p style={{ whiteSpace: 'pre-wrap', margin: 0 }}>{error}</p>
+            </SectionMessage>
+          ) : null}
+        </div>
+      </ModalBody>
+      <ModalFooter>
+        <Button appearance="subtle" onClick={onClose} isDisabled={busy}>Cancel</Button>
+        <Button appearance="danger" onClick={submit} isDisabled={!canConfirm} testId="strata-retire-confirm">
+          {busy ? 'Retiring…' : 'Retire KPI'}
+        </Button>
+      </ModalFooter>
+    </Modal>
+  );
+}
+
 export default function StrataKpiDetailPage() {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
@@ -327,6 +491,7 @@ export default function StrataKpiDetailPage() {
   // KO-DEF-001 — the exact prerequisites the server enforces at submit. Same RPC, so the list
   // shown here and the list that blocks the transition cannot disagree.
   const blockersQ = useKpiSubmissionBlockers(kpi?.id, kpi?.status === 'draft');
+  const [retireOpen, setRetireOpen] = useState(false);
   const submitBlockers = blockersQ.data ?? [];
   // F-9: pass the lineage so the trend spans every version of this KPI, not just the open one.
   const detailQ = useKpiDetail(kpi?.id, kpi?.lineage_id ?? undefined);
@@ -356,6 +521,8 @@ export default function StrataKpiDetailPage() {
   const [showStrategyLinks, setShowStrategyLinks] = useState(false);
   /** KO-DEF-002 — governed revision of an Approved KPI (reason + materiality are mandatory). */
   const [revisionOpen, setRevisionOpen] = useState(false);
+  // KO-DEF-002 item 6 — complete dependency impact for the revision modal (not strategy links only).
+  const revisionImpactQ = useKpiDependencyImpact(kpi?.id, revisionOpen);
   /** Governance verdict modal — one at a time (approve KPI / approve formula / attest actual). */
   const [decision, setDecision] = useState<
     | { kind: 'submit-kpi' }
@@ -718,6 +885,9 @@ export default function StrataKpiDetailPage() {
             >
               Create new version
             </Button>
+          ) : null}
+          {canAuthor && kpi.status === 'approved' ? (
+            <Button onClick={() => setRetireOpen(true)} testId="strata-kpi-retire">Retire KPI</Button>
           ) : null}
         </>
       }
@@ -1102,22 +1272,29 @@ export default function StrataKpiDetailPage() {
           cloned, and NO actuals / targets / Key Results / Scorecard lines / links copied. The
           Approved predecessor is never mutated — server-enforced; the modal only collects the
           governed reason and materiality it requires. */}
+      {retireOpen ? (
+        <RetireKpiModal
+          kpi={kpi}
+          onClose={() => setRetireOpen(false)}
+          onDone={() => { setRetireOpen(false); invalidate(); }}
+        />
+      ) : null}
+
       {revisionOpen ? (
         <StrataFormModal
           open
           onClose={() => setRevisionOpen(false)}
           title="Create new KPI version"
           description={(
-            <>
-              Creates <strong>v{(kpi.version ?? 1) + 1}</strong> of “{kpi.name}” as a Draft on the same
-              lineage. <strong>v{kpi.version ?? 1} stays Approved and unchanged</strong>, and keeps every
-              actual, target and historical fact already recorded against it. The new version takes
-              effect only once approved.
-              {kpiElementLinks.length > 0 ? (
-                <> {kpiElementLinks.length} strategy link{kpiElementLinks.length === 1 ? '' : 's'} resolve
-                through the lineage and will follow the approved version.</>
-              ) : null}
-            </>
+            <div style={{ display: 'grid', gap: 12 }}>
+              <span>
+                Creates <strong>v{(kpi.version ?? 1) + 1}</strong> of “{kpi.name}” as a Draft on the same
+                lineage. <strong>v{kpi.version ?? 1} stays Approved and unchanged</strong>, and keeps every
+                actual, target and historical fact already recorded against it. The new version takes
+                effect only once approved.
+              </span>
+              <DependencyImpactList impact={revisionImpactQ.data} loading={revisionImpactQ.isLoading} />
+            </div>
           )}
           fields={[
             {
@@ -1131,12 +1308,17 @@ export default function StrataKpiDetailPage() {
                 { value: 'material', label: 'Material — formula, unit, direction, scope or source semantics (breaks comparability)' },
               ],
             },
+            {
+              key: 'effectiveFrom', label: 'Prospective adoption date', kind: 'date',
+              helper: 'Optional — leave blank to adopt on approval. A future date defers adoption.',
+            },
           ]}
           submitLabel="Create draft version"
           testId="strata-kpi-new-version-modal"
           onSubmit={async (v) => {
             await configApi.createKpiDraftVersion(
               kpi.id, String(v.reason), v.revisionClass as 'non_material' | 'material',
+              (v.effectiveFrom as string | null) || null,
             );
             invalidate();
           }}
