@@ -888,11 +888,25 @@ function MeasureGroups({ modelId, measures, canEdit }: {
   );
 }
 
+/** Model identity/scope/granularity/rollup — mirrors the strata_scorecard_models CHECKs exactly. */
+const OWNER_SCOPE_OPTIONS = ['enterprise', 'sector', 'function', 'portfolio', 'initiative', 'custom']
+  .map((v) => ({ value: v, label: labelize(v) }));
+const ROLLUP_OPTIONS = ['weighted_average', 'sum', 'min', 'custom']
+  .map((v) => ({ value: v, label: labelize(v) }));
+const GRANULARITY_OPTIONS = ['month', 'quarter', 'half', 'year']
+  .map((v) => ({ value: v, label: labelize(v) }));
+
 export function ScorecardModelsSection({ onError }: { onError: OnError }) {
   const q = useScorecardModels();
   const allMP = useAllModelPerspectives();
   const allMeasures = useAllModelMeasures();
   const roles = useStrataRoles();
+  const schemes = useThresholdSchemes();
+  const invalidateModels = useInvalidateStrata();
+  // SC-DEF-001: net-new model creation. Previously unreachable — the only writer of
+  // strata_scorecard_models was the clone-based revision RPC, which needs a model to already
+  // exist, so a first model could not be authored from any surface.
+  const [newModelOpen, setNewModelOpen] = useState(false);
   const list = q.data ?? [];
   // strata_scorecard_model_perspectives write is strategy_office (matches RLS).
   // Role is necessary but NOT sufficient: RLS + the set_model_measures RPC also require the parent
@@ -911,7 +925,17 @@ export function ScorecardModelsSection({ onError }: { onError: OnError }) {
   }
 
   return (
-    <StrataPanel title="Scorecard models" icon={<Scale size={16} />} count={list.length} testId="strata-admin-scorecard-models">
+    <StrataPanel
+      title="Scorecard models"
+      icon={<Scale size={16} />}
+      count={list.length}
+      testId="strata-admin-scorecard-models"
+      actions={hasAuthorRole ? (
+        <Button spacing="compact" onClick={() => setNewModelOpen(true)} testId="strata-new-model-button">
+          New model
+        </Button>
+      ) : undefined}
+    >
       <p style={captionStyle}>
         The builder governs perspective weights, measures, integrity and lifecycle. Perspective weights must total 100,
         and each perspective's measure weights must total 100, before a model can be submitted for approval. A measure is
@@ -975,6 +999,46 @@ export function ScorecardModelsSection({ onError }: { onError: OnError }) {
           })}
         </div>
       </SectionState>
+
+      {/* SC-DEF-001 — net-new model Draft. Identity/scope/rollup/granularity are the model's
+          four required governed fields; threshold scheme is optional at create and can be set
+          before approval. Perspectives and KPI measures are then authored on the resulting
+          draft via the existing weights/measures editors below each card — which is why this
+          creates a DRAFT and never an approved definition. */}
+      {newModelOpen ? (
+        <StrataFormModal
+          open
+          onClose={() => setNewModelOpen(false)}
+          title="New scorecard model"
+          description="Creates a draft at version 1. Add perspective weights and KPI measures next, then submit for approval."
+          fields={[
+            { key: 'name', label: 'Name', kind: 'text', required: true },
+            { key: 'ownerScopeType', label: 'Owner scope', kind: 'select', required: true, options: OWNER_SCOPE_OPTIONS },
+            { key: 'periodGranularity', label: 'Period granularity', kind: 'select', required: true, options: GRANULARITY_OPTIONS },
+            { key: 'rollupMethod', label: 'Rollup method', kind: 'select', required: true, options: ROLLUP_OPTIONS },
+            {
+              key: 'thresholdSchemeId', label: 'Threshold scheme', kind: 'select',
+              options: (schemes.data ?? []).map((s) => ({ value: s.id, label: s.name })),
+              helper: 'Optional — required before approval',
+            },
+            { key: 'description', label: 'Description', kind: 'textarea' },
+          ]}
+          initial={{ ownerScopeType: 'enterprise', periodGranularity: 'quarter', rollupMethod: 'weighted_average' }}
+          submitLabel="Create draft"
+          testId="strata-new-model-modal"
+          onSubmit={async (v) => {
+            await scorecardApi.createModel({
+              name: String(v.name),
+              ownerScopeType: String(v.ownerScopeType),
+              rollupMethod: String(v.rollupMethod),
+              periodGranularity: String(v.periodGranularity),
+              description: str(v.description),
+              thresholdSchemeId: str(v.thresholdSchemeId),
+            });
+            invalidateModels();
+          }}
+        />
+      ) : null}
     </StrataPanel>
   );
 }

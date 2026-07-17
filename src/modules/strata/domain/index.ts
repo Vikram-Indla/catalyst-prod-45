@@ -344,6 +344,25 @@ export const strategyApi = {
 export const scorecardApi = {
   models: (): Promise<StrataScorecardModel[]> =>
     run(typedQuery('strata_scorecard_models').select('*').order('name')),
+  /**
+   * Create a NET-NEW scorecard model at version 1 / status draft (SC-DEF-001).
+   * Distinct from `configApi.createModelDraftVersion`, which REVISES an existing model by
+   * cloning it (D-2/D-3) and cannot bootstrap a first model. Perspectives and KPI measures
+   * are authored afterwards via setModelPerspectiveWeights / setModelMeasures, both of
+   * which require the model to be a draft.
+   */
+  createModel: (input: {
+    name: string; ownerScopeType: string; rollupMethod: string; periodGranularity: string;
+    description?: string; thresholdSchemeId?: string;
+  }): Promise<string> =>
+    run(typedRpc('strata_create_scorecard_model', {
+      p_name: input.name,
+      p_owner_scope_type: input.ownerScopeType,
+      p_rollup_method: input.rollupMethod,
+      p_period_granularity: input.periodGranularity,
+      p_description: input.description ?? null,
+      p_threshold_scheme: input.thresholdSchemeId ?? null,
+    })),
   modelPerspectives: (modelId: string): Promise<StrataModelPerspective[]> =>
     run(typedQuery('strata_scorecard_model_perspectives').select('*').eq('model_id', modelId).order('order_index')),
   // Every model→perspective link, unfiltered — lets the measurement domain page
