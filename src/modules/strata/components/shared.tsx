@@ -1353,7 +1353,7 @@ function OkrLifecycleActions({ okr }: { okr: StrataOkr }) {
           </p>
         </SectionMessage>
         {linkedReview ? (
-          <div style={{ marginTop: 6, fontSize: 'var(--ds-font-size-050)', color: T.subtle }} data-testid={`strata-okr-linked-review-${okr.id}`}>
+          <div style={{ marginTop: 'var(--ds-space-075)', fontSize: 'var(--ds-font-size-050)', color: T.subtle }} data-testid={`strata-okr-linked-review-${okr.id}`}>
             Linked review: <strong style={{ color: T.text }}>{(linkedReview as { title?: string; review_key?: string }).title ?? (linkedReview as { review_key?: string }).review_key ?? linkedReview.id}</strong>
             {' '}— retained as closed-history evidence (read-only).
           </div>

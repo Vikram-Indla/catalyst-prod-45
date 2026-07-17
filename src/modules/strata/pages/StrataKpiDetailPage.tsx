@@ -339,7 +339,7 @@ function DependencyImpactList({ impact, loading }: {
     ['Retired-element links', h.element_links],
     ['Superseded model measures', h.model_measures],
   ];
-  const cell = { padding: '2px 0', fontSize: 'var(--ds-font-size-100)' } as const;
+  const cell = { padding: 'var(--ds-space-025) 0', fontSize: 'var(--ds-font-size-100)' } as const;
   return (
     <div data-testid="strata-kpi-dependency-impact" style={{ display: 'grid', gap: 8 }}>
       <div>
@@ -458,7 +458,7 @@ function RetireKpiModal({ kpi, onClose, onDone }: {
               Record an authorized exception instead
             </label>
             {useException ? (
-              <div style={{ marginTop: 6 }}>
+              <div style={{ marginTop: 'var(--ds-space-075)' }}>
                 <Textfield value={exception} onChange={(e) => setException((e.target as HTMLInputElement).value)}
                   placeholder="Authorization reference / justification" testId="strata-retire-exception" />
               </div>
@@ -915,7 +915,7 @@ export default function StrataKpiDetailPage() {
               Submit for approval is disabled until every prerequisite below is met. The server enforces
               the same list.
             </p>
-            <ul style={{ margin: 0, paddingLeft: 20 }} data-testid="strata-kpi-submit-blockers">
+            <ul style={{ margin: 0, paddingLeft: 'var(--ds-space-250)' }} data-testid="strata-kpi-submit-blockers">
               {submitBlockers.map((b) => <li key={b}>{b}</li>)}
             </ul>
           </SectionMessage>
