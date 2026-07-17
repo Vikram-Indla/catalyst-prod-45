@@ -375,3 +375,35 @@ being listed*, while `pending` was listed and counted.
 **Next:** quarantine accept/correct/reject RPC (states + columns already exist — small) → mapping memory /
 reconciliation / run ledger → 24h reversal (D-7/E-5) → R5 + the 14/14 matrix.
 **UI debt unchanged: R2/R3/R4 are DB-complete with no screens.**
+
+---
+
+# SESSION 026 (part 12) — one-hour closure sprint. **CLOSURE NOT ACHIEVED: 2/14.**
+
+Shipped: quarantine resolution RPC · 24h reversal + eligibility. **Session total: 22 slices.**
+**Matrix: `12_CAPABILITY_MATRIX.md` — 2 Complete · 7 Backend-only · 2 Partial · 3 Not started.**
+
+## The honest result
+The sprint's Definition of Full Closure requires *every user workflow has a reachable UI* and *14/14 Complete*.
+**Neither holds.** The P1 UI block was never reached — **no UI was built**. Ten capabilities have tested,
+staging-applied backends with **no screens**. Marking those Complete would have been the exact failure this whole
+feature exists to prevent, and the sprint brief forbade it explicitly.
+
+## What the backends prove
+24h reversal: blocks at >24h / locked snapshot / already-reversed / reverse-a-reversal; **actuals 19→19 (nothing
+deleted)**; **0 rows with value ≤ 0 (no artificial offsets)**; **E-5 restore proven directly — prior 80, reversed 95,
+effective actual after reversal = 80**, reversed row still present.
+Quarantine: self-authorization refused, blank reason refused, accept→counts+flagged, correct→pending, reject→excluded.
+
+## Two own-bugs caught by testing, not by gates
+1. **`reasons || 'literal'` → "malformed array literal"** — an untyped literal on the right of `||` makes Postgres
+   choose `array||array` and parse the sentence as an array. It bit ONLY the plain-string reasons, so
+   "already reversed" and "is a reversal" **crashed with an opaque error exactly where a clean reason was the point**.
+   Fixed with `array_append`.
+2. **My own fixture UPDATE ran as `authenticated`, was RLS-filtered to 0 rows and raised nothing** —
+   [[rls-blocked-update-is-silent]], my own memory, biting my own test.
+
+## Status
+⏸ **Hour expired. All work committed and pushed; tree clean; PR #349 open and unmerged.**
+**Next session: build UI — that is the gap.** Then mapping memory, reconciliation, preview/diff/score-shift,
+threshold band editor, DEF-010 link relaxation. Exact scope per capability: `12_CAPABILITY_MATRIX.md`.
