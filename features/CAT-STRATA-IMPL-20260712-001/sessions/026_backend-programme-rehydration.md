@@ -347,3 +347,31 @@ recreated the exact lie D-4 removed.
 ⏸ **Stopped at context limit on a committed+pushed boundary. DEBT #1 discharged; DEBT #2 open.**
 **Next:** quarantine workflow RPC (states + columns already exist) → **DEBT #2: pending actuals counting (E-7 cond. 3)
 — this one WILL move live numbers, unlike F-7; baseline first** → mapping memory/reconciliation → 24h reversal → R5.
+
+---
+
+# SESSION 026 (part 11) — R4b: debt #2 discharged
+
+**2026-07-17.** `f0073c9ab` (`20260717170000`). **Session total: 20 slices.** Suite 2,442/6; gates green; ledger 1:1.
+
+## Both live-numbers debts are closed, and neither moved a number
+F-7 (owner_confirmed counts) and E-7 cond.3 (pending stops counting) are both in force. **9/9 benefits and 18/18 KPI
+results byte-identical.** Both were safe for the same reason: the states they turn on had **zero rows**. Both proven to
+have teeth on constructed cases.
+
+## The lesson landed on me this time
+The handover carried **my own** note: *"unlike F-7, pending actuals EXIST today, so this WILL move live numbers."*
+Written from memory, never checked, **false** — all 18 actuals were already validated. That is the **twelfth** stale
+claim on this feature and the first one I authored. The rule is not about other people's notes: **do not inherit a
+claim without re-testing it, including your own.**
+
+## What `pending` counting actually meant
+An unvalidated number counted in official reporting, damped to confidence ×0.6. **Confidence is not exclusion.**
+And §2.1's "validated WHITELIST" sentence described a control that did not exist — quarantined was excluded by *not
+being listed*, while `pending` was listed and counted.
+
+## Status
+⏸ **Stopped at context limit on a committed+pushed boundary.**
+**Next:** quarantine accept/correct/reject RPC (states + columns already exist — small) → mapping memory /
+reconciliation / run ledger → 24h reversal (D-7/E-5) → R5 + the 14/14 matrix.
+**UI debt unchanged: R2/R3/R4 are DB-complete with no screens.**
