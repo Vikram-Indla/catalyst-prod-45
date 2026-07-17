@@ -607,3 +607,50 @@ F-3 QUALIFICATION on a pack over SNAP-1: is_qualified=t values_changed=f reprodu
 `tsc -p tsconfig.app.json`: **0 errors under `src/modules/strata`** · colors 0=0 · audit no category above baseline ·
 CRE pass · suite **2,442 passed / 6 failed** (this run landed at the clean end of the flaky range; see the corrected
 baseline note — 2 load-flaky tests pass in isolation).
+
+---
+
+# R3 · data-source governance — RAW EVIDENCE (rolled back)
+```
+=== R3 DATA SOURCE (rolled back) ===
+source: Salam Finance Excel (status active)
+upload_runs=1 · actuals_from_source=8 · calculated_values_from_source=3178
+BLOCKING (approved KPIs): 3
+MIGRATION (not yet approved): 0
+HISTORICAL (locked snapshots): 0
+board packs over affected snapshots: 0
+can_retire=false
+---
+retire while blocking -> cannot retire: 3 approved KPI(s) are still fed by this source. Re-point or retire
+                         them first. Blocking: Cost to Serve, Churn Rate, B2B Revenue Growth
+illegal jump active→registered -> cannot go from active to registered — allowed: registered→active|retired, …
+no-op transition -> this data source is already active
+SUSPEND (not gated on dependents) -> status now suspended
+HISTORICAL LINEAGE PRESERVED: calculated_values 7457→7457 · snapshots 2→2
+coverage_note present: t
+```
+
+## The forward chain — proven to FIRE, and honest that it is empty on real data
+`historical` = 0 above is **not** a broken join. Probed intersection:
+```
+calculated_values with snapshot_id    = 32
+calculated_values with source_run_ids = 3178
+calculated_values with BOTH           = 0     <- they never intersect
+```
+Constructed a locked snapshot holding a run-sourced value:
+```
+=== FORWARD CHAIN, constructed (rolled back) ===
+HISTORICAL locked snapshots reached : 1 (expect 1 — the chain FIRES)  -> SNAP-1001
+board packs over affected snapshots : 3
+can_retire (still blocked by approved KPIs) : false
+```
+| authorization R3 clause | Result |
+|---|---|
+| registration · validation/activation · suspension · retirement | ✅ states already existed; **transitions** now enforced |
+| **dependents-impact checks** | ✅ retirement refused, blockers **named** |
+| **server-side downstream blast-radius** | ✅ RPC; chain proven to fire; **legitimately empty on today's data** |
+| **historical lineage preservation** | ✅ 7,457→7,457 · 2→2 across a live suspension; nothing deleted or re-pointed |
+| **blocking and migration classifications** | ✅ + a third, HISTORICAL — never blocking, never migratable |
+
+**Gates** (F-11): `tsc -p tsconfig.app.json` **0 errors under `src/modules/strata`** · colors 0=0 · audit no category
+above baseline · CRE pass · suite **2,442 / 6**.

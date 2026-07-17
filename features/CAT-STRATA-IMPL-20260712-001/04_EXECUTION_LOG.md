@@ -1655,3 +1655,51 @@ received it. Proven live against **SNAP-1**, a genuinely qualified snapshot.
 ✅ **DONE** — applied, ledger 1:1, gates green, suite **2,442 / 6** (the clean end of the flaky range).
 **Remaining in R2: the editorial builder UI** (`title`/`sections` columns + RPCs exist; no UI yet) — DB-complete,
 UI-pending. Then R3 → R4 → R5.
+
+---
+
+# R3 · data-source lifecycle + dependents impact + blast radius · migration `20260717150000`
+
+## Reuse — the lifecycle STATES already existed
+`strata_data_sources.status` is **already** CHECKed to `registered | active | suspended | retired` — exactly R3's
+"registration / validation and activation / suspension and retirement". **Nothing about the states needed inventing.**
+What was missing: the **transitions** (status was free-form — nothing enforced any of them), the dependents-impact
+check, and the blast radius.
+
+## ⚠️ I nearly shipped a claim built on two numbers that never meet
+The first draft asserted "the forward chain is complete and populated", citing **3,178** calculated values carrying
+`source_run_ids` and **32** frozen into snapshots. Probing the **intersection**: `calculated_values with BOTH = 0`.
+The two populations **do not overlap** — run-sourced rows belong to periods that were never locked, and the rows inside
+the two locked snapshots come from actuals with no `upload_run_id`. So `historical` is legitimately **EMPTY for every
+real source today**.
+**The chain is right; the claim was wrong.** Proven to FIRE against a constructed locked snapshot holding a
+run-sourced value → returned **SNAP-1001** + its board packs. Comment corrected before commit. Two impressive counts
+that never join is exactly the shape of an evidence-free claim.
+
+## P4-D4's labelled gap
+P4-D4: "backward-derivable named KPIs only; **labelled gap for scorecard/snapshot forward impact**; never fabricate."
+The forward chain is now **expressible** — every link is a real FK / array containment. It is **not yet demonstrable on
+real data** (see above). Both statements are true and neither is the other.
+
+## Classification — a THIRD class was unavoidable
+The authorization names "blocking and migration". A third is the important one:
+| class | meaning |
+|---|---|
+| **BLOCKING** | an **approved** KPI still fed by the source — retiring would silently starve official reporting. Retirement refused, **and the blockers are NAMED**, not counted. |
+| **MIGRATION** | a draft/pending KPI — re-point it; nothing official depends on it yet. |
+| **HISTORICAL** | locked snapshots / issued packs that used the source. **Never blocking, never "migratable".** |
+Collapsing HISTORICAL into BLOCKING makes any source with history **permanently un-retirable**. Collapsing it into
+MIGRATION invites someone to "migrate" a locked snapshot — i.e. **rewrite governed history**, which D-1 forbids.
+
+## Suspension is deliberately NOT gated on dependents
+Suspending is how you **stop a bad feed**. Gating it behind dependents would mean *the more important a broken source
+is, the harder it is to stop*. It is reversible, and the blast radius is returned either way so the cost is visible.
+Retirement — which is terminal — is gated.
+
+## Honest about its own blind spot
+`coverage_note` ships on **every** response: manual actuals carry no `upload_run_id`, so **absence from `historical` is
+NOT evidence a source was uninvolved.** Same discipline as the integrity register's lower-bound label.
+
+## Status
+✅ **DONE** — applied, ledger 1:1, gates green, suite 2,442/6. **Historical lineage preserved: calculated_values
+7,457→7,457, snapshots 2→2** across a live suspension. **UI pending** (no screens for any of R3).
