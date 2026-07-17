@@ -15,7 +15,8 @@ import type {
   StrataReviewReadiness, StrataRunReversal,
   StrataGateModel, StrataGateModelStage, StrataInitiative, StrataInitiativeProject,
   StrataBulkUpdateResult, StrataSavedView, StrataKeyResult, StrataKpi, StrataKpiActual, StrataKpiFormulaVersion, StrataKpiTarget,
-  StrataKpiTypeConfig, StrataMapEdge, StrataMilestone, StrataModelPerspective, StrataNotification, StrataNotificationRule, StrataOkr,
+  StrataKpiTypeConfig, StrataMapEdge, StrataMappingMemory, StrataMappingSuggestion,
+  StrataMilestone, StrataModelPerspective, StrataNotification, StrataNotificationRule, StrataOkr,
   StrataPeriod, StrataPerspective, StrataThemeCharter, StrataPortfolio, StrataProjectCard,
   StrataProjectCardFieldConfig, StrataProjectCardPicklist, StrataProjectCardSectionConfig,
   StrataModelMeasure, StrataNotificationTarget, StrataProjectCardTabConfig, StrataRoleSod, StrataRisk, StrataRole, StrataScorecardInstance, StrataScorecardLine,
@@ -1192,6 +1193,65 @@ export const lineageApi = {
   /** Promote VALID rows of a completed run into canonical KPI actuals + lineage. */
   promoteRun: (runId: string): Promise<{ run_id: string; promoted: number; skipped: number }> =>
     run(typedRpc('strata_promote_run', { p_run: runId })),
+
+  // ── Mapping memory (capability 11) — R5/N ────────────────────────────────
+  /**
+   * SUGGEST remembered column mappings for the incoming headers. Never applies them.
+   *
+   * suggest-not-assume: this is a read (the RPC is STABLE and cannot write). It returns what a human
+   * previously confirmed so the wizard can OFFER it; binding a column still requires the human to
+   * press confirm, which is what calls `recordMapping`. Do not auto-apply the result.
+   *
+   * Returns one row per requested key, always — an unremembered key comes back `status: 'none'` with
+   * a `null` target so the caller renders nothing rather than guessing.
+   *
+   * `status: 'conflict'` means MORE THAN ONE target is remembered for that key. `suggested_target` is
+   * `null` and `candidates` names them: present the conflict, never pick for the user.
+   *
+   * Candidates whose target column has left the template schema, whose template is no longer
+   * approved, or whose data source is retired are dropped server-side — retired targets are not reused.
+   *
+   * Requires a registered `dataSourceId`: the wizard's source is optional, and a run with no source
+   * has no identity to remember against (NULL is "not recorded", not a match key).
+   */
+  suggestMapping: (
+    dataSourceId: string,
+    templateId: string,
+    sourceKeys: string[],
+  ): Promise<StrataMappingSuggestion[]> =>
+    run(typedRpc('strata_suggest_mapping', {
+      p_data_source_id: dataSourceId,
+      p_template_id: templateId,
+      p_source_keys: sourceKeys,
+    })),
+
+  /**
+   * Append ONE immutable confirmation that `sourceKey` means `targetColumn`.
+   *
+   * Evidence immutable: the ledger is append-only (no UPDATE/DELETE policy, plus an explicit REVOKE),
+   * so this only ever inserts. Re-confirming the same target is not a duplicate — it is another dated
+   * piece of evidence and raises `times_confirmed`.
+   *
+   * Role gate: the RLS insert policy mirrors `strata_runs_insert` exactly —
+   * data_steward | kpi_owner | strategy_office (strata_has_role short-circuits on admin). The RPC is
+   * SECURITY INVOKER, so the policy is the gate; it throws for a caller without the role.
+   *
+   * Also refuses a non-approved template, a column outside the template schema, and a retired source.
+   */
+  recordMapping: (input: {
+    dataSourceId: string;
+    templateId: string;
+    sourceKey: string;
+    targetColumn: string;
+    uploadRunId?: string | null;
+  }): Promise<StrataMappingMemory> =>
+    run(typedRpc('strata_record_mapping', {
+      p_data_source_id: input.dataSourceId,
+      p_template_id: input.templateId,
+      p_source_key: input.sourceKey,
+      p_target_column: input.targetColumn,
+      p_upload_run_id: input.uploadRunId ?? null,
+    })),
 };
 
 // ── Execution manual Excel import (session 007) ─────────────────────────────

@@ -31,7 +31,7 @@ import {
   type StrataLifecycleStep, type StrataStepState,
 } from '@/modules/strata/components/shared';
 import { labelize } from '@/modules/strata/components/format';
-import type { StrataUploadTemplate } from '@/modules/strata/types';
+import type { StrataMappingSuggestion, StrataUploadTemplate } from '@/modules/strata/types';
 
 const bodyStyle: React.CSSProperties = { fontSize: 'var(--ds-font-size-200)', color: T.text };
 const captionStyle: React.CSSProperties = { fontSize: 'var(--ds-font-size-100)', color: T.subtlest };
@@ -82,14 +82,32 @@ function buildMapRows(template: StrataUploadTemplate, parsed: ParsedData): MapRo
 const MATCH_APPEARANCE: Record<MatchKind, 'success' | 'moved'> = { AUTO: 'success', CONFIRM: 'moved', DECIDE: 'moved' };
 const UNMAPPED = '__unmapped__';
 
-/** MAP step (anchor 20) — AUTO/CONFIRM/DECIDE mapping table + honest mapping-memory band. */
-function MapStep({ template, rows, mapping, onChange }: {
+// ── Mapping memory (capability 11) ───────────────────────────────────────────
+// The memory SUGGESTS; it never applies. A remembered mapping is rendered as an offer with its
+// provenance and a Use action — the steward's click is the only thing that binds a column, and the
+// Remember action is the only thing that writes. Nothing here auto-fills a Select.
+const fmtDate = (iso: string | null): string | null =>
+  iso ? new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : null;
+
+/** MAP step (anchor 20) — AUTO/CONFIRM/DECIDE mapping table + mapping memory (cap 11). */
+export function MapStep({ template, rows, mapping, memory, memoryState, sourceSelected, onChange, onRemember }: {
   template: StrataUploadTemplate;
   rows: MapRow[];
   mapping: Record<string, string>;
+  /** Suggestion per source header. Absent = nothing remembered → render nothing. */
+  memory: Record<string, StrataMappingSuggestion>;
+  memoryState: 'idle' | 'loading' | 'saving' | 'saved' | 'error';
+  sourceSelected: boolean;
   onChange: (header: string, value: string) => void;
+  onRemember: () => void;
 }) {
   const autoCount = rows.filter((r) => r.match === 'AUTO').length;
+  const labelFor = (col: string): string =>
+    (template.column_schema ?? []).find((f) => f.column === col)?.label ?? col;
+  const rememberable = rows.filter((r) => {
+    const t = mapping[r.header];
+    return t != null && t !== '' && t !== UNMAPPED;
+  }).length;
   const fieldOptions: SelectOption[] = [
     ...(template.column_schema ?? []).map((f) => ({ label: f.label, value: f.column })),
     { label: 'Leave unmapped', value: UNMAPPED },
@@ -128,6 +146,55 @@ function MapStep({ template, rows, mapping, onChange }: {
         </div>
       ),
     },
+    {
+      id: 'memory', label: 'Mapping memory', width: 22,
+      cell: ({ row }) => {
+        const s = memory[row.header];
+        // Nothing remembered (or every candidate dropped as retired) → render nothing. NOT "none".
+        if (!s || s.status === 'none') return <span style={{ color: T.subtlest }}>—</span>;
+
+        if (s.status === 'conflict') {
+          // Named, never chosen. STRATA refuses to pick and says so.
+          return (
+            <div data-testid={`strata-map-memory-conflict-${row.header}`}>
+              <Lozenge appearance="moved">Conflict</Lozenge>
+              <div style={{ ...captionStyle, marginTop: 4 }}>
+                {s.candidates?.length ?? 0} targets remembered:{' '}
+                <strong style={{ color: T.text }}>{(s.candidates ?? []).map(labelFor).join(' · ')}</strong>
+                {' — '}STRATA will not choose. Pick one above.
+              </div>
+            </div>
+          );
+        }
+
+        const applied = mapping[row.header] === s.suggested_target;
+        const who = s.last_confirmed_by_name;
+        const when = fmtDate(s.last_confirmed_at);
+        return (
+          <div data-testid={`strata-map-memory-suggested-${row.header}`}>
+            <Lozenge appearance={applied ? 'success' : 'inprogress'}>{applied ? 'Applied' : 'Suggested'}</Lozenge>
+            <div style={{ ...captionStyle, marginTop: 4 }}>
+              <strong style={{ color: T.text }}>{labelFor(s.suggested_target ?? '')}</strong>
+              {/* Provenance renders only what was recorded — no "Unknown", no placeholder. */}
+              {who && when ? <> — last confirmed by {who} on {when}</> : when ? <> — last confirmed on {when}</> : null}
+              {s.times_confirmed && s.times_confirmed > 1 ? <> ({s.times_confirmed}×)</> : null}
+            </div>
+            {!applied ? (
+              <div style={{ marginTop: 4 }}>
+                <Button
+                  spacing="compact"
+                  appearance="link"
+                  onClick={() => onChange(row.header, s.suggested_target as string)}
+                  testId={`strata-map-memory-use-${row.header}`}
+                >
+                  Use this mapping
+                </Button>
+              </div>
+            ) : null}
+          </div>
+        );
+      },
+    },
   ];
   return (
     <>
@@ -143,9 +210,43 @@ function MapStep({ template, rows, mapping, onChange }: {
           <JiraTable<MapRow> columns={columns} data={rows} getRowId={(r) => r.header} showRowCount={false} ariaLabel="Column mapping" />
         )}
       </StrataPanel>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 16, padding: '12px 16px', border: `1px solid ${T.border}`, borderRadius: 8, background: T.sunken, ...captionStyle, flexWrap: 'wrap' }} data-testid="strata-upload-mapping-memory">
+      <div
+        style={{
+          display: 'flex', alignItems: 'center', gap: 'var(--ds-space-200)',
+          padding: 'var(--ds-space-150) var(--ds-space-200)', border: `1px solid ${T.border}`,
+          borderRadius: 8, background: T.sunken, ...captionStyle, flexWrap: 'wrap',
+        }}
+        data-testid="strata-upload-mapping-memory"
+      >
         <span style={{ fontWeight: 700, letterSpacing: '0.04em', color: T.subtlest }}>MAPPING MEMORY</span>
-        <span>This mapping applies to this run only — STRATA has no template-contract write path yet, so next month&apos;s file is matched fresh by column name.</span>
+        {!sourceSelected ? (
+          // A run with no registered source has no identity to remember against. Say that plainly
+          // rather than offering an action the RPC would refuse.
+          <span data-testid="strata-map-memory-no-source">
+            No registered source selected, so these mappings cannot be remembered — a mapping is remembered
+            <em> against a source</em>, and an unrecorded source is not an identity. Go back to add one.
+          </span>
+        ) : (
+          <>
+            <span>
+              Remembered mappings are <strong>suggested, never applied</strong> — STRATA offers what a human
+              last confirmed for this source and template; you decide. Nothing is written until Promote.
+            </span>
+            <span style={{ display: 'flex', alignItems: 'center', gap: 'var(--ds-space-100)', marginLeft: 'auto' }}>
+              {memoryState === 'loading' ? <Spinner size="small" /> : null}
+              {memoryState === 'saved' ? <Lozenge appearance="success">Remembered</Lozenge> : null}
+              {memoryState === 'error' ? <Lozenge appearance="removed">Not remembered</Lozenge> : null}
+              <Button
+                spacing="compact"
+                onClick={onRemember}
+                isDisabled={rememberable === 0 || memoryState === 'saving' || memoryState === 'loading'}
+                testId="strata-map-memory-remember"
+              >
+                {memoryState === 'saving' ? 'Remembering…' : `Remember ${rememberable} mapping${rememberable === 1 ? '' : 's'}`}
+              </Button>
+            </span>
+          </>
+        )}
       </div>
     </>
   );
@@ -448,6 +549,8 @@ export default function StrataUploadWizardPage() {
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [mapping, setMapping] = useState<Record<string, string>>({});
+  const [memory, setMemory] = useState<Record<string, StrataMappingSuggestion>>({});
+  const [memoryState, setMemoryState] = useState<'idle' | 'loading' | 'saving' | 'saved' | 'error'>('idle');
 
   // Column mapping rows (anchor 20); AUTO/CONFIRM defaults auto-fill, DECIDE stays undecided.
   const mapRows = useMemo(() => (template && parsed ? buildMapRows(template, parsed) : []), [template, parsed]);
@@ -461,6 +564,44 @@ export default function StrataUploadWizardPage() {
   }, [mapRows]);
   const unresolvedDecide = mapRows.some((r) => r.match === 'DECIDE' && mapping[r.header] === undefined);
   const hasIngestRole = (roles.data ?? []).some((r) => (INGEST_ROLES as readonly string[]).includes(r));
+
+  // Mapping memory (cap 11). Fetched when the Map step opens and a registered source is known — a
+  // run with no source has nothing to remember against. The result is ONLY rendered as a suggestion:
+  // it deliberately never feeds setMapping, or the memory would silently bind columns.
+  React.useEffect(() => {
+    if (step !== 2 || !template || !sourceId || parsed == null || parsed.headers.length === 0) return;
+    let cancelled = false;
+    setMemoryState('loading');
+    lineageApi.suggestMapping(sourceId, template.id, parsed.headers)
+      .then((rows) => {
+        if (cancelled) return;
+        setMemory(Object.fromEntries(rows.map((r) => [r.source_key, r])));
+        setMemoryState('idle');
+      })
+      .catch(() => { if (!cancelled) setMemoryState('error'); });
+    return () => { cancelled = true; };
+  }, [step, template, sourceId, parsed]);
+
+  /** The human's explicit confirm — the ONLY thing that writes to the memory ledger. */
+  const rememberMappings = async () => {
+    if (!template || !sourceId) return;
+    setMemoryState('saving');
+    try {
+      const chosen = mapRows
+        .map((r) => ({ header: r.header, target: mapping[r.header] }))
+        .filter((x): x is { header: string; target: string } => !!x.target && x.target !== UNMAPPED);
+      for (const c of chosen) {
+        await lineageApi.recordMapping({
+          dataSourceId: sourceId, templateId: template.id, sourceKey: c.header, targetColumn: c.target,
+        });
+      }
+      const rows = await lineageApi.suggestMapping(sourceId, template.id, parsed?.headers ?? []);
+      setMemory(Object.fromEntries(rows.map((r) => [r.source_key, r])));
+      setMemoryState('saved');
+    } catch {
+      setMemoryState('error');
+    }
+  };
 
   /** Remap a parsed row's keys to the template columns the steward mapped (anchor 20). */
   const remapRaw = (raw: Record<string, unknown>): Record<string, unknown> => {
@@ -533,7 +674,16 @@ export default function StrataUploadWizardPage() {
           <FileStep sourceId={sourceId} onSourceChange={setSourceId} parsed={parsed} onParsed={setParsed} />
         ) : null}
         {step === 2 && template && parsed ? (
-          <MapStep template={template} rows={mapRows} mapping={mapping} onChange={(header, value) => setMapping((prev) => ({ ...prev, [header]: value }))} />
+          <MapStep
+            template={template}
+            rows={mapRows}
+            mapping={mapping}
+            memory={memory}
+            memoryState={memoryState}
+            sourceSelected={sourceId != null}
+            onChange={(header, value) => setMapping((prev) => ({ ...prev, [header]: value }))}
+            onRemember={() => void rememberMappings()}
+          />
         ) : null}
         {step === 2 && submitError ? (
           <SectionMessage appearance="error" title="Could not stage the run">

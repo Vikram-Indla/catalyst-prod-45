@@ -843,6 +843,54 @@ export interface StrataStagingRow {
   validation_status: ValidationStatus | 'valid';
 }
 
+// ── Mapping memory (capability 11) ───────────────────────────────────────────
+
+/**
+ * One immutable confirmation that an incoming column means a template column
+ * (`strata_mapping_memory`). Append-only: rows are never updated or deleted, so
+ * current state is DERIVED by `strata_suggest_mapping` rather than stored.
+ */
+export interface StrataMappingMemory {
+  id: string;
+  data_source_id: string;
+  template_id: string;
+  /** The incoming column header, verbatim. */
+  source_key: string;
+  /** Normalised match key (lowercase alphanumerics) — mirrors the wizard heuristic. */
+  source_key_norm: string;
+  /** A column of the template's `column_schema`. Never a KPI — the KPI is a cell value. */
+  target_column: string;
+  confirmed_by: string;
+  confirmed_at: string;
+  /** The run the confirmation was made during. `null` = NOT RECORDED, never "no run". */
+  upload_run_id: string | null;
+  created_at: string;
+}
+
+/**
+ * A remembered mapping as offered to a human — a SUGGESTION, never an application.
+ *
+ * `status`:
+ *  - `none`      — nothing remembered (or every candidate was dropped as retired). Render nothing.
+ *  - `suggested` — exactly one surviving candidate. `suggested_target` is set; the human still confirms.
+ *  - `conflict`  — more than one surviving candidate. `suggested_target` is `null` ON PURPOSE and
+ *                  `candidates` names them all. The system reports the conflict; it does not resolve it.
+ *
+ * Every provenance field is `null` unless `status === 'suggested'`: on a conflict there is no single
+ * "last confirmed by", and attributing the conflict to one candidate would be a fabrication.
+ */
+export interface StrataMappingSuggestion {
+  source_key: string;
+  status: 'none' | 'suggested' | 'conflict';
+  suggested_target: string | null;
+  /** Every surviving candidate, named. `null` when `status === 'none'`. */
+  candidates: string[] | null;
+  last_confirmed_by: string | null;
+  last_confirmed_by_name: string | null;
+  last_confirmed_at: string | null;
+  times_confirmed: number | null;
+}
+
 export interface StrataValidationResult {
   id: string;
   upload_run_id: string;
