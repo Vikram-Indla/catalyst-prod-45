@@ -105,6 +105,22 @@ export const configApi = {
   createModelDraftVersion: (modelId: string, reason: string): Promise<string> =>
     run(typedRpc('strata_create_model_draft_version', { p_model: modelId, p_reason: reason })),
   /**
+   * D-2's KPI revision RPC (KO-DEF-002). Takes a THIRD argument the other two do not — the
+   * revision class — which is why it cannot be expressed through the (id, reason) REVISION_RPC
+   * map used by models/threshold schemes and is wired directly from the KPI detail page instead.
+   *
+   * The server clones definition columns + formula versions only, keeps the source lineage_id,
+   * sets version = max+1 and supersedes_id, and leaves the Approved predecessor untouched.
+   * Actuals, targets, Key Results, Scorecard lines, element links and model measures are
+   * deliberately NOT copied — facts keep the version that produced them.
+   */
+  createKpiDraftVersion: (
+    kpiId: string, reason: string, revisionClass: 'non_material' | 'material',
+  ): Promise<string> =>
+    run(typedRpc('strata_create_kpi_draft_version', {
+      p_kpi: kpiId, p_reason: reason, p_revision_class: revisionClass,
+    })),
+  /**
    * D-2's third revision RPC. Separate from the model one by ruling ("dedicated revision RPCs —
    * NOT one generic polymorphic RPC"), and separate in fact: a threshold scheme has no aggregate
    * children (its bands are jsonb on the row), so the clone is parent-only.

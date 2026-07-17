@@ -354,6 +354,8 @@ export default function StrataKpiDetailPage() {
   const resolveBand = useBandResolver();
   const [showTrendData, setShowTrendData] = useState(false);
   const [showStrategyLinks, setShowStrategyLinks] = useState(false);
+  /** KO-DEF-002 — governed revision of an Approved KPI (reason + materiality are mandatory). */
+  const [revisionOpen, setRevisionOpen] = useState(false);
   /** Governance verdict modal — one at a time (approve KPI / approve formula / attest actual). */
   const [decision, setDecision] = useState<
     | { kind: 'submit-kpi' }
@@ -704,6 +706,17 @@ export default function StrataKpiDetailPage() {
               testId="strata-kpi-approve"
             >
               Approve KPI
+            </Button>
+          ) : null}
+          {/* KO-DEF-002 — the only governed way to change an Approved definition (D-3: a new
+              draft version, never in-place mutation). The predecessor stays Approved and
+              immutable; this creates vNext on the same lineage. */}
+          {canAuthor && kpi.status === 'approved' ? (
+            <Button
+              onClick={() => setRevisionOpen(true)}
+              testId="strata-kpi-new-version"
+            >
+              Create new version
             </Button>
           ) : null}
         </>
@@ -1083,6 +1096,52 @@ export default function StrataKpiDetailPage() {
         </StrataPanel>
 
       </div>
+
+      {/* KO-DEF-002 — Draft vNext from an Approved KPI. Reuses strata_create_kpi_draft_version:
+          same lineage, version = max+1, supersedes_id set, definition children (formula versions)
+          cloned, and NO actuals / targets / Key Results / Scorecard lines / links copied. The
+          Approved predecessor is never mutated — server-enforced; the modal only collects the
+          governed reason and materiality it requires. */}
+      {revisionOpen ? (
+        <StrataFormModal
+          open
+          onClose={() => setRevisionOpen(false)}
+          title="Create new KPI version"
+          description={(
+            <>
+              Creates <strong>v{(kpi.version ?? 1) + 1}</strong> of “{kpi.name}” as a Draft on the same
+              lineage. <strong>v{kpi.version ?? 1} stays Approved and unchanged</strong>, and keeps every
+              actual, target and historical fact already recorded against it. The new version takes
+              effect only once approved.
+              {kpiElementLinks.length > 0 ? (
+                <> {kpiElementLinks.length} strategy link{kpiElementLinks.length === 1 ? '' : 's'} resolve
+                through the lineage and will follow the approved version.</>
+              ) : null}
+            </>
+          )}
+          fields={[
+            {
+              key: 'reason', label: 'Change reason', kind: 'textarea', required: true,
+              helper: 'Recorded on the version and in the audit trail',
+            },
+            {
+              key: 'revisionClass', label: 'Materiality', kind: 'select', required: true,
+              options: [
+                { value: 'non_material', label: 'Non-material — wording, owner or metadata only' },
+                { value: 'material', label: 'Material — formula, unit, direction, scope or source semantics (breaks comparability)' },
+              ],
+            },
+          ]}
+          submitLabel="Create draft version"
+          testId="strata-kpi-new-version-modal"
+          onSubmit={async (v) => {
+            await configApi.createKpiDraftVersion(
+              kpi.id, String(v.reason), v.revisionClass as 'non_material' | 'material',
+            );
+            invalidate();
+          }}
+        />
+      ) : null}
 
       {/* Governance verdict modals — RPC-enforced SoD; errors render in-modal */}
       <StrataDecisionModal
