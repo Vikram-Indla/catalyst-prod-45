@@ -375,6 +375,9 @@ export const useKpiSubmissionBlockers = (kpiId?: string, enabled = true) =>
   });
 /** KO-DEF-002 — dependency impact for a KPI. Fetched on demand (retire/revise modal), not
  *  on every KPI page load, so the join scan runs only when a governed action needs it. */
+/** KO-DEF-003 — eligible persisted reviews for OKR review linkage. */
+export const useReviews = () =>
+  useQuery({ queryKey: ['strata', 'reviews'], queryFn: governanceApi.reviews, staleTime: STALE });
 /** KO-DEF-003 — server-resolved KR reportability (never recomputed client-side). */
 export const useKrReportability = (krId?: string) =>
   useQuery({

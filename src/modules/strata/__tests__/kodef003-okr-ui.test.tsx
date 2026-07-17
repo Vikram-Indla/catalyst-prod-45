@@ -13,13 +13,14 @@ import { render, screen, within, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 const q = <T,>(data: T) => ({ data, isLoading: false, isError: false, error: null, refetch: vi.fn() });
-const { activateOkr, closeOkr, krReportability, okrProgress, keyResults } = vi.hoisted(() => ({
-  activateOkr: vi.fn(), closeOkr: vi.fn(), krReportability: vi.fn(), okrProgress: vi.fn(), keyResults: vi.fn(),
+const { activateOkr, closeOkr, updateOkr, linkOkrReview, krReportability, okrProgress, keyResults } = vi.hoisted(() => ({
+  activateOkr: vi.fn(), closeOkr: vi.fn(), updateOkr: vi.fn(), linkOkrReview: vi.fn(),
+  krReportability: vi.fn(), okrProgress: vi.fn(), keyResults: vi.fn(),
 }));
 
 vi.mock('@/modules/strata/domain', async (orig) => {
   const actual = await orig<typeof import('@/modules/strata/domain')>();
-  return { ...actual, kpiApi: { ...actual.kpiApi, activateOkr, closeOkr,
+  return { ...actual, kpiApi: { ...actual.kpiApi, activateOkr, closeOkr, updateOkr, linkOkrReview,
     keyResults: (okrId: string) => keyResults(okrId) } };
 });
 vi.mock('@/modules/strata/hooks/useStrata', async (orig) => ({
@@ -27,6 +28,10 @@ vi.mock('@/modules/strata/hooks/useStrata', async (orig) => ({
   useKrReportability: (id: string) => q(krReportability(id)),
   useOkrOfficialProgress: () => q(okrProgress()),
   useInvalidateStrata: () => vi.fn(),
+  useStrataContext: () => ({ cycles: [], periods: [], activeCycle: null, activePeriod: null }),
+  useStrategyElements: () => q([]),
+  useProfileNames: () => q(new Map()),
+  useReviews: () => q([]),
 }));
 
 import { OkrRow } from '@/modules/strata/components/shared';
@@ -109,5 +114,43 @@ describe('KO-DEF-003 UI — lifecycle actions', () => {
     expect(within(frozen).getByText(/Partially achieved/i)).toBeTruthy();
     expect(screen.queryByTestId('strata-okr-activate-okr-1')).toBeNull();
     expect(screen.queryByTestId('strata-okr-close-okr-1')).toBeNull();
+    expect(screen.queryByTestId('strata-okr-edit-okr-1')).toBeNull();
+    expect(screen.queryByTestId('strata-okr-review-okr-1')).toBeNull();
+  });
+});
+
+describe('KO-DEF-003 UI — Edit Draft + Review link', () => {
+  it('a Draft OKR exposes Edit; Active and Closed do not', () => {
+    renderRow(OKR({ status: 'draft' }));
+    expect(screen.getByTestId('strata-okr-edit-okr-1')).toBeTruthy();
+  });
+
+  it('Active/Closed OKRs cannot be edited', () => {
+    renderRow(OKR({ status: 'active' }));
+    expect(screen.queryByTestId('strata-okr-edit-okr-1')).toBeNull();
+  });
+
+  it('Edit persists owner, objective and start/end periods via updateOkr', async () => {
+    updateOkr.mockResolvedValue(undefined);
+    const u = userEvent.setup({ delay: null });
+    renderRow(OKR({ status: 'draft' }));
+    await u.click(screen.getByTestId('strata-okr-edit-okr-1'));
+    expect(screen.getByTestId('strata-okr-edit-form-okr-1')).toBeTruthy();
+    await u.click(screen.getByTestId('strata-okr-edit-save-okr-1'));
+    await waitFor(() => expect(updateOkr).toHaveBeenCalledWith('okr-1', expect.any(Object)));
+  });
+
+  it('an Active OKR exposes the Review-link action', () => {
+    renderRow(OKR({ status: 'active' }));
+    expect(screen.getByTestId('strata-okr-review-okr-1')).toBeTruthy();
+  });
+
+  it('surfaces a server rejection verbatim on edit save', async () => {
+    updateOkr.mockRejectedValueOnce(new Error('end period cannot precede start period'));
+    const u = userEvent.setup({ delay: null });
+    renderRow(OKR({ status: 'draft' }));
+    await u.click(screen.getByTestId('strata-okr-edit-okr-1'));
+    await u.click(screen.getByTestId('strata-okr-edit-save-okr-1'));
+    await waitFor(() => expect(screen.getByText(/end period cannot precede start period/)).toBeTruthy());
   });
 });

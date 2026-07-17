@@ -706,10 +706,10 @@ export const kpiApi = {
       p_direction: input.direction ?? 'higher_better',
     })),
   /** KO-DEF-003 OKR lifecycle — server-governed (Draft→Active→Closed). Errors surface verbatim. */
-  updateOkr: (okrId: string, patch: { ownerId?: string; objectiveElementId?: string; cycleId?: string; periodId?: string }) =>
+  updateOkr: (okrId: string, patch: { ownerId?: string; objectiveElementId?: string; cycleId?: string; startPeriodId?: string; endPeriodId?: string }) =>
     run(typedRpc('strata_update_okr', {
       p_okr: okrId, p_owner: patch.ownerId ?? null, p_objective: patch.objectiveElementId ?? null,
-      p_cycle: patch.cycleId ?? null, p_period: patch.periodId ?? null,
+      p_cycle: patch.cycleId ?? null, p_period_start: patch.startPeriodId ?? null, p_period_end: patch.endPeriodId ?? null,
     })),
   activateOkr: (okrId: string) => run(typedRpc('strata_activate_okr', { p_okr: okrId })),
   linkOkrReview: (okrId: string, reviewId: string) =>

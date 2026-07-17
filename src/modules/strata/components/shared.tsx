@@ -24,7 +24,7 @@ import { ChevronDown, ChevronRight, Plus } from '@/lib/atlaskit-icons';
 import { JiraTable } from '@/components/shared/JiraTable';
 import type { Column } from '@/components/shared/JiraTable';
 import { kpiApi } from '../domain';
-import { useBandResolver, useInvalidateStrata, useKrReportability, useOkrOfficialProgress, useStrataContext } from '../hooks/useStrata';
+import { useBandResolver, useInvalidateStrata, useKrReportability, useOkrOfficialProgress, useProfileNames, useReviews, useStrataContext, useStrategyElements } from '../hooks/useStrata';
 import { StrataNotificationBell } from './StrataNotificationBell';
 import { StrataNotificationBand } from './StrataSystemStates';
 import { fmtDate, fmtPct, fmtRatioPct, fmtSarCompact, fmtScore, fmtUnit, labelize } from './format';
@@ -1312,11 +1312,31 @@ export function OkrRow({ okr, objectiveName, isOpen, onToggle, onAddKeyResult, o
  *  authority and its rejection text is surfaced verbatim. Closed shows the frozen final status. */
 function OkrLifecycleActions({ okr }: { okr: StrataOkr }) {
   const invalidate = useInvalidateStrata();
+  const { periods } = useStrataContext();
+  const elementsQ = useStrategyElements();
+  const profiles = useProfileNames();
+  const reviewsQ = useReviews();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [closeOpen, setCloseOpen] = useState(false);
   const [finalStatus, setFinalStatus] = useState('achieved');
   const [closeReason, setCloseReason] = useState('');
+  const [editOpen, setEditOpen] = useState(false);
+  const [reviewOpen, setReviewOpen] = useState(false);
+  const [owner, setOwner] = useState<string | null>((okr as { owner_id?: string | null }).owner_id ?? null);
+  const [objective, setObjective] = useState<string | null>(okr.objective_element_id ?? null);
+  const [startP, setStartP] = useState<string | null>((okr as { start_period_id?: string | null }).start_period_id ?? null);
+  const [endP, setEndP] = useState<string | null>((okr as { end_period_id?: string | null }).end_period_id ?? null);
+  const [reviewId, setReviewId] = useState<string | null>((okr as { review_id?: string | null }).review_id ?? null);
+
+  const periodOpts = (periods ?? []).map((p) => ({ value: p.id, label: p.name }));
+  const objectiveOpts = (elementsQ.data ?? []).filter((e) => e.element_type === 'objective').map((e) => ({ value: e.id, label: e.name }));
+  const ownerOpts = Array.from((profiles.data ?? new Map()).entries()).map(([id, p]) => ({ value: id, label: (p as { name?: string }).name ?? id }));
+  const reviewOpts = (reviewsQ.data ?? []).map((r) => ({ value: r.id, label: (r as { title?: string; review_key?: string }).title ?? (r as { review_key?: string }).review_key ?? r.id }));
+  const startIso = periods?.find((p) => p.id === startP)?.starts_on;
+  const endIso = periods?.find((p) => p.id === endP)?.ends_on;
+  const rangeInvalid = !!startIso && !!endIso && endIso < startIso;
+  const linkedReview = (reviewsQ.data ?? []).find((r) => r.id === (okr as { review_id?: string | null }).review_id);
 
   const run = async (fn: () => Promise<unknown>) => {
     setBusy(true); setError(null);
@@ -1332,6 +1352,12 @@ function OkrLifecycleActions({ okr }: { okr: StrataOkr }) {
             {okr.closure_reason ?? 'This OKR is closed.'} Its final status, key results and history are frozen.
           </p>
         </SectionMessage>
+        {linkedReview ? (
+          <div style={{ marginTop: 6, fontSize: 'var(--ds-font-size-050)', color: T.subtle }} data-testid={`strata-okr-linked-review-${okr.id}`}>
+            Linked review: <strong style={{ color: T.text }}>{(linkedReview as { title?: string; review_key?: string }).title ?? (linkedReview as { review_key?: string }).review_key ?? linkedReview.id}</strong>
+            {' '}— retained as closed-history evidence (read-only).
+          </div>
+        ) : null}
       </div>
     );
   }
@@ -1340,9 +1366,21 @@ function OkrLifecycleActions({ okr }: { okr: StrataOkr }) {
     <div style={{ marginTop: 8, display: 'flex', flexDirection: 'column', gap: 8 }}>
       <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
         {okr.status === 'draft' ? (
+          <Button spacing="compact" isDisabled={busy} testId={`strata-okr-edit-${okr.id}`}
+            onClick={() => setEditOpen((v) => !v)}>
+            Edit OKR
+          </Button>
+        ) : null}
+        {okr.status === 'draft' ? (
           <Button spacing="compact" isDisabled={busy} testId={`strata-okr-activate-${okr.id}`}
             onClick={() => run(() => kpiApi.activateOkr(okr.id))}>
             Activate
+          </Button>
+        ) : null}
+        {okr.status === 'active' ? (
+          <Button spacing="compact" isDisabled={busy} testId={`strata-okr-review-${okr.id}`}
+            onClick={() => setReviewOpen((v) => !v)}>
+            Review OKR
           </Button>
         ) : null}
         {okr.status === 'active' ? (
@@ -1352,6 +1390,58 @@ function OkrLifecycleActions({ okr }: { okr: StrataOkr }) {
           </Button>
         ) : null}
       </div>
+
+      {editOpen && okr.status === 'draft' ? (
+        <div style={{ display: 'grid', gap: 6, maxWidth: 460 }} data-testid={`strata-okr-edit-form-${okr.id}`}>
+          <Select options={ownerOpts} value={ownerOpts.find((o) => o.value === owner) ?? null}
+            onChange={(o) => setOwner(o?.value ?? null)} placeholder="Accountable owner…" isClearable usePortal aria-label="Accountable owner" />
+          <Select options={objectiveOpts} value={objectiveOpts.find((o) => o.value === objective) ?? null}
+            onChange={(o) => setObjective(o?.value ?? null)} placeholder="Strategy objective…" isClearable usePortal aria-label="Strategy objective" />
+          <Select options={periodOpts} value={periodOpts.find((o) => o.value === startP) ?? null}
+            onChange={(o) => setStartP(o?.value ?? null)} placeholder="Start period…" isClearable usePortal aria-label="Start period" />
+          <Select options={periodOpts} value={periodOpts.find((o) => o.value === endP) ?? null}
+            onChange={(o) => setEndP(o?.value ?? null)} placeholder="End period…" isClearable usePortal aria-label="End period" />
+          {rangeInvalid ? (
+            <span style={{ color: 'var(--ds-text-danger)', fontSize: 'var(--ds-font-size-050)' }}>End period cannot precede start period.</span>
+          ) : null}
+          <div style={{ display: 'flex', gap: 8 }}>
+            <Button spacing="compact" appearance="subtle" isDisabled={busy} onClick={() => setEditOpen(false)}>Cancel</Button>
+            <Button spacing="compact" appearance="primary" isDisabled={busy || rangeInvalid}
+              testId={`strata-okr-edit-save-${okr.id}`}
+              onClick={() => run(async () => {
+                await kpiApi.updateOkr(okr.id, {
+                  ownerId: owner ?? undefined, objectiveElementId: objective ?? undefined,
+                  startPeriodId: startP ?? undefined, endPeriodId: endP ?? undefined,
+                });
+                setEditOpen(false);
+              })}>
+              Save
+            </Button>
+          </div>
+        </div>
+      ) : null}
+
+      {reviewOpen && okr.status === 'active' ? (
+        <div style={{ display: 'grid', gap: 6, maxWidth: 460 }} data-testid={`strata-okr-review-form-${okr.id}`}>
+          <Select options={reviewOpts} value={reviewOpts.find((o) => o.value === reviewId) ?? null}
+            onChange={(o) => setReviewId(o?.value ?? null)} placeholder="Select a persisted review…" usePortal aria-label="Persisted review" />
+          <div style={{ display: 'flex', gap: 8 }}>
+            <Button spacing="compact" appearance="subtle" isDisabled={busy} onClick={() => setReviewOpen(false)}>Cancel</Button>
+            <Button spacing="compact" appearance="primary" isDisabled={busy || !reviewId}
+              testId={`strata-okr-review-save-${okr.id}`}
+              onClick={() => run(async () => { await kpiApi.linkOkrReview(okr.id, reviewId!); setReviewOpen(false); })}>
+              Link review
+            </Button>
+          </div>
+        </div>
+      ) : null}
+
+      {linkedReview ? (
+        <div style={{ fontSize: 'var(--ds-font-size-050)', color: T.subtle }} data-testid={`strata-okr-linked-review-${okr.id}`}>
+          Linked review: <strong style={{ color: T.text }}>{(linkedReview as { title?: string; review_key?: string }).title ?? (linkedReview as { review_key?: string }).review_key ?? linkedReview.id}</strong>
+          {' '}· commentary, decisions and corrective actions are recorded on the review.
+        </div>
+      ) : null}
       {closeOpen ? (
         <div style={{ display: 'grid', gap: 6, maxWidth: 420 }}>
           <Select
