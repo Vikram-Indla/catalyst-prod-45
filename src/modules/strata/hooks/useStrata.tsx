@@ -361,18 +361,28 @@ export const useScorecardPlanVariances = (instances: StrataScorecardInstance[]) 
 export const useKpis = () => useQuery({ queryKey: ['strata', 'kpis'], queryFn: kpiApi.list, staleTime: STALE });
 export const useKpiBySlug = (slug?: string) =>
   useQuery({ queryKey: ['strata', 'kpi', slug], queryFn: () => kpiApi.bySlug(slug!), enabled: !!slug, staleTime: STALE });
-export const useKpiDetail = (kpiId?: string) =>
+/**
+ * F-9: targets and actuals are read across the KPI's whole LINEAGE, not just the version whose page
+ * is open. `id` identifies a version; `lineage_id` identifies the KPI as a continuing concept, so
+ * reading one id makes the trend silently restart at every revision — the history would look like it
+ * never happened. Facts keep their own kpi_id and are never repointed; `versions` lets a consumer
+ * attribute each point to the exact version that produced it (and mark a material break).
+ * `lineageId` is optional so a KPI with no lineage still resolves to its own history.
+ */
+export const useKpiDetail = (kpiId?: string, lineageId?: string) =>
   useQuery({
-    queryKey: ['strata', 'kpi-detail', kpiId],
+    queryKey: ['strata', 'kpi-detail', kpiId, lineageId],
     queryFn: async () => {
+      const versions = lineageId ? await kpiApi.lineageVersions(lineageId) : [];
+      const ids = versions.length > 0 ? versions.map((v) => v.id) : [kpiId!];
       const [formulas, targets, actuals, lineage, calc] = await Promise.all([
         kpiApi.formulaVersions(kpiId!),
-        kpiApi.targets(kpiId!),
-        kpiApi.actuals(kpiId!),
+        kpiApi.targetsForKpis(ids),
+        kpiApi.actualsForKpis(ids),
         lineageApi.lineageForEntity('strata_kpi_actuals_by_kpi', kpiId!).catch(() => []),
         lineageApi.calcValues('kpi', kpiId!),
       ]);
-      return { formulas, targets, actuals, lineage, calc };
+      return { formulas, targets, actuals, lineage, calc, versions };
     },
     enabled: !!kpiId,
     staleTime: STALE,

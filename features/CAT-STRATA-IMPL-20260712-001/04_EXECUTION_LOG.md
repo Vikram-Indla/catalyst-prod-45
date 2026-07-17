@@ -1120,3 +1120,862 @@ strip; 2E-3 charter/OKR restyle + promote + states.
 - Deferred P4-D2 (no fabrication): editorial builder + Issue + draft numbers + compare-since-freeze.
 - GATES: tsc · colors 0=0 · audit 19798/19798 · CRE green. Live-verified light+dark (editorial arc grounded, present-mode
   nav + Esc). Map untouched; console clean. **PHASE 4 (governance & data) COMPLETE — anchors 23·10·24·09·19·20 + 4A.**
+
+---
+
+# R0 · P0-A — approved-model aggregate immutability (D-1) · migration `20260716160000`
+**Session 026 · branch `strata/measures-2b` · target `catalyst-staging` (cyijbdeuehohvhnsywig, ACTIVE_HEALTHY, verified)**
+
+## What shipped
+1. **RLS** — `strata_scorecard_model_perspectives_write` and `strata_model_measures_write` rewritten to
+   `strata_has_role(['strategy_office']) AND EXISTS(parent WHERE status='draft')`, stated in **both** USING and
+   WITH CHECK (covers INSERT/UPDATE/DELETE per E-4). The measures policy previously had `with_check` NULL.
+2. **RPC** — `strata_set_model_measures` gains a parent-status guard. Body otherwise byte-identical to `20260716150000`.
+3. **Client** — `configApi.setModelPerspectiveWeights` now throws when an UPDATE matches zero rows.
+4. **UI** — `canAuthor = hasAuthorRole && m.status === 'draft'`; approved models render a visible immutability reason.
+5. **Tests** — AC-6 fixture corrected to `draft` (DRIFT-11); new `p0-approved-model-immutable.test.tsx` (4 tests).
+
+## Why BOTH layers (neither is redundant — each is the sole guard for one writer)
+- Perspective weights have **no RPC**: `domain/index.ts:159` does a raw `.update()` as `authenticated`. **RLS is the
+  only enforcement point for that path.**
+- `strata_set_model_measures` is **SECURITY DEFINER** → runs as table owner → **bypasses RLS**. **The in-RPC guard is
+  the only enforcement point for that path.**
+
+## The silent-failure hazard this slice had to close
+An RLS-filtered UPDATE matches **zero rows and raises nothing**. Without the row-count check, `setModelPerspectiveWeights`
+would have reported success having written nothing — the UI would lie about a governed write. The count is load-bearing.
+
+## Scope correction
+`strata_element_kpis` is **excluded** from the draft-gate — see **F-8** / **DRIFT-10**. Gating it would break every KPI
+link (`strata_link_element_kpi` requires `approved`).
+
+## Status
+✅ **DONE** — applied to staging, ledger 1:1, gates green, AC-1 (§8.1) proven at RLS **and** RPC with a positive control.
+**Follows immediately: P0-B / A3 revision RPCs (F-4 — A2→A3 back-to-back; until A3 lands, no model is editable,
+because both staging models are approved. That freeze is correct and intended, and A3 restores the path via versioning.)**
+
+---
+
+# R0 · P0-B / A3a — scorecard-model governed revision (D-2) · migration `20260716170000`
+**Session 026 · `strata_create_model_draft_version(p_model uuid, p_reason text) RETURNS uuid`**
+
+## What shipped
+RPC + `configApi.createModelDraftVersion` + a "Create new version" CTA on approved models (reusing the
+existing Retire modal pattern — reason required, stated before the round trip) + 6 tests.
+
+## Reuse — the supersession half already worked; this is the missing WRITER
+`supersedes_id` exists on 9+ tables and was **never written**; `strata_approve_record` is its only reader and
+**already** flips the predecessor to `superseded` + `effective_to=now()`. **`strata_approve_record` is NOT modified.**
+SoD comes free: `created_by` defaults to `auth.uid()`, so a draft's author cannot approve it — proven below.
+The slug trigger (`strata_generate_slug`, BEFORE INSERT) dedupes to `-2`, so the clone passes `slug=NULL` and the
+slug contract holds without special-casing.
+
+## Design choices (derivable; no new product decision)
+- **`p_reason` REQUIRED** — D-2 says the revision "records actor/reason"; a NULL reason records nothing.
+- **One open successor per predecessor** — two concurrent drafts would both carry `supersedes_id = p_model`, and
+  approving both would supersede the same predecessor twice, the second silently overriding the first.
+- **Revising a draft is refused** — a draft is already editable; cloning one forks the lineage for nothing.
+- **CTA gated on `isScorecardModel`** — only the model RPC exists at A3a. Offering it for KPI/threshold would promise
+  a verb the server cannot perform (A3b/A3c).
+
+## Test correction worth recording
+The first acceptance run drove `UPDATE … SET status='pending_approval'` directly and was refused by RLS
+(`strata_scorecard_models_update` WITH CHECK is `status='draft'`). **The test was wrong, not the code** — submission is
+RPC-only (`strata_submit_record`). Re-run through the real governed lifecycle: draft → submit → approve.
+
+## Status
+✅ **DONE** — applied to staging, ledger 1:1, gates green, §8.2 proven in full with the predecessor byte-identical.
+**F-4 is now discharged: A2→A3 landed back-to-back, and the E-2 v2 clone path is unblocked.**
+
+---
+
+# R0 · P0-C / E-4 — governed-child auditability · migration `20260716180000`
+
+## Census FIRST (verified against pg_trigger + information_schema — this shrank the slice)
+| | tables |
+|---|---|
+| Already have `updated_at` + touch trigger + **`strata_audit` trigger** | **10** — kpi_actuals · kpi_targets · kpi_formula_versions · scorecard_lines · key_results · gate_model_stages · scorecard_instances · theme_charters · upload_runs · benefit_values |
+| Have **none** of the three | **4** — model_perspectives · model_measures · element_kpis · initiative_kpis |
+
+**Blueprint §13.2 is WRONG:** it says the 10 "already have `updated_at` — **triggers still required**". They already
+have the triggers too. Nothing was done to them. E-4's real scope is exactly §13.1's 4 tables.
+
+## Reuse — E-4 needed almost no new code
+- **`strata_audit()` is already exactly what E-4 specifies**: `(entity_table, entity_id, TG_OP, auth.uid(),
+  before=to_jsonb(OLD), after=to_jsonb(NEW))`, generic over any table with an `id`. The **parent** travels inside the
+  payload (`model_id`/`kpi_id`/`element_id`), so "capture … parent" needs no extra column.
+- **`strata_audit_events` already has `before` + `after` jsonb.** §13.3's "extend it rather than mint a second audit
+  store" is satisfied by the shipped shape — no ALTER, no second store.
+- **`strata_touch_updated_at()` reused verbatim** (§13.3 explicitly requires this).
+- **One** new function: `strata_touch_updated_by()`. It is deliberately NOT folded into
+  `strata_touch_updated_at` — that function is shared by 10 tables with no `updated_by` column, and assigning
+  `NEW.updated_by` there would break every one of them.
+
+## F-5 honoured mechanically, not just documented
+`ADD COLUMN updated_at timestamptz` (no default) → existing rows **NULL**; `ALTER … SET DEFAULT now()` afterwards →
+only NEW rows stamped. Same for `created_by`. A single `ADD COLUMN … DEFAULT now()` would have backfilled `now()` onto
+all 8 legacy rows — asserting a change time that never happened, on the very rows under investigation. A
+`COMMENT ON COLUMN` on each table carries F-5's marker: **NULL means UNKNOWN, never UNCHANGED.**
+
+## Consequence for the register (§13.4)
+The register is a LOWER BOUND **for everything before 2026-07-16** and becomes a true census **prospectively only**.
+It can never retroactively recover the undetectable past. That wording stays mandatory on every run.
+
+## Status
+✅ **DONE** — applied, ledger 1:1, gates green, suite 2,434/6. The in-place child UPDATE that was undetectable is now
+captured with old+new values, parent, actor and timestamp.
+
+---
+
+# R0 · P0-D / A1 — integrity-exception register (E-1/E-2) · migration `20260716190000`
+**`strata_integrity_exceptions` — append-only. TABLE SHIPPED · THE THREE RECORDS ARE BLOCKED ON F-1.**
+
+## What this register does and does not do
+It is **additive and append-only**. It touches no snapshot, no `snapshot_items.payload`, no model, no calculated
+value. That is the whole point: §3.6 established the **numbers are safe** (the payload is frozen at lock and
+`calcResult` reads the frozen payload), so what is broken is **resolution**, not values. The register **qualifies the
+provenance claim** and leaves the official numbers exactly where they are. **The locked payload is never modified.**
+
+## Shape (§3.8) + the two classes
+`exception_class ∈ snapshot_provenance | model_approval_provenance` — E-2's B2B record is a **model** exception, not a
+snapshot one, so a CHECK enforces that a snapshot record HAS a snapshot and a model record does NOT. `values_changed`
+is a column, not an assumption (FALSE for both known records — but a future exception might not be so lucky).
+`detection_is_lower_bound` is NOT NULL DEFAULT true per §3.7/§13.4.
+
+## Append-only enforced, not intended
+SELECT + INSERT policies only; **no UPDATE policy, no DELETE policy**, plus an explicit
+`REVOKE UPDATE, DELETE … FROM authenticated`. Proven: both return **permission denied**. An accountability record that
+can be edited or deleted is not evidence of anything. SELECT is `current_user_is_approved()` (not strategy_office):
+§3.8/F-3 require the qualification to be visible wherever the qualified numbers appear, which a
+strategy_office-only register could not satisfy.
+
+## ⛔ F-1 — the ONE thing blocking the three records
+`strategy_office_owner` is **NOT NULL by design**. E-1 mandates the field; an owner names a **person who accepts
+accountability** and cannot be inferred from schema. **The table ships empty.** That is the honest state: zero rows
+reads as "not yet recorded", whereas rows carrying a guessed or NULL owner would be a **fabricated audit trail** — the
+exact failure this register exists to document. The three records (SNAP-1, SNAP-1001, B2B v1) are one INSERT away the
+moment a name is given; their content is already written and evidenced in blueprint §3.8.
+
+## Status
+✅ **TABLE DONE** — applied, ledger 1:1, gates green, suite 2,434/6. ⛔ **RECORDS PENDING F-1.**
+
+---
+
+# R0 · P0-D2 — F-1 correction + the three exception records · migration `20260716200000`
+**Alignment with the approved F-1 ruling. Not a new product decision.**
+
+## What changed
+`owner_role` (NOT NULL, DEFAULT `strategy_office`, CHECK over the six shipped roles — vocabulary copied from
+`strata_role_assignments`' own CHECK, not invented) · `strategy_office_owner` → **renamed** `assigned_owner_id` and
+made **nullable** · `status` (open|in_progress|closed) + `due_on` added alongside the existing `resolution` ·
+`UNIQUE … NULLS NOT DISTINCT` · **the three records filed**.
+
+## The correction
+Session 026 modelled the owner as a required individual and left the register empty, calling F-1 a blocker. The ruling
+is the opposite: the **role** is accountable. The register was blocked **by its own schema**, not by a missing fact.
+Safe to restructure because the table was empty (0 rows), so the rename lost nothing and needed no backfill.
+
+## Records filed (all `owner_role='strategy_office'`, `assigned_owner_id=NULL`, `detection_is_lower_bound=true`)
+| class | subject | v | status | resolution |
+|---|---|---|---|---|
+| snapshot_provenance | SNAP-1 · CEO Enterprise Scorecard | 1 | open | preserved_with_qualification |
+| snapshot_provenance | SNAP-1001 · CEO Enterprise Scorecard | 1 | open | preserved_with_qualification |
+| model_approval_provenance | B2B Sector Scorecard (approved_at NULL) | 1 | open | superseded_prospectively |
+
+**Every figure re-probed 2026-07-16, not copied from prose:** SNAP-1 → 1 post-lock perspective row; SNAP-1001 → 5;
+both stamp CEO model **v1**. B2B → 3 perspective weights + 2 measures after it became effective.
+`created_by` is NULL by design: these were filed **by a migration, not a person**. Do not stamp an actor who did not file them.
+
+## Status
+✅ **DONE** — applied, ledger 1:1, gates green, suite 2,434/6. **F-1 is discharged and is no longer a blocker.**
+
+---
+
+# R1 · A3c — threshold-scheme governed revision (D-2) · migration `20260716210000`
+**`strata_create_threshold_draft_version(p_scheme uuid, p_reason text) RETURNS uuid`**
+
+## Why A3c was safe to land ahead of A3b (probed, not assumed)
+`strata_threshold_schemes` has **no aggregate children**: its bands are a **`bands` jsonb column ON the scheme row**
+(`[{key,label,min_score,appearance}, …]`), and the only FKs pointing at it (`strata_kpis.threshold_scheme_id`,
+`strata_scorecard_models.threshold_scheme_id`) **reference** a scheme — they are not part of its definition. So the
+clone is parent-only. **That is exactly what makes A3b different**: a KPI has relationship AND measurement children
+(F-9). D-2 names all three RPCs in one breath, which implies one shape; **there are two**.
+
+## The full definition is copied — bands, tolerance, confidence_threshold, escalation_rules
+Omitting any would silently produce a v2 that rates differently from v1 for reasons nobody chose: **bands decide every
+rating**, and tolerance/confidence gate whether a value counts.
+
+## UI — a lookup, not a second boolean
+`REVISION_RPC: Record<table, rpc>` drives the "Create new version" CTA, replacing A3a's `isScorecardModel` flag. The
+CTA now appears **only where a revision RPC exists** (models, threshold schemes), so no table can be offered a verb the
+server cannot perform. **`strata_kpis` is absent on purpose** — it joins when A3b lands.
+
+## Status
+✅ **DONE** — applied, ledger 1:1, gates green, suite 2,434/6, §8.2 proven in full with the predecessor byte-identical.
+
+---
+
+# R0/R1 · A3b-1 — stable logical KPI lineage (F-9) · migration `20260716220000`
+
+## Why lineage exists (the F-9 problem, restated)
+A revision creates a NEW ROW with a NEW id. Without a stable identity, every relationship and fact still points at
+v1; once v1 is superseded (E-7: superseded ⇒ historical only), **v2 would have no links and no actuals and every
+objective would silently lose its measure.** `lineage_id` is the stable identity that makes revision survivable.
+`id` identifies a **version** (a governed definition); `lineage_id` identifies the **KPI as a continuing concept**.
+
+## Probe first — it made the backfill trivial
+**17 KPIs · `supersedes_id` used ZERO times · every version = 1 · 10 approved (1 with `effective_from` NULL).**
+No chains exist, so the backfill is one lineage per KPI. **The chain-aware recursive walk was written anyway** (the
+ruling requires it, and it degenerates exactly to one-per-KPI with no chains) — correct today, correct later. Proven
+against a simulated `v1←v2←v3`: **1 root, 3 rows**.
+
+## Row IDs preserved — proven by checksum, not asserted
+| | before | after |
+|---|---|---|
+| `md5(id set)` | `e7928cf9548900b1606277825b8b2ac0` | **identical** |
+| `md5(id:version:status)` | `5e226ea9b071d2d4b7e0af6ef2529e62` | **identical** |
+The migration only ADDS a column. No id rewritten, no row recreated, no FK repointed.
+
+## Non-overlap is DECLARATIVE, not a trigger
+`EXCLUDE USING gist (lineage_id WITH =, tstzrange(effective_from, effective_to, '[)') WITH &&) WHERE (status='approved')`
+via `btree_gist` (available 1.7; installed here). A BEFORE-trigger check has a **race window** where two concurrent
+approvals both see no conflict and both commit; an EXCLUDE constraint cannot be raced. Only `approved` rows
+participate — drafts/pending/superseded/retired may overlap freely, which is precisely what lets a successor be
+drafted while the predecessor is still live.
+**Critical control proven: ADJACENT approved versions are ALLOWED.** Had the constraint rejected `[a,b)` followed by
+`[b,∞)`, it would have forbidden the very supersession it exists to support.
+
+## Status
+✅ **DONE** — applied, ledger 1:1, gates green, suite 2,434/6. **Next: the canonical effective-version resolver**
+(step 4) — no UI surface may invent its own version resolution.
+
+---
+
+# R1 · A3b-2 — canonical KPI effective-version resolver (F-9) · migration `20260716230000`
+**"Do not allow different UI surfaces to invent their own version resolution."** This is that single rule.
+
+## Surface
+| function | use |
+|---|---|
+| `strata_resolve_kpi_version(lineage, as_of)` | resolve from a lineage |
+| `strata_resolve_kpi_effective(kpi_id, as_of)` | **resolve from ANY version's row id** — the relationship entry point |
+| `strata_kpi_effective_at(as_of)` → TABLE | set-based, for calculations/joins (per-row calls don't belong in a calc) |
+| `strata_kpi_current_effective` (view) | the common "as of now" case |
+
+## The compatibility design (ruling-sanctioned, taken deliberately)
+Relationship tables **keep their existing `kpi_id` FK**, now read as a **lineage entry point** rather than "the
+version this relationship is about": the resolver hops `kpi_id → lineage_id → effective version`. **Nothing is
+repointed, no FK changes** — the ruling's stated condition for this route. Indexes added on all three
+(`element_kpis`, `initiative_kpis`, `model_measures`).
+
+## Zero-assumption at the resolution point
+NULL when nothing approved is effective. **Not** "fall back to latest", **not** "fall back to a draft". A caller that
+gets NULL renders **Missing**. `status='approved'` is filtered here, at the single resolution point, so **no official
+calculation can reach a draft by construction** (E-7 / DEF-010).
+Overlapping matches **RAISE** rather than picking one — unreachable while the EXCLUDE constraint holds, but if it is
+ever dropped, silently picking one version would be an invisible wrong number.
+
+## Status
+✅ **DONE** — applied, ledger 1:1, gates green, suite 2,434/6. Proves 3 of the ruling's required tests outright:
+present-day resolves v2 · historical still resolves v1 · drafts never resolve.
+
+---
+
+# R1 · A3b — KPI governed revision + revision materiality (D-2/D-3, F-9) · migration `20260716240000`
+**`strata_create_kpi_draft_version(p_kpi, p_reason, p_revision_class) RETURNS uuid`**
+
+## The line this RPC draws — the entire point of F-9
+| | tables | action |
+|---|---|---|
+| **definition** (what the KPI IS) | KPI definition columns · `strata_kpi_formula_versions` | **CLONE** |
+| **facts** (what was MEASURED) | `kpi_actuals` · `kpi_targets` · `key_results` · `scorecard_lines` | **NEVER clone, never repoint** |
+| **relationships** (continuing intent) | `element_kpis` · `initiative_kpis` · `model_measures` | **NEVER clone** — they resolve through the lineage |
+Cloning either non-definition class would fabricate history: an actual submitted against v1 **was** submitted against
+v1, and duplicating a link would **double-count** the KPI in its objective. v2 inherits relationships **without a
+single row being rewritten**, via `strata_resolve_kpi_effective()`.
+
+## Two details that are easy to get wrong
+- **`version = max(version)+1 across the LINEAGE**, not `v_src.version+1` — the source may not be the highest (e.g.
+  revising a superseded version), and `(lineage_id, version)` is UNIQUE.
+- **One open successor per LINEAGE**, not per row — two drafts anywhere in the lineage would both claim the next
+  version number and collide on approval.
+
+## Revision materiality — REQUIRED, never defaulted
+`revision_class ∈ non_material | material`, enforced **at the DB** (`supersedes_id IS NULL OR revision_class IS NOT
+NULL`) as well as in the RPC — proven: an unclassified revision is rejected even by a direct INSERT. **NULL ⇔ not a
+revision**; it never means "unclassified".
+**Why required:** defaulting it would be the system asserting *"this change is safe to trend through"* on behalf of an
+author who never said so — a comparability lie, and the most expensive kind, because it is invisible in the number.
+
+## Status
+✅ **DONE** — applied, ledger 1:1, gates green, suite 2,434/6.
+**Proves 5 of the ruling's required tests:** lineage retained + version incremented · predecessor byte-identical ·
+formula definitions clone · **facts do not clone** · draft versions never resolve into official calculations.
+
+---
+
+# Step 6a · calc-engine lineage resolution + full provenance (F-9 + B1) · migration `20260717100000`
+
+## Done together, on purpose
+The F-9 ruling's provenance list (KPI row id · lineage id · KPI version · formula version · target version ·
+model-measure/config version · effective context) **IS** what B1 §4 needs captured. Capturing it twice would guarantee
+two dictionaries that drift.
+
+## 🔴 F-10 — the finding that decided this slice
+Naive date-aware resolution would have made **3,210 of 3,212** existing KPI calculated values **Missing**, because
+`effective_from` holds the **approval timestamp**, not a business-effective date (8 KPIs: `effective_from` ==
+`approved_at` == `2026-07-04 22:56:51`, while their periods end 2026-03-31…2026-06-30). Resolved by **backward
+extension of the earliest approved version** — see `09_DECISIONS.md` → F-10. **After: 3,212/3,212 resolve to their own
+version; 0 become Missing.**
+
+## What changed in `strata_calc_kpi_achievement`
+1. **Resolves the version** at the **period's end date** (the date the result is ABOUT, not when someone presses
+   recalculate) via the canonical resolver — never a hand-rolled predicate.
+2. **E-7 condition 1 enforced at calc time in its own right:** a draft KPI resolves to NULL → `no_effective_kpi_version`.
+   Previously an approved actual belonging to a draft KPI would have counted. Proven.
+3. **Complete provenance** in `config_context`: `kpi_id · kpi_lineage_id · kpi_version · kpi_revision_class ·
+   formula_version(+id) · target_version(+id) · actual_id · threshold_scheme_id · **threshold_scheme_version** ·
+   resolved_as_of · requested_kpi_id`. The scheme **version** is captured because §3 proved an id + a static version
+   number cannot re-resolve a configuration — and bands decide every rating.
+4. `requested_kpi_id` vs `kpi_id` differ **iff** a revision occurred — the version switch is provable after the fact.
+
+## The maths is untouched
+Same direction cases, same clamps, same confidence damping, same zero-assumption early return. **18/18 results
+byte-identical to the pre-migration baseline.**
+
+## Blueprint correction
+**§2.1's "calcs filter `validation_status='validated'` — a WHITELIST" is FALSE.** `strata_calc_kpi_achievement`
+prefers validated and then **falls back to `pending`** (confidence × 0.6). The *conclusion* survives (quarantined
+matches neither branch, so it is still excluded), but **pending actuals count today**, which is a real gap against
+E-7's condition 3 ("validated **or** accepted-with-exception"). **Left for G1/E-6** — closing it here would change live
+numbers outside this slice's scope. Logged, not silently adapted.
+
+## Status
+✅ **DONE** — applied, ledger 1:1, gates green, suite 2,434/6, **zero numbers moved**.
+**Next:** B1's other half — `strata_lock_snapshot.config_versions` completeness (§4) + `strata_calc_scorecard_instance`.
+
+---
+
+# Step 6b · B1 — snapshot config-version completeness (§4) · migration `20260717110000`
+
+## The gap, verified in the shipped body
+`config_versions` recorded only `{perspectives, threshold_schemes, scorecard_models}` — and each sub-select was
+`WHERE status='approved'` with **no link to the snapshot**, i.e. it stamped **every approved config in the system**,
+not the ones this snapshot used. KPIs, formula versions and measures were absent entirely. §4: *"today's blob
+over-claims"*. Confirmed.
+
+## Why this was only possible after step 6a
+`snapshot_items` freezes `to_jsonb(cv)`, and 6a made every calculated value carry its complete provenance in
+`config_context`. So **"the configs USED" is no longer a guess — it is read back from what actually happened.**
+That is why `config_versions` is now written **after** the items are frozen.
+
+## Now recorded
+`used.{kpis (id+version+lineage+revision_class) · kpi_formula_versions · kpi_targets · threshold_schemes **with
+version** · model_measures · resolved_as_of}` · `selection_semantics: used_only` · `draft_kpi_exclusion` (the rule +
+the count actually excluded — **proves** the exclusion was applied rather than asserting it) ·
+`provenance_completeness`. The legacy blob is **retained and relabelled** `all_approved_at_lock` (it is genuinely
+useful as "what else existed then", and the two existing snapshots are annotated against it) — but it can never again
+be mistaken for "what this snapshot used".
+
+## A defect in my own migration, caught by testing it
+The first version produced `threshold_schemes: [{id, version: null}, {id, version: "1"}]` — **the same scheme twice**.
+Cause: `strata_calc_scorecard_instance` still writes a `config_context` with a scheme id but no version (only
+`strata_calc_kpi_achievement` was wired in 6a), so a naive `DISTINCT` read one config as two.
+**Deduping the null away would have over-claimed completeness — the exact fault §4 exists to fix.** Instead `used` is
+derived ONLY from items carrying full provenance, and the rest are **counted**:
+`provenance_completeness: {items_with_full_provenance: 8, items_without_full_provenance: 20, note: "LOWER BOUND …"}`.
+The snapshot **declares itself a lower bound**, mirroring the §3.7 register discipline. **The count is also the to-do
+list for step 6c.**
+
+## Forward-only (§8.3) — proven
+`md5` over all locked snapshots: **`128b14afc429bc18ad5dc14563edf3d3` before AND after.** No existing snapshot row is
+touched; the two locked ones are annotated in `strata_integrity_exceptions` (E-1), never rewritten.
+
+## Status
+✅ **DONE** — applied, ledger 1:1, gates green, suite 2,434/6.
+**⚠️ Step 6c REMAINS:** `strata_calc_scorecard_instance` · `strata_calc_period` · `strata_calc_benefit_realization`
+are **not yet wired** to the canonical resolver — that is exactly the 20 items counted above. Until they are, every new
+snapshot's `used` block is honestly a LOWER BOUND.
+
+---
+
+# Step 6c · wire the remaining calcs (F-9 step 6 COMPLETE) · migration `20260717120000`
+`strata_calc_period` · `strata_calc_scorecard_instance` · `strata_calc_benefit_realization`
+(+ `strata_calc_kpi_achievement` and `strata_lock_snapshot` re-declared, see below)
+
+## Closed the gap 6b measured
+Every new snapshot said `items_with_full_provenance: 8 / items_without_full_provenance: 20`. **That count was the
+to-do list, and it is now 42 / 1.** Per entity type: kpi **20/20** · scorecard_line **12/12** · scorecard_instance
+**2/2** · perspective **8/9**. The single remainder is **genuinely stale data, not an unwired calc**: the two live
+instances' models carry 5 + 3 = **8** perspectives, so every perspective that is actually calculated is covered; the
+9th is a pre-6c row from an instance that no longer calculates. The metric correctly reports **LOWER BOUND** rather
+than claiming completeness — it is doing its job, not decorating.
+
+## 🔴 Latent bug fixed in `strata_calc_period`
+It iterated `WHERE k.status='approved'` and joined targets on `t.kpi_id = k.id`. Once a lineage has v1 (superseded) +
+v2 (approved), an **OLD period whose target sits on v1 finds no target on v2 → the KPI is never iterated → that
+period's number SILENTLY VANISHES on recalc.** Harmless today (no lineage has >1 version) and fatal the moment one
+does. Now iterates by **lineage**, resolves the version effective at the period end, and calculates that.
+
+## A flaw in 6b's own metric, fixed here
+6b keyed completeness on `config_context->>'kpi_version' IS NOT NULL` — **KPI-centric**. A benefit calculated value has
+no KPI, so it would have counted as "incomplete" **forever**, even fully wired: the metric could never reach zero and
+would have quietly stopped meaning anything. Every calc now stamps **`provenance_schema: 1`** and completeness keys on
+that. It is a **version number, not a boolean**, so a future provenance change is detectable rather than silent.
+`strata_calc_kpi_achievement` was re-declared to carry the marker — **not** by editing `20260717100000`, which shipped
+and was applied; rewriting an applied migration breaks the file↔ledger contract.
+
+## What each calc now records
+- **scorecard_line** — model id+version+rollup, scheme id **+version**, resolved_as_of, ref_type, line weight, the
+  full **`kpi_provenance`** block from 6a (so a line is traceable to the exact KPI version), and for objective lines
+  **`objective_kpis`** = every linked KPI with its **resolved** version. Without that the roll-up is a number with no
+  way back to its inputs.
+- **perspective** — + `model_perspective_weight`: **the exact child value §3 proved can move under a static model version**.
+- **scorecard_instance** — + the **resolved child aggregate** (`model_perspectives`, `model_measures` with weights and
+  aggregation) that §4 requires, because version alone is unreliable.
+- **benefit** — it wrote **no config_context at all**. Now records the assurance rule, the period cutoff rule,
+  resolved_as_of and **exactly which benefit_values counted, with their validation_status**.
+
+## Deliberately NOT changed (out of scope, would move live numbers)
+`strata_calc_benefit_realization` still counts **only** `validation_status='validated'`. **F-7 rules that
+`owner_confirmed` COUNTS**, which widens this whitelist and **will** move live numbers — that is R4 (E-6/F-7). The rule
+is now *recorded in provenance*, so when it changes the change is visible and dated instead of silently rewriting what
+past numbers meant.
+
+## Status
+✅ **DONE — STEP 6 IS COMPLETE.** Applied, ledger 1:1, gates green, suite 2,434/6.
+**Scorecard instance + benefit results byte-identical to baseline. Zero numbers moved.**
+
+---
+
+# Step 7 · revision materiality — CONSUMER behaviour (F-9) · NO migration
+
+## The problem underneath the ruling
+`id` identifies a **version**. The KPI detail trend was built from **one** `kpiId`'s targets and actuals, so after a
+revision the trend **silently restarts** and the KPI's history looks like it never happened. **"Display a methodology
+break" had nowhere to appear, because the trend never spanned versions.** So step 7 is two things, and the second is
+meaningless without the first.
+
+## What shipped
+1. **Lineage-aware history** — `kpiApi.lineageVersions/targetsForKpis/actualsForKpis`; `useKpiDetail(kpiId, lineageId)`
+   now reads the **whole lineage** and returns `versions`. Facts keep their own `kpi_id` — **nothing is repointed**.
+2. **Exact provenance per point** — each `TrendRow` carries `kpiVersion` + `revisionClass`, **read from the row's own
+   `kpi_id`** (provenance, not inference). New **Version** column (`v2 ⚠`); unknown version renders a dash, never a guess.
+   This is the ruling's "non_material continuity retains **exact provenance**".
+3. **Methodology break** — an ADS `SectionMessage appearance="warning"` above the chart, naming **which version** and
+   **from which period**, and the semantics that changed. Only `material` raises it.
+4. **The rule is SHARED, not local** — `domain/materiality.ts` → `methodologyBreaks(points)`. Same reasoning as the DB
+   resolver: the ruling forbids surfaces inventing their own version handling, and scorecard detail + board packs need
+   the same answer (F-3). A page-local re-derivation would drift.
+
+## 🔴 F-11 — found while verifying this slice: **the `tsc` gate is a no-op**
+`tsconfig.json` is a solution config (`files: []` + references), so **`npx tsc --noEmit` compiles nothing**. A
+deliberate `const x: number = "string"` in the page produced **no error**. The gate reported on every slice of this
+feature has been **vacuous**. The real check (`-p tsconfig.app.json`) shows **159 pre-existing errors in 4 foreign
+files** and **0 in ours**. Full detail + recommendation: `09_DECISIONS.md` → **F-11**. **No shipped claim rests on
+tsc** — every claim in `06_VALIDATION_EVIDENCE.md` was established by DB probe or test.
+
+## Status
+✅ **DONE** — gates green, **8 new tests**, suite **2,442 passed / 6 failed** (baseline 2,434 → +8; the 6 are the
+pre-existing foreign ChatDock failures). `usage-map.generated.ts` regenerated for the new import.
+**Step 7's DB half was already proven in 6a** (material revision ⇒ Missing, never a carried-forward value).
+
+---
+
+# R2 · E1 — persisted review scheduling entity (D-6) · migration `20260717130000`
+`strata_reviews` + `strata_review_participants` + `strata_review_readiness` (view) +
+`strata_schedule_review` / `strata_update_review` + the D-6 backfill.
+
+## What already existed — and it shrank the slice
+**`strata_decisions` already has `snapshot_id` + `forum`; `strata_actions` already has `decision_id`.** So the
+authorization's "snapshot, agenda, decision and action relationships" is **already expressed** as
+snapshot ← decisions ← actions. E1 therefore **joins that chain at the snapshot** and does **NOT** add `review_id` to
+decisions/actions: a second path to the same fact lets the two disagree, and the existing chain answers every
+question. **Only `agenda` was genuinely absent, so only `agenda` was added.** `strata_reviews` itself was correctly
+reported absent by §9.
+
+## D-6 honoured literally
+Backfill = **2 migrated Closed reviews / 2 locked snapshots**. `chair_id`, `agenda`, `scheduled_for` and participants
+are **NULL/empty — never invented**. Participants are ROWS rather than a jsonb blob precisely so nobody can write `[]`
+and call it attendance. Each migrated row's `note` states the derivation **on the row**, including that
+`review_type`/`cadence` (executive/quarterly) are **an assumption of the migration, not a recorded fact** — a reader
+is never left guessing which fields were recorded.
+
+## The two defaults, as defaults
+`departmental → monthly`, `executive → quarterly`, applied via COALESCE in `strata_schedule_review`, **not** a CHECK.
+A CHECK forcing departmental⇒monthly would make a genuinely ad-hoc departmental review unrepresentable, and the system
+would then be lying about a meeting that really happened.
+
+## Readiness is DERIVED, never stored
+`strata_review_readiness` view. Storing it would create a second source of truth that goes stale the moment a snapshot
+locks — and someone would eventually trust the stale copy. `blocking_reasons` is an array so the UI can state **why**
+rather than render a bare red dot.
+
+## Probe finding
+**`strata_snapshots.status` CHECK is `locked | superseded` only** — a snapshot is locked by construction; there is no
+unlocked state. My first error message said "unlocked snapshot", describing a state that cannot exist. **Corrected**
+to name superseded explicitly.
+
+## Status
+✅ **DONE** — applied, ledger 1:1, gates green. All rules proven (backfill · participants 0 · cadence defaults ·
+readiness both ways · cannot close without a snapshot · cannot close on a non-locked snapshot · closed review immutable).
+**Next: F1 board-pack issue/supersede — it needs E1, which now exists.**
+
+---
+
+# R2 · F1 — board-pack editorial lifecycle, issuance + supersession · migration `20260717140000`
+
+## F-12 — `status` was already taken
+`status` is the **generation** lifecycle (`pending|generating|ready|failed`), not an editorial one. Adding
+`issued/superseded` there (as §6 says) would conflate "did the file render?" with "did the board approve it?", and an
+`issued` pack would lose its generation state. New **`issue_status`** carries `draft|in_review|approved|issued|
+superseded`; existing rows default to `draft` — the truth. See `09_DECISIONS.md` → **F-12**.
+
+## Immutability is a TRIGGER, not a policy
+RLS gates *whether a row is writable*, not *which fields changed* — and both RPCs are SECURITY DEFINER, so they bypass
+RLS anyway. A BEFORE UPDATE trigger is the only layer that sees OLD vs NEW and binds every writer. Exactly one
+transition is permitted on an issued pack (`issued → superseded`) and it must leave snapshot, storage_path, sections,
+title, version, issued_by/at and format **byte-identical** — proven. DELETE of an issued/superseded pack is refused
+too: deleting it would erase the record of what a board received.
+
+## §8.7 in full
+Correction = **new version**, never an edit. `snapshot_id` is **copied, never re-pointed**: a corrected pack reports the
+SAME numbers, corrected in presentation. If the numbers themselves changed, that is a new snapshot and a new pack —
+re-pointing a pack at different numbers while keeping its identity is the precise lie this programme exists to prevent.
+**SoD added** (approver ≠ issuer), mirroring `strata_approve_record` — issuance is what makes a pack a board record.
+
+## F-3 discharged at DB level
+`strata_board_pack_qualification` — **derived** from `strata_integrity_exceptions`, never copied onto the pack: a copy
+goes stale the moment the register changes, and the stale copy is what would get **printed on a board pack**. It states
+the distinction that matters: *the figures are OFFICIAL and UNCHANGED; what is qualified is their PROVENANCE.*
+Issuance also stamps the qualification into the audit trail — the point-in-time fact of what was known when the board
+received it. Proven live against **SNAP-1**, a genuinely qualified snapshot.
+
+## Status
+✅ **DONE** — applied, ledger 1:1, gates green, suite **2,442 / 6** (the clean end of the flaky range).
+**Remaining in R2: the editorial builder UI** (`title`/`sections` columns + RPCs exist; no UI yet) — DB-complete,
+UI-pending. Then R3 → R4 → R5.
+
+---
+
+# R3 · data-source lifecycle + dependents impact + blast radius · migration `20260717150000`
+
+## Reuse — the lifecycle STATES already existed
+`strata_data_sources.status` is **already** CHECKed to `registered | active | suspended | retired` — exactly R3's
+"registration / validation and activation / suspension and retirement". **Nothing about the states needed inventing.**
+What was missing: the **transitions** (status was free-form — nothing enforced any of them), the dependents-impact
+check, and the blast radius.
+
+## ⚠️ I nearly shipped a claim built on two numbers that never meet
+The first draft asserted "the forward chain is complete and populated", citing **3,178** calculated values carrying
+`source_run_ids` and **32** frozen into snapshots. Probing the **intersection**: `calculated_values with BOTH = 0`.
+The two populations **do not overlap** — run-sourced rows belong to periods that were never locked, and the rows inside
+the two locked snapshots come from actuals with no `upload_run_id`. So `historical` is legitimately **EMPTY for every
+real source today**.
+**The chain is right; the claim was wrong.** Proven to FIRE against a constructed locked snapshot holding a
+run-sourced value → returned **SNAP-1001** + its board packs. Comment corrected before commit. Two impressive counts
+that never join is exactly the shape of an evidence-free claim.
+
+## P4-D4's labelled gap
+P4-D4: "backward-derivable named KPIs only; **labelled gap for scorecard/snapshot forward impact**; never fabricate."
+The forward chain is now **expressible** — every link is a real FK / array containment. It is **not yet demonstrable on
+real data** (see above). Both statements are true and neither is the other.
+
+## Classification — a THIRD class was unavoidable
+The authorization names "blocking and migration". A third is the important one:
+| class | meaning |
+|---|---|
+| **BLOCKING** | an **approved** KPI still fed by the source — retiring would silently starve official reporting. Retirement refused, **and the blockers are NAMED**, not counted. |
+| **MIGRATION** | a draft/pending KPI — re-point it; nothing official depends on it yet. |
+| **HISTORICAL** | locked snapshots / issued packs that used the source. **Never blocking, never "migratable".** |
+Collapsing HISTORICAL into BLOCKING makes any source with history **permanently un-retirable**. Collapsing it into
+MIGRATION invites someone to "migrate" a locked snapshot — i.e. **rewrite governed history**, which D-1 forbids.
+
+## Suspension is deliberately NOT gated on dependents
+Suspending is how you **stop a bad feed**. Gating it behind dependents would mean *the more important a broken source
+is, the harder it is to stop*. It is reversible, and the blast radius is returned either way so the cost is visible.
+Retirement — which is terminal — is gated.
+
+## Honest about its own blind spot
+`coverage_note` ships on **every** response: manual actuals carry no `upload_run_id`, so **absence from `historical` is
+NOT evidence a source was uninvolved.** Same discipline as the integrity register's lower-bound label.
+
+## Status
+✅ **DONE** — applied, ledger 1:1, gates green, suite 2,442/6. **Historical lineage preserved: calculated_values
+7,457→7,457, snapshots 2→2** across a live suspension. **UI pending** (no screens for any of R3).
+
+---
+
+# R4a · assurance vocabulary + exception governance (D-4, D-5, E-6, F-6, F-7) · migration `20260717160000`
+**This is the slice carrying one of the two live-numbers debts. It moved ZERO numbers — by construction, not luck.**
+
+## D-4 — the label was a lie, and it is gone
+Probed: `finance_validated` lives on **`strata_benefits.lifecycle_stage`** (NOT on benefit_values — the blueprint
+pointed at the wrong table), and `strata_validate_benefit_value` hardcoded it on **any** validator's verdict. The RPC
+gates on the benefit's `validator_id` or the `vmo_validator` role — **there is no Finance role anywhere in STRATA**.
+The system has been stamping "finance validated" on records Finance never touched. `finance_validated` is now
+**unrepresentable** (proven: the CHECK rejects it).
+
+## A relabel, NOT a re-assertion (D-4 / §7)
+`pending(15) → reported` · `validated(13) → independently_validated` · `finance_validated(1) → independently_validated`.
+**Same rows, same counts.** `validated_by` / `validated_at` / `validation_note` and every audit event untouched — the
+actor who validated is still recorded. Only the WORD changed, from one naming a department that was never involved to
+one describing what actually happened.
+
+## F-7 — the live-numbers change, and why it moved nothing
+`strata_calc_benefit_realization` whitelisted `='validated'`; it now counts
+`independently_validated + owner_confirmed (F-7) + accepted_with_exception (E-6)`.
+**Measured: all 9 benefits byte-identical to baseline.** `owner_confirmed` and `accepted_with_exception` are new states
+with **0 rows**, and the rename is the same 13 rows. **The rule is in force from now; numbers move only when someone
+actually confirms a value** — proven with teeth: setting one value to `owner_confirmed` moved its index **0.0000 →
+0.4000**. A change that moved numbers on the day it shipped would have been a silent restatement of history.
+
+## Why the calc HAD to change in the same migration
+The rename removes `validated` from existence. Split across migrations, there would be a window where every benefit
+silently reports **zero realized**. Atomic, deliberately.
+
+## Assurance composition (authorization R4)
+The three counting states are reported **separately** in provenance and in the result. A realization index built
+entirely from `owner_confirmed` is a very different claim from an independently validated one — **a single total hides
+that**. E-6: acceptance for calculation does **not** imply independent validation, which is why
+`accepted_with_exception` is its own state and never collapses into `independently_validated`.
+
+## Exception governance at the DB (D-5/E-6), not just in RPCs
+`exception_reason` + `exception_authorized_by` + `exception_authorized_at` + `original_validation_failures` on **both**
+tables, with two CHECKs: an exception **must** carry a reason and an authorizer, and **the submitter cannot authorize
+their own** — enforced at the DB because the RPCs are SECURITY DEFINER and bypass RLS. Both proven.
+**F-6 honoured:** benefit values get `accepted_with_exception` **only**, no `quarantined` — that would imply a
+benefit-quarantine workflow that does not exist and was not asked for.
+
+## Own-bug caught
+First draft added the tightened CHECK **before** migrating the data → the existing `finance_validated` row violated it.
+Reordered: data first, then constraint.
+
+## Status
+✅ **DONE** — applied, ledger 1:1, gates green, suite 2,442/6, **9/9 benefits byte-identical**.
+**R4 remainder:** quarantine accept/correct/reject RPC · mapping-memory · Matched/New/Conflict/Invalid · immutable run
+ledger · **24h import reversal (D-7/E-5)**. **Debt #2 still open:** `strata_calc_kpi_achievement` still counts
+`pending` actuals (E-7 condition 3).
+
+---
+
+# R4a-2 · client contract realigned to the shipped vocabulary (D-4) — no migration
+**R4a broke the client and tsc could not tell me (F-11).** Found by grepping for the old vocabulary, not by a gate.
+
+| Break | Fix |
+|---|---|
+| `valueApi.validateBenefitValue(id, 'validated')` — **the RPC now REJECTS `'validated'` outright** | verdict type → `'owner_confirmed' \| 'independently_validated' \| 'rejected'` |
+| `StrataPortfolioVmoPage` offered a single **"Validate"** button sending `'validated'` | now **two** buttons: *Independently validate* and *Owner confirm* |
+| `types.ts` `ValidationStatus` missing `accepted_with_exception`, `reversed` | added |
+| `types.ts` benefit lifecycle still listed **`finance_validated`** — now unrepresentable in the DB | → `independently_validated` |
+| `types.ts` benefit `validation_status: 'pending'\|'validated'\|'rejected'` | → new `BenefitAssuranceStatus` (6 states) |
+
+**Why two buttons, not one relabelled:** *owner confirmed* and *independently validated* are **different claims**. The
+first says the owner stands behind their own number; the second says **someone else checked it**. Both count (F-7);
+only the second asserts independence, and only the second carries SoD. Collapsing them into one control would have
+recreated exactly the lie D-4 removed — a button that claims an assurance nobody performed.
+
+**This is F-11 made concrete:** a live break in a governed write path, invisible to `npx tsc --noEmit` (a no-op) AND to
+`tsc -p tsconfig.app.json` (property access on these objects is unchecked at `strict:false`). Caught by grep.
+
+## Status
+✅ **DONE** — `tsc -p tsconfig.app.json` **0 errors under `src/modules/strata`**, gates green, suite **2,442 / 6**.
+
+---
+
+# R4b · E-7 condition 3 — only ELIGIBLE actuals count · migration `20260717170000`
+**DEBT #2 DISCHARGED. Both live-numbers debts are now closed, and neither moved a number.**
+
+## The defect
+`strata_calc_kpi_achievement` preferred a validated actual and then **fell back to `pending`**, damping confidence
+×0.6. **An unvalidated number counted in official reporting**, merely with a quieter confidence score — and
+**confidence is not exclusion**. E-7 condition 3 requires "validated **or** accepted-with-exception". `pending` is
+neither.
+
+## Blueprint §2.1 was wrong about the mechanism and accidentally right about the outcome
+It claims the calcs "filter `validation_status='validated'` — a **WHITELIST**, so quarantined is excluded **by
+construction**". There was no whitelist. Quarantined was excluded by **not being listed**, not by a control — and
+`pending` **was** listed, and counted. The reassuring sentence described a control that did not exist.
+
+## 🔴 I corrected MY OWN false warning
+The handover carried my note: *"unlike F-7, `pending` actuals EXIST today, so this WILL move live numbers. Baseline
+first."* **I wrote that from memory and never checked it.** Probed: `strata_kpi_actuals` = **18 rows, ALL validated**;
+pending/quarantined/rejected/accepted_with_exception/reversed = **0**. Blast radius: **zero**.
+**This is the twelfth time on this feature — and the first time the stale claim was mine.** The rule still applies to
+me: do not inherit a claim without re-testing it.
+
+## Result: 18/18 byte-identical, and the rule has teeth
+Same achievement, score, band **and confidence** for all 18. Proven on a real KPI by walking one actual through each
+state: validated → 83.33/0.900 · **pending → Missing** (`no_eligible_actual`) · **quarantined → Missing** ·
+**accepted_with_exception → 83.33 COUNTS**, conf 0.540, flagged, reason visible.
+
+## Design details
+- **One predicate, not a fallback chain.** A chain silently encodes a hierarchy of acceptability and can grow a quiet
+  extra tier later. One eligible set says exactly what is allowed.
+- **`no_eligible_actual` ≠ `no_actual`.** An actual may EXIST and simply not be eligible. Saying "no actual" would send
+  someone hunting for data that is already there — so the response also names the **ineligible** rows and their states.
+- **×0.6 damping retained for `accepted_with_exception`.** It counts fully (E-6); the damp is the honest confidence
+  signal for a value that counted *despite failing validation*. Exclusion-free.
+- **E-6 visibility:** the exception reason/authorizer/timestamp ride in the provenance and the result — never
+  flattened into the number.
+
+## Status
+✅ **DONE** — applied, ledger 1:1, gates green, suite 2,442/6. **Both R4 live-numbers debts discharged.**
+**R4 remainder:** quarantine accept/correct/reject RPC · mapping-memory · Matched/New/Conflict/Invalid · immutable run
+ledger · 24h import reversal (D-7/E-5). Then R5.
+
+---
+
+# R4c · quarantine resolution (D-5/E-6) · migration `20260717180000`
+Reused entirely: `quarantined`/`accepted_with_exception` states, exception columns + DB no-self-auth CHECK, and
+`strata_attest_actual` (quarantine ENTRY with SoD). **Only the resolution verb was missing.**
+
+`strata_resolve_quarantine(actual, verdict, reason, corrected_value)` — `accept_with_exception | correct | reject`.
+**`correct` returns the row to `pending`, not validated:** a corrected value is a NEW claim nobody has checked, and
+sending it to validated would let the corrector self-validate through the back door — the exact SoD
+`strata_attest_actual` enforces at the front. Since `pending` no longer counts (R4b), a corrected value is Missing
+until attested. Correct: nobody has checked it yet.
+
+**Proven:** non-SO refused · **self-authorization refused** · blank reason refused · correct-without-value refused ·
+accept_with_exception → counts=true, flagged, reason + original failures preserved, calc 83.33/conf 0.540 ·
+re-resolving a non-quarantined row refused · correct → pending/99 · reject → counts=false.
+✅ **DONE** — applied, ledger 1:1.
+
+---
+
+# R4d · 24-hour import reversal (D-7/E-5) · migration `20260717190000`
+`strata_run_reversal_eligibility(run)` (asks BEFORE offering the verb; returns **every** blocking reason, not the
+first — telling someone "locked snapshot", then "issued pack" after they fix it, misleads them twice) +
+`strata_reverse_run(run, reason)`.
+
+## Supersession, never an offsetting entry (D-7)
+A `-100` correction is **a measurement that never happened** — it would sit in the ledger as though someone observed
+-100, and every downstream average, trend and audit would read it as data. Instead the original actual is marked
+`reversed` (already excluded by R4b's eligible set) and the prior validated actual becomes effective again.
+
+## Reuse — no new state machine
+`reversed` already existed in the CHECK (R4a) and was already excluded from calcs (R4b). `strata_calc_kpi_achievement`
+already picks the most recent **eligible** actual, so "restoring" needs **no repointing**: removing the newer row from
+the eligible set lets the older validated one win again.
+
+## PROVEN
+`reversed=2 restored_prior=1 left_without_value=1 recalculated=2` · **BLOCK >24h** · **BLOCK locked snapshot** ·
+**BLOCK reverse-twice** · **BLOCK reverse-a-reversal** · original run preserved · **actuals 19→19 (nothing deleted)** ·
+**0 rows with value ≤ 0 (no artificial offsets)**.
+**E-5 restore, proven directly:** prior 80, reversed 95 → **effective actual after reversal = 80**, reversed row still
+present and marked `reversed`. **E-5 no-prior:** → `no_eligible_actual` (left EMPTY, never zeroed).
+
+## Own-bug caught by testing
+`reasons := reasons || 'literal'` raised **"malformed array literal"** at runtime: an untyped literal on the right of
+`||` makes Postgres choose `array||array` and try to PARSE the sentence as an array. It bit only the plain-string
+reasons — the `format()`-built one is explicitly `text` — so **"already reversed" and "is a reversal" crashed with an
+opaque error exactly where a clean reason was the entire point**. Fixed with `array_append`.
+✅ **DONE** — applied, ledger 1:1.
+
+---
+
+# R3-UI · data-source lifecycle + dependents impact — **capability 6 & 8 now COMPLETE**
+**Extended `StrataDataIntegrationPage` (route `/strata/admin/data`) — no new surface.**
+
+## The page's own header was stale, and that was the whole gap
+It read: *"strata_data_sources is status-only with NO admin authoring RPC, so the source registry is READ-ONLY —
+'+ Register source' and the retire-with-dependents flow are deferred and labelled."* **True when written (P5-D3);
+false since R3.** The RPCs shipped `20260717150000`. Header corrected; the labelled gap is now a real governed flow.
+
+## What is now reachable
+Per-row **Dependents** (blast radius) · **Validate & activate** · **Suspend** · **Resume** · **Retire** — driven by
+`NEXT_STATUS`, which mirrors the RPC's allowed transitions exactly, so **the UI can never offer a transition the server
+refuses**. A retired source renders **"Retired — terminal"**, not a row of dead buttons.
+
+## Honesty carried into the UI, not just the RPC
+- **Blockers are NAMED** (the panel lists *Churn Rate*), never counted.
+- **`coverage_note` is RENDERED verbatim** — "no historical impact" is **NOT** proof a source was uninvolved (manual
+  actuals carry no run lineage). Hiding it would turn an honest lower bound into a **false all-clear**.
+- **HISTORICAL is shown as informational**, explicitly "preserved, not blocking".
+- The RPC's refusal (which already names the blockers) surfaces **verbatim** — re-wording it would lose them.
+- **Retire requires a reason before the round trip; Suspend does not** — stopping a bad feed must not get harder the
+  more important the feed is.
+
+## Gate caught me, and I fixed rather than annotated
+`audit:ads:gate` **FAILED**: `tokens 19802 (baseline 19798, +4)` — four new `HARDCODED_PX` (`marginBottom: 6`,
+`margin: '8px 0 0'`, `paddingLeft: 18`). Converted to **`var(--ds-space-*)`**, the primitive `shared.tsx` already uses.
+**Back to 19798/19798 exactly** — no baseline bump, no `ads-scanner:ignore` exemption.
+
+## Tests
+`r3-data-source-lifecycle-ui.test.tsx` — **9 tests**, testing the exported `SourcesRegistry` **section** rather than
+the page (rendering the page drags in the STRATA shell and would prove the shell, not the lifecycle — mirrors how
+`ScorecardModelsSection` is tested). Covers: allowed transitions per state · retired-is-terminal · **role gate mirrors
+the RPC** · blockers named · **coverage_note rendered** · retire-needs-reason (RPC not called) · **suspend needs none**
+· reason trimmed and passed.
+
+## Status
+✅ Suite **2,451 passed / 6 failed** (foreign ChatDock) — **+9, no new failures**. tsc 0 under `src/modules/strata` ·
+colors 0=0 · audit at baseline · CRE pass · usage-map regenerated.
+**Capabilities 6 (data-source register/retire + dependents-impact) and 8 (downstream blast-radius) → Complete.**
+
+---
+
+# 027 · R2/R4 UI wiring — caps 7 · 9 · 10 · 12-reversal → **2/14 → 8/14 Complete**
+**Four capabilities wired into THREE EXISTING pages. No new pages, no new routes.** Plus one new backend verb (F-13).
+
+## The probe that made this a one-session slice instead of four
+The matrix said caps 7/10 had "no screens" — but `StrataReviewsPage.tsx` (81K) and `StrataBoardPackPage.tsx` (18K)
+**exist**. Rather than believe either, I grepped `src/` for all ten new RPCs: **zero client references** for every
+R2/R4 RPC; only R3's blast-radius was wired. **The matrix was right in substance, wrong in wording** — the pages run on
+older data paths. **The gap was WIRING, not greenfield.** That reframing is why four capabilities landed at once.
+Recorded so nobody re-litigates it: **"a page exists" ≠ "the capability is reachable."**
+
+## F-13 — the backend was NOT complete either (the matrix's ✅ was too generous)
+The board-pack subagent reported it **could not** wire Issue: nothing moves a pack `draft → approved`. It **refused to
+invent a flow** and escalated — which is the only reason this was caught rather than papered over with a fake control.
+Probed staging: **3 packs, 0 approved.** Issue was provably unreachable **at the DB**.
+
+**It could not be a client UPDATE.** `strata_board_packs_write` is `FOR ALL USING (strata_has_role(['strategy_office']))`
+⇒ a client could set `approved_by` to **any uuid**, and `strata_issue_board_pack`'s entire SoD control is
+`approved_by <> auth.uid()`. **A spoofable `approved_by` defeats SoD completely.** Shipped
+`strata_approve_board_pack` — SECURITY DEFINER, stamps `auth.uid()`, **no actor parameter by design**.
+Applied to staging `20260717200000`; **ledger 1:1**. Deliberately does NOT require a locked snapshot (only issuance
+does — inventing that gate would impose a rule R2/F1 rejected).
+
+**Proven by DB probe as a REAL non-admin `strategy_office` user (`is_admin=f`), rolled back, positive control included:**
+`draft→approved` + `approved_by` = caller · **approver then REFUSED as issuer** (SoD has teeth *because* the server
+stamps it) · double-approve refused · roleless refused.
+
+## F-11b — tsc has NEVER checked STRATA, under EITHER config
+Found incidentally: `StrataBlastRadius` is used at `domain/index.ts:1037`/`:1044` and **was never imported** — shipped
+in `f3331ae4a`, the commit that reported "tsc 0 errors under src/modules/strata". A missing import is TS2304.
+tsc said nothing. Confirmed with F-11's own method (`const __probe: number = "definitely a string"` → **zero** errors
+from `-p tsconfig.app.json`). **F-11's prescribed fallback is also a no-op; "0 under strata" is vacuous, not clean.**
+No shipped claim collapses (acceptance rests on tests + DB probes) and there is no runtime break (type-only usage is
+erased by esbuild). **Import fixed here.** Ruling ask + the honest limit of my evidence: `09_DECISIONS.md` → F-11b.
+
+## Honesty carried into the UI (not just asserted in the RPCs)
+- **Reversal:** eligibility is ASKED before the verb exists; **every** `blocking_reasons` entry rendered, never just the
+  first. `affected_actuals` renders `—` when null (`array_length` returns NULL on an empty set — `0` would be invented).
+  `left_without_effective_value` always shown with its meaning; server `note` verbatim.
+- **Quarantine:** `correct → pending` is STATED, not hidden ("does NOT count yet… Missing until someone attests").
+- **Reviews:** `origin='migrated'` rows render **"Migrated · details not recorded"**, never "—" and never "none".
+  `is_ready` is snapshot-locked only; `pack_attached` shown SEPARATELY and never ANDed in (the DB rejected that gate).
+- **Board packs:** two lifecycles kept distinct (F-12). `qualification_note` verbatim. `is_qualified===false` renders as
+  *information* — "absence of a record is not evidence" — never a green tick.
+
+## Gates (raw)
+```
+✅ ads-color-gate: 0 = baseline 0. No new hard-coded colors.
+✅ ads-audit-gate: no category above baseline — tokens 19798/19798, typography 1366/1366, spacing 0/0, fontImports 0/0.
+vitest (full repo): 2,514 passed · 6 failed · 16 skipped / 2,536
+```
+Baseline on entry 2,451/6 ⇒ **+63 tests, 0 new failures.** The 6 are the known foreign ChatDock suites.
+**No baseline bumped; no `ads-scanner:ignore` added** — new spacing uses `var(--ds-space-*)` throughout.
+**`registry-drift` FAILED first and was a REAL drift, not the documented flake** — the new exported sections changed the
+scan. Fixed by `npx tsx scripts/scan-components.ts`. (`ads-violations.generated.ts` regenerated to a **timestamp-only**
+diff — 13 violations unchanged — so it was REVERTED rather than committed as churn.)
+**No tsc claim is made. See F-11b.**
+
+## Status — and what is NOT done
+**Caps 7 · 9 · 10 → Complete. Cap 12's reversal half → Complete.** 2/14 → **8/14**.
+**NOT attempted (not blocked — not reached):** cap 1 band editor · 3 preview-with-data · 4 version diff ·
+5 score-shift · 11 mapping memory (still no table) · 12 reconciliation half · 14 link relaxation.
+**⛔ NO SCREENSHOT ACCEPTANCE — no browser was opened.** All UI claims rest on DOM assertions + DB probes. Per
+CLAUDE.md that is **not** UI/UX acceptance: **a screenshot pass is OWED on caps 7 · 9 · 10 · 12** before this is called
+user-visible. Committed on the feature branch (PR #349 remains open/unmerged) with the debt stated, not hidden.

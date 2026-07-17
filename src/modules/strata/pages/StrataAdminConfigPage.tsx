@@ -11,8 +11,9 @@ import { useNavigate, useParams } from 'react-router-dom';
 import Tabs, { Tab, TabList, TabPanel } from '@atlaskit/tabs';
 import {
   Button, CatalystInlineCode, CatalystTag, EmptyState, Lozenge, Modal, ModalBody, ModalFooter,
-  ModalHeader, ModalTitle, SectionMessage, Spinner, Textfield,
+  ModalHeader, ModalTitle, SectionMessage, Select, Spinner, Textfield,
 } from '@/components/ads';
+import type { SelectOption } from '@/components/ads';
 import { JiraTable } from '@/components/shared/JiraTable';
 import type { Column } from '@/components/shared/JiraTable';
 import { StatusLozenge } from '@/components/shared/StatusLozenge';
@@ -23,12 +24,12 @@ import {
   MoveRight, Rocket, Scale, ShieldCheck, Upload, Users,
 } from '@/lib/atlaskit-icons';
 import Toggle from '@atlaskit/toggle';
-import { configApi, governanceApi } from '@/modules/strata/domain';
+import { configApi, governanceApi, scorecardApi } from '@/modules/strata/domain';
 import {
   useAllModelMeasures, useAllModelPerspectives, useChangeRequests, useGateModels, useInvalidateStrata, useKpiTypes, useKpis, useModelPerspectives,
   usePerspectives, useProfileNames, useProjectCardFieldConfigs, useProjectCardPicklists,
   useProjectCardSectionConfigs, useProjectCardTabConfigs, useRoleAssignments, useScorecardModels,
-  useStrataAudit, useStrataNotificationRules, useStrataRoles, useThresholdSchemes, useUploadTemplates, useValueCategories,
+  useStrataAudit, useStrataNotificationRules, useStrataRoles, useStrataUserId, useThresholdSchemes, useUploadTemplates, useValueCategories,
   useWorkflowConfigs,
 } from '@/modules/strata/hooks/useStrata';
 import { StrataPageShell, StrataPanel, T } from '@/modules/strata/components/shared';
@@ -37,7 +38,8 @@ import { StrataFormModal, str } from '@/modules/strata/components/authoring';
 import { fmtDate, fmtDateTime, labelize } from '@/modules/strata/components/format';
 import type {
   GovernedEnvelope, GovernedStatus, StrataChangeRequest, StrataNotificationRule, StrataPerspective,
-  StrataModelMeasure, StrataProjectCardFieldConfig, StrataProjectCardPicklist, StrataRole, StrataScorecardModel, ThresholdBand,
+  StrataModelMeasure, StrataProjectCardFieldConfig, StrataProjectCardPicklist, StrataRole, StrataScorecardModel,
+  StrataThresholdPreview, StrataThresholdPreviewMove, StrataThresholdScheme, ThresholdBand,
 } from '@/modules/strata/types';
 
 type OnError = (msg: string | null) => void;
@@ -81,6 +83,18 @@ export function GovEnvelope({ r }: { r: GovernedEnvelope }) {
   );
 }
 
+/**
+ * D-2: which governed tables can be REVISED, and by which dedicated RPC.
+ * Deliberately a lookup rather than a boolean prop: the "Create new version" CTA must appear only
+ * where a revision RPC actually exists, so a table cannot be offered a verb the server has no way
+ * to perform. `strata_kpis` is absent on purpose — A3b is blocked on F-9 (a KPI revision has
+ * relationship and measurement children, so it is not the same shape as these two).
+ */
+const REVISION_RPC: Record<string, ((id: string, reason: string) => Promise<unknown>) | undefined> = {
+  strata_scorecard_models: (id, reason) => configApi.createModelDraftVersion(id, reason),
+  strata_threshold_schemes: (id, reason) => configApi.createThresholdDraftVersion(id, reason),
+};
+
 /** Governance lifecycle actions — RPC-only; DB errors surface verbatim. */
 export function GovActions({ table, record, isScorecardModel, onError, submitBlockedReason }: {
   table: string;
@@ -95,6 +109,9 @@ export function GovActions({ table, record, isScorecardModel, onError, submitBlo
   const [busy, setBusy] = useState(false);
   const [retireOpen, setRetireOpen] = useState(false);
   const [retireReason, setRetireReason] = useState('');
+  const [versionOpen, setVersionOpen] = useState(false);
+  const [versionReason, setVersionReason] = useState('');
+  const createVersion = REVISION_RPC[table];
   const act = async (fn: () => Promise<unknown>) => {
     setBusy(true);
     onError(null);
@@ -140,9 +157,57 @@ export function GovActions({ table, record, isScorecardModel, onError, submitBlo
   if (record.status === 'approved') {
     return (
       <>
+        {/* D-2/D-3: an approved definition is immutable, so changing it means a new draft version.
+            The CTA is driven by REVISION_RPC, so it appears only for tables that actually have one
+            (models A3a, threshold schemes A3c). Offering it for a table with no RPC behind it would
+            promise a verb the server cannot perform. KPIs join when A3b lands (blocked on F-9). */}
+        {createVersion ? (
+          <Button
+            spacing="compact"
+            isDisabled={busy}
+            testId={`strata-model-new-version-${record.id}`}
+            onClick={() => { setVersionReason(''); setVersionOpen(true); }}
+          >
+            Create new version
+          </Button>
+        ) : null}
         <Button spacing="compact" isDisabled={busy} onClick={() => { setRetireReason(''); setRetireOpen(true); }}>
           Retire
         </Button>
+        <Modal isOpen={versionOpen} onClose={() => setVersionOpen(false)} width="small">
+          <ModalHeader>
+            <ModalTitle>Create new version</ModalTitle>
+          </ModalHeader>
+          <ModalBody>
+            <p style={{ margin: '0 0 12px', fontSize: 'var(--ds-font-size-200)', color: T.subtle }}>
+              This copies the approved model — its perspectives, weights, measures, aggregation and
+              threshold scheme — into a new draft at version {(record.version ?? 1) + 1}. The approved
+              version stays unchanged and keeps producing results until the draft is approved.
+            </p>
+            <Textfield
+              value={versionReason}
+              onChange={(e) => setVersionReason(e.target.value)}
+              placeholder="Reason for the new version"
+              aria-label="Reason for the new version"
+              autoFocus
+            />
+          </ModalBody>
+          <ModalFooter>
+            <Button appearance="subtle" onClick={() => setVersionOpen(false)}>Cancel</Button>
+            <Button
+              appearance="primary"
+              // The RPC requires a reason; disabling here states that rule before the round trip
+              // rather than surfacing it as a server error.
+              isDisabled={busy || versionReason.trim() === ''}
+              onClick={() => {
+                setVersionOpen(false);
+                void act(() => createVersion(record.id, versionReason.trim()));
+              }}
+            >
+              Create draft version
+            </Button>
+          </ModalFooter>
+        </Modal>
         <Modal isOpen={retireOpen} onClose={() => setRetireOpen(false)} width="small">
           <ModalHeader>
             <ModalTitle>Retire record</ModalTitle>
@@ -540,6 +605,26 @@ function ModelIntegrityBand({ sum, count, measureIssues }: {
   );
 }
 
+/** M-D1 — the ONE aggregation vocabulary, byte-identical to
+ * strata_scorecard_models.rollup_method's CHECK. Never mint a fifth value here:
+ * a second dictionary one level down is the exact failure M-D0/M-D1 prevent. */
+const AGGREGATION_METHODS: StrataModelMeasure['aggregation_method'][] = [
+  'weighted_average', 'sum', 'min', 'custom',
+];
+const AGGREGATION_OPTIONS: SelectOption[] = AGGREGATION_METHODS.map((v) => ({ value: v, label: labelize(v) }));
+
+/** One editable measure ASSIGNMENT. Carries only the assignment's own facts —
+ * name/direction/unit/scheme are read from the KPI and are never drafted here. */
+interface MeasureDraft {
+  perspectiveId: string;
+  kpiId: string;
+  /** String while editing: an emptied number field must stay empty, not snap to 0. */
+  weight: string;
+  required: boolean;
+  aggregationMethod: StrataModelMeasure['aggregation_method'];
+  targetPolicy: StrataModelMeasure['target_policy'];
+}
+
 /**
  * Anchor-05 measures builder — perspective groups, each listing its measure
  * ASSIGNMENTS (M-D0). Every identity column (Measure / Direction / Threshold
@@ -547,12 +632,26 @@ function ModelIntegrityBand({ sum, count, measureIssues }: {
  * re-entered here — storing them on the assignment would be the
  * two-competing-dictionaries bug M-D0 exists to prevent. Only the assignment's
  * own facts (weight, required, aggregation) belong to the measure row.
+ *
+ * Authoring (part 2b) mirrors ModelWeights: local draft, editing flag,
+ * Save/Cancel, Save disabled while integrity fails, DB error surfaced verbatim.
+ * Save is a REPLACE-SET — it sends the full set across every group, so the draft
+ * is held flat and `order_index` is re-derived from position within each group.
+ * The 100-per-group rule is gated CLIENT-side only: the RPC deliberately does
+ * not enforce it, because anchor 05 gates *submit*, not *save*.
  */
-function MeasureGroups({ modelId, measures }: { modelId: string; measures: StrataModelMeasure[] }) {
+function MeasureGroups({ modelId, measures, canEdit }: {
+  modelId: string; measures: StrataModelMeasure[]; canEdit: boolean;
+}) {
   const perspectives = usePerspectives();
   const mp = useModelPerspectives(modelId);
   const kpis = useKpis();
   const kpiTypes = useKpiTypes();
+  const invalidate = useInvalidateStrata();
+  const [editing, setEditing] = useState(false);
+  const [draft, setDraft] = useState<MeasureDraft[]>([]);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const pName = new Map((perspectives.data ?? []).map((p) => [p.id, p.name]));
   const kpiById = new Map((kpis.data ?? []).map((k) => [k.id, k]));
@@ -561,18 +660,88 @@ function MeasureGroups({ modelId, measures }: { modelId: string; measures: Strat
 
   if (groups.length === 0) return null;
 
+  const startEdit = () => {
+    setDraft([...measures]
+      .sort((a, b) => a.order_index - b.order_index)
+      .map((m) => ({
+        perspectiveId: m.perspective_id,
+        kpiId: m.kpi_id,
+        weight: String(m.weight),
+        required: m.required,
+        aggregationMethod: m.aggregation_method,
+        targetPolicy: m.target_policy,
+      })));
+    setError(null);
+    setEditing(true);
+  };
+  // Cancel restores the persisted values by dropping the draft.
+  const cancel = () => { setEditing(false); setError(null); };
+
+  const patchRow = (kpiId: string, patch: Partial<MeasureDraft>) =>
+    setDraft((prev) => prev.map((d) => (d.kpiId === kpiId ? { ...d, ...patch } : d)));
+  const removeRow = (kpiId: string) => setDraft((prev) => prev.filter((d) => d.kpiId !== kpiId));
+  const addRow = (perspectiveId: string, kpiId: string) => setDraft((prev) => [...prev, {
+    perspectiveId, kpiId, weight: '0', required: false,
+    aggregationMethod: 'weighted_average', targetPolicy: 'default',
+  }]);
+
+  const draftRowsFor = (pid: string) => draft.filter((d) => d.perspectiveId === pid);
+  const draftTotalFor = (pid: string) => draftRowsFor(pid).reduce((a, d) => a + (Number(d.weight) || 0), 0);
+  // A group with no measures is not a failure — it mirrors ModelIntegrityBand,
+  // which flags only groups that HAVE measures. Blocking on empty groups would
+  // make the first save of a part-built model impossible (replace-set sends all).
+  const failingGroups = groups
+    .filter((g) => draftRowsFor(g.perspective_id).length > 0 && draftTotalFor(g.perspective_id) !== 100)
+    .map((g) => pName.get(g.perspective_id) ?? '—');
+  // A KPI is assigned at most once per MODEL, so the picker offers the rest.
+  const assigned = new Set(draft.map((d) => d.kpiId));
+  const kpiOptions: SelectOption[] = (kpis.data ?? [])
+    .filter((k) => !assigned.has(k.id))
+    .map((k) => ({ value: k.id, label: k.name }));
+
+  const save = async () => {
+    setSaving(true);
+    setError(null);
+    try {
+      const seen = new Map<string, number>();
+      await scorecardApi.setModelMeasures(modelId, draft.map((d) => {
+        const idx = seen.get(d.perspectiveId) ?? 0;
+        seen.set(d.perspectiveId, idx + 1);
+        return {
+          perspectiveId: d.perspectiveId,
+          kpiId: d.kpiId,
+          weight: Number(d.weight) || 0,
+          orderIndex: idx,
+          required: d.required,
+          aggregationMethod: d.aggregationMethod,
+          targetPolicy: d.targetPolicy,
+        };
+      }));
+      invalidate();
+      setEditing(false);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : String(e));
+    } finally {
+      setSaving(false);
+    }
+  };
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
       {groups.map((g) => {
         const rows = measures.filter((m) => m.perspective_id === g.perspective_id)
           .sort((a, b) => a.order_index - b.order_index);
-        const total = rows.reduce((a, m) => a + Number(m.weight ?? 0), 0);
+        const drows = draftRowsFor(g.perspective_id);
+        const total = editing
+          ? draftTotalFor(g.perspective_id)
+          : rows.reduce((a, m) => a + Number(m.weight ?? 0), 0);
+        const count = editing ? drows.length : rows.length;
         return (
           <div key={g.id} style={{ border: `1px solid ${T.border}`, borderRadius: 6, overflow: 'hidden' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap', padding: '8px 12px', background: T.sunken }}>
               <strong style={{ fontSize: 'var(--ds-font-size-200)', color: T.text }}>{pName.get(g.perspective_id) ?? '—'}</strong>
               <span style={metaStyle}>perspective weight <strong style={{ color: T.text }}>{g.weight}</strong></span>
-              {rows.length === 0 ? (
+              {count === 0 ? (
                 <span style={{ ...metaStyle, marginLeft: 'auto' }}>No measures assigned</span>
               ) : (
                 <span style={{ marginLeft: 'auto', fontSize: 'var(--ds-font-size-100)', fontWeight: 600,
@@ -581,7 +750,84 @@ function MeasureGroups({ modelId, measures }: { modelId: string; measures: Strat
                 </span>
               )}
             </div>
-            {rows.length > 0 ? (
+            {editing ? (
+              <div style={{ display: 'flex', flexDirection: 'column' }}>
+                {drows.map((d) => {
+                  const k = kpiById.get(d.kpiId);
+                  const dir = k?.kpi_type_id ? typeById.get(k.kpi_type_id)?.directionality : undefined;
+                  const kName = k?.name ?? '—';
+                  return (
+                    <div key={d.kpiId} style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap',
+                      padding: '8px 12px', borderTop: `1px solid ${T.border}`, fontSize: 'var(--ds-font-size-100)' }}>
+                      <span style={{ ...bodyStyle, fontWeight: 600, flex: '1 1 180px', minWidth: 0 }}>{kName}</span>
+                      <div style={{ width: 96 }}>
+                        <Textfield
+                          type="number"
+                          spacing="compact"
+                          value={d.weight}
+                          onChange={(e) => patchRow(d.kpiId, { weight: e.target.value })}
+                          aria-label={`Weight for ${kName}`}
+                          elemAfterInput={<span style={{ paddingRight: 'var(--ds-space-050)', color: T.subtlest }}>%</span>}
+                          testId={`strata-measure-weight-${d.kpiId}`}
+                        />
+                      </div>
+                      {/* Direction is READ from the KPI (M-D0) — never an input. */}
+                      <span style={metaStyle}>{dir ? (DIRECTIONALITY_LABEL[dir] ?? labelize(dir)) : '—'}</span>
+                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                        <Toggle
+                          isChecked={d.required}
+                          isDisabled={saving}
+                          onChange={() => patchRow(d.kpiId, { required: !d.required })}
+                          label={`Required — ${kName}`}
+                          testId={`strata-measure-required-${d.kpiId}`}
+                        />
+                        <span style={metaStyle}>Required</span>
+                      </span>
+                      <div style={{ width: 180 }}>
+                        <Select
+                          options={AGGREGATION_OPTIONS}
+                          value={AGGREGATION_OPTIONS.find((o) => o.value === d.aggregationMethod) ?? null}
+                          onChange={(o) => o && patchRow(d.kpiId, {
+                            aggregationMethod: o.value as StrataModelMeasure['aggregation_method'],
+                          })}
+                          isDisabled={saving}
+                          isSearchable={false}
+                          usePortal
+                          aria-label={`Aggregation for ${kName}`}
+                          testId={`strata-measure-aggregation-${d.kpiId}`}
+                        />
+                      </div>
+                      <Button
+                        spacing="compact"
+                        appearance="subtle"
+                        isDisabled={saving}
+                        onClick={() => removeRow(d.kpiId)}
+                        testId={`strata-measure-remove-${d.kpiId}`}
+                      >
+                        Remove
+                      </Button>
+                    </div>
+                  );
+                })}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap',
+                  padding: '8px 12px', borderTop: `1px solid ${T.border}` }}>
+                  <span style={metaStyle}>+ Add measure</span>
+                  <div style={{ minWidth: 240 }}>
+                    <Select
+                      options={kpiOptions}
+                      value={null}
+                      onChange={(o) => o && addRow(g.perspective_id, o.value)}
+                      isDisabled={saving || kpiOptions.length === 0}
+                      isLoading={kpis.isLoading}
+                      usePortal
+                      placeholder={kpiOptions.length === 0 ? 'Every KPI is already assigned' : 'Select a KPI…'}
+                      aria-label={`Add measure to ${pName.get(g.perspective_id) ?? 'perspective'}`}
+                      testId={`strata-measure-add-${g.perspective_id}`}
+                    />
+                  </div>
+                </div>
+              </div>
+            ) : rows.length > 0 ? (
               <div style={{ display: 'flex', flexDirection: 'column' }}>
                 {rows.map((m) => {
                   const k = kpiById.get(m.kpi_id);
@@ -602,6 +848,42 @@ function MeasureGroups({ modelId, measures }: { modelId: string; measures: Strat
           </div>
         );
       })}
+      {editing ? (
+        <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'center' }}>
+          <Button
+            spacing="compact"
+            appearance="primary"
+            isDisabled={saving || failingGroups.length > 0}
+            onClick={() => void save()}
+            testId={`strata-model-measures-save-${modelId}`}
+          >
+            {saving ? 'Saving…' : 'Save measures'}
+          </Button>
+          <Button spacing="compact" appearance="subtle" isDisabled={saving} onClick={cancel}>Cancel</Button>
+          {/* The block always states its reason — never a silent disable (anchor 05). */}
+          {failingGroups.length > 0 ? (
+            <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--ds-text-danger)' }}>
+              {failingGroups.join(', ')} must total 100 before saving
+            </span>
+          ) : null}
+        </div>
+      ) : canEdit ? (
+        <div>
+          <Button
+            spacing="compact"
+            appearance="subtle"
+            onClick={startEdit}
+            testId={`strata-model-measures-edit-${modelId}`}
+          >
+            Edit measures
+          </Button>
+        </div>
+      ) : null}
+      {error ? (
+        <SectionMessage appearance="error" title="Action rejected">
+          <p style={{ whiteSpace: 'pre-wrap' }}>{error}</p>
+        </SectionMessage>
+      ) : null}
     </div>
   );
 }
@@ -613,7 +895,9 @@ export function ScorecardModelsSection({ onError }: { onError: OnError }) {
   const roles = useStrataRoles();
   const list = q.data ?? [];
   // strata_scorecard_model_perspectives write is strategy_office (matches RLS).
-  const canEditWeights = (roles.data ?? []).includes('strategy_office');
+  // Role is necessary but NOT sufficient: RLS + the set_model_measures RPC also require the parent
+  // model to be status='draft' (P0-A, D-1). Authoring is gated per-model below, not here.
+  const hasAuthorRole = (roles.data ?? []).includes('strategy_office');
 
   const perspectivesForNames = usePerspectives();
   const perspectiveNameById = new Map((perspectivesForNames.data ?? []).map((p) => [p.id, p.name]));
@@ -632,7 +916,7 @@ export function ScorecardModelsSection({ onError }: { onError: OnError }) {
         The builder governs perspective weights, measures, integrity and lifecycle. Perspective weights must total 100,
         and each perspective's measure weights must total 100, before a model can be submitted for approval. A measure is
         an assignment of an existing KPI — its name, direction and threshold scheme are read from the KPI, never re-entered
-        here. Assigning measures from this screen, preview-with-data and version diff are later slices.
+        here. Preview-with-data and version diff are later slices.
       </p>
       <SectionState query={q} empty={list.length === 0}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
@@ -657,6 +941,10 @@ export function ScorecardModelsSection({ onError }: { onError: OnError }) {
             const submitBlockedReason = m.status === 'draft' && !integrityOk
               ? (wcount === 0 ? 'Add perspective weights totalling 100 first' : `Weights total ${wsum} — must total 100`)
               : undefined;
+            // D-1: only a DRAFT model's aggregate may be authored. Enforced at RLS and in the
+            // set_model_measures RPC; mirrored here so the reason is visible up front rather than
+            // discovered as a failed save. The UI is not the boundary — it is the explanation.
+            const canAuthor = hasAuthorRole && m.status === 'draft';
             return (
               <GovRecordCard
                 key={m.id}
@@ -668,13 +956,20 @@ export function ScorecardModelsSection({ onError }: { onError: OnError }) {
                 submitBlockedReason={submitBlockedReason}
               >
                 <ModelIntegrityBand sum={wsum} count={wcount} measureIssues={measureIssues} />
+                {hasAuthorRole && m.status !== 'draft' ? (
+                  <span style={metaStyle} data-testid="strata-model-immutable-note">
+                    {labelize(m.status)} definitions are immutable — to change this model&apos;s perspective
+                    weights or measures, use Create new version. Version {m.version} keeps producing results
+                    until the new draft is approved.
+                  </span>
+                ) : null}
                 <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
                   <span style={metaStyle}>Scope {labelize(m.owner_scope_type)}</span>
                   <span style={metaStyle}>Rollup {labelize(m.rollup_method)}</span>
                   <span style={metaStyle}>Granularity {labelize(m.period_granularity)}</span>
                 </div>
-                <ModelWeights model={m} canEditWeights={canEditWeights} />
-                <MeasureGroups modelId={m.id} measures={myMeasures} />
+                <ModelWeights model={m} canEditWeights={canAuthor} />
+                <MeasureGroups modelId={m.id} measures={myMeasures} canEdit={canAuthor} />
               </GovRecordCard>
             );
           })}
@@ -712,9 +1007,401 @@ export function bandRows(bands: ThresholdBand[]): BandRow[] {
   }));
 }
 
+/**
+ * R5 — band editor.
+ *
+ * Every rule below is sourced from the DB, not invented (probed on staging 2026-07-17):
+ *
+ *  - SHAPE: bands is `[{key,label,min_score,appearance?}, …]`. There is NO `max`/upper bound on a
+ *    band — a band is a FLOOR only. The "To <" shown is derived, never stored.
+ *  - RESOLUTION: strata_band_from_score() picks `min_score <= score ORDER BY min_score DESC LIMIT 1`,
+ *    falling back to the LOWEST min_score band when the score is under every floor. So array order
+ *    is irrelevant (the resolver sorts), and there is no gap or overlap to police — floors alone
+ *    cannot overlap, and the bottom is covered by that fallback.
+ *  - CONSTRAINT: the ONLY DB check on the column is `jsonb_typeof(bands) = 'array'`. The database
+ *    does NOT enforce ordering, coverage, non-overlap, unique keys or unique floors.
+ *
+ * Because of that last point the editor blocks ONLY what is needed to construct a band at all
+ * (a key, a label, a numeric floor — form-level requirements). It does NOT invent a governance
+ * rule the server would happily accept. Where a saveable configuration is nonetheless ambiguous
+ * (two bands sharing a floor => the resolver's LIMIT 1 picks between them non-deterministically),
+ * the editor says so as an ADVISORY and still lets it save — the server is the authority on what
+ * is legal, and pretending otherwise would be a rule we made up.
+ */
+const BAND_APPEARANCES: LozengeAppearance[] = ['default', 'inprogress', 'success', 'removed', 'moved', 'new'];
+/** Options are the ADS lozenge appearance NAMES — the component owns the colour, we never map one.
+ * The preview renders a real StatusLozenge so the author sees the colour ADS will actually use. */
+const APPEARANCE_OPTIONS: SelectOption[] = BAND_APPEARANCES.map((a) => ({
+  value: a, label: <StatusLozenge status={a} label={a} appearance={a} />,
+}));
+
+/** One editable band. min_score is held as a string while typing (an empty field is not 0). */
+interface BandDraft { rowId: string; key: string; label: string; minScore: string; appearance: string | null }
+
+const toDraft = (bands: ThresholdBand[]): BandDraft[] =>
+  [...bands]
+    .sort((a, b) => b.min_score - a.min_score)
+    .map((b, i) => ({
+      rowId: `${b.key}-${i}`, key: b.key, label: b.label,
+      minScore: String(b.min_score), appearance: b.appearance ?? null,
+    }));
+
+/** Exported for tests: the draft→payload mapping and the blocking rules, in one place.
+ * `blocked` is the list of things that make a band unconstructable — NOT a policy opinion. */
+export function bandDraftToPayload(draft: BandDraft[]): { bands: ThresholdBand[]; blocked: string[]; advisories: string[] } {
+  const blocked: string[] = [];
+  const advisories: string[] = [];
+  if (draft.length === 0) blocked.push('A scheme with no bands can never rate anything — add at least one band.');
+  draft.forEach((d, i) => {
+    const where = d.label.trim() || d.key.trim() || `Band ${i + 1}`;
+    if (d.key.trim() === '') blocked.push(`${where}: a band key is required — it is the value stored against every rated KPI.`);
+    if (d.label.trim() === '') blocked.push(`${where}: a band label is required.`);
+    if (d.minScore.trim() === '' || !Number.isFinite(Number(d.minScore))) {
+      blocked.push(`${where}: the floor must be a number — the rating query casts it to numeric.`);
+    }
+  });
+  const keys = draft.map((d) => d.key.trim()).filter((k) => k !== '');
+  const dupKeys = keys.filter((k, i) => keys.indexOf(k) !== i);
+  for (const k of [...new Set(dupKeys)]) {
+    blocked.push(`Two bands share the key “${k}” — a rated KPI stores only the key, so the two would be indistinguishable.`);
+  }
+  const floors = draft.map((d) => Number(d.minScore)).filter((n) => Number.isFinite(n));
+  const dupFloors = floors.filter((n, i) => floors.indexOf(n) !== i);
+  for (const f of [...new Set(dupFloors)]) {
+    // Advisory, not blocked: the database accepts this. It is the resolver's ORDER BY … LIMIT 1
+    // that becomes arbitrary between the tied bands, and that is worth saying out loud.
+    advisories.push(`Two bands start at ${f}. The database accepts this, but the rating query takes the highest floor at or below a score and stops at the first match — with a tie, which of the two wins is not determined.`);
+  }
+  const bands: ThresholdBand[] = draft.map((d) => ({
+    key: d.key.trim(),
+    label: d.label.trim(),
+    min_score: Number(d.minScore),
+    // Zero-assumption: an unset appearance stays unset. We do not default it to a colour.
+    ...(d.appearance ? { appearance: d.appearance } : {}),
+  }));
+  return { bands, blocked, advisories };
+}
+
+/** A band key rendered as the lozenge ADS will actually use — the component owns the colour, we
+ * never map one. Zero-assumption: no key => a dash, not a fabricated band. A key with no matching
+ * band definition keeps the key as its own label rather than inventing one. */
+function bandCell(bands: ThresholdBand[], key: string | null) {
+  if (!key) return <span style={bodyStyle}>—</span>;
+  const b = bands.find((x) => x.key === key);
+  return <StatusLozenge status={key} label={b?.label ?? key} appearance={(b?.appearance as LozengeAppearance) ?? 'default'} />;
+}
+
+const num = (n: number | null, dp = 2) =>
+  // Zero-assumption: a missing number is a dash. Never 0 — 0 is a real score.
+  n === null || n === undefined ? '—' : n.toFixed(dp);
+
+/** Built per render from both band sets (each lozenge needs its own set's label+appearance).
+ * Deliberately a plain function, not a useMemo: a memo dep here buys nothing and TDZ-risks the
+ * const it would depend on. */
+function previewMoveColumns(current: ThresholdBand[], candidate: ThresholdBand[]): Column<StrataThresholdPreviewMove>[] {
+  return [
+    {
+      id: 'entity', label: 'Value', flex: true,
+      cell: ({ row }) => (
+        <div style={{ display: 'flex', flexDirection: 'column' }}>
+          {/* Zero-assumption: an entity we cannot name shows a dash, never a made-up label. */}
+          <span style={bodyStyle}>{row.entity_name ?? '—'}</span>
+          <span style={captionStyle}>{labelize(row.entity_type)}{row.metric_key ? ` · ${row.metric_key}` : ''}</span>
+        </div>
+      ),
+    },
+    { id: 'period', label: 'Period', width: 22, cell: ({ row }) => <span style={bodyStyle}>{row.period_name ?? '—'}</span> },
+    {
+      id: 'score', label: 'Score', width: 14,
+      cell: ({ row }) => <span style={{ ...bodyStyle, fontVariantNumeric: 'tabular-nums' }}>{num(row.score)}</span>,
+    },
+    { id: 'today', label: 'Rated today', width: 18, cell: ({ row }) => bandCell(current, row.band_today) },
+    { id: 'candidate', label: 'Candidate would rate', width: 24, cell: ({ row }) => bandCell(candidate, row.band_candidate) },
+  ];
+}
+
+interface DistRow { key: string; count_today: number; count_candidate: number }
+
+function previewDistColumns(current: ThresholdBand[], candidate: ThresholdBand[]): Column<DistRow>[] {
+  return [
+    { id: 'band', label: 'Band', flex: true, cell: ({ row }) => bandCell(candidate.some((b) => b.key === row.key) ? candidate : current, row.key) },
+    {
+      id: 'today', label: 'Now', width: 14,
+      cell: ({ row }) => <span style={{ ...bodyStyle, fontVariantNumeric: 'tabular-nums' }}>{row.count_today}</span>,
+    },
+    {
+      id: 'candidate', label: 'Under candidate', width: 20,
+      cell: ({ row }) => <span style={{ ...bodyStyle, fontVariantNumeric: 'tabular-nums' }}>{row.count_candidate}</span>,
+    },
+    {
+      id: 'delta', label: 'Change', width: 14,
+      cell: ({ row }) => {
+        const d = row.count_candidate - row.count_today;
+        // Sign carries the meaning; colour would have to invent a judgement about whether a band
+        // growing is good or bad, and nothing in the config says which.
+        return <span style={{ ...bodyStyle, fontVariantNumeric: 'tabular-nums' }}>{d === 0 ? '—' : d > 0 ? `+${d}` : String(d)}</span>;
+      },
+    },
+  ];
+}
+
+/**
+ * R5 capability 3 — preview-with-data, for threshold schemes.
+ *
+ * Exported as its own section so it can be tested directly rather than through the page.
+ *
+ * ⚠️ THE WORDING HERE IS LOAD-BEARING. This panel must never say the listed values "will change".
+ * Saving bands does NOT re-rate a single stored row: a rating is written once, at calculation time,
+ * so new bands govern FUTURE calculations only, and locked snapshots never re-rate at all (D-1).
+ * The honest claim — and the useful one — is "the candidate policy would rate these differently".
+ *
+ * The panel renders `coverage_note` VERBATIM. It is a lower bound: values whose provenance carries
+ * no threshold_scheme_id, or that have no score, are invisible to the preview. Absence from the
+ * list is not evidence, and re-wording the server's own statement of its limits would soften it.
+ */
+export function ThresholdPreviewPanel({
+  scheme, bands, isDisabled,
+}: { scheme: StrataThresholdScheme; bands: ThresholdBand[]; isDisabled?: boolean }) {
+  const [preview, setPreview] = useState<StrataThresholdPreview | null>(null);
+  const [running, setRunning] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const run = async () => {
+    setRunning(true);
+    setError(null);
+    try {
+      setPreview(await configApi.previewThresholdScheme(scheme.id, bands));
+    } catch (e) {
+      // Verbatim — the server's refusal is the message.
+      setError(e instanceof Error ? e.message : String(e));
+      setPreview(null);
+    } finally {
+      setRunning(false);
+    }
+  };
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--ds-space-100)' }} data-testid={`strata-threshold-preview-${scheme.id}`}>
+      <div>
+        <Button
+          spacing="compact" isDisabled={isDisabled || running}
+          onClick={() => void run()} testId={`strata-preview-run-${scheme.id}`}
+        >
+          {running ? 'Previewing…' : 'Preview against data'}
+        </Button>
+      </div>
+
+      {error ? (
+        <SectionMessage appearance="error" title="Preview rejected">
+          <p style={{ whiteSpace: 'pre-wrap' }}>{error}</p>
+        </SectionMessage>
+      ) : null}
+
+      {preview ? (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--ds-space-100)' }} data-testid="strata-preview-result">
+          <p style={captionStyle} data-testid="strata-preview-summary">
+            {preview.moved_count === 0
+              ? `No change: all ${preview.evaluated} rated value${preview.evaluated === 1 ? '' : 's'} keep the same band under these bands.`
+              : `${preview.moved_count} of ${preview.evaluated} rated values would be rated differently by these bands.`}
+            {' '}These values are not re-rated by saving — a rating is written when a value is calculated, so
+            new bands apply to future calculations only, and locked snapshots are never re-rated.
+          </p>
+
+          {preview.band_distribution.length > 0 ? (
+            <JiraTable<DistRow>
+              columns={previewDistColumns(preview.current_bands, preview.candidate_bands)}
+              data={preview.band_distribution}
+              getRowId={(d) => d.key}
+              showRowCount={false}
+              ariaLabel={`Band populations now and under the candidate bands for ${scheme.name}`}
+            />
+          ) : null}
+
+          {preview.moves.length > 0 ? (
+            <JiraTable<StrataThresholdPreviewMove>
+              columns={previewMoveColumns(preview.current_bands, preview.candidate_bands)}
+              data={preview.moves}
+              getRowId={(m) => `${m.entity_id}-${m.period_id}-${m.metric_key}`}
+              showRowCount={false}
+              ariaLabel={`Values the candidate bands would rate differently for ${scheme.name}`}
+            />
+          ) : null}
+
+          {/* The cap declares its own overflow rather than truncating in silence. */}
+          {preview.moves_not_named > 0 ? (
+            <SectionMessage appearance="warning" title="Not every mover is listed">
+              <p>
+                {`${preview.moves_named} of ${preview.moved_count} are listed above. The remaining ${preview.moves_not_named} are counted but not named here.`}
+              </p>
+            </SectionMessage>
+          ) : null}
+
+          {preview.moves_in_locked_snapshots > 0 ? (
+            <SectionMessage appearance="information" title="Some are in locked snapshots">
+              <p>
+                {`${preview.moves_in_locked_snapshots} of these values sit in locked snapshots. Those are reported so the decision is informed — they are never re-rated, and published history does not move.`}
+              </p>
+            </SectionMessage>
+          ) : null}
+
+          {preview.stored_status_drift > 0 ? (
+            <SectionMessage appearance="warning" title="Stored ratings already disagree with the current bands">
+              <p>
+                {`${preview.stored_status_drift} stored value${preview.stored_status_drift === 1 ? '' : 's'} already carry a rating that the scheme's CURRENT bands would not give them — they were rated under an earlier version. "Rated today" above is the current bands' answer, not what is stored.`}
+              </p>
+            </SectionMessage>
+          ) : null}
+
+          {/* VERBATIM. The server states the limits of its own analysis; re-wording it softens it. */}
+          <SectionMessage appearance="information" title="What this preview cannot see">
+            <p style={{ whiteSpace: 'pre-wrap' }} data-testid="strata-preview-coverage">{preview.coverage_note}</p>
+          </SectionMessage>
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+/** The band editor for a DRAFT scheme. Rendered only where RLS would permit the write. */
+export function ThresholdBandEditor({ scheme, onDone }: { scheme: StrataThresholdScheme; onDone: () => void }) {
+  const invalidate = useInvalidateStrata();
+  const [draft, setDraft] = useState<BandDraft[]>(() => toDraft(scheme.bands ?? []));
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const { bands, blocked, advisories } = bandDraftToPayload(draft);
+  const patch = (rowId: string, p: Partial<BandDraft>) =>
+    setDraft((prev) => prev.map((d) => (d.rowId === rowId ? { ...d, ...p } : d)));
+
+  const save = async () => {
+    setSaving(true);
+    setError(null);
+    try {
+      await configApi.updateThresholdBands(scheme.id, bands);
+      invalidate();
+      onDone();
+    } catch (e) {
+      // Verbatim — never re-worded.
+      setError(e instanceof Error ? e.message : String(e));
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--ds-space-100)' }} data-testid={`strata-band-editor-${scheme.id}`}>
+      {draft.map((d, i) => (
+        <div key={d.rowId} style={{ display: 'flex', alignItems: 'center', gap: 'var(--ds-space-100)', flexWrap: 'wrap' }}>
+          <div style={{ width: 120 }}>
+            <Textfield
+              spacing="compact" value={d.key} isDisabled={saving}
+              onChange={(e) => patch(d.rowId, { key: e.target.value })}
+              aria-label={`Key for band ${i + 1}`} placeholder="Key"
+              testId={`strata-band-key-${i}`}
+            />
+          </div>
+          <div style={{ width: 160 }}>
+            <Textfield
+              spacing="compact" value={d.label} isDisabled={saving}
+              onChange={(e) => patch(d.rowId, { label: e.target.value })}
+              aria-label={`Label for band ${i + 1}`} placeholder="Label"
+              testId={`strata-band-label-${i}`}
+            />
+          </div>
+          <div style={{ width: 120 }}>
+            <Textfield
+              type="number" spacing="compact" value={d.minScore} isDisabled={saving}
+              onChange={(e) => patch(d.rowId, { minScore: e.target.value })}
+              aria-label={`Floor score for band ${i + 1}`} placeholder="From ≥"
+              testId={`strata-band-min-${i}`}
+            />
+          </div>
+          <div style={{ width: 170 }}>
+            <Select
+              options={APPEARANCE_OPTIONS}
+              value={APPEARANCE_OPTIONS.find((o) => o.value === d.appearance) ?? null}
+              onChange={(o) => patch(d.rowId, { appearance: o ? String(o.value) : null })}
+              isDisabled={saving} isSearchable={false} usePortal isClearable
+              placeholder="Appearance"
+              aria-label={`Appearance for band ${i + 1}`}
+            />
+          </div>
+          <Button
+            spacing="compact" appearance="subtle" isDisabled={saving}
+            onClick={() => setDraft((prev) => prev.filter((x) => x.rowId !== d.rowId))}
+            testId={`strata-band-remove-${i}`}
+          >
+            Remove
+          </Button>
+        </div>
+      ))}
+      <div>
+        <Button
+          spacing="compact" isDisabled={saving}
+          onClick={() => setDraft((prev) => [...prev, {
+            rowId: `new-${prev.length}-${Date.now()}`, key: '', label: '', minScore: '', appearance: null,
+          }])}
+          testId={`strata-band-add-${scheme.id}`}
+        >
+          Add band
+        </Button>
+      </div>
+      {/* The resolver's semantics, made visible: the same derivation the read-only table uses. */}
+      {blocked.length === 0 && bands.length > 0 ? (
+        <JiraTable<BandRow>
+          columns={THRESHOLD_BAND_COLUMNS}
+          data={bandRows(bands)}
+          getRowId={(b) => b.key}
+          showRowCount={false}
+          ariaLabel={`Resulting bands for ${scheme.name}`}
+        />
+      ) : null}
+      {blocked.length > 0 ? (
+        <SectionMessage appearance="error" title="Cannot save yet">
+          <ul style={{ margin: 0, paddingLeft: 'var(--ds-space-200)' }}>
+            {blocked.map((b) => <li key={b}>{b}</li>)}
+          </ul>
+        </SectionMessage>
+      ) : null}
+      {/* R5 cap.3 — preview the CANDIDATE bands against real data before saving. Offered only when
+          the draft is actually well-formed: previewing bands that cannot be constructed would ask
+          the server a question about a configuration that does not exist. */}
+      {blocked.length === 0 && bands.length > 0 ? (
+        <ThresholdPreviewPanel scheme={scheme} bands={bands} isDisabled={saving} />
+      ) : null}
+      {advisories.length > 0 ? (
+        <SectionMessage appearance="warning" title="Saveable, but ambiguous">
+          <ul style={{ margin: 0, paddingLeft: 'var(--ds-space-200)' }}>
+            {advisories.map((a) => <li key={a}>{a}</li>)}
+          </ul>
+        </SectionMessage>
+      ) : null}
+      <div style={{ display: 'flex', gap: 'var(--ds-space-100)', flexWrap: 'wrap' }}>
+        <Button
+          spacing="compact" appearance="primary" isDisabled={saving || blocked.length > 0}
+          onClick={() => void save()} testId={`strata-band-save-${scheme.id}`}
+        >
+          {saving ? 'Saving…' : 'Save bands'}
+        </Button>
+        <Button spacing="compact" appearance="subtle" isDisabled={saving} onClick={onDone}>Cancel</Button>
+      </div>
+      {error ? (
+        <SectionMessage appearance="error" title="Action rejected">
+          <p style={{ whiteSpace: 'pre-wrap' }}>{error}</p>
+        </SectionMessage>
+      ) : null}
+    </div>
+  );
+}
+
 export function ThresholdsSection({ onError }: { onError: OnError }) {
   const q = useThresholdSchemes();
+  const roles = useStrataRoles();
+  const userId = useStrataUserId();
+  const [editingId, setEditingId] = useState<string | null>(null);
   const list = q.data ?? [];
+  // Mirrors strata_is_admin() — useStrataRoles already folds the platform-admin RPC into the
+  // role list, so this is the server's own predicate, not an approximation of it.
+  const isStrataAdmin = (roles.data ?? []).includes('strata_admin');
   const pending = list.filter((s) => s.status === 'pending_approval');
   // Sibling-version count per name → surfaces "compare versions" affordance honestly.
   const versionsByName = new Map<string, number>();
@@ -724,8 +1411,9 @@ export function ThresholdsSection({ onError }: { onError: OnError }) {
     <StrataPanel title="Threshold schemes" icon={<BarChart3 size={16} />} count={list.length} testId="strata-admin-thresholds">
       <p style={captionStyle}>
         A threshold scheme turns an achievement score into a rating — the bands below are governed policy, effective-dated so
-        past periods keep their scheme version. Editing bands and the server-calculated impact preview are later features;
-        today you can review the boundaries, compare versions and manage lifecycle.
+        past periods keep their scheme version. A band is a floor: a score is rated by the highest floor at or below it, so
+        bands need no upper bound. Draft bands are editable; an approved scheme is immutable and changing it means a new
+        version. The server-calculated impact preview is a later feature.
       </p>
       {pending.length > 0 ? (
         <div style={{ marginBottom: 12 }}>
@@ -739,15 +1427,38 @@ export function ThresholdsSection({ onError }: { onError: OnError }) {
       ) : null}
       <SectionState query={q} empty={list.length === 0}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-          {list.map((s) => (
-            <GovRecordCard key={s.id} name={s.name} table="strata_threshold_schemes" record={s} onError={onError}>
+          {list.map((s) => {
+            // The RLS UPDATE predicate, mirrored exactly: status='draft' AND (created_by = auth.uid()
+            // OR strata_is_admin()). Deliberately NOT the revision RPC's strategy_office gate — that
+            // rule governs cloning an approved scheme, not editing a draft's bands.
+            const isAuthor = s.created_by != null && userId.data != null && s.created_by === userId.data;
+            const canEditBands = s.status === 'draft' && (isAuthor || isStrataAdmin);
+            // Why the control is absent — never a silent hide (anchor 05 states rules).
+            const noEditReason = s.status !== 'draft'
+              ? `${labelize(s.status)} definitions are immutable — to change these bands, use Create new version. Version ${s.version} keeps producing ratings until the new draft is approved.`
+              : (roles.isLoading || userId.isLoading
+                ? null
+                : 'Only this draft’s author or a strata_admin can edit its bands — the database refuses anyone else.');
+            return (
+            <GovRecordCard key={s.id} name={s.name} table="strata_threshold_schemes" record={s} onError={onError}
+              headerActions={canEditBands && editingId !== s.id ? (
+                <Button spacing="compact" onClick={() => setEditingId(s.id)} testId={`strata-band-edit-${s.id}`}>
+                  Edit bands
+                </Button>
+              ) : null}
+            >
               {s.description ? <span style={metaStyle}>{s.description}</span> : null}
               {(versionsByName.get(s.name) ?? 0) > 1 ? (
                 <span style={{ fontSize: 'var(--ds-font-size-100)', color: T.subtlest }}>
                   Multiple versions of “{s.name}” exist — compare the bands across the cards to see what a version changes.
                 </span>
               ) : null}
-              {(s.bands ?? []).length > 0 ? (
+              {!canEditBands && noEditReason ? (
+                <span style={metaStyle} data-testid={`strata-band-noedit-${s.id}`}>{noEditReason}</span>
+              ) : null}
+              {editingId === s.id ? (
+                <ThresholdBandEditor scheme={s} onDone={() => setEditingId(null)} />
+              ) : (s.bands ?? []).length > 0 ? (
                 <JiraTable<BandRow>
                   columns={THRESHOLD_BAND_COLUMNS}
                   data={bandRows(s.bands)}
@@ -761,7 +1472,8 @@ export function ThresholdsSection({ onError }: { onError: OnError }) {
                 <span style={metaStyle}>Confidence threshold {s.confidence_threshold ?? '—'}</span>
               </div>
             </GovRecordCard>
-          ))}
+            );
+          })}
         </div>
       </SectionState>
     </StrataPanel>

@@ -9,7 +9,10 @@
 
 export type GovernedStatus = 'draft' | 'pending_approval' | 'approved' | 'retired' | 'superseded';
 export type DataState = 'live' | 'draft' | 'pending_validation' | 'locked';
-export type ValidationStatus = 'pending' | 'validated' | 'rejected' | 'quarantined';
+// E-6: accepted_with_exception COUNTS after Strategy Office authorization but is NOT independent
+// validation — it never collapses into 'validated'. reversed = superseded by a reversal (D-7/E-5).
+export type ValidationStatus =
+  | 'pending' | 'validated' | 'rejected' | 'quarantined' | 'accepted_with_exception' | 'reversed';
 
 export interface GovernedEnvelope {
   version: number;
@@ -32,6 +35,61 @@ export interface ThresholdBand {
   min_score: number;
   /** ADS lozenge appearance name, config-owned (e.g. 'success' | 'moved' | 'removed') */
   appearance?: string;
+}
+
+/**
+ * R5 capability 3 · strata_preview_threshold_scheme.
+ *
+ * ⚠️ `moves` is a COUNTERFACTUAL, not a changelog. Saving the candidate bands would NOT re-rate any
+ * row listed here: a rating (status_key) is written once, at calculation time, so new bands govern
+ * FUTURE calculations only, and locked snapshots are never re-rated (D-1). Read a move as "the
+ * candidate policy would rate this value differently" — never as "this row will change".
+ */
+export interface StrataThresholdPreviewMove {
+  entity_type: string;
+  entity_id: string;
+  /** NULL when the entity_type has no name source. Render a dash — never invent a label. */
+  entity_name: string | null;
+  period_id: string | null;
+  period_name: string | null;
+  metric_key: string | null;
+  value: number | null;
+  score: number | null;
+  /** Band under the scheme's CURRENT bands. NULL is a real answer, not "unknown". */
+  band_today: string | null;
+  /** Band under the CANDIDATE bands. */
+  band_candidate: string | null;
+  in_locked_snapshot: boolean;
+}
+
+export interface StrataThresholdBandCount {
+  key: string;
+  count_today: number;
+  count_candidate: number;
+}
+
+export interface StrataThresholdPreview {
+  scheme: { id: string; name: string; status: string; version: number };
+  current_bands: ThresholdBand[];
+  candidate_bands: ThresholdBand[];
+  /** Values that could be re-banded: attributable to this scheme AND carrying a score. */
+  evaluated: number;
+  moved_count: number;
+  /** The movers, NAMED — capped; `moves_not_named` reports the overflow rather than hiding it. */
+  moves: StrataThresholdPreviewMove[];
+  moves_named: number;
+  moves_not_named: number;
+  band_distribution: StrataThresholdBandCount[];
+  /** Movers sitting in locked snapshots — informational: those never re-rate. */
+  moves_in_locked_snapshots: number;
+  /** Stored status_key disagreeing with a recompute under CURRENT bands. 0 on staging today. */
+  stored_status_drift: number;
+  not_visible: {
+    values_with_no_scheme_in_provenance: number;
+    values_for_this_scheme_with_no_score: number;
+  };
+  /** What the analysis cannot see. Absence from `moves` is not evidence. Render it VERBATIM. */
+  coverage_note: string;
 }
 
 export interface StrataPerspective extends GovernedEnvelope {
@@ -327,6 +385,22 @@ export interface StrataKpi extends GovernedEnvelope {
   escalation_owner_id: string | null;
   data_source_id: string | null;
   threshold_scheme_id: string | null;
+  /**
+   * F-9: stable logical KPI identity, shared by EVERY version of this KPI and unchanged across a
+   * revision. `id` identifies a VERSION (a governed definition); `lineage_id` identifies the KPI as
+   * a continuing business concept. Relationships resolve through it to the version effective for a
+   * date; historical facts keep their own version id and are never repointed.
+   */
+  lineage_id: string;
+  /**
+   * F-9 revision materiality, RELATIVE TO the version this row supersedes.
+   * NULL ⇔ this row is not a revision — it never means "unclassified" (DB CHECK:
+   * supersedes_id IS NULL OR revision_class IS NOT NULL).
+   * `material` = formula/unit/direction/scope/source-semantic change: consumers MUST show a
+   * methodology break and must not imply comparability. `non_material` = wording/owner/metadata
+   * only: continuous trend permitted, with exact provenance.
+   */
+  revision_class: 'material' | 'non_material' | null;
 }
 
 export interface StrataKpiFormulaVersion {
@@ -626,7 +700,9 @@ export interface StrataPortfolio {
 
 export type BenefitLifecycleStage =
   | 'identified' | 'qualified' | 'approved' | 'baselined' | 'in_flight'
-  | 'forecast_revised' | 'realized' | 'finance_validated' | 'closed';
+  // D-4: 'finance_validated' is GONE — no Finance role has ever existed in STRATA, so the label
+  // claimed an assurance nobody performed. The DB CHECK now rejects it outright.
+  | 'forecast_revised' | 'realized' | 'independently_validated' | 'closed';
 
 export interface StrataBenefit {
   id: string;
@@ -644,6 +720,11 @@ export interface StrataBenefit {
   confidence: number | null;
 }
 
+/** D-4 · E-6 · F-7 — the six states a benefit value's assurance can be in. */
+export type BenefitAssuranceStatus =
+  | 'reported' | 'owner_confirmed' | 'independently_validated'
+  | 'accepted_with_exception' | 'rejected' | 'reversed';
+
 export interface StrataBenefitValue {
   id: string;
   benefit_id: string;
@@ -652,7 +733,10 @@ export interface StrataBenefitValue {
   value: number;
   upload_run_id: string | null;
   submitted_by: string | null;
-  validation_status: 'pending' | 'validated' | 'rejected';
+  /** D-4/E-6 assurance. reported = no assurance yet. owner_confirmed COUNTS (F-7) but is not
+   *  independent validation. accepted_with_exception COUNTS by SO authorization and stays visibly
+   *  distinct. rejected/reversed do not count. */
+  validation_status: BenefitAssuranceStatus;
   validated_by: string | null;
   validated_at: string | null;
 }
@@ -682,6 +766,43 @@ export interface StrataGateInstance {
 }
 
 // ── Lineage / governance ─────────────────────────────────────────────────────
+/**
+ * R3 · strata_data_source_blast_radius. Three classes, deliberately — the authorization names
+ * "blocking and migration", but HISTORICAL is the important third: locked snapshots / issued packs
+ * that used the source. It is NEVER blocking (or any source with history could never retire) and
+ * never "migratable" (that would mean rewriting governed history — D-1 forbids it).
+ */
+export interface StrataBlastRadiusItem {
+  type: string;
+  id: string;
+  name?: string | null;
+  status?: string | null;
+  version?: number | null;
+  lineage_id?: string | null;
+  snapshot_key?: string | null;
+  locked_at?: string | null;
+  issue_status?: string | null;
+  /** Why this row is in this class — rendered verbatim; never re-worded in the UI. */
+  reason?: string | null;
+}
+
+export interface StrataBlastRadius {
+  data_source: { id: string; name: string; status: StrataDataSource['status'] };
+  upload_runs: number | null;
+  kpi_actuals_from_source: number;
+  calculated_values_from_source: number;
+  /** APPROVED KPIs — retirement is refused while any exist. */
+  blocking: StrataBlastRadiusItem[];
+  /** Not-yet-approved KPIs — re-point them. */
+  migration: StrataBlastRadiusItem[];
+  /** Locked snapshots — informational only. Never blocking, never migratable. */
+  historical: StrataBlastRadiusItem[];
+  board_packs_over_affected_snapshots: StrataBlastRadiusItem[];
+  can_retire: boolean;
+  /** What this analysis CANNOT see. Absence from `historical` is not evidence. Render it. */
+  coverage_note: string;
+}
+
 export interface StrataDataSource {
   id: string;
   name: string;
@@ -720,6 +841,54 @@ export interface StrataStagingRow {
   raw: Record<string, unknown>;
   target_entity: string | null;
   validation_status: ValidationStatus | 'valid';
+}
+
+// ── Mapping memory (capability 11) ───────────────────────────────────────────
+
+/**
+ * One immutable confirmation that an incoming column means a template column
+ * (`strata_mapping_memory`). Append-only: rows are never updated or deleted, so
+ * current state is DERIVED by `strata_suggest_mapping` rather than stored.
+ */
+export interface StrataMappingMemory {
+  id: string;
+  data_source_id: string;
+  template_id: string;
+  /** The incoming column header, verbatim. */
+  source_key: string;
+  /** Normalised match key (lowercase alphanumerics) — mirrors the wizard heuristic. */
+  source_key_norm: string;
+  /** A column of the template's `column_schema`. Never a KPI — the KPI is a cell value. */
+  target_column: string;
+  confirmed_by: string;
+  confirmed_at: string;
+  /** The run the confirmation was made during. `null` = NOT RECORDED, never "no run". */
+  upload_run_id: string | null;
+  created_at: string;
+}
+
+/**
+ * A remembered mapping as offered to a human — a SUGGESTION, never an application.
+ *
+ * `status`:
+ *  - `none`      — nothing remembered (or every candidate was dropped as retired). Render nothing.
+ *  - `suggested` — exactly one surviving candidate. `suggested_target` is set; the human still confirms.
+ *  - `conflict`  — more than one surviving candidate. `suggested_target` is `null` ON PURPOSE and
+ *                  `candidates` names them all. The system reports the conflict; it does not resolve it.
+ *
+ * Every provenance field is `null` unless `status === 'suggested'`: on a conflict there is no single
+ * "last confirmed by", and attributing the conflict to one candidate would be a fabrication.
+ */
+export interface StrataMappingSuggestion {
+  source_key: string;
+  status: 'none' | 'suggested' | 'conflict';
+  suggested_target: string | null;
+  /** Every surviving candidate, named. `null` when `status === 'none'`. */
+  candidates: string[] | null;
+  last_confirmed_by: string | null;
+  last_confirmed_by_name: string | null;
+  last_confirmed_at: string | null;
+  times_confirmed: number | null;
 }
 
 export interface StrataValidationResult {
@@ -801,8 +970,160 @@ export interface StrataBoardPack {
   snapshot_id: string;
   format: 'pdf' | 'pptx';
   storage_path: string | null;
+  /**
+   * The GENERATION lifecycle — whether the artefact has been rendered. NOT the editorial one.
+   * F-12: §6 asked for `issued`/`superseded` here, but this column was already in use for
+   * generation and the two lifecycles are independent (a pack can be `ready` and unissued, or
+   * `issued` and still `pending` a re-render). The editorial lifecycle is `issue_status`.
+   * Do not "fix" these back into one column.
+   */
   status: 'pending' | 'generating' | 'ready' | 'failed';
   generated_at: string | null;
+  /** The EDITORIAL lifecycle (R2/F1). Issued packs are immutable BY TRIGGER — not by convention. */
+  issue_status: 'draft' | 'in_review' | 'approved' | 'issued' | 'superseded';
+  version: number;
+  /** A correction is a NEW VERSION pointing back — never an edit of what the board received. */
+  supersedes_id: string | null;
+  issued_by: string | null;
+  issued_at: string | null;
+  approved_by: string | null;
+  approved_at: string | null;
+  title: string | null;
+  sections: unknown;
+}
+
+/**
+ * R2/F1 · `strata_board_pack_qualification` VIEW (not an RPC). Derived from
+ * `strata_integrity_exceptions` at read time and never copied onto the pack — a copy goes stale the
+ * moment the register changes, and the stale copy is what would get printed.
+ *
+ * ⚠️ `is_qualified === false` means NO EXCEPTION IS ON RECORD. Per E-4/§3.7 that is **not** proof of
+ * integrity for anything predating the child audit triggers. Do not render it as "verified".
+ *
+ * ⚠️ A qualification is about PROVENANCE, not the numbers. The figures are official and unchanged.
+ * `qualification_note` says exactly that — render it verbatim; paraphrasing it into "these numbers
+ * are questionable" would be a straight falsehood.
+ */
+export interface StrataBoardPackQualification {
+  board_pack_id: string;
+  snapshot_id: string | null;
+  snapshot_key: string | null;
+  issue_status: StrataBoardPack['issue_status'];
+  version: number;
+  is_qualified: boolean;
+  provenance_reproducibility: string | null;
+  values_changed: boolean | null;
+  resolution: string | null;
+  detection_is_lower_bound: boolean | null;
+  /** The exact wording to show. NULL when unqualified. Verbatim only. */
+  qualification_note: string | null;
+}
+
+/**
+ * R4c · strata_resolve_quarantine. `counts_in_official_calculations` is returned by the server
+ * rather than re-derived here: the eligible set (E-7 cond.3) is one predicate and it lives in the
+ * DB. A page that re-implements it will drift the day the rule changes.
+ */
+export interface StrataQuarantineResolution {
+  actual_id: string;
+  validation_status: StrataKpiActual['validation_status'];
+  counts_in_official_calculations: boolean;
+  exception_reason: string | null;
+  exception_authorized_by: string | null;
+  /** WHY it was quarantined — preserved across the resolution that clears it (E-6). */
+  original_validation_failures: unknown;
+}
+
+/**
+ * R4d · strata_run_reversal_eligibility. Returns EVERY blocking reason, not the first — a user
+ * told "locked snapshot", who fixes that and is then told "issued board pack", has been misled
+ * twice. Ask before offering the verb; render all reasons.
+ */
+export interface StrataReversalEligibility {
+  run_id: string;
+  run_type: string | null;
+  completed_at: string | null;
+  affected_actuals: number | null;
+  can_reverse: boolean;
+  blocking_reasons: string[];
+}
+
+/**
+ * R4d · strata_reverse_run. The original run and its actuals are PRESERVED and marked `reversed`;
+ * no offsetting, zero or negative measurement is ever created (D-7/E-5).
+ * `left_without_effective_value` is not a failure — it means there was no prior validated value to
+ * restore, and saying so is honest where inventing a zero would not be.
+ */
+export interface StrataRunReversal {
+  reversal_run_id: string;
+  original_run_id: string;
+  actuals_reversed: number;
+  prior_values_restored: number;
+  left_without_effective_value: number;
+  recalculated: number;
+  detail: unknown;
+  /** The server's own statement of what it did. Rendered verbatim; never re-worded. */
+  note: string;
+}
+
+/** R2/E1 · `strata_reviews`. Cadence defaults are COALESCE defaults in the RPC, not CHECKs. */
+export interface StrataReview {
+  id: string;
+  review_key: string;
+  slug: string | null;
+  organization_id: string | null;
+  name: string;
+  review_type: 'departmental' | 'executive';
+  cadence: 'monthly' | 'quarterly' | 'ad_hoc';
+  status: 'scheduled' | 'in_progress' | 'closed' | 'cancelled';
+  /**
+   * `migrated` = reconstructed from a locked snapshot by the D-6 backfill. Its meeting details
+   * (chair, agenda, scheduled_for, participants) were NEVER recorded and are NULL. A migrated
+   * review must not be rendered as though those details were captured and are merely blank.
+   */
+  origin: 'scheduled' | 'migrated';
+  scope: unknown;
+  cycle_id: string | null;
+  period_id: string | null;
+  /** Nullable BY DESIGN — a review is scheduled before its snapshot is locked. */
+  snapshot_id: string | null;
+  board_pack_id: string | null;
+  scheduled_for: string | null;
+  /** D-6: NULL means "not recorded", NEVER "nobody chaired it". */
+  chair_id: string | null;
+  agenda: unknown;
+  note: string | null;
+  created_by: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface StrataReviewParticipant {
+  id: string;
+  review_id: string;
+  user_id: string;
+  role: 'chair' | 'attendee' | 'presenter' | 'observer';
+  created_by: string | null;
+  created_at: string;
+}
+
+/**
+ * R2/E1 · `strata_review_readiness` view. Readiness is DERIVED, never stored — a stored flag goes
+ * stale the moment the snapshot or pack behind it moves.
+ *
+ * `is_ready` requires a LOCKED snapshot only. `pack_attached` is reported SEPARATELY and is
+ * deliberately not part of readiness: a review can legitimately convene on locked numbers before
+ * its pack is built. Do not AND them together in the UI — that would invent a gate the DB rejected.
+ */
+export interface StrataReviewReadiness {
+  review_id: string;
+  review_key: string;
+  status: StrataReview['status'];
+  snapshot_locked: boolean;
+  pack_attached: boolean;
+  is_ready: boolean;
+  /** Every gap, named — so a consumer states WHY rather than rendering a bare status. */
+  blocking_reasons: string[];
 }
 
 // ── Notifications (CAT-STRATA-CLOSEOUT-20260710-001 W3) ──────────────────────

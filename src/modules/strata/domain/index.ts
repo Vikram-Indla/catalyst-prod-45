@@ -8,17 +8,21 @@ import { supabase, typedQuery, typedRpc } from '@/integrations/supabase/client';
 import type {
   ExecutionImportDependencyRow, ExecutionImportMilestoneRow, ExecutionImportProjectCardRow, ExecutionImportResult,
   ScorecardCalcResult, ScorecardPlanVariance, StrataAction, StrataAiOutput, StrataAssumption, StrataBenefit,
-  StrataBenefitProjectCard, StrataBenefitValue, StrataBoardPack, StrataCalculatedValue, StrataChangeRequest,
+  StrataBenefitProjectCard, StrataBenefitValue, StrataBlastRadius, StrataBoardPack, StrataBoardPackQualification,
+  StrataCalculatedValue, StrataChangeRequest,
   StrataCycle, StrataDataSource, StrataDecision, StrataDependency, StrataGateInstance,
+  StrataQuarantineResolution, StrataReversalEligibility, StrataReview, StrataReviewParticipant,
+  StrataReviewReadiness, StrataRunReversal,
   StrataGateModel, StrataGateModelStage, StrataInitiative, StrataInitiativeProject,
   StrataBulkUpdateResult, StrataSavedView, StrataKeyResult, StrataKpi, StrataKpiActual, StrataKpiFormulaVersion, StrataKpiTarget,
-  StrataKpiTypeConfig, StrataMapEdge, StrataMilestone, StrataModelPerspective, StrataNotification, StrataNotificationRule, StrataOkr,
+  StrataKpiTypeConfig, StrataMapEdge, StrataMappingMemory, StrataMappingSuggestion,
+  StrataMilestone, StrataModelPerspective, StrataNotification, StrataNotificationRule, StrataOkr,
   StrataPeriod, StrataPerspective, StrataThemeCharter, StrataPortfolio, StrataProjectCard,
   StrataProjectCardFieldConfig, StrataProjectCardPicklist, StrataProjectCardSectionConfig,
   StrataModelMeasure, StrataNotificationTarget, StrataProjectCardTabConfig, StrataRoleSod, StrataRisk, StrataRole, StrataScorecardInstance, StrataScorecardLine,
-  StrataScorecardModel, StrataSnapshot, StrataStagingRow, StrataStrategyElement, StrataThresholdScheme,
+  StrataScorecardModel, StrataSnapshot, StrataStagingRow, StrataStrategyElement, StrataThresholdPreview, StrataThresholdScheme,
   StrataUploadRun, StrataUploadTemplate, StrataValidationResult, StrataValueCategory,
-  StrataWorkflowConfig,
+  StrataWorkflowConfig, ThresholdBand,
 } from '../types';
 
 /** Maps known Postgres/RPC errors to business-facing copy so schema, table and
@@ -84,6 +88,73 @@ export const configApi = {
     run(typedRpc('strata_retire_record', { p_table: table, p_id: id, p_reason: reason ?? null })),
   approveScorecardModel: (modelId: string, note?: string) =>
     run(typedRpc('strata_approve_scorecard_model', { p_model: modelId, p_note: note ?? null })),
+  /**
+   * D-2/D-3: the governed way to change an APPROVED model. Clones the complete aggregate into a
+   * new draft at version+1 with supersedes_id set, and leaves the predecessor untouched. Approving
+   * the draft is what supersedes the predecessor — strata_approve_record already does that.
+   * The reason is required by the RPC (a version whose reason is NULL explains nothing).
+   * Returns the new draft's id.
+   */
+  createModelDraftVersion: (modelId: string, reason: string): Promise<string> =>
+    run(typedRpc('strata_create_model_draft_version', { p_model: modelId, p_reason: reason })),
+  /**
+   * D-2's third revision RPC. Separate from the model one by ruling ("dedicated revision RPCs —
+   * NOT one generic polymorphic RPC"), and separate in fact: a threshold scheme has no aggregate
+   * children (its bands are jsonb on the row), so the clone is parent-only.
+   */
+  createThresholdDraftVersion: (schemeId: string, reason: string): Promise<string> =>
+    run(typedRpc('strata_create_threshold_draft_version', { p_scheme: schemeId, p_reason: reason })),
+  /**
+   * R5 — the band editor's write path. There is deliberately NO RPC here: bands are a jsonb column
+   * on the scheme row, and RLS is the entire gate. Probed 2026-07-17 on staging
+   * (policy strata_threshold_schemes_update):
+   *     USING  (status = 'draft' AND (created_by = auth.uid() OR strata_is_admin()))
+   *     CHECK  (status = 'draft')
+   * — note this is authorship-based, NOT the strategy_office role gate the revision RPC uses. A
+   * strategy_office user who did not author the draft is refused. The UI mirrors this exact
+   * predicate; it does not mirror the RPC's role gate, because it is not the rule in force here.
+   *
+   * `.select()` is load-bearing, not decoration. An UPDATE filtered out by RLS matches zero rows
+   * and returns NO error — a silent no-op. Without reading the rows back, this would resolve
+   * successfully and the UI would report a save that never happened. Zero rows = the server
+   * declined; we say so rather than invent a success.
+   */
+  updateThresholdBands: async (schemeId: string, bands: ThresholdBand[]): Promise<StrataThresholdScheme> => {
+    const rows: StrataThresholdScheme[] = await run(
+      typedQuery('strata_threshold_schemes').update({ bands }).eq('id', schemeId).select(),
+    );
+    if (!rows || rows.length === 0) {
+      // The server said nothing at all, so there is no server text to surface verbatim. This
+      // states the policy that produced the silence — the two readings of zero rows — without
+      // claiming which one applied.
+      throw new Error(
+        'The database applied no change. A threshold scheme’s bands are editable only while it is a draft, '
+        + 'and only by the draft’s author or a strata_admin — or this scheme no longer exists. Refresh and check its status.',
+      );
+    }
+    return rows[0];
+  },
+  /**
+   * R5 capability 3 — preview-with-data. Re-bands the scores ALREADY stored for this scheme against
+   * CANDIDATE (unsaved) bands and NAMES what moves, never merely counting: a decision needs to know
+   * WHICH KPIs move, not how many.
+   *
+   * ⚠️ THE RESULT IS A COUNTERFACTUAL, NOT A CHANGELOG. Saving these bands would NOT re-rate a
+   * single row in `moves`. A rating is written once, at calculation time, so new bands govern FUTURE
+   * calculations only, and locked snapshots never re-rate (D-1). Never label these rows as "will
+   * change" in the UI — they are values the candidate policy would rate differently.
+   *
+   * Writes NOTHING — not even an audit event: a preview is a question, not an act. The RPC is
+   * STABLE, so Postgres enforces that at runtime rather than trusting the author.
+   *
+   * The banding rule is NOT re-derived here or in the RPC: both share strata_band_from_bands with
+   * the live resolver strata_band_from_score, so a page-local copy cannot drift from the server's.
+   *
+   * `coverage_note` is a LOWER BOUND on coverage — values with no threshold_scheme_id in their
+   * provenance, or no score, are invisible. Render it VERBATIM; absence from `moves` is not evidence.
+   */
+  previewThresholdScheme: (schemeId: string, bands: ThresholdBand[]): Promise<StrataThresholdPreview> =>
+    run(typedRpc('strata_preview_threshold_scheme', { p_scheme: schemeId, p_bands: bands })),
   myRoles: async (userId: string): Promise<StrataRole[]> => {
     const rows: Array<{ role: StrataRole }> = await run(
       typedQuery('strata_role_assignments').select('role').eq('user_id', userId),
@@ -156,15 +227,26 @@ export const configApi = {
   // Edits the weight (+ optional order) of EXISTING model↔perspective rows only —
   // strategy_office has full write on strata_scorecard_model_perspectives. Does not
   // add/remove perspectives from the model. Errors surface verbatim to the caller.
+  //
+  // There is no RPC behind this path, so RLS is its only guard (P0-A). RLS now also requires the
+  // parent model to be status='draft' — and a row filtered out by RLS makes UPDATE match zero
+  // rows WITHOUT raising, so an unchecked call would report success having written nothing.
+  // The row count is therefore load-bearing, not a sanity check.
   setModelPerspectiveWeights: async (
     modelId: string,
     rows: Array<{ perspectiveId: string; weight: number; orderIndex?: number }>,
   ): Promise<void> => {
     for (const r of rows) {
-      await run(typedQuery('strata_scorecard_model_perspectives').update({
+      const updated = await run<Array<{ id: string }>>(typedQuery('strata_scorecard_model_perspectives').update({
         weight: r.weight,
         ...(r.orderIndex !== undefined ? { order_index: r.orderIndex } : {}),
       }).eq('model_id', modelId).eq('perspective_id', r.perspectiveId).select('id'));
+      if ((updated?.length ?? 0) === 0) {
+        throw new Error(
+          'Weight update was rejected — no rows changed. Approved definitions are immutable; '
+          + 'if this model is approved, create a new draft version to change its weights.',
+        );
+      }
     }
   },
 };
@@ -376,6 +458,21 @@ export const kpiApi = {
     run(typedQuery('strata_kpi_targets').select('*').eq('kpi_id', kpiId)),
   actuals: (kpiId: string): Promise<StrataKpiActual[]> =>
     run(typedQuery('strata_kpi_actuals').select('*').eq('kpi_id', kpiId).order('submitted_at', { ascending: false })),
+  /**
+   * F-9: every version of one logical KPI, oldest first. `id` identifies a VERSION; `lineage_id`
+   * identifies the KPI as a continuing business concept, so a trend that reads one `id` shows one
+   * version's history and silently restarts at a revision.
+   */
+  lineageVersions: (lineageId: string): Promise<StrataKpi[]> =>
+    run(typedQuery('strata_kpis').select('*').eq('lineage_id', lineageId).order('version')),
+  /** Targets across every version of a lineage. Each row keeps its own kpi_id — never repointed. */
+  targetsForKpis: (kpiIds: string[]): Promise<StrataKpiTarget[]> =>
+    kpiIds.length === 0 ? Promise.resolve([])
+      : run(typedQuery('strata_kpi_targets').select('*').in('kpi_id', kpiIds)),
+  /** Actuals across every version of a lineage. Each row keeps its own kpi_id — never repointed. */
+  actualsForKpis: (kpiIds: string[]): Promise<StrataKpiActual[]> =>
+    kpiIds.length === 0 ? Promise.resolve([])
+      : run(typedQuery('strata_kpi_actuals').select('*').in('kpi_id', kpiIds).order('submitted_at', { ascending: false })),
   actualsForPeriod: (periodId: string): Promise<StrataKpiActual[]> =>
     run(typedQuery('strata_kpi_actuals').select('*').eq('period_id', periodId)),
   achievement: (kpiId: string, periodId: string) =>
@@ -384,6 +481,33 @@ export const kpiApi = {
     run(typedRpc('strata_calc_ytd', { p_kpi: kpiId, p_cycle: cycleId, p_method: method })),
   attestActual: (actualId: string, verdict: 'validated' | 'rejected' | 'quarantined', note?: string) =>
     run(typedRpc('strata_attest_actual', { p_actual: actualId, p_verdict: verdict, p_note: note ?? null })),
+  /**
+   * R4c quarantine RESOLUTION (D-5/E-6) — the exit from quarantine. `attestActual` above is the
+   * ENTRY; this is the only way out. A reason is mandatory at the DB, so it is mandatory here: the
+   * resolution has to be explainable later.
+   *
+   * The three verdicts are not interchangeable:
+   * - `accept_with_exception` — the value COUNTS after Strategy Office authorization. The submitter
+   *   may not authorize their own (SoD, enforced by a DB CHECK as well as the RPC).
+   * - `correct` — returns the row to `pending`, NOT to validated: a corrected value is a new claim
+   *   nobody has checked. Since `pending` no longer counts (E-7 cond.3), a corrected value reads as
+   *   Missing until attested. That is correct, not a bug.
+   * - `reject` — the value stays out.
+   *
+   * Never pre-filter the verdicts by guessing the caller's role; let the RPC refuse and surface it.
+   */
+  resolveQuarantine: (
+    actualId: string,
+    verdict: 'accept_with_exception' | 'correct' | 'reject',
+    reason: string,
+    correctedValue?: number,
+  ): Promise<StrataQuarantineResolution> =>
+    run(typedRpc('strata_resolve_quarantine', {
+      p_actual: actualId,
+      p_verdict: verdict,
+      p_reason: reason,
+      p_corrected_value: correctedValue ?? null,
+    })),
   approveKpi: (kpiId: string, note?: string) =>
     run(typedRpc('strata_approve_kpi', { p_kpi: kpiId, p_note: note ?? null })),
   approveFormulaVersion: (formulaId: string, note?: string) =>
@@ -835,7 +959,13 @@ export const valueApi = {
     run(typedQuery('strata_gate_evidence').select('*').eq('gate_instance_id', gateInstanceId)),
   decideGate: (gateId: string, verdict: string, note?: string) =>
     run(typedRpc('strata_decide_gate', { p_gate: gateId, p_verdict: verdict, p_note: note ?? null })),
-  validateBenefitValue: (valueId: string, verdict: 'validated' | 'rejected', note?: string) =>
+  /**
+   * D-4: verdicts are the neutral assurance vocabulary. 'validated' is NO LONGER ACCEPTED by the
+   * RPC — it raises. owner_confirmed is the owner standing behind their own number (it COUNTS per
+   * F-7, but claims nothing about independence); independently_validated asserts someone else
+   * checked it and carries SoD.
+   */
+  validateBenefitValue: (valueId: string, verdict: 'owner_confirmed' | 'independently_validated' | 'rejected', note?: string) =>
     run(typedRpc('strata_validate_benefit_value', { p_value: valueId, p_verdict: verdict, p_note: note ?? null })),
   benefitRealization: (benefitId: string) =>
     run(typedRpc('strata_calc_benefit_realization', { p_benefit: benefitId })),
@@ -952,6 +1082,40 @@ export const lineageApi = {
         ),
   dataSources: (): Promise<StrataDataSource[]> =>
     run(typedQuery('strata_data_sources').select('*').order('name')),
+  /**
+   * R3 downstream blast radius. Read-only; writes nothing. `blocking` names the APPROVED KPIs that
+   * make retirement unsafe (named, not counted — a decision needs the names). `historical` is locked
+   * snapshots / issued packs: reported so the decision is informed, NEVER a blocker and never
+   * "migratable" (D-1 — history is not rewritten). `coverage_note` states what the analysis cannot
+   * see: manual actuals carry no run lineage, so absence is not evidence.
+   */
+  dataSourceBlastRadius: (sourceId: string): Promise<StrataBlastRadius> =>
+    run(typedRpc('strata_data_source_blast_radius', { p_source: sourceId })),
+  /**
+   * R3 lifecycle. Returns the blast radius as computed at the moment of the change, so the audit
+   * trail records what was known then. Retirement is gated on `blocking` being empty and requires a
+   * reason; suspension is deliberately ungated — suspending is how you stop a bad feed.
+   */
+  setDataSourceStatus: (sourceId: string, status: StrataDataSource['status'], reason?: string): Promise<StrataBlastRadius> =>
+    run(typedRpc('strata_set_data_source_status', { p_source: sourceId, p_status: status, p_reason: reason ?? null })),
+  /**
+   * R4d · ASK BEFORE OFFERING THE VERB. Read-only. Returns EVERY blocking reason, not the first —
+   * a user told "locked snapshot", who clears it and is then told "issued board pack", has been
+   * misled twice. Render `blocking_reasons` in full; never show only the first.
+   */
+  runReversalEligibility: (runId: string): Promise<StrataReversalEligibility> =>
+    run(typedRpc('strata_run_reversal_eligibility', { p_run: runId })),
+  /**
+   * R4d · 24-hour import reversal (D-7/E-5). Atomic by construction. The original run and its
+   * actuals are PRESERVED and marked `reversed` — no offsetting, zero or negative measurement is
+   * ever written. Re-checks eligibility server-side and raises with all reasons, so a stale client
+   * gate cannot force a reversal through.
+   *
+   * `left_without_effective_value > 0` is NOT a failure: it means no prior validated value existed
+   * to restore. Report it; inventing a zero there would be the lie the RPC refuses to tell.
+   */
+  reverseRun: (runId: string, reason: string): Promise<StrataRunReversal> =>
+    run(typedRpc('strata_reverse_run', { p_run: runId, p_reason: reason })),
   uploadRuns: (): Promise<StrataUploadRun[]> =>
     run(typedQuery('strata_upload_runs').select('*').order('started_at', { ascending: false })),
   runByKey: (runKey: string): Promise<StrataUploadRun | null> =>
@@ -1029,6 +1193,65 @@ export const lineageApi = {
   /** Promote VALID rows of a completed run into canonical KPI actuals + lineage. */
   promoteRun: (runId: string): Promise<{ run_id: string; promoted: number; skipped: number }> =>
     run(typedRpc('strata_promote_run', { p_run: runId })),
+
+  // ── Mapping memory (capability 11) — R5/N ────────────────────────────────
+  /**
+   * SUGGEST remembered column mappings for the incoming headers. Never applies them.
+   *
+   * suggest-not-assume: this is a read (the RPC is STABLE and cannot write). It returns what a human
+   * previously confirmed so the wizard can OFFER it; binding a column still requires the human to
+   * press confirm, which is what calls `recordMapping`. Do not auto-apply the result.
+   *
+   * Returns one row per requested key, always — an unremembered key comes back `status: 'none'` with
+   * a `null` target so the caller renders nothing rather than guessing.
+   *
+   * `status: 'conflict'` means MORE THAN ONE target is remembered for that key. `suggested_target` is
+   * `null` and `candidates` names them: present the conflict, never pick for the user.
+   *
+   * Candidates whose target column has left the template schema, whose template is no longer
+   * approved, or whose data source is retired are dropped server-side — retired targets are not reused.
+   *
+   * Requires a registered `dataSourceId`: the wizard's source is optional, and a run with no source
+   * has no identity to remember against (NULL is "not recorded", not a match key).
+   */
+  suggestMapping: (
+    dataSourceId: string,
+    templateId: string,
+    sourceKeys: string[],
+  ): Promise<StrataMappingSuggestion[]> =>
+    run(typedRpc('strata_suggest_mapping', {
+      p_data_source_id: dataSourceId,
+      p_template_id: templateId,
+      p_source_keys: sourceKeys,
+    })),
+
+  /**
+   * Append ONE immutable confirmation that `sourceKey` means `targetColumn`.
+   *
+   * Evidence immutable: the ledger is append-only (no UPDATE/DELETE policy, plus an explicit REVOKE),
+   * so this only ever inserts. Re-confirming the same target is not a duplicate — it is another dated
+   * piece of evidence and raises `times_confirmed`.
+   *
+   * Role gate: the RLS insert policy mirrors `strata_runs_insert` exactly —
+   * data_steward | kpi_owner | strategy_office (strata_has_role short-circuits on admin). The RPC is
+   * SECURITY INVOKER, so the policy is the gate; it throws for a caller without the role.
+   *
+   * Also refuses a non-approved template, a column outside the template schema, and a retired source.
+   */
+  recordMapping: (input: {
+    dataSourceId: string;
+    templateId: string;
+    sourceKey: string;
+    targetColumn: string;
+    uploadRunId?: string | null;
+  }): Promise<StrataMappingMemory> =>
+    run(typedRpc('strata_record_mapping', {
+      p_data_source_id: input.dataSourceId,
+      p_template_id: input.templateId,
+      p_source_key: input.sourceKey,
+      p_target_column: input.targetColumn,
+      p_upload_run_id: input.uploadRunId ?? null,
+    })),
 };
 
 // ── Execution manual Excel import (session 007) ─────────────────────────────
@@ -1073,6 +1296,98 @@ export const governanceApi = {
     run(typedQuery('strata_decisions').select('*').order('created_at', { ascending: false })),
   actions: (): Promise<StrataAction[]> =>
     run(typedQuery('strata_actions').select('*').order('due_date')),
+  // ── R2/E1 · reviews (persisted scheduling entity, D-6) ─────────────────────
+  /**
+   * Authoritative going forward. `origin='migrated'` rows are reconstructed from locked snapshots
+   * and their chair/agenda/scheduled_for/participants are NULL = NOT RECORDED, never "none".
+   */
+  reviews: (): Promise<StrataReview[]> =>
+    run(typedQuery('strata_reviews').select('*').order('scheduled_for', { ascending: false, nullsFirst: false })),
+  reviewBySlug: (slug: string): Promise<StrataReview | null> =>
+    run(typedQuery('strata_reviews').select('*').eq('slug', slug).maybeSingle()),
+  reviewParticipants: (reviewId: string): Promise<StrataReviewParticipant[]> =>
+    run(typedQuery('strata_review_participants').select('*').eq('review_id', reviewId)),
+  /** Derived view — never stored. `is_ready` is snapshot-locked only; `pack_attached` is separate. */
+  reviewReadiness: (): Promise<StrataReviewReadiness[]> =>
+    run(typedQuery('strata_review_readiness').select('*')),
+  /**
+   * Cadence is optional: the RPC COALESCEs departmental→monthly, executive→quarterly. Pass it only
+   * when the caller genuinely chose one — sending a client-side default would turn the server's
+   * documented default into a value the user never picked.
+   */
+  scheduleReview: (input: {
+    name: string;
+    reviewType: StrataReview['review_type'];
+    periodId?: string | null;
+    cycleId?: string | null;
+    scheduledFor?: string | null;
+    cadence?: StrataReview['cadence'] | null;
+    chairId?: string | null;
+    scope?: unknown;
+  }): Promise<string> =>
+    run(typedRpc('strata_schedule_review', {
+      p_name: input.name,
+      p_review_type: input.reviewType,
+      p_period: input.periodId ?? null,
+      p_cycle: input.cycleId ?? null,
+      p_scheduled_for: input.scheduledFor ?? null,
+      p_cadence: input.cadence ?? null,
+      p_chair: input.chairId ?? null,
+      p_scope: (input.scope ?? null) as never,
+    })),
+  /**
+   * A CLOSED review is refused by the RPC — it records a meeting that already happened. Closing
+   * requires a LOCKED snapshot: closing on live numbers would record a decision against figures
+   * that can still move. Both refusals surface verbatim.
+   */
+  updateReview: (
+    reviewId: string,
+    patch: {
+      status?: StrataReview['status'];
+      snapshotId?: string | null;
+      packId?: string | null;
+      agenda?: unknown;
+      chairId?: string | null;
+      note?: string | null;
+    },
+  ): Promise<void> =>
+    run(typedRpc('strata_update_review', {
+      p_review: reviewId,
+      p_status: patch.status ?? null,
+      p_snapshot: patch.snapshotId ?? null,
+      p_pack: patch.packId ?? null,
+      p_agenda: (patch.agenda ?? null) as never,
+      p_chair: patch.chairId ?? null,
+      p_note: patch.note ?? null,
+    })),
+  // ── R2/F1 · board-pack editorial lifecycle ────────────────────────────────
+  /**
+   * F-3 qualification, derived from the integrity register. `is_qualified=false` means no exception
+   * is ON RECORD — not that integrity is proven (E-4/§3.7). Render `qualification_note` verbatim.
+   */
+  boardPackQualification: (packId: string): Promise<StrataBoardPackQualification | null> =>
+    run(typedQuery('strata_board_pack_qualification').select('*').eq('board_pack_id', packId).maybeSingle()),
+  /**
+   * The entry verb into `approved` — without it `issueBoardPack` is unreachable, since it refuses
+   * anything not already approved. Server-side only by necessity: RLS would let a client UPDATE set
+   * `approved_by` to anyone, which would defeat the approver≠issuer SoD check that issuance relies
+   * on. The RPC stamps `auth.uid()`. Never write `issue_status`/`approved_by` from the client.
+   */
+  approveBoardPack: (packId: string, note?: string): Promise<void> =>
+    run(typedRpc('strata_approve_board_pack', { p_pack: packId, p_note: note ?? null })),
+  /**
+   * SoD: the approver may not be the issuer. Issuance STAMPS the qualification into the audit trail,
+   * so the pack carries what was true when the board received it. Issued packs are then immutable
+   * BY TRIGGER — UPDATE and DELETE are both refused at the DB, not by client convention.
+   */
+  issueBoardPack: (packId: string, note?: string): Promise<void> =>
+    run(typedRpc('strata_issue_board_pack', { p_pack: packId, p_note: note ?? null })),
+  /**
+   * A correction is a NEW VERSION, never an edit: `snapshot_id` is COPIED to the successor and never
+   * re-pointed (that would silently restate what the board was shown). Returns the new pack id.
+   */
+  supersedeBoardPack: (packId: string, reason: string): Promise<string> =>
+    run(typedRpc('strata_supersede_board_pack', { p_pack: packId, p_reason: reason })),
   boardPacks: (snapshotId: string): Promise<StrataBoardPack[]> =>
     run(typedQuery('strata_board_packs').select('*').eq('snapshot_id', snapshotId)),
   /** All board-pack rows across snapshots — thin select feeding the reviews-index pack-stage dot. */

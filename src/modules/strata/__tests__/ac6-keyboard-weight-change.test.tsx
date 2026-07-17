@@ -19,15 +19,22 @@ import userEvent from '@testing-library/user-event';
 // vi.mock factories are hoisted above module scope, so everything they touch
 // must be created inside vi.hoisted().
 const H = vi.hoisted(() => {
+  // status is 'draft' DELIBERATELY. This fixture was 'approved' until P0-A, which means the test
+  // asserted that an APPROVED model's weights are keyboard-editable — i.e. it was passing because
+  // of the P0 defect (D-1: the approved aggregate is immutable), and it made §20 AC-6 read 7/7
+  // over that defect. AC-6's criterion is "keyboard-only completion of the weight-change verb",
+  // and that verb is legitimate on a draft. The verb is unchanged; only the fixture's governance
+  // state is corrected. The immutability rule itself is pinned by p0-approved-model-immutable.test.tsx.
   const MODEL = {
     id: 'm1', name: 'CEO Enterprise Scorecard',
     owner_scope_type: 'enterprise', rollup_method: 'weighted_average', period_granularity: 'quarter',
-    version: 1, status: 'approved', effective_from: '2026-07-05', effective_to: null,
-    approved_by: null, approved_at: '2026-07-05', change_reason: null, supersedes_id: null,
+    version: 1, status: 'draft', effective_from: null, effective_to: null,
+    approved_by: null, approved_at: null, change_reason: null, supersedes_id: null,
     created_by: null, created_at: '2026-07-05', updated_at: '2026-07-05',
   };
   return {
     setModelPerspectiveWeights: vi.fn(async () => undefined),
+    setModelMeasures: vi.fn(async () => undefined),
     invalidate: vi.fn(),
     MODEL,
     PERSPECTIVES: [
@@ -81,6 +88,8 @@ vi.mock('@/modules/strata/domain', () => ({
     approveScorecardModel: vi.fn(async () => undefined),
     retireRecord: vi.fn(async () => undefined),
   },
+  // The measures builder writes through scorecardApi, not configApi.
+  scorecardApi: { setModelMeasures: H.setModelMeasures },
   governanceApi: {},
 }));
 

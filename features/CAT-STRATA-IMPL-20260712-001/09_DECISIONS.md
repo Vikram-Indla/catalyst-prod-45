@@ -151,4 +151,435 @@ Plan Lock `03_PLAN_LOCK_PHASE5.md` approved at `3e215d4ed`. All decisions ratifi
   `rollup_method` CHECK are **byte-identical**.
 - **M-D2 ✅ RULED (Vikram 2026-07-16): SPLIT the slice.** Table + RPC + reader shipped first
   (`20260716150000`); the anchor-05 measures **builder UI** is its own slice (it replaces 5C's card layout with
-  perspective groups — a large surface).
+  perspective groups — a large surface). **Part 2a shipped `ffb3f8c68`; part 2b BUILT session 025** (gates green,
+  live-verified, measures table 0 → 2 rows through the UI). Anchor 05's builder is complete.
+
+## Remaining-backend PROGRAMME — product policy RULED (Vikram, 2026-07-16). Blueprint: `03_PLAN_LOCK_BACKEND_PROGRAM.md`.
+> Applies to all 14 remaining capabilities. **Blueprint is NOT approved — no code, no migrations.** Seven decisions
+> (E-1…E-7) remain open in the blueprint §11 and may not be assumed.
+
+- **D-1 ✅ CONFIRMED — approved-model aggregate immutability is P0**, ahead of the remaining programme. Protect the
+  COMPLETE approved aggregate (perspectives, weights, measures, aggregation settings, target policies, threshold
+  association) in **RPCs AND at the DB/RLS layer — the UI is not a security boundary.** Read-only integrity report
+  FIRST; **do not silently rewrite historical records.**
+  **AUDIT RESULT (executed read-only 2026-07-16): both approved models AND both locked snapshots are affected.**
+  Blast radius is PROVENANCE, not values — frozen `snapshot_items` mean no number changed, but "model v1" no longer
+  re-resolves to the weights that produced those numbers. Detection is a LOWER BOUND (no `updated_at` on child
+  tables; the raw `.update()` writes no audit event → in-place UPDATEs undetectable). See blueprint §3.
+- **D-2 ✅ RULED — dedicated revision RPCs**, not one generic polymorphic RPC and not a mandatory change-request
+  workflow: `strata_create_model_draft_version` · `strata_create_kpi_draft_version` ·
+  `strata_create_threshold_draft_version`. Each clones the complete governed aggregate, increments `version`, sets
+  `supersedes_id`, resets approval fields, copies children, records actor/reason, **leaves the predecessor
+  unchanged**. Reuse `strata_approve_record`'s approval + supersession boundary (it ALREADY auto-supersedes the
+  predecessor when `supersedes_id` is set — `foundation_config_engine.sql:413-418`). `strata_config_change_requests`
+  MAY serve as an OPTIONAL request/audit envelope; **do not create a second mandatory approval lifecycle without
+  evidence it is needed.**
+- **D-3 ✅ CONFIRMED — approved-KPI "retire and recreate" is REPLACED by governed revision.** Retirement remains for
+  genuine discontinuation. Preserve logical KPI lineage + historical resolution for actuals, objectives, Key Results,
+  scorecards, snapshots, board packs. (Changes `strata_update_kpi`'s explicit "retire and recreate to change an
+  approved KPI" — `authoring_write_paths.sql:615-616`. Supersedes the [[strata-governance-version-based]] habit.)
+- **D-4 ✅ RULED — replace misleading Finance terminology.** Neutral assurance states: **Reported · Owner confirmed ·
+  Independently validated · Rejected.** Stop writing `finance_validated`; migrate the vocabulary to
+  `independently_validated`, preserving original actors and audit events. **Do not claim historical Finance
+  assurance.** (Probe: **no Finance role or actor exists anywhere in STRATA** — `strata_validate_benefit_value`
+  hardcodes `lifecycle_stage='finance_validated'` on any validator's verdict — `strata_execution_value.sql:409-414`.
+  The label is a lie today.)
+- **D-5 ✅ RULED — accepted-with-exception MAY count after Strategy Office authorization.** Quarantined stays
+  excluded. Submitter cannot authorize their own exception. Preserve exception reason, original validation failures,
+  authorizer, timestamp, evidence, source run. Scorecards/snapshots/board packs must **retain and visibly expose**
+  the exception flag. **Never silently convert exception-authorized data into ordinary Validated data.**
+- **D-6 ✅ RULED — persisted reviews COEXIST with the derived model during transition.** `strata_reviews` is
+  authoritative going forward; backfill ONE Closed historical review per existing locked snapshot, marked
+  migrated/historical. **Do not invent chair, participants, agenda or meeting details that were never recorded.**
+  Derived logic retained temporarily as compatibility/verification support, not as the system of record.
+- **D-7 ✅ RULED — undo = immutable supersession + reversal ledger**, NOT negative/offsetting KPI measurements.
+  Preserve the original run and actuals; compensating reversal run references the original; mark affected actuals
+  reversed/superseded; restore the prior effective state where one existed. Allowed only within 24h · before a locked
+  snapshot · before dependent board-pack issuance · before a later run makes reversal unsafe. **Prefer atomic
+  reversal; never silently leave a partially reversed run.**
+- **D-8 ✅ RULED — the count is 14.** 13 previously listed + DEF-010. **Measure-level scorecard authoring has SHIPPED
+  and must not be counted.** 14 product capabilities ≈ 24 implementation slices — never report slice progress as
+  capability progress.
+
+## Integrity-exception handling — E-1…E-7 RULED (Vikram, 2026-07-16). Integrity report ACCEPTED.
+> Blueprint §1.1 / §3.7 / §3.8 / §12 / §13 / §14. **Still NOT approved for implementation.** Seven NEW decisions
+> (F-1…F-7) arose from these rulings — blueprint §11.
+
+- **E-1 ✅ RULED — preserve and annotate both affected locked snapshots; do NOT restate** (the exact historical child
+  configuration cannot be reconstructed reliably). Frozen values remain **official and unchanged**; provenance is
+  **qualified**. Integrity-exception record: affected snapshot · model/version · discovery date · known post-approval/
+  post-lock child changes · **values changed: NO** · **provenance reproducibility: INCOMPLETE** · Strategy Office
+  owner · **resolution: preserved with qualification**. **Never modify the locked payload.**
+- **E-2 ✅ RULED — do NOT backfill or infer `approved_at`.** B2B Sector Scorecard v1 = **legacy/unverified approval
+  provenance**. Prevent further edits → clone intended current config to **v2 Draft** → proper SO approval → explicit
+  effective date → **supersede v1 prospectively**. Clean approval requires agreement among: approved status ·
+  `approved_at` · `approved_by` · approval audit event · successful integrity checks.
+- **E-3 ✅ RULED — retain the 2 verification measure rows.** No in-place "cleaning" of the approved model. Preserve
+  rows + audit evidence; mark v1 integrity-qualified; include/exclude the measures **deliberately** in the clean v2.
+- **E-4 ✅ RULED — full DB-level child auditability.** `updated_at`, actor fields, INSERT/UPDATE/DELETE audit triggers
+  on every governed child table affecting calculations; capture old+new values, parent, actor, timestamp, operation,
+  correlation/request context. **For approved parents reject child UPDATE and DELETE at BOTH RPC and DB/RLS layers.**
+  **Census (probed): exactly 4 child tables lack `updated_at`** — `strata_scorecard_model_perspectives` ·
+  `strata_scorecard_model_measures` · `strata_element_kpis` · `strata_initiative_kpis`.
+- **E-5 ✅ RULED — import reversal restores the previous validated effective state.** Mark imported actuals reversed/
+  superseded; restore a prior valid non-reversed actual for the same KPI/period/source context as effective, else
+  **leave no effective value**. **Never create zero, negative or artificial offset measurements.** Recalculate
+  **unlocked results only**.
+- **E-6 ✅ RULED — accepted-with-exception governance spans KPI actuals AND benefit values.** Both: quarantined +
+  rejected don't count · validated counts · SO-authorized `accepted_with_exception` **counts** · no self-authorization
+  · exception reason/original failures/evidence/actor/timestamp visible downstream. **Benefit assurance stays
+  separate** (Reported · Owner confirmed · Independently validated). **Acceptance for calculation ≠ independent
+  validation.**
+- **E-7 ✅ RULED — draft-KPI exclusion enforced at BOTH relationship and calculation layers.** Draft/pending linkable
+  for authoring, visible, excluded from official reporting; approved+effective ⇒ reportable; superseded/retired ⇒
+  historical only. **No independent link-status state machine** — derive reportability from KPI lifecycle + effective
+  dates. Every official calculation independently requires: approved+effective KPI · reportable relationship ·
+  validated-or-accepted-with-exception actual · correct scope+period · captured config versions. Draft previews only
+  in clearly labelled, non-persistent simulations. **DEF-010 is a relationship-authoring + calculation-eligibility +
+  snapshot-context + audit + testing change — NOT a UI-only or link-table-only fix.**
+- **P0+ ✅ RULED — broaden the integrity audit** across every governed parent/child aggregate affecting official
+  results; **label it explicitly a LOWER-BOUND EVIDENCE REGISTER** (historical updates may be undetectable).
+  **RESULT (probed 2026-07-16, all 9 governed parents × their aggregate children): the violation set is CONFINED to
+  the scorecard-model aggregate** — 3 records. `element_kpis` rows written after KPI approval are **legitimate
+  post-approval linking, NOT violations** (relationship ≠ definition). `gate_model_stages` is clean **because it is
+  already correctly gated** — the shipped precedent the P0 fix must copy.
+
+## DEF-010 — RULED (Vikram, 2026-07-16). Was the last open product decision; there are now NONE.
+- **DEF-010 ✅ RULED — draft KPIs MAY be linked to strategic objectives during authoring, but never count.**
+  Recorded verbatim:
+  - Allow draft KPIs to be linked to strategic objectives during authoring.
+  - Clearly label them as **Draft**.
+  - **Exclude draft KPIs from official calculations, health, roll-ups, scorecards, snapshots, board packs and
+    executive reporting.**
+  - **Activate** eligible links when the KPI is approved.
+  - **Do NOT auto-approve KPIs.**
+  - **Preserve historical links** when KPIs are retired or superseded.
+- **Status: product direction APPROVED; technical specification PENDING.** This is a **backend change needing its own
+  Plan Lock** — it is now backend initiative #14 in the handover's authoritative "Still open" block, not a product
+  decision. Do not start it expecting a spec to exist.
+- **Why it was blocked (probed on staging, session 024 — re-probe before specifying):** `strata_link_element_kpi` is
+  gated on `approved` (the function body references it); `strata_kpis.status` defaults to `'draft'`; 6 draft KPIs on
+  staging today, all unlinkable at creation. So link-at-creation cannot work without this change.
+  See [[strata-kpi-link-requires-approved]].
+- **The ruling rejects the auto-approve escape hatch** that session 024 floated as an alternative. The exclusion rule
+  is the load-bearing part: a draft link must be inert everywhere a number is asserted — calculations, health,
+  roll-ups, scorecards, snapshots, board packs, executive reporting. A draft KPI that silently moved a score would be
+  the zero-assumption violation this feature has refused eleven times.
+
+## Part 2b — RULED (Vikram, 2026-07-16)
+- **M-D3 ✅ CONFIRMED (Vikram 2026-07-16): the Save gate treats an EMPTY perspective group as PASSING.** Plan Lock 2b
+  says "gate Save on every group totalling 100". Read literally that includes groups with zero measures — but
+  `setModelMeasures` is a REPLACE-SET (the save sends the FULL set across all groups), so the literal rule makes the
+  FIRST save of a part-built model impossible, and it contradicts `ModelIntegrityBand` (2a), which flags only groups
+  that HAVE measures. Gate mirrors the band: **one rule for one fact.** Shipped in PR #349 as built — no code change
+  needed from this ruling.
+  **Consequence, ratified with the decision:** the band's ✕ measure state is unreachable *through the UI* (the gate
+  stops you persisting ≠100); it still guards non-UI writes (RPC/seed/other clients), which is how it was verified.
+- **M-D4 ⏸ DEFERRED TO ITS OWN SLICE (Vikram 2026-07-16): "rule separately in its own slice."** The open question:
+  measures — and perspective weights — are editable on an APPROVED model, role-gated only (`strategy_office`), with no
+  status gate, while STRATA governance is otherwise version-based (approved records are re-created, not field-edited;
+  see the governance-is-version-based lesson). **NOT a 2b defect:** `ModelWeights` has behaved this way since 5C, so
+  2b introduced nothing new — which is precisely why the fix does not belong inside 2b.
+  **Scope when it is picked up:** it covers `ModelWeights` + `MeasureGroups` together (same question, two callers), and
+  it needs its own Plan Lock + a ruling on the mechanism (block editing at `status='approved'` vs require a new draft
+  version vs accept in-place edits as intended for models). Do NOT start it assuming the answer. No migration is
+  obviously required — `strata_scorecard_models.status` already exists — but the versioning mechanism might need one.
+
+---
+
+## Backend programme AUTHORIZED (Vikram, 2026-07-16) — full continuous execution through Release 5
+> "The complete backend-programme Plan Lock, D-series, E-series and F-series rulings are approved. Implementation is
+> authorized for all dependency-ordered releases and all 14 product capabilities." PR #349 stays open/unmerged.
+> Blueprint `03_PLAN_LOCK_BACKEND_PROGRAM.md` is **APPROVED**. Each slice: implement → migrate staging → test →
+> evidence → logs → commit → next dependency-safe slice. Stop only for a hard blocker (list in the authorization).
+
+### F-SERIES — resolved from the authorization's CONFIRMED PRODUCT RULES (not assumed)
+| ID | Resolution | Derived from |
+|---|---|---|
+| **F-1** | ⛔ **STILL OPEN — the ONE thing not derivable.** No Strategy Office owner is named for the three integrity-exception records. E-1 mandates the field. A name cannot be inferred from schema, and inventing one is the exact zero-assumption violation the register exists to prevent. **Does NOT block the programme:** the register ships with `strategy_office_owner NOT NULL`; the three records are the only deferred item. | — |
+| **F-2** | **Clone-as-is, then edit in draft.** v2 is a draft and freely editable; the deliberate include/exclude choice (E-3) is recorded at approval, where SO reviews it anyway. | blueprint §11 recommendation + "choose the smallest design" |
+| **F-3** | **Qualification surfaces on board packs and exports**, not only admin/registry. | authorization R2: "Snapshot-integrity qualification on future packs and exports" |
+| **F-4** | **A2 → A3 back-to-back**, before E-2 remediation. No one-time exception, no A3-before-A2. | authorization: "Maintain dependency order" + §11 recommendation |
+| **F-5** | **Pre-existing rows get NULL `updated_at`**, never `now()`, plus an explicit "unaudited before <date>" marker. Defaulting to `now()` would assert a change time that never happened — false provenance on the very rows under investigation. | authorization: "Do not fabricate historical approval dates or update timestamps" |
+| **F-6** | **Benefit values get `accepted_with_exception` ONLY — not `quarantined`.** The authorization's benefit assurance list names Reported · Owner confirmed · Independently validated · Accepted with exception · Rejected · Reversed/superseded, and no quarantine. Adding `quarantined` would imply a benefit-value quarantine workflow that does not exist and was not asked for. | authorization: benefit assurance state list |
+| **F-7** | **`owner_confirmed` COUNTS in benefit realization.** This changes live numbers — `strata_calc_benefit_realization` currently whitelists `='validated'`, so the whitelist must be widened. Acceptance for calculation still does NOT imply independent validation (E-6); the state stays visibly distinct. | authorization: "Owner-confirmed benefits count" |
+| **F-8** | 🆕 **`strata_element_kpis` is NOT part of the P0 draft-gate.** Blueprint §12.2 lists it, but that contradicts §3.7 (relationship ≠ definition; post-approval linking is intended) and E-7 (no independent link-status state machine), and `strata_link_element_kpi` REQUIRES `approved` — so a draft-gate would invert the rule and break every KPI link. It is not a child of the scorecard-model aggregate at all. It receives E-4 audit coverage + the DEF-010 relaxation instead. **Derived from approved rules + the regression ban; raised as DRIFT-10, not silently adapted.** | §3.7 + E-7 + probe of the RPC body |
+
+### Probe corrections to the blueprint/handover (evidence-backed, this session)
+- **DEF-010's link layer is PARTIALLY SHIPPED.** `strata_link_element_kpi` already permits draft/pending linking when
+  `is_strategic` is true. Staging: 10 approved · 5 draft non-strategic · **1 draft STRATEGIC** · 1 pending_approval.
+  The handover's "6 draft KPIs on staging, **all unlinkable at creation**" is **FALSE** — the strategic one is linkable
+  today. DEF-010 extends a shipped pattern rather than inventing one.
+- **E-4's old/new value capture needs NO new columns.** `strata_audit_events` **already has `before` and `after` jsonb**
+  (probed). Blueprint §13.3's "extend it rather than mint a second audit store" is satisfied by the existing shape;
+  only correlation context is genuinely absent.
+- **The §12.1 precedent cannot be copied verbatim.** `strata_gate_model_stages_write` authorizes on
+  `(created_by = auth.uid() OR strata_is_admin())`, **not** `strategy_office`. Copying it wholesale would silently
+  change who may author measures. P0-A copies the draft-join SHAPE and preserves the existing role predicate.
+- **§12.3.3 verified, not assumed:** `strata_scorecard_models_update` gates on `status='draft'`, so the threshold
+  association (`threshold_scheme_id`, on the parent) is already protected. No work needed.
+
+## F-9 · RAISED (session 026, not ruled) — KPI revision (A3b) has a live-numbers consequence the blueprint does not specify
+> **Do NOT start A3b assuming it mirrors A3a. It does not.** Found by probing `strata_kpis`' FK children.
+
+**A3a was safe because a scorecard model's children are all definition.** `strata_kpis` has **three kinds** of child,
+and only the first is part of the definition:
+| child | kind | clone into v2? |
+|---|---|---|
+| `strata_kpi_formula_versions` | **definition** — the formula decides the number | **YES** |
+| `strata_element_kpis` · `strata_initiative_kpis` | **relationship** | **NO** — §3.7: relationship ≠ definition |
+| `strata_kpi_actuals` · `strata_kpi_targets` · `strata_key_results` · `strata_scorecard_lines` · `strata_scorecard_model_measures` | **measurement facts / references** | **NO** |
+
+**The problem.** A revision creates a NEW ROW with a NEW id. Every actual, link, key result and model-measure points at
+**v1's id**. On approval, `strata_approve_record` supersedes v1 — and E-7 rules superseded ⇒ **historical only**. So
+**v2 would have no links and no actuals, and every objective would silently lose its measure.** That MOVES OFFICIAL
+NUMBERS. Regression is banned; this must not be discovered mid-slice.
+
+**What IS ruled:** D-3 — "Preserve **logical KPI lineage** + historical resolution for actuals, objectives, Key
+Results, scorecards, snapshots, board packs." So the requirement is settled: **the links and actuals must survive a
+revision.** The *mechanism* is not, and it is not derivable from the blueprint.
+
+**Options (recommendation first) — needs a ruling before A3b:**
+1. **Resolve through the lineage chain (RECOMMEND).** Keep relationship/measurement rows on the logical lineage and
+   have readers resolve v1→v2 via `supersedes_id`. Nothing is re-pointed; history stays literally true (an actual
+   submitted against v1 *was* submitted against v1). Cost: every reader must walk the chain — a real, wide change.
+2. **Carry relationships forward at approval.** `strata_approve_record` re-points `element_kpis`/`initiative_kpis` from
+   v1 to v2 when the approved record supersedes one. Cheaper to read; but it MUTATES `strata_approve_record` (which
+   A3a deliberately left untouched, and which is shared by all 9 governed tables), and it rewrites a historical
+   relationship row to point at a KPI that did not exist when the link was made.
+3. **KPI revision does not create a new row** — version the definition in place with a formula-version child. Smallest
+   blast radius, but contradicts D-2's "clone the complete governed aggregate … increments version … sets
+   supersedes_id" and the shipped model precedent.
+
+**Note the asymmetry:** D-2 names all three revision RPCs in one breath, which implies they are the same shape. **They
+are not.** `strata_create_threshold_draft_version` (A3c) is closer to A3a — `strata_threshold_schemes` has no
+aggregate children at all (only `strata_kpis`/`strata_scorecard_models` REFERENCE it), so its clone is parent-only and
+should be safe. **A3c is not blocked by F-9; A3b is.**
+
+## F-1 ✅ RULED (Vikram, 2026-07-16) — accountability is the ROLE; a named person is OPTIONAL
+- **Ruling:** "Accountability belongs to the Strategy Office role; a named person is optional." Add required
+  `owner_role` (constrained to the supported role vocabulary, defaulted `strategy_office`); make the personal owner
+  **nullable** as `assigned_owner_id`; retain append-only + status/due-date/resolution; **do not fabricate a person**;
+  **file the three records** with `owner_role='strategy_office'` and no individual.
+  **Recorded as ALIGNMENT with the already-approved F-1 decision — NOT a new product decision.**
+- **What session 026 got wrong:** it read F-1 as "a name is required and cannot be inferred", and modelled
+  `strategy_office_owner NOT NULL`. That **contradicted** the ruling and made the register unfillable — the register
+  was blocked **by its own schema**, not by a missing fact. Corrected by `20260716200000` (P0-D2).
+- **The zero-assumption principle still holds, and is now expressed more precisely:** `assigned_owner_id IS NULL`
+  means **"no individual assigned; accountability rests with owner_role"** — it does **not** mean "owner unknown".
+  That is why the role field is NOT NULL and the personal field is nullable. Guessing a person remains banned.
+- **`status` vs `resolution` are deliberately separate** (both retained per the ruling). `resolution` is the RULED
+  disposition (E-1 preserve-with-qualification; E-2 supersede-prospectively) and is fixed when the record is filed.
+  `status` is whether it has been CARRIED OUT. **B2B v1 proves why:** resolution `superseded_prospectively` (ruled) but
+  status `open` (v2 does not exist yet). Collapsing them would let a ruled-but-unperformed remediation read as done.
+- **Bug found and fixed in P0-D's own design while applying this:** `UNIQUE(exception_class, affected_snapshot_id, …)`
+  treats NULLs as DISTINCT, so **model_approval_provenance records (snapshot NULL) could be filed repeatedly** — the
+  one class the duplicate guard most needed to cover was the one it did not. Rebuilt as
+  `UNIQUE NULLS NOT DISTINCT` (PG15+; staging runs 17.6). Proven rejected.
+
+## F-10 · RAISED **and APPLIED** (session 026, 2026-07-17) — `effective_from` holds the APPROVAL timestamp, not a business-effective date
+> **The F-9 ruling's resolution rule, applied literally to this data, would have ERASED 3,210 historical results.**
+> Applied rather than escalated because the alternative is an explicitly authorized HARD BLOCKER
+> ("implementation would destroy or rewrite governed history"), which makes the answer derivable. **Flagged for
+> override** — say the word and I will change it.
+
+**Probed 2026-07-17 (staging):** 8 approved KPIs have `effective_from` == `approved_at` == `2026-07-04 22:56:51`,
+**byte-identical** — they were stamped by `strata_approve_record`'s `effective_from = COALESCE(effective_from, now())`.
+Their **3,210** calculated values cover periods ending **2026-03-31 … 2026-06-30**, all BEFORE that timestamp. Only
+`Enterprise Revenue Growth (proof)` (effective 2026-07-05, period end 2027-03-31) sits after its own `effective_from`.
+Measured directly: resolving every existing KPI calculated value at its period end gave
+**would_resolve_to_same = 2 · WOULD_BECOME_MISSING = 3,210 · would_switch_version = 0**.
+
+**Diagnosis — a data-semantics discovery, not a bug.** The ruling's "select the approved version effective on that
+date" assumes `effective_from` means *effective from* in the business sense. In this data it means *approved at*:
+every historical period predates its own KPI's approval, because the system was stood up after the periods it reports.
+
+**Ruled here (one canonical rule, EXTENDED — not a second rule):**
+1. the approved version whose `[effective_from, effective_to)` contains the date; several → **RAISE**;
+2. **if none AND the date precedes the lineage's EARLIEST approved version → that earliest version.** It is the only
+   definition that ever existed and **it is the definition that produced those numbers**, so answering "v1" is TRUE,
+   not an assumption. **Backward only.**
+3. otherwise NULL (Missing) — every version retired/ended before the date, or no approved version at all (the
+   DEF-010/E-7 draft case, which must stay Missing).
+**Backward extension never applies forward past an `effective_to`: a retired KPI stays Missing.**
+
+**Why this is derivable, not a new product decision:** returning Missing for 3,210 governed historical results is
+forbidden by the authorization's hard-blocker list; the earliest-version rule is the only reading that both preserves
+governed history and keeps the ruling's actual intent (choose correctly among **multiple** versions).
+**Measured after applying: `resolve_to_same` = 3,212 / 3,212 · `would_become_missing` = 0.**
+
+**If Vikram wants the literal rule instead**, the consequence must be stated plainly: 3,210 historical results become
+Missing on the next recalculation of any unlocked period, and the fix would be to backfill true business-effective
+dates onto the KPIs — which **cannot be inferred** and would be exactly the fabricated-timestamp failure F-5 forbids.
+
+## F-11 · 🔴 RAISED (session 026, 2026-07-17) — **`npx tsc --noEmit` is a NO-OP. The "tsc clean" gate has been vacuous.**
+> **This invalidates a gate reported on every slice of this feature, including all 13 shipped this session.**
+> Not a STRATA defect — a repo-wide tooling defect. Raised, not silently worked around.
+
+**Proof:** `tsconfig.json` is a **solution-style config** — `"files": []` plus `"references"` to `tsconfig.app.json`
+and `tsconfig.node.json`. `tsc --noEmit` against it compiles **nothing**. Demonstrated: a deliberate
+`const x: number = "definitely not a number";` inserted into `StrataKpiDetailPage.tsx` produces **zero** errors from
+`npx tsc --noEmit`. (Separately, RTK's tsc filter prints "TypeScript: No errors found" for any output without error
+lines — it says the same for `tsc --version` — so the reassuring message came from the filter, not from tsc.)
+
+**The real check is `npx tsc --noEmit -p tsconfig.app.json`** (or `tsc --build`). It reports **159 pre-existing errors
+across exactly 4 foreign files** — `CapacityHeatmap.tsx` · `icon-registry.ts` · `RichTextCommentEditor.tsx` ·
+`SortableColumn.tsx`. They are **parse** errors (TS1005/TS1136/TS1161), which Vite never surfaces because esbuild
+strips types without checking. **ZERO are in any file this feature has touched** — verified per slice.
+
+**Second, narrower finding:** even under the real check, `kpi?.BOGUS_FIELD_XYZ` on the KPI object is **not** flagged,
+so property access there is effectively unchecked. `tsconfig.app.json` sets `strict: false` + `noImplicitAny: false`.
+**Consequence: for STRATA page code, tsc green is not evidence.** Tests and DB probes are the evidence — which is how
+every claim in `06_VALIDATION_EVIDENCE.md` was actually established, so no shipped claim rests on tsc.
+
+**Recommended (needs a ruling — it is a repo-wide change, outside this feature's scope):**
+1. Change the CLAUDE.md gate from `npx tsc --noEmit` to **`npx tsc --noEmit -p tsconfig.app.json`**.
+2. Fix or exclude the 4 foreign files so the real gate can be made blocking (today it cannot: it fails on arrival).
+3. Consider a ratchet, exactly like `lint:colors:gate` — baseline 159, fail on increase. That makes the gate useful
+   immediately without demanding a 159-error cleanup first.
+**Until then, report the gate honestly:** "tsc: no errors in touched files (`-p tsconfig.app.json`); 159 pre-existing
+errors in 4 foreign files" — **never a bare "tsc clean"**.
+
+## F-14 · 🔴 RAISED — NOT RULED (session 027, 2026-07-17) — **DEF-010 (cap 14) conflicts with V6QA D-4. Cap 14 is BLOCKED on a ruling, not on effort.**
+> **RED FLAG. Two Vikram-approved rulings, from two features, give opposite answers for the same case.**
+> I stopped cap 14 here and continued with other capabilities rather than silently choose. Choosing wrong changes who
+> may link what to a strategic objective — a governance semantic, not an implementation detail.
+
+**1. The decisions log's own claim about DEF-010 is a MISATTRIBUTION — correcting it.**
+This file (§"Probe corrections", session 026) says *"DEF-010's link layer is PARTIALLY SHIPPED … DEF-010 extends a
+shipped pattern rather than inventing one."* **It does not.** Traced the live predicate to its migration:
+`20260712170000_strata_kpi_is_strategic.sql`, header **`CAT-STRATA-V6QA-20260712-001 — STRATA-E2E-010 (decision D-4)`**
+— **a different feature, a different defect, ruled four days before DEF-010.** Its purpose was to break a
+**chicken-and-egg** (approval required a link; linking required approval) for *Strategic* KPIs. DEF-010 was never
+partially implemented. The two rules merely touch the same predicate.
+
+**2. The conflict.**
+| Ruling | Says |
+|---|---|
+| **V6QA D-4** (2026-07-12), migration header, verbatim | *"strata_link_element_kpi: relaxed so a **STRATEGIC** KPI can be linked while draft/pending_approval (breaks the chicken-and-egg); **operational KPIs keep the approved-only rule**."* — a **deliberate** choice, stated as such. |
+| **DEF-010** (2026-07-16), this file, verbatim | *"Allow **draft KPIs** to be linked to **strategic objectives** during authoring."* |
+A **draft operational (non-strategic) KPI linking to an objective** is permitted by DEF-010 and **refused by D-4 on
+purpose**. Implementing DEF-010 as written **overrides another feature's explicit decision.** That is not mine to do.
+
+**3. A second, independent ambiguity — the word "strategic" attaches to different entities.**
+DEF-010 says *"strategic **objectives**"* — "strategic" grammatically qualifies the **objective** (the element).
+The shipped predicate gates on **`kpi.is_strategic`** — the **KPI**. These are different entities, and the schema does
+not settle it: `strata_strategy_elements.element_type` ∈ **{objective, theme}** only — **there is no `is_strategic` (or
+any strategic marker) on elements**, so "strategic objective" is not a schema-distinguishable subset of objectives.
+Consequently the live rule is simultaneously:
+- **over-permissive** vs the text — a strategic draft KPI may link to a **theme**, which "strategic objectives" does not cover; and
+- **under-permissive** vs the text — a non-strategic draft KPI may **not** link to an objective, which is exactly the case DEF-010 names.
+
+**4. Measured on staging (why this is the whole of cap 14, not a corner case).**
+`approved/non-strategic: 10 · draft/non-strategic: 5 · draft/strategic: 1 · pending_approval/non-strategic: 1`.
+**6 draft/pending non-strategic KPIs are blocked today** — which is **exactly the "6 draft KPIs, all unlinkable at
+creation" that DEF-010 was raised to fix.** The D-4 exception unblocked **1** KPI. So DEF-010's defect is **fully
+open**: relaxing it is not a tidy-up, it *is* cap 14.
+
+**5. What is NOT in doubt** — so the ruling is narrow. The calc-side is already proven: the resolver excludes drafts
+from official resolution **by construction** (A3b), so a draft link **cannot** move an official number regardless of
+which reading wins. The risk here is governance semantics, **not** number integrity.
+
+**Options — needs a ruling. Recommendation first.**
+1. **RECOMMEND — DEF-010 wins for `element_type='objective'`; D-4's rule survives everywhere else.** Permit any
+   draft/pending KPI → an **objective**; keep approved-only for **themes**. This is the literal text ("strategic
+   objectives"), it closes all 6, and it narrows D-4 rather than deleting it. **It still overrides D-4's stated
+   "operational KPIs keep the approved-only rule" for objectives — Vikram must accept that explicitly.**
+2. **DEF-010 wins outright** — any draft KPI → any element. Simplest; discards D-4's distinction entirely.
+3. **D-4 wins; DEF-010 is deemed already satisfied** by the strategic-KPI path. **Rejected as a recommendation:** it
+   leaves 6/6 of the original defect's KPIs blocked, i.e. DEF-010 delivers nothing.
+**Also needs deciding, whichever wins:** the ruling's *"activate eligible links when the KPI is approved"* and
+*"clearly label them Draft"* — no link-status column exists (F-8 ruled `strata_element_kpis` has **no** independent
+link-status state machine), so "activation" is currently **derived** from the KPI's status. That is consistent with
+F-8 and needs no schema — **confirm** that reading rather than adding a column.
+
+## F-13 · APPLIED (session 027, 2026-07-17) — R2/F1 shipped a lifecycle state with **no entry verb**; Issue was unreachable
+> Found by wiring, not by review. The board-pack UI subagent hit it, correctly **refused to invent a flow**, and
+> reported it as a blocker instead. That refusal is why this was caught rather than papered over.
+
+**The gap.** R2/F1 (`20260717140000`) shipped `draft → in_review → approved → issued → superseded` and
+`strata_issue_board_pack`, which refuses anything not already `approved`. **Nothing moved a pack INTO `approved`.**
+Confirmed on staging before building: **3 packs, 0 approved** — Issue was provably unreachable end-to-end, and the
+capability matrix's "backend ✅ / UI ❌" for cap 7 was **too generous**. The backend was incomplete too.
+
+**Why it had to be an RPC, not a client UPDATE — this is the substantive part.**
+`strata_board_packs_write` (`20260705100400`) is `FOR ALL USING (strata_has_role(ARRAY['strategy_office']))`. A plain
+client UPDATE could therefore set `approved_by` to **any uuid**. And `strata_issue_board_pack`'s entire SoD control is
+`approved_by IS NOT DISTINCT FROM auth.uid()` → refuse. So a spoofable `approved_by` **defeats the SoD check
+completely**: one user names a colleague as approver, then issues the pack themselves. The approver identity must be
+**stamped by the server**. Hence `strata_approve_board_pack` is SECURITY DEFINER, stamps `auth.uid()`, and takes **no
+actor parameter** — there is deliberately no way for a caller to assert who approved.
+
+**Deliberately NOT imposed:** approval does **not** require the snapshot to be `locked`. Only issuance does. A pack may
+legitimately be reviewed and approved while its period is still open, and duplicating the lock check at approval would
+invent a gate R2/F1 chose not to impose. Approval **does** require a snapshot — approval is a statement about *which
+numbers* were approved, and without one there are none to point at.
+
+**Proven** (`20260717200000`, applied to staging, ledger 1:1) by DB probe as a **real non-admin `strategy_office` user**
+(`is_admin=f`), fully rolled back, **with a positive control so it could fail**:
+`draft → approved` + `approved_by` = the caller · **approver then REFUSED as issuer** (SoD has teeth *because* the
+server stamped it) · double-approve refused · roleless user refused.
+
+### F-11b · 🔴 EXTENDED (session 027, 2026-07-17) — **the FALLBACK gate is also a no-op. `-p tsconfig.app.json` does not semantically check STRATA either.**
+> **F-11 above prescribed `-p tsconfig.app.json` as "the real check". It is not. Proven this session.**
+> So "**0 errors under `src/modules/strata`**" — reported on the R3 UI slice and every slice since F-11 was raised —
+> **does not mean the code type-checks. It means tsc never semantically looked at it.** The number is vacuous, not clean.
+
+**How it surfaced (not by looking for it).** While wiring the R2/R4 domain layer I noticed `StrataBlastRadius` is used
+at `domain/index.ts:1037` and `:1044` but **is not imported anywhere in that file** (grep: only those two lines,
+repo-wide the type lives in `types.ts`). That is a textbook `TS2304: Cannot find name`. `-p tsconfig.app.json` reported
+**nothing** for it. Shipped in `f3331ae4a` (the R3 UI slice), which reported the gate green.
+
+**Proof (F-11's own methodology).** Appended to `src/modules/strata/domain/index.ts`:
+```ts
+const __probe: number = "definitely a string";   // TS2322
+const __probe2: NoSuchTypeAnywhere = 1;          // TS2304
+```
+`npx tsc --noEmit -p tsconfig.app.json` → **159 errors, all in the same 4 foreign files, NOT ONE about `__probe`.**
+Both probes removed; file restored and verified (`grep -c __probe` = 0).
+
+**Mechanism — stated at the confidence I actually have.** The 159 are **syntactic** (TS1005 94× · TS1109 52× ·
+TS1128 4× · TS1110 3× · TS2657 2×) in `CapacityHeatmap.tsx` · `icon-registry.ts` · `RichTextCommentEditor.tsx` ·
+`SortableColumn.tsx`. The overwhelmingly likely mechanism is that **tsc reports syntactic diagnostics and skips the
+semantic phase for the program**, so parse errors in 4 foreign files suppress type-checking for **all 1,000+ others**.
+I did **not** finish confirming that mechanism — the scoped run (those 4 excluded) timed out at 2 minutes and I
+restored the tree rather than leave a probe file in it. **The empirical fact is proven; the causal story is inference.**
+Whoever rules on F-11 should confirm it by excluding the 4 files and re-running.
+
+**What this changes.**
+1. **STRATA has had NO type-checking gate at any point in this feature.** Not since F-11, not before it. Neither
+   `tsc --noEmit` (compiles nothing) nor `-p tsconfig.app.json` (semantically silent) ever checked a STRATA file.
+2. **No shipped claim collapses** — for the reason F-11 already gives: every acceptance claim in
+   `06_VALIDATION_EVIDENCE.md` rests on **tests and DB probes**, never on tsc. The gate was decorative, so removing it
+   removes nothing. That is luck, not design.
+3. **No runtime break from the missing import.** `StrataBlastRadius` is used only in type position, and Vite/esbuild
+   strips types without checking — so it cannot fail at runtime. It is a type-safety hole, not a regression. **Fixed in
+   this slice's commit** (added to the import block) rather than left for the ruling.
+4. **F-11's recommendation #2 is now the load-bearing one, not a nice-to-have.** Until the 4 parse-error files are
+   fixed or excluded, **no tsc configuration checks this repo at all**, and a ratchet at 159 would ratchet a number
+   that measures nothing.
+5. **Stop reporting "tsc 0 under src/modules/strata" as evidence. It is not evidence of anything.** Report tests, DB
+   probes, and gates. This slice reports no tsc claim, and its subagents were instructed not to make one.
+
+## F-12 · APPLIED (session 026, 2026-07-17) — board-pack issuance gets its OWN column; `status` is left alone
+> Deviation from blueprint §6's literal wording. Derived from the authorization's own capability list + the shipped
+> schema. Logged, not silently adapted. **Flagged for override.**
+
+**§6 says:** `strata_board_packs` status "+issued, superseded".
+**Probed:** `status` is already a **GENERATION** lifecycle — `CHECK (pending | generating | ready | failed)`. It tracks
+whether the *artefact rendered*. 3 existing rows use `pending`/`ready`.
+**The authorization asks for more than §6 did:** an editorial *builder*, *review*, *approval* **and** issuance —
+i.e. `draft → in_review → approved → issued → superseded`.
+
+**Why not one column.** Piling those onto `status` conflates two **orthogonal** facts: *"has the file rendered?"* and
+*"has the Strategy Office approved and issued it?"*. `generating` and `in_review` are not comparable states, and a pack
+reading `issued` would have **lost** its generation state — you could no longer tell whether the artefact exists. It
+would also silently redefine the meaning of a column already in use by 3 rows.
+
+**Taken:** `status` untouched (keeps its meaning and its rows); new **`issue_status`** carries the editorial lifecycle,
+defaulting existing rows to `draft` — which is the truth: they were generated, never issued. Smallest design that
+satisfies the approved operating model without destroying a meaning already in use.
+
+**Also applied:** immutability is a **BEFORE UPDATE trigger**, not RLS. RLS gates *whether a row is writable*, not
+*which fields changed*, and the issue/supersede RPCs are SECURITY DEFINER so they bypass RLS entirely. The trigger is
+the only layer that sees old vs new and binds **every** writer — RPC, client, and future migrations alike.

@@ -83,7 +83,21 @@ create table public.strata_scorecard_model_measures (
 
 ---
 
-# PART 2b — measure ASSIGNMENT UI · READY TO BUILD (spec is complete; no decisions outstanding)
+# PART 2b — measure ASSIGNMENT UI · ✅ BUILT + RULED · CLOSED (session 025, 2026-07-16)
+> Built exactly as specced below; gates green; live-verified. The measures table went 0 → 2 rows through the
+> new UI as `strategy_office`, which also closed part 2a's "populated rows verified by construction only" gap.
+> PR #349. Evidence: `sessions/025_measures-builder-part2b.md`.
+>
+> **Both rulings in (Vikram 2026-07-16) — nothing outstanding on 2b:**
+> - **M-D3 CONFIRMED** — the Save gate's "every group totals 100" applies only to groups that HAVE measures,
+>   mirroring `ModelIntegrityBand`. The literal reading is unimplementable against the replace-set contract
+>   (it would block the first save of a part-built model). Ruled as built; no code change followed.
+> - **M-D4 DEFERRED to its own slice** — approved-model editability (measures AND perspective weights,
+>   role-gated only, no status gate). Pre-existing since 5C via `ModelWeights`, so explicitly NOT 2b's to fix.
+>   See `09_DECISIONS.md` → M-D4.
+>
+> **Anchor 05's builder is COMPLETE.** This was the feature's last ready-to-build spec — nothing is queued behind it.
+
 Everything 2b needs already exists and is verified. This is a build-only slice — do not re-derive any of it.
 
 ## Already shipped (do not rebuild)

@@ -16,12 +16,12 @@
  * ('—' when unknown).
  */
 import React, { useMemo, useState } from 'react';
-import { useQueries } from '@tanstack/react-query';
+import { useQueries, useQuery } from '@tanstack/react-query';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
-  Button, CatalystTag, Checkbox, EmptyState, Heading,
+  Button, CatalystTag, Checkbox, EmptyState, Heading, Lozenge,
   Modal, ModalBody, ModalFooter, ModalHeader, ModalTitle,
-  SectionMessage, Textfield, Tooltip,
+  SectionMessage, Spinner, Textfield, Tooltip,
 } from '@/components/ads';
 import { JiraTable } from '@/components/shared/JiraTable';
 import type { Column } from '@/components/shared/JiraTable';
@@ -64,7 +64,9 @@ import {
 } from '@/modules/strata/components/shared';
 import { StrataFormModal } from '@/modules/strata/components/authoring';
 import { fmtDate, fmtDateTime, fmtUnit, labelize } from '@/modules/strata/components/format';
-import type { StrataAction, StrataDecision, StrataPeriod, StrataSnapshot } from '@/modules/strata/types';
+import type {
+  StrataAction, StrataDecision, StrataPeriod, StrataReview, StrataReviewReadiness, StrataSnapshot,
+} from '@/modules/strata/types';
 
 /** strata_snapshot_items row (domain returns untyped rows; payload is the frozen record). */
 interface SnapshotItemRow {
@@ -388,6 +390,475 @@ function ClosePeriodModal({ open, onClose, period }: {
         </Button>
       </ModalFooter>
     </Modal>
+  );
+}
+
+// ── R2/E1 · scheduled reviews (persisted entity `strata_reviews`, D-6) ────────
+/**
+ * The persisted review entity is AUTHORITATIVE going forward. The derived
+ * snapshot-keyed "Review registry" below it is retained deliberately as
+ * compatibility / verification support (migration 20260717130000 says so in
+ * as many words) — it is no longer the system of record.
+ *
+ * Three rules from the migration are load-bearing here and are not negotiable:
+ *  1. `origin='migrated'` rows were RECONSTRUCTED from a locked snapshot by the D-6
+ *     backfill. Their chair / agenda / scheduled_for / participants are NULL meaning
+ *     NOT RECORDED — never "none". Rendering them as a bare '—' would imply the meeting
+ *     had no chair, which is a lie about a meeting that really happened.
+ *  2. `is_ready` requires a LOCKED SNAPSHOT ONLY. `pack_attached` is reported separately
+ *     and is deliberately NOT part of readiness — a review may legitimately convene on
+ *     locked numbers before its pack is built. The two are never ANDed here: that would
+ *     invent a gate the database explicitly rejected.
+ *  3. `blocking_reasons` is rendered IN FULL, so the surface states WHY rather than
+ *     showing a bare status. A row can be Ready AND still carry "no board pack attached".
+ */
+
+/** Mirrors strata_has_role(ARRAY['strategy_office']) — which admits strata_admin via strata_is_admin. */
+const REVIEW_GOVERN_ROLES: readonly string[] = ['strategy_office', 'strata_admin'];
+
+const REVIEW_STATUS_LOZENGE: Record<StrataReview['status'], LozengeAppearance> = {
+  scheduled: 'default',
+  in_progress: 'inprogress',
+  closed: 'success',
+  cancelled: 'removed',
+};
+
+/**
+ * Exactly the transitions strata_update_review permits. The RPC has no transition graph:
+ * its ONLY refusal is on a review whose CURRENT status is already 'closed' ("a closed review
+ * records a meeting that already happened and cannot be edited"). So closed is terminal here
+ * and every other status may still move. Closing additionally requires a LOCKED snapshot —
+ * that check is left to the server and its refusal is surfaced verbatim, because the readiness
+ * view already names the gap and a client copy of the rule could disagree with it.
+ */
+const REVIEW_NEXT_STATUS: Record<StrataReview['status'], Array<{ to: StrataReview['status']; label: string; danger?: boolean }>> = {
+  scheduled: [
+    { to: 'in_progress', label: 'Start' },
+    { to: 'closed', label: 'Close' },
+    { to: 'cancelled', label: 'Cancel', danger: true },
+  ],
+  in_progress: [
+    { to: 'closed', label: 'Close' },
+    { to: 'cancelled', label: 'Cancel', danger: true },
+  ],
+  cancelled: [{ to: 'scheduled', label: 'Reinstate' }],
+  closed: [],
+};
+
+/** D-6: absent, not empty. Never rendered as '—', which would read as "there was none". */
+const NOT_RECORDED = 'Not recorded';
+export const REVIEW_MIGRATED_NOTICE =
+  'Reconstructed from a locked snapshot by the migration — its chair, participants, agenda and meeting date were never recorded. Absent, not empty.';
+const REVIEW_READINESS_RULE =
+  'Ready means the snapshot is locked. A board pack is reported separately and does not gate convening.';
+const CADENCE_HELPER =
+  'Optional — left unset, the server applies its own default (departmental → monthly, executive → quarterly).';
+
+/**
+ * Form values → `governanceApi.scheduleReview` input. Pure, and exported, so the cadence rule is
+ * provable: when the user chose no cadence the key is OMITTED ENTIRELY rather than filled with a
+ * client-side default. Sending 'monthly' here would turn the server's documented default into a
+ * value the user never picked, and the row would then claim a cadence as a recorded choice.
+ * cycle_id is DERIVED from the chosen period (a fact on the period row), never assumed.
+ */
+export function scheduleInputFromForm(
+  values: Record<string, unknown>,
+  periods: StrataPeriod[],
+): Parameters<typeof governanceApi.scheduleReview>[0] {
+  const str = (k: string): string | undefined => {
+    const v = values[k];
+    return typeof v === 'string' && v.trim() !== '' ? v.trim() : undefined;
+  };
+  const periodId = str('period_id');
+  const period = periodId ? periods.find((p) => p.id === periodId) ?? null : null;
+  const cadence = str('cadence') as StrataReview['cadence'] | undefined;
+  return {
+    name: str('name') ?? '',
+    reviewType: values.review_type as StrataReview['review_type'],
+    periodId: periodId ?? null,
+    cycleId: period?.cycle_id ?? null,
+    scheduledFor: str('scheduled_for') ?? null,
+    chairId: str('chair_id') ?? null,
+    // Present ONLY when genuinely chosen — see the docblock.
+    ...(cadence ? { cadence } : {}),
+  };
+}
+
+/**
+ * Exported so the governed lifecycle can be tested directly, mirroring SourcesRegistry (R3).
+ * Rendering the whole page in a test drags in the STRATA shell and would prove the shell.
+ */
+export function ScheduledReviewsSection() {
+  const { periods } = useStrataContext();
+  const rolesQ = useStrataRoles();
+  const profilesQ = useProfileNames();
+  const snapshotsQ = useSnapshots();
+  const invalidate = useInvalidateStrata();
+  const reviewsQ = useQuery({
+    queryKey: ['strata', 'reviews'],
+    queryFn: () => governanceApi.reviews(),
+    staleTime: 30_000,
+  });
+  const readinessQ = useQuery({
+    queryKey: ['strata', 'review-readiness'],
+    queryFn: () => governanceApi.reviewReadiness(),
+    staleTime: 30_000,
+  });
+
+  const [scheduleOpen, setScheduleOpen] = useState(false);
+  const [pending, setPending] = useState<{ review: StrataReview; to: StrataReview['status'] } | null>(null);
+  const [attachTo, setAttachTo] = useState<StrataReview | null>(null);
+  const [note, setNote] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const rows = reviewsQ.data ?? [];
+  // The RPC's own gate, mirrored — this only avoids offering a verb the server would refuse.
+  const canGovern = (rolesQ.data ?? []).some((r) => REVIEW_GOVERN_ROLES.includes(r));
+
+  const readinessById = useMemo(() => {
+    const m = new Map<string, StrataReviewReadiness>();
+    (readinessQ.data ?? []).forEach((r) => m.set(r.review_id, r));
+    return m;
+  }, [readinessQ.data]);
+
+  const chairName = (id: string | null): string | null => (id ? profilesQ.data?.get(id)?.name ?? null : null);
+
+  const applyStatus = async () => {
+    if (!pending) return;
+    setBusy(true); setError(null);
+    try {
+      await governanceApi.updateReview(pending.review.id, {
+        status: pending.to,
+        note: note.trim() || null,
+      });
+      invalidate();
+      setPending(null); setNote('');
+    } catch (e) {
+      // Verbatim: the RPC already states its own refusal ("a review cannot close on a snapshot
+      // that is not locked (it is superseded) — …"). Re-wording it would lose the reason.
+      setError(e instanceof Error ? e.message : String(e));
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const columns: Column<StrataReview>[] = [
+    {
+      id: 'review', label: 'Review', flex: true,
+      cell: ({ row }) => {
+        const migrated = row.origin === 'migrated';
+        return (
+          <div style={{ minWidth: 0, display: 'flex', flexDirection: 'column', gap: 'var(--ds-space-050)' }}>
+            <span style={{ display: 'flex', alignItems: 'center', gap: 'var(--ds-space-075)', flexWrap: 'wrap' }}>
+              <span style={{ ...bodyStyle, fontWeight: 600 }}>{row.name}</span>
+              {/* A migrated row must be visually distinguishable — its meeting details are
+                  reconstructions, not records. */}
+              {migrated ? (
+                <span data-testid={`strata-review-migrated-${row.id}`}>
+                  <Lozenge appearance="moved">Migrated · details not recorded</Lozenge>
+                </span>
+              ) : null}
+            </span>
+            <span style={{ ...captionStyle, fontVariantNumeric: 'tabular-nums' }}>{row.review_key}</span>
+            {migrated ? (
+              <span style={captionStyle} data-testid={`strata-review-migrated-note-${row.id}`}>
+                {REVIEW_MIGRATED_NOTICE}
+              </span>
+            ) : null}
+            {/* The server's own note on the row, rendered verbatim — on migrated rows it states
+                which facts are assumptions of the migration rather than recorded facts. */}
+            {row.note ? (
+              <span style={captionStyle} data-testid={`strata-review-note-${row.id}`}>{row.note}</span>
+            ) : null}
+          </div>
+        );
+      },
+    },
+    {
+      id: 'type', label: 'Type · cadence', width: 14,
+      cell: ({ row }) => (
+        <span style={captionStyle}>{labelize(row.review_type)} · {labelize(row.cadence)}</span>
+      ),
+    },
+    {
+      id: 'scheduled', label: 'Scheduled', width: 14,
+      cell: ({ row }) => {
+        if (row.scheduled_for) {
+          return <span style={{ ...captionStyle, fontVariantNumeric: 'tabular-nums' }}>{fmtDateTime(row.scheduled_for)}</span>;
+        }
+        // NULL on a migrated row is "never captured", not "unscheduled" — say which.
+        return (
+          <span style={captionStyle} data-testid={`strata-review-scheduled-${row.id}`}>
+            {row.origin === 'migrated' ? NOT_RECORDED : '—'}
+          </span>
+        );
+      },
+    },
+    {
+      id: 'chair', label: 'Chair', width: 14,
+      cell: ({ row }) => {
+        const name = chairName(row.chair_id);
+        if (name) return <span style={captionStyle}>{name}</span>;
+        return (
+          <span style={captionStyle} data-testid={`strata-review-chair-${row.id}`}>
+            {row.origin === 'migrated' ? NOT_RECORDED : '—'}
+          </span>
+        );
+      },
+    },
+    {
+      id: 'readiness', label: 'Readiness', width: 26,
+      cell: ({ row }) => {
+        const rd = readinessById.get(row.id) ?? null;
+        if (!rd) return <span style={captionStyle}>—</span>;
+        return (
+          <div
+            style={{ display: 'flex', flexDirection: 'column', gap: 'var(--ds-space-050)', minWidth: 0 }}
+            data-testid={`strata-review-readiness-${row.id}`}
+          >
+            <span style={{ display: 'flex', gap: 'var(--ds-space-075)', flexWrap: 'wrap' }}>
+              {/* is_ready is the view's own verdict — snapshot-locked ONLY. Never ANDed with the pack. */}
+              <Lozenge appearance={rd.is_ready ? 'success' : 'moved'}>
+                {rd.is_ready ? 'Ready to convene' : 'Not ready'}
+              </Lozenge>
+              {/* Reported alongside, never folded into readiness. */}
+              <Lozenge appearance={rd.pack_attached ? 'new' : 'default'}>
+                {rd.pack_attached ? 'Pack attached' : 'No pack attached'}
+              </Lozenge>
+            </span>
+            <span style={captionStyle}>{REVIEW_READINESS_RULE}</span>
+            {rd.blocking_reasons.length > 0 ? (
+              <ul
+                style={{ margin: 0, paddingLeft: 'var(--ds-space-250)', ...captionStyle }}
+                data-testid={`strata-review-blockers-${row.id}`}
+              >
+                {/* Every reason the view returned — including "no board pack attached" on a row
+                    that is nonetheless Ready. Naming them is the point; counting them is not. */}
+                {rd.blocking_reasons.map((reason) => <li key={reason}>{reason}</li>)}
+              </ul>
+            ) : null}
+          </div>
+        );
+      },
+    },
+    {
+      id: 'status', label: 'Status', width: 22,
+      cell: ({ row }) => (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--ds-space-075)', minWidth: 0 }}>
+          <span>
+            <StatusLozenge
+              status={row.status}
+              label={labelize(row.status)}
+              appearance={REVIEW_STATUS_LOZENGE[row.status] ?? 'default'}
+            />
+          </span>
+          {!canGovern ? null : row.status === 'closed' ? (
+            // Terminal by rule. Saying so beats rendering buttons the server will refuse.
+            <span style={captionStyle} data-testid={`strata-review-closed-${row.id}`}>
+              Closed — this records a meeting that already happened and cannot be edited.
+            </span>
+          ) : (
+            <span style={{ display: 'inline-flex', gap: 'var(--ds-space-075)', flexWrap: 'wrap' }}>
+              {/* Without this, "no snapshot attached" would be a blocker the surface states but
+                  gives no way to resolve. Re-pointing is permitted while the review is not closed —
+                  nothing has been recorded against it yet. */}
+              <Button
+                spacing="compact"
+                appearance="subtle"
+                isDisabled={busy}
+                testId={`strata-review-attach-${row.id}`}
+                onClick={() => { setError(null); setAttachTo(row); }}
+              >
+                {row.snapshot_id ? 'Change snapshot' : 'Attach snapshot'}
+              </Button>
+              {(REVIEW_NEXT_STATUS[row.status] ?? []).map((n) => (
+                <Button
+                  key={n.to}
+                  spacing="compact"
+                  appearance={n.danger ? 'danger' : 'default'}
+                  isDisabled={busy}
+                  testId={`strata-review-${n.to}-${row.id}`}
+                  onClick={() => { setNote(''); setError(null); setPending({ review: row, to: n.to }); }}
+                >
+                  {n.label}
+                </Button>
+              ))}
+            </span>
+          )}
+        </div>
+      ),
+    },
+  ];
+
+  return (
+    <StrataPanel
+      title="Scheduled reviews"
+      icon={<CalendarClock size={16} />}
+      count={rows.length}
+      noPadding
+      testId="strata-reviews-scheduled"
+      actions={canGovern ? (
+        <Button
+          appearance="primary"
+          spacing="compact"
+          onClick={() => { setError(null); setScheduleOpen(true); }}
+          testId="strata-review-schedule"
+        >
+          Schedule review
+        </Button>
+      ) : <Lozenge appearance="new">Read-only for your role</Lozenge>}
+    >
+      <p style={{ ...captionStyle, margin: 0, padding: 'var(--ds-space-150) var(--ds-space-200) 0' }}>
+        The reviews the organisation has actually scheduled. A review is scheduled before its snapshot
+        is locked — that is the point of scheduling, and it is what makes readiness a real question.
+        Monthly departmental and quarterly executive are the server&apos;s defaults, not laws: a body
+        that meets off-cadence is recorded as it meets.
+      </p>
+      {error ? (
+        <div style={{ padding: 'var(--ds-space-150) var(--ds-space-200) 0' }}>
+          <SectionMessage appearance="error" title="Review update rejected by the database">
+            <p style={{ whiteSpace: 'pre-wrap' }} data-testid="strata-review-error">{error}</p>
+          </SectionMessage>
+        </div>
+      ) : null}
+      {reviewsQ.isLoading ? (
+        <div style={{ display: 'flex', justifyContent: 'center', padding: 'var(--ds-space-300)' }}>
+          <Spinner size="medium" />
+        </div>
+      ) : reviewsQ.isError ? (
+        <div style={{ padding: 'var(--ds-space-200)' }}>
+          <SectionMessage appearance="error" title="Failed to load scheduled reviews">
+            <p>{reviewsQ.error instanceof Error ? reviewsQ.error.message : 'Unknown error'}</p>
+          </SectionMessage>
+        </div>
+      ) : rows.length === 0 ? (
+        <div style={{ padding: 'var(--ds-space-200)' }}>
+          <EmptyState
+            size="compact"
+            header="No reviews scheduled"
+            description="Scheduled departmental and executive reviews appear here, with their readiness against the locked snapshot they will convene on."
+          />
+        </div>
+      ) : (
+        <JiraTable<StrataReview>
+          columns={columns}
+          data={rows}
+          getRowId={(r) => r.id}
+          showRowCount={false}
+          ariaLabel="Scheduled reviews"
+        />
+      )}
+
+      {/* Status transition. Nothing is pre-gated beyond the RPC's own terminal rule: closing
+          without a locked snapshot is REFUSED BY THE SERVER, and that refusal renders verbatim
+          above rather than being predicted here. */}
+      <Modal isOpen={!!pending} onClose={busy ? () => {} : () => setPending(null)} width="small">
+        <ModalHeader>
+          <ModalTitle>{pending ? `${labelize(pending.to)} · ${pending.review.name}` : ''}</ModalTitle>
+        </ModalHeader>
+        <ModalBody>
+          <p style={{ margin: '0 0 var(--ds-space-150)', fontSize: 'var(--ds-font-size-200)', color: T.subtle }}>
+            {pending?.to === 'closed'
+              ? 'A review can only close on a locked snapshot — closing on live numbers would record a decision against figures that can still move. The database enforces this and its refusal is shown verbatim. Closing is final: a closed review cannot be edited afterwards.'
+              : pending?.to === 'cancelled'
+                ? 'Cancelling records that this review will not convene. It stays on the register.'
+                : 'This changes the review’s status on the register.'}
+          </p>
+          <Textfield
+            value={note}
+            onChange={(e) => setNote((e.target as HTMLInputElement).value)}
+            placeholder="Note (optional) — recorded in the audit trail"
+            aria-label="Note"
+            testId="strata-review-status-note"
+          />
+        </ModalBody>
+        <ModalFooter>
+          <Button appearance="subtle" onClick={() => setPending(null)} isDisabled={busy}>Cancel</Button>
+          <Button
+            appearance={pending?.to === 'cancelled' ? 'danger' : 'primary'}
+            isDisabled={busy}
+            testId="strata-review-status-confirm"
+            onClick={() => void applyStatus()}
+          >
+            {pending ? labelize(pending.to) : ''}
+          </Button>
+        </ModalFooter>
+      </Modal>
+
+      {/* Attach the snapshot a review will convene on. EVERY snapshot is offered, each labelled
+          with its own status — not just locked ones: a review may legitimately attach a snapshot
+          before it is locked, and readiness then states "snapshot is not locked" rather than the
+          UI pretending the choice does not exist. The one-review-per-snapshot constraint is the
+          database's to enforce; its rejection surfaces verbatim. */}
+      {canGovern && attachTo ? (
+        <StrataFormModal
+          open
+          onClose={() => setAttachTo(null)}
+          title={`Attach snapshot · ${attachTo.name}`}
+          description="A review convenes on one snapshot. Readiness requires that snapshot to be locked — a board pack is separate and does not gate convening."
+          fields={[{
+            key: 'snapshot_id', label: 'Snapshot', kind: 'select', required: true,
+            options: (snapshotsQ.data ?? []).map((s) => ({
+              value: s.id,
+              label: `${s.snapshot_key} · ${s.name} · ${labelize(s.status)}`,
+            })),
+          }]}
+          initial={attachTo.snapshot_id ? { snapshot_id: attachTo.snapshot_id } : undefined}
+          submitLabel="Attach snapshot"
+          onSubmit={async (v) => {
+            await governanceApi.updateReview(attachTo.id, { snapshotId: v.snapshot_id as string });
+            invalidate();
+          }}
+          testId="strata-review-attach-modal"
+        />
+      ) : null}
+
+      {/* Schedule — the server assigns REV-xxxx. Cadence is deliberately optional and NOT
+          pre-filled: the default is stated as a hint, because a pre-filled default would be
+          recorded as a choice the user never made. */}
+      {canGovern ? (
+        <StrataFormModal
+          open={scheduleOpen}
+          onClose={() => setScheduleOpen(false)}
+          title="Schedule review"
+          description="The review key is assigned by the server. A review is scheduled before its snapshot is locked — attach the snapshot when it exists."
+          fields={[
+            { key: 'name', label: 'Name', kind: 'text', required: true },
+            {
+              key: 'review_type', label: 'Type', kind: 'select', required: true,
+              options: [
+                { value: 'departmental', label: 'Departmental' },
+                { value: 'executive', label: 'Executive' },
+              ],
+            },
+            {
+              key: 'cadence', label: 'Cadence', kind: 'select',
+              helper: CADENCE_HELPER,
+              placeholder: 'Use the server default for this type',
+              options: [
+                { value: 'monthly', label: 'Monthly' },
+                { value: 'quarterly', label: 'Quarterly' },
+                { value: 'ad_hoc', label: 'Ad hoc' },
+              ],
+            },
+            {
+              key: 'period_id', label: 'Period', kind: 'select',
+              helper: 'Optional — the cycle is taken from the period.',
+              options: periods.map((p) => ({ value: p.id, label: p.name })),
+            },
+            { key: 'scheduled_for', label: 'Scheduled for', kind: 'date' },
+            { key: 'chair_id', label: 'Chair', kind: 'user' },
+          ]}
+          submitLabel="Schedule review"
+          onSubmit={async (v) => {
+            await governanceApi.scheduleReview(scheduleInputFromForm(v as Record<string, unknown>, periods));
+            invalidate();
+          }}
+          testId="strata-review-schedule-modal"
+        />
+      ) : null}
+    </StrataPanel>
   );
 }
 
@@ -1147,14 +1618,21 @@ export default function StrataReviewsPage() {
   const reviewsIndex = (
     <>
       {nowBand}
+      {/* R2/E1: the persisted entity is authoritative. The derived registry below it is kept as
+          compatibility / verification support per migration 20260717130000, not as the record. */}
+      <ScheduledReviewsSection />
       <StrataPanel
-        title="Review registry"
+        title="Review registry (derived)"
         icon={<CalendarClock size={16} />}
         count={reviewRows.length}
         noPadding
         testId="strata-reviews-registry"
         actions={<span style={captionStyle}>Lifecycle: readiness · snapshot · decisions · actions · pack</span>}
       >
+        <p style={{ ...captionStyle, margin: 0, padding: 'var(--ds-space-150) var(--ds-space-200) 0' }}>
+          Derived from locked snapshots, one row per current snapshot. Retained as compatibility and
+          verification support alongside the scheduled reviews above, which are the system of record.
+        </p>
         {reviewRows.length === 0 ? (
           <div style={{ padding: 16 }}>
             <EmptyState size="compact" header="No reviews yet" description="Lock a period snapshot to open its review lifecycle." />
@@ -1544,7 +2022,11 @@ export default function StrataReviewsPage() {
                                 </Tooltip>
                               ) : isReady ? (
                                 <Tooltip content="Generated before pack storage existed — regenerate to store a retrievable copy">
-                                  <CatalystTag text="Ready" color="green" />
+                                  {/* Lozenge, not CatalystTag color="green": a bare colour name is a
+                                      hard-coded colour (it breached the strict ratchet and broke CI),
+                                      and every other CatalystTag on this page passes no color at all.
+                                      ADS lets the component own its colour. */}
+                                  <Lozenge appearance="success">Ready</Lozenge>
                                 </Tooltip>
                               ) : null}
                             </div>
