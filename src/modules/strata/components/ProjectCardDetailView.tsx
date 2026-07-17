@@ -65,8 +65,6 @@ const RISK_LEVEL: Record<'low' | 'medium' | 'high', React.ComponentProps<typeof 
 };
 const RISK_STATUS_OPTIONS = ['open', 'mitigating', 'accepted', 'closed'];
 const RISK_LEVEL_OPTIONS = ['low', 'medium', 'high'];
-const KPI_DIRECTION_OPTIONS = ['higher_better', 'lower_better', 'band', 'manual'];
-const KPI_FREQUENCY_OPTIONS = ['weekly', 'monthly', 'quarterly', 'half_yearly', 'yearly'];
 
 const fvStr = (v: unknown): string | undefined =>
   typeof v === 'string' && v.trim() !== '' ? v.trim() : undefined;
@@ -199,6 +197,9 @@ export function ProjectCardDetailView({ card, theme }: {
   const themeElements = elements.filter((e) => e.element_type === 'theme');
   const themeObjectives = elements.filter((e) => e.context === 'theme' && e.element_type === 'objective');
   const themeKpis = allKpis; // scoping to strictly theme-linked KPIs is a future refinement; all KPIs are valid roll-up targets today
+  // PC-DEF-002 — the "New KPI" action now REUSES an approved governed KPI rather
+  // than minting a project-local master. Only approved dictionary KPIs are selectable.
+  const approvedKpis = useMemo(() => allKpis.filter((k) => k.status === 'approved'), [allKpis]);
 
   // Resolved upward roll-up target per Project KPI. The parent Theme KPI is a
   // 'rolls_up_to' execution link (strata_execution_links), not a column — resolve
@@ -557,7 +558,7 @@ export function ProjectCardDetailView({ card, theme }: {
             {sectionVisible('scope_measures', 'project_kpis') ? (
               <TabSection
                 title={`Project KPIs / Measures (${projectKpis.length})`}
-                action={canWriteKpi ? <Button spacing="compact" onClick={() => setForm('new-kpi')} testId="strata-new-project-kpi">New KPI</Button> : undefined}
+                action={canWriteKpi ? <Button spacing="compact" onClick={() => setForm('new-kpi')} testId="strata-new-project-kpi">Link KPI</Button> : undefined}
               >
                 {projectKpis.length === 0 ? (
                   <EmptyState size="compact" header="No project KPIs" description="Project KPIs / Measures use the same framework as Theme KPIs and may roll up to one." />
@@ -785,28 +786,36 @@ export function ProjectCardDetailView({ card, theme }: {
       <StrataFormModal
         open={form === 'new-kpi'}
         onClose={() => setForm(null)}
-        title="New project KPI / measure"
-        description="Uses the same KPI framework as Theme KPIs."
-        submitLabel="Create"
+        title="Link governed KPI / measure"
+        description="Project Cards reuse an approved KPI from the governed dictionary. Contribution and target context are recorded on the link — no new KPI is created and official KPI/Scorecard results are unchanged."
+        submitLabel="Link measure"
         fields={[
-          { key: 'name', label: 'Measure name', kind: 'text', required: true },
-          { key: 'unit', label: 'Unit of measure', kind: 'text' },
-          { key: 'direction', label: 'Directionality', kind: 'select', options: KPI_DIRECTION_OPTIONS.map((d) => ({ value: d, label: labelize(d) })) },
-          { key: 'frequency', label: 'Measurement frequency', kind: 'select', options: KPI_FREQUENCY_OPTIONS.map((f) => ({ value: f, label: labelize(f) })) },
+          {
+            key: 'kpiId', label: 'Governed KPI', kind: 'select', required: true,
+            options: approvedKpis.map((k) => ({ value: k.id, label: k.name })),
+            helper: approvedKpis.length === 0
+              ? 'No approved governed KPIs are available to reuse yet.'
+              : 'Select an approved KPI from the governed dictionary',
+          },
+          {
+            key: 'contribution', label: 'Contribution', kind: 'select',
+            options: [{ value: 'direct', label: 'Direct' }, { value: 'supporting', label: 'Supporting' }],
+          },
+          {
+            key: 'targetNote', label: 'Contribution / target context', kind: 'text',
+            helper: 'Optional — how this project contributes to the KPI (stored on the link, not the KPI definition)',
+          },
           {
             key: 'parentThemeKpiId', label: 'Roll up to Theme KPI', kind: 'select',
             options: themeKpis.map((k) => ({ value: k.id, label: k.name })),
-            helper: 'Optional — links this Project KPI upward',
+            helper: 'Optional — links this measure upward',
           },
-          { key: 'accountableOwnerId', label: 'Measure Owner', kind: 'user' },
-          { key: 'validatorId', label: 'Validator', kind: 'user', helper: 'Must differ from the measure owner' },
         ]}
-        initial={{ direction: 'higher_better', frequency: 'quarterly' }}
-        onSubmit={submitAndRefresh((v) => executionApi.createProjectKpi({
-          projectId: card.id, name: String(v.name ?? '').trim(), unit: fvStr(v.unit),
-          direction: fvStr(v.direction), frequency: fvStr(v.frequency), entryMethod: 'manual',
-          parentThemeKpiId: fvStr(v.parentThemeKpiId), accountableOwnerId: fvStr(v.accountableOwnerId),
-          validatorId: fvStr(v.validatorId),
+        initial={{ contribution: 'supporting' }}
+        onSubmit={submitAndRefresh((v) => executionApi.linkProjectKpi({
+          projectId: card.id, kpiId: String(v.kpiId ?? ''),
+          contribution: fvStr(v.contribution), targetNote: fvStr(v.targetNote),
+          parentThemeKpiId: fvStr(v.parentThemeKpiId),
         }))}
         testId="strata-project-kpi-create-modal"
       />

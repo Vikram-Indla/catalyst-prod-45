@@ -788,17 +788,18 @@ export const executionApi = {
     if (links.length === 0) return [];
     return run(typedQuery('strata_strategy_elements').select('*').in('id', links.map((l) => l.to_id)));
   },
-  /** Project KPIs / Measures (Execution Reconciliation §K rule 8) — same strata_kpis
-   * framework as Theme KPIs, linked to the card + optionally rolled up to a Theme KPI. */
-  createProjectKpi: (input: {
-    projectId: string; name: string; unit?: string; direction?: string; frequency?: string;
-    entryMethod?: string; parentThemeKpiId?: string; accountableOwnerId?: string; validatorId?: string;
+  /** Project KPIs / Measures (Execution Reconciliation §K rule 8, PC-DEF-002) —
+   * REUSE an approved governed KPI on the card and record contribution/target
+   * context on the link. Never mints a KPI master (that path is server-disabled)
+   * and never mutates KPI targets/actuals, so official results are unchanged. */
+  linkProjectKpi: (input: {
+    projectId: string; kpiId: string; contribution?: string; targetNote?: string; parentThemeKpiId?: string;
   }): Promise<string> =>
-    run(typedRpc('strata_create_project_kpi', {
-      p_project: input.projectId, p_name: input.name, p_unit: input.unit ?? null,
-      p_direction: input.direction ?? 'higher_better', p_frequency: input.frequency ?? 'quarterly',
-      p_entry_method: input.entryMethod ?? 'manual', p_parent_theme_kpi: input.parentThemeKpiId ?? null,
-      p_accountable_owner: input.accountableOwnerId ?? null, p_validator: input.validatorId ?? null,
+    run(typedRpc('strata_link_project_kpi', {
+      p_project: input.projectId, p_kpi: input.kpiId,
+      p_contribution: input.contribution ?? 'supporting',
+      p_target_note: input.targetNote ?? null,
+      p_parent_theme_kpi: input.parentThemeKpiId ?? null,
     })),
   projectKpis: async (projectId: string): Promise<StrataKpi[]> => {
     const links: Array<{ to_id: string }> = await run(
