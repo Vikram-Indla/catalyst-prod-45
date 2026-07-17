@@ -1823,3 +1823,20 @@ state: validated → 83.33/0.900 · **pending → Missing** (`no_eligible_actual
 ✅ **DONE** — applied, ledger 1:1, gates green, suite 2,442/6. **Both R4 live-numbers debts discharged.**
 **R4 remainder:** quarantine accept/correct/reject RPC · mapping-memory · Matched/New/Conflict/Invalid · immutable run
 ledger · 24h import reversal (D-7/E-5). Then R5.
+
+---
+
+# R4c · quarantine resolution (D-5/E-6) · migration `20260717180000`
+Reused entirely: `quarantined`/`accepted_with_exception` states, exception columns + DB no-self-auth CHECK, and
+`strata_attest_actual` (quarantine ENTRY with SoD). **Only the resolution verb was missing.**
+
+`strata_resolve_quarantine(actual, verdict, reason, corrected_value)` — `accept_with_exception | correct | reject`.
+**`correct` returns the row to `pending`, not validated:** a corrected value is a NEW claim nobody has checked, and
+sending it to validated would let the corrector self-validate through the back door — the exact SoD
+`strata_attest_actual` enforces at the front. Since `pending` no longer counts (R4b), a corrected value is Missing
+until attested. Correct: nobody has checked it yet.
+
+**Proven:** non-SO refused · **self-authorization refused** · blank reason refused · correct-without-value refused ·
+accept_with_exception → counts=true, flagged, reason + original failures preserved, calc 83.33/conf 0.540 ·
+re-resolving a non-quarantined row refused · correct → pending/99 · reject → counts=false.
+✅ **DONE** — applied, ledger 1:1.
