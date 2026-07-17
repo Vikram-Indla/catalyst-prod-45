@@ -1000,6 +1000,22 @@ export const lineageApi = {
         ),
   dataSources: (): Promise<StrataDataSource[]> =>
     run(typedQuery('strata_data_sources').select('*').order('name')),
+  /**
+   * R3 downstream blast radius. Read-only; writes nothing. `blocking` names the APPROVED KPIs that
+   * make retirement unsafe (named, not counted — a decision needs the names). `historical` is locked
+   * snapshots / issued packs: reported so the decision is informed, NEVER a blocker and never
+   * "migratable" (D-1 — history is not rewritten). `coverage_note` states what the analysis cannot
+   * see: manual actuals carry no run lineage, so absence is not evidence.
+   */
+  dataSourceBlastRadius: (sourceId: string): Promise<StrataBlastRadius> =>
+    run(typedRpc('strata_data_source_blast_radius', { p_source: sourceId })),
+  /**
+   * R3 lifecycle. Returns the blast radius as computed at the moment of the change, so the audit
+   * trail records what was known then. Retirement is gated on `blocking` being empty and requires a
+   * reason; suspension is deliberately ungated — suspending is how you stop a bad feed.
+   */
+  setDataSourceStatus: (sourceId: string, status: StrataDataSource['status'], reason?: string): Promise<StrataBlastRadius> =>
+    run(typedRpc('strata_set_data_source_status', { p_source: sourceId, p_status: status, p_reason: reason ?? null })),
   uploadRuns: (): Promise<StrataUploadRun[]> =>
     run(typedQuery('strata_upload_runs').select('*').order('started_at', { ascending: false })),
   runByKey: (runKey: string): Promise<StrataUploadRun | null> =>

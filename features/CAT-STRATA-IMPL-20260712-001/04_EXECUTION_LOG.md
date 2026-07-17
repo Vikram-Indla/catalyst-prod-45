@@ -1871,3 +1871,44 @@ present and marked `reversed`. **E-5 no-prior:** → `no_eligible_actual` (left 
 reasons — the `format()`-built one is explicitly `text` — so **"already reversed" and "is a reversal" crashed with an
 opaque error exactly where a clean reason was the entire point**. Fixed with `array_append`.
 ✅ **DONE** — applied, ledger 1:1.
+
+---
+
+# R3-UI · data-source lifecycle + dependents impact — **capability 6 & 8 now COMPLETE**
+**Extended `StrataDataIntegrationPage` (route `/strata/admin/data`) — no new surface.**
+
+## The page's own header was stale, and that was the whole gap
+It read: *"strata_data_sources is status-only with NO admin authoring RPC, so the source registry is READ-ONLY —
+'+ Register source' and the retire-with-dependents flow are deferred and labelled."* **True when written (P5-D3);
+false since R3.** The RPCs shipped `20260717150000`. Header corrected; the labelled gap is now a real governed flow.
+
+## What is now reachable
+Per-row **Dependents** (blast radius) · **Validate & activate** · **Suspend** · **Resume** · **Retire** — driven by
+`NEXT_STATUS`, which mirrors the RPC's allowed transitions exactly, so **the UI can never offer a transition the server
+refuses**. A retired source renders **"Retired — terminal"**, not a row of dead buttons.
+
+## Honesty carried into the UI, not just the RPC
+- **Blockers are NAMED** (the panel lists *Churn Rate*), never counted.
+- **`coverage_note` is RENDERED verbatim** — "no historical impact" is **NOT** proof a source was uninvolved (manual
+  actuals carry no run lineage). Hiding it would turn an honest lower bound into a **false all-clear**.
+- **HISTORICAL is shown as informational**, explicitly "preserved, not blocking".
+- The RPC's refusal (which already names the blockers) surfaces **verbatim** — re-wording it would lose them.
+- **Retire requires a reason before the round trip; Suspend does not** — stopping a bad feed must not get harder the
+  more important the feed is.
+
+## Gate caught me, and I fixed rather than annotated
+`audit:ads:gate` **FAILED**: `tokens 19802 (baseline 19798, +4)` — four new `HARDCODED_PX` (`marginBottom: 6`,
+`margin: '8px 0 0'`, `paddingLeft: 18`). Converted to **`var(--ds-space-*)`**, the primitive `shared.tsx` already uses.
+**Back to 19798/19798 exactly** — no baseline bump, no `ads-scanner:ignore` exemption.
+
+## Tests
+`r3-data-source-lifecycle-ui.test.tsx` — **9 tests**, testing the exported `SourcesRegistry` **section** rather than
+the page (rendering the page drags in the STRATA shell and would prove the shell, not the lifecycle — mirrors how
+`ScorecardModelsSection` is tested). Covers: allowed transitions per state · retired-is-terminal · **role gate mirrors
+the RPC** · blockers named · **coverage_note rendered** · retire-needs-reason (RPC not called) · **suspend needs none**
+· reason trimmed and passed.
+
+## Status
+✅ Suite **2,451 passed / 6 failed** (foreign ChatDock) — **+9, no new failures**. tsc 0 under `src/modules/strata` ·
+colors 0=0 · audit at baseline · CRE pass · usage-map regenerated.
+**Capabilities 6 (data-source register/retire + dependents-impact) and 8 (downstream blast-radius) → Complete.**

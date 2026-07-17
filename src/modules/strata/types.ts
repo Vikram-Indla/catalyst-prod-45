@@ -711,6 +711,43 @@ export interface StrataGateInstance {
 }
 
 // ── Lineage / governance ─────────────────────────────────────────────────────
+/**
+ * R3 · strata_data_source_blast_radius. Three classes, deliberately — the authorization names
+ * "blocking and migration", but HISTORICAL is the important third: locked snapshots / issued packs
+ * that used the source. It is NEVER blocking (or any source with history could never retire) and
+ * never "migratable" (that would mean rewriting governed history — D-1 forbids it).
+ */
+export interface StrataBlastRadiusItem {
+  type: string;
+  id: string;
+  name?: string | null;
+  status?: string | null;
+  version?: number | null;
+  lineage_id?: string | null;
+  snapshot_key?: string | null;
+  locked_at?: string | null;
+  issue_status?: string | null;
+  /** Why this row is in this class — rendered verbatim; never re-worded in the UI. */
+  reason?: string | null;
+}
+
+export interface StrataBlastRadius {
+  data_source: { id: string; name: string; status: StrataDataSource['status'] };
+  upload_runs: number | null;
+  kpi_actuals_from_source: number;
+  calculated_values_from_source: number;
+  /** APPROVED KPIs — retirement is refused while any exist. */
+  blocking: StrataBlastRadiusItem[];
+  /** Not-yet-approved KPIs — re-point them. */
+  migration: StrataBlastRadiusItem[];
+  /** Locked snapshots — informational only. Never blocking, never migratable. */
+  historical: StrataBlastRadiusItem[];
+  board_packs_over_affected_snapshots: StrataBlastRadiusItem[];
+  can_retire: boolean;
+  /** What this analysis CANNOT see. Absence from `historical` is not evidence. Render it. */
+  coverage_note: string;
+}
+
 export interface StrataDataSource {
   id: string;
   name: string;
