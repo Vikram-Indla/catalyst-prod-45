@@ -651,7 +651,7 @@ function BenefitDetailSection({ benefit, isFirst, canAuthor, canAuthorValues }: 
           { key: 'confidence', label: 'Confidence', kind: 'number', min: 0, max: 1, step: 0.05, helper: '0–1' },
           {
             key: 'lifecycleStage', label: 'Lifecycle stage', kind: 'select', options: LIFECYCLE_STAGE_OPTIONS,
-            helper: 'Forward-only (forecast revised may step back); finance validated is set by value validation',
+            helper: 'Forward-only (forecast revised may step back); the independently-validated stage is reached through value assurance, not by hand',
           },
         ]}
         initial={{
