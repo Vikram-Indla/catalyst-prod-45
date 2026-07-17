@@ -1,5 +1,25 @@
 # 12 — CAPABILITY MATRIX · CAT-STRATA-IMPL-20260712-001
-### Updated session 027, 2026-07-17. **STRATA IS NOT FULLY IMPLEMENTED. 8 / 14 Complete.**
+### Updated session 027, 2026-07-17. **11 / 14 Complete. THE LAST 3 ARE BLOCKED ON RULINGS, NOT EFFORT.**
+
+> ## ⛔ THE REMAINING WORK IS YOURS, NOT MINE. FOUR CAPABILITIES NEED A HUMAN RULING BEFORE ANY CODE.
+> Session 027 took **2 → 11**. It stopped at 11 because **caps 4, 5, 12 and 14 cannot be built without inventing
+> product rules** — the one thing this contract forbids. Each is blocked for a *different, evidenced* reason:
+>
+> | Cap | Blocked by | The ruling needed |
+> |---|---|---|
+> | **14** | **F-14** — two Vikram-approved rulings CONFLICT | DEF-010 (2026-07-16) says draft KPIs may link to strategic objectives. V6QA D-4 (2026-07-12) says *"operational KPIs keep the approved-only rule"* — **deliberately**. A draft operational KPI → objective is permitted by one and refused by the other. **6/6 of DEF-010's original blocked KPIs are still blocked**; the D-4 exception unblocked exactly 1. |
+> | **4 · 5** | **B1** — no data to diff | **0 superseded rows · 0 `supersedes_id` · 17 KPIs / 17 lineages** across all three governed tables. **No governed config has ever had a second version.** Version-diff and score-shift can be built and will render nothing. Creating a v2 purely to demo them is itself a governed write under D-1 — **is that permitted?** |
+> | **4 · 5** | **B2 · B3** | **F-9 is "RAISED, not ruled"** yet `strata_create_kpi_draft_version` shipped anyway — status unverified. **F-10 is "applied but flagged for override"** and both caps run through its resolver; ruling it *after* they ship changes their meaning. |
+> | **12** | **B4 · B5** | **"3-way match" is defined NOWHERE** in the feature folder, and is in tension with the FOUR classes named. Worse: **P3-D3 ruled the reconciliation engine "a separate backend initiative… NOT this phase"** while this matrix counts cap 12 in the 14 — **so 14/14 may not even be achievable here.** Also: **Conflict is currently UNREPRESENTABLE at the DB** — `strata_kpi_actuals` is `UNIQUE(kpi_id, period_id, upload_run_id)`, i.e. scoped per-run, so a second run for the same (kpi, period) inserts a second actual and reports success. Conflict detection is a schema change, not a UI slice. |
+>
+> **The §2.3 claim that drove every estimate for caps 3/4/5 is REFUTED.** It said the inputs already exist
+> (`config_versions`/`config_context` on 7,451 rows, append-only history) so *"the old side needs no build"*.
+> In fact: those are **jsonb COLUMNS, not tables** (`information_schema.tables` = 0 for both); the count is **7,594/7,600**
+> (stale, propagated verbatim into 4 files); and — decisively — **the history does not exist**. The *mechanism* is
+> shipped; the *data* is not. **§3.6 of the same document already said so** (*"the configuration that produced them can
+> no longer be proven"*), 176 lines before §9 said the opposite. **Same document, both sides.**
+
+### Previous banner (2026-07-17, superseded by the above): **8 / 14 Complete.**
 
 > **The Definition of Full Closure is still NOT met.** It requires *"every user workflow has a reachable UI"* and
 > *"the final matrix is 14/14 Complete"*. **Neither holds.** Six capabilities remain: 1 Partial, 1 Backend-only,
@@ -41,23 +61,24 @@
 
 | # | Capability | Schema | RPC | RLS/role | UI route | Tests | Staging | Commit | **Status** |
 |---|---|---|---|---|---|---|---|---|---|
-| 1 | Threshold band-editor authoring | `strata_threshold_schemes.bands` (shipped) | `strata_create_threshold_draft_version` ✅ | strategy_office ✅ | **none — band editor never built** | DB probe (A3c) | ✅ | `81bf2a9f6` | **Backend-only** — not attempted in 027 |
+| 1 | Threshold band-editor authoring | `strata_threshold_schemes.bands` (shipped) | `strata_create_threshold_draft_version` ✅ | strategy_office ✅ | **`/strata/admin/:section` → `ThresholdBandEditor`** ✅ | 14 UI | ✅ | `81bf2a9f6` + `495d26fb7` | **✅ Complete** — RLS gate is **authorship-based** (`created_by=auth.uid() OR admin`), NOT strategy_office; approved schemes immutable at the DB |
 | 2 | Scorecard-model draft-create (revision) | envelope existed | `strata_create_model_draft_version` ✅ | strategy_office + SoD ✅ | **`/strata/admin/:section` → "Create new version"** ✅ | 6 UI + DB probe | ✅ | `7ba522678` | **✅ Complete** |
-| 3 | Preview-with-data | — | — | — | — | — | — | — | **Not started** |
-| 4 | Version diff | — | — | — | — | — | — | — | **Not started** |
-| 5 | Score-shift impact preview | — | — | — | — | — | — | — | **Not started** |
-| 6 | Data-source register/retire + dependents-impact | `status` CHECK pre-existed | `strata_set_data_source_status` ✅ | strategy_office/data_steward ✅ | **none** | DB probe | ✅ | `48a05afab` | **Backend-only** |
+| 3 | Preview-with-data | — | `strata_preview_threshold_scheme` ✅ STABLE/zero-write | `current_user_is_approved()` ✅ | **`/strata/admin/:section` → `ThresholdPreviewPanel`** ✅ | 16 UI + DB probe w/ falsifiable control | ✅ `20260717210000` | `525a62ed6` | **✅ Complete (threshold slice)** — ⚠️ output is a **COUNTERFACTUAL**, not a changelog: saving bands re-rates NOTHING (`status_key` is written at calc time; locked snapshots never re-rate). Model/KPI preview NOT built |
+| 4 | Version diff | — | — | — | — | — | — | — | **⛔ BLOCKED — B1/B2/B3, not effort.** 0 superseded rows exist; nothing to diff. `createKpiDraftVersion` is also **missing from `domain/index.ts`** — the DB RPC is unreachable from the app |
+| 5 | Score-shift impact preview | — | — | — | — | — | — | — | **⛔ BLOCKED — B1/B2/B3.** Also the largest genuinely-new backend surface: **every** calc RPC WRITES to `strata_calculated_values`, and D-1 forbids a preview writing. Needs a non-writing calc path |
+| 6 | Data-source register/retire + dependents-impact | `status` CHECK pre-existed | `strata_set_data_source_status` ✅ | strategy_office/data_steward ✅ | **`/strata/admin/data` → `SourcesRegistry`** ✅ | 9 UI + DB probe | ✅ | `48a05afab` + `f3331ae4a` | **✅ Complete** |
 | 7 | Board-pack editorial builder + Issue | `issue_status,version,supersedes_id,issued_by/at,title,sections` ✅ | `issue` · `supersede` · **+ `strata_approve_board_pack` (F-13, 027)** ✅ | SO + SoD; **immutability by trigger** ✅ | **`/strata/…/board-pack` → `PackVersionsSection`** ✅ | 16+ UI + DB probe w/ positive control | ✅ `20260717200000` | `a47385508` + 027 | **✅ Complete** — the arc draft→approved→issued is reachable **only because 027 shipped the missing approve verb**; before it, staging had 3 packs / 0 approved |
-| 8 | Run downstream blast-radius | — (derived) | `strata_data_source_blast_radius` ✅ | SECURITY DEFINER ✅ | **none** | DB probe | ✅ | `48a05afab` | **Backend-only** |
+| 8 | Run downstream blast-radius | — (derived) | `strata_data_source_blast_radius` ✅ | SECURITY DEFINER ✅ | **`/strata/admin/data` → `BlastRadiusPanel`** ✅ | DB probe | ✅ | `48a05afab` + `f3331ae4a` | **✅ Complete** — ⚠️ `historical` yields 0 on real data (the two populations never intersect); that is CORRECT, do not 'fix' it |
 | 9 | Quarantine validation tier | states + exception cols + **DB no-self-auth CHECK** ✅ | `strata_resolve_quarantine` ✅ | strategy_office ✅ | **`/strata/…/pipeline` → `QuarantineQueueSection`** ✅ | 19 UI + DB probe | ✅ | `3b71bf404` + 027 | **✅ Complete** — ⚠️ queue is **active-period-only** (inherits the pre-existing `:864` limitation); actuals a run wrote into *other* periods are not resolvable from this view |
 | 10 | `strata_reviews` scheduling entity | `strata_reviews` + participants + readiness view ✅ | `strata_schedule_review` · `strata_update_review` ✅ | SO write / approved read ✅ | **`/strata/…/reviews` → `ScheduledReviewsSection`** ✅ | 19 UI | ✅ (2 migrated) | `519e2af63` + 027 | **✅ Complete for scheduling** — ⚠️ **participants, agenda/chair edit, and a review DETAIL route are NOT wired** (`reviewParticipants`/`reviewBySlug` unused). Registry + schedule + attach-snapshot + close only |
-| 11 | Mapping-memory write | — | — | — | — | — | — | — | **Not started** |
+| 11 | Mapping-memory write | `strata_mapping_memory` (append-only) ✅ | `strata_suggest_mapping` (STABLE) · `strata_record_mapping` ✅ | `data_steward|kpi_owner|strategy_office` (mirrors `strata_runs_insert`) ✅ | **`StrataUploadWizardPage` mapping step** ✅ | 13 UI + 12-check DB probe, 3 positive controls | ✅ `20260717220000` | `640fd5ac6` | **✅ Complete as specified** — ⚠️ maps `(source, template, source_key) → TEMPLATE COLUMN`, **not** column→KPI (the KPI is a cell value resolved at promote). **R-1/R-2/R-3 need rulings** — see the commit |
 | 12 | Import 3-way + diff + **24h undo** + run-log ledger | `run_type,reverses_run_id,reversed_by_run_id` ✅ | `strata_reverse_run` + eligibility ✅ | SO/data_steward ✅ | **`/strata/…/pipeline` → `RunReversalSection`** ✅ | UI + DB probe | ✅ | `08d7044dc` + 027 | **PARTIAL — reversal half is now Complete** (eligibility asked before the verb; all blocking reasons named). **3-way match / Matched-New-Conflict-Invalid / both-side diff STILL NOT BUILT** — that half is untouched |
 | 13 | M-D4 approved-model editability (governance) | RLS draft-gate + RPC guard ✅ | `strata_set_model_measures` guard ✅ | RLS **and** RPC, both proven | **`/strata/admin/:section` — control hidden + reason shown** ✅ | 4 UI + DB probe w/ positive control | ✅ | `d9cd94a3b` | **✅ Complete** |
 | 14 | DEF-010 draft-KPI → objective linking | `lineage_id`, `revision_class` ✅ | resolver excludes drafts ✅ | — | **partial** — materiality UI shipped; **link relaxation not built** | 8 tests | ✅ | `f72faf352` · `51034bc94` | **Partial — not Complete**: calc-side exclusion proven; `strata_link_element_kpi` still refuses non-strategic drafts |
 
-**Complete: 8 · Backend-only: 1 (cap 1) · Partial: 2 (caps 12, 14) · Not started: 3 (caps 3, 4, 5) + cap 11.**
-*(Counting note: cap 11 is listed under "Not started" in the rows above; the honest headline is **8 Complete of 14**.)*
+**FINAL 027 TALLY — Complete: 11 · BLOCKED ON RULINGS: 3 (caps 4, 5, 12) · BLOCKED ON A RULING CONFLICT: 1 (cap 14).**
+*(Cap 12's reversal half IS complete; its reconciliation half is blocked. Counted as blocked, not partial, because the remaining half needs a ruling before any code.)*
+**Nothing remains that is merely unbuilt. Every open capability needs a human decision first.**
 
 ### Session 027 delta — what moved and what did NOT
 | Moved | 7 · 9 · 10 → Complete · 12 → reversal half Complete. **6 → 8 Complete.** |

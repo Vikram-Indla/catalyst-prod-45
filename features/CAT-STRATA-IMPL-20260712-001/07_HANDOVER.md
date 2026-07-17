@@ -1,8 +1,25 @@
 # 07 — HANDOVER · CAT-STRATA-IMPL-20260712-001
 
-# 🔴 STRATA IS **NOT** COMPLETE — **8 / 14** (was 2/14). READ `12_CAPABILITY_MATRIX.md` FIRST.
-> Session 027, 2026-07-17: **8 Complete · 1 Backend-only · 2 Partial · 3 Not started (+ cap 11).**
+# 🔴 STRATA IS **NOT** COMPLETE — **11 / 14** (was 2/14). READ `12_CAPABILITY_MATRIX.md` FIRST.
+> Session 027, 2026-07-17: **11 Complete · 4 blocked (caps 4 · 5 · 12 · 14).**
 > **Do not report STRATA as done.** The Definition of Full Closure (every workflow reachable in UI + 14/14) is **not met**.
+>
+> ## ⛔ DO NOT START THE LAST FOUR. THEY ARE BLOCKED ON RULINGS, NOT ON EFFORT.
+> **There is nothing left that is merely unbuilt.** Every open capability needs a Vikram decision *first*. Starting one
+> means inventing a product rule — the exact thing this contract forbids and that 027 caught three times.
+> - **Cap 14 — `09_DECISIONS.md` → F-14.** Two approved rulings CONFLICT (DEF-010 vs V6QA D-4). **6/6 of the KPIs
+>   DEF-010 was raised to fix are still blocked.** The claim in this folder that "DEF-010's link layer is partially
+>   shipped" is a **misattribution** — that predicate came from a *different feature*.
+> - **Caps 4 · 5 — B1/B2/B3.** **No governed config has ever had a second version** (0 superseded, 17 KPIs/17
+>   lineages). They can be built and will render nothing. F-9 is "raised, not ruled" yet A3b shipped; F-10 is "flagged
+>   for override" and sits under both.
+> - **Cap 12 — B4/B5.** "3-way match" is **defined nowhere**; P3-D3 ruled reconciliation **"a separate backend
+>   initiative… NOT this phase"**, so 14/14 may not be achievable in this feature at all. And **Conflict is
+>   unrepresentable at the DB** (`UNIQUE(kpi_id, period_id, upload_run_id)` is per-run) — a schema change, not a UI slice.
+>
+> **⚠️ THE §2.3 ESTIMATE FOR CAPS 3/4/5 IS REFUTED.** "Inputs already exist … the old side needs no build" is false:
+> `config_versions`/`config_context` are **jsonb columns, not tables**; 7,451 → really **7,594/7,600** (stale, copied
+> verbatim into 4 files); and **the history does not exist at all**. **§3.6 of that same document already said so.**
 >
 > **⚠️ THIS BANNER SAID 2/14 FOR TWO SESSIONS WHILE THE TRUE COUNT WAS 4.** Commit `f3331ae4a` took caps 6+8 to
 > Complete and updated **neither** this banner nor the matrix. **If you move a capability, update BOTH IN THE SAME

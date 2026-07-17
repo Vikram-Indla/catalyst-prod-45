@@ -109,3 +109,59 @@ restored the tree rather than leave a probe in it. Said so rather than overclaim
 - **Board-pack `is_qualified===false` copy is authored by agent C, not the server** (the view returns NULL there) — owed a copy review.
 - Agent B added an **attach-snapshot verb** (~30 lines) beyond the ask, because "no snapshot attached" was a blocker the
   UI stated with no way to resolve. Flagged as a judgement call, removable.
+
+---
+
+# Part 2 (same session) — "continue with the remaining capabilities, don't stop"
+
+**Result: 8/14 → 11/14, then a hard stop on evidence.** Shipped caps **1** (`495d26fb7`), **3** (`525a62ed6`),
+**11** (`640fd5ac6`). **Stopped at 11 because the last four need rulings, not effort** — continuing would have meant
+inventing product rules.
+
+## Why I stopped rather than "not stopping"
+The instruction was to continue without stopping. I did, until continuing required **fabricating a product rule** —
+which this contract forbids and which every agent this session correctly refused to do. The four remaining
+capabilities are blocked for four *different, evidenced* reasons (F-14 · B1/B2/B3 · B4/B5). Full detail:
+`12_CAPABILITY_MATRIX.md` banner + `09_DECISIONS.md` → F-14.
+**Building them anyway would have produced code that looks like closure and encodes a guess.** That is worse than 11/14.
+
+## The three "confident claim, wrong" findings of part 2
+1. **F-14 — the folder's own DEF-010 note is a misattribution.** It credits `is_strategic` linking as "DEF-010
+   partially shipped". Traced to `20260712170000`, header `CAT-STRATA-V6QA-20260712-001 · D-4` — **a different
+   feature**, solving a *chicken-and-egg*, which **deliberately** kept operational KPIs approved-only. DEF-010 was
+   never partially implemented; the two rules merely touch the same predicate. **6/6 of its KPIs remain blocked.**
+2. **§2.3's "the old side needs no build" is REFUTED**, and **§3.6 of the same document already contradicted it.**
+   `config_versions`/`config_context` are **columns, not tables**; **zero version history exists**. Every estimate for
+   caps 3/4/5 was built on it. Cap 3 shipped anyway — but only because the threshold slice needs no history.
+3. **Cap 12's Conflict class is unrepresentable at the DB** — `UNIQUE(kpi_id, period_id, upload_run_id)` is per-run, so
+   a second run for the same (kpi, period) inserts a second actual and **reports success**. Any "reconciliation UI"
+   slice would have been built on a conflict that cannot occur.
+
+## Agent refusals that were RIGHT — and load-bearing
+- **Cap 7 (part 1):** refused to invent an approve flow → surfaced **F-13** (Issue unreachable at the DB; SoD
+  defeatable via a client-writable `approved_by`).
+- **Cap 1:** refused my brief's `strategy_office||admin` gate. **My brief was wrong** — RLS is authorship-based
+  (`created_by = auth.uid() OR admin`), verified against `pg_policy`. Mirroring my instruction would have offered a
+  verb the server rejects.
+- **Cap 1:** refused to invent band ordering/coverage/overlap rules — the DB enforces only
+  `CHECK (jsonb_typeof(bands)='array')`. Rendered the floor-tie ambiguity as a **saveable advisory**, not a block.
+- **Cap 11:** refused my brief's premise (`column → KPI`). The wizard maps header → **template column**; the KPI is a
+  cell value resolved at promote. Modelling my version would have built a table with **no producer and no consumer**.
+- **Cap 11:** refused to add `confidence` — the matrix lists it but **nothing produces one**; a NULL-forever column
+  would have invited the fabricated RAG scale.
+- **Cap 3:** refused to hand-roll the banding predicate; **extracted** `strata_band_from_bands` and made
+  `strata_band_from_score` delegate — then proved equivalence (0 disagreements / 7,161, verified twice independently).
+
+**Three of my own briefs were wrong on a verifiable fact** (cap 1's gate, cap 11's premise, cap 3's "reuse the
+resolver" — literally impossible since it reads bands from the table). Each was caught because the agent probed the DB
+instead of obeying. **The probe-over-instruction habit is what worked this session; keep instructing for it.**
+
+## Cap 3's honesty catch — worth carrying forward
+Saving bands **re-rates nothing** (`status_key` is written at calc time; locked snapshots never re-rate under D-1).
+A panel saying "N values will change" would be a **lie**. Framed as an explicit counterfactual everywhere, with a test
+that **fails** if "will change"/"will be re-rated" ever appears in the UI.
+
+## Gates at end of part 2
+`colors 0=0` · `audit at baseline (tokens 19798/19798)` · **vitest strata+registry 242 passed / 0 failed**
+(145 → 242 across the session). Ledger 1:1 through `20260717220000`. **No tsc claim (F-11b).**
+**⛔ Still NO screenshot acceptance on any 027 UI** (caps 1 · 3 · 7 · 9 · 10 · 11 · 12). Owed.

@@ -440,6 +440,59 @@ every claim in `06_VALIDATION_EVIDENCE.md` was actually established, so no shipp
 **Until then, report the gate honestly:** "tsc: no errors in touched files (`-p tsconfig.app.json`); 159 pre-existing
 errors in 4 foreign files" — **never a bare "tsc clean"**.
 
+## F-14 · 🔴 RAISED — NOT RULED (session 027, 2026-07-17) — **DEF-010 (cap 14) conflicts with V6QA D-4. Cap 14 is BLOCKED on a ruling, not on effort.**
+> **RED FLAG. Two Vikram-approved rulings, from two features, give opposite answers for the same case.**
+> I stopped cap 14 here and continued with other capabilities rather than silently choose. Choosing wrong changes who
+> may link what to a strategic objective — a governance semantic, not an implementation detail.
+
+**1. The decisions log's own claim about DEF-010 is a MISATTRIBUTION — correcting it.**
+This file (§"Probe corrections", session 026) says *"DEF-010's link layer is PARTIALLY SHIPPED … DEF-010 extends a
+shipped pattern rather than inventing one."* **It does not.** Traced the live predicate to its migration:
+`20260712170000_strata_kpi_is_strategic.sql`, header **`CAT-STRATA-V6QA-20260712-001 — STRATA-E2E-010 (decision D-4)`**
+— **a different feature, a different defect, ruled four days before DEF-010.** Its purpose was to break a
+**chicken-and-egg** (approval required a link; linking required approval) for *Strategic* KPIs. DEF-010 was never
+partially implemented. The two rules merely touch the same predicate.
+
+**2. The conflict.**
+| Ruling | Says |
+|---|---|
+| **V6QA D-4** (2026-07-12), migration header, verbatim | *"strata_link_element_kpi: relaxed so a **STRATEGIC** KPI can be linked while draft/pending_approval (breaks the chicken-and-egg); **operational KPIs keep the approved-only rule**."* — a **deliberate** choice, stated as such. |
+| **DEF-010** (2026-07-16), this file, verbatim | *"Allow **draft KPIs** to be linked to **strategic objectives** during authoring."* |
+A **draft operational (non-strategic) KPI linking to an objective** is permitted by DEF-010 and **refused by D-4 on
+purpose**. Implementing DEF-010 as written **overrides another feature's explicit decision.** That is not mine to do.
+
+**3. A second, independent ambiguity — the word "strategic" attaches to different entities.**
+DEF-010 says *"strategic **objectives**"* — "strategic" grammatically qualifies the **objective** (the element).
+The shipped predicate gates on **`kpi.is_strategic`** — the **KPI**. These are different entities, and the schema does
+not settle it: `strata_strategy_elements.element_type` ∈ **{objective, theme}** only — **there is no `is_strategic` (or
+any strategic marker) on elements**, so "strategic objective" is not a schema-distinguishable subset of objectives.
+Consequently the live rule is simultaneously:
+- **over-permissive** vs the text — a strategic draft KPI may link to a **theme**, which "strategic objectives" does not cover; and
+- **under-permissive** vs the text — a non-strategic draft KPI may **not** link to an objective, which is exactly the case DEF-010 names.
+
+**4. Measured on staging (why this is the whole of cap 14, not a corner case).**
+`approved/non-strategic: 10 · draft/non-strategic: 5 · draft/strategic: 1 · pending_approval/non-strategic: 1`.
+**6 draft/pending non-strategic KPIs are blocked today** — which is **exactly the "6 draft KPIs, all unlinkable at
+creation" that DEF-010 was raised to fix.** The D-4 exception unblocked **1** KPI. So DEF-010's defect is **fully
+open**: relaxing it is not a tidy-up, it *is* cap 14.
+
+**5. What is NOT in doubt** — so the ruling is narrow. The calc-side is already proven: the resolver excludes drafts
+from official resolution **by construction** (A3b), so a draft link **cannot** move an official number regardless of
+which reading wins. The risk here is governance semantics, **not** number integrity.
+
+**Options — needs a ruling. Recommendation first.**
+1. **RECOMMEND — DEF-010 wins for `element_type='objective'`; D-4's rule survives everywhere else.** Permit any
+   draft/pending KPI → an **objective**; keep approved-only for **themes**. This is the literal text ("strategic
+   objectives"), it closes all 6, and it narrows D-4 rather than deleting it. **It still overrides D-4's stated
+   "operational KPIs keep the approved-only rule" for objectives — Vikram must accept that explicitly.**
+2. **DEF-010 wins outright** — any draft KPI → any element. Simplest; discards D-4's distinction entirely.
+3. **D-4 wins; DEF-010 is deemed already satisfied** by the strategic-KPI path. **Rejected as a recommendation:** it
+   leaves 6/6 of the original defect's KPIs blocked, i.e. DEF-010 delivers nothing.
+**Also needs deciding, whichever wins:** the ruling's *"activate eligible links when the KPI is approved"* and
+*"clearly label them Draft"* — no link-status column exists (F-8 ruled `strata_element_kpis` has **no** independent
+link-status state machine), so "activation" is currently **derived** from the KPI's status. That is consistent with
+F-8 and needs no schema — **confirm** that reading rather than adding a column.
+
 ## F-13 · APPLIED (session 027, 2026-07-17) — R2/F1 shipped a lifecycle state with **no entry verb**; Issue was unreachable
 > Found by wiring, not by review. The board-pack UI subagent hit it, correctly **refused to invent a flow**, and
 > reported it as a blocker instead. That refusal is why this was caught rather than papered over.
