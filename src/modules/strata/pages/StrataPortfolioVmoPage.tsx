@@ -22,6 +22,7 @@ import {
   CheckCircle2, FileBarChart, Gem, Info, ListChecks, ShieldCheck, Wallet,
 } from '@/lib/atlaskit-icons';
 import { valueApi } from '@/modules/strata/domain';
+import { countsTowardRealization } from '@/modules/strata/assurance';
 import { StrataChipMenu,
   StrataBandBar, StrataDecisionModal, StrataPageShell, StrataPanel, StrataStatStrip, StrataValueBar, T,
 } from '@/modules/strata/components/shared';
@@ -40,13 +41,20 @@ import {
   useProjectCards, useStrataContext, useStrataRoles, useValueAtRisk, useValueCategories,
 } from '@/modules/strata/hooks/useStrata';
 import type {
+  BenefitAssuranceStatus,
   StrataAssumption, StrataBenefit, StrataBenefitValue, StrataGateInstance, StrataGateModelStage, StrataPortfolio,
 } from '@/modules/strata/types';
 import StrataPortfolioIndexView from './StrataPortfolioIndexView';
 
 // ── System-state appearance maps (mirror DB CHECK constraints) ───────────────
-const VALIDATION_STATUS: Record<StrataBenefitValue['validation_status'], LozengeAppearance> = {
-  validated: 'success', pending: 'moved', rejected: 'removed',
+// Six-state assurance vocabulary (D-4/E-6, migration 20260717160000). Mirrors the DB CHECK.
+const VALIDATION_STATUS: Record<BenefitAssuranceStatus, LozengeAppearance> = {
+  reported: 'moved',
+  owner_confirmed: 'success',
+  independently_validated: 'success',
+  accepted_with_exception: 'inprogress',
+  rejected: 'removed',
+  reversed: 'default',
 };
 const ASSUMPTION_STATUS: Record<StrataAssumption['status'], LozengeAppearance> = {
   holding: 'success', open: 'default', broken: 'removed', retired: 'default',
@@ -57,13 +65,13 @@ const GATE_STATUS: Record<string, LozengeAppearance> = {
 const LIFECYCLE_STAGE: Record<string, LozengeAppearance> = {
   identified: 'default', qualified: 'default', approved: 'inprogress', baselined: 'inprogress',
   in_flight: 'inprogress', forecast_revised: 'moved', realized: 'success',
-  finance_validated: 'success', closed: 'default',
+  independently_validated: 'success', closed: 'default',
 };
 const VALUE_KINDS: Array<StrataBenefitValue['value_kind']> = ['baseline', 'planned', 'forecast', 'realized'];
 
 // ── Authoring option lists (mirror DB CHECK constraints; UI copy states server rules) ──
-/** All lifecycle stages except finance_validated — that stage is only reachable
- *  through value validation, never by direct edit (server-enforced). */
+/** All lifecycle stages except independently_validated — that stage is only reachable
+ *  through independent value validation, never by direct edit (server-enforced). */
 const LIFECYCLE_STAGE_OPTIONS = (
   ['identified', 'qualified', 'approved', 'baselined', 'in_flight', 'forecast_revised', 'realized', 'closed'] as const
 ).map((s) => ({ value: s, label: labelize(s) }));
@@ -217,9 +225,10 @@ function BenefitDetailSection({ benefit, isFirst, canAuthor, canAuthorValues }: 
   const values = valuesQ.data ?? [];
   const assumptions = assumptionsQ.data ?? [];
   const projectCards = projectCardsQ.data ?? [];
-  // Realized value submitted but not yet finance-validated (anchor 21 "awaits attestation").
+  // Realized value submitted but with no assurance yet (state = reported): awaits attestation.
+  // rejected/reversed are terminal (they do not "await"); assured states already count.
   const pendingRealized = values
-    .filter((v) => v.value_kind === 'realized' && v.validation_status !== 'validated')
+    .filter((v) => v.value_kind === 'realized' && v.validation_status === 'reported')
     .reduce((s, v) => s + v.value, 0);
   // Resolve an attribution split's Project Card target to a display name.
   // Zero-assumption: an unknown id resolves to null → the panel renders '—'.
@@ -249,12 +258,13 @@ function BenefitDetailSection({ benefit, isFirst, canAuthor, canAuthorValues }: 
   });
 
   // Segmented value bar (SRC-M5): active period when it has values, else the
-  // latest period that does. Validated = the realized value once finance-validated.
+  // latest period that does. "Assured" = the realized value once it reaches a
+  // counting assurance state (independently_validated / owner_confirmed / accepted_with_exception).
   const barRow = profileRows.find((r) => r.periodId === activePeriod?.id)
     ?? (profileRows.length ? profileRows[profileRows.length - 1] : null);
   const barValue = (kind: StrataBenefitValue['value_kind']): number | null =>
     barRow?.byKind[kind]?.value ?? null;
-  const barValidated = barRow?.byKind.realized?.validation_status === 'validated'
+  const barValidated = barRow?.byKind.realized && countsTowardRealization(barRow.byKind.realized.validation_status)
     ? barRow.byKind.realized.value
     : null;
 
@@ -271,21 +281,19 @@ function BenefitDetailSection({ benefit, isFirst, canAuthor, canAuthorValues }: 
         return (
           <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, rowGap: 4, minWidth: 0, flexWrap: 'wrap' }}>
             <span style={{ ...bodyStyle, fontVariantNumeric: 'tabular-nums' }}>{fmtUnit(v.value, benefit.unit)}</span>
-            {v.validation_status !== 'validated' ? (
-              <StatusLozenge
-                status={v.validation_status}
-                label={labelize(v.validation_status)}
-                appearance={VALIDATION_STATUS[v.validation_status] ?? 'default'}
-              />
-            ) : null}
-            {v.validation_status === 'pending' ? (
+            <StatusLozenge
+              status={v.validation_status}
+              label={labelize(v.validation_status)}
+              appearance={VALIDATION_STATUS[v.validation_status] ?? 'default'}
+            />
+            {canAuthorValues && v.validation_status === 'reported' ? (
               <Button
                 appearance="default"
                 spacing="compact"
                 onClick={() => setDecision({ kind: 'validate-value', id: v.id, label: `${labelize(kind)} · ${row.periodName}`, valueKind: v.value_kind })}
                 testId={`strata-validate-value-${v.id}`}
               >
-                Validate
+                Assure
               </Button>
             ) : null}
           </span>
@@ -323,7 +331,7 @@ function BenefitDetailSection({ benefit, isFirst, canAuthor, canAuthorValues }: 
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 'var(--ds-space-100)', flexWrap: 'wrap' }}>
             <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, letterSpacing: '0.04em', color: T.subtlest }}>VALUE POSITION{barRow ? ` · ${barRow.periodName}` : ''}</span>
             {pendingRealized > 0 ? (
-              <StatusLozenge status="pending" label={`${fmtUnit(pendingRealized, benefit.unit)} awaits attestation`} appearance="moved" />
+              <StatusLozenge status="reported" label={`${fmtUnit(pendingRealized, benefit.unit)} awaits assurance`} appearance="moved" />
             ) : null}
           </div>
           {benefit.value_hypothesis ? (
@@ -602,7 +610,7 @@ function BenefitDetailSection({ benefit, isFirst, canAuthor, canAuthorValues }: 
       <StrataDecisionModal
         open={decision?.kind === 'validate-value'}
         onClose={() => setDecision(null)}
-        title={`Validate value · ${decision?.kind === 'validate-value' ? decision.label : ''}`}
+        title={`Assure value · ${decision?.kind === 'validate-value' ? decision.label : ''}`}
         description="Owner confirmed = the owner stands behind their own number. Independently validated = someone other than the submitter checked it (the submitter cannot independently validate their own value). Both count toward realization; only independent validation asserts independence."
         /* D-4: the neutral assurance vocabulary. 'Validate' claimed an assurance nobody performed —
            the RPC now rejects it outright. Owner confirmed and Independently validated are different
