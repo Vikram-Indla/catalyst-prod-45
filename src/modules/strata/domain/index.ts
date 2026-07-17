@@ -8,8 +8,11 @@ import { supabase, typedQuery, typedRpc } from '@/integrations/supabase/client';
 import type {
   ExecutionImportDependencyRow, ExecutionImportMilestoneRow, ExecutionImportProjectCardRow, ExecutionImportResult,
   ScorecardCalcResult, ScorecardPlanVariance, StrataAction, StrataAiOutput, StrataAssumption, StrataBenefit,
-  StrataBenefitProjectCard, StrataBenefitValue, StrataBoardPack, StrataCalculatedValue, StrataChangeRequest,
+  StrataBenefitProjectCard, StrataBenefitValue, StrataBlastRadius, StrataBoardPack, StrataBoardPackQualification,
+  StrataCalculatedValue, StrataChangeRequest,
   StrataCycle, StrataDataSource, StrataDecision, StrataDependency, StrataGateInstance,
+  StrataQuarantineResolution, StrataReversalEligibility, StrataReview, StrataReviewParticipant,
+  StrataReviewReadiness, StrataRunReversal,
   StrataGateModel, StrataGateModelStage, StrataInitiative, StrataInitiativeProject,
   StrataBulkUpdateResult, StrataSavedView, StrataKeyResult, StrataKpi, StrataKpiActual, StrataKpiFormulaVersion, StrataKpiTarget,
   StrataKpiTypeConfig, StrataMapEdge, StrataMilestone, StrataModelPerspective, StrataNotification, StrataNotificationRule, StrataOkr,
@@ -426,6 +429,33 @@ export const kpiApi = {
     run(typedRpc('strata_calc_ytd', { p_kpi: kpiId, p_cycle: cycleId, p_method: method })),
   attestActual: (actualId: string, verdict: 'validated' | 'rejected' | 'quarantined', note?: string) =>
     run(typedRpc('strata_attest_actual', { p_actual: actualId, p_verdict: verdict, p_note: note ?? null })),
+  /**
+   * R4c quarantine RESOLUTION (D-5/E-6) — the exit from quarantine. `attestActual` above is the
+   * ENTRY; this is the only way out. A reason is mandatory at the DB, so it is mandatory here: the
+   * resolution has to be explainable later.
+   *
+   * The three verdicts are not interchangeable:
+   * - `accept_with_exception` — the value COUNTS after Strategy Office authorization. The submitter
+   *   may not authorize their own (SoD, enforced by a DB CHECK as well as the RPC).
+   * - `correct` — returns the row to `pending`, NOT to validated: a corrected value is a new claim
+   *   nobody has checked. Since `pending` no longer counts (E-7 cond.3), a corrected value reads as
+   *   Missing until attested. That is correct, not a bug.
+   * - `reject` — the value stays out.
+   *
+   * Never pre-filter the verdicts by guessing the caller's role; let the RPC refuse and surface it.
+   */
+  resolveQuarantine: (
+    actualId: string,
+    verdict: 'accept_with_exception' | 'correct' | 'reject',
+    reason: string,
+    correctedValue?: number,
+  ): Promise<StrataQuarantineResolution> =>
+    run(typedRpc('strata_resolve_quarantine', {
+      p_actual: actualId,
+      p_verdict: verdict,
+      p_reason: reason,
+      p_corrected_value: correctedValue ?? null,
+    })),
   approveKpi: (kpiId: string, note?: string) =>
     run(typedRpc('strata_approve_kpi', { p_kpi: kpiId, p_note: note ?? null })),
   approveFormulaVersion: (formulaId: string, note?: string) =>
@@ -1016,6 +1046,24 @@ export const lineageApi = {
    */
   setDataSourceStatus: (sourceId: string, status: StrataDataSource['status'], reason?: string): Promise<StrataBlastRadius> =>
     run(typedRpc('strata_set_data_source_status', { p_source: sourceId, p_status: status, p_reason: reason ?? null })),
+  /**
+   * R4d · ASK BEFORE OFFERING THE VERB. Read-only. Returns EVERY blocking reason, not the first —
+   * a user told "locked snapshot", who clears it and is then told "issued board pack", has been
+   * misled twice. Render `blocking_reasons` in full; never show only the first.
+   */
+  runReversalEligibility: (runId: string): Promise<StrataReversalEligibility> =>
+    run(typedRpc('strata_run_reversal_eligibility', { p_run: runId })),
+  /**
+   * R4d · 24-hour import reversal (D-7/E-5). Atomic by construction. The original run and its
+   * actuals are PRESERVED and marked `reversed` — no offsetting, zero or negative measurement is
+   * ever written. Re-checks eligibility server-side and raises with all reasons, so a stale client
+   * gate cannot force a reversal through.
+   *
+   * `left_without_effective_value > 0` is NOT a failure: it means no prior validated value existed
+   * to restore. Report it; inventing a zero there would be the lie the RPC refuses to tell.
+   */
+  reverseRun: (runId: string, reason: string): Promise<StrataRunReversal> =>
+    run(typedRpc('strata_reverse_run', { p_run: runId, p_reason: reason })),
   uploadRuns: (): Promise<StrataUploadRun[]> =>
     run(typedQuery('strata_upload_runs').select('*').order('started_at', { ascending: false })),
   runByKey: (runKey: string): Promise<StrataUploadRun | null> =>
@@ -1137,6 +1185,98 @@ export const governanceApi = {
     run(typedQuery('strata_decisions').select('*').order('created_at', { ascending: false })),
   actions: (): Promise<StrataAction[]> =>
     run(typedQuery('strata_actions').select('*').order('due_date')),
+  // ── R2/E1 · reviews (persisted scheduling entity, D-6) ─────────────────────
+  /**
+   * Authoritative going forward. `origin='migrated'` rows are reconstructed from locked snapshots
+   * and their chair/agenda/scheduled_for/participants are NULL = NOT RECORDED, never "none".
+   */
+  reviews: (): Promise<StrataReview[]> =>
+    run(typedQuery('strata_reviews').select('*').order('scheduled_for', { ascending: false, nullsFirst: false })),
+  reviewBySlug: (slug: string): Promise<StrataReview | null> =>
+    run(typedQuery('strata_reviews').select('*').eq('slug', slug).maybeSingle()),
+  reviewParticipants: (reviewId: string): Promise<StrataReviewParticipant[]> =>
+    run(typedQuery('strata_review_participants').select('*').eq('review_id', reviewId)),
+  /** Derived view — never stored. `is_ready` is snapshot-locked only; `pack_attached` is separate. */
+  reviewReadiness: (): Promise<StrataReviewReadiness[]> =>
+    run(typedQuery('strata_review_readiness').select('*')),
+  /**
+   * Cadence is optional: the RPC COALESCEs departmental→monthly, executive→quarterly. Pass it only
+   * when the caller genuinely chose one — sending a client-side default would turn the server's
+   * documented default into a value the user never picked.
+   */
+  scheduleReview: (input: {
+    name: string;
+    reviewType: StrataReview['review_type'];
+    periodId?: string | null;
+    cycleId?: string | null;
+    scheduledFor?: string | null;
+    cadence?: StrataReview['cadence'] | null;
+    chairId?: string | null;
+    scope?: unknown;
+  }): Promise<string> =>
+    run(typedRpc('strata_schedule_review', {
+      p_name: input.name,
+      p_review_type: input.reviewType,
+      p_period: input.periodId ?? null,
+      p_cycle: input.cycleId ?? null,
+      p_scheduled_for: input.scheduledFor ?? null,
+      p_cadence: input.cadence ?? null,
+      p_chair: input.chairId ?? null,
+      p_scope: (input.scope ?? null) as never,
+    })),
+  /**
+   * A CLOSED review is refused by the RPC — it records a meeting that already happened. Closing
+   * requires a LOCKED snapshot: closing on live numbers would record a decision against figures
+   * that can still move. Both refusals surface verbatim.
+   */
+  updateReview: (
+    reviewId: string,
+    patch: {
+      status?: StrataReview['status'];
+      snapshotId?: string | null;
+      packId?: string | null;
+      agenda?: unknown;
+      chairId?: string | null;
+      note?: string | null;
+    },
+  ): Promise<void> =>
+    run(typedRpc('strata_update_review', {
+      p_review: reviewId,
+      p_status: patch.status ?? null,
+      p_snapshot: patch.snapshotId ?? null,
+      p_pack: patch.packId ?? null,
+      p_agenda: (patch.agenda ?? null) as never,
+      p_chair: patch.chairId ?? null,
+      p_note: patch.note ?? null,
+    })),
+  // ── R2/F1 · board-pack editorial lifecycle ────────────────────────────────
+  /**
+   * F-3 qualification, derived from the integrity register. `is_qualified=false` means no exception
+   * is ON RECORD — not that integrity is proven (E-4/§3.7). Render `qualification_note` verbatim.
+   */
+  boardPackQualification: (packId: string): Promise<StrataBoardPackQualification | null> =>
+    run(typedQuery('strata_board_pack_qualification').select('*').eq('board_pack_id', packId).maybeSingle()),
+  /**
+   * The entry verb into `approved` — without it `issueBoardPack` is unreachable, since it refuses
+   * anything not already approved. Server-side only by necessity: RLS would let a client UPDATE set
+   * `approved_by` to anyone, which would defeat the approver≠issuer SoD check that issuance relies
+   * on. The RPC stamps `auth.uid()`. Never write `issue_status`/`approved_by` from the client.
+   */
+  approveBoardPack: (packId: string, note?: string): Promise<void> =>
+    run(typedRpc('strata_approve_board_pack', { p_pack: packId, p_note: note ?? null })),
+  /**
+   * SoD: the approver may not be the issuer. Issuance STAMPS the qualification into the audit trail,
+   * so the pack carries what was true when the board received it. Issued packs are then immutable
+   * BY TRIGGER — UPDATE and DELETE are both refused at the DB, not by client convention.
+   */
+  issueBoardPack: (packId: string, note?: string): Promise<void> =>
+    run(typedRpc('strata_issue_board_pack', { p_pack: packId, p_note: note ?? null })),
+  /**
+   * A correction is a NEW VERSION, never an edit: `snapshot_id` is COPIED to the successor and never
+   * re-pointed (that would silently restate what the board was shown). Returns the new pack id.
+   */
+  supersedeBoardPack: (packId: string, reason: string): Promise<string> =>
+    run(typedRpc('strata_supersede_board_pack', { p_pack: packId, p_reason: reason })),
   boardPacks: (snapshotId: string): Promise<StrataBoardPack[]> =>
     run(typedQuery('strata_board_packs').select('*').eq('snapshot_id', snapshotId)),
   /** All board-pack rows across snapshots — thin select feeding the reviews-index pack-stage dot. */

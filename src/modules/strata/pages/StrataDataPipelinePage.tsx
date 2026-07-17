@@ -3,11 +3,12 @@
  * Routes: /strata/data and /strata/data/runs/:runKey.
  * UI renders DB/RPC values only — no business logic computed here.
  */
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import {
-  Button, CatalystTag, EmptyState, SectionMessage, Spinner, Tooltip,
+  Button, CatalystTag, EmptyState, Modal, ModalBody, ModalFooter, ModalHeader, ModalTitle,
+  SectionMessage, Spinner, Textfield, Tooltip,
 } from '@/components/ads';
 import { JiraTable } from '@/components/shared/JiraTable';
 import type { Column } from '@/components/shared/JiraTable';
@@ -27,13 +28,22 @@ import {
 } from '@/modules/strata/components/shared';
 import { fmtDate, fmtDateTime, labelize } from '@/modules/strata/components/format';
 import type {
-  StrataDataSource, StrataKpi, StrataKpiActual, StrataStagingRow, StrataUploadRun, StrataValidationResult,
+  StrataDataSource, StrataKpi, StrataKpiActual, StrataQuarantineResolution, StrataReversalEligibility,
+  StrataRunReversal, StrataStagingRow, StrataUploadRun, StrataValidationResult,
 } from '@/modules/strata/types';
 
 /** UI affordance gating only — DB RPC guards enforce the real rules (mirrors StrataUploadWizardPage). */
 const INGEST_ROLES = ['data_steward', 'kpi_owner', 'strategy_office', 'strata_admin'] as const;
 /** Jira connector sync (F-GOV-010) — narrower than ingest: no kpi_owner. RPC enforces the real guard. */
 const SYNC_ROLES = ['data_steward', 'strategy_office', 'strata_admin'] as const;
+/**
+ * R4c · strata_resolve_quarantine gates on strata_has_role(['strategy_office']), and
+ * strata_has_role admits strata_admin unconditionally — so this mirrors the RPC exactly.
+ * The gate only avoids offering a verb the server would refuse; the RPC remains the authority.
+ */
+const QUARANTINE_ROLES = ['strategy_office', 'strata_admin'] as const;
+/** R4d · strata_reverse_run gates on strata_has_role(['strategy_office','data_steward']) (+ admin). */
+const REVERSAL_ROLES = ['strategy_office', 'data_steward', 'strata_admin'] as const;
 
 // ── System-state appearance maps (mirror DB CHECK constraints) ───────────────
 const SOURCE_STATUS: Record<StrataDataSource['status'], LozengeAppearance> = {
@@ -99,7 +109,9 @@ function buildSourceRows(sources: StrataDataSource[], runs: StrataUploadRun[], k
 /**
  * Run lifecycle (anchor 09) — the steward's 7-step journey, mapped from run.status.
  * "Resolve" is derived (rejected rows outstanding), not a discrete backend stage.
- * Promote note is honest per P4-D7: writes PENDING attestation, no reverse RPC exists.
+ * Promote writes PENDING attestation. The old "no reverse RPC exists" note is STALE — R4d shipped
+ * `strata_reverse_run` (migration 20260717190000): a promoted run is reversible for 24 hours, before
+ * a lock or an issuance. RunReversalSection asks the eligibility RPC rather than asserting either way.
  */
 function runLifecycleSteps(run: StrataUploadRun): StrataLifecycleStep[] {
   const s = run.status;
@@ -446,6 +458,407 @@ function RunsPanel() {
   );
 }
 
+// ── R4c · quarantine resolution (capability 9) ───────────────────────────────
+/**
+ * The three verdicts exactly as `strata_resolve_quarantine` allows them — stated, not derived, so
+ * the UI can never offer one the server refuses. `correct` is not a shortcut to validated: it
+ * returns the row to `pending`, and since pending no longer counts (E-7 cond.3) the KPI reads as
+ * Missing until someone attests it. That is the point, so the modal says it rather than hiding it.
+ */
+type QuarantineVerdict = 'accept_with_exception' | 'correct' | 'reject';
+const VERDICTS: Array<{ value: QuarantineVerdict; label: string; danger?: boolean; blurb: string }> = [
+  {
+    value: 'accept_with_exception',
+    label: 'Accept with exception',
+    blurb: 'The value COUNTS in official calculations once Strategy Office authorizes it. You cannot authorize an exception for a value you submitted yourself — the database enforces that.',
+  },
+  {
+    value: 'correct',
+    label: 'Correct the value',
+    blurb: 'A corrected value is a NEW claim nobody has checked, so it returns to PENDING — not validated. Pending values do not count, so this KPI will read as Missing until someone attests the correction. That is correct, not a bug.',
+  },
+  {
+    value: 'reject',
+    label: 'Reject',
+    danger: true,
+    blurb: 'The value stays out of official calculations. Why it was quarantined is preserved.',
+  },
+];
+
+/**
+ * Quarantined values written by this run. Exported so the governed workflow can be tested directly:
+ * rendering the whole page drags in the STRATA shell and would prove the shell, not this.
+ */
+export function QuarantineQueueSection({ actuals, kpiNameById, onResolved }: {
+  actuals: StrataKpiActual[];
+  kpiNameById: Map<string, string>;
+  onResolved: () => void;
+}) {
+  const rolesQ = useStrataRoles();
+  const canResolve = (rolesQ.data ?? []).some((r) => (QUARANTINE_ROLES as readonly string[]).includes(r));
+
+  const [target, setTarget] = useState<StrataKpiActual | null>(null);
+  const [verdict, setVerdict] = useState<QuarantineVerdict>('accept_with_exception');
+  const [reason, setReason] = useState('');
+  const [corrected, setCorrected] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [outcome, setOutcome] = useState<StrataQuarantineResolution | null>(null);
+
+  const correctedNumber = Number(corrected.trim());
+  const correctedValid = corrected.trim() !== '' && Number.isFinite(correctedNumber);
+  // Both requirements are stated here rather than surfaced as a server error: the RPC demands a
+  // reason for every verdict and a corrected value for `correct`.
+  const confirmBlocked = busy || reason.trim() === '' || (verdict === 'correct' && !correctedValid);
+
+  const open = (a: StrataKpiActual) => {
+    setTarget(a); setVerdict('accept_with_exception'); setReason(''); setCorrected('');
+    setError(null); setOutcome(null);
+  };
+
+  const resolve = async () => {
+    if (!target) return;
+    setBusy(true); setError(null);
+    try {
+      const res = await kpiApi.resolveQuarantine(
+        target.id, verdict, reason.trim(), verdict === 'correct' ? correctedNumber : undefined,
+      );
+      setOutcome(res);
+      setTarget(null);
+      onResolved();
+    } catch (e) {
+      // The RPC's refusal (SoD, wrong status, missing reason) surfaces verbatim — re-wording it
+      // would lose the specific thing it named.
+      setError(e instanceof Error ? e.message : String(e));
+    } finally { setBusy(false); }
+  };
+
+  const columns: Column<StrataKpiActual>[] = [
+    {
+      id: 'kpi', label: 'KPI', flex: true,
+      cell: ({ row }) => {
+        const name = kpiNameById.get(row.kpi_id) ?? null;
+        return name
+          ? <span style={{ ...bodyStyle, fontWeight: 600 }}>{name}</span>
+          : <span style={{ color: T.subtlest }}>—</span>;
+      },
+    },
+    {
+      id: 'value', label: 'Quarantined value', width: 18,
+      cell: ({ row }) => <span style={{ ...bodyStyle, fontVariantNumeric: 'tabular-nums' }}>{row.value}</span>,
+    },
+    {
+      id: 'why', label: 'Why it was quarantined', width: 30,
+      // Zero-assumption: no note recorded renders a dash, never an invented reason.
+      cell: ({ row }) => (row.validation_note
+        ? <span style={{ ...captionStyle, color: T.subtle }}>{row.validation_note}</span>
+        : <span style={{ color: T.subtlest }}>—</span>),
+    },
+    {
+      id: 'resolve', label: 'Resolution', width: 16,
+      cell: ({ row }) => (canResolve
+        ? (
+          <Button spacing="compact" isDisabled={busy} testId={`strata-quarantine-resolve-${row.id}`} onClick={() => open(row)}>
+            Resolve
+          </Button>
+        )
+        : <span style={{ color: T.subtlest }}>—</span>),
+    },
+  ];
+
+  const selected = VERDICTS.find((v) => v.value === verdict);
+
+  return (
+    <StrataPanel
+      title="Quarantined values from this run"
+      icon={<Database size={16} />}
+      count={actuals.length}
+      testId="strata-quarantine-queue"
+    >
+      <p style={{ ...captionStyle, margin: '0 0 var(--ds-space-150)' }}>
+        A quarantined value is excluded from official calculations until it is resolved. Resolving one
+        is a Strategy Office act and always requires a reason — the resolution has to be explainable later.
+      </p>
+      {!canResolve ? (
+        // Rule 7: say why the verb is absent rather than leaving a silent gap.
+        <p style={{ ...captionStyle, margin: '0 0 var(--ds-space-150)' }} data-testid="strata-quarantine-role-gate">
+          Resolving a quarantined value requires the strategy_office role. Your roles cannot, so no
+          resolution is offered here.
+        </p>
+      ) : null}
+      {outcome ? (
+        <div style={{ marginBottom: 'var(--ds-space-150)' }}>
+          <SectionMessage
+            appearance={outcome.counts_in_official_calculations ? 'success' : 'information'}
+            title={`Resolved — now ${labelize(outcome.validation_status)}`}
+          >
+            <p style={{ margin: 0 }} data-testid="strata-quarantine-outcome">
+              {outcome.counts_in_official_calculations
+                ? 'This value now counts in official calculations.'
+                : outcome.validation_status === 'pending'
+                  // The honest consequence of `correct`, stated rather than hidden.
+                  ? 'This value does NOT count yet: a corrected value is a new claim nobody has checked, so it returned to pending and the KPI reads as Missing until someone attests it.'
+                  : 'This value does not count in official calculations.'}
+            </p>
+            {outcome.exception_reason ? (
+              <p style={{ margin: 'var(--ds-space-050) 0 0' }}>Exception reason: {outcome.exception_reason}</p>
+            ) : null}
+          </SectionMessage>
+        </div>
+      ) : null}
+      {actuals.length === 0 ? (
+        <EmptyState
+          size="compact"
+          header="Nothing quarantined from this run"
+          description="Quarantined values written by this run would appear here for Strategy Office resolution."
+        />
+      ) : (
+        <JiraTable<StrataKpiActual>
+          columns={columns}
+          data={actuals}
+          getRowId={(a) => a.id}
+          showRowCount={false}
+          ariaLabel="Quarantined values from this run"
+        />
+      )}
+
+      <Modal isOpen={!!target} onClose={() => setTarget(null)} width="medium" testId="strata-quarantine-modal">
+        <ModalHeader>
+          <ModalTitle>
+            {target ? `Resolve quarantine · ${kpiNameById.get(target.kpi_id) ?? 'KPI'}` : ''}
+          </ModalTitle>
+        </ModalHeader>
+        <ModalBody>
+          <div style={{ display: 'flex', gap: 'var(--ds-space-100)', flexWrap: 'wrap', marginBottom: 'var(--ds-space-150)' }}>
+            {VERDICTS.map((v) => (
+              <Button
+                key={v.value}
+                spacing="compact"
+                appearance={verdict === v.value ? (v.danger ? 'danger' : 'primary') : 'default'}
+                testId={`strata-quarantine-verdict-${v.value}`}
+                onClick={() => setVerdict(v.value)}
+              >
+                {v.label}
+              </Button>
+            ))}
+          </div>
+          <p style={{ ...captionStyle, color: T.subtle, margin: '0 0 var(--ds-space-150)' }} data-testid="strata-quarantine-verdict-blurb">
+            {selected?.blurb}
+          </p>
+          {verdict === 'correct' ? (
+            <div style={{ marginBottom: 'var(--ds-space-150)' }}>
+              <Textfield
+                value={corrected}
+                onChange={(e) => setCorrected((e.target as HTMLInputElement).value)}
+                placeholder="Corrected value (required)"
+                aria-label="Corrected value"
+                testId="strata-quarantine-corrected"
+              />
+            </div>
+          ) : null}
+          <Textfield
+            value={reason}
+            onChange={(e) => setReason((e.target as HTMLInputElement).value)}
+            placeholder="Reason (required)"
+            aria-label="Reason"
+            testId="strata-quarantine-reason"
+          />
+          {error ? (
+            <div style={{ marginTop: 'var(--ds-space-150)' }}>
+              <SectionMessage appearance="error" title="Resolution rejected by the database">
+                <p style={{ whiteSpace: 'pre-wrap' }} data-testid="strata-quarantine-error">{error}</p>
+              </SectionMessage>
+            </div>
+          ) : null}
+        </ModalBody>
+        <ModalFooter>
+          <Button appearance="subtle" isDisabled={busy} onClick={() => setTarget(null)}>Cancel</Button>
+          <Button
+            appearance={verdict === 'reject' ? 'danger' : 'primary'}
+            isDisabled={confirmBlocked}
+            testId="strata-quarantine-confirm"
+            onClick={() => void resolve()}
+          >
+            {busy ? 'Resolving…' : 'Record resolution'}
+          </Button>
+        </ModalFooter>
+      </Modal>
+    </StrataPanel>
+  );
+}
+
+// ── R4d · 24-hour import reversal (capability 12) ────────────────────────────
+/**
+ * ASK BEFORE OFFERING THE VERB: eligibility is fetched before Reverse is enabled, and EVERY
+ * blocking reason is rendered. The RPC returns them all on purpose — telling a steward "locked
+ * snapshot", then "issued board pack" after they fix it, misleads them twice.
+ * Exported for the same reason as QuarantineQueueSection: test the section, not the shell.
+ */
+export function RunReversalSection({ run, onReversed }: { run: StrataUploadRun; onReversed: () => void }) {
+  const rolesQ = useStrataRoles();
+  const canReverse = (rolesQ.data ?? []).some((r) => (REVERSAL_ROLES as readonly string[]).includes(r));
+
+  const [elig, setElig] = useState<StrataReversalEligibility | null>(null);
+  const [eligError, setEligError] = useState<string | null>(null);
+  const [eligLoading, setEligLoading] = useState(false);
+  const [confirming, setConfirming] = useState(false);
+  const [reason, setReason] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [result, setResult] = useState<StrataRunReversal | null>(null);
+
+  useEffect(() => {
+    if (!canReverse) return undefined;
+    let cancelled = false;
+    setEligLoading(true); setEligError(null);
+    lineageApi.runReversalEligibility(run.id)
+      .then((e) => { if (!cancelled) setElig(e); })
+      .catch((e) => { if (!cancelled) setEligError(e instanceof Error ? e.message : String(e)); })
+      .finally(() => { if (!cancelled) setEligLoading(false); });
+    return () => { cancelled = true; };
+  }, [run.id, canReverse]);
+
+  const reverse = async () => {
+    setBusy(true); setError(null);
+    try {
+      const res = await lineageApi.reverseRun(run.id, reason.trim());
+      setResult(res);
+      setConfirming(false);
+      onReversed();
+    } catch (e) {
+      // The server re-checks eligibility and raises with ALL reasons — surfaced verbatim so a
+      // stale client gate cannot quietly become a fake success.
+      setError(e instanceof Error ? e.message : String(e));
+    } finally { setBusy(false); }
+  };
+
+  return (
+    <StrataPanel title="Reverse this import" icon={<RefreshCw size={16} />} testId="strata-reversal-panel">
+      <p style={{ ...captionStyle, margin: '0 0 var(--ds-space-150)' }}>
+        Reversal is supersession, not an offsetting entry. The original run and its actuals are kept and
+        marked reversed; where a prior validated value exists it becomes effective again. No zero,
+        negative or artificial measurement is ever created.
+      </p>
+
+      {!canReverse ? (
+        <p style={{ ...captionStyle, margin: 0 }} data-testid="strata-reversal-role-gate">
+          Reversing an import requires the strategy_office or data_steward role. Your roles cannot, so
+          no reversal is offered here.
+        </p>
+      ) : eligLoading ? (
+        <div style={{ display: 'flex', justifyContent: 'center', padding: 'var(--ds-space-300)' }}>
+          <Spinner size="medium" />
+        </div>
+      ) : eligError ? (
+        <SectionMessage appearance="error" title="Could not check whether this run can be reversed">
+          <p style={{ whiteSpace: 'pre-wrap' }} data-testid="strata-reversal-elig-error">{eligError}</p>
+        </SectionMessage>
+      ) : elig ? (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--ds-space-150)' }}>
+          <div style={{ display: 'flex', gap: 'var(--ds-space-200)', flexWrap: 'wrap' }}>
+            <span style={captionStyle}>
+              Run type: {elig.run_type ? labelize(elig.run_type) : '—'}
+            </span>
+            <span style={captionStyle}>
+              Completed: {elig.completed_at ? fmtDateTime(elig.completed_at) : '—'}
+            </span>
+            <span style={captionStyle} data-testid="strata-reversal-affected">
+              {/* array_length() returns NULL for an empty set — a dash, never an assumed 0. */}
+              Actuals it would reverse: {elig.affected_actuals ?? '—'}
+            </span>
+          </div>
+
+          {elig.can_reverse ? (
+            <SectionMessage appearance="success" title="This import can still be reversed">
+              <p style={{ margin: 0 }}>Nothing blocks reversal. The database re-checks this before it acts.</p>
+            </SectionMessage>
+          ) : (
+            // EVERY reason, not the first. Fixing one and being told the next is being misled twice.
+            <SectionMessage
+              appearance="warning"
+              title={`Reversal is blocked by ${elig.blocking_reasons.length} reason${elig.blocking_reasons.length === 1 ? '' : 's'}`}
+            >
+              <ul style={{ margin: 'var(--ds-space-100) 0 0', paddingLeft: 'var(--ds-space-250)' }} data-testid="strata-reversal-blockers">
+                {elig.blocking_reasons.map((r) => (
+                  <li key={r} style={{ marginBottom: 'var(--ds-space-075)' }}>{r}</li>
+                ))}
+              </ul>
+            </SectionMessage>
+          )}
+
+          <div>
+            <Button
+              appearance="danger"
+              spacing="compact"
+              isDisabled={busy || !elig.can_reverse}
+              testId="strata-reverse-run"
+              onClick={() => { setReason(''); setError(null); setConfirming(true); }}
+            >
+              Reverse import
+            </Button>
+          </div>
+        </div>
+      ) : null}
+
+      {result ? (
+        <div style={{ marginTop: 'var(--ds-space-150)' }}>
+          <SectionMessage appearance="success" title="Import reversed">
+            <ul style={{ margin: 'var(--ds-space-100) 0 0', paddingLeft: 'var(--ds-space-250)' }}>
+              <li>{result.actuals_reversed} actual{result.actuals_reversed === 1 ? '' : 's'} marked reversed</li>
+              <li>{result.prior_values_restored} prior validated value{result.prior_values_restored === 1 ? '' : 's'} effective again</li>
+              {/* NOT a failure: it means there was no prior validated value to restore. Never a 0-wash. */}
+              <li data-testid="strata-reversal-left-empty">
+                {result.left_without_effective_value} left with no effective value — no prior validated
+                value existed to restore, so they were left empty rather than zeroed
+              </li>
+              <li>{result.recalculated} unlocked result{result.recalculated === 1 ? '' : 's'} recalculated</li>
+            </ul>
+            {/* The server's own statement of what it did — verbatim, never re-worded. */}
+            <p style={{ margin: 'var(--ds-space-100) 0 0' }} data-testid="strata-reversal-note">{result.note}</p>
+          </SectionMessage>
+        </div>
+      ) : null}
+
+      <Modal isOpen={confirming} onClose={() => setConfirming(false)} width="small" testId="strata-reversal-modal">
+        <ModalHeader><ModalTitle>Reverse import · {run.run_key}</ModalTitle></ModalHeader>
+        <ModalBody>
+          <p style={{ margin: '0 0 var(--ds-space-150)', fontSize: 'var(--ds-font-size-200)', color: T.subtle }}>
+            A compensating reversal run is recorded against this one. This run is preserved and marked
+            reversed — nothing is deleted and no offsetting number is written. Where a KPI has no prior
+            validated value, it is left with no effective value rather than zeroed.
+          </p>
+          <Textfield
+            value={reason}
+            onChange={(e) => setReason((e.target as HTMLInputElement).value)}
+            placeholder="Reason (required)"
+            aria-label="Reversal reason"
+            testId="strata-reversal-reason"
+          />
+          {error ? (
+            <div style={{ marginTop: 'var(--ds-space-150)' }}>
+              <SectionMessage appearance="error" title="Reversal rejected by the database">
+                <p style={{ whiteSpace: 'pre-wrap' }} data-testid="strata-reversal-error">{error}</p>
+              </SectionMessage>
+            </div>
+          ) : null}
+        </ModalBody>
+        <ModalFooter>
+          <Button appearance="subtle" isDisabled={busy} onClick={() => setConfirming(false)}>Cancel</Button>
+          <Button
+            appearance="danger"
+            // The RPC demands a reason; stated here rather than spent on a round trip.
+            isDisabled={busy || reason.trim() === ''}
+            testId="strata-reversal-confirm"
+            onClick={() => void reverse()}
+          >
+            {busy ? 'Reversing…' : 'Reverse import'}
+          </Button>
+        </ModalFooter>
+      </Modal>
+    </StrataPanel>
+  );
+}
+
 // ── Run detail ───────────────────────────────────────────────────────────────
 type RunDetailQuery = ReturnType<typeof useRunDetail>;
 
@@ -476,6 +889,13 @@ function RunDetailSection({ runKey, detail }: { runKey: string; detail: RunDetai
     });
     return m;
   }, [actualsQ.data, runId]);
+  // R4c — the quarantine queue for THIS run, from the same period-scoped fetch. Actuals this run
+  // wrote into other periods are not resolvable from this view (same limit as attestation above).
+  const quarantinedActuals = useMemo(
+    () => ((actualsQ.data ?? []) as StrataKpiActual[])
+      .filter((a) => runId != null && a.upload_run_id === runId && a.validation_status === 'quarantined'),
+    [actualsQ.data, runId],
+  );
   const [attestTarget, setAttestTarget] = useState<{ actual: StrataKpiActual; rowNumber: number } | null>(null);
 
   // Pipeline actions (validate/promote) — role-gated affordance; RPCs enforce the real guard.
@@ -615,6 +1035,8 @@ function RunDetailSection({ runKey, detail }: { runKey: string; detail: RunDetai
   const dependentKpiNames = (kpisQ.data ?? [])
     .filter((k) => run.data_source_id != null && k.data_source_id === run.data_source_id)
     .map((k) => k.name);
+  // Name lookup for the quarantine queue — a KPI absent from the list renders a dash, never a guess.
+  const kpiNameById = new Map((kpisQ.data ?? []).map((k) => [k.id, k.name] as const));
   const sourceName = run.data_source_id ? (sourcesQ.data ?? []).find((s) => s.id === run.data_source_id)?.name ?? null : null;
   const rejectedRows = rows.filter((r) => r.validation_status === 'rejected');
   const promoteReady = hasIngestRole && run.status === 'completed';
@@ -728,7 +1150,9 @@ function RunDetailSection({ runKey, detail }: { runKey: string; detail: RunDetai
               <div style={{ minWidth: 0, flex: 1 }}>
                 <div style={{ ...bodyStyle, fontWeight: 600 }}>Promote {run.row_count_valid.toLocaleString()} accepted row{run.row_count_valid === 1 ? '' : 's'} to canonical</div>
                 <div style={{ ...captionStyle, color: T.subtle, marginTop: 4 }}>
-                  Writes pending-attestation actuals — not yet committed. There is no automatic reverse; to correct, re-run a fixed file. The {run.row_count_rejected} rejected row{run.row_count_rejected === 1 ? '' : 's'} never block the rest.
+                  Writes pending-attestation actuals — not yet committed. A promoted run can be reversed
+                  within 24 hours, before its numbers are locked or issued — see "Reverse this import"
+                  below for whether this one still can. The {run.row_count_rejected} rejected row{run.row_count_rejected === 1 ? '' : 's'} never block the rest.
                 </div>
               </div>
               {rejectedRows.length > 0 ? (
@@ -801,6 +1225,16 @@ function RunDetailSection({ runKey, detail }: { runKey: string; detail: RunDetai
           />
         )}
       </StrataPanel>
+
+      {/* R4c — quarantined values this run wrote, and their Strategy Office resolution */}
+      <QuarantineQueueSection
+        actuals={quarantinedActuals}
+        kpiNameById={kpiNameById}
+        onResolved={() => { invalidate(); void actualsQ.refetch(); }}
+      />
+
+      {/* R4d — 24-hour reversal. Eligibility is asked BEFORE the verb is offered. */}
+      <RunReversalSection run={run} onReversed={() => { invalidate(); void actualsQ.refetch(); }} />
 
       {/* Governed attestation verdict — RPC-only; SoD errors render in-modal */}
       <StrataDecisionModal

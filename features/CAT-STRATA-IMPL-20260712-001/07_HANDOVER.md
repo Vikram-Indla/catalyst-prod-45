@@ -1,13 +1,28 @@
 # 07 — HANDOVER · CAT-STRATA-IMPL-20260712-001
 
-# 🔴 STRATA IS **NOT** COMPLETE — **2 / 14**. READ `12_CAPABILITY_MATRIX.md` FIRST.
-> Closure sprint result, 2026-07-17: **2 Complete · 7 Backend-only · 2 Partial · 3 Not started.**
-> Ten capabilities have working, tested, staging-applied backends **with NO SCREENS**. **No UI was built** — the
-> sprint's P1 UI block was never reached. Per its own rule, **Backend-only is NOT Complete**. **Do not report STRATA
-> as done.** The Definition of Full Closure (every workflow reachable in UI + 14/14) is **not met**.
+# 🔴 STRATA IS **NOT** COMPLETE — **8 / 14** (was 2/14). READ `12_CAPABILITY_MATRIX.md` FIRST.
+> Session 027, 2026-07-17: **8 Complete · 1 Backend-only · 2 Partial · 3 Not started (+ cap 11).**
+> **Do not report STRATA as done.** The Definition of Full Closure (every workflow reachable in UI + 14/14) is **not met**.
 >
-> **⛔ THE BIGGEST REMAINING ITEM IS UI, NOT BACKEND.** Reviews · board packs · data sources · quarantine · reversal
-> all have RPCs, RLS and tests, and **zero routes**. Exact remaining work per capability: `12_CAPABILITY_MATRIX.md`.
+> **⚠️ THIS BANNER SAID 2/14 FOR TWO SESSIONS WHILE THE TRUE COUNT WAS 4.** Commit `f3331ae4a` took caps 6+8 to
+> Complete and updated **neither** this banner nor the matrix. **If you move a capability, update BOTH IN THE SAME
+> COMMIT.** Session 027 had to re-derive the real state from `git log`. This is the recurring failure mode on this
+> feature: **the forward-looking blocks decay one commit after they are written.** Trust `git log` over this file.
+>
+> **⛔ THE REMAINING WORK IS NOW MOSTLY BACKEND, NOT UI — the inverse of what this banner said for two sessions.**
+> Reviews · board packs · quarantine · reversal · data sources are **wired** (027 + `f3331ae4a`).
+> What is left: **mapping memory (11) has no table** · **reconciliation (12) 3-way match not built** ·
+> **preview-with-data (3) · version diff (4) · score-shift (5) not started** · **band editor UI (1)** ·
+> **DEF-010 link relaxation (14)**. Exact per-capability detail: `12_CAPABILITY_MATRIX.md`.
+>
+> **⚠️ 027 shipped NO screenshot acceptance.** All UI claims rest on DOM assertions + DB probes; nothing was loaded in
+> a browser. Per CLAUDE.md that is not UI/UX acceptance — **a screenshot pass is owed on caps 7 · 9 · 10 · 12.**
+>
+> **🔴 F-11b — `tsc` NEVER CHECKED STRATA. NOT WITH EITHER CONFIG.** F-11's prescribed fallback
+> (`-p tsconfig.app.json`) is **also semantically silent**: parse errors in 4 foreign files suppress type-checking
+> repo-wide. Proven in 027 — a deliberate `const x: number = "string"` in `domain/index.ts` produced **zero** errors,
+> and a genuinely missing import (`StrataBlastRadius`, shipped unimported in `f3331ae4a`) was never flagged.
+> **"0 errors under src/modules/strata" is vacuous — stop reporting it.** Details + the ruling ask: `09_DECISIONS.md` → F-11b.
 >
 > **Verified 2026-07-17 (re-probed, not inherited):** locked snapshots **byte-identical** across the whole session
 > (`md5 128b14afc429bc18ad5dc14563edf3d3`) · **18/18 KPI + 9/9 benefit calcs byte-identical** · both live-numbers
@@ -136,17 +151,28 @@ Proven to have teeth: validated → 83.33/0.900 · pending → **Missing** · qu
 accepted_with_exception → **83.33 COUNTS** at conf 0.540, flagged, reason visible.
 **`no_eligible_actual` ≠ `no_actual`** — the response NAMES the ineligible rows, so nobody hunts for data that is there.
 
-## ▶ DO THIS NEXT — R4 remainder
-1. **Quarantine accept/correct/reject RPC** (D-5). The states (`quarantined`, `accepted_with_exception`) and the
-   exception columns (reason/authorizer/timestamp/original_failures, with **DB-enforced no-self-authorization**)
-   **already exist** — only the workflow RPC is missing. Small.
-2. **Mapping-memory persistence + reuse · Matched/New/Conflict/Invalid · both-side diffs · immutable run ledger.**
-3. **24h import reversal (D-7/E-5)** — reversal restores the prior validated effective state; **never** zero/negative
-   offsets; blocked by locked snapshot / locked period / issued pack / unsafe later run; atomic. `reversed` is already
-   in both CHECKs.
-4. **R5 — hardening/closeout + the final 14/14 capability matrix.**
-5. **UI DEBT (unchanged):** R2, R3 and R4 are **DB-complete with NO screens**, except the R4a VMO button realign and
-   R1's KPI-detail materiality UI. Do not report them as user-visible.
+## ▶ DO THIS NEXT — updated session 027. (The old R4-remainder list here was STALE: items 1 and 3 had already shipped
+## in `3b71bf404` and `08d7044dc` when it was written. Verified against `git log`, not inherited.)
+
+**The UI debt that dominated this feature is largely discharged.** What remains is mostly backend:
+
+1. **Mapping memory (cap 11)** — **no table exists.** The only capability needing a schema from scratch. Needs: source
+   identity, source key, target entity/type, confidence, owner, status, effective dates, last-confirmed,
+   version/audit. Rules: **suggest-not-assume** · conflicts require human resolution · retired targets are not reused ·
+   evidence immutable. **Biggest single item left.**
+2. **Reconciliation (cap 12 remainder)** — Matched / New / Conflict / Invalid + both-side diff. `strata_upload_runs`
+   already carries `row_count_raw/valid/rejected` for the ledger counts. The reversal half is DONE (027).
+3. **Preview-with-data (3) · Version diff (4) · Score-shift preview (5)** — blueprint §2.3: the **inputs already
+   exist** (`config_versions`, `config_context` on 7,451 rows, append-only history), so the "old side" needs no build.
+   These are smaller than they look.
+4. **Threshold band editor (1)** — the revision RPC (`strata_create_threshold_draft_version`) shipped in `81bf2a9f6`;
+   only the editor UI is missing. Pure UI slice.
+5. **DEF-010 link relaxation (14)** — `strata_link_element_kpi` still requires `approved` (strategic drafts already
+   pass). Calc-side exclusion is proven, so this is **the link layer only**.
+6. **Owed on 027's work:** a **screenshot pass** (caps 7 · 9 · 10 · 12) — no browser was used; and the follow-ups in
+   `12_CAPABILITY_MATRIX.md` → reviews participants/agenda/detail-route, quarantine's active-period-only queue.
+7. **F-11b needs a repo-wide ruling** (`09_DECISIONS.md`) — until the 4 parse-error files are fixed or excluded,
+   **no tsc config type-checks this repo at all.**
 
 ## ⚠️ SUITE BASELINE — corrected, read this before reporting gates
 **True baseline: 6 real failures (foreign ChatDock) + 2 LOAD-FLAKY** (`AgeingPanel.navigate`, `registry-drift`) that

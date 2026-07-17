@@ -440,6 +440,74 @@ every claim in `06_VALIDATION_EVIDENCE.md` was actually established, so no shipp
 **Until then, report the gate honestly:** "tsc: no errors in touched files (`-p tsconfig.app.json`); 159 pre-existing
 errors in 4 foreign files" — **never a bare "tsc clean"**.
 
+## F-13 · APPLIED (session 027, 2026-07-17) — R2/F1 shipped a lifecycle state with **no entry verb**; Issue was unreachable
+> Found by wiring, not by review. The board-pack UI subagent hit it, correctly **refused to invent a flow**, and
+> reported it as a blocker instead. That refusal is why this was caught rather than papered over.
+
+**The gap.** R2/F1 (`20260717140000`) shipped `draft → in_review → approved → issued → superseded` and
+`strata_issue_board_pack`, which refuses anything not already `approved`. **Nothing moved a pack INTO `approved`.**
+Confirmed on staging before building: **3 packs, 0 approved** — Issue was provably unreachable end-to-end, and the
+capability matrix's "backend ✅ / UI ❌" for cap 7 was **too generous**. The backend was incomplete too.
+
+**Why it had to be an RPC, not a client UPDATE — this is the substantive part.**
+`strata_board_packs_write` (`20260705100400`) is `FOR ALL USING (strata_has_role(ARRAY['strategy_office']))`. A plain
+client UPDATE could therefore set `approved_by` to **any uuid**. And `strata_issue_board_pack`'s entire SoD control is
+`approved_by IS NOT DISTINCT FROM auth.uid()` → refuse. So a spoofable `approved_by` **defeats the SoD check
+completely**: one user names a colleague as approver, then issues the pack themselves. The approver identity must be
+**stamped by the server**. Hence `strata_approve_board_pack` is SECURITY DEFINER, stamps `auth.uid()`, and takes **no
+actor parameter** — there is deliberately no way for a caller to assert who approved.
+
+**Deliberately NOT imposed:** approval does **not** require the snapshot to be `locked`. Only issuance does. A pack may
+legitimately be reviewed and approved while its period is still open, and duplicating the lock check at approval would
+invent a gate R2/F1 chose not to impose. Approval **does** require a snapshot — approval is a statement about *which
+numbers* were approved, and without one there are none to point at.
+
+**Proven** (`20260717200000`, applied to staging, ledger 1:1) by DB probe as a **real non-admin `strategy_office` user**
+(`is_admin=f`), fully rolled back, **with a positive control so it could fail**:
+`draft → approved` + `approved_by` = the caller · **approver then REFUSED as issuer** (SoD has teeth *because* the
+server stamped it) · double-approve refused · roleless user refused.
+
+### F-11b · 🔴 EXTENDED (session 027, 2026-07-17) — **the FALLBACK gate is also a no-op. `-p tsconfig.app.json` does not semantically check STRATA either.**
+> **F-11 above prescribed `-p tsconfig.app.json` as "the real check". It is not. Proven this session.**
+> So "**0 errors under `src/modules/strata`**" — reported on the R3 UI slice and every slice since F-11 was raised —
+> **does not mean the code type-checks. It means tsc never semantically looked at it.** The number is vacuous, not clean.
+
+**How it surfaced (not by looking for it).** While wiring the R2/R4 domain layer I noticed `StrataBlastRadius` is used
+at `domain/index.ts:1037` and `:1044` but **is not imported anywhere in that file** (grep: only those two lines,
+repo-wide the type lives in `types.ts`). That is a textbook `TS2304: Cannot find name`. `-p tsconfig.app.json` reported
+**nothing** for it. Shipped in `f3331ae4a` (the R3 UI slice), which reported the gate green.
+
+**Proof (F-11's own methodology).** Appended to `src/modules/strata/domain/index.ts`:
+```ts
+const __probe: number = "definitely a string";   // TS2322
+const __probe2: NoSuchTypeAnywhere = 1;          // TS2304
+```
+`npx tsc --noEmit -p tsconfig.app.json` → **159 errors, all in the same 4 foreign files, NOT ONE about `__probe`.**
+Both probes removed; file restored and verified (`grep -c __probe` = 0).
+
+**Mechanism — stated at the confidence I actually have.** The 159 are **syntactic** (TS1005 94× · TS1109 52× ·
+TS1128 4× · TS1110 3× · TS2657 2×) in `CapacityHeatmap.tsx` · `icon-registry.ts` · `RichTextCommentEditor.tsx` ·
+`SortableColumn.tsx`. The overwhelmingly likely mechanism is that **tsc reports syntactic diagnostics and skips the
+semantic phase for the program**, so parse errors in 4 foreign files suppress type-checking for **all 1,000+ others**.
+I did **not** finish confirming that mechanism — the scoped run (those 4 excluded) timed out at 2 minutes and I
+restored the tree rather than leave a probe file in it. **The empirical fact is proven; the causal story is inference.**
+Whoever rules on F-11 should confirm it by excluding the 4 files and re-running.
+
+**What this changes.**
+1. **STRATA has had NO type-checking gate at any point in this feature.** Not since F-11, not before it. Neither
+   `tsc --noEmit` (compiles nothing) nor `-p tsconfig.app.json` (semantically silent) ever checked a STRATA file.
+2. **No shipped claim collapses** — for the reason F-11 already gives: every acceptance claim in
+   `06_VALIDATION_EVIDENCE.md` rests on **tests and DB probes**, never on tsc. The gate was decorative, so removing it
+   removes nothing. That is luck, not design.
+3. **No runtime break from the missing import.** `StrataBlastRadius` is used only in type position, and Vite/esbuild
+   strips types without checking — so it cannot fail at runtime. It is a type-safety hole, not a regression. **Fixed in
+   this slice's commit** (added to the import block) rather than left for the ruling.
+4. **F-11's recommendation #2 is now the load-bearing one, not a nice-to-have.** Until the 4 parse-error files are
+   fixed or excluded, **no tsc configuration checks this repo at all**, and a ratchet at 159 would ratchet a number
+   that measures nothing.
+5. **Stop reporting "tsc 0 under src/modules/strata" as evidence. It is not evidence of anything.** Report tests, DB
+   probes, and gates. This slice reports no tsc claim, and its subagents were instructed not to make one.
+
 ## F-12 · APPLIED (session 026, 2026-07-17) — board-pack issuance gets its OWN column; `status` is left alone
 > Deviation from blueprint §6's literal wording. Derived from the authorization's own capability list + the shipped
 > schema. Logged, not silently adapted. **Flagged for override.**

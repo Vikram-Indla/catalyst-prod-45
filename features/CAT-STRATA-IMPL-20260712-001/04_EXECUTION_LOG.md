@@ -1912,3 +1912,70 @@ the RPC** · blockers named · **coverage_note rendered** · retire-needs-reason
 ✅ Suite **2,451 passed / 6 failed** (foreign ChatDock) — **+9, no new failures**. tsc 0 under `src/modules/strata` ·
 colors 0=0 · audit at baseline · CRE pass · usage-map regenerated.
 **Capabilities 6 (data-source register/retire + dependents-impact) and 8 (downstream blast-radius) → Complete.**
+
+---
+
+# 027 · R2/R4 UI wiring — caps 7 · 9 · 10 · 12-reversal → **2/14 → 8/14 Complete**
+**Four capabilities wired into THREE EXISTING pages. No new pages, no new routes.** Plus one new backend verb (F-13).
+
+## The probe that made this a one-session slice instead of four
+The matrix said caps 7/10 had "no screens" — but `StrataReviewsPage.tsx` (81K) and `StrataBoardPackPage.tsx` (18K)
+**exist**. Rather than believe either, I grepped `src/` for all ten new RPCs: **zero client references** for every
+R2/R4 RPC; only R3's blast-radius was wired. **The matrix was right in substance, wrong in wording** — the pages run on
+older data paths. **The gap was WIRING, not greenfield.** That reframing is why four capabilities landed at once.
+Recorded so nobody re-litigates it: **"a page exists" ≠ "the capability is reachable."**
+
+## F-13 — the backend was NOT complete either (the matrix's ✅ was too generous)
+The board-pack subagent reported it **could not** wire Issue: nothing moves a pack `draft → approved`. It **refused to
+invent a flow** and escalated — which is the only reason this was caught rather than papered over with a fake control.
+Probed staging: **3 packs, 0 approved.** Issue was provably unreachable **at the DB**.
+
+**It could not be a client UPDATE.** `strata_board_packs_write` is `FOR ALL USING (strata_has_role(['strategy_office']))`
+⇒ a client could set `approved_by` to **any uuid**, and `strata_issue_board_pack`'s entire SoD control is
+`approved_by <> auth.uid()`. **A spoofable `approved_by` defeats SoD completely.** Shipped
+`strata_approve_board_pack` — SECURITY DEFINER, stamps `auth.uid()`, **no actor parameter by design**.
+Applied to staging `20260717200000`; **ledger 1:1**. Deliberately does NOT require a locked snapshot (only issuance
+does — inventing that gate would impose a rule R2/F1 rejected).
+
+**Proven by DB probe as a REAL non-admin `strategy_office` user (`is_admin=f`), rolled back, positive control included:**
+`draft→approved` + `approved_by` = caller · **approver then REFUSED as issuer** (SoD has teeth *because* the server
+stamps it) · double-approve refused · roleless refused.
+
+## F-11b — tsc has NEVER checked STRATA, under EITHER config
+Found incidentally: `StrataBlastRadius` is used at `domain/index.ts:1037`/`:1044` and **was never imported** — shipped
+in `f3331ae4a`, the commit that reported "tsc 0 errors under src/modules/strata". A missing import is TS2304.
+tsc said nothing. Confirmed with F-11's own method (`const __probe: number = "definitely a string"` → **zero** errors
+from `-p tsconfig.app.json`). **F-11's prescribed fallback is also a no-op; "0 under strata" is vacuous, not clean.**
+No shipped claim collapses (acceptance rests on tests + DB probes) and there is no runtime break (type-only usage is
+erased by esbuild). **Import fixed here.** Ruling ask + the honest limit of my evidence: `09_DECISIONS.md` → F-11b.
+
+## Honesty carried into the UI (not just asserted in the RPCs)
+- **Reversal:** eligibility is ASKED before the verb exists; **every** `blocking_reasons` entry rendered, never just the
+  first. `affected_actuals` renders `—` when null (`array_length` returns NULL on an empty set — `0` would be invented).
+  `left_without_effective_value` always shown with its meaning; server `note` verbatim.
+- **Quarantine:** `correct → pending` is STATED, not hidden ("does NOT count yet… Missing until someone attests").
+- **Reviews:** `origin='migrated'` rows render **"Migrated · details not recorded"**, never "—" and never "none".
+  `is_ready` is snapshot-locked only; `pack_attached` shown SEPARATELY and never ANDed in (the DB rejected that gate).
+- **Board packs:** two lifecycles kept distinct (F-12). `qualification_note` verbatim. `is_qualified===false` renders as
+  *information* — "absence of a record is not evidence" — never a green tick.
+
+## Gates (raw)
+```
+✅ ads-color-gate: 0 = baseline 0. No new hard-coded colors.
+✅ ads-audit-gate: no category above baseline — tokens 19798/19798, typography 1366/1366, spacing 0/0, fontImports 0/0.
+vitest (full repo): 2,514 passed · 6 failed · 16 skipped / 2,536
+```
+Baseline on entry 2,451/6 ⇒ **+63 tests, 0 new failures.** The 6 are the known foreign ChatDock suites.
+**No baseline bumped; no `ads-scanner:ignore` added** — new spacing uses `var(--ds-space-*)` throughout.
+**`registry-drift` FAILED first and was a REAL drift, not the documented flake** — the new exported sections changed the
+scan. Fixed by `npx tsx scripts/scan-components.ts`. (`ads-violations.generated.ts` regenerated to a **timestamp-only**
+diff — 13 violations unchanged — so it was REVERTED rather than committed as churn.)
+**No tsc claim is made. See F-11b.**
+
+## Status — and what is NOT done
+**Caps 7 · 9 · 10 → Complete. Cap 12's reversal half → Complete.** 2/14 → **8/14**.
+**NOT attempted (not blocked — not reached):** cap 1 band editor · 3 preview-with-data · 4 version diff ·
+5 score-shift · 11 mapping memory (still no table) · 12 reconciliation half · 14 link relaxation.
+**⛔ NO SCREENSHOT ACCEPTANCE — no browser was opened.** All UI claims rest on DOM assertions + DB probes. Per
+CLAUDE.md that is **not** UI/UX acceptance: **a screenshot pass is OWED on caps 7 · 9 · 10 · 12** before this is called
+user-visible. Committed on the feature branch (PR #349 remains open/unmerged) with the debt stated, not hidden.

@@ -1,10 +1,27 @@
 # 12 — CAPABILITY MATRIX · CAT-STRATA-IMPL-20260712-001
-### Closure sprint result, 2026-07-17. **STRATA IS NOT FULLY IMPLEMENTED. 2 / 14 Complete.**
+### Updated session 027, 2026-07-17. **STRATA IS NOT FULLY IMPLEMENTED. 8 / 14 Complete.**
 
-> **The Definition of Full Closure is NOT met.** It requires *"every user workflow has a reachable UI"* and
-> *"the final matrix is 14/14 Complete"*. **Neither holds.** Ten capabilities have working, tested, staging-applied
-> backends with **no screens**, and two were never started. Per the sprint's own rule — *"Do not mark Backend-only as
-> Complete"* — they are not marked Complete. **No UI was built this sprint**; the P1 UI block was not reached.
+> **The Definition of Full Closure is still NOT met.** It requires *"every user workflow has a reachable UI"* and
+> *"the final matrix is 14/14 Complete"*. **Neither holds.** Six capabilities remain: 1 Partial, 1 Backend-only,
+> **4 genuinely Not started** (3 · 4 · 5 · 11) plus the reconciliation half of 12.
+>
+> **⚠️ THIS FILE WAS STALE FOR TWO SESSIONS.** It said **2/14** while commit `f3331ae4a` had already taken caps 6 and 8
+> to Complete. Anyone reading it planned against a number that was wrong by two. **If you change a capability's status,
+> update this file IN THE SAME COMMIT** — the R3 UI commit did not, and the next session had to re-derive the truth from
+> `git log`. The handover banner had the same defect.
+>
+> **What session 027 did:** wired the R2/R4 UI (caps 7 · 9 · 10 · 12-reversal) + shipped the missing
+> `strata_approve_board_pack` backend verb (F-13). **2 → 8 Complete.**
+>
+> **⚠️ "Backend ✅" in this table was too generous and is now qualified.** Cap 7 was marked backend-complete, but
+> `issue_status='approved'` had **no entry verb** — staging had **3 packs, 0 approved**, so Issue was provably
+> unreachable *at the DB*, not just missing a screen (F-13). A capability is not backend-complete because its RPCs
+> exist; it is backend-complete when its states are **reachable**. The remaining ✅ marks in this table were inherited
+> from prior sessions' evidence and **were not re-probed in 027**.
+>
+> **⚠️ NO SCREENSHOT ACCEPTANCE.** Every UI claim below is proven by DOM assertions + DB probes only. Nothing in this
+> session was loaded in a browser. Per CLAUDE.md that is **not** UI/UX acceptance — a screenshot pass is still owed,
+> and per the local lesson a TDZ-class error passes every gate and only a live page load catches it.
 
 ## Verified baseline (re-probed this sprint, not inherited)
 | | |
@@ -24,22 +41,30 @@
 
 | # | Capability | Schema | RPC | RLS/role | UI route | Tests | Staging | Commit | **Status** |
 |---|---|---|---|---|---|---|---|---|---|
-| 1 | Threshold band-editor authoring | `strata_threshold_schemes.bands` (shipped) | `strata_create_threshold_draft_version` ✅ | strategy_office ✅ | **none — band editor never built** | DB probe (A3c) | ✅ | `81bf2a9f6` | **Backend-only** |
+| 1 | Threshold band-editor authoring | `strata_threshold_schemes.bands` (shipped) | `strata_create_threshold_draft_version` ✅ | strategy_office ✅ | **none — band editor never built** | DB probe (A3c) | ✅ | `81bf2a9f6` | **Backend-only** — not attempted in 027 |
 | 2 | Scorecard-model draft-create (revision) | envelope existed | `strata_create_model_draft_version` ✅ | strategy_office + SoD ✅ | **`/strata/admin/:section` → "Create new version"** ✅ | 6 UI + DB probe | ✅ | `7ba522678` | **✅ Complete** |
 | 3 | Preview-with-data | — | — | — | — | — | — | — | **Not started** |
 | 4 | Version diff | — | — | — | — | — | — | — | **Not started** |
 | 5 | Score-shift impact preview | — | — | — | — | — | — | — | **Not started** |
 | 6 | Data-source register/retire + dependents-impact | `status` CHECK pre-existed | `strata_set_data_source_status` ✅ | strategy_office/data_steward ✅ | **none** | DB probe | ✅ | `48a05afab` | **Backend-only** |
-| 7 | Board-pack editorial builder + Issue | `issue_status,version,supersedes_id,issued_by/at,title,sections` ✅ | `strata_issue_board_pack` · `strata_supersede_board_pack` ✅ | SO + SoD; **immutability by trigger** ✅ | **none** | DB probe | ✅ | `a47385508` | **Backend-only** |
+| 7 | Board-pack editorial builder + Issue | `issue_status,version,supersedes_id,issued_by/at,title,sections` ✅ | `issue` · `supersede` · **+ `strata_approve_board_pack` (F-13, 027)** ✅ | SO + SoD; **immutability by trigger** ✅ | **`/strata/…/board-pack` → `PackVersionsSection`** ✅ | 16+ UI + DB probe w/ positive control | ✅ `20260717200000` | `a47385508` + 027 | **✅ Complete** — the arc draft→approved→issued is reachable **only because 027 shipped the missing approve verb**; before it, staging had 3 packs / 0 approved |
 | 8 | Run downstream blast-radius | — (derived) | `strata_data_source_blast_radius` ✅ | SECURITY DEFINER ✅ | **none** | DB probe | ✅ | `48a05afab` | **Backend-only** |
-| 9 | Quarantine validation tier | states + exception cols + **DB no-self-auth CHECK** ✅ | `strata_resolve_quarantine` ✅ | strategy_office ✅ | **none** | DB probe | ✅ | `28e2c1bbf` · quarantine RPC | **Backend-only** |
-| 10 | `strata_reviews` scheduling entity | `strata_reviews` + participants + readiness view ✅ | `strata_schedule_review` · `strata_update_review` ✅ | SO write / approved read ✅ | **none** | DB probe | ✅ (2 migrated) | `519e2af63` | **Backend-only** |
+| 9 | Quarantine validation tier | states + exception cols + **DB no-self-auth CHECK** ✅ | `strata_resolve_quarantine` ✅ | strategy_office ✅ | **`/strata/…/pipeline` → `QuarantineQueueSection`** ✅ | 19 UI + DB probe | ✅ | `3b71bf404` + 027 | **✅ Complete** — ⚠️ queue is **active-period-only** (inherits the pre-existing `:864` limitation); actuals a run wrote into *other* periods are not resolvable from this view |
+| 10 | `strata_reviews` scheduling entity | `strata_reviews` + participants + readiness view ✅ | `strata_schedule_review` · `strata_update_review` ✅ | SO write / approved read ✅ | **`/strata/…/reviews` → `ScheduledReviewsSection`** ✅ | 19 UI | ✅ (2 migrated) | `519e2af63` + 027 | **✅ Complete for scheduling** — ⚠️ **participants, agenda/chair edit, and a review DETAIL route are NOT wired** (`reviewParticipants`/`reviewBySlug` unused). Registry + schedule + attach-snapshot + close only |
 | 11 | Mapping-memory write | — | — | — | — | — | — | — | **Not started** |
-| 12 | Import 3-way + diff + **24h undo** + run-log ledger | `run_type,reverses_run_id,reversed_by_run_id` ✅ | `strata_reverse_run` + eligibility ✅ | SO/data_steward ✅ | **none** | DB probe | ✅ | (reversal commit) | **Backend-only — and PARTIAL**: 24h undo + ledger done; **3-way match / Matched-New-Conflict-Invalid / both-side diff NOT built** |
+| 12 | Import 3-way + diff + **24h undo** + run-log ledger | `run_type,reverses_run_id,reversed_by_run_id` ✅ | `strata_reverse_run` + eligibility ✅ | SO/data_steward ✅ | **`/strata/…/pipeline` → `RunReversalSection`** ✅ | UI + DB probe | ✅ | `08d7044dc` + 027 | **PARTIAL — reversal half is now Complete** (eligibility asked before the verb; all blocking reasons named). **3-way match / Matched-New-Conflict-Invalid / both-side diff STILL NOT BUILT** — that half is untouched |
 | 13 | M-D4 approved-model editability (governance) | RLS draft-gate + RPC guard ✅ | `strata_set_model_measures` guard ✅ | RLS **and** RPC, both proven | **`/strata/admin/:section` — control hidden + reason shown** ✅ | 4 UI + DB probe w/ positive control | ✅ | `d9cd94a3b` | **✅ Complete** |
 | 14 | DEF-010 draft-KPI → objective linking | `lineage_id`, `revision_class` ✅ | resolver excludes drafts ✅ | — | **partial** — materiality UI shipped; **link relaxation not built** | 8 tests | ✅ | `f72faf352` · `51034bc94` | **Partial — not Complete**: calc-side exclusion proven; `strata_link_element_kpi` still refuses non-strategic drafts |
 
-**Complete: 2 · Backend-only: 7 · Partial: 2 · Not started: 3.**
+**Complete: 8 · Backend-only: 1 (cap 1) · Partial: 2 (caps 12, 14) · Not started: 3 (caps 3, 4, 5) + cap 11.**
+*(Counting note: cap 11 is listed under "Not started" in the rows above; the honest headline is **8 Complete of 14**.)*
+
+### Session 027 delta — what moved and what did NOT
+| Moved | 7 · 9 · 10 → Complete · 12 → reversal half Complete. **6 → 8 Complete.** |
+|---|---|
+| **Did NOT move** | **1** (band editor) · **3 · 4 · 5** (preview / diff / score-shift) · **11** (mapping memory — still no table) · **12** (reconciliation half) · **14** (link relaxation). **Not attempted — not blocked, just not reached.** |
+| **Backend added** | `strata_approve_board_pack` (F-13) — the only new DB object; staging-applied + ledger 1:1. |
+| **Evidence class** | DOM assertions + DB probes. **No browser, no screenshots.** |
 
 ---
 

@@ -867,8 +867,160 @@ export interface StrataBoardPack {
   snapshot_id: string;
   format: 'pdf' | 'pptx';
   storage_path: string | null;
+  /**
+   * The GENERATION lifecycle — whether the artefact has been rendered. NOT the editorial one.
+   * F-12: §6 asked for `issued`/`superseded` here, but this column was already in use for
+   * generation and the two lifecycles are independent (a pack can be `ready` and unissued, or
+   * `issued` and still `pending` a re-render). The editorial lifecycle is `issue_status`.
+   * Do not "fix" these back into one column.
+   */
   status: 'pending' | 'generating' | 'ready' | 'failed';
   generated_at: string | null;
+  /** The EDITORIAL lifecycle (R2/F1). Issued packs are immutable BY TRIGGER — not by convention. */
+  issue_status: 'draft' | 'in_review' | 'approved' | 'issued' | 'superseded';
+  version: number;
+  /** A correction is a NEW VERSION pointing back — never an edit of what the board received. */
+  supersedes_id: string | null;
+  issued_by: string | null;
+  issued_at: string | null;
+  approved_by: string | null;
+  approved_at: string | null;
+  title: string | null;
+  sections: unknown;
+}
+
+/**
+ * R2/F1 · `strata_board_pack_qualification` VIEW (not an RPC). Derived from
+ * `strata_integrity_exceptions` at read time and never copied onto the pack — a copy goes stale the
+ * moment the register changes, and the stale copy is what would get printed.
+ *
+ * ⚠️ `is_qualified === false` means NO EXCEPTION IS ON RECORD. Per E-4/§3.7 that is **not** proof of
+ * integrity for anything predating the child audit triggers. Do not render it as "verified".
+ *
+ * ⚠️ A qualification is about PROVENANCE, not the numbers. The figures are official and unchanged.
+ * `qualification_note` says exactly that — render it verbatim; paraphrasing it into "these numbers
+ * are questionable" would be a straight falsehood.
+ */
+export interface StrataBoardPackQualification {
+  board_pack_id: string;
+  snapshot_id: string | null;
+  snapshot_key: string | null;
+  issue_status: StrataBoardPack['issue_status'];
+  version: number;
+  is_qualified: boolean;
+  provenance_reproducibility: string | null;
+  values_changed: boolean | null;
+  resolution: string | null;
+  detection_is_lower_bound: boolean | null;
+  /** The exact wording to show. NULL when unqualified. Verbatim only. */
+  qualification_note: string | null;
+}
+
+/**
+ * R4c · strata_resolve_quarantine. `counts_in_official_calculations` is returned by the server
+ * rather than re-derived here: the eligible set (E-7 cond.3) is one predicate and it lives in the
+ * DB. A page that re-implements it will drift the day the rule changes.
+ */
+export interface StrataQuarantineResolution {
+  actual_id: string;
+  validation_status: StrataKpiActual['validation_status'];
+  counts_in_official_calculations: boolean;
+  exception_reason: string | null;
+  exception_authorized_by: string | null;
+  /** WHY it was quarantined — preserved across the resolution that clears it (E-6). */
+  original_validation_failures: unknown;
+}
+
+/**
+ * R4d · strata_run_reversal_eligibility. Returns EVERY blocking reason, not the first — a user
+ * told "locked snapshot", who fixes that and is then told "issued board pack", has been misled
+ * twice. Ask before offering the verb; render all reasons.
+ */
+export interface StrataReversalEligibility {
+  run_id: string;
+  run_type: string | null;
+  completed_at: string | null;
+  affected_actuals: number | null;
+  can_reverse: boolean;
+  blocking_reasons: string[];
+}
+
+/**
+ * R4d · strata_reverse_run. The original run and its actuals are PRESERVED and marked `reversed`;
+ * no offsetting, zero or negative measurement is ever created (D-7/E-5).
+ * `left_without_effective_value` is not a failure — it means there was no prior validated value to
+ * restore, and saying so is honest where inventing a zero would not be.
+ */
+export interface StrataRunReversal {
+  reversal_run_id: string;
+  original_run_id: string;
+  actuals_reversed: number;
+  prior_values_restored: number;
+  left_without_effective_value: number;
+  recalculated: number;
+  detail: unknown;
+  /** The server's own statement of what it did. Rendered verbatim; never re-worded. */
+  note: string;
+}
+
+/** R2/E1 · `strata_reviews`. Cadence defaults are COALESCE defaults in the RPC, not CHECKs. */
+export interface StrataReview {
+  id: string;
+  review_key: string;
+  slug: string | null;
+  organization_id: string | null;
+  name: string;
+  review_type: 'departmental' | 'executive';
+  cadence: 'monthly' | 'quarterly' | 'ad_hoc';
+  status: 'scheduled' | 'in_progress' | 'closed' | 'cancelled';
+  /**
+   * `migrated` = reconstructed from a locked snapshot by the D-6 backfill. Its meeting details
+   * (chair, agenda, scheduled_for, participants) were NEVER recorded and are NULL. A migrated
+   * review must not be rendered as though those details were captured and are merely blank.
+   */
+  origin: 'scheduled' | 'migrated';
+  scope: unknown;
+  cycle_id: string | null;
+  period_id: string | null;
+  /** Nullable BY DESIGN — a review is scheduled before its snapshot is locked. */
+  snapshot_id: string | null;
+  board_pack_id: string | null;
+  scheduled_for: string | null;
+  /** D-6: NULL means "not recorded", NEVER "nobody chaired it". */
+  chair_id: string | null;
+  agenda: unknown;
+  note: string | null;
+  created_by: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface StrataReviewParticipant {
+  id: string;
+  review_id: string;
+  user_id: string;
+  role: 'chair' | 'attendee' | 'presenter' | 'observer';
+  created_by: string | null;
+  created_at: string;
+}
+
+/**
+ * R2/E1 · `strata_review_readiness` view. Readiness is DERIVED, never stored — a stored flag goes
+ * stale the moment the snapshot or pack behind it moves.
+ *
+ * `is_ready` requires a LOCKED snapshot only. `pack_attached` is reported SEPARATELY and is
+ * deliberately not part of readiness: a review can legitimately convene on locked numbers before
+ * its pack is built. Do not AND them together in the UI — that would invent a gate the DB rejected.
+ */
+export interface StrataReviewReadiness {
+  review_id: string;
+  review_key: string;
+  status: StrataReview['status'];
+  snapshot_locked: boolean;
+  pack_attached: boolean;
+  is_ready: boolean;
+  /** Every gap, named — so a consumer states WHY rather than rendering a bare status. */
+  blocking_reasons: string[];
 }
 
 // ── Notifications (CAT-STRATA-CLOSEOUT-20260710-001 W3) ──────────────────────
