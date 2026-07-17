@@ -877,7 +877,13 @@ export const valueApi = {
     run(typedQuery('strata_gate_evidence').select('*').eq('gate_instance_id', gateInstanceId)),
   decideGate: (gateId: string, verdict: string, note?: string) =>
     run(typedRpc('strata_decide_gate', { p_gate: gateId, p_verdict: verdict, p_note: note ?? null })),
-  validateBenefitValue: (valueId: string, verdict: 'validated' | 'rejected', note?: string) =>
+  /**
+   * D-4: verdicts are the neutral assurance vocabulary. 'validated' is NO LONGER ACCEPTED by the
+   * RPC — it raises. owner_confirmed is the owner standing behind their own number (it COUNTS per
+   * F-7, but claims nothing about independence); independently_validated asserts someone else
+   * checked it and carries SoD.
+   */
+  validateBenefitValue: (valueId: string, verdict: 'owner_confirmed' | 'independently_validated' | 'rejected', note?: string) =>
     run(typedRpc('strata_validate_benefit_value', { p_value: valueId, p_verdict: verdict, p_note: note ?? null })),
   benefitRealization: (benefitId: string) =>
     run(typedRpc('strata_calc_benefit_realization', { p_benefit: benefitId })),

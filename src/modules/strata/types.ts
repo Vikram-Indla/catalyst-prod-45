@@ -9,7 +9,10 @@
 
 export type GovernedStatus = 'draft' | 'pending_approval' | 'approved' | 'retired' | 'superseded';
 export type DataState = 'live' | 'draft' | 'pending_validation' | 'locked';
-export type ValidationStatus = 'pending' | 'validated' | 'rejected' | 'quarantined';
+// E-6: accepted_with_exception COUNTS after Strategy Office authorization but is NOT independent
+// validation — it never collapses into 'validated'. reversed = superseded by a reversal (D-7/E-5).
+export type ValidationStatus =
+  | 'pending' | 'validated' | 'rejected' | 'quarantined' | 'accepted_with_exception' | 'reversed';
 
 export interface GovernedEnvelope {
   version: number;
@@ -642,7 +645,9 @@ export interface StrataPortfolio {
 
 export type BenefitLifecycleStage =
   | 'identified' | 'qualified' | 'approved' | 'baselined' | 'in_flight'
-  | 'forecast_revised' | 'realized' | 'finance_validated' | 'closed';
+  // D-4: 'finance_validated' is GONE — no Finance role has ever existed in STRATA, so the label
+  // claimed an assurance nobody performed. The DB CHECK now rejects it outright.
+  | 'forecast_revised' | 'realized' | 'independently_validated' | 'closed';
 
 export interface StrataBenefit {
   id: string;
@@ -660,6 +665,11 @@ export interface StrataBenefit {
   confidence: number | null;
 }
 
+/** D-4 · E-6 · F-7 — the six states a benefit value's assurance can be in. */
+export type BenefitAssuranceStatus =
+  | 'reported' | 'owner_confirmed' | 'independently_validated'
+  | 'accepted_with_exception' | 'rejected' | 'reversed';
+
 export interface StrataBenefitValue {
   id: string;
   benefit_id: string;
@@ -668,7 +678,10 @@ export interface StrataBenefitValue {
   value: number;
   upload_run_id: string | null;
   submitted_by: string | null;
-  validation_status: 'pending' | 'validated' | 'rejected';
+  /** D-4/E-6 assurance. reported = no assurance yet. owner_confirmed COUNTS (F-7) but is not
+   *  independent validation. accepted_with_exception COUNTS by SO authorization and stays visibly
+   *  distinct. rejected/reversed do not count. */
+  validation_status: BenefitAssuranceStatus;
   validated_by: string | null;
   validated_at: string | null;
 }

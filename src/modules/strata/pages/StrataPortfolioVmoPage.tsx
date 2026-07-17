@@ -603,19 +603,29 @@ function BenefitDetailSection({ benefit, isFirst, canAuthor, canAuthorValues }: 
         open={decision?.kind === 'validate-value'}
         onClose={() => setDecision(null)}
         title={`Validate value · ${decision?.kind === 'validate-value' ? decision.label : ''}`}
-        description="Realized values require independent validation — the submitter cannot validate their own value."
+        description="Owner confirmed = the owner stands behind their own number. Independently validated = someone other than the submitter checked it (the submitter cannot independently validate their own value). Both count toward realization; only independent validation asserts independence."
+        /* D-4: the neutral assurance vocabulary. 'Validate' claimed an assurance nobody performed —
+           the RPC now rejects it outright. Owner confirmed and Independently validated are different
+           claims and must be different buttons: the first says the owner stands behind their own
+           number, the second says someone else checked it. Both count (F-7); only the second asserts
+           independence. */
         options={[
-          { value: 'validated', label: 'Validate' },
+          { value: 'independently_validated', label: 'Independently validate' },
+          { value: 'owner_confirmed', label: 'Owner confirm' },
           { value: 'rejected', label: 'Reject', appearance: 'danger' },
         ]}
         onConfirm={async (verdict, note) => {
           if (decision?.kind !== 'validate-value') return;
-          await valueApi.validateBenefitValue(decision.id, verdict as 'validated' | 'rejected', note || undefined);
+          await valueApi.validateBenefitValue(
+            decision.id,
+            verdict as 'owner_confirmed' | 'independently_validated' | 'rejected',
+            note || undefined,
+          );
           try {
             // A newly validated REALIZED value changes the server-calculated numbers:
             // recompute benefit realization and (if portfolio-linked) value at risk
             // so the register/hero update from authored data.
-            if (verdict === 'validated' && decision.valueKind === 'realized') {
+            if ((verdict === 'independently_validated' || verdict === 'owner_confirmed') && decision.valueKind === 'realized') {
               await valueApi.benefitRealization(benefit.id);
               if (benefit.portfolio_id) await valueApi.valueAtRisk(benefit.portfolio_id);
             }

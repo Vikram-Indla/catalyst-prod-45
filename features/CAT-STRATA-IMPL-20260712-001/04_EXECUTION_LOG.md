@@ -1756,3 +1756,27 @@ Reordered: data first, then constraint.
 **R4 remainder:** quarantine accept/correct/reject RPC · mapping-memory · Matched/New/Conflict/Invalid · immutable run
 ledger · **24h import reversal (D-7/E-5)**. **Debt #2 still open:** `strata_calc_kpi_achievement` still counts
 `pending` actuals (E-7 condition 3).
+
+---
+
+# R4a-2 · client contract realigned to the shipped vocabulary (D-4) — no migration
+**R4a broke the client and tsc could not tell me (F-11).** Found by grepping for the old vocabulary, not by a gate.
+
+| Break | Fix |
+|---|---|
+| `valueApi.validateBenefitValue(id, 'validated')` — **the RPC now REJECTS `'validated'` outright** | verdict type → `'owner_confirmed' \| 'independently_validated' \| 'rejected'` |
+| `StrataPortfolioVmoPage` offered a single **"Validate"** button sending `'validated'` | now **two** buttons: *Independently validate* and *Owner confirm* |
+| `types.ts` `ValidationStatus` missing `accepted_with_exception`, `reversed` | added |
+| `types.ts` benefit lifecycle still listed **`finance_validated`** — now unrepresentable in the DB | → `independently_validated` |
+| `types.ts` benefit `validation_status: 'pending'\|'validated'\|'rejected'` | → new `BenefitAssuranceStatus` (6 states) |
+
+**Why two buttons, not one relabelled:** *owner confirmed* and *independently validated* are **different claims**. The
+first says the owner stands behind their own number; the second says **someone else checked it**. Both count (F-7);
+only the second asserts independence, and only the second carries SoD. Collapsing them into one control would have
+recreated exactly the lie D-4 removed — a button that claims an assurance nobody performed.
+
+**This is F-11 made concrete:** a live break in a governed write path, invisible to `npx tsc --noEmit` (a no-op) AND to
+`tsc -p tsconfig.app.json` (property access on these objects is unchecked at `strict:false`). Caught by grep.
+
+## Status
+✅ **DONE** — `tsc -p tsconfig.app.json` **0 errors under `src/modules/strata`**, gates green, suite **2,442 / 6**.
