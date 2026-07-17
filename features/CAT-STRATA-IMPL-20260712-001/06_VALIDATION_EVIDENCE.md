@@ -654,3 +654,48 @@ can_retire (still blocked by approved KPIs) : false
 
 **Gates** (F-11): `tsc -p tsconfig.app.json` **0 errors under `src/modules/strata`** · colors 0=0 · audit no category
 above baseline · CRE pass · suite **2,442 / 6**.
+
+---
+
+# R4a · assurance vocabulary — RAW EVIDENCE
+
+## 1. Zero numbers moved (the test that had to pass)
+```
+BASELINE (pre)                                        AFTER (post)
+AUM growth …            | 0.0000/true/planned=2000000/realized=-          (identical)
+B2B Revenue Uplift      | 0.8625/true/planned=24000000/realized=20700000  (identical)
+Churn Reduction Value   | 0.7889/true/planned=9000000/realized=7100000    (identical)
+Cost-to-Serve Reduction | 0.9571/true/planned=14000000/realized=13400000  (identical)
+Enterprise Rev (proof)  | 0.0000/false/planned=-/realized=-               (identical)
+Operations cost reduc.  | 0.0000/true/planned=800000/realized=-           (identical)
+Regulatory penalty avo. | 0.0000/true/planned=300000/realized=-           (identical)
+ZZTEST-QA-CRUD-Benefit  | 0.0000/false/planned=-/realized=-               (identical)
+ZZTEST-QA-Portfolio     | 0.0000/true/planned=500000/realized=-           (identical)
+```
+**9/9 byte-identical.** Vocabulary migration: `reported=15 independently_validated=13` (was `pending=15 validated=13`)
+— same counts. `finance_validated` rows remaining: **0**.
+
+## 2. F-7 has teeth — and the exception controls hold
+```
+=== R4a EXCEPTION + F-7 (rolled back) ===
+F-7 owner_confirmed COUNTS : index 0.0000 -> 0.4000  (MOVED = t)
+accepted_with_exception COUNTS (E-6) : index 0.4000
+assurance_composition: {"owner_confirmed": 200000, "excluded_rejected": 0, "excluded_reported": -100,
+                        "excluded_reversed": 0, "accepted_with_exception": 0, "independently_validated": 0}
+exception w/o reason+authorizer -> violates check constraint "strata_benefit_values_exception_complete"
+SELF-AUTHORIZED exception (submitter = authorizer) -> violates "…_exception_no_self_auth"
+finance_validated now unrepresentable -> violates "strata_benefits_lifecycle_stage_check"
+```
+| D-4 / E-6 / F-6 / F-7 clause | Result |
+|---|---|
+| **Owner-confirmed benefits count** | ✅ proven to move a number (0.0000 → 0.4000) |
+| accepted-with-exception counts after SO authorization | ✅ |
+| **submitters cannot authorize their own exceptions** | ✅ **at the DB** |
+| exception reason / authorizer / timestamp / original failures visible downstream | ✅ columns, not prose |
+| **no code path writes `finance_validated`** | ✅ unrepresentable |
+| no historical Finance assurance claimed | ✅ relabel only; actors + audit preserved |
+| **assurance-composition reporting** | ✅ each state broken out separately |
+| F-6: benefits get `accepted_with_exception` only, no quarantine | ✅ |
+
+**Gates** (F-11): `tsc -p tsconfig.app.json` 0 errors under `src/modules/strata` · colors 0=0 · audit no category above
+baseline · CRE pass · suite **2,442 / 6**.

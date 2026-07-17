@@ -1703,3 +1703,56 @@ NOT evidence a source was uninvolved.** Same discipline as the integrity registe
 ## Status
 ✅ **DONE** — applied, ledger 1:1, gates green, suite 2,442/6. **Historical lineage preserved: calculated_values
 7,457→7,457, snapshots 2→2** across a live suspension. **UI pending** (no screens for any of R3).
+
+---
+
+# R4a · assurance vocabulary + exception governance (D-4, D-5, E-6, F-6, F-7) · migration `20260717160000`
+**This is the slice carrying one of the two live-numbers debts. It moved ZERO numbers — by construction, not luck.**
+
+## D-4 — the label was a lie, and it is gone
+Probed: `finance_validated` lives on **`strata_benefits.lifecycle_stage`** (NOT on benefit_values — the blueprint
+pointed at the wrong table), and `strata_validate_benefit_value` hardcoded it on **any** validator's verdict. The RPC
+gates on the benefit's `validator_id` or the `vmo_validator` role — **there is no Finance role anywhere in STRATA**.
+The system has been stamping "finance validated" on records Finance never touched. `finance_validated` is now
+**unrepresentable** (proven: the CHECK rejects it).
+
+## A relabel, NOT a re-assertion (D-4 / §7)
+`pending(15) → reported` · `validated(13) → independently_validated` · `finance_validated(1) → independently_validated`.
+**Same rows, same counts.** `validated_by` / `validated_at` / `validation_note` and every audit event untouched — the
+actor who validated is still recorded. Only the WORD changed, from one naming a department that was never involved to
+one describing what actually happened.
+
+## F-7 — the live-numbers change, and why it moved nothing
+`strata_calc_benefit_realization` whitelisted `='validated'`; it now counts
+`independently_validated + owner_confirmed (F-7) + accepted_with_exception (E-6)`.
+**Measured: all 9 benefits byte-identical to baseline.** `owner_confirmed` and `accepted_with_exception` are new states
+with **0 rows**, and the rename is the same 13 rows. **The rule is in force from now; numbers move only when someone
+actually confirms a value** — proven with teeth: setting one value to `owner_confirmed` moved its index **0.0000 →
+0.4000**. A change that moved numbers on the day it shipped would have been a silent restatement of history.
+
+## Why the calc HAD to change in the same migration
+The rename removes `validated` from existence. Split across migrations, there would be a window where every benefit
+silently reports **zero realized**. Atomic, deliberately.
+
+## Assurance composition (authorization R4)
+The three counting states are reported **separately** in provenance and in the result. A realization index built
+entirely from `owner_confirmed` is a very different claim from an independently validated one — **a single total hides
+that**. E-6: acceptance for calculation does **not** imply independent validation, which is why
+`accepted_with_exception` is its own state and never collapses into `independently_validated`.
+
+## Exception governance at the DB (D-5/E-6), not just in RPCs
+`exception_reason` + `exception_authorized_by` + `exception_authorized_at` + `original_validation_failures` on **both**
+tables, with two CHECKs: an exception **must** carry a reason and an authorizer, and **the submitter cannot authorize
+their own** — enforced at the DB because the RPCs are SECURITY DEFINER and bypass RLS. Both proven.
+**F-6 honoured:** benefit values get `accepted_with_exception` **only**, no `quarantined` — that would imply a
+benefit-quarantine workflow that does not exist and was not asked for.
+
+## Own-bug caught
+First draft added the tightened CHECK **before** migrating the data → the existing `finance_validated` row violated it.
+Reordered: data first, then constraint.
+
+## Status
+✅ **DONE** — applied, ledger 1:1, gates green, suite 2,442/6, **9/9 benefits byte-identical**.
+**R4 remainder:** quarantine accept/correct/reject RPC · mapping-memory · Matched/New/Conflict/Invalid · immutable run
+ledger · **24h import reversal (D-7/E-5)**. **Debt #2 still open:** `strata_calc_kpi_achievement` still counts
+`pending` actuals (E-7 condition 3).
