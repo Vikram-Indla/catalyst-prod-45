@@ -1780,3 +1780,46 @@ recreated exactly the lie D-4 removed — a button that claims an assurance nobo
 
 ## Status
 ✅ **DONE** — `tsc -p tsconfig.app.json` **0 errors under `src/modules/strata`**, gates green, suite **2,442 / 6**.
+
+---
+
+# R4b · E-7 condition 3 — only ELIGIBLE actuals count · migration `20260717170000`
+**DEBT #2 DISCHARGED. Both live-numbers debts are now closed, and neither moved a number.**
+
+## The defect
+`strata_calc_kpi_achievement` preferred a validated actual and then **fell back to `pending`**, damping confidence
+×0.6. **An unvalidated number counted in official reporting**, merely with a quieter confidence score — and
+**confidence is not exclusion**. E-7 condition 3 requires "validated **or** accepted-with-exception". `pending` is
+neither.
+
+## Blueprint §2.1 was wrong about the mechanism and accidentally right about the outcome
+It claims the calcs "filter `validation_status='validated'` — a **WHITELIST**, so quarantined is excluded **by
+construction**". There was no whitelist. Quarantined was excluded by **not being listed**, not by a control — and
+`pending` **was** listed, and counted. The reassuring sentence described a control that did not exist.
+
+## 🔴 I corrected MY OWN false warning
+The handover carried my note: *"unlike F-7, `pending` actuals EXIST today, so this WILL move live numbers. Baseline
+first."* **I wrote that from memory and never checked it.** Probed: `strata_kpi_actuals` = **18 rows, ALL validated**;
+pending/quarantined/rejected/accepted_with_exception/reversed = **0**. Blast radius: **zero**.
+**This is the twelfth time on this feature — and the first time the stale claim was mine.** The rule still applies to
+me: do not inherit a claim without re-testing it.
+
+## Result: 18/18 byte-identical, and the rule has teeth
+Same achievement, score, band **and confidence** for all 18. Proven on a real KPI by walking one actual through each
+state: validated → 83.33/0.900 · **pending → Missing** (`no_eligible_actual`) · **quarantined → Missing** ·
+**accepted_with_exception → 83.33 COUNTS**, conf 0.540, flagged, reason visible.
+
+## Design details
+- **One predicate, not a fallback chain.** A chain silently encodes a hierarchy of acceptability and can grow a quiet
+  extra tier later. One eligible set says exactly what is allowed.
+- **`no_eligible_actual` ≠ `no_actual`.** An actual may EXIST and simply not be eligible. Saying "no actual" would send
+  someone hunting for data that is already there — so the response also names the **ineligible** rows and their states.
+- **×0.6 damping retained for `accepted_with_exception`.** It counts fully (E-6); the damp is the honest confidence
+  signal for a value that counted *despite failing validation*. Exclusion-free.
+- **E-6 visibility:** the exception reason/authorizer/timestamp ride in the provenance and the result — never
+  flattened into the number.
+
+## Status
+✅ **DONE** — applied, ledger 1:1, gates green, suite 2,442/6. **Both R4 live-numbers debts discharged.**
+**R4 remainder:** quarantine accept/correct/reject RPC · mapping-memory · Matched/New/Conflict/Invalid · immutable run
+ledger · 24h import reversal (D-7/E-5). Then R5.

@@ -699,3 +699,59 @@ finance_validated now unrepresentable -> violates "strata_benefits_lifecycle_sta
 
 **Gates** (F-11): `tsc -p tsconfig.app.json` 0 errors under `src/modules/strata` · colors 0=0 · audit no category above
 baseline · CRE pass · suite **2,442 / 6**.
+
+---
+
+# R4b · E-7 condition 3 — RAW EVIDENCE
+
+## 1. Blast radius measured BEFORE the change — and my own warning was false
+```
+strata_kpi_actuals: total=18 validated=18 pending=0 quarantined=0 rejected=0
+                    accepted_with_exception=0 reversed=0
+```
+The handover said "pending actuals EXIST today, so this WILL move live numbers". **Wrong — I wrote it from memory.**
+Blast radius: **zero**.
+
+## 2. Zero numbers moved (18/18, confidence included)
+```
+BEFORE                                                  AFTER
+B2B Revenue Growth  | 2026-03-31 | 77.50/77.50/amber/conf=0.950   (identical)
+B2B Revenue Growth  | 2026-06-30 | 111.25/100.00/green/conf=0.950 (identical)
+Churn Rate          | 2026-03-31 | 83.33/83.33/amber/conf=0.900   (identical)
+Churn Rate          | 2026-06-30 | 105.26/100.00/green/conf=0.900 (identical)
+CO2 Reduction       | 2026-03-31 | 75.00/75.00/amber/conf=0.800   (identical)
+CO2 Reduction       | 2026-06-30 | 91.67/91.67/green/conf=0.800   (identical)
+Cost to Serve       | 2026-03-31 | 94.06/94.06/green/conf=0.900   (identical)
+Cost to Serve       | 2026-06-30 | 97.94/97.94/green/conf=0.900   (identical)
+Digital Rev Share   | 2026-03-31 | 88.57/88.57/green/conf=0.900   (identical)
+Digital Rev Share   | 2026-06-30 | 102.86/100.00/green/conf=0.900 (identical)
+Employee Engagement | 2026-03-31 | 94.67/94.67/green/conf=0.800   (identical)
+Employee Engagement | 2026-06-30 | 98.67/98.67/green/conf=0.800   (identical)
+Enterprise Rev(proof)| 2027-03-31 | 83.33/83.33/-/conf=0.800      (identical)
+Net Promoter Score  | 2026-03-31 | 93.55/93.55/green/conf=0.850   (identical)
+Net Promoter Score  | 2026-06-30 | 101.61/100.00/green/conf=0.850 (identical)
+Network Availability| 2026-03-31 | 100.00/100.00/green/conf=0.980 (identical)
+Network Availability| 2026-06-30 | 66.67/66.67/amber/conf=0.980   (identical)
+```
+**18/18 byte-identical.**
+
+## 3. The rule has teeth — one real actual walked through every state (rolled back)
+```
+=== E-7 cond.3 ELIGIBILITY (rolled back) ===
+VALIDATED (control)                       -> achievement=83.33 conf=0.900
+PENDING (USED TO COUNT at conf x0.6)      -> achievement=<NULL> reason=no_eligible_actual
+                                             ineligible=[{"id":"ea38c37b-…","validation_status":"pending"}]
+QUARANTINED                               -> achievement=<NULL> reason=no_eligible_actual
+ACCEPTED_WITH_EXCEPTION (must COUNT, E-6) -> achievement=83.33 conf=0.540 flagged=true
+                                             reason_visible="source late; SO authorized"
+```
+| E-7 / E-6 clause | Result |
+|---|---|
+| **validated OR accepted-with-exception actual** (cond. 3) | ✅ one predicate, no fallback tier |
+| **pending no longer counts** | ✅ Missing, and the ineligible row is NAMED |
+| quarantined excluded | ✅ (now by a real control, not by omission) |
+| **accepted_with_exception COUNTS** | ✅ 83.33, conf damped 0.540 |
+| exception reason/authorizer visible downstream, not flattened | ✅ in result **and** provenance |
+
+**Gates** (F-11): `tsc -p tsconfig.app.json` 0 errors under `src/modules/strata` · colors 0=0 · audit no category above
+baseline · CRE pass · suite **2,442 / 6**.
