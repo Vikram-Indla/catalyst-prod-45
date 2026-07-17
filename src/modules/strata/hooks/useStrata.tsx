@@ -362,6 +362,18 @@ export const useKpis = () => useQuery({ queryKey: ['strata', 'kpis'], queryFn: k
 export const useKpiBySlug = (slug?: string) =>
   useQuery({ queryKey: ['strata', 'kpi', slug], queryFn: () => kpiApi.bySlug(slug!), enabled: !!slug, staleTime: STALE });
 /**
+ * KO-DEF-001 — unmet governed prerequisites for a KPI (empty = approvable). Only meaningful for
+ * a draft, so it is not fetched otherwise. staleTime 0: the user fixes prerequisites on this very
+ * page, and a cached list would keep Submit disabled after they are satisfied.
+ */
+export const useKpiSubmissionBlockers = (kpiId?: string, enabled = true) =>
+  useQuery({
+    queryKey: ['strata', 'kpi-blockers', kpiId],
+    queryFn: () => configApi.kpiSubmissionBlockers(kpiId!),
+    enabled: !!kpiId && enabled,
+    staleTime: 0,
+  });
+/**
  * F-9: targets and actuals are read across the KPI's whole LINEAGE, not just the version whose page
  * is open. `id` identifies a version; `lineage_id` identifies the KPI as a continuing concept, so
  * reading one id makes the trend silently restart at every revision — the history would look like it

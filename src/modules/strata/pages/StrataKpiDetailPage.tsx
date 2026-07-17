@@ -27,7 +27,7 @@ import { configApi, kpiApi, strategyApi } from '@/modules/strata/domain';
 import { methodologyBreaks } from '@/modules/strata/domain/materiality';
 import {
   useBandResolver, useDataSources, useElementKpis, useInvalidateStrata, useKpiAchievement, useKpiBySlug,
-  useKpiDetail, useKpiEvidenceChain, useKpiTypes,
+  useKpiDetail, useKpiEvidenceChain, useKpiSubmissionBlockers, useKpiTypes,
   useProfileNames, useStrataContext, useStrataRoles, useStrategyElements, useThresholdSchemes, useUploadRuns,
 } from '@/modules/strata/hooks/useStrata';
 import type { StrataProfileRef } from '@/modules/strata/hooks/useStrata';
@@ -324,6 +324,10 @@ export default function StrataKpiDetailPage() {
 
   const kpiQ = useKpiBySlug(slug);
   const kpi = kpiQ.data ?? null;
+  // KO-DEF-001 — the exact prerequisites the server enforces at submit. Same RPC, so the list
+  // shown here and the list that blocks the transition cannot disagree.
+  const blockersQ = useKpiSubmissionBlockers(kpi?.id, kpi?.status === 'draft');
+  const submitBlockers = blockersQ.data ?? [];
   // F-9: pass the lineage so the trend spans every version of this KPI, not just the open one.
   const detailQ = useKpiDetail(kpi?.id, kpi?.lineage_id ?? undefined);
   const achievementQ = useKpiAchievement(kpi?.id, activePeriod?.id);
@@ -682,8 +686,11 @@ export default function StrataKpiDetailPage() {
             </Button>
           ) : null}
           {canAuthor && kpi.status === 'draft' ? (
+            // KO-DEF-001: blocked while prerequisites remain, so a KPI can no longer reach
+            // Pending Approval only to fail approval later on the first unmet gate.
             <Button
               appearance="primary"
+              isDisabled={blockersQ.isLoading || submitBlockers.length > 0}
               onClick={() => setDecision({ kind: 'submit-kpi' })}
               testId="strata-kpi-submit"
             >
@@ -713,6 +720,23 @@ export default function StrataKpiDetailPage() {
     >
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+        {/* KO-DEF-001 — the COMPLETE prerequisite list, before submission rather than one failed
+            approval at a time. Rendered from strata_kpi_submission_blockers, the same function the
+            submit gate enforces, so this list is exactly what the server will check. */}
+        {kpi.status === 'draft' && submitBlockers.length > 0 ? (
+          <SectionMessage
+            appearance="warning"
+            title={`Not ready to submit — ${submitBlockers.length} prerequisite${submitBlockers.length === 1 ? '' : 's'} outstanding`}
+          >
+            <p style={{ margin: '0 0 8px' }}>
+              Submit for approval is disabled until every prerequisite below is met. The server enforces
+              the same list.
+            </p>
+            <ul style={{ margin: 0, paddingLeft: 20 }} data-testid="strata-kpi-submit-blockers">
+              {submitBlockers.map((b) => <li key={b}>{b}</li>)}
+            </ul>
+          </SectionMessage>
+        ) : null}
         {/* STRATA-E2E-010: a strategic KPI with no governed association can't be approved. */}
         {kpi.is_strategic && kpi.status !== 'approved' && kpiElementLinks.length === 0 ? (
           <SectionMessage appearance="warning" title="Strategy association required">

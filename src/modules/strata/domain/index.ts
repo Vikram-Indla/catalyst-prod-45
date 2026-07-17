@@ -80,6 +80,13 @@ export const configApi = {
     return run(q);
   },
   /** Governed-record lifecycle — RPC-only transitions (SoD enforced in DB). */
+  /**
+   * Unmet governed prerequisites for a KPI, empty when approvable (KO-DEF-001).
+   * The SAME function the submit gate enforces — so the list shown to the user cannot drift
+   * from the list the server applies.
+   */
+  kpiSubmissionBlockers: (kpiId: string): Promise<string[]> =>
+    run(typedRpc('strata_kpi_submission_blockers', { p_kpi: kpiId })).then((r) => (r as string[] | null) ?? []),
   submitRecord: (table: string, id: string) =>
     run(typedRpc('strata_submit_record', { p_table: table, p_id: id })),
   approveRecord: (table: string, id: string, note?: string) =>
