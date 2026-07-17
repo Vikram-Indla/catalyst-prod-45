@@ -39,7 +39,7 @@ import { fmtDate, fmtDateTime, labelize } from '@/modules/strata/components/form
 import type {
   GovernedEnvelope, GovernedStatus, StrataChangeRequest, StrataNotificationRule, StrataPerspective,
   StrataModelMeasure, StrataProjectCardFieldConfig, StrataProjectCardPicklist, StrataRole, StrataScorecardModel,
-  StrataThresholdScheme, ThresholdBand,
+  StrataThresholdPreview, StrataThresholdPreviewMove, StrataThresholdScheme, ThresholdBand,
 } from '@/modules/strata/types';
 
 type OnError = (msg: string | null) => void;
@@ -1082,6 +1082,186 @@ export function bandDraftToPayload(draft: BandDraft[]): { bands: ThresholdBand[]
   return { bands, blocked, advisories };
 }
 
+/** A band key rendered as the lozenge ADS will actually use — the component owns the colour, we
+ * never map one. Zero-assumption: no key => a dash, not a fabricated band. A key with no matching
+ * band definition keeps the key as its own label rather than inventing one. */
+function bandCell(bands: ThresholdBand[], key: string | null) {
+  if (!key) return <span style={bodyStyle}>—</span>;
+  const b = bands.find((x) => x.key === key);
+  return <StatusLozenge status={key} label={b?.label ?? key} appearance={(b?.appearance as LozengeAppearance) ?? 'default'} />;
+}
+
+const num = (n: number | null, dp = 2) =>
+  // Zero-assumption: a missing number is a dash. Never 0 — 0 is a real score.
+  n === null || n === undefined ? '—' : n.toFixed(dp);
+
+/** Built per render from both band sets (each lozenge needs its own set's label+appearance).
+ * Deliberately a plain function, not a useMemo: a memo dep here buys nothing and TDZ-risks the
+ * const it would depend on. */
+function previewMoveColumns(current: ThresholdBand[], candidate: ThresholdBand[]): Column<StrataThresholdPreviewMove>[] {
+  return [
+    {
+      id: 'entity', label: 'Value', flex: true,
+      cell: ({ row }) => (
+        <div style={{ display: 'flex', flexDirection: 'column' }}>
+          {/* Zero-assumption: an entity we cannot name shows a dash, never a made-up label. */}
+          <span style={bodyStyle}>{row.entity_name ?? '—'}</span>
+          <span style={captionStyle}>{labelize(row.entity_type)}{row.metric_key ? ` · ${row.metric_key}` : ''}</span>
+        </div>
+      ),
+    },
+    { id: 'period', label: 'Period', width: 22, cell: ({ row }) => <span style={bodyStyle}>{row.period_name ?? '—'}</span> },
+    {
+      id: 'score', label: 'Score', width: 14,
+      cell: ({ row }) => <span style={{ ...bodyStyle, fontVariantNumeric: 'tabular-nums' }}>{num(row.score)}</span>,
+    },
+    { id: 'today', label: 'Rated today', width: 18, cell: ({ row }) => bandCell(current, row.band_today) },
+    { id: 'candidate', label: 'Candidate would rate', width: 24, cell: ({ row }) => bandCell(candidate, row.band_candidate) },
+  ];
+}
+
+interface DistRow { key: string; count_today: number; count_candidate: number }
+
+function previewDistColumns(current: ThresholdBand[], candidate: ThresholdBand[]): Column<DistRow>[] {
+  return [
+    { id: 'band', label: 'Band', flex: true, cell: ({ row }) => bandCell(candidate.some((b) => b.key === row.key) ? candidate : current, row.key) },
+    {
+      id: 'today', label: 'Now', width: 14,
+      cell: ({ row }) => <span style={{ ...bodyStyle, fontVariantNumeric: 'tabular-nums' }}>{row.count_today}</span>,
+    },
+    {
+      id: 'candidate', label: 'Under candidate', width: 20,
+      cell: ({ row }) => <span style={{ ...bodyStyle, fontVariantNumeric: 'tabular-nums' }}>{row.count_candidate}</span>,
+    },
+    {
+      id: 'delta', label: 'Change', width: 14,
+      cell: ({ row }) => {
+        const d = row.count_candidate - row.count_today;
+        // Sign carries the meaning; colour would have to invent a judgement about whether a band
+        // growing is good or bad, and nothing in the config says which.
+        return <span style={{ ...bodyStyle, fontVariantNumeric: 'tabular-nums' }}>{d === 0 ? '—' : d > 0 ? `+${d}` : String(d)}</span>;
+      },
+    },
+  ];
+}
+
+/**
+ * R5 capability 3 — preview-with-data, for threshold schemes.
+ *
+ * Exported as its own section so it can be tested directly rather than through the page.
+ *
+ * ⚠️ THE WORDING HERE IS LOAD-BEARING. This panel must never say the listed values "will change".
+ * Saving bands does NOT re-rate a single stored row: a rating is written once, at calculation time,
+ * so new bands govern FUTURE calculations only, and locked snapshots never re-rate at all (D-1).
+ * The honest claim — and the useful one — is "the candidate policy would rate these differently".
+ *
+ * The panel renders `coverage_note` VERBATIM. It is a lower bound: values whose provenance carries
+ * no threshold_scheme_id, or that have no score, are invisible to the preview. Absence from the
+ * list is not evidence, and re-wording the server's own statement of its limits would soften it.
+ */
+export function ThresholdPreviewPanel({
+  scheme, bands, isDisabled,
+}: { scheme: StrataThresholdScheme; bands: ThresholdBand[]; isDisabled?: boolean }) {
+  const [preview, setPreview] = useState<StrataThresholdPreview | null>(null);
+  const [running, setRunning] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const run = async () => {
+    setRunning(true);
+    setError(null);
+    try {
+      setPreview(await configApi.previewThresholdScheme(scheme.id, bands));
+    } catch (e) {
+      // Verbatim — the server's refusal is the message.
+      setError(e instanceof Error ? e.message : String(e));
+      setPreview(null);
+    } finally {
+      setRunning(false);
+    }
+  };
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--ds-space-100)' }} data-testid={`strata-threshold-preview-${scheme.id}`}>
+      <div>
+        <Button
+          spacing="compact" isDisabled={isDisabled || running}
+          onClick={() => void run()} testId={`strata-preview-run-${scheme.id}`}
+        >
+          {running ? 'Previewing…' : 'Preview against data'}
+        </Button>
+      </div>
+
+      {error ? (
+        <SectionMessage appearance="error" title="Preview rejected">
+          <p style={{ whiteSpace: 'pre-wrap' }}>{error}</p>
+        </SectionMessage>
+      ) : null}
+
+      {preview ? (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--ds-space-100)' }} data-testid="strata-preview-result">
+          <p style={captionStyle} data-testid="strata-preview-summary">
+            {preview.moved_count === 0
+              ? `No change: all ${preview.evaluated} rated value${preview.evaluated === 1 ? '' : 's'} keep the same band under these bands.`
+              : `${preview.moved_count} of ${preview.evaluated} rated values would be rated differently by these bands.`}
+            {' '}These values are not re-rated by saving — a rating is written when a value is calculated, so
+            new bands apply to future calculations only, and locked snapshots are never re-rated.
+          </p>
+
+          {preview.band_distribution.length > 0 ? (
+            <JiraTable<DistRow>
+              columns={previewDistColumns(preview.current_bands, preview.candidate_bands)}
+              data={preview.band_distribution}
+              getRowId={(d) => d.key}
+              showRowCount={false}
+              ariaLabel={`Band populations now and under the candidate bands for ${scheme.name}`}
+            />
+          ) : null}
+
+          {preview.moves.length > 0 ? (
+            <JiraTable<StrataThresholdPreviewMove>
+              columns={previewMoveColumns(preview.current_bands, preview.candidate_bands)}
+              data={preview.moves}
+              getRowId={(m) => `${m.entity_id}-${m.period_id}-${m.metric_key}`}
+              showRowCount={false}
+              ariaLabel={`Values the candidate bands would rate differently for ${scheme.name}`}
+            />
+          ) : null}
+
+          {/* The cap declares its own overflow rather than truncating in silence. */}
+          {preview.moves_not_named > 0 ? (
+            <SectionMessage appearance="warning" title="Not every mover is listed">
+              <p>
+                {`${preview.moves_named} of ${preview.moved_count} are listed above. The remaining ${preview.moves_not_named} are counted but not named here.`}
+              </p>
+            </SectionMessage>
+          ) : null}
+
+          {preview.moves_in_locked_snapshots > 0 ? (
+            <SectionMessage appearance="information" title="Some are in locked snapshots">
+              <p>
+                {`${preview.moves_in_locked_snapshots} of these values sit in locked snapshots. Those are reported so the decision is informed — they are never re-rated, and published history does not move.`}
+              </p>
+            </SectionMessage>
+          ) : null}
+
+          {preview.stored_status_drift > 0 ? (
+            <SectionMessage appearance="warning" title="Stored ratings already disagree with the current bands">
+              <p>
+                {`${preview.stored_status_drift} stored value${preview.stored_status_drift === 1 ? '' : 's'} already carry a rating that the scheme's CURRENT bands would not give them — they were rated under an earlier version. "Rated today" above is the current bands' answer, not what is stored.`}
+              </p>
+            </SectionMessage>
+          ) : null}
+
+          {/* VERBATIM. The server states the limits of its own analysis; re-wording it softens it. */}
+          <SectionMessage appearance="information" title="What this preview cannot see">
+            <p style={{ whiteSpace: 'pre-wrap' }} data-testid="strata-preview-coverage">{preview.coverage_note}</p>
+          </SectionMessage>
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
 /** The band editor for a DRAFT scheme. Rendered only where RLS would permit the write. */
 export function ThresholdBandEditor({ scheme, onDone }: { scheme: StrataThresholdScheme; onDone: () => void }) {
   const invalidate = useInvalidateStrata();
@@ -1181,6 +1361,12 @@ export function ThresholdBandEditor({ scheme, onDone }: { scheme: StrataThreshol
             {blocked.map((b) => <li key={b}>{b}</li>)}
           </ul>
         </SectionMessage>
+      ) : null}
+      {/* R5 cap.3 — preview the CANDIDATE bands against real data before saving. Offered only when
+          the draft is actually well-formed: previewing bands that cannot be constructed would ask
+          the server a question about a configuration that does not exist. */}
+      {blocked.length === 0 && bands.length > 0 ? (
+        <ThresholdPreviewPanel scheme={scheme} bands={bands} isDisabled={saving} />
       ) : null}
       {advisories.length > 0 ? (
         <SectionMessage appearance="warning" title="Saveable, but ambiguous">

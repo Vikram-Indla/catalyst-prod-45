@@ -19,7 +19,7 @@ import type {
   StrataPeriod, StrataPerspective, StrataThemeCharter, StrataPortfolio, StrataProjectCard,
   StrataProjectCardFieldConfig, StrataProjectCardPicklist, StrataProjectCardSectionConfig,
   StrataModelMeasure, StrataNotificationTarget, StrataProjectCardTabConfig, StrataRoleSod, StrataRisk, StrataRole, StrataScorecardInstance, StrataScorecardLine,
-  StrataScorecardModel, StrataSnapshot, StrataStagingRow, StrataStrategyElement, StrataThresholdScheme,
+  StrataScorecardModel, StrataSnapshot, StrataStagingRow, StrataStrategyElement, StrataThresholdPreview, StrataThresholdScheme,
   StrataUploadRun, StrataUploadTemplate, StrataValidationResult, StrataValueCategory,
   StrataWorkflowConfig, ThresholdBand,
 } from '../types';
@@ -133,6 +133,27 @@ export const configApi = {
     }
     return rows[0];
   },
+  /**
+   * R5 capability 3 — preview-with-data. Re-bands the scores ALREADY stored for this scheme against
+   * CANDIDATE (unsaved) bands and NAMES what moves, never merely counting: a decision needs to know
+   * WHICH KPIs move, not how many.
+   *
+   * ⚠️ THE RESULT IS A COUNTERFACTUAL, NOT A CHANGELOG. Saving these bands would NOT re-rate a
+   * single row in `moves`. A rating is written once, at calculation time, so new bands govern FUTURE
+   * calculations only, and locked snapshots never re-rate (D-1). Never label these rows as "will
+   * change" in the UI — they are values the candidate policy would rate differently.
+   *
+   * Writes NOTHING — not even an audit event: a preview is a question, not an act. The RPC is
+   * STABLE, so Postgres enforces that at runtime rather than trusting the author.
+   *
+   * The banding rule is NOT re-derived here or in the RPC: both share strata_band_from_bands with
+   * the live resolver strata_band_from_score, so a page-local copy cannot drift from the server's.
+   *
+   * `coverage_note` is a LOWER BOUND on coverage — values with no threshold_scheme_id in their
+   * provenance, or no score, are invisible. Render it VERBATIM; absence from `moves` is not evidence.
+   */
+  previewThresholdScheme: (schemeId: string, bands: ThresholdBand[]): Promise<StrataThresholdPreview> =>
+    run(typedRpc('strata_preview_threshold_scheme', { p_scheme: schemeId, p_bands: bands })),
   myRoles: async (userId: string): Promise<StrataRole[]> => {
     const rows: Array<{ role: StrataRole }> = await run(
       typedQuery('strata_role_assignments').select('role').eq('user_id', userId),

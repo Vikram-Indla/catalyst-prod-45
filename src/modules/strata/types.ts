@@ -37,6 +37,61 @@ export interface ThresholdBand {
   appearance?: string;
 }
 
+/**
+ * R5 capability 3 · strata_preview_threshold_scheme.
+ *
+ * ⚠️ `moves` is a COUNTERFACTUAL, not a changelog. Saving the candidate bands would NOT re-rate any
+ * row listed here: a rating (status_key) is written once, at calculation time, so new bands govern
+ * FUTURE calculations only, and locked snapshots are never re-rated (D-1). Read a move as "the
+ * candidate policy would rate this value differently" — never as "this row will change".
+ */
+export interface StrataThresholdPreviewMove {
+  entity_type: string;
+  entity_id: string;
+  /** NULL when the entity_type has no name source. Render a dash — never invent a label. */
+  entity_name: string | null;
+  period_id: string | null;
+  period_name: string | null;
+  metric_key: string | null;
+  value: number | null;
+  score: number | null;
+  /** Band under the scheme's CURRENT bands. NULL is a real answer, not "unknown". */
+  band_today: string | null;
+  /** Band under the CANDIDATE bands. */
+  band_candidate: string | null;
+  in_locked_snapshot: boolean;
+}
+
+export interface StrataThresholdBandCount {
+  key: string;
+  count_today: number;
+  count_candidate: number;
+}
+
+export interface StrataThresholdPreview {
+  scheme: { id: string; name: string; status: string; version: number };
+  current_bands: ThresholdBand[];
+  candidate_bands: ThresholdBand[];
+  /** Values that could be re-banded: attributable to this scheme AND carrying a score. */
+  evaluated: number;
+  moved_count: number;
+  /** The movers, NAMED — capped; `moves_not_named` reports the overflow rather than hiding it. */
+  moves: StrataThresholdPreviewMove[];
+  moves_named: number;
+  moves_not_named: number;
+  band_distribution: StrataThresholdBandCount[];
+  /** Movers sitting in locked snapshots — informational: those never re-rate. */
+  moves_in_locked_snapshots: number;
+  /** Stored status_key disagreeing with a recompute under CURRENT bands. 0 on staging today. */
+  stored_status_drift: number;
+  not_visible: {
+    values_with_no_scheme_in_provenance: number;
+    values_for_this_scheme_with_no_score: number;
+  };
+  /** What the analysis cannot see. Absence from `moves` is not evidence. Render it VERBATIM. */
+  coverage_note: string;
+}
+
 export interface StrataPerspective extends GovernedEnvelope {
   id: string;
   name: string;
