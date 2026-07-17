@@ -289,3 +289,33 @@ editorial lifecycle its own `issue_status`; existing rows default to `draft`, wh
 ## Status
 ⏸ **Stopped at context limit on a committed+pushed boundary. R2 is DB-COMPLETE; its UI is not built.**
 **Next:** R2's editorial builder UI (+ reviews UI from E1) → R3 → **R4 (where the two live-numbers debts land)** → R5.
+
+---
+
+# SESSION 026 (part 9) — R3 data-source governance
+
+**2026-07-17.** `48a05afab` (`20260717150000`). **Session total: 17 slices.** Suite 2,442/6; gates green; ledger 1:1.
+
+## Reuse again: the states were already there
+`strata_data_sources.status` was already `registered|active|suspended|retired` — R3's whole lifecycle. Only the
+**transitions** (unenforced), the dependents check and the blast radius were missing.
+
+## The near-miss worth remembering
+I drafted "the forward chain is complete and populated" citing **3,178** run-sourced calculated values and **32**
+snapshot-frozen ones. Probing the **intersection**: **0**. They never meet. `historical` is legitimately empty on real
+data. **Two impressive counts that don't join is exactly the shape of an evidence-free claim** — I caught it only
+because the test returned 0 and I refused to accept my own explanation without checking. Chain proven to fire on a
+constructed case (SNAP-1001); comment corrected before commit.
+
+## Design calls
+- **A third class beyond "blocking/migration": HISTORICAL.** Collapsing it into BLOCKING makes any source with history
+  permanently un-retirable; into MIGRATION invites "migrating" a locked snapshot = rewriting governed history (D-1).
+- **Suspension ungated on dependents.** Suspending is how you stop a bad feed; gating it means the more important a
+  broken source is, the harder it is to stop. Retirement (terminal) IS gated + reasoned.
+- **Blockers are NAMED, not counted** — a retirement decision needs the names.
+- **`coverage_note` on every response**: manual actuals carry no run lineage, so absence is not evidence.
+
+## Status
+⏸ **Stopped at context limit on a committed+pushed boundary. R2 and R3 are DB-COMPLETE with NO UI.**
+**Next: R4** — quarantine/exception workflow, benefit assurance, mapping memory, reconciliation, 24h import reversal.
+**Both live-numbers debts land in R4.** Then R5 + the 14/14 matrix.

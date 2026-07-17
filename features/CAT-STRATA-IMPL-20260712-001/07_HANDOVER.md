@@ -89,12 +89,30 @@ trail. Proven live against **SNAP-1**, a genuinely qualified snapshot.
 (`pending|generating|ready|failed`) and is in use. The editorial lifecycle got its OWN column instead. Don't "fix"
 this back.
 
+## ✅ R3 DB-COMPLETE — shipped `48a05afab` (`20260717150000`)
+`strata_data_source_blast_radius` (blocking / migration / **historical**) + `strata_set_data_source_status`
+(enforced transitions; retirement gated + reasoned; **suspension deliberately ungated** — you must be able to stop a
+bad feed). The four lifecycle STATES already existed; only transitions/checks were missing.
+**⚠️ Read the migration header before extending it:** the forward chain (`data_source → runs → calculated_values →
+snapshot → pack`) is **expressible and proven to fire**, but yields **0 on real data** — `calculated_values` with BOTH
+`snapshot_id` and `source_run_ids` = **0**. The two populations never intersect. Do not "fix" the empty `historical`;
+it is correct.
+
 ## ▶ DO THIS NEXT
-1. **R2 remainder — board-pack editorial builder UI.** DB is complete (`title`, `sections` jsonb, all RPCs); there is
-   **no UI**. Also no UI yet for reviews (E1) or the version chain. Reuse `GovRecordCard`/`REVISION_RPC` patterns.
-2. **R3 — data-source register/retire + dependents-impact + server-side blast radius.**
-3. **R4 — validation & reconciliation.** ⚠️ **This is where the two live-numbers debts land** (below).
-4. **R5 — hardening/closeout + the final 14/14 capability matrix.**
+1. **R4 — validation & reconciliation.** ⚠️ **The two live-numbers debts land here** (below). Quarantine
+   accept/correct/reject · accepted-with-exception (SO-authorized, no self-authorization) · benefit assurance states ·
+   mapping-memory · Matched/New/Conflict/Invalid · immutable run ledger · **24h import reversal** (D-7/E-5).
+2. **R5 — hardening/closeout + the final 14/14 capability matrix.**
+3. **UI DEBT — the honest gap.** R2 and R3 are **DB-complete with NO screens**: board-pack editorial builder
+   (`title`/`sections` + RPCs exist), reviews (E1), the pack version chain, and every R3 surface. R1's KPI-detail
+   materiality UI **did** ship. Do not report R2/R3 as user-visible.
+
+## ⚠️ THE TWO LIVE-NUMBERS DEBTS — both R4, both deliberate, both recorded in provenance
+1. **`strata_calc_benefit_realization` counts ONLY `validation_status='validated'`.** **F-7 rules `owner_confirmed`
+   COUNTS** ⇒ widening it **WILL move live benefit numbers**. The rule is recorded in every benefit calculated value's
+   `config_context.assurance_rule`, so the change will be visible and dated.
+2. **`strata_calc_kpi_achievement` falls back to `pending` actuals** (confidence × 0.6). §2.1's "validated whitelist"
+   claim is **FALSE**. Quarantined is excluded, but pending counts today — a gap against **E-7 condition 3**.
 Blueprint §6 F1: `strata_board_packs` today has ONLY `snapshot_id, format, storage_path, status, generated_by/at`
 (probed — §9 correct). Add `version, supersedes_id, issued_by, issued_at`; status `+issued, superseded`; RPCs
 `strata_issue_board_pack` / `strata_supersede_board_pack`; **issued rows immutable**; `snapshot_id` unchanged on
