@@ -1,5 +1,22 @@
 # 07 — HANDOVER · CAT-STRATA-IMPL-20260712-001
 
+# 🔴 STRATA IS **NOT** COMPLETE — **2 / 14**. READ `12_CAPABILITY_MATRIX.md` FIRST.
+> Closure sprint result, 2026-07-17: **2 Complete · 7 Backend-only · 2 Partial · 3 Not started.**
+> Ten capabilities have working, tested, staging-applied backends **with NO SCREENS**. **No UI was built** — the
+> sprint's P1 UI block was never reached. Per its own rule, **Backend-only is NOT Complete**. **Do not report STRATA
+> as done.** The Definition of Full Closure (every workflow reachable in UI + 14/14) is **not met**.
+>
+> **⛔ THE BIGGEST REMAINING ITEM IS UI, NOT BACKEND.** Reviews · board packs · data sources · quarantine · reversal
+> all have RPCs, RLS and tests, and **zero routes**. Exact remaining work per capability: `12_CAPABILITY_MATRIX.md`.
+>
+> **Verified 2026-07-17 (re-probed, not inherited):** locked snapshots **byte-identical** across the whole session
+> (`md5 128b14afc429bc18ad5dc14563edf3d3`) · **18/18 KPI + 9/9 benefit calcs byte-identical** · both live-numbers
+> debts (F-7, E-7 cond.3) **live and moved nothing** (the states they turn on had zero rows) · staging actuals =
+> **18 total, ALL validated, 0 pending** (an earlier handover claimed pending existed — **false, written from
+> memory**) · gates green · suite **2,442/6** · ledger **1:1** · **PR #349 open, unmerged**.
+> **F-11 stands: `npx tsc --noEmit` is a NO-OP — use `-p tsconfig.app.json` and grep your own paths.**
+
+
 ---
 
 # 🟢 NEW SESSION — START HERE (session 026, 2026-07-16). THIS BLOCK IS AUTHORITATIVE.
