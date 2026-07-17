@@ -207,16 +207,33 @@ function buildProjectCardOptions(
   cards: StrataProjectCard[],
   excludeIds: Set<string>,
 ): SelectOption<string>[] {
-  const eligible = cards.filter((c) => !excludeIds.has(c.id));
+  // PB-DEF-004: the same card row can arrive twice from the query, producing two
+  // indistinguishable options (`ZZTEST-STRATA-E2E-Project-B · Manual` ×2). De-dupe by
+  // id — safe, never drops a distinct card (unlike name de-duping, which must not happen).
+  const seenIds = new Set<string>();
+  const eligible = cards.filter((c) => {
+    if (excludeIds.has(c.id) || seenIds.has(c.id)) return false;
+    seenIds.add(c.id);
+    return true;
+  });
   const nameCounts = new Map<string, number>();
   for (const c of eligible) nameCounts.set(c.name, (nameCounts.get(c.name) ?? 0) + 1);
-  return eligible.map((c) => {
+  const labelCounts = new Map<string, number>();
+  const options = eligible.map((c) => {
     const ambiguous = (nameCounts.get(c.name) ?? 0) > 1;
     const hint = c.source_key
       ? `${labelize(c.source_system)}: ${c.source_key}`
       : labelize(c.source_system);
-    return { value: c.id, label: ambiguous ? `${c.name} · ${hint}` : c.name };
+    const label = ambiguous ? `${c.name} · ${hint}` : c.name;
+    labelCounts.set(label, (labelCounts.get(label) ?? 0) + 1);
+    return { value: c.id, label };
   });
+  // Two DISTINCT cards can still collide on name+source (e.g. both Manual, no source_key).
+  // Suffix a short id so the picker never presents two indistinguishable rows.
+  const collided = new Set(Array.from(labelCounts).filter(([, n]) => n > 1).map(([l]) => l));
+  return options.map((o) =>
+    collided.has(o.label) ? { ...o, label: `${o.label} · #${o.value.slice(0, 6)}` } : o,
+  );
 }
 
 function AddMemberModal({
