@@ -39,6 +39,7 @@ import { fmtDate, fmtDateTime, labelize } from '@/modules/strata/components/form
 import { computeModelIntegrity, draftSubmitBlockedReason } from '@/modules/strata/lib/modelIntegrity';
 import { auditChangedFields } from '@/modules/strata/lib/auditDiff';
 import { perspectiveDependents, thresholdSchemeDependents, modelVersionImpact } from '@/modules/strata/lib/dependents';
+import { deriveEffectiveAdminRows } from '@/modules/strata/lib/effectiveRoles';
 import type {
   GovernedEnvelope, GovernedStatus, StrataChangeRequest, StrataCycle, StrataNotificationRule, StrataPeriod, StrataPerspective,
   StrataModelMeasure, StrataProjectCardFieldConfig, StrataProjectCardPicklist, StrataRole, StrataScorecardModel,
@@ -99,7 +100,7 @@ const REVISION_RPC: Record<string, ((id: string, reason: string) => Promise<unkn
 };
 
 /** Governance lifecycle actions — RPC-only; DB errors surface verbatim. */
-export function GovActions({ table, record, isScorecardModel, onError, submitBlockedReason, impact }: {
+export function GovActions({ table, record, isScorecardModel, onError, submitBlockedReason, approveBlockedReasons, impact, copiedContents }: {
   table: string;
   record: { id: string; status: GovernedStatus };
   isScorecardModel?: boolean;
@@ -107,9 +108,15 @@ export function GovActions({ table, record, isScorecardModel, onError, submitBlo
   /** When set, the draft "Submit for approval" action is disabled and the
    * reason is shown inline (never a silent disable — anchor 05 states rule). */
   submitBlockedReason?: string | null;
+  /** CFG-006 (Cycle 4): when non-empty, Approve is disabled and every reason
+   * is shown — the full integrity gate applies to approval, not just submit. */
+  approveBlockedReasons?: string[];
   /** CFG-004: downstream dependents shown in the Retire / Create-new-version
    * dialogs. undefined = unknown (render nothing); [] = checked, none. */
   impact?: string[];
+  /** CFG-004 (Cycle 4): what a new draft version COPIES — distinct from
+   * downstream impact; shown only in the Create-new-version dialog. */
+  copiedContents?: string[];
 }) {
   const invalidate = useInvalidateStrata();
   const [busy, setBusy] = useState(false);
@@ -169,17 +176,29 @@ export function GovActions({ table, record, isScorecardModel, onError, submitBlo
     );
   }
   if (record.status === 'pending_approval') {
+    // CFG-006 (Cycle 4): the integrity gate applies to APPROVAL too. A model
+    // that reached pending while failing integrity must not be approvable —
+    // blocked with every visible reason, never a silent disable.
+    const approveBlocked = (approveBlockedReasons ?? []).length > 0;
     return (
-      <Button
-        spacing="compact"
-        appearance="default"
+      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
+        <Button
+          spacing="compact"
+          appearance="default"
         iconBefore={<CheckCircle2 size={14} />}
-        isDisabled={busy}
-        onClick={() => void act(() =>
-          isScorecardModel ? configApi.approveScorecardModel(record.id) : configApi.approveRecord(table, record.id))}
-      >
-        Approve
-      </Button>
+          isDisabled={busy || approveBlocked}
+          testId={`strata-approve-${record.id}`}
+          onClick={() => void act(() =>
+            isScorecardModel ? configApi.approveScorecardModel(record.id) : configApi.approveRecord(table, record.id))}
+        >
+          Approve
+        </Button>
+        {approveBlocked ? (
+          <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-danger)', textAlign: 'right' }} data-testid={`strata-approve-blocked-${record.id}`}>
+            Cannot approve: {(approveBlockedReasons ?? []).join('; ')}
+          </span>
+        ) : null}
+      </span>
     );
   }
   if (record.status === 'approved') {
@@ -212,7 +231,31 @@ export function GovActions({ table, record, isScorecardModel, onError, submitBlo
               threshold scheme — into a new draft at version {(record.version ?? 1) + 1}. The approved
               version stays unchanged and keeps producing results until the draft is approved.
             </p>
+            {/* CFG-004 (Cycle 4): copied definition contents are NOT downstream
+                impact — label each honestly, and state the draft's live effect. */}
+            {copiedContents !== undefined ? (
+              <div
+                data-testid="strata-version-copied-contents"
+                style={{
+                  margin: '0 0 12px', padding: '8px 12px', border: `1px solid ${T.border}`,
+                  borderRadius: 6, background: T.sunken, display: 'flex', flexDirection: 'column', gap: 4,
+                }}
+              >
+                <span style={{ fontWeight: 700, letterSpacing: '0.04em', fontSize: 'var(--ds-font-size-075)', color: T.subtlest }}>
+                  COPIED DEFINITION CONTENTS
+                </span>
+                {copiedContents.length === 0 ? (
+                  <span style={{ fontSize: 'var(--ds-font-size-100)', color: T.subtle }}>Nothing is defined on this version yet.</span>
+                ) : copiedContents.map((line) => (
+                  <span key={line} style={{ fontSize: 'var(--ds-font-size-100)', color: T.subtle }}>• {line}</span>
+                ))}
+              </div>
+            ) : null}
             {impactBlock}
+            <p style={{ margin: '0 0 12px', fontSize: 'var(--ds-font-size-100)', color: T.subtle }} data-testid="strata-version-no-live-effect">
+              Downstream impact: creating a draft has no live downstream effect — consumers keep using the
+              approved version until the new draft is itself approved.
+            </p>
             <Textfield
               value={versionReason}
               onChange={(e) => setVersionReason(e.target.value)}
@@ -275,7 +318,7 @@ export function GovActions({ table, record, isScorecardModel, onError, submitBlo
 }
 
 /** Card wrapper for one governed record: name + envelope + lifecycle actions. */
-function GovRecordCard({ name, table, record, isScorecardModel, onError, headerActions, submitBlockedReason, impact, children }: {
+function GovRecordCard({ name, table, record, isScorecardModel, onError, headerActions, submitBlockedReason, approveBlockedReasons, impact, copiedContents, children }: {
   name: string;
   table: string;
   record: GovernedEnvelope & { id: string };
@@ -285,8 +328,12 @@ function GovRecordCard({ name, table, record, isScorecardModel, onError, headerA
   headerActions?: React.ReactNode;
   /** Forwarded to GovActions — blocks Submit with a visible reason. */
   submitBlockedReason?: string | null;
+  /** Forwarded to GovActions — CFG-006 blocks Approve with visible reasons. */
+  approveBlockedReasons?: string[];
   /** Forwarded to GovActions — CFG-004 downstream impact in lifecycle dialogs. */
   impact?: string[];
+  /** Forwarded to GovActions — CFG-004 copied contents in the version dialog. */
+  copiedContents?: string[];
   children?: React.ReactNode;
 }) {
   return (
@@ -301,7 +348,7 @@ function GovRecordCard({ name, table, record, isScorecardModel, onError, headerA
         <strong style={{ fontSize: 'var(--ds-font-size-200)', color: T.text }}>{name}</strong>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
           {headerActions}
-          <GovActions table={table} record={record} isScorecardModel={isScorecardModel} onError={onError} submitBlockedReason={submitBlockedReason} impact={impact} />
+          <GovActions table={table} record={record} isScorecardModel={isScorecardModel} onError={onError} submitBlockedReason={submitBlockedReason} approveBlockedReasons={approveBlockedReasons} impact={impact} copiedContents={copiedContents} />
         </div>
       </div>
       <GovEnvelope r={record} />
@@ -1011,7 +1058,12 @@ export function ScorecardModelsSection({ onError }: { onError: OnError }) {
                 isScorecardModel
                 onError={onError}
                 submitBlockedReason={submitBlockedReason}
-                impact={modelVersionImpact(m.id, allMP.data ?? [], allMeasures.data ?? [])}
+                approveBlockedReasons={m.status === 'pending_approval' && !integrity.ok
+                  ? (integrity.perspectiveWeightsOk
+                    ? integrity.measureIssues
+                    : [`Perspective weights total ${integrity.weightSum} — must total 100`, ...integrity.measureIssues])
+                  : undefined}
+                copiedContents={modelVersionImpact(m.id, allMP.data ?? [], allMeasures.data ?? [])}
               >
                 <ModelIntegrityBand
                   sum={integrity.weightSum}
@@ -1790,7 +1842,10 @@ interface RoleAssignmentRow {
   scope_type: string;
   scope_entity_id: string | null;
   granted_by: string | null;
-  granted_at: string;
+  /** null on CFG-005 derived rows — a bypass role has no grant event. */
+  granted_at: string | null;
+  /** CFG-005: true when derived from the platform-admin bypass, not a grant. */
+  derived?: boolean;
 }
 
 const ASSIGNABLE_ROLES: Array<{ value: string; label: string }> =
@@ -1809,6 +1864,12 @@ function RolesSection({ onError }: { onError: OnError }) {
   // server-side, even without a strata_admin assignment row.
   const isStrataAdmin = mine.includes('strata_admin');
   const assignments = (assignmentsQ.data ?? []) as RoleAssignmentRow[];
+  // CFG-005 (Cycle 4): this section — /strata/admin/roles — is a second roles
+  // surface; the derived platform-admin row previously landed only on
+  // /strata/admin/access. Same helper, same labelling, no Revoke for derived.
+  const userIdQ = useStrataUserId();
+  const derivedRows = deriveEffectiveAdminRows(userIdQ.data, roles.data, assignments) as unknown as RoleAssignmentRow[];
+  const displayRows = [...assignments, ...derivedRows];
   const profileName = (id: string | null): string | null =>
     id ? profilesQ.data?.get(id)?.name ?? null : null;
 
@@ -1835,7 +1896,16 @@ function RolesSection({ onError }: { onError: OnError }) {
     },
     {
       id: 'role', label: 'Role', width: 18,
-      cell: ({ row }) => <StatusLozenge status={row.role} label={labelize(row.role)} appearance="default" />,
+      cell: ({ row }) => (
+        <span style={{ display: 'flex', flexDirection: 'column', gap: 2, alignItems: 'flex-start' }}>
+          <StatusLozenge status={row.role} label={labelize(row.role)} appearance="default" />
+          {row.derived ? (
+            <span style={{ ...metaStyle, fontSize: 'var(--ds-font-size-075)' }} data-testid="strata-admin-derived-role">
+              via platform admin — no explicit grant
+            </span>
+          ) : null}
+        </span>
+      ),
     },
     {
       id: 'scope', label: 'Scope', width: 12,
@@ -1843,7 +1913,9 @@ function RolesSection({ onError }: { onError: OnError }) {
     },
     {
       id: 'granted', label: 'Granted', width: 13,
-      cell: ({ row }) => <span style={{ ...bodyStyle, fontVariantNumeric: 'tabular-nums' }}>{fmtDate(row.granted_at)}</span>,
+      cell: ({ row }) => (row.granted_at
+        ? <span style={{ ...bodyStyle, fontVariantNumeric: 'tabular-nums' }}>{fmtDate(row.granted_at)}</span>
+        : <span style={{ color: T.subtlest }}>—</span>),
     },
     {
       id: 'granted-by', label: 'Granted by', width: 15,
@@ -1854,7 +1926,9 @@ function RolesSection({ onError }: { onError: OnError }) {
     },
     ...(isStrataAdmin ? [{
       id: 'revoke', label: '', width: 10, align: 'end' as const,
-      cell: ({ row }: { row: RoleAssignmentRow }) => (
+      // CFG-005: derived access has no assignment row to revoke — offering the
+      // verb would promise an action the server cannot perform.
+      cell: ({ row }: { row: RoleAssignmentRow }) => (row.derived ? null : (
         <Button
           spacing="compact"
           appearance="subtle"
@@ -1864,7 +1938,7 @@ function RolesSection({ onError }: { onError: OnError }) {
         >
           Revoke
         </Button>
-      ),
+      )),
     }] : []),
   ];
 
@@ -1873,7 +1947,7 @@ function RolesSection({ onError }: { onError: OnError }) {
       <StrataPanel
         title="Role assignments"
         icon={<Users size={16} />}
-        count={assignments.length}
+        count={displayRows.length}
         noPadding
         testId="strata-admin-role-assignments"
         actions={isStrataAdmin ? (
@@ -1887,10 +1961,16 @@ function RolesSection({ onError }: { onError: OnError }) {
           </Button>
         ) : undefined}
       >
-        <SectionState query={assignmentsQ} empty={assignments.length === 0} emptyLabel="No role assignments">
+        <SectionState query={assignmentsQ} empty={displayRows.length === 0} emptyLabel="No role assignments">
+          <div style={{ padding: '8px 16px 0' }}>
+            <p style={captionStyle}>
+              {assignments.length} explicit grant{assignments.length === 1 ? '' : 's'}
+              {derivedRows.length > 0 ? ` · ${derivedRows.length} derived from platform admin` : ''}
+            </p>
+          </div>
           <JiraTable<RoleAssignmentRow>
             columns={assignmentColumns}
-            data={assignments}
+            data={displayRows}
             getRowId={(r) => r.id}
             showRowCount={false}
             ariaLabel="STRATA role assignments"
@@ -2017,6 +2097,9 @@ function ChangeLogSection() {
       cell: ({ row }) => {
         const { changes, truncated } = auditChangedFields(row.before, row.after);
         if (changes.length === 0 && !row.note) return <span style={{ color: T.subtlest }}>—</span>;
+        // CFG-001 (Cycle 4): trigger-fed rows (INSERT/UPDATE/DELETE) carry no
+        // note — say so honestly instead of leaving rationale ambiguous.
+        const isTriggerFed = !!row.action && !row.action.startsWith('RPC:');
         return (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 2, padding: '2px 0' }}>
             {changes.map((c) => (
@@ -2029,6 +2112,8 @@ function ChangeLogSection() {
             ) : null}
             {row.note ? (
               <span style={{ color: T.subtle, fontSize: 'var(--ds-font-size-075)' }}>Rationale: {row.note}</span>
+            ) : isTriggerFed ? (
+              <span style={{ color: T.subtlest, fontSize: 'var(--ds-font-size-075)' }}>System/trigger event — rationale not supplied</span>
             ) : null}
           </div>
         );

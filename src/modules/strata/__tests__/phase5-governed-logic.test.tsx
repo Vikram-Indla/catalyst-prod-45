@@ -167,4 +167,15 @@ describe('ModelIntegrityBand — anchor 05 tri-state + blocking', () => {
     expect(screen.getByText(/Financial has no measures assigned/)).toBeInTheDocument();
     expect(screen.getByText(/Each perspective needs measure weights totalling 100 before submit/)).toBeInTheDocument();
   });
+
+  it('CFG-006 C4: Approve on a PENDING model failing integrity is blocked with visible reasons', () => {
+    renderWith([60, 40], 'pending_approval'); // weights pass, no measures anywhere
+    expect(screen.getByRole('button', { name: /Approve/i })).toBeDisabled();
+    expect(screen.getByText(/Cannot approve: Financial has no measures assigned; Customer has no measures assigned/)).toBeInTheDocument();
+  });
+
+  it('CFG-006 C4: Approve stays enabled on a PENDING model with full integrity', () => {
+    renderWith([60, 40], 'pending_approval', true);
+    expect(screen.getByRole('button', { name: /Approve/i })).not.toBeDisabled();
+  });
 });
