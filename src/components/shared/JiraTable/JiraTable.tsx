@@ -124,6 +124,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
     groups,
     getRowId,
     onRowClick,
+    rowAriaLabel,
     onCellEdit,
     getRowDepth,
     selectable,
@@ -516,6 +517,11 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
       /* Focus ring via blue left bar + subtle bg */
       .jira-table-grid .jira-table-row-focused > td:first-child {
         box-shadow: inset 3px 0 0 var(--ds-link);
+      }
+      /* CC-DEF-003: visible focus indicator for keyboard-focused rows. */
+      .jira-table-grid tbody tr[tabindex]:focus-visible {
+        outline: 2px solid var(--ds-border-focused);
+        outline-offset: -2px;
       }
       .jira-table-grid .jira-table-row-focused > td {
         background-color: var(--ds-surface-sunken, var(--cp-bg-sunken)) !important;
@@ -1512,6 +1518,19 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
           setFocusedRow(id);
           setCtxMenu({ row, x: e.clientX, y: e.clientY });
         } : undefined,
+        // CC-DEF-003: rows with a click action are genuine keyboard controls —
+        // Tab-focusable with an accessible name; Enter/Space activate the exact
+        // same path as mouse click. Guarded to the row element itself so inner
+        // controls (resize separators, buttons, editors) never trigger it.
+        tabIndex: onRowClick ? 0 : undefined,
+        ariaLabel: rowAriaLabel ? rowAriaLabel(row) : undefined,
+        onKeyDown: onRowClick ? (e: React.KeyboardEvent) => {
+          if (e.key !== 'Enter' && e.key !== ' ') return;
+          if (e.target !== e.currentTarget) return;
+          e.preventDefault();
+          setFocusedRow(id);
+          onRowClick(row);
+        } : undefined,
         cells: rowCells,
       };
     };
@@ -1851,6 +1870,9 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
         className={[r.className, isGroup ? 'jira-table-group-row' : ''].filter(Boolean).join(' ')}
         onClick={r.onClick}
         onContextMenu={r.onContextMenu}
+        tabIndex={r.tabIndex}
+        aria-label={r.ariaLabel}
+        onKeyDown={r.onKeyDown}
         style={{ minHeight: d.rowHeight }}
       >
         {r.cells.map((c: any) => {
