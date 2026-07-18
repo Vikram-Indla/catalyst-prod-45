@@ -50,6 +50,26 @@ function FieldBlock({ label, required, helper, children }: {
   );
 }
 
+/**
+ * Parse a day-first typed date (DD/MM/YYYY, tolerant of `-` or `.` separators and 1-digit
+ * day/month) into a Date. Returns an Invalid Date for anything that doesn't fully parse, so
+ * @atlaskit leaves the field unset rather than committing a wrong date. PB-DEF-005: the
+ * established STRATA day-first behavior; a valid 31/12/2026 must never be silently dropped.
+ */
+export function parseDayFirstDate(input: string): Date {
+  const m = input.trim().match(/^(\d{1,2})[/\-.](\d{1,2})[/\-.](\d{4})$/);
+  if (!m) return new Date(NaN);
+  const day = Number(m[1]);
+  const month = Number(m[2]);
+  const year = Number(m[3]);
+  const d = new Date(year, month - 1, day);
+  // Reject overflow (e.g. 31/02/2026 rolling into March) — the round-trip must be exact.
+  if (d.getFullYear() !== year || d.getMonth() !== month - 1 || d.getDate() !== day) {
+    return new Date(NaN);
+  }
+  return d;
+}
+
 // ── Gate scheduling (subject prefilled; stage options follow the model) ──────
 export interface StrataGateSubject {
   type: 'initiative' | 'project_card' | 'benefit' | 'element';
@@ -151,12 +171,17 @@ export function StrataScheduleGateModal({
             <DatePicker
               value={scheduledFor ?? ''}
               onChange={(iso) => setScheduledFor(iso || null)}
+              // PB-DEF-005: @atlaskit's default parser reads typed input US-first, so a valid
+              // day-first date like 31/12/2026 was silently discarded (new Date('31/12/2026') is
+              // Invalid). Parse day-first explicitly so typed text commits on blur/submit.
+              dateFormat="DD/MM/YYYY"
+              parseInputValue={parseDayFirstDate}
               shouldShowCalendarButton
               clearControlLabel="Clear scheduled date"
               label="Scheduled for"
               // Supply a placeholder so an empty date never shows @atlaskit's
               // built-in 1993 fallback (STRATA-E2E-007).
-              placeholder="Select date"
+              placeholder="DD/MM/YYYY"
             />
           </FieldBlock>
         </div>
@@ -207,16 +232,33 @@ function buildProjectCardOptions(
   cards: StrataProjectCard[],
   excludeIds: Set<string>,
 ): SelectOption<string>[] {
-  const eligible = cards.filter((c) => !excludeIds.has(c.id));
+  // PB-DEF-004: the same card row can arrive twice from the query, producing two
+  // indistinguishable options (`ZZTEST-STRATA-E2E-Project-B · Manual` ×2). De-dupe by
+  // id — safe, never drops a distinct card (unlike name de-duping, which must not happen).
+  const seenIds = new Set<string>();
+  const eligible = cards.filter((c) => {
+    if (excludeIds.has(c.id) || seenIds.has(c.id)) return false;
+    seenIds.add(c.id);
+    return true;
+  });
   const nameCounts = new Map<string, number>();
   for (const c of eligible) nameCounts.set(c.name, (nameCounts.get(c.name) ?? 0) + 1);
-  return eligible.map((c) => {
+  const labelCounts = new Map<string, number>();
+  const options = eligible.map((c) => {
     const ambiguous = (nameCounts.get(c.name) ?? 0) > 1;
     const hint = c.source_key
       ? `${labelize(c.source_system)}: ${c.source_key}`
       : labelize(c.source_system);
-    return { value: c.id, label: ambiguous ? `${c.name} · ${hint}` : c.name };
+    const label = ambiguous ? `${c.name} · ${hint}` : c.name;
+    labelCounts.set(label, (labelCounts.get(label) ?? 0) + 1);
+    return { value: c.id, label };
   });
+  // Two DISTINCT cards can still collide on name+source (e.g. both Manual, no source_key).
+  // Suffix a short id so the picker never presents two indistinguishable rows.
+  const collided = new Set(Array.from(labelCounts).filter(([, n]) => n > 1).map(([l]) => l));
+  return options.map((o) =>
+    collided.has(o.label) ? { ...o, label: `${o.label} · #${o.value.slice(0, 6)}` } : o,
+  );
 }
 
 function AddMemberModal({

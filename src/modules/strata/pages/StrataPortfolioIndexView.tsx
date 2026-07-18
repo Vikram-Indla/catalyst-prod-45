@@ -22,6 +22,7 @@ import { JiraTable } from '@/components/shared/JiraTable';
 import type { Column } from '@/components/shared/JiraTable';
 import { Routes } from '@/lib/routes';
 import { valueApi } from '@/modules/strata/domain';
+import { countsTowardRealization } from '@/modules/strata/assurance';
 import { StrataPageShell, StrataPanel, StrataValueBar, T } from '@/modules/strata/components/shared';
 import { VMO_AUTHOR_ROLES } from '@/modules/strata/components/vmoAuthoring';
 import { fmtRatioPct, fmtSarCompact } from '@/modules/strata/components/format';
@@ -111,8 +112,11 @@ export default function StrataPortfolioIndexView() {
     const planned = pid ? sumKind(values, pid, 'planned') : null;
     const forecast = pid ? sumKind(values, pid, 'forecast') : null;
     const realized = pid ? sumKind(values, pid, 'realized') : null;
+    // Assured realized value = a counting assurance state (mirrors strata_calc_benefit_realization).
+    // The retired 'validated' literal no longer exists, so the old check silently reported zero.
     const validatedRows = pid
-      ? values.filter((v) => v.period_id === pid && v.value_kind === 'realized' && v.validation_status === 'validated')
+      ? values.filter((v) => v.period_id === pid && v.value_kind === 'realized'
+          && countsTowardRealization(v.validation_status))
       : [];
     const validated = validatedRows.length ? validatedRows.reduce((s, v) => s + v.value, 0) : null;
     return {

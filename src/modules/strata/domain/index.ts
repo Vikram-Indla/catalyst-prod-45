@@ -1086,6 +1086,11 @@ export const valueApi = {
     run(typedQuery('strata_assumptions').select('*').eq('benefit_id', benefitId)),
   attributionRules: (benefitId: string) =>
     run(typedQuery('strata_attribution_rules').select('*').eq('benefit_id', benefitId)),
+  /** All shared_benefit attribution rules across benefits — the governed benefit↔project-card
+   * split (pct per project_card_id). Powers reverse traceability ("Benefit at stake") on the
+   * Project Card end, where the attribution is authored as a rule, not a direct link (PB-DEF-006). */
+  sharedBenefitAttributions: () =>
+    run(typedQuery('strata_attribution_rules').select('*').eq('rule_type', 'shared_benefit')),
   benefitInitiatives: () => run(typedQuery('strata_benefit_initiatives').select('*')),
   /** Benefit ↔ Project Card attribution (Execution Reconciliation §K rule 19) — the
    * primary attribution path going forward; Theme-level rollup derives via project_card.theme_id. */
@@ -1112,10 +1117,33 @@ export const valueApi = {
    */
   validateBenefitValue: (valueId: string, verdict: 'owner_confirmed' | 'independently_validated' | 'rejected', note?: string) =>
     run(typedRpc('strata_validate_benefit_value', { p_value: valueId, p_verdict: verdict, p_note: note ?? null })),
+  /** PB-DEF-003 · accept a value with exception (Strategy Office, different actor, reason + evidence
+   *  mandatory). It COUNTS by governed rule and the exception stays visible downstream. */
+  authorizeBenefitException: (valueId: string, reason: string, evidence: string): Promise<void> =>
+    run(typedRpc('strata_authorize_benefit_exception', { p_value: valueId, p_reason: reason, p_evidence: evidence })),
+  /** PB-DEF-003 · reverse/supersede a value (append-only — history preserved; it stops counting). */
+  reverseBenefitValue: (valueId: string, reason: string): Promise<void> =>
+    run(typedRpc('strata_reverse_benefit_value', { p_value: valueId, p_reason: reason })),
   benefitRealization: (benefitId: string) =>
     run(typedRpc('strata_calc_benefit_realization', { p_benefit: benefitId })),
   valueAtRisk: (portfolioId: string) =>
     run(typedRpc('strata_calc_value_at_risk', { p_portfolio: portfolioId })),
+  /** PB-DEF-008 · append-only entity audit/lineage over strata_audit_events (RLS-safe read). */
+  entityAudit: (entityTable: string, entityId: string): Promise<Array<{
+    id: string; entity_table: string; entity_id: string; action: string;
+    actor_id: string | null; before: unknown; after: unknown; note: string | null; created_at: string;
+  }>> =>
+    run(typedRpc('strata_entity_audit', { p_entity_table: entityTable, p_entity_id: entityId })),
+  // PB-DEF-010 · governed Reviews ↔ portfolio/benefit/gate references (bidirectional).
+  // RD-DEF-001 widened the vocabulary: objectives, KPIs/OKRs, scorecards, project cards, snapshots.
+  linkReview: (reviewId: string, targetType: 'portfolio' | 'benefit' | 'benefit_value' | 'gate_instance' | 'objective' | 'kpi' | 'okr' | 'scorecard_instance' | 'project_card' | 'snapshot', targetId: string, note?: string): Promise<string> =>
+    run(typedRpc('strata_link_review', { p_review: reviewId, p_target_type: targetType, p_target_id: targetId, p_note: note ?? null })),
+  unlinkReview: (reviewId: string, targetType: string, targetId: string): Promise<void> =>
+    run(typedRpc('strata_unlink_review', { p_review: reviewId, p_target_type: targetType, p_target_id: targetId })),
+  reviewLinksOf: (reviewId: string): Promise<Array<{ id: string; target_type: string; target_id: string; target_name: string | null; note: string | null; created_at: string }>> =>
+    run(typedRpc('strata_review_links_of', { p_review: reviewId })),
+  reviewsReferencing: (targetType: string, targetId: string): Promise<Array<{ review_id: string; review_key: string; review_name: string; review_slug: string | null; scheduled_for: string | null; note: string | null }>> =>
+    run(typedRpc('strata_reviews_referencing', { p_target_type: targetType, p_target_id: targetId })),
   // ── Authoring write paths (Recovery: Lane E) ──────────────────────────────
   createPortfolio: (input: {
     name: string; description?: string; categoryId?: string; ownerId?: string; valueTarget?: number;
@@ -1127,15 +1155,26 @@ export const valueApi = {
     })),
   updatePortfolio: (portfolioId: string, patch: {
     name?: string; description?: string; categoryId?: string; ownerId?: string;
-    valueTarget?: number; status?: 'active' | 'archived';
+    valueTarget?: number;
     clearOwner?: boolean; clearCategory?: boolean;
   }) =>
     run(typedRpc('strata_update_portfolio', {
       p_portfolio: portfolioId, p_name: patch.name ?? null, p_description: patch.description ?? null,
       p_category: patch.categoryId ?? null, p_owner: patch.ownerId ?? null,
-      p_value_target: patch.valueTarget ?? null, p_status: patch.status ?? null,
+      p_value_target: patch.valueTarget ?? null, p_status: null,
       p_clear_owner: patch.clearOwner ?? false, p_clear_category: patch.clearCategory ?? false,
     })),
+  // PB-DEF-007 · governed portfolio lifecycle transitions (SoD + reason/evidence enforced server-side).
+  submitPortfolio: (portfolioId: string): Promise<void> =>
+    run(typedRpc('strata_submit_portfolio', { p_portfolio: portfolioId })),
+  approvePortfolio: (portfolioId: string): Promise<void> =>
+    run(typedRpc('strata_approve_portfolio', { p_portfolio: portfolioId })),
+  closePortfolio: (portfolioId: string, reason: string, evidence: string): Promise<void> =>
+    run(typedRpc('strata_close_portfolio', { p_portfolio: portfolioId, p_reason: reason, p_evidence: evidence })),
+  cancelPortfolio: (portfolioId: string, reason: string, evidence: string): Promise<void> =>
+    run(typedRpc('strata_cancel_portfolio', { p_portfolio: portfolioId, p_reason: reason, p_evidence: evidence })),
+  archivePortfolio: (portfolioId: string): Promise<void> =>
+    run(typedRpc('strata_archive_portfolio', { p_portfolio: portfolioId })),
   addPortfolioMember: (portfolioId: string, memberType: 'initiative' | 'project_card', memberId: string, allocationPct?: number, priority?: number) =>
     run(typedRpc('strata_add_portfolio_member', {
       p_portfolio: portfolioId, p_member_type: memberType, p_member_id: memberId,
@@ -1164,6 +1203,25 @@ export const valueApi = {
       p_lifecycle_stage: patch.lifecycleStage ?? null,
       p_clear_owner: patch.clearOwner ?? false, p_clear_validator: patch.clearValidator ?? false,
     })),
+  /** PB-DEF-002 · set the governed benefit definition (reuses governed objective/KPI references). */
+  setBenefitGovernance: (benefitId: string, g: {
+    strategicObjectiveId?: string | null; governedKpiId?: string | null; sponsorId?: string | null;
+    reportingOwnerId?: string | null; accountableOwnerId?: string | null; baseline?: number | null;
+    baselinePeriodId?: string | null; calculationMethod?: string | null; evidenceReference?: string | null;
+    realizationStart?: string | null; realizationEnd?: string | null; fundingContext?: string | null;
+  }): Promise<void> =>
+    run(typedRpc('strata_set_benefit_governance', {
+      p_benefit: benefitId,
+      p_strategic_objective: g.strategicObjectiveId ?? null, p_governed_kpi: g.governedKpiId ?? null,
+      p_sponsor: g.sponsorId ?? null, p_reporting_owner: g.reportingOwnerId ?? null,
+      p_accountable_owner: g.accountableOwnerId ?? null, p_baseline: g.baseline ?? null,
+      p_baseline_period: g.baselinePeriodId ?? null, p_calc_method: g.calculationMethod ?? null,
+      p_evidence: g.evidenceReference ?? null, p_realization_start: g.realizationStart ?? null,
+      p_realization_end: g.realizationEnd ?? null, p_funding: g.fundingContext ?? null,
+    })),
+  /** PB-DEF-002 · authoritative governance-completeness (server-computed; gates activation). */
+  benefitGovernanceComplete: (benefitId: string): Promise<boolean> =>
+    run(typedRpc('strata_benefit_governance_complete', { p_benefit: benefitId })),
   createBenefitValue: (input: {
     benefitId: string; periodId: string; valueKind: 'baseline' | 'planned' | 'forecast' | 'realized'; value: number;
   }): Promise<string> =>
@@ -1494,6 +1552,10 @@ export const governanceApi = {
       agenda?: unknown;
       chairId?: string | null;
       note?: string | null;
+      /** RD-DEF-001 — accountable owner; readiness names its absence. */
+      accountableOwnerId?: string | null;
+      /** RD-DEF-007 — reschedule; server rejects stale/impossible dates. */
+      scheduledFor?: string | null;
     },
   ): Promise<void> =>
     run(typedRpc('strata_update_review', {
@@ -1504,7 +1566,23 @@ export const governanceApi = {
       p_agenda: (patch.agenda ?? null) as never,
       p_chair: patch.chairId ?? null,
       p_note: patch.note ?? null,
+      p_accountable_owner: patch.accountableOwnerId ?? null,
+      p_scheduled_for: patch.scheduledFor ?? null,
     })),
+  /**
+   * RD-DEF-001 — participants are direct table writes under RLS (strategy_office); the
+   * trg_strata_review_participants_guard trigger refuses writes once the review is terminal.
+   */
+  addReviewParticipant: async (reviewId: string, userId: string, role: StrataReviewParticipant['role']): Promise<void> => {
+    // .select() so an RLS-silent zero-row write surfaces instead of reporting a save that never happened.
+    const rows = await run(typedQuery('strata_review_participants')
+      .insert({ review_id: reviewId, user_id: userId, role } as never).select('id'));
+    if (!Array.isArray(rows) || rows.length === 0) throw new Error('participant was not added — your role may not permit editing this review');
+  },
+  removeReviewParticipant: async (participantId: string): Promise<void> => {
+    const rows = await run(typedQuery('strata_review_participants').delete().eq('id', participantId).select('id'));
+    if (!Array.isArray(rows) || rows.length === 0) throw new Error('participant was not removed — your role may not permit editing this review');
+  },
   // ── R2/F1 · board-pack editorial lifecycle ────────────────────────────────
   /**
    * F-3 qualification, derived from the integrity register. `is_qualified=false` means no exception
@@ -1673,13 +1751,21 @@ export const governanceApi = {
       p_snapshot: input.snapshotId ?? null, p_evidence_refs: input.evidenceRefs ?? null,
       p_element: input.elementId ?? null,
     })),
+  /**
+   * RD-DEF-003 — moving to 'decided' is the OFFICIAL act: the server requires an explicit
+   * outcome + rationale and a DISTINCT approver (creator self-approval is refused, zero rows).
+   * Transitions are explicit: open → decided → closed. Closed decisions are immutable.
+   */
   updateDecision: (decisionId: string, patch: {
     status?: 'open' | 'decided' | 'closed'; description?: string; ownerId?: string; dueDate?: string;
+    outcome?: StrataDecision['outcome']; rationale?: string; evidenceRefs?: unknown;
   }) =>
     run(typedRpc('strata_update_decision', {
       p_decision: decisionId, p_status: patch.status ?? null,
       p_description: patch.description ?? null, p_owner: patch.ownerId ?? null,
       p_due_date: patch.dueDate ?? null,
+      p_outcome: patch.outcome ?? null, p_rationale: patch.rationale ?? null,
+      p_evidence_refs: (patch.evidenceRefs ?? null) as never,
     })),
   createAction: (input: {
     decisionId: string; title: string; ownerId?: string; dueDate?: string; note?: string;

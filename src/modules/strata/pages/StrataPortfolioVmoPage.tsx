@@ -22,10 +22,13 @@ import {
   CheckCircle2, FileBarChart, Gem, Info, ListChecks, ShieldCheck, Wallet,
 } from '@/lib/atlaskit-icons';
 import { valueApi } from '@/modules/strata/domain';
+import { countsTowardRealization } from '@/modules/strata/assurance';
 import { StrataChipMenu,
   StrataBandBar, StrataDecisionModal, StrataPageShell, StrataPanel, StrataStatStrip, StrataValueBar, T,
 } from '@/modules/strata/components/shared';
 import { StrataFormModal } from '@/modules/strata/components/authoring';
+import { StrataAuditHistory } from '@/modules/strata/components/StrataAuditHistory';
+import { StrataReviewLinks } from '@/modules/strata/components/StrataReviewLinks';
 import {
   StrataAttributionRuleModal, StrataPortfolioMembersPanel, StrataScheduleGateModal,
   VMO_AUTHOR_ROLES, VMO_VALUE_ROLES,
@@ -36,17 +39,24 @@ import {
 } from '@/modules/strata/components/format';
 import {
   useAssumptions, useBenefitBySlug, useBenefitRealization, useBenefits, useBenefitValues, useCalcValues,
-  useGateInstances, useGateModels, useInvalidateStrata, usePortfolios, useProfileNames,
-  useProjectCards, useStrataContext, useStrataRoles, useValueAtRisk, useValueCategories,
+  useGateInstances, useGateModels, useInvalidateStrata, useKpis, usePortfolios, useProfileNames,
+  useProjectCards, useStrataContext, useStrataRoles, useStrategyElements, useValueAtRisk, useValueCategories,
 } from '@/modules/strata/hooks/useStrata';
 import type {
+  BenefitAssuranceStatus,
   StrataAssumption, StrataBenefit, StrataBenefitValue, StrataGateInstance, StrataGateModelStage, StrataPortfolio,
 } from '@/modules/strata/types';
 import StrataPortfolioIndexView from './StrataPortfolioIndexView';
 
 // ── System-state appearance maps (mirror DB CHECK constraints) ───────────────
-const VALIDATION_STATUS: Record<StrataBenefitValue['validation_status'], LozengeAppearance> = {
-  validated: 'success', pending: 'moved', rejected: 'removed',
+// Six-state assurance vocabulary (D-4/E-6, migration 20260717160000). Mirrors the DB CHECK.
+const VALIDATION_STATUS: Record<BenefitAssuranceStatus, LozengeAppearance> = {
+  reported: 'moved',
+  owner_confirmed: 'success',
+  independently_validated: 'success',
+  accepted_with_exception: 'inprogress',
+  rejected: 'removed',
+  reversed: 'default',
 };
 const ASSUMPTION_STATUS: Record<StrataAssumption['status'], LozengeAppearance> = {
   holding: 'success', open: 'default', broken: 'removed', retired: 'default',
@@ -57,13 +67,13 @@ const GATE_STATUS: Record<string, LozengeAppearance> = {
 const LIFECYCLE_STAGE: Record<string, LozengeAppearance> = {
   identified: 'default', qualified: 'default', approved: 'inprogress', baselined: 'inprogress',
   in_flight: 'inprogress', forecast_revised: 'moved', realized: 'success',
-  finance_validated: 'success', closed: 'default',
+  independently_validated: 'success', closed: 'default',
 };
 const VALUE_KINDS: Array<StrataBenefitValue['value_kind']> = ['baseline', 'planned', 'forecast', 'realized'];
 
 // ── Authoring option lists (mirror DB CHECK constraints; UI copy states server rules) ──
-/** All lifecycle stages except finance_validated — that stage is only reachable
- *  through value validation, never by direct edit (server-enforced). */
+/** All lifecycle stages except independently_validated — that stage is only reachable
+ *  through independent value validation, never by direct edit (server-enforced). */
 const LIFECYCLE_STAGE_OPTIONS = (
   ['identified', 'qualified', 'approved', 'baselined', 'in_flight', 'forecast_revised', 'realized', 'closed'] as const
 ).map((s) => ({ value: s, label: labelize(s) }));
@@ -72,8 +82,6 @@ const ASSUMPTION_STATUS_OPTIONS = (['open', 'holding', 'broken', 'retired'] as c
 const VALUE_KIND_OPTIONS = VALUE_KINDS.map((k) => ({ value: k, label: labelize(k) }));
 const RULE_TYPE_OPTIONS = (['shared_benefit', 'counterfactual', 'double_counting'] as const)
   .map((t) => ({ value: t, label: labelize(t) }));
-const PORTFOLIO_STATUS_OPTIONS = (['active', 'archived'] as const)
-  .map((s) => ({ value: s, label: labelize(s) }));
 
 /** Clear-flag detection: the modal opened with a value and the user cleared the field. */
 const wasCleared = (initial: string | null | undefined, submitted: unknown): boolean =>
@@ -191,6 +199,7 @@ function BenefitDetailSection({ benefit, isFirst, canAuthor, canAuthorValues }: 
   const [decision, setDecision] = useState<
     | { kind: 'gate'; gate: StrataGateInstance; stage: StrataGateModelStage }
     | { kind: 'validate-value'; id: string; label: string; valueKind: StrataBenefitValue['value_kind'] }
+    | { kind: 'reverse-value'; id: string; label: string; valueKind: StrataBenefitValue['value_kind'] }
     | null
   >(null);
   /** Authoring modal — create/edit flows against the Lane E RPCs. */
@@ -200,6 +209,8 @@ function BenefitDetailSection({ benefit, isFirst, canAuthor, canAuthorValues }: 
     | { kind: 'add-assumption' }
     | { kind: 'edit-assumption'; assumption: StrataAssumption }
     | { kind: 'add-rule' }
+    | { kind: 'except-value'; id: string; label: string; valueKind: StrataBenefitValue['value_kind'] }
+    | { kind: 'edit-governance' }
     | null
   >(null);
   const [gateSubject, setGateSubject] = useState<StrataGateSubject | null>(null);
@@ -217,9 +228,25 @@ function BenefitDetailSection({ benefit, isFirst, canAuthor, canAuthorValues }: 
   const values = valuesQ.data ?? [];
   const assumptions = assumptionsQ.data ?? [];
   const projectCards = projectCardsQ.data ?? [];
-  // Realized value submitted but not yet finance-validated (anchor 21 "awaits attestation").
+  // PB-DEF-002 · governed-definition reference data + completeness.
+  const objectives = (useStrategyElements().data ?? []).filter((e) => e.element_type === 'objective');
+  const kpis = useKpis().data ?? [];
+  const govProfiles = useProfileNames();
+  const govName = (id: string | null | undefined): string | null =>
+    id ? (govProfiles.data?.get(id)?.name ?? `${id.slice(0, 8)}…`) : null;
+  const objectiveName = (id: string | null | undefined): string | null =>
+    id ? (objectives.find((o) => o.id === id)?.name ?? null) : null;
+  const kpiName = (id: string | null | undefined): string | null =>
+    id ? (kpis.find((k) => k.id === id)?.name ?? null) : null;
+  const governanceCompleteQ = useQuery({
+    queryKey: ['strata', 'benefit-governance-complete', benefit.id],
+    queryFn: () => valueApi.benefitGovernanceComplete(benefit.id),
+    staleTime: 15_000,
+  });
+  // Realized value submitted but with no assurance yet (state = reported): awaits attestation.
+  // rejected/reversed are terminal (they do not "await"); assured states already count.
   const pendingRealized = values
-    .filter((v) => v.value_kind === 'realized' && v.validation_status !== 'validated')
+    .filter((v) => v.value_kind === 'realized' && v.validation_status === 'reported')
     .reduce((s, v) => s + v.value, 0);
   // Resolve an attribution split's Project Card target to a display name.
   // Zero-assumption: an unknown id resolves to null → the panel renders '—'.
@@ -249,12 +276,13 @@ function BenefitDetailSection({ benefit, isFirst, canAuthor, canAuthorValues }: 
   });
 
   // Segmented value bar (SRC-M5): active period when it has values, else the
-  // latest period that does. Validated = the realized value once finance-validated.
+  // latest period that does. "Assured" = the realized value once it reaches a
+  // counting assurance state (independently_validated / owner_confirmed / accepted_with_exception).
   const barRow = profileRows.find((r) => r.periodId === activePeriod?.id)
     ?? (profileRows.length ? profileRows[profileRows.length - 1] : null);
   const barValue = (kind: StrataBenefitValue['value_kind']): number | null =>
     barRow?.byKind[kind]?.value ?? null;
-  const barValidated = barRow?.byKind.realized?.validation_status === 'validated'
+  const barValidated = barRow?.byKind.realized && countsTowardRealization(barRow.byKind.realized.validation_status)
     ? barRow.byKind.realized.value
     : null;
 
@@ -271,21 +299,41 @@ function BenefitDetailSection({ benefit, isFirst, canAuthor, canAuthorValues }: 
         return (
           <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, rowGap: 4, minWidth: 0, flexWrap: 'wrap' }}>
             <span style={{ ...bodyStyle, fontVariantNumeric: 'tabular-nums' }}>{fmtUnit(v.value, benefit.unit)}</span>
-            {v.validation_status !== 'validated' ? (
-              <StatusLozenge
-                status={v.validation_status}
-                label={labelize(v.validation_status)}
-                appearance={VALIDATION_STATUS[v.validation_status] ?? 'default'}
-              />
-            ) : null}
-            {v.validation_status === 'pending' ? (
+            <StatusLozenge
+              status={v.validation_status}
+              label={labelize(v.validation_status)}
+              appearance={VALIDATION_STATUS[v.validation_status] ?? 'default'}
+            />
+            {/* PB-DEF-003 — only the transitions permitted from the current assurance state.
+                Server RPCs re-enforce role + SoD; rejections surface verbatim. */}
+            {canAuthorValues && (v.validation_status === 'reported' || v.validation_status === 'owner_confirmed') ? (
               <Button
                 appearance="default"
                 spacing="compact"
                 onClick={() => setDecision({ kind: 'validate-value', id: v.id, label: `${labelize(kind)} · ${row.periodName}`, valueKind: v.value_kind })}
                 testId={`strata-validate-value-${v.id}`}
               >
-                Validate
+                Assure
+              </Button>
+            ) : null}
+            {canAuthorValues && (v.validation_status === 'reported' || v.validation_status === 'owner_confirmed') ? (
+              <Button
+                appearance="subtle"
+                spacing="compact"
+                onClick={() => setAuthor({ kind: 'except-value', id: v.id, label: `${labelize(kind)} · ${row.periodName}`, valueKind: v.value_kind })}
+                testId={`strata-except-value-${v.id}`}
+              >
+                Accept w/ exception
+              </Button>
+            ) : null}
+            {canAuthorValues && v.validation_status !== 'reversed' ? (
+              <Button
+                appearance="subtle"
+                spacing="compact"
+                onClick={() => setDecision({ kind: 'reverse-value', id: v.id, label: `${labelize(kind)} · ${row.periodName}`, valueKind: v.value_kind })}
+                testId={`strata-reverse-value-${v.id}`}
+              >
+                Reverse
               </Button>
             ) : null}
           </span>
@@ -295,7 +343,7 @@ function BenefitDetailSection({ benefit, isFirst, canAuthor, canAuthorValues }: 
   ];
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 16, marginTop: 16 }} data-testid="strata-benefit-detail">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 16, marginTop: 16, paddingBottom: 48 }} data-testid="strata-benefit-detail">
       {/* Selected-benefit header — makes the register→detail link explicit */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
         <span style={labelStyle}>Showing</span>
@@ -323,7 +371,7 @@ function BenefitDetailSection({ benefit, isFirst, canAuthor, canAuthorValues }: 
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 'var(--ds-space-100)', flexWrap: 'wrap' }}>
             <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, letterSpacing: '0.04em', color: T.subtlest }}>VALUE POSITION{barRow ? ` · ${barRow.periodName}` : ''}</span>
             {pendingRealized > 0 ? (
-              <StatusLozenge status="pending" label={`${fmtUnit(pendingRealized, benefit.unit)} awaits attestation`} appearance="moved" />
+              <StatusLozenge status="reported" label={`${fmtUnit(pendingRealized, benefit.unit)} awaits assurance`} appearance="moved" />
             ) : null}
           </div>
           {benefit.value_hypothesis ? (
@@ -331,6 +379,42 @@ function BenefitDetailSection({ benefit, isFirst, canAuthor, canAuthorValues }: 
           ) : null}
         </div>
       ) : null}
+
+      {/* PB-DEF-002 · governed benefit definition + activation-readiness. */}
+      <StrataPanel
+        title="Governed definition"
+        icon={<ShieldCheck size={16} />}
+        testId="strata-benefit-governance"
+        actions={canAuthor ? (
+          <Button appearance="default" spacing="compact" onClick={() => setAuthor({ kind: 'edit-governance' })} testId="strata-edit-governance">
+            Edit governance
+          </Button>
+        ) : undefined}
+      >
+        {governanceCompleteQ.data === false ? (
+          <div style={{ padding: '0 16px 12px' }}>
+            <SectionMessage appearance="warning" title="Governance incomplete — cannot progress beyond Identified">
+              <p style={{ margin: 0 }}>A Strategic Objective, an attributable project/initiative, sponsor, reporting owner, owner, validator, baseline, calculation method, evidence, funding context and a realization start date are required before this benefit can be activated or accept official value reporting.</p>
+            </SectionMessage>
+          </div>
+        ) : governanceCompleteQ.data === true ? (
+          <div style={{ padding: '0 16px 8px' }}>
+            <StatusLozenge status="complete" label="Governance complete" appearance="success" />
+          </div>
+        ) : null}
+        <div style={{ padding: '0 16px 12px' }}>
+          <DefRow label="Strategic objective">{objectiveName(benefit.strategic_objective_id) ?? '—'}</DefRow>
+          <DefRow label="Governed KPI">{kpiName(benefit.governed_kpi_id) ?? '—'}</DefRow>
+          <DefRow label="Accountable sponsor">{govName(benefit.accountable_sponsor_id) ?? '—'}</DefRow>
+          <DefRow label="Reporting owner">{govName(benefit.reporting_owner_id) ?? '—'}</DefRow>
+          <DefRow label="Accountable owner">{govName(benefit.accountable_owner_id) ?? '—'}</DefRow>
+          <DefRow label="Baseline">{benefit.baseline == null ? '—' : fmtUnit(benefit.baseline, benefit.unit)}</DefRow>
+          <DefRow label="Calculation method">{benefit.calculation_method ?? '—'}</DefRow>
+          <DefRow label="Evidence">{benefit.evidence_reference ?? '—'}</DefRow>
+          <DefRow label="Funding context">{benefit.funding_context ?? '—'}</DefRow>
+          <DefRow label="Realization">{benefit.realization_start ? `${fmtDate(benefit.realization_start)} → ${benefit.realization_end ? fmtDate(benefit.realization_end) : '—'}` : '—'}</DefRow>
+        </div>
+      </StrataPanel>
 
       <StrataPanel
         title="Value profile"
@@ -379,7 +463,7 @@ function BenefitDetailSection({ benefit, isFirst, canAuthor, canAuthorValues }: 
               ariaLabel={`Value profile for ${benefit.name}`}
             />
             <p style={{ fontSize: 'var(--ds-font-size-100)', color: T.subtlest, margin: 0, padding: '8px 16px 12px' }}>
-              Realized values require independent finance validation.
+              Realized values count only once assured — owner-confirmed, independently validated, or accepted with exception.
             </p>
           </>
         )}
@@ -577,6 +661,12 @@ function BenefitDetailSection({ benefit, isFirst, canAuthor, canAuthorValues }: 
         )}
       </StrataPanel>
 
+      {/* PB-DEF-008 · benefit definition + assurance history, reachable from the record itself. */}
+      <StrataAuditHistory entityTable="strata_benefits" entityId={benefit.id} title="Governance history" />
+
+      {/* PB-DEF-010 · reviews that reference this benefit, navigable both ways. */}
+      <StrataReviewLinks targetType="benefit" targetId={benefit.id} />
+
       {/* Governance verdict modals — verdicts are governed per-stage config;
           the RPC rejects anything outside stage.decision_options + enforces SoD. */}
       <StrataDecisionModal
@@ -602,7 +692,7 @@ function BenefitDetailSection({ benefit, isFirst, canAuthor, canAuthorValues }: 
       <StrataDecisionModal
         open={decision?.kind === 'validate-value'}
         onClose={() => setDecision(null)}
-        title={`Validate value · ${decision?.kind === 'validate-value' ? decision.label : ''}`}
+        title={`Assure value · ${decision?.kind === 'validate-value' ? decision.label : ''}`}
         description="Owner confirmed = the owner stands behind their own number. Independently validated = someone other than the submitter checked it (the submitter cannot independently validate their own value). Both count toward realization; only independent validation asserts independence."
         /* D-4: the neutral assurance vocabulary. 'Validate' claimed an assurance nobody performed —
            the RPC now rejects it outright. Owner confirmed and Independently validated are different
@@ -635,6 +725,101 @@ function BenefitDetailSection({ benefit, isFirst, canAuthor, canAuthorValues }: 
         }}
         testId="strata-validate-value-modal"
       />
+      {/* PB-DEF-003 · reverse / supersede — append-only; the value and its history are preserved. */}
+      <StrataDecisionModal
+        open={decision?.kind === 'reverse-value'}
+        onClose={() => setDecision(null)}
+        title={`Reverse / supersede · ${decision?.kind === 'reverse-value' ? decision.label : ''}`}
+        description="Reversal is append-only: the value and its assurance history are preserved, but it stops counting toward realization. A reason is required and audited."
+        options={[{ value: 'reversed', label: 'Reverse / supersede', appearance: 'danger' }]}
+        requireNote
+        onConfirm={async (_verdict, note) => {
+          if (decision?.kind !== 'reverse-value') return;
+          await valueApi.reverseBenefitValue(decision.id, note);
+          try {
+            if (decision.valueKind === 'realized') {
+              await valueApi.benefitRealization(benefit.id);
+              if (benefit.portfolio_id) await valueApi.valueAtRisk(benefit.portfolio_id);
+            }
+          } finally {
+            invalidate();
+          }
+        }}
+        testId="strata-reverse-value-modal"
+      />
+      {/* PB-DEF-003 · accept with exception — Strategy Office, different actor, visible reason + evidence. */}
+      <StrataFormModal
+        open={author?.kind === 'except-value'}
+        onClose={() => setAuthor(null)}
+        title={`Accept with exception · ${author?.kind === 'except-value' ? author.label : ''}`}
+        submitLabel="Accept with exception"
+        description="Strategy Office only, and never the submitter (segregation of duties). The value counts by authorization despite failing normal assurance; the reason and evidence stay visible downstream and never read as independent validation."
+        fields={[
+          { key: 'reason', label: 'Exception reason', kind: 'textarea', required: true },
+          { key: 'evidence', label: 'Evidence', kind: 'textarea', required: true, helper: 'Reference or link substantiating the exception' },
+        ]}
+        onSubmit={async (v) => {
+          if (author?.kind !== 'except-value') return;
+          await valueApi.authorizeBenefitException(author.id, String(v.reason ?? ''), String(v.evidence ?? ''));
+          try {
+            if (author.valueKind === 'realized') {
+              await valueApi.benefitRealization(benefit.id);
+              if (benefit.portfolio_id) await valueApi.valueAtRisk(benefit.portfolio_id);
+            }
+          } finally {
+            invalidate();
+          }
+        }}
+        testId="strata-except-value-modal"
+      />
+      {/* PB-DEF-002 · edit the governed benefit definition (reuses governed objective/KPI references). */}
+      <StrataFormModal
+        open={author?.kind === 'edit-governance'}
+        onClose={() => setAuthor(null)}
+        title={`Governed definition · ${benefit.name}`}
+        submitLabel="Save governance"
+        description="Every benefit must trace to a Strategic Objective and at least one attributable project/initiative, and carry sponsor, reporting owner, baseline, calculation method, evidence, funding and realization dates before it can progress beyond Identified. Governed objectives and KPIs are reused — never re-created."
+        fields={[
+          { key: 'strategicObjectiveId', label: 'Strategic objective', kind: 'select', options: objectives.map((o) => ({ value: o.id, label: o.name })) },
+          { key: 'governedKpiId', label: 'Governed KPI (reuse)', kind: 'select', options: kpis.map((k) => ({ value: k.id, label: k.name })), helper: 'Reuse an existing KPI where measurement is needed' },
+          { key: 'sponsorId', label: 'Accountable sponsor', kind: 'user' },
+          { key: 'reportingOwnerId', label: 'Reporting owner', kind: 'user' },
+          { key: 'accountableOwnerId', label: 'Accountable owner', kind: 'user' },
+          { key: 'baseline', label: 'Baseline', kind: 'number', min: 0, helper: benefit.unit ?? undefined },
+          { key: 'baselinePeriodId', label: 'Baseline period', kind: 'select', options: periods.map((p) => ({ value: p.id, label: p.name })) },
+          { key: 'calculationMethod', label: 'Calculation method', kind: 'text' },
+          { key: 'evidenceReference', label: 'Evidence', kind: 'textarea' },
+          { key: 'fundingContext', label: 'Funding context', kind: 'text' },
+          { key: 'realizationStart', label: 'Realization start', kind: 'date' },
+          { key: 'realizationEnd', label: 'Realization end', kind: 'date' },
+        ]}
+        initial={{
+          strategicObjectiveId: benefit.strategic_objective_id, governedKpiId: benefit.governed_kpi_id,
+          sponsorId: benefit.accountable_sponsor_id, reportingOwnerId: benefit.reporting_owner_id,
+          accountableOwnerId: benefit.accountable_owner_id, baseline: benefit.baseline,
+          baselinePeriodId: benefit.baseline_period_id, calculationMethod: benefit.calculation_method,
+          evidenceReference: benefit.evidence_reference, fundingContext: benefit.funding_context,
+          realizationStart: benefit.realization_start, realizationEnd: benefit.realization_end,
+        }}
+        onSubmit={async (v) => {
+          await valueApi.setBenefitGovernance(benefit.id, {
+            strategicObjectiveId: (v.strategicObjectiveId as string | null) ?? null,
+            governedKpiId: (v.governedKpiId as string | null) ?? null,
+            sponsorId: (v.sponsorId as string | null) ?? null,
+            reportingOwnerId: (v.reportingOwnerId as string | null) ?? null,
+            accountableOwnerId: (v.accountableOwnerId as string | null) ?? null,
+            baseline: (v.baseline as number | null) ?? null,
+            baselinePeriodId: (v.baselinePeriodId as string | null) ?? null,
+            calculationMethod: (v.calculationMethod as string | null) ?? null,
+            evidenceReference: (v.evidenceReference as string | null) ?? null,
+            realizationStart: (v.realizationStart as string | null) ?? null,
+            realizationEnd: (v.realizationEnd as string | null) ?? null,
+            fundingContext: (v.fundingContext as string | null) ?? null,
+          });
+          invalidate();
+        }}
+        testId="strata-edit-governance-modal"
+      />
 
       {/* ── Authoring modals (Lane E) — RPC-validated; rejections surface verbatim ── */}
       <StrataFormModal
@@ -651,7 +836,7 @@ function BenefitDetailSection({ benefit, isFirst, canAuthor, canAuthorValues }: 
           { key: 'confidence', label: 'Confidence', kind: 'number', min: 0, max: 1, step: 0.05, helper: '0–1' },
           {
             key: 'lifecycleStage', label: 'Lifecycle stage', kind: 'select', options: LIFECYCLE_STAGE_OPTIONS,
-            helper: 'Forward-only (forecast revised may step back); finance validated is set by value validation',
+            helper: 'Forward-only (forecast revised may step back); the independently-validated stage is reached through value assurance, not by hand',
           },
         ]}
         initial={{
@@ -680,7 +865,7 @@ function BenefitDetailSection({ benefit, isFirst, canAuthor, canAuthorValues }: 
         open={author?.kind === 'add-value'}
         onClose={() => setAuthor(null)}
         title={`Add value · ${benefit.name}`}
-        description="Values enter as pending; realized values must be validated by a different user than the submitter."
+        description="Values enter as reported (no assurance yet); realized values must be independently validated by a different user than the submitter."
         fields={[
           { key: 'valueKind', label: 'Value kind', kind: 'select', required: true, options: VALUE_KIND_OPTIONS },
           {
@@ -813,6 +998,7 @@ function StrataPortfolioManageView() {
 
   /** Page-level authoring modals (portfolio create/edit, benefit create). */
   const [portfolioModal, setPortfolioModal] = useState<'create' | 'edit' | null>(null);
+  const [portfolioLifecycle, setPortfolioLifecycle] = useState<'close' | 'cancel' | null>(null);
   const [benefitCreateOpen, setBenefitCreateOpen] = useState(false);
   /** Gate scheduling launched from a membership row (initiative / project card). */
   const [memberGateSubject, setMemberGateSubject] = useState<StrataGateSubject | null>(null);
@@ -909,12 +1095,49 @@ function StrataPortfolioManageView() {
     />
   ) : null;
 
+  // PB-DEF-007 · governed lifecycle appearance + the transitions permitted from each state.
+  const PORTFOLIO_STATUS_APPEARANCE: Record<string, LozengeAppearance> = {
+    draft: 'default', submitted: 'inprogress', active: 'success',
+    closed: 'moved', cancelled: 'removed', archived: 'default',
+  };
   const headerActions = (
-    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
       {portfolioSwitcher}
+      {portfolio ? (
+        <StatusLozenge status={portfolio.status} label={labelize(portfolio.status)} appearance={PORTFOLIO_STATUS_APPEARANCE[portfolio.status] ?? 'default'} />
+      ) : null}
       {canAuthor && portfolio ? (
         <Button appearance="default" spacing="compact" onClick={() => setPortfolioModal('edit')} testId="strata-edit-portfolio">
           Edit portfolio
+        </Button>
+      ) : null}
+      {/* PB-DEF-007 · only the transitions permitted from the current status; server re-enforces. */}
+      {canAuthor && portfolio?.status === 'draft' ? (
+        <Button appearance="primary" spacing="compact" testId="strata-portfolio-submit"
+          onClick={async () => { try { await valueApi.submitPortfolio(portfolio.id); invalidate(); } catch (e) { window.alert((e as Error).message); } }}>
+          Submit for approval
+        </Button>
+      ) : null}
+      {canAuthor && portfolio?.status === 'submitted' ? (
+        <Button appearance="primary" spacing="compact" testId="strata-portfolio-approve"
+          onClick={async () => { try { await valueApi.approvePortfolio(portfolio.id); invalidate(); } catch (e) { window.alert((e as Error).message); } }}>
+          Approve
+        </Button>
+      ) : null}
+      {canAuthor && portfolio?.status === 'active' ? (
+        <Button appearance="default" spacing="compact" testId="strata-portfolio-close" onClick={() => setPortfolioLifecycle('close')}>
+          Close
+        </Button>
+      ) : null}
+      {canAuthor && portfolio && ['draft', 'submitted', 'active'].includes(portfolio.status) ? (
+        <Button appearance="subtle" spacing="compact" testId="strata-portfolio-cancel" onClick={() => setPortfolioLifecycle('cancel')}>
+          Cancel
+        </Button>
+      ) : null}
+      {canAuthor && portfolio && ['active', 'closed', 'cancelled'].includes(portfolio.status) ? (
+        <Button appearance="subtle" spacing="compact" testId="strata-portfolio-archive"
+          onClick={async () => { try { await valueApi.archivePortfolio(portfolio.id); invalidate(); } catch (e) { window.alert((e as Error).message); } }}>
+          Archive
         </Button>
       ) : null}
       {canAuthor ? (
@@ -1107,16 +1330,13 @@ function StrataPortfolioManageView() {
               options: approvedCategories.map((c) => ({ value: c.id, label: c.name })),
               helper: 'Approved value categories only',
             },
-            { key: 'ownerId', label: 'Owner', kind: 'user' },
+            { key: 'ownerId', label: 'Owner', kind: 'user', helper: 'Required before the portfolio can be submitted for approval' },
             { key: 'valueTarget', label: 'Value target', kind: 'number', min: 0, helper: 'SAR' },
-            {
-              key: 'status', label: 'Status', kind: 'select', required: true, options: PORTFOLIO_STATUS_OPTIONS,
-              helper: 'Archived portfolios leave active tracking',
-            },
+            // PB-DEF-007 · status is no longer a free edit — it moves through the governed lifecycle actions.
           ]}
           initial={{
             name: portfolio.name, description: portfolio.description, categoryId: portfolio.category_id,
-            ownerId: portfolio.owner_id, valueTarget: portfolio.value_target, status: portfolio.status,
+            ownerId: portfolio.owner_id, valueTarget: portfolio.value_target,
           }}
           onSubmit={async (v) => {
             await valueApi.updatePortfolio(portfolio.id, {
@@ -1125,7 +1345,6 @@ function StrataPortfolioManageView() {
               categoryId: (v.categoryId as string | null) ?? undefined,
               ownerId: (v.ownerId as string | null) ?? undefined,
               valueTarget: v.valueTarget != null ? Number(v.valueTarget) : undefined,
-              status: (v.status as 'active' | 'archived' | null) ?? undefined,
               // Clear affordances: the field opened with a value and the user emptied it.
               clearOwner: wasCleared(portfolio.owner_id, v.ownerId),
               clearCategory: wasCleared(portfolio.category_id, v.categoryId),
@@ -1133,6 +1352,27 @@ function StrataPortfolioManageView() {
             invalidate();
           }}
           testId="strata-edit-portfolio-modal"
+        />
+      ) : null}
+      {/* PB-DEF-007 · close / cancel require a reason + evidence (server-enforced, audited). */}
+      {portfolio ? (
+        <StrataFormModal
+          open={portfolioLifecycle != null}
+          onClose={() => setPortfolioLifecycle(null)}
+          title={`${portfolioLifecycle === 'cancel' ? 'Cancel' : 'Close'} portfolio · ${portfolio.name}`}
+          submitLabel={portfolioLifecycle === 'cancel' ? 'Cancel portfolio' : 'Close portfolio'}
+          description={`${portfolioLifecycle === 'cancel' ? 'Cancellation' : 'Closure'} requires a reason and evidence; the transition is audited with before/after status. Linked benefits, members and issued history are preserved.`}
+          fields={[
+            { key: 'reason', label: 'Reason', kind: 'textarea', required: true },
+            { key: 'evidence', label: 'Evidence', kind: 'textarea', required: true },
+          ]}
+          onSubmit={async (v) => {
+            const reason = String(v.reason ?? ''); const evidence = String(v.evidence ?? '');
+            if (portfolioLifecycle === 'cancel') await valueApi.cancelPortfolio(portfolio.id, reason, evidence);
+            else await valueApi.closePortfolio(portfolio.id, reason, evidence);
+            invalidate();
+          }}
+          testId="strata-portfolio-lifecycle-modal"
         />
       ) : null}
       <StrataFormModal

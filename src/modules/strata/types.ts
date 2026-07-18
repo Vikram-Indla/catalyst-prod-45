@@ -687,6 +687,9 @@ export interface StrataInitiativeProject {
 }
 
 // ── Value / VMO ──────────────────────────────────────────────────────────────
+/** PB-DEF-007 · governed portfolio lifecycle states. */
+export type PortfolioStatus = 'draft' | 'submitted' | 'active' | 'closed' | 'cancelled' | 'archived';
+
 export interface StrataPortfolio {
   id: string;
   name: string;
@@ -695,7 +698,12 @@ export interface StrataPortfolio {
   category_id: string | null;
   owner_id: string | null;
   value_target: number | null;
-  status: 'active' | 'archived';
+  status: PortfolioStatus;
+  // PB-DEF-007 · transition provenance (nullable)
+  submitted_by?: string | null;
+  approved_by?: string | null;
+  closure_reason?: string | null;
+  closure_evidence?: string | null;
 }
 
 export type BenefitLifecycleStage =
@@ -718,6 +726,19 @@ export interface StrataBenefit {
   value_hypothesis: string | null;
   causal_mechanism: string | null;
   confidence: number | null;
+  // PB-DEF-002 · governed definition (nullable — legacy records are visibly incomplete)
+  strategic_objective_id: string | null;
+  governed_kpi_id: string | null;
+  accountable_sponsor_id: string | null;
+  reporting_owner_id: string | null;
+  accountable_owner_id: string | null;
+  baseline: number | null;
+  baseline_period_id: string | null;
+  calculation_method: string | null;
+  evidence_reference: string | null;
+  realization_start: string | null;
+  realization_end: string | null;
+  funding_context: string | null;
 }
 
 /** D-4 · E-6 · F-7 — the six states a benefit value's assurance can be in. */
@@ -952,6 +973,16 @@ export interface StrataDecision {
   due_date: string | null;
   status: 'open' | 'decided' | 'closed';
   evidence_refs: Array<{ entity_type: string; entity_id?: string; note?: string }> | null;
+  /**
+   * RD-DEF-003 outcome vocabulary — SEPARATE from decision_type. NULL on open/draft decisions
+   * and on history recorded before the vocabulary existed (absent, not 'noted').
+   */
+  outcome: 'approved' | 'rejected' | 'deferred' | 'escalated' | 'noted' | null;
+  rationale: string | null;
+  /** The distinct authorized approver (server-enforced ≠ created_by). NULL on pre-vocabulary history. */
+  approved_by: string | null;
+  approved_at: string | null;
+  created_by: string | null;
 }
 
 export interface StrataAction {
@@ -1091,6 +1122,8 @@ export interface StrataReview {
   scheduled_for: string | null;
   /** D-6: NULL means "not recorded", NEVER "nobody chaired it". */
   chair_id: string | null;
+  /** RD-DEF-001: NULL means "not recorded", never "nobody accountable". */
+  accountable_owner_id: string | null;
   agenda: unknown;
   note: string | null;
   created_by: string | null;
@@ -1111,7 +1144,8 @@ export interface StrataReviewParticipant {
  * R2/E1 · `strata_review_readiness` view. Readiness is DERIVED, never stored — a stored flag goes
  * stale the moment the snapshot or pack behind it moves.
  *
- * `is_ready` requires a LOCKED snapshot only. `pack_attached` is reported SEPARATELY and is
+ * RD-DEF-002: `is_ready` now requires a LOCKED snapshot, a chair, an accountable owner, ≥1
+ * participant and a non-empty agenda. `pack_attached` remains reported SEPARATELY and is
  * deliberately not part of readiness: a review can legitimately convene on locked numbers before
  * its pack is built. Do not AND them together in the UI — that would invent a gate the DB rejected.
  */
@@ -1124,6 +1158,10 @@ export interface StrataReviewReadiness {
   is_ready: boolean;
   /** Every gap, named — so a consumer states WHY rather than rendering a bare status. */
   blocking_reasons: string[];
+  chair_present: boolean;
+  accountable_present: boolean;
+  participants_present: boolean;
+  agenda_present: boolean;
 }
 
 // ── Notifications (CAT-STRATA-CLOSEOUT-20260710-001 W3) ──────────────────────

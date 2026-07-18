@@ -1061,8 +1061,11 @@ export function StrataPanel({
         display: 'flex', flexDirection: 'column', overflow: 'hidden',
       }}
     >
+      {/* RD-DEF-010: header WRAPS at narrow viewports (1024×768). Without flexWrap the section's
+        * overflow:hidden silently amputated header actions (e.g. Generate board pack) with no
+        * recovery — actions must drop to their own line instead of being clipped. */}
       <div style={{
-        display: 'flex', alignItems: 'center', gap: 8,
+        display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap',
         padding: '12px 16px', borderBottom: `1px solid ${T.border}`, flexShrink: 0,
       }}>
         {icon ? <span aria-hidden style={{ display: 'inline-flex', color: T.subtle }}>{icon}</span> : null}
@@ -1075,7 +1078,7 @@ export function StrataPanel({
             {count}
           </span>
         ) : null}
-        <span style={{ marginLeft: 'auto', display: 'inline-flex', alignItems: 'center', gap: 8 }}>{actions}</span>
+        <span style={{ marginLeft: 'auto', display: 'inline-flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', minWidth: 0 }}>{actions}</span>
       </div>
       {/* Table panels (noPadding) scroll horizontally instead of hard-clipping
         * the last columns at the viewport edge (KPI Achievement / Validator bug). */}

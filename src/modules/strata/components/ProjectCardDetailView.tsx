@@ -25,15 +25,17 @@ import type { Column } from '@/components/shared/JiraTable';
 import { Routes } from '@/lib/routes';
 import { executionApi, valueApi } from '../domain';
 import {
-  useBenefitProjectCards, useBenefits, useCardAudit, useDependencies, useExecutionLinks, useMilestones, useProfileNames,
+  useBenefitProjectCards, useBenefits, useCardAudit, usePortfolios, useSharedBenefitAttributions,
+  useDependencies, useExecutionLinks, useMilestones, useProfileNames,
   useProjectCardFieldConfigs, useProjectCardPicklists, useProjectCardSectionConfigs, useProjectKpis,
   useProjectObjectives, useInvalidateStrata, useKpis, useRisks, useStrataContext, useStrataRoles,
   useStrataUserId, useStrategyElements,
 } from '../hooks/useStrata';
 import type {
-  StrataBenefitValue, StrataDependency, StrataMilestone, StrataProjectCard, StrataRisk, StrataRole,
+  StrataBenefit, StrataBenefitValue, StrataDependency, StrataMilestone, StrataPortfolio, StrataProjectCard, StrataRisk, StrataRole,
   StrataStrategyElement,
 } from '../types';
+import { countsTowardRealization } from '../assurance';
 import { fmtDate, fmtSarCompact, labelize } from './format';
 import { StrataFormModal } from './authoring';
 import type { StrataFormValues } from './authoring';
@@ -295,12 +297,39 @@ export function ProjectCardDetailView({ card, theme }: {
     return out.sort((a, b) => b.impactDays - a.impactDays);
   }, [milestones, projectDependencies, risks]);
 
-  // ── Value contribution (anchor 07) — planned/forecast/realized for THIS card's
-  // linked benefits (benefit_project_cards ⋈ benefit_values × attribution share,
-  // active period else first). Zero-assumption: dash per kind when absent. ──────
+  // ── Reverse benefit traceability (PB-DEF-006) — from THIS Project Card back to the
+  // portfolio benefit(s) that attribute value to it, using the GOVERNED attribution rule
+  // (shared_benefit splits), never inferred from names or portfolio membership. ─────────
   const benefitLinks = useBenefitProjectCards().data ?? [];
+  const sharedAttrRules = (useSharedBenefitAttributions().data ?? []) as Array<{ id: string; benefit_id: string; rule_type: string; definition: unknown }>;
+  const allBenefits = (useBenefits().data ?? []) as StrataBenefit[];
+  const portfolios = (usePortfolios().data ?? []) as StrataPortfolio[];
+
+  // Governed attribution edges for this card: rule splits (portfolio attribution UI) win over any
+  // direct benefit_project_cards link. pct is 0–100.
+  const cardEdges = useMemo(() => {
+    const byBenefit = new Map<string, { benefit_id: string; pct: number; ruleType: string; ruleId: string | null }>();
+    for (const l of benefitLinks) {
+      if (l.project_card_id !== card.id) continue;
+      byBenefit.set(l.benefit_id, {
+        benefit_id: l.benefit_id, pct: l.attribution_share == null ? 100 : Number(l.attribution_share),
+        ruleType: 'direct_link', ruleId: null,
+      });
+    }
+    for (const r of sharedAttrRules) {
+      const def = r.definition as { splits?: Array<{ project_card_id?: string; pct?: number }> } | null;
+      const splits = Array.isArray(def?.splits) ? def!.splits : [];
+      for (const s of splits) {
+        if (s?.project_card_id !== card.id || typeof s.pct !== 'number') continue;
+        byBenefit.set(r.benefit_id, { benefit_id: r.benefit_id, pct: s.pct, ruleType: r.rule_type, ruleId: r.id });
+      }
+    }
+    return Array.from(byBenefit.values());
+  }, [benefitLinks, sharedAttrRules, card.id]);
+
+  const cardBenefitIds = useMemo(() => cardEdges.map((e) => e.benefit_id), [cardEdges]);
+
   // PC-DEF-005 — governed benefit linkage, per-card audit history, effective context.
-  const allBenefits = useBenefits().data ?? [];
   const benefitNameById = useMemo(() => new Map(allBenefits.map((b) => [b.id, b.name])), [allBenefits]);
   const linkedBenefits = useMemo(() => benefitLinks.filter((l) => l.project_card_id === card.id), [benefitLinks, card.id]);
   const auditQ = useCardAudit(card.id);
@@ -316,15 +345,6 @@ export function ProjectCardDetailView({ card, theme }: {
   // Hide the guaranteed-to-fail approve action (SoD: approver ≠ creator ≠ submitter); server still enforces.
   const canApprove = canArchive && !isTerminal && approval.approval_status === 'submitted'
     && currentUserId != null && currentUserId !== approval.created_by && currentUserId !== approval.submitted_by;
-  const cardBenefitIds = useMemo(
-    () => Array.from(new Set(benefitLinks.filter((l) => l.project_card_id === card.id).map((l) => l.benefit_id))),
-    [benefitLinks, card.id],
-  );
-  const cardBenefitShare = useMemo(() => {
-    const m = new Map<string, number>();
-    benefitLinks.filter((l) => l.project_card_id === card.id).forEach((l) => m.set(l.benefit_id, l.attribution_share ?? 1));
-    return m;
-  }, [benefitLinks, card.id]);
   const benefitValueQueries = useQueries({
     queries: cardBenefitIds.map((bid) => ({
       queryKey: ['strata', 'benefit-values', bid],
@@ -332,21 +352,34 @@ export function ProjectCardDetailView({ card, theme }: {
       staleTime: 30_000,
     })),
   });
-  const valueContribution = useMemo(() => {
-    const sumKind = (kind: StrataBenefitValue['value_kind']): number | null => {
-      let total = 0; let any = false;
-      cardBenefitIds.forEach((bid, i) => {
-        const rows = (benefitValueQueries[i]?.data ?? []) as StrataBenefitValue[];
+
+  const reverseTrace = useMemo(() => {
+    return cardEdges.map((edge, i) => {
+      const benefit = allBenefits.find((b) => b.id === edge.benefit_id) ?? null;
+      const portfolio = benefit?.portfolio_id ? portfolios.find((p) => p.id === benefit.portfolio_id) ?? null : null;
+      const rows = (benefitValueQueries[i]?.data ?? []) as StrataBenefitValue[];
+      const pick = (kind: StrataBenefitValue['value_kind']) => {
         const of = rows.filter((v) => v.value_kind === kind);
-        const pick = of.find((v) => v.period_id === activePeriod?.id) ?? of[0];
-        if (pick) { total += pick.value * (cardBenefitShare.get(bid) ?? 1); any = true; }
-      });
-      return any ? total : null;
-    };
-    return { hasBenefit: cardBenefitIds.length > 0, planned: sumKind('planned'), forecast: sumKind('forecast'), realized: sumKind('realized') };
+        return of.find((v) => v.period_id === activePeriod?.id) ?? of[0] ?? null;
+      };
+      const planned = pick('planned'); const forecast = pick('forecast'); const realized = pick('realized');
+      const attributable = planned ? (planned.value * edge.pct) / 100 : null;
+      const eligibleRealized = realized && countsTowardRealization(realized.validation_status)
+        ? (realized.value * edge.pct) / 100 : null;
+      const reportedRealized = realized && realized.validation_status === 'reported'
+        ? (realized.value * edge.pct) / 100 : null;
+      return { edge, benefit, portfolio, planned, forecast, realized, attributable, eligibleRealized, reportedRealized };
+    });
     // benefitValueQueries is fresh each render; key on resolved-count + period.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [cardBenefitIds, activePeriod?.id, cardBenefitShare, benefitValueQueries.map((q) => (q.data ? 1 : 0)).join('')]);
+  }, [cardEdges, allBenefits, portfolios, activePeriod?.id, benefitValueQueries.map((q) => (q.data ? 1 : 0)).join('')]);
+
+  const stakeTotal = useMemo(() => {
+    const vals = reverseTrace.map((t) => t.attributable).filter((x): x is number => x != null);
+    return vals.length ? vals.reduce((s, v) => s + v, 0) : null;
+  }, [reverseTrace]);
+  const hasBenefit = cardEdges.length > 0;
+  const periodLabel = activePeriod?.name ?? null;
 
   const milestoneColumns = useMemo<Column<StrataMilestone>[]>(() => [
     { id: 'name', label: 'Milestone', flex: true, cell: ({ row }) => <span style={{ fontWeight: 600, color: T.text }}>{row.name}</span> },
@@ -776,18 +809,46 @@ export function ProjectCardDetailView({ card, theme }: {
             <p style={{ ...captionStyle, margin: '8px 0 0', lineHeight: 1.5 }}>STRATA summarizes and links — the work items live in {labelize(card.source_system)}. This card never becomes a task tracker.</p>
           </DetailPanel>
 
-          {valueContribution.hasBenefit ? (
-            <DetailPanel label="VALUE CONTRIBUTION" testId="strata-project-value">
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--ds-space-075)', fontSize: 'var(--ds-font-size-200)', color: T.subtle }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', gap: 8 }}><span>Planned</span><strong style={{ color: T.text, fontVariantNumeric: 'tabular-nums' }}>{valueContribution.planned == null ? '—' : fmtSarCompact(valueContribution.planned)}</strong></div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', gap: 8 }}><span>Forecast</span><strong style={{ color: forecastLate ? 'var(--ds-text-danger)' : T.text, fontVariantNumeric: 'tabular-nums' }}>{valueContribution.forecast == null ? '—' : fmtSarCompact(valueContribution.forecast)}</strong></div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', gap: 8 }}><span>Realized</span><strong style={{ color: T.text, fontVariantNumeric: 'tabular-nums' }}>{valueContribution.realized == null ? '—' : fmtSarCompact(valueContribution.realized)}</strong></div>
+          {hasBenefit ? (
+            <DetailPanel label="BENEFIT TRACEABILITY" testId="strata-project-value">
+              <div style={{ display: 'flex', justifyContent: 'space-between', gap: 8, marginBottom: 'var(--ds-space-100)', fontSize: 'var(--ds-font-size-200)' }}>
+                <span style={{ color: T.subtle }}>Benefit at stake{periodLabel ? ` · ${periodLabel}` : ''}</span>
+                <strong style={{ color: T.text, fontVariantNumeric: 'tabular-nums' }} data-testid="strata-project-stake">
+                  {stakeTotal == null ? '—' : fmtSarCompact(stakeTotal)}
+                </strong>
               </div>
-              {(valueContribution.realized ?? 0) <= 0 && (derivedProgress ?? 0) > 0 ? (
-                <div style={{ marginTop: 'var(--ds-space-100)', padding: 'var(--ds-space-100) var(--ds-space-150)', borderRadius: 6, background: 'var(--ds-background-danger)', fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-danger)', lineHeight: 1.5 }}>
-                  Delivery is {Math.round((derivedProgress ?? 0) * 100)}% complete but <strong>no value is realized yet</strong> — completion ≠ benefit.
-                </div>
-              ) : null}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--ds-space-125)' }}>
+                {reverseTrace.map((t) => (
+                  <div key={t.edge.benefit_id} style={{ borderTop: `1px solid ${T.border}`, paddingTop: 'var(--ds-space-100)', display: 'flex', flexDirection: 'column', gap: 4, fontSize: 'var(--ds-font-size-100)', color: T.subtle }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
+                      {t.benefit?.slug ? (
+                        <Button appearance="link" spacing="none" onClick={() => window.location.assign(Routes.strata.benefit(t.benefit!.slug!))}>
+                          {t.benefit?.name ?? 'Benefit'}
+                        </Button>
+                      ) : <span style={{ color: T.text, fontWeight: 600 }}>{t.benefit?.name ?? 'Benefit'}</span>}
+                      {t.realized ? (
+                        <StatusLozenge status={t.realized.validation_status} label={labelize(t.realized.validation_status)}
+                          appearance={countsTowardRealization(t.realized.validation_status) ? 'success' : t.realized.validation_status === 'reported' ? 'moved' : 'removed'} />
+                      ) : null}
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', gap: 8 }}>
+                      <span>Portfolio</span>
+                      {t.portfolio?.slug ? (
+                        <Button appearance="link" spacing="none" onClick={() => window.location.assign(Routes.strata.portfolioDetail(t.portfolio!.slug!))}>{t.portfolio.name}</Button>
+                      ) : <span style={{ color: T.text }}>{t.portfolio?.name ?? '—'}</span>}
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', gap: 8 }}><span>Attribution rule</span><span style={{ color: T.text }}>{labelize(t.edge.ruleType)} · {t.edge.pct}%</span></div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', gap: 8 }}><span>Source (planned)</span><span style={{ color: T.text, fontVariantNumeric: 'tabular-nums' }}>{t.planned == null ? '—' : `${fmtSarCompact(t.planned.value)} × ${t.edge.pct}%`}</span></div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', gap: 8 }}><span>Attributable</span><strong style={{ color: T.text, fontVariantNumeric: 'tabular-nums' }}>{t.attributable == null ? '—' : fmtSarCompact(t.attributable)}</strong></div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', gap: 8 }}><span>Forecast</span><span style={{ color: forecastLate ? 'var(--ds-text-danger)' : T.text, fontVariantNumeric: 'tabular-nums' }}>{t.forecast == null ? '—' : fmtSarCompact(t.forecast.value * t.edge.pct / 100)}</span></div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', gap: 8 }}><span>Eligible realized</span><span style={{ color: T.text, fontVariantNumeric: 'tabular-nums' }}>{t.eligibleRealized == null ? '—' : fmtSarCompact(t.eligibleRealized)}</span></div>
+                    {t.reportedRealized != null ? (
+                      <div style={{ display: 'flex', justifyContent: 'space-between', gap: 8 }}><span>Reported (awaiting assurance)</span><span style={{ color: 'var(--ds-text-warning)', fontVariantNumeric: 'tabular-nums' }}>{fmtSarCompact(t.reportedRealized)}</span></div>
+                    ) : null}
+                  </div>
+                ))}
+              </div>
+              <p style={{ ...captionStyle, margin: '8px 0 0', lineHeight: 1.5 }}>Attributable value uses the governed attribution rule — never inferred from portfolio membership. Eligible realized counts only assured values.</p>
             </DetailPanel>
           ) : null}
         </aside>
