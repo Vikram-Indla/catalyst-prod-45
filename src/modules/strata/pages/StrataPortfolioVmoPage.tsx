@@ -38,8 +38,8 @@ import {
 } from '@/modules/strata/components/format';
 import {
   useAssumptions, useBenefitBySlug, useBenefitRealization, useBenefits, useBenefitValues, useCalcValues,
-  useGateInstances, useGateModels, useInvalidateStrata, usePortfolios, useProfileNames,
-  useProjectCards, useStrataContext, useStrataRoles, useValueAtRisk, useValueCategories,
+  useGateInstances, useGateModels, useInvalidateStrata, useKpis, usePortfolios, useProfileNames,
+  useProjectCards, useStrataContext, useStrataRoles, useStrategyElements, useValueAtRisk, useValueCategories,
 } from '@/modules/strata/hooks/useStrata';
 import type {
   BenefitAssuranceStatus,
@@ -211,6 +211,7 @@ function BenefitDetailSection({ benefit, isFirst, canAuthor, canAuthorValues }: 
     | { kind: 'edit-assumption'; assumption: StrataAssumption }
     | { kind: 'add-rule' }
     | { kind: 'except-value'; id: string; label: string; valueKind: StrataBenefitValue['value_kind'] }
+    | { kind: 'edit-governance' }
     | null
   >(null);
   const [gateSubject, setGateSubject] = useState<StrataGateSubject | null>(null);
@@ -228,6 +229,21 @@ function BenefitDetailSection({ benefit, isFirst, canAuthor, canAuthorValues }: 
   const values = valuesQ.data ?? [];
   const assumptions = assumptionsQ.data ?? [];
   const projectCards = projectCardsQ.data ?? [];
+  // PB-DEF-002 · governed-definition reference data + completeness.
+  const objectives = (useStrategyElements().data ?? []).filter((e) => e.element_type === 'objective');
+  const kpis = useKpis().data ?? [];
+  const govProfiles = useProfileNames();
+  const govName = (id: string | null | undefined): string | null =>
+    id ? (govProfiles.data?.get(id)?.name ?? `${id.slice(0, 8)}…`) : null;
+  const objectiveName = (id: string | null | undefined): string | null =>
+    id ? (objectives.find((o) => o.id === id)?.name ?? null) : null;
+  const kpiName = (id: string | null | undefined): string | null =>
+    id ? (kpis.find((k) => k.id === id)?.name ?? null) : null;
+  const governanceCompleteQ = useQuery({
+    queryKey: ['strata', 'benefit-governance-complete', benefit.id],
+    queryFn: () => valueApi.benefitGovernanceComplete(benefit.id),
+    staleTime: 15_000,
+  });
   // Realized value submitted but with no assurance yet (state = reported): awaits attestation.
   // rejected/reversed are terminal (they do not "await"); assured states already count.
   const pendingRealized = values
@@ -364,6 +380,42 @@ function BenefitDetailSection({ benefit, isFirst, canAuthor, canAuthorValues }: 
           ) : null}
         </div>
       ) : null}
+
+      {/* PB-DEF-002 · governed benefit definition + activation-readiness. */}
+      <StrataPanel
+        title="Governed definition"
+        icon={<ShieldCheck size={16} />}
+        testId="strata-benefit-governance"
+        actions={canAuthor ? (
+          <Button appearance="default" spacing="compact" onClick={() => setAuthor({ kind: 'edit-governance' })} testId="strata-edit-governance">
+            Edit governance
+          </Button>
+        ) : undefined}
+      >
+        {governanceCompleteQ.data === false ? (
+          <div style={{ padding: '0 16px 12px' }}>
+            <SectionMessage appearance="warning" title="Governance incomplete — cannot progress beyond Identified">
+              <p style={{ margin: 0 }}>A Strategic Objective, an attributable project/initiative, sponsor, reporting owner, owner, validator, baseline, calculation method, evidence, funding context and a realization start date are required before this benefit can be activated or accept official value reporting.</p>
+            </SectionMessage>
+          </div>
+        ) : governanceCompleteQ.data === true ? (
+          <div style={{ padding: '0 16px 8px' }}>
+            <StatusLozenge status="complete" label="Governance complete" appearance="success" />
+          </div>
+        ) : null}
+        <div style={{ padding: '0 16px 12px' }}>
+          <DefRow label="Strategic objective">{objectiveName(benefit.strategic_objective_id) ?? '—'}</DefRow>
+          <DefRow label="Governed KPI">{kpiName(benefit.governed_kpi_id) ?? '—'}</DefRow>
+          <DefRow label="Accountable sponsor">{govName(benefit.accountable_sponsor_id) ?? '—'}</DefRow>
+          <DefRow label="Reporting owner">{govName(benefit.reporting_owner_id) ?? '—'}</DefRow>
+          <DefRow label="Accountable owner">{govName(benefit.accountable_owner_id) ?? '—'}</DefRow>
+          <DefRow label="Baseline">{benefit.baseline == null ? '—' : fmtUnit(benefit.baseline, benefit.unit)}</DefRow>
+          <DefRow label="Calculation method">{benefit.calculation_method ?? '—'}</DefRow>
+          <DefRow label="Evidence">{benefit.evidence_reference ?? '—'}</DefRow>
+          <DefRow label="Funding context">{benefit.funding_context ?? '—'}</DefRow>
+          <DefRow label="Realization">{benefit.realization_start ? `${fmtDate(benefit.realization_start)} → ${benefit.realization_end ? fmtDate(benefit.realization_end) : '—'}` : '—'}</DefRow>
+        </div>
+      </StrataPanel>
 
       <StrataPanel
         title="Value profile"
@@ -717,6 +769,54 @@ function BenefitDetailSection({ benefit, isFirst, canAuthor, canAuthorValues }: 
           }
         }}
         testId="strata-except-value-modal"
+      />
+      {/* PB-DEF-002 · edit the governed benefit definition (reuses governed objective/KPI references). */}
+      <StrataFormModal
+        open={author?.kind === 'edit-governance'}
+        onClose={() => setAuthor(null)}
+        title={`Governed definition · ${benefit.name}`}
+        submitLabel="Save governance"
+        description="Every benefit must trace to a Strategic Objective and at least one attributable project/initiative, and carry sponsor, reporting owner, baseline, calculation method, evidence, funding and realization dates before it can progress beyond Identified. Governed objectives and KPIs are reused — never re-created."
+        fields={[
+          { key: 'strategicObjectiveId', label: 'Strategic objective', kind: 'select', options: objectives.map((o) => ({ value: o.id, label: o.name })) },
+          { key: 'governedKpiId', label: 'Governed KPI (reuse)', kind: 'select', options: kpis.map((k) => ({ value: k.id, label: k.name })), helper: 'Reuse an existing KPI where measurement is needed' },
+          { key: 'sponsorId', label: 'Accountable sponsor', kind: 'user' },
+          { key: 'reportingOwnerId', label: 'Reporting owner', kind: 'user' },
+          { key: 'accountableOwnerId', label: 'Accountable owner', kind: 'user' },
+          { key: 'baseline', label: 'Baseline', kind: 'number', min: 0, helper: benefit.unit ?? undefined },
+          { key: 'baselinePeriodId', label: 'Baseline period', kind: 'select', options: periods.map((p) => ({ value: p.id, label: p.name })) },
+          { key: 'calculationMethod', label: 'Calculation method', kind: 'text' },
+          { key: 'evidenceReference', label: 'Evidence', kind: 'textarea' },
+          { key: 'fundingContext', label: 'Funding context', kind: 'text' },
+          { key: 'realizationStart', label: 'Realization start', kind: 'date' },
+          { key: 'realizationEnd', label: 'Realization end', kind: 'date' },
+        ]}
+        initial={{
+          strategicObjectiveId: benefit.strategic_objective_id, governedKpiId: benefit.governed_kpi_id,
+          sponsorId: benefit.accountable_sponsor_id, reportingOwnerId: benefit.reporting_owner_id,
+          accountableOwnerId: benefit.accountable_owner_id, baseline: benefit.baseline,
+          baselinePeriodId: benefit.baseline_period_id, calculationMethod: benefit.calculation_method,
+          evidenceReference: benefit.evidence_reference, fundingContext: benefit.funding_context,
+          realizationStart: benefit.realization_start, realizationEnd: benefit.realization_end,
+        }}
+        onSubmit={async (v) => {
+          await valueApi.setBenefitGovernance(benefit.id, {
+            strategicObjectiveId: (v.strategicObjectiveId as string | null) ?? null,
+            governedKpiId: (v.governedKpiId as string | null) ?? null,
+            sponsorId: (v.sponsorId as string | null) ?? null,
+            reportingOwnerId: (v.reportingOwnerId as string | null) ?? null,
+            accountableOwnerId: (v.accountableOwnerId as string | null) ?? null,
+            baseline: (v.baseline as number | null) ?? null,
+            baselinePeriodId: (v.baselinePeriodId as string | null) ?? null,
+            calculationMethod: (v.calculationMethod as string | null) ?? null,
+            evidenceReference: (v.evidenceReference as string | null) ?? null,
+            realizationStart: (v.realizationStart as string | null) ?? null,
+            realizationEnd: (v.realizationEnd as string | null) ?? null,
+            fundingContext: (v.fundingContext as string | null) ?? null,
+          });
+          invalidate();
+        }}
+        testId="strata-edit-governance-modal"
       />
 
       {/* ── Authoring modals (Lane E) — RPC-validated; rejections surface verbatim ── */}

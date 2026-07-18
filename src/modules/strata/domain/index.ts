@@ -1037,6 +1037,25 @@ export const valueApi = {
       p_lifecycle_stage: patch.lifecycleStage ?? null,
       p_clear_owner: patch.clearOwner ?? false, p_clear_validator: patch.clearValidator ?? false,
     })),
+  /** PB-DEF-002 · set the governed benefit definition (reuses governed objective/KPI references). */
+  setBenefitGovernance: (benefitId: string, g: {
+    strategicObjectiveId?: string | null; governedKpiId?: string | null; sponsorId?: string | null;
+    reportingOwnerId?: string | null; accountableOwnerId?: string | null; baseline?: number | null;
+    baselinePeriodId?: string | null; calculationMethod?: string | null; evidenceReference?: string | null;
+    realizationStart?: string | null; realizationEnd?: string | null; fundingContext?: string | null;
+  }): Promise<void> =>
+    run(typedRpc('strata_set_benefit_governance', {
+      p_benefit: benefitId,
+      p_strategic_objective: g.strategicObjectiveId ?? null, p_governed_kpi: g.governedKpiId ?? null,
+      p_sponsor: g.sponsorId ?? null, p_reporting_owner: g.reportingOwnerId ?? null,
+      p_accountable_owner: g.accountableOwnerId ?? null, p_baseline: g.baseline ?? null,
+      p_baseline_period: g.baselinePeriodId ?? null, p_calc_method: g.calculationMethod ?? null,
+      p_evidence: g.evidenceReference ?? null, p_realization_start: g.realizationStart ?? null,
+      p_realization_end: g.realizationEnd ?? null, p_funding: g.fundingContext ?? null,
+    })),
+  /** PB-DEF-002 · authoritative governance-completeness (server-computed; gates activation). */
+  benefitGovernanceComplete: (benefitId: string): Promise<boolean> =>
+    run(typedRpc('strata_benefit_governance_complete', { p_benefit: benefitId })),
   createBenefitValue: (input: {
     benefitId: string; periodId: string; valueKind: 'baseline' | 'planned' | 'forecast' | 'realized'; value: number;
   }): Promise<string> =>

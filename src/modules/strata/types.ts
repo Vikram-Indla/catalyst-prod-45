@@ -718,6 +718,19 @@ export interface StrataBenefit {
   value_hypothesis: string | null;
   causal_mechanism: string | null;
   confidence: number | null;
+  // PB-DEF-002 · governed definition (nullable — legacy records are visibly incomplete)
+  strategic_objective_id: string | null;
+  governed_kpi_id: string | null;
+  accountable_sponsor_id: string | null;
+  reporting_owner_id: string | null;
+  accountable_owner_id: string | null;
+  baseline: number | null;
+  baseline_period_id: string | null;
+  calculation_method: string | null;
+  evidence_reference: string | null;
+  realization_start: string | null;
+  realization_end: string | null;
+  funding_context: string | null;
 }
 
 /** D-4 · E-6 · F-7 — the six states a benefit value's assurance can be in. */
