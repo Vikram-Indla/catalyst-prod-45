@@ -25,14 +25,37 @@
 --   'PROBE_COMPLETE_ROLLBACK ::' whose report contains every expected value.
 --   Any other error, or a non-error completion, is a FAILURE.
 --
--- CONCURRENCY (point 4 of the closure requirement)
---   True two-session concurrency cannot run inside one transaction. Procedure:
---   open two SQL sessions; in session 1 BEGIN + run only the "Phase A" portion
---   through strata_promote_run WITHOUT the final RAISE; in session 2 attempt
---   strata_promote_run on an identical-payload run. Session 2 blocks on
---   pg_advisory_xact_lock('strata_promote:'||file_hash) until session 1
---   commits/rolls back, then fails with 'identical payload … already promoted'
---   (if committed) or proceeds (if rolled back). ROLLBACK both sessions to end.
+-- PROJECT GUARD
+--   The probe hard-aborts unless the target database carries the two
+--   staging-only migration-ledger rows written when the DL-DEF-007/003 fixes
+--   were applied to catalyst-staging (cyijbdeuehohvhnsywig). Production
+--   (lmqwtldpfacrrlvdnmld) does not have these rows, so pointing the probe at
+--   production (or any other project) aborts before any write. NOTE: Postgres
+--   cannot read the Supabase project ref directly; this ledger marker is the
+--   strongest in-database guard available — additionally, every write in this
+--   probe is rolled back even when the guard is bypassed.
+--
+-- CONCURRENCY (two exact copy-paste sessions)
+--   True two-session concurrency cannot run inside one transaction.
+--   SESSION A (leave the transaction OPEN — do not commit):
+--     BEGIN;
+--     SELECT set_config('request.jwt.claims', json_build_object('sub',
+--       (SELECT user_id FROM public.strata_role_assignments
+--         WHERE role IN ('data_steward','strategy_office') LIMIT 1),
+--       'role','authenticated')::text, true);
+--     -- create + validate + promote a run with file_hash 'zzqaconcurrency1'
+--     -- (copy Phase B below, replacing the hash), then STOP after
+--     -- strata_promote_run returns. Keep the session open.
+--   SESSION B (second connection, same set_config):
+--     BEGIN;
+--     -- create + validate an identical run (same file_hash 'zzqaconcurrency1',
+--     -- same template) and call strata_promote_run(<run B id>).
+--     -- EXPECTED: the call BLOCKS on pg_advisory_xact_lock until session A
+--     -- resolves. If A COMMITs: B errors 'identical payload … was already
+--     -- promoted by run …'. If A ROLLBACKs: B proceeds and promotes 1.
+--   VERIFICATION / ROLLBACK (both sessions):
+--     ROLLBACK;   -- in each session — leaves zero residue either way.
+--     SELECT count(*) FROM public.strata_upload_runs WHERE file_hash='zzqaconcurrency1';  -- expect 0
 -- ============================================================================
 
 DO $$
@@ -44,6 +67,12 @@ DECLARE
   report text := '';
   n int; before_actuals int;
 BEGIN
+  -- PROJECT GUARD: staging-only migration-ledger markers (see header).
+  IF NOT (EXISTS (SELECT 1 FROM supabase_migrations.schema_migrations WHERE name = 'strata_numeric_boundary_guard')
+      AND EXISTS (SELECT 1 FROM supabase_migrations.schema_migrations WHERE name = 'strata_duplicate_replay_guard')) THEN
+    RAISE EXCEPTION 'PROBE_ABORT :: project guard failed — this database is not catalyst-staging (cyijbdeuehohvhnsywig) carrying the DL-DEF-003/007 fixes; refusing to run';
+  END IF;
+
   -- Impersonate an EXISTING ingest role-holder (no hardcoded identity).
   SELECT user_id INTO v_uid FROM public.strata_role_assignments
    WHERE role IN ('data_steward','strategy_office','kpi_owner') LIMIT 1;

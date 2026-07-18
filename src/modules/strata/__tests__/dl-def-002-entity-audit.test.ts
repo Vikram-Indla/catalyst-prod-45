@@ -4,7 +4,7 @@
 import { describe, expect, it } from 'vitest';
 
 import {
-  ENTITY_AUDIT_TYPES, isEntityUuid, owningRouteForEntity,
+  ENTITY_AUDIT_TYPES, ENTITY_DISCOVERY, isEntityUuid, owningRouteForEntity,
 } from '@/modules/strata/pages/StrataDataPipelinePage';
 
 describe('isEntityUuid — exact UUID input validation', () => {
@@ -51,5 +51,46 @@ describe('owningRouteForEntity — navigation only where a mapping exists', () =
   it('returns null (renders as —) when no mapping is loaded or the table has no route', () => {
     expect(owningRouteForEntity('strata_kpis', 'unknown-kpi', kpiSlugById, runKeyById)).toBeNull();
     expect(owningRouteForEntity('strata_benefits', 'benefit-1', kpiSlugById, runKeyById)).toBeNull();
+  });
+});
+
+describe('ENTITY_DISCOVERY — name/key discovery + owning-route contract', () => {
+  it('every governed audit type except UUID-only KPI actuals has a discovery config', () => {
+    for (const t of ENTITY_AUDIT_TYPES.map((o) => o.value)) {
+      if (t === 'strata_kpi_actuals') expect(ENTITY_DISCOVERY[t]).toBeUndefined();
+      else expect(ENTITY_DISCOVERY[t], t).toBeDefined();
+    }
+  });
+
+  it('builds owning routes from the row\'s own slug/key — never from display names', () => {
+    expect(ENTITY_DISCOVERY.strata_kpis.route({ id: 'x', name: 'Anything', slug: 'b2b-revenue-growth' }))
+      .toBe('/strata/kpis/b2b-revenue-growth');
+    expect(ENTITY_DISCOVERY.strata_strategy_elements.route({ id: 'x', name: 'N', slug: 'el-1' }))
+      .toBe('/strata/strategy/elements/el-1');
+    expect(ENTITY_DISCOVERY.strata_project_cards.route({ id: 'x', name: 'N', slug: 'pc-1' }))
+      .toBe('/strata/execution/pc-1');
+    expect(ENTITY_DISCOVERY.strata_portfolios.route({ id: 'x', name: 'N', slug: 'pf-1' }))
+      .toBe('/strata/portfolio/pf-1');
+    expect(ENTITY_DISCOVERY.strata_benefits.route({ id: 'x', name: 'N', slug: 'bn-1' }))
+      .toBe('/strata/portfolio/benefits/bn-1');
+    expect(ENTITY_DISCOVERY.strata_data_sources.route({ id: 'x', name: 'N', slug: 'salam-finance-excel' }))
+      .toBe('/strata/data/sources/salam-finance-excel');
+    expect(ENTITY_DISCOVERY.strata_upload_runs.route({ id: 'x', run_key: 'RUN-23' }))
+      .toBe('/strata/data/runs/RUN-23');
+    expect(ENTITY_DISCOVERY.strata_snapshots.route({ id: 'x', name: 'N', snapshot_key: 'SNAP-1' }))
+      .toBe('/strata/reviews/SNAP-1');
+  });
+
+  it('renders — (null) for types without a routeable surface and for missing slugs', () => {
+    expect(ENTITY_DISCOVERY.strata_okrs.route({ id: 'x', name: 'N', slug: 'okr-1' })).toBeNull();
+    expect(ENTITY_DISCOVERY.strata_reviews.route({ id: 'x', name: 'N', slug: 'rev-1' })).toBeNull();
+    expect(ENTITY_DISCOVERY.strata_decisions.route({ id: 'x', title: 'T' })).toBeNull();
+    expect(ENTITY_DISCOVERY.strata_kpis.route({ id: 'x', name: 'N', slug: null })).toBeNull();
+  });
+
+  it('matches only real human-readable columns per table', () => {
+    expect(ENTITY_DISCOVERY.strata_upload_runs.matchCols).toEqual(['run_key']);
+    expect(ENTITY_DISCOVERY.strata_decisions.matchCols).toEqual(['title']);
+    expect(ENTITY_DISCOVERY.strata_snapshots.matchCols).toEqual(['name', 'snapshot_key']);
   });
 });

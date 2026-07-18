@@ -1145,6 +1145,65 @@ export const lineageApi = {
   }>> =>
     run(typedRpc('strata_entity_audit', { p_entity_table: entityTable, p_entity_id: entityId })),
   /**
+   * DL-DEF-002: governed entity discovery by human-readable name/slug/key.
+   * Case-insensitive CONTAINS match to surface candidates; the caller NEVER
+   * auto-selects — one-or-many candidates are shown for an explicit pick, so a
+   * fuzzy match can never silently choose the wrong entity. RLS applies.
+   */
+  discoverEntities: (table: string, matchCols: string[], selectCols: string, term: string): Promise<Array<Record<string, unknown>>> => {
+    const t = term.trim().replace(/[%,()*]/g, '');
+    if (!t) return Promise.resolve([]);
+    const orExpr = matchCols.map((c) => `${c}.ilike.*${t}*`).join(',');
+    return run((typedQuery as unknown as (tbl: string) => ReturnType<typeof typedQuery>)(table)
+      .select(selectCols)
+      .or(orExpr)
+      .limit(11));
+  },
+  /**
+   * DL-DEF-002: real upstream/downstream relationships for the Module-7 core
+   * chain, read from the EXISTING governed stores (staging rows, canonical
+   * actuals, scorecard model measures, runs). Types outside the chain return
+   * null and the panel renders an honest empty state — nothing is invented.
+   */
+  relationsForEntity: async (table: string, id: string): Promise<
+    | { kind: 'upload_run'; staging: Array<{ validation_status: string | null }>; actuals: Array<{ id: string; kpi_id: string; period_id: string; value: number; validation_status: string; confidence: number | null; reversed_by_run_id: string | null }> }
+    | { kind: 'kpi_actual'; actual: { id: string; kpi_id: string; period_id: string; value: number; validation_status: string; confidence: number | null; reversed_by_run_id: string | null; upload_run_id: string | null; staging_row_id: string | null } | null }
+    | { kind: 'kpi'; actuals: Array<{ id: string; validation_status: string }>; scorecardModels: Array<{ id: string; name: string; slug: string | null }> }
+    | { kind: 'data_source'; runs: Array<{ id: string; run_key: string; status: string; run_type: string | null }> }
+    | null
+  > => {
+    const q = (typedQuery as unknown as (tbl: string) => ReturnType<typeof typedQuery>);
+    if (table === 'strata_upload_runs') {
+      const [staging, actuals] = await Promise.all([
+        run(q('strata_staging_rows').select('validation_status').eq('upload_run_id', id)),
+        run(q('strata_kpi_actuals').select('id, kpi_id, period_id, value, validation_status, confidence, reversed_by_run_id').eq('upload_run_id', id)),
+      ]);
+      return { kind: 'upload_run', staging, actuals };
+    }
+    if (table === 'strata_kpi_actuals') {
+      const actual = await run(q('strata_kpi_actuals')
+        .select('id, kpi_id, period_id, value, validation_status, confidence, reversed_by_run_id, upload_run_id, staging_row_id')
+        .eq('id', id).maybeSingle());
+      return { kind: 'kpi_actual', actual };
+    }
+    if (table === 'strata_kpis') {
+      const [actuals, measures] = await Promise.all([
+        run(q('strata_kpi_actuals').select('id, validation_status').eq('kpi_id', id)),
+        run(q('strata_scorecard_model_measures').select('scorecard_model_id').eq('kpi_id', id)),
+      ]);
+      const modelIds = [...new Set((measures as Array<{ scorecard_model_id: string }>).map((m) => m.scorecard_model_id))];
+      const scorecardModels = modelIds.length
+        ? await run(q('strata_scorecard_models').select('id, name, slug').in('id', modelIds))
+        : [];
+      return { kind: 'kpi', actuals, scorecardModels };
+    }
+    if (table === 'strata_data_sources') {
+      const runs = await run(q('strata_upload_runs').select('id, run_key, status, run_type').eq('data_source_id', id).order('started_at', { ascending: false }));
+      return { kind: 'data_source', runs };
+    }
+    return null;
+  },
+  /**
    * DL-DEF-001 (source detail): the append-only mapping-memory ledger for one
    * registered source. Read-only evidence — rows are never updated or deleted;
    * RLS (current_user_is_approved) governs visibility.

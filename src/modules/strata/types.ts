@@ -820,7 +820,7 @@ export interface StrataUploadRun {
   data_source_id: string | null;
   template_id: string | null;
   template_version: number | null;
-  channel: 'excel' | 'manual' | 'jira' | 'api';
+  channel: 'excel' | 'manual' | 'jira' | 'api' | 'system';
   initiated_by: string | null;
   storage_path: string | null;
   file_name: string | null;

@@ -299,35 +299,31 @@ function DataLandingJudgment() {
 }
 
 // ── Sources — freshness and who depends on them (anchor 19) ───────────────────
-function SourcesPanel() {
-  const sources = useDataSources();
-  const runs = useUploadRuns();
-  const kpis = useKpis();
-  const navigate = useNavigate();
-  // DL-DEF-004: search + pagination with URL-preserved state (?srcq, ?srcpage).
-  // Single-call updates via applyListParams — empty values delete their key.
-  const [searchParams, setSearchParams] = useSearchParams();
-  const srcQ = searchParams.get('srcq') ?? '';
-  const srcPage = Math.max(1, Number(searchParams.get('srcpage') ?? '1') || 1);
-  const setListParams = (changes: Record<string, string | null>) =>
-    setSearchParams(applyListParams(searchParams.toString(), changes), { replace: true });
-  const allRows = useMemo(
-    () => buildSourceRows(sources.data ?? [], runs.data ?? [], kpis.data ?? []),
-    [sources.data, runs.data, kpis.data],
-  );
-  const rows = useMemo(() => {
-    if (!srcQ) return allRows;
-    const needle = srcQ.toLowerCase();
-    return allRows.filter((r) =>
-      `${r.source.name} ${labelize(r.source.system_type)} ${r.statusLabel} ${r.lastRunKey ?? ''}`.toLowerCase().includes(needle));
-  }, [allRows, srcQ]);
-
-  const columns: Column<SourceRow>[] = [
+/**
+ * DL-DEF-001: production source-registry columns, exported for rendered-adapter
+ * tests. The source name is an explicit LINK (native button: Tab-focusable,
+ * Enter/Space activate, visible focus ring) for slugged sources; a null-slug
+ * source renders plain text and is not actionable. stopPropagation prevents a
+ * double navigation through the row's pointer onRowClick.
+ */
+export function buildSourceColumns(navigate: (path: string) => void): Column<SourceRow>[] {
+  return [
     {
       id: 'source', label: 'Source', flex: true,
       cell: ({ row }) => (
         <div style={{ minWidth: 0 }}>
-          <span style={{ ...bodyStyle, fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'block' }}>{row.source.name}</span>
+          {row.source.slug ? (
+            <Button
+              appearance="subtle-link"
+              spacing="none"
+              onClick={(e: React.MouseEvent | React.KeyboardEvent) => { e.stopPropagation?.(); navigate(Routes.strata.source(row.source.slug!)); }}
+              testId={`strata-source-link-${row.source.slug}`}
+            >
+              <span style={{ ...bodyStyle, fontWeight: 600 }}>{row.source.name}</span>
+            </Button>
+          ) : (
+            <span style={{ ...bodyStyle, fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'block' }}>{row.source.name}</span>
+          )}
           <span style={{ ...captionStyle, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'block' }}>
             {labelize(row.source.system_type)}{row.source.refresh_cadence ? ` · ${row.source.refresh_cadence}` : ''}
           </span>
@@ -373,6 +369,32 @@ function SourcesPanel() {
       cell: ({ row }) => <StatusLozenge status={row.statusLabel.toLowerCase()} label={row.statusLabel} appearance={row.statusAppearance} />,
     },
   ];
+}
+
+function SourcesPanel() {
+  const sources = useDataSources();
+  const runs = useUploadRuns();
+  const kpis = useKpis();
+  const navigate = useNavigate();
+  // DL-DEF-004: search + pagination with URL-preserved state (?srcq, ?srcpage).
+  // Single-call updates via applyListParams — empty values delete their key.
+  const [searchParams, setSearchParams] = useSearchParams();
+  const srcQ = searchParams.get('srcq') ?? '';
+  const srcPage = Math.max(1, Number(searchParams.get('srcpage') ?? '1') || 1);
+  const setListParams = (changes: Record<string, string | null>) =>
+    setSearchParams(applyListParams(searchParams.toString(), changes), { replace: true });
+  const allRows = useMemo(
+    () => buildSourceRows(sources.data ?? [], runs.data ?? [], kpis.data ?? []),
+    [sources.data, runs.data, kpis.data],
+  );
+  const rows = useMemo(() => {
+    if (!srcQ) return allRows;
+    const needle = srcQ.toLowerCase();
+    return allRows.filter((r) =>
+      `${r.source.name} ${labelize(r.source.system_type)} ${r.statusLabel} ${r.lastRunKey ?? ''}`.toLowerCase().includes(needle));
+  }, [allRows, srcQ]);
+
+  const columns = useMemo(() => buildSourceColumns(navigate), [navigate]);
 
   return (
     <StrataPanel
@@ -1539,7 +1561,39 @@ export const ENTITY_AUDIT_TYPES: Array<{ value: string; label: string }> = [
   { value: 'strata_decisions', label: 'Decision' },
   { value: 'strata_data_sources', label: 'Data source' },
   { value: 'strata_upload_runs', label: 'Upload run' },
+  { value: 'strata_actions', label: 'Action' },
 ];
+
+/**
+ * DL-DEF-002: per-table discovery + owning-route contract. matchCols are the
+ * REAL human-readable columns of each governed table; route() builds the
+ * owning-module route from the row's own slug/key — never derived from a
+ * display name, never guessed. route: null = no routeable surface exists ('—').
+ * strata_kpi_actuals has no human-readable key and stays UUID-only.
+ */
+export interface EntityDiscoveryConfig {
+  matchCols: string[];
+  selectCols: string;
+  display: (r: Record<string, unknown>) => string;
+  route: (r: Record<string, unknown>) => string | null;
+}
+const slugRoute = (build: (slug: string) => string) => (r: Record<string, unknown>) =>
+  r.slug ? build(String(r.slug)) : null;
+export const ENTITY_DISCOVERY: Record<string, EntityDiscoveryConfig> = {
+  strata_strategy_elements: { matchCols: ['name', 'slug'], selectCols: 'id, name, slug', display: (r) => String(r.name), route: slugRoute(Routes.strata.strategyElement) },
+  strata_kpis: { matchCols: ['name', 'slug'], selectCols: 'id, name, slug', display: (r) => String(r.name), route: slugRoute(Routes.strata.kpi) },
+  strata_okrs: { matchCols: ['name', 'slug'], selectCols: 'id, name, slug', display: (r) => String(r.name), route: () => null },
+  strata_scorecard_models: { matchCols: ['name', 'slug'], selectCols: 'id, name, slug', display: (r) => String(r.name), route: () => null },
+  strata_snapshots: { matchCols: ['name', 'snapshot_key'], selectCols: 'id, name, snapshot_key', display: (r) => String(r.name ?? r.snapshot_key), route: (r) => (r.snapshot_key ? Routes.strata.review(String(r.snapshot_key)) : null) },
+  strata_project_cards: { matchCols: ['name', 'slug'], selectCols: 'id, name, slug', display: (r) => String(r.name), route: slugRoute(Routes.strata.projectCard) },
+  strata_benefits: { matchCols: ['name', 'slug'], selectCols: 'id, name, slug', display: (r) => String(r.name), route: slugRoute(Routes.strata.benefit) },
+  strata_portfolios: { matchCols: ['name', 'slug'], selectCols: 'id, name, slug', display: (r) => String(r.name), route: slugRoute((s) => Routes.strata.portfolioDetail(s)) },
+  strata_reviews: { matchCols: ['name', 'slug'], selectCols: 'id, name, slug', display: (r) => String(r.name), route: () => null },
+  strata_decisions: { matchCols: ['title'], selectCols: 'id, title', display: (r) => String(r.title), route: () => null },
+  strata_actions: { matchCols: ['title'], selectCols: 'id, title', display: (r) => String(r.title), route: () => null },
+  strata_data_sources: { matchCols: ['name', 'slug'], selectCols: 'id, name, slug', display: (r) => String(r.name), route: slugRoute(Routes.strata.source) },
+  strata_upload_runs: { matchCols: ['run_key'], selectCols: 'id, run_key', display: (r) => String(r.run_key), route: (r) => (r.run_key ? Routes.strata.run(String(r.run_key)) : null) },
+};
 
 /** Exact-UUID validation for the entity lookup — nothing fuzzy, nothing guessed. */
 export const isEntityUuid = (v: string): boolean =>
@@ -1581,9 +1635,24 @@ function EntityAuditPanel() {
   const runsQ = useUploadRuns();
   const [entityType, setEntityType] = useState<string>('');
   const [entityId, setEntityId] = useState('');
+  const [term, setTerm] = useState('');
+  const [pickedRoute, setPickedRoute] = useState<string | null>(null);
   const trimmedId = entityId.trim();
   const validId = isEntityUuid(trimmedId);
   const canSearch = !!entityType && validId;
+  const discovery = entityType ? ENTITY_DISCOVERY[entityType] ?? null : null;
+  const discoveryQ = useQuery({
+    queryKey: ['strata', 'entity-discovery', entityType, term.trim().toLowerCase()],
+    queryFn: () => lineageApi.discoverEntities(entityType, discovery!.matchCols, discovery!.selectCols, term),
+    enabled: !!discovery && term.trim().length >= 2,
+    staleTime: 30_000,
+  });
+  const relationsQ = useQuery({
+    queryKey: ['strata', 'entity-relations', entityType, trimmedId],
+    queryFn: () => lineageApi.relationsForEntity(entityType, trimmedId),
+    enabled: canSearch,
+    staleTime: 30_000,
+  });
   const auditQ = useQuery({
     queryKey: ['strata', 'entity-audit', entityType, trimmedId],
     queryFn: () => lineageApi.entityAudit(entityType, trimmedId),
@@ -1600,13 +1669,20 @@ function EntityAuditPanel() {
     () => new Map((kpisQ.data ?? []).filter((k) => k.slug).map((k) => [k.id, k.slug!] as const)),
     [kpisQ.data],
   );
+  const kpiNamesById = useMemo(
+    () => new Map((kpisQ.data ?? []).map((k) => [k.id, k.name] as const)),
+    [kpisQ.data],
+  );
   const runKeyById = useMemo(
     () => new Map((runsQ.data ?? []).map((r) => [r.id, r.run_key] as const)),
     [runsQ.data],
   );
-  const owningRoute = canSearch ? owningRouteForEntity(entityType, trimmedId, kpiSlugById, runKeyById) : null;
+  const owningRoute = canSearch
+    ? pickedRoute ?? owningRouteForEntity(entityType, trimmedId, kpiSlugById, runKeyById)
+    : null;
   const j = (v: unknown) => (v == null ? null : JSON.stringify(v));
   const typeOption = ENTITY_AUDIT_TYPES.find((o) => o.value === entityType) ?? null;
+  const candidates = (discoveryQ.data ?? []) as Array<Record<string, unknown>>;
 
   return (
     <StrataPanel title="Entity audit & lineage" icon={<Network size={16} />} testId="strata-entity-audit-panel">
@@ -1615,17 +1691,27 @@ function EntityAuditPanel() {
           <Select
             options={ENTITY_AUDIT_TYPES}
             value={typeOption}
-            onChange={(o) => setEntityType(o?.value ?? '')}
+            onChange={(o) => { setEntityType(o?.value ?? ''); setTerm(''); setPickedRoute(null); }}
             isClearable
             isSearchable
             placeholder="Entity type"
             aria-label="Entity type for audit lookup"
           />
         </div>
+        <div style={{ flex: '1 1 200px', maxWidth: 300 }}>
+          <Textfield
+            value={term}
+            onChange={(e) => { setTerm(e.target.value); setPickedRoute(null); }}
+            placeholder={discovery ? 'Search by name / key' : entityType ? 'This type is UUID-only' : 'Search by name / key'}
+            aria-label="Search entity by name or key"
+            isCompact
+            isDisabled={!!entityType && !discovery}
+          />
+        </div>
         <div style={{ flex: '1 1 260px', maxWidth: 380 }}>
           <Textfield
             value={entityId}
-            onChange={(e) => setEntityId(e.target.value)}
+            onChange={(e) => { setEntityId(e.target.value); setPickedRoute(null); }}
             placeholder="Exact entity ID (UUID)"
             aria-label="Exact entity ID for audit lookup"
             isCompact
@@ -1633,6 +1719,40 @@ function EntityAuditPanel() {
           />
         </div>
       </div>
+      {discovery && term.trim().length >= 2 ? (
+        <div style={{ marginTop: 8 }} data-testid="strata-entity-discovery-results">
+          {discoveryQ.isLoading ? (
+            <span style={captionStyle}>Searching…</span>
+          ) : candidates.length === 0 ? (
+            <span style={captionStyle} data-testid="strata-entity-discovery-empty">
+              No {typeOption?.label.toLowerCase()} matches "{term.trim()}" — nothing was selected for you.
+            </span>
+          ) : candidates.length > 10 ? (
+            <span style={captionStyle} data-testid="strata-entity-discovery-ambiguous">
+              More than 10 matches — refine the search; nothing was selected for you.
+            </span>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+              {candidates.length > 1 ? (
+                <span style={captionStyle}>{candidates.length} candidates — pick one explicitly:</span>
+              ) : null}
+              {candidates.map((r) => (
+                <div key={String(r.id)} style={{ display: 'flex', gap: 8, alignItems: 'center', minWidth: 0 }}>
+                  <Button
+                    appearance="subtle-link"
+                    spacing="none"
+                    onClick={() => { setEntityId(String(r.id)); setPickedRoute(discovery.route(r)); }}
+                    testId={`strata-entity-candidate-${String(r.id).slice(0, 8)}`}
+                  >
+                    {discovery.display(r)}
+                  </Button>
+                  <span style={{ ...captionStyle, ...mono }}>{String(r.id).slice(0, 8)}</span>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      ) : null}
       {entityId.length > 0 && !validId ? (
         <p style={{ ...captionStyle, color: 'var(--ds-text-danger)', margin: '8px 0 0' }}>
           Enter a full UUID (8-4-4-4-12 hex) — partial or fuzzy lookup is not supported.
@@ -1702,7 +1822,101 @@ function EntityAuditPanel() {
                 </div>
               ))
             )}
-            <p style={{ ...captionStyle, margin: '6px 0 0' }}>Scorecard/snapshot forward impact is not tracked.</p>
+          </div>
+          <div style={{ borderTop: `1px solid ${T.border}`, paddingTop: 8 }} data-testid="strata-entity-relations">
+            <div style={{ ...bodyStyle, fontWeight: 600 }}>Relationships</div>
+            {relationsQ.isLoading ? (
+              <span style={captionStyle}>Loading…</span>
+            ) : !relationsQ.data ? (
+              <p style={{ ...captionStyle, margin: '4px 0 0' }}>
+                No relationship contract is implemented for this entity type yet — none is invented.
+              </p>
+            ) : relationsQ.data.kind === 'upload_run' ? (
+              <div style={{ ...captionStyle, marginTop: 4, display: 'flex', flexDirection: 'column', gap: 4 }}>
+                <span>
+                  Staging evidence: {relationsQ.data.staging.length} row{relationsQ.data.staging.length === 1 ? '' : 's'}
+                  {' — '}
+                  {(() => {
+                    const staging = relationsQ.data.kind === 'upload_run' ? relationsQ.data.staging : [];
+                    return ['valid', 'rejected', 'reversed', 'pending']
+                      .map((s) => `${staging.filter((r) => r.validation_status === s).length} ${s}`).join(' · ');
+                  })()}
+                </span>
+                {relationsQ.data.actuals.length === 0 ? (
+                  <span>Promoted official facts: none — this run wrote no canonical actuals.</span>
+                ) : relationsQ.data.actuals.map((a) => (
+                  <span key={a.id}>
+                    Official fact {kpiNamesById.get(a.kpi_id) ?? a.kpi_id.slice(0, 8)} = {a.value}
+                    {' · '}status {a.validation_status}
+                    {a.confidence != null ? ` · confidence ${a.confidence}` : ''}
+                    {a.reversed_by_run_id ? ' · REVERSED (superseded)' : ''}
+                    {' · '}
+                    {a.validation_status === 'validated' && !a.reversed_by_run_id
+                      ? 'eligible for official calculations'
+                      : `not eligible (${a.reversed_by_run_id ? 'reversed' : `status ${a.validation_status}`})`}
+                  </span>
+                ))}
+              </div>
+            ) : relationsQ.data.kind === 'kpi_actual' ? (
+              relationsQ.data.actual == null ? (
+                <p style={{ ...captionStyle, margin: '4px 0 0' }}>No canonical actual exists with this id.</p>
+              ) : (
+                <div style={{ ...captionStyle, marginTop: 4, display: 'flex', flexDirection: 'column', gap: 4 }}>
+                  <span>
+                    Value {relationsQ.data.actual.value} · status {relationsQ.data.actual.validation_status}
+                    {relationsQ.data.actual.confidence != null ? ` · confidence ${relationsQ.data.actual.confidence}` : ''}
+                    {relationsQ.data.actual.reversed_by_run_id ? ' · REVERSED (superseded)' : ''}
+                    {' · '}
+                    {relationsQ.data.actual.validation_status === 'validated' && !relationsQ.data.actual.reversed_by_run_id
+                      ? 'eligible for official calculations'
+                      : `not eligible (${relationsQ.data.actual.reversed_by_run_id ? 'reversed' : `status ${relationsQ.data.actual.validation_status}`})`}
+                  </span>
+                  <span>
+                    KPI: {kpiNamesById.get(relationsQ.data.actual.kpi_id) ?? relationsQ.data.actual.kpi_id.slice(0, 8)}
+                    {' · '}source run:{' '}
+                    {(() => {
+                      const runId2 = relationsQ.data.kind === 'kpi_actual' ? relationsQ.data.actual?.upload_run_id ?? null : null;
+                      const key = runId2 ? runKeyById.get(runId2) : null;
+                      return key ? (
+                        <Button appearance="subtle-link" spacing="none" onClick={() => navigate(Routes.strata.run(key))}>{key}</Button>
+                      ) : '—';
+                    })()}
+                  </span>
+                </div>
+              )
+            ) : relationsQ.data.kind === 'kpi' ? (
+              <div style={{ ...captionStyle, marginTop: 4, display: 'flex', flexDirection: 'column', gap: 4 }}>
+                <span>
+                  Canonical actuals: {relationsQ.data.actuals.length}
+                  {relationsQ.data.actuals.length > 0
+                    ? ` (${relationsQ.data.actuals.filter((a) => a.validation_status === 'validated').length} validated)`
+                    : ''}
+                </span>
+                {relationsQ.data.scorecardModels.length === 0 ? (
+                  <span>Scorecard dependents: none — no scorecard model measures this KPI.</span>
+                ) : (
+                  <span data-testid="strata-entity-scorecard-impact">
+                    Scorecard dependents: {relationsQ.data.scorecardModels.map((m) => m.name).join(', ')}
+                  </span>
+                )}
+              </div>
+            ) : relationsQ.data.kind === 'data_source' ? (
+              <div style={{ ...captionStyle, marginTop: 4, display: 'flex', flexDirection: 'column', gap: 4 }}>
+                {relationsQ.data.runs.length === 0 ? (
+                  <span>No import runs — this source has never been loaded.</span>
+                ) : relationsQ.data.runs.map((r) => (
+                  <span key={r.id}>
+                    <Button appearance="subtle-link" spacing="none" onClick={() => navigate(Routes.strata.run(r.run_key))}>{r.run_key}</Button>
+                    {' · '}{labelize(r.status)}{r.run_type === 'reversal' ? ' · reversal' : ''}
+                  </span>
+                ))}
+              </div>
+            ) : null}
+            <p style={{ ...captionStyle, margin: '6px 0 0' }}>
+              {relationsQ.data?.kind === 'kpi'
+                ? 'Snapshot forward impact is not tracked.'
+                : 'Scorecard/snapshot forward impact is not tracked for this entity type.'}
+            </p>
           </div>
         </div>
       )}
