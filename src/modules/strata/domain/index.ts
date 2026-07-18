@@ -941,6 +941,11 @@ export const valueApi = {
     run(typedQuery('strata_assumptions').select('*').eq('benefit_id', benefitId)),
   attributionRules: (benefitId: string) =>
     run(typedQuery('strata_attribution_rules').select('*').eq('benefit_id', benefitId)),
+  /** All shared_benefit attribution rules across benefits — the governed benefit↔project-card
+   * split (pct per project_card_id). Powers reverse traceability ("Benefit at stake") on the
+   * Project Card end, where the attribution is authored as a rule, not a direct link (PB-DEF-006). */
+  sharedBenefitAttributions: () =>
+    run(typedQuery('strata_attribution_rules').select('*').eq('rule_type', 'shared_benefit')),
   benefitInitiatives: () => run(typedQuery('strata_benefit_initiatives').select('*')),
   /** Benefit ↔ Project Card attribution (Execution Reconciliation §K rule 19) — the
    * primary attribution path going forward; Theme-level rollup derives via project_card.theme_id. */

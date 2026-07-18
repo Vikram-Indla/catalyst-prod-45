@@ -526,6 +526,10 @@ export const useGateInstances = () =>
 /** Benefit ↔ Project Card attribution (Execution Reconciliation §K rule 19). */
 export const useBenefitProjectCards = () =>
   useQuery({ queryKey: ['strata', 'benefit-project-cards'], queryFn: valueApi.benefitProjectCards, staleTime: STALE });
+/** Governed shared_benefit attribution rules (splits: pct per project_card_id) — reverse
+ *  traceability source for "Benefit at stake" on the Project Card end (PB-DEF-006). */
+export const useSharedBenefitAttributions = () =>
+  useQuery({ queryKey: ['strata', 'shared-benefit-attributions'], queryFn: valueApi.sharedBenefitAttributions, staleTime: STALE });
 export const useValueAtRisk = (portfolioId?: string) =>
   useQuery({
     queryKey: ['strata', 'var', portfolioId],

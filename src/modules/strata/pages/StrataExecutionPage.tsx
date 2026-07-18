@@ -37,7 +37,7 @@ import { ProjectCardDetailView } from '@/modules/strata/components/ProjectCardDe
 import { executionApi, valueApi } from '@/modules/strata/domain';
 import { fmtDate, fmtPct, fmtRatioPct, fmtSarCompact, labelize } from '@/modules/strata/components/format';
 import {
-  useBenefitProjectCards, useDependencies, useInvalidateStrata, useMilestones, usePortfolios, useProfileNames,
+  useBenefitProjectCards, useSharedBenefitAttributions, useDependencies, useInvalidateStrata, useMilestones, usePortfolios, useProfileNames,
   useProjectCardBySlug, ctxToken, useProjectCardPicklists, useProjectCards, useStrataContext, useStrataRoles,
   useStrategyElements,
 } from '@/modules/strata/hooks/useStrata';
@@ -520,16 +520,45 @@ export default function StrataExecutionPage() {
     return m;
   }, [allMilestones]);
 
-  // ── Benefit at stake (anchor 17) ──────────────────────────────────────────
-  // Per card: Σ over its linked benefits of (benefit planned value × attribution
-  // share). Planned = the benefit's 'planned' value for the active period (else its
-  // first planned row). ONE page-level batch (useQueries over the linked benefits) —
-  // never a per-row query. Zero-assumption: no linked benefit with a planned value → dash.
+  // ── Benefit at stake (anchor 17 · PB-DEF-006) ──────────────────────────────
+  // Per card: Σ over its attributed benefits of (benefit planned value × attribution %).
+  // Attribution comes from TWO governed relationships, deduped per (card, benefit):
+  //   1. strata_benefit_project_cards — the direct link (attribution_share, a percent 0–100).
+  //   2. strata_attribution_rules (shared_benefit) — splits authored on the portfolio side
+  //      ({ pct, project_card_id }); this is where the Portfolio→Benefit attribution UI writes,
+  //      so a card with only a rule-split (and no direct link) previously showed "—".
+  // Planned = the benefit's 'planned' value for the active period (else its first planned row).
+  // Zero-assumption: no attributed benefit with a planned value → dash.
   const benefitLinks = useBenefitProjectCards().data ?? [];
+  const sharedAttrRules = useSharedBenefitAttributions().data ?? [];
   const cardIdSet = useMemo(() => new Set(projectCards.map((c) => c.id)), [projectCards]);
+  // Unified attribution edges: { project_card_id, benefit_id, pct(0–100) }. Rule splits win
+  // over a direct link on the same (card, benefit) so attribution is never double-counted.
+  const attributionEdges = useMemo(() => {
+    const byKey = new Map<string, { project_card_id: string; benefit_id: string; pct: number }>();
+    const key = (c: string, b: string) => `${c}::${b}`;
+    for (const l of benefitLinks) {
+      if (!cardIdSet.has(l.project_card_id)) continue;
+      byKey.set(key(l.project_card_id, l.benefit_id), {
+        project_card_id: l.project_card_id, benefit_id: l.benefit_id,
+        pct: l.attribution_share == null ? 100 : Number(l.attribution_share),
+      });
+    }
+    for (const r of sharedAttrRules as Array<{ benefit_id: string; definition: unknown }>) {
+      const def = r.definition as { splits?: Array<{ project_card_id?: string; pct?: number }> } | null;
+      const splits = Array.isArray(def?.splits) ? def!.splits : [];
+      for (const s of splits) {
+        if (!s?.project_card_id || !cardIdSet.has(s.project_card_id) || typeof s.pct !== 'number') continue;
+        byKey.set(key(s.project_card_id, r.benefit_id), {
+          project_card_id: s.project_card_id, benefit_id: r.benefit_id, pct: s.pct,
+        });
+      }
+    }
+    return Array.from(byKey.values());
+  }, [benefitLinks, sharedAttrRules, cardIdSet]);
   const stakeBenefitIds = useMemo(
-    () => Array.from(new Set(benefitLinks.filter((l) => cardIdSet.has(l.project_card_id)).map((l) => l.benefit_id))),
-    [benefitLinks, cardIdSet],
+    () => Array.from(new Set(attributionEdges.map((e) => e.benefit_id))),
+    [attributionEdges],
   );
   const benefitValueQueries = useQueries({
     queries: stakeBenefitIds.map((bid) => ({
@@ -552,14 +581,13 @@ export default function StrataExecutionPage() {
   }, [stakeBenefitIds, activePeriod?.id, benefitValueQueries.map((q) => (q.data ? 1 : 0)).join('')]);
   const stakesByCard = useMemo(() => {
     const m = new Map<string, number | null>();
-    for (const l of benefitLinks) {
-      if (!cardIdSet.has(l.project_card_id)) continue;
-      const planned = plannedByBenefit.get(l.benefit_id);
+    for (const e of attributionEdges) {
+      const planned = plannedByBenefit.get(e.benefit_id);
       if (planned == null) continue;
-      m.set(l.project_card_id, (m.get(l.project_card_id) ?? 0) + planned * (l.attribution_share ?? 1));
+      m.set(e.project_card_id, (m.get(e.project_card_id) ?? 0) + planned * (e.pct / 100));
     }
     return m;
-  }, [benefitLinks, cardIdSet, plannedByBenefit]);
+  }, [attributionEdges, plannedByBenefit]);
 
   const themes = elements.filter((e) => e.element_type === 'theme');
 
