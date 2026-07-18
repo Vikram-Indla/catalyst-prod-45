@@ -901,8 +901,12 @@ export default function StrataExecutionPage() {
 
   return (
     <StrataPageShell
-      trail={detailCard ? [{ text: 'Execution', href: Routes.strata.execution() }, { text: detailCard.name }] : undefined}
-      hideTitle={!!detailCard}
+      trail={slug
+        // Detail route: parent link renders immediately; the record crumb only
+        // once its real name is known — never a fabricated placeholder.
+        ? [{ text: 'Execution', href: Routes.strata.execution() }, ...(detailCard ? [{ text: detailCard.name }] : [])]
+        : undefined}
+      hideTitle={!!slug}
       docTitle={detailCard ? detailCard.name : undefined}
       headerActions={!detailCard ? (
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>

@@ -91,6 +91,18 @@ describe('ProjectPageHeader — STRATA breadcrumb links', () => {
     expect(current!.textContent).toContain('STRATA');
   });
 
+  it('loading shells (hideTitle + ancestors-only trail) fabricate no current crumb', () => {
+    // Zero-assumption rendering: while an entity name is unknown, the nav must
+    // show only real ancestors — never the parent word duplicated as "current".
+    const { container } = renderHeader('/strata/kpis/b2b-revenue-growth', {
+      trail: [{ text: 'KPI library', href: '/strata/kpis' }],
+      hideTitle: true,
+    });
+    expect(container.querySelector('[aria-current="page"]')).toBeNull();
+    expect(screen.getByRole('link', { name: /KPI library/i })).toHaveAttribute('href', '/strata/kpis');
+    expect(screen.queryAllByText('KPI library')).toHaveLength(1); // no duplicate
+  });
+
   it('hideTitle detail pages keep the trail terminal as the aria-current crumb', () => {
     const { container } = renderHeader('/strata/execution/real-project-1', {
       trail: [

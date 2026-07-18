@@ -49,7 +49,12 @@ const ENTITY_BREADCRUMB_ICON: Record<string, React.ReactElement> = {
 const StrataCrumbLink = React.forwardRef<
   HTMLAnchorElement,
   React.AnchorHTMLAttributes<HTMLAnchorElement> & { href: string }
->(function StrataCrumbLink({ href, children, ...rest }, ref) {
+>(function StrataCrumbLink({ href, children, 'aria-current': _ariaCurrent, ...rest }, ref) {
+  // _ariaCurrent is dropped deliberately: @atlaskit/breadcrumbs clones the LAST
+  // item with aria-current="page" unconditionally, which falsely marks an
+  // ancestor link as current on loading shells (ancestors-only trail). In
+  // STRATA the true current page always carries its own aria-current (terminal
+  // h2 / span) — a navigable ancestor never does.
   return (
     <Link ref={ref} to={href} {...rest}>
       {children}
