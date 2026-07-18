@@ -10,6 +10,7 @@ import {
   computeModelIntegrity,
   coverageState,
   draftSubmitBlockedReason,
+  serverCoverageLabel,
 } from '../lib/modelIntegrity';
 
 const names = new Map([
@@ -183,5 +184,24 @@ describe('gap 1 — zero-weight assigned measure', () => {
     expect(r.perspectiveCoverage[0]).toMatchObject({ state: 'underweight', measureCount: 1, total: 0, delta: 100 });
     expect(r.measureIssues).toEqual(['Financial measure weights total 0 — assign the remaining 100']);
     expect(coverageState(1, 0)).toBe('underweight');
+  });
+});
+
+/** P2 — server semantic codes render through the ONE client formatter. */
+describe('P2 — authoritative server coverage codes', () => {
+  it('renders the corrected messages from codes + params for 0-measures, 50, 125 and 100 totals', () => {
+    expect(serverCoverageLabel({ code: 'NO_MEASURES', perspective_id: 'p1', name: 'Financial', total: 0, delta: 0 }))
+      .toBe('Financial has no measures assigned');
+    expect(serverCoverageLabel({ code: 'MEASURE_WEIGHTS_UNDER_100', perspective_id: 'p1', name: 'Financial', total: 50, delta: 50 }))
+      .toBe('Financial measure weights total 50 — assign the remaining 50');
+    expect(serverCoverageLabel({ code: 'MEASURE_WEIGHTS_OVER_100', perspective_id: 'p1', name: 'Financial', total: 125, delta: 25 }))
+      .toBe('Financial measure weights total 125 — remove 25');
+    expect(serverCoverageLabel({ code: 'MEASURE_WEIGHTS_VALID', perspective_id: 'p1', name: 'Financial', total: 100, delta: 0 }))
+      .toBeNull();
+  });
+
+  it('numeric params arrive as strings from Postgres jsonb — still rendered exactly', () => {
+    expect(serverCoverageLabel({ code: 'MEASURE_WEIGHTS_UNDER_100', perspective_id: 'p1', name: 'Financial', total: '50', delta: '50' }))
+      .toBe('Financial measure weights total 50 — assign the remaining 50');
   });
 });

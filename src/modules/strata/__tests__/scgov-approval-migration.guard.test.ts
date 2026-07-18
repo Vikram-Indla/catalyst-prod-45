@@ -203,6 +203,18 @@ describe('SC-GOVAPPROVAL — validator and notifications', () => {
     expect(body).toMatch(/'passed'/);
   });
 
+  it('P2: validator carries AUTHORITATIVE semantic codes + params alongside the prose', () => {
+    const body = latestBody('strata_validate_scorecard_model');
+    for (const code of [
+      'NO_MEASURES', 'MEASURE_WEIGHTS_UNDER_100', 'MEASURE_WEIGHTS_OVER_100', 'MEASURE_WEIGHTS_VALID',
+      'NO_PERSPECTIVES', 'PERSPECTIVE_WEIGHTS_UNDER_100', 'PERSPECTIVE_WEIGHTS_OVER_100', 'PERSPECTIVE_WEIGHTS_VALID',
+    ]) expect(body).toContain(`'${code}'`);
+    // Params are numeric total/delta per perspective; result keys are additive.
+    expect(body).toMatch(/'coverage', v_coverage/);
+    expect(body).toMatch(/'perspective_weights', v_pw/);
+    expect(body).toMatch(/'total',r\.msum,'delta',100 - r\.msum/);
+  });
+
   it('saving stays ungated on totals — set_model_measures has NO 100-total check', () => {
     // Incomplete drafts must be saveable; only submit/approve consume the
     // validator's blockers (the contract's "block submission, not save"). The

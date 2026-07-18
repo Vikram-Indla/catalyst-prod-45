@@ -78,6 +78,36 @@ export function coverageIssueLabel(c: Pick<PerspectiveCoverage, 'name' | 'state'
   }
 }
 
+/** Server validator coverage entry — the AUTHORITATIVE codes + numeric params. */
+export interface ServerCoverageEntry {
+  code: 'NO_MEASURES' | 'MEASURE_WEIGHTS_UNDER_100' | 'MEASURE_WEIGHTS_OVER_100' | 'MEASURE_WEIGHTS_VALID';
+  perspective_id: string;
+  name: string;
+  total: number | string;
+  delta: number | string;
+}
+
+const SERVER_CODE_TO_STATE: Record<ServerCoverageEntry['code'], MeasureCoverageState> = {
+  NO_MEASURES: 'no_measures',
+  MEASURE_WEIGHTS_UNDER_100: 'underweight',
+  MEASURE_WEIGHTS_OVER_100: 'overweight',
+  MEASURE_WEIGHTS_VALID: 'valid',
+};
+
+/**
+ * Render a PERSISTED (server-authoritative) coverage entry through the ONE
+ * client formatter — wording is derived from code + params, never re-classified
+ * client-side. Returns null for a valid entry (nothing to flag).
+ */
+export function serverCoverageLabel(e: ServerCoverageEntry): string | null {
+  return coverageIssueLabel({
+    name: e.name,
+    state: SERVER_CODE_TO_STATE[e.code],
+    total: Number(e.total),
+    delta: Number(e.delta),
+  });
+}
+
 export function computeModelIntegrity(
   perspectiveWeights: PerspectiveWeightRow[],
   measures: MeasureRow[],
