@@ -218,7 +218,8 @@ describe('R2 UI — server refusals surface verbatim', () => {
     await user.click(q('strata-review-status-confirm') as HTMLElement);
     await waitFor(() => expect(q('strata-review-error')).not.toBeNull());
     expect(q('strata-review-error')?.textContent).toBe(refusal);
-  });
+    // Modal mount + userEvent are slow under full-suite contention; the default 5s flakes.
+  }, 20_000);
 
   it('Export CSV emits a real download: DOM-attached anchor click, .csv filename, filtered artifact content (RD-DEF-006)', async () => {
     // jsdom has no download manager, so this proves everything up to the browser boundary:

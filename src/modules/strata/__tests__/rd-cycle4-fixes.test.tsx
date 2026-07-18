@@ -20,7 +20,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import { LINK_TYPES, objectiveOptions } from '@/modules/strata/components/ReviewWorkspaceModal';
-import { ActionRow, DecisionCard, buildReviewsCsv, eligibleSnapshotOptions } from '@/modules/strata/pages/StrataReviewsPage';
+import { ActionRow, DecisionCard, buildReviewsCsv, eligibleSnapshotOptions, resolveDecisionSnapshotLabel } from '@/modules/strata/pages/StrataReviewsPage';
 import { StrataFormModal } from '@/modules/strata/components/authoring';
 import { StrataPanel } from '@/modules/strata/components/shared';
 import type { StrataAction, StrataDecision, StrataReview, StrataSnapshot } from '@/modules/strata/types';
@@ -212,6 +212,82 @@ const decision = (over: Partial<StrataDecision>): StrataDecision => ({
   ...over,
 });
 
+describe('RD-DEF-012 — decision snapshot attribution is the decision’s OWN, never the selected cockpit’s', () => {
+  // The cockpit’s real mapping path: a memoized id→key map over the governed snapshot
+  // collection, resolved INSIDE DecisionCard from d.snapshot_id. The selected snapshot is
+  // deliberately NOT an input anywhere in this path.
+  const LOOKUP = new Map([['s1', 'SNAP-1'], ['s8', 'SNAP-8']]);
+  const noop = () => {};
+  const renderCard = (over: Partial<StrataDecision>) => render(
+    <DecisionCard
+      d={decision({ status: 'closed', decided_by: 'u1', ...over })}
+      canAuthor busy={false} snapshotKeyById={LOOKUP} profileName={() => 'Vikram Indla'}
+      onDecide={noop} onCloseDecision={noop} onNewAction={noop} onHistory={noop}
+    />,
+  );
+  const attribution = (key: string) =>
+    (document.querySelector(`[data-testid="strata-reviews-decision-snapshot-${key}"]`) as HTMLElement).textContent ?? '';
+
+  it('a SNAP-1 historical decision reads "against SNAP-1" even while the SNAP-8 cockpit is open (DEC-1104 case)', () => {
+    // Viewing context = SNAP-8 cockpit; the lookup contains SNAP-8 — the card must not use it.
+    renderCard({ decision_key: 'DEC-1104x', snapshot_id: 's1' });
+    expect(attribution('DEC-1104x')).toContain('against SNAP-1');
+    expect(attribution('DEC-1104x')).not.toContain('SNAP-8');
+  });
+
+  it('a decision genuinely linked to the selected snapshot reads "against SNAP-8"', () => {
+    renderCard({ decision_key: 'DEC-S8', snapshot_id: 's8' });
+    expect(attribution('DEC-S8')).toContain('against SNAP-8');
+  });
+
+  it('snapshot_id = null renders the honest absent value, inheriting nothing', () => {
+    renderCard({ decision_key: 'DEC-NULL', snapshot_id: null });
+    expect(attribution('DEC-NULL')).toContain('against —');
+    expect(attribution('DEC-NULL')).not.toContain('SNAP-');
+  });
+
+  it('an unresolvable non-null snapshot id renders the honest fallback preserving the id — never the selected snapshot', () => {
+    renderCard({ decision_key: 'DEC-GHOST', snapshot_id: 'ghost-id' });
+    expect(attribution('DEC-GHOST')).toContain('against unknown snapshot (ghost-id)');
+    expect(attribution('DEC-GHOST')).not.toContain('SNAP-8');
+    expect(attribution('DEC-GHOST')).not.toContain('SNAP-1');
+  });
+
+  it('mixed set: linked/unlinked membership is disjoint (page predicate) and every card keeps its own attribution', () => {
+    const mixed = [
+      decision({ id: 'd1', decision_key: 'DEC-A', snapshot_id: 's1', status: 'closed', decided_by: 'u1' }),
+      decision({ id: 'd2', decision_key: 'DEC-B', snapshot_id: 's8', status: 'closed', decided_by: 'u1' }),
+      decision({ id: 'd3', decision_key: 'DEC-N', snapshot_id: null, status: 'closed', decided_by: 'u1' }),
+    ];
+    // The page's own membership predicate (unchanged by this fix): linked ⇔ d.snapshot_id === selected.id
+    const selectedId = 's8';
+    const linked = mixed.filter((d) => d.snapshot_id === selectedId);
+    const unlinked = mixed.filter((d) => !linked.includes(d));
+    expect(linked.map((d) => d.decision_key)).toEqual(['DEC-B']);
+    expect(unlinked.map((d) => d.decision_key).sort()).toEqual(['DEC-A', 'DEC-N']);
+    expect(linked.filter((d) => unlinked.includes(d))).toHaveLength(0); // no duplicates
+    // Every card renders its own attribution regardless of section:
+    mixed.forEach((d) => renderCard(d));
+    expect(attribution('DEC-A')).toContain('against SNAP-1');
+    expect(attribution('DEC-B')).toContain('against SNAP-8');
+    expect(attribution('DEC-N')).toContain('against —');
+  });
+
+  it('resolveDecisionSnapshotLabel: the pure mapping used by the card', () => {
+    expect(resolveDecisionSnapshotLabel('s1', LOOKUP)).toBe('SNAP-1');
+    expect(resolveDecisionSnapshotLabel(null, LOOKUP)).toBe('—');
+    expect(resolveDecisionSnapshotLabel('nope', LOOKUP)).toBe('unknown snapshot (nope)');
+  });
+
+  it('attribution stays inside the wrapping verdict band at narrow widths (RD-DEF-010 interplay)', () => {
+    renderCard({ decision_key: 'DEC-W', snapshot_id: 's1', forum: 'A very long forum that forces wrapping at 1024 wide viewports' });
+    const verdict = document.querySelector('[data-testid="strata-reviews-decision-verdict-DEC-W"]') as HTMLElement;
+    const attributionEl = document.querySelector('[data-testid="strata-reviews-decision-snapshot-DEC-W"]') as HTMLElement;
+    expect(verdict.contains(attributionEl)).toBe(true);
+    expect(verdict.style.overflowWrap).toBe('anywhere');
+  });
+});
+
 describe('RD-DEF-010 — cockpit decision/action surfaces wrap at narrow widths', () => {
   const LONG = 'A very long forum name that would otherwise push controls past the 1024 viewport edge and clip them irrecoverably';
   const noop = () => {};
@@ -219,8 +295,8 @@ describe('RD-DEF-010 — cockpit decision/action surfaces wrap at narrow widths'
   it('DecisionCard: metadata, verdict and control rows all declare wrap; long text breaks safely', () => {
     render(
       <DecisionCard
-        d={decision({ forum: LONG, owner_id: 'u1', status: 'decided', outcome: 'approved', rationale: 'because', decided_by: 'u2', approved_by: 'u2' })}
-        canAuthor busy={false} snapshotKey="SNAP-8" profileName={() => 'Vikram Indla'}
+        d={decision({ forum: LONG, owner_id: 'u1', status: 'decided', outcome: 'approved', rationale: 'because', decided_by: 'u2', approved_by: 'u2', snapshot_id: 's8' })}
+        canAuthor busy={false} snapshotKeyById={new Map([['s8', 'SNAP-8']])} profileName={() => 'Vikram Indla'}
         onDecide={noop} onCloseDecision={noop} onNewAction={noop} onHistory={noop}
       />,
     );
@@ -239,7 +315,7 @@ describe('RD-DEF-010 — cockpit decision/action surfaces wrap at narrow widths'
     render(
       <DecisionCard
         d={decision({ decision_key: 'DEC-C', status: 'closed' })}
-        canAuthor busy={false} snapshotKey={null} profileName={() => null}
+        canAuthor busy={false} snapshotKeyById={new Map()} profileName={() => null}
         onDecide={noop} onCloseDecision={noop} onNewAction={noop} onHistory={noop}
       />,
     );

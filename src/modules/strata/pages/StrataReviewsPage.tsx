@@ -528,15 +528,34 @@ export function buildReviewsCsv(
 }
 
 /**
+ * RD-DEF-012 · a decision's snapshot attribution comes from ITS OWN d.snapshot_id, resolved
+ * through this lookup — NEVER from the currently selected cockpit snapshot. Passing the
+ * selected key labelled every historical decision "against" whatever cockpit happened to be
+ * open (DEC-1104, a SNAP-1 decision, read "against SNAP-8") — a materially false governance
+ * record. Resolution rules: NULL id → absent ('—', the house convention); resolvable id →
+ * that snapshot's key; unresolvable non-NULL id → an honest "unknown snapshot" with the id
+ * preserved for diagnostics, never the selected snapshot.
+ */
+export function resolveDecisionSnapshotLabel(
+  snapshotId: string | null,
+  snapshotKeyById: ReadonlyMap<string, string>,
+): string {
+  if (snapshotId == null) return '—';
+  return snapshotKeyById.get(snapshotId) ?? `unknown snapshot (${snapshotId})`;
+}
+
+/**
  * Decision-register card (anchor 10) — EXPORTED so the cockpit's metadata + responsive
  * behaviour (RD-DEF-008/010) is testable without mounting the whole page. Every control row
  * and metadata line wraps; nothing is clipped by the parent panel's overflow:hidden.
+ * Snapshot attribution is resolved INSIDE the card from d.snapshot_id (RD-DEF-012) — callers
+ * supply the id→key lookup, not a pre-chosen key, so no caller can mislabel a decision.
  */
-export function DecisionCard({ d, canAuthor, busy, snapshotKey, profileName, onDecide, onCloseDecision, onNewAction, onHistory }: {
+export function DecisionCard({ d, canAuthor, busy, snapshotKeyById, profileName, onDecide, onCloseDecision, onNewAction, onHistory }: {
   d: StrataDecision;
   canAuthor: boolean;
   busy: boolean;
-  snapshotKey: string | null;
+  snapshotKeyById: ReadonlyMap<string, string>;
   profileName: (id: string | null | undefined) => string | null;
   onDecide: () => void;
   onCloseDecision: () => void;
@@ -545,6 +564,7 @@ export function DecisionCard({ d, canAuthor, busy, snapshotKey, profileName, onD
 }) {
   const recorded = d.status === 'decided' || d.status === 'closed';
   const evidenceRefs = d.evidence_refs ?? [];
+  const snapshotLabel = resolveDecisionSnapshotLabel(d.snapshot_id, snapshotKeyById);
   return (
     <div style={{ padding: 16, borderBottom: `1px solid ${T.border}` }} data-testid={`strata-reviews-decision-${d.decision_key}`}>
       <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, minWidth: 0, flexWrap: 'wrap' }}>
@@ -573,8 +593,9 @@ export function DecisionCard({ d, canAuthor, busy, snapshotKey, profileName, onD
               {d.rationale ? (
                 <span style={{ display: 'block', marginTop: 4 }}>{d.rationale}</span>
               ) : null}
-              <span style={{ display: 'block', marginTop: 4, color: T.subtlest }}>
-                Recorded by {profileName(d.decided_by) ?? '—'} · {d.decided_at ? fmtDateTime(d.decided_at) : '—'} · against {snapshotKey ?? '—'}
+              {/* RD-DEF-012: the decision's OWN snapshot — never the selected cockpit's. */}
+              <span style={{ display: 'block', marginTop: 4, color: T.subtlest }} data-testid={`strata-reviews-decision-snapshot-${d.decision_key}`}>
+                Recorded by {profileName(d.decided_by) ?? '—'} · {d.decided_at ? fmtDateTime(d.decided_at) : '—'} · against {snapshotLabel}
                 {d.approved_by ? ` · approved by ${profileName(d.approved_by) ?? '—'}` : ''}
               </span>
             </div>
@@ -1765,6 +1786,15 @@ export default function StrataReviewsPage() {
     },
   ];
 
+  // RD-DEF-012: id → key over the governed snapshot collection, memoized once. Each card
+  // resolves ITS OWN d.snapshot_id through this — the selected cockpit snapshot has no part
+  // in attribution (passing selected.snapshot_key here is what mislabelled DEC-1104).
+  const snapshotKeyById = useMemo(() => {
+    const m = new Map<string, string>();
+    snapshots.forEach((s) => m.set(s.id, s.snapshot_key));
+    return m;
+  }, [snapshots]);
+
   // Decision-register card — extracted to the exported DecisionCard so the cockpit's
   // responsive/metadata behaviour is testable without mounting the whole page (RD-DEF-010).
   const renderDecision = (d: StrataDecision) => (
@@ -1773,7 +1803,7 @@ export default function StrataReviewsPage() {
       d={d}
       canAuthor={canAuthor}
       busy={govBusyId === d.id}
-      snapshotKey={selected?.snapshot_key ?? null}
+      snapshotKeyById={snapshotKeyById}
       profileName={profileName}
       onDecide={() => setDecideTarget(d)}
       onCloseDecision={() => void transition('decision', d.id, 'closed')}
