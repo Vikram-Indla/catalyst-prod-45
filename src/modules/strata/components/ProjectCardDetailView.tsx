@@ -25,11 +25,11 @@ import type { Column } from '@/components/shared/JiraTable';
 import { Routes } from '@/lib/routes';
 import { executionApi, valueApi } from '../domain';
 import {
-  useBenefitProjectCards, useBenefits, usePortfolios, useSharedBenefitAttributions,
+  useBenefitProjectCards, useBenefits, useCardAudit, usePortfolios, useSharedBenefitAttributions,
   useDependencies, useExecutionLinks, useMilestones, useProfileNames,
   useProjectCardFieldConfigs, useProjectCardPicklists, useProjectCardSectionConfigs, useProjectKpis,
   useProjectObjectives, useInvalidateStrata, useKpis, useRisks, useStrataContext, useStrataRoles,
-  useStrategyElements,
+  useStrataUserId, useStrategyElements,
 } from '../hooks/useStrata';
 import type {
   StrataBenefit, StrataBenefitValue, StrataDependency, StrataMilestone, StrataPortfolio, StrataProjectCard, StrataRisk, StrataRole,
@@ -67,8 +67,6 @@ const RISK_LEVEL: Record<'low' | 'medium' | 'high', React.ComponentProps<typeof 
 };
 const RISK_STATUS_OPTIONS = ['open', 'mitigating', 'accepted', 'closed'];
 const RISK_LEVEL_OPTIONS = ['low', 'medium', 'high'];
-const KPI_DIRECTION_OPTIONS = ['higher_better', 'lower_better', 'band', 'manual'];
-const KPI_FREQUENCY_OPTIONS = ['weekly', 'monthly', 'quarterly', 'half_yearly', 'yearly'];
 
 const fvStr = (v: unknown): string | undefined =>
   typeof v === 'string' && v.trim() !== '' ? v.trim() : undefined;
@@ -150,12 +148,14 @@ function RailField({ k, children }: { k: string; children: React.ReactNode }) {
 }
 
 type FormKey =
-  | 'edit' | 'archive'
+  | 'edit' | 'archive' | 'complete' | 'cancel' | 'set-objective' | 'link-benefit' | 'submit' | 'approve'
   | 'new-milestone' | 'edit-milestone'
   | 'new-dependency' | 'edit-dependency' | 'new-blocker'
   | 'new-risk' | 'edit-risk'
   | 'new-objective' | 'new-kpi'
   | null;
+
+const TERMINAL_STAGES = ['completed', 'cancelled', 'archived'];
 
 export function ProjectCardDetailView({ card, theme }: {
   card: StrataProjectCard;
@@ -167,6 +167,8 @@ export function ProjectCardDetailView({ card, theme }: {
   const canWriteKpi = roles.some((r) => KPI_WRITE_ROLES.includes(r));
   const canWriteObjective = roles.some((r) => OBJECTIVE_WRITE_ROLES.includes(r));
   const canArchive = roles.some((r) => ARCHIVE_ROLES.includes(r));
+  // PC-DEF-004/003/005: a terminal project card is frozen — no edit / lifecycle action.
+  const isTerminal = TERMINAL_STAGES.includes(card.stage);
   const { activeCycle, activePeriod } = useStrataContext();
 
   const milestonesQ = useMilestones(card.id);
@@ -201,6 +203,9 @@ export function ProjectCardDetailView({ card, theme }: {
   const themeElements = elements.filter((e) => e.element_type === 'theme');
   const themeObjectives = elements.filter((e) => e.context === 'theme' && e.element_type === 'objective');
   const themeKpis = allKpis; // scoping to strictly theme-linked KPIs is a future refinement; all KPIs are valid roll-up targets today
+  // PC-DEF-002 — the "New KPI" action now REUSES an approved governed KPI rather
+  // than minting a project-local master. Only approved dictionary KPIs are selectable.
+  const approvedKpis = useMemo(() => allKpis.filter((k) => k.status === 'approved'), [allKpis]);
 
   // Resolved upward roll-up target per Project KPI. The parent Theme KPI is a
   // 'rolls_up_to' execution link (strata_execution_links), not a column — resolve
@@ -323,6 +328,23 @@ export function ProjectCardDetailView({ card, theme }: {
   }, [benefitLinks, sharedAttrRules, card.id]);
 
   const cardBenefitIds = useMemo(() => cardEdges.map((e) => e.benefit_id), [cardEdges]);
+
+  // PC-DEF-005 — governed benefit linkage, per-card audit history, effective context.
+  const benefitNameById = useMemo(() => new Map(allBenefits.map((b) => [b.id, b.name])), [allBenefits]);
+  const linkedBenefits = useMemo(() => benefitLinks.filter((l) => l.project_card_id === card.id), [benefitLinks, card.id]);
+  const auditQ = useCardAudit(card.id);
+  const auditEvents = auditQ.data ?? [];
+  const closure = (card.optional_fields?.closure ?? null) as { type?: string; reason?: string; actor?: string; at?: string } | null;
+  // PC-DEF-005 submit/approve governance — new columns not yet in generated types.
+  const approval = card as unknown as {
+    approval_status?: string | null; submitted_by?: string | null; approved_by?: string | null;
+    submitted_at?: string | null; approved_at?: string | null; created_by?: string | null;
+  };
+  const currentUserId = useStrataUserId().data ?? null;
+  const canSubmit = canWrite && !isTerminal && approval.approval_status !== 'approved' && approval.approval_status !== 'submitted';
+  // Hide the guaranteed-to-fail approve action (SoD: approver ≠ creator ≠ submitter); server still enforces.
+  const canApprove = canArchive && !isTerminal && approval.approval_status === 'submitted'
+    && currentUserId != null && currentUserId !== approval.created_by && currentUserId !== approval.submitted_by;
   const benefitValueQueries = useQueries({
     queries: cardBenefitIds.map((bid) => ({
       queryKey: ['strata', 'benefit-values', bid],
@@ -367,13 +389,13 @@ export function ProjectCardDetailView({ card, theme }: {
     { id: 'weight', label: 'Weight', width: 8, align: 'end', cell: ({ row }) => <span style={{ fontVariantNumeric: 'tabular-nums', color: T.subtle }}>{row.weight}</span> },
     { id: 'source', label: 'Source', width: 10, cell: ({ row }) => (row.source_system ? <CatalystTag text={`${labelize(row.source_system)}${row.source_reference_key ? ` · ${row.source_reference_key}` : ''}`} /> : <Dash />) },
     { id: 'status', label: 'Status', width: 11, cell: ({ row }) => <StatusLozenge status={row.status} appearance={MILESTONE_STATUS[row.status] ?? 'default'} /> },
-    ...(canWrite ? [{
+    ...(canWrite && !isTerminal ? [{
       id: 'actions', label: '', width: 8, align: 'end' as const,
       cell: ({ row }: { row: StrataMilestone }) => (
         <Button appearance="subtle" spacing="compact" onClick={() => { setEditMilestone(row); setForm('edit-milestone'); }}>Edit</Button>
       ),
     }] : []),
-  ], [canWrite]);
+  ], [canWrite, isTerminal]);
 
   const dependencyColumns = useMemo<Column<StrataDependency>[]>(() => [
     { id: 'name', label: 'Dependency', flex: true, cell: ({ row }) => <span style={{ fontWeight: 600, color: T.text }}>{row.name ?? row.description ?? labelize(row.dependency_type)}</span> },
@@ -391,7 +413,7 @@ export function ProjectCardDetailView({ card, theme }: {
       id: 'impact', label: 'Impact / blocker note', width: 16,
       cell: ({ row }) => (row.impact ? <Tooltip content={row.impact}><span style={{ display: 'block', color: T.subtle, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{row.impact}</span></Tooltip> : <Dash />),
     },
-    ...(canWrite ? [{
+    ...(canWrite && !isTerminal ? [{
       id: 'actions', label: '', width: 8, align: 'end' as const,
       cell: ({ row }: { row: StrataDependency }) => (
         <Button appearance="subtle" spacing="compact" onClick={() => { setEditDependency(row); setForm('edit-dependency'); }}>Edit</Button>
@@ -407,7 +429,7 @@ export function ProjectCardDetailView({ card, theme }: {
     { id: 'owner', label: 'Owner', width: 12, cell: ({ row }) => (profileName(row.owner_id) ? <span style={{ color: T.subtle }}>{profileName(row.owner_id)}</span> : <Dash />) },
     { id: 'target', label: 'Target', width: 11, cell: ({ row }) => (row.target_resolution_date ? <span style={{ color: T.subtle }}>{fmtDate(row.target_resolution_date)}</span> : <Dash />) },
     { id: 'status', label: 'Status', width: 11, cell: ({ row }) => <StatusLozenge status={row.status} appearance={RISK_STATUS[row.status] ?? 'default'} /> },
-    ...(canWrite ? [{
+    ...(canWrite && !isTerminal ? [{
       id: 'actions', label: '', width: 8, align: 'end' as const,
       cell: ({ row }: { row: StrataRisk }) => (
         <Button appearance="subtle" spacing="compact" onClick={() => { setEditRisk(row); setForm('edit-risk'); }}>Edit</Button>
@@ -427,8 +449,18 @@ export function ProjectCardDetailView({ card, theme }: {
         {card.reference_id ? <CatalystTag text={card.reference_id} /> : null}
         <StrataExecutionHealthLozenge health={card.calculated_health} />
         <span style={{ marginLeft: 'auto', display: 'flex', gap: 8 }}>
-          {canWrite ? <Button spacing="compact" onClick={() => setForm('edit')} testId="strata-project-edit-open">Edit</Button> : null}
-          {canArchive ? <Button spacing="compact" appearance="subtle" onClick={() => setForm('archive')}>Archive</Button> : null}
+          {isTerminal ? (
+            <CatalystTag text={`Locked · ${labelize(card.stage)}`} />
+          ) : (
+            <>
+              {canSubmit ? <Button spacing="compact" onClick={() => setForm('submit')} testId="strata-project-submit-open">Submit for approval</Button> : null}
+              {canApprove ? <Button spacing="compact" appearance="primary" onClick={() => setForm('approve')} testId="strata-project-approve-open">Approve</Button> : null}
+              {canWrite ? <Button spacing="compact" onClick={() => setForm('edit')} testId="strata-project-edit-open">Edit</Button> : null}
+              {canArchive ? <Button spacing="compact" onClick={() => setForm('complete')} testId="strata-project-complete-open">Complete</Button> : null}
+              {canArchive ? <Button spacing="compact" appearance="subtle" onClick={() => setForm('cancel')} testId="strata-project-cancel-open">Cancel project</Button> : null}
+              {canArchive ? <Button spacing="compact" appearance="subtle" onClick={() => setForm('archive')}>Archive</Button> : null}
+            </>
+          )}
         </span>
       </div>
 
@@ -513,14 +545,21 @@ export function ProjectCardDetailView({ card, theme }: {
                 : <Dash />}
             </SummaryField>
             <SummaryField label="Linked Strategic Objective">
-              {(() => {
-                const obj = card.objective_element_id
-                  ? themeObjectives.find((o) => o.id === card.objective_element_id) ?? null
-                  : null;
-                return obj
-                  ? <Button appearance="subtle" spacing="compact" onClick={() => window.location.assign(Routes.strata.strategy())}>{obj.name}</Button>
-                  : <Dash />;
-              })()}
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
+                {(() => {
+                  const obj = card.objective_element_id
+                    ? themeObjectives.find((o) => o.id === card.objective_element_id) ?? null
+                    : null;
+                  return obj
+                    ? <Button appearance="subtle" spacing="compact" onClick={() => window.location.assign(Routes.strata.strategy())}>{obj.name}</Button>
+                    : <Dash />;
+                })()}
+                {canWriteObjective && !isTerminal ? (
+                  <Button appearance="subtle" spacing="compact" onClick={() => setForm('set-objective')} testId="strata-set-objective-open">
+                    {card.objective_element_id ? 'Change' : 'Set objective'}
+                  </Button>
+                ) : null}
+              </span>
             </SummaryField>
             <SummaryField label="Business Owner">
               {profileName(card.business_owner_id) ? (
@@ -577,7 +616,7 @@ export function ProjectCardDetailView({ card, theme }: {
             {sectionVisible('scope_measures', 'project_objectives') ? (
               <TabSection
                 title={`Project Objectives (${objectives.length})`}
-                action={canWriteObjective ? <Button spacing="compact" onClick={() => setForm('new-objective')} testId="strata-new-project-objective">New objective</Button> : undefined}
+                action={canWriteObjective && !isTerminal ? <Button spacing="compact" onClick={() => setForm('new-objective')} testId="strata-new-project-objective">New objective</Button> : undefined}
               >
                 {objectives.length === 0 ? (
                   <EmptyState size="compact" header="No project objectives" description="Project Objectives use the same framework as Theme Objectives and may link upward to one." />
@@ -590,7 +629,7 @@ export function ProjectCardDetailView({ card, theme }: {
             {sectionVisible('scope_measures', 'project_kpis') ? (
               <TabSection
                 title={`Project KPIs / Measures (${projectKpis.length})`}
-                action={canWriteKpi ? <Button spacing="compact" onClick={() => setForm('new-kpi')} testId="strata-new-project-kpi">New KPI</Button> : undefined}
+                action={canWriteKpi && !isTerminal ? <Button spacing="compact" onClick={() => setForm('new-kpi')} testId="strata-new-project-kpi">Link KPI</Button> : undefined}
               >
                 {projectKpis.length === 0 ? (
                   <EmptyState size="compact" header="No project KPIs" description="Project KPIs / Measures use the same framework as Theme KPIs and may roll up to one." />
@@ -610,6 +649,66 @@ export function ProjectCardDetailView({ card, theme }: {
               </TabSection>
             ) : null}
 
+            {/* PC-DEF-005 — Linked Benefits (distinct from KPIs / objectives / milestones) */}
+            <TabSection
+              title={`Linked Benefits (${linkedBenefits.length})`}
+              action={canWrite && !isTerminal ? <Button spacing="compact" onClick={() => setForm('link-benefit')} testId="strata-link-benefit-open">Link benefit</Button> : undefined}
+            >
+              {linkedBenefits.length === 0 ? (
+                <EmptyState size="compact" header="No linked benefits" description="Link an existing governed benefit to attribute value to this project. Benefit definitions are never created here." />
+              ) : linkedBenefits.map((l) => (
+                <LinkedRow
+                  key={l.id}
+                  primary={benefitNameById.get(l.benefit_id) ?? '—'}
+                  meta={l.attribution_share != null ? `Attribution ${l.attribution_share}%` : 'No attribution share set'}
+                  canAct={canWrite && !isTerminal}
+                  onAction={() => { void executionApi.unlinkBenefitProjectCard(l.benefit_id, card.id).then(() => invalidate()); }}
+                />
+              ))}
+            </TabSection>
+
+            {/* PC-DEF-005 — Version & effective context (truthful existing fields only) */}
+            <TabSection title="Version & Effective Context">
+              <div style={{ display: 'grid', gridTemplateColumns: isNarrow ? '1fr' : '1fr 1fr', gap: 12 }}>
+                <SummaryField label="Reference">{card.reference_id ?? <Dash />}</SummaryField>
+                <SummaryField label="Lifecycle Stage">{card.stage ? labelize(card.stage) : <Dash />}</SummaryField>
+                <SummaryField label="Effective Cycle">{activeCycle?.name ?? <Dash />}</SummaryField>
+                <SummaryField label="Effective Period">{activePeriod?.name ?? <Dash />}</SummaryField>
+                <SummaryField label="Created">{card.created_at ? fmtDate(card.created_at) : <Dash />}</SummaryField>
+                <SummaryField label="Last Updated">{card.updated_at ? fmtDate(card.updated_at) : <Dash />}</SummaryField>
+                <SummaryField label="Approval">{approval.approval_status ? labelize(approval.approval_status) : 'Unsubmitted'}</SummaryField>
+                {approval.submitted_by ? (
+                  <SummaryField label="Submitted By">{`${profileName(approval.submitted_by) ?? '—'}${approval.submitted_at ? ` · ${fmtDate(approval.submitted_at)}` : ''}`}</SummaryField>
+                ) : null}
+                {approval.approved_by ? (
+                  <SummaryField label="Approved By">{`${profileName(approval.approved_by) ?? '—'}${approval.approved_at ? ` · ${fmtDate(approval.approved_at)}` : ''}`}</SummaryField>
+                ) : null}
+                {closure ? (
+                  <SummaryField label="Closure">{`${labelize(closure.type ?? '')}${closure.reason ? ` · ${closure.reason}` : ''}${closure.at ? ` · ${fmtDate(closure.at)}` : ''}`}</SummaryField>
+                ) : null}
+              </div>
+            </TabSection>
+
+            {/* PC-DEF-005 — Audit history (read preserved for terminal cards) */}
+            <TabSection title={`Audit History (${auditEvents.length})`}>
+              {auditQ.isLoading ? (
+                <span style={{ color: T.subtle, fontSize: 'var(--ds-font-size-100)' }}>Loading audit history…</span>
+              ) : auditEvents.length === 0 ? (
+                <EmptyState size="compact" header="No audit history" description="Governed actions on this project will appear here." />
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                  {auditEvents.map((e) => (
+                    <div key={e.id} style={{ borderLeft: `2px solid ${T.border}`, paddingLeft: 10 }}>
+                      <div style={{ fontSize: 'var(--ds-font-size-100)', color: T.text }}>{labelize(String(e.action ?? '').replace(/^RPC:/, ''))}</div>
+                      <div style={{ fontSize: 'var(--ds-font-size-075)', color: T.subtle }}>
+                        {(profileName(e.actor_id) ?? 'System')}{e.created_at ? ` · ${fmtDate(e.created_at)}` : ''}{e.note ? ` · ${e.note}` : ''}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </TabSection>
+
             {sectionVisible('scope_measures', 'target_outcomes') ? (
               <SummaryField label="Target Outcomes">{card.target_outcomes ?? <Dash />}</SummaryField>
             ) : null}
@@ -625,7 +724,7 @@ export function ProjectCardDetailView({ card, theme }: {
             {sectionVisible('delivery', 'milestones') ? (
               <TabSection
                 title={`Milestones (${milestones.length})`}
-                action={canWrite ? <Button spacing="compact" onClick={() => setForm('new-milestone')} testId="strata-new-milestone">New milestone</Button> : undefined}
+                action={canWrite && !isTerminal ? <Button spacing="compact" onClick={() => setForm('new-milestone')} testId="strata-new-milestone">New milestone</Button> : undefined}
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                   <span style={{ ...captionStyle, fontWeight: 600 }}>Project progress</span>
@@ -648,7 +747,7 @@ export function ProjectCardDetailView({ card, theme }: {
             {sectionVisible('delivery', 'risks') ? (
               <TabSection
                 title={`Risks (${risks.length})`}
-                action={canWrite ? <Button spacing="compact" onClick={() => { setEditRisk(null); setForm('new-risk'); }} testId="strata-new-risk">New risk</Button> : undefined}
+                action={canWrite && !isTerminal ? <Button spacing="compact" onClick={() => { setEditRisk(null); setForm('new-risk'); }} testId="strata-new-risk">New risk</Button> : undefined}
               >
                 {risks.length === 0 ? (
                   <EmptyState size="compact" header="No risks" description="Track delivery risks with a likelihood × impact assessment and mitigation." />
@@ -661,7 +760,7 @@ export function ProjectCardDetailView({ card, theme }: {
             {sectionVisible('delivery', 'dependencies') ? (
               <TabSection
                 title={`Blockers (${blockers.length})`}
-                action={canWrite ? <Button spacing="compact" onClick={() => setForm('new-blocker')} testId="strata-new-blocker">New blocker</Button> : undefined}
+                action={canWrite && !isTerminal ? <Button spacing="compact" onClick={() => setForm('new-blocker')} testId="strata-new-blocker">New blocker</Button> : undefined}
               >
                 {blockers.length === 0 ? (
                   <EmptyState size="compact" header="No active blockers" description="Blocking dependencies in either direction surface here until resolved." />
@@ -674,7 +773,7 @@ export function ProjectCardDetailView({ card, theme }: {
             {sectionVisible('delivery', 'dependencies') ? (
               <TabSection
                 title={`Delivery Dependencies (${projectDependencies.length})`}
-                action={canWrite ? <Button spacing="compact" onClick={() => setForm('new-dependency')} testId="strata-new-project-dependency">New dependency</Button> : undefined}
+                action={canWrite && !isTerminal ? <Button spacing="compact" onClick={() => setForm('new-dependency')} testId="strata-new-project-dependency">New dependency</Button> : undefined}
               >
                 {projectDependencies.length === 0 ? (
                   <EmptyState size="compact" header="No delivery dependencies" description="Dependencies where this project is requesting or serving appear here." />
@@ -775,7 +874,7 @@ export function ProjectCardDetailView({ card, theme }: {
           { key: 'leadBusinessUnit', label: 'Lead Business Unit', kind: 'select', options: (lobPicklistQ.data ?? []).map((p) => ({ value: p.value, label: p.label })) },
           { key: 'deliveryTeam', label: 'Delivery Team', kind: 'select', options: (teamPicklistQ.data ?? []).map((p) => ({ value: p.value, label: p.label })) },
           { key: 'sector', label: 'Department / Sector', kind: 'select', options: (sectorPicklistQ.data ?? []).map((p) => ({ value: p.value, label: p.label })) },
-          { key: 'stage', label: 'Delivery Status', kind: 'select', options: (deliveryStatusPicklistQ.data ?? []).map((p) => ({ value: p.value, label: p.label })) },
+          { key: 'stage', label: 'Delivery Status', kind: 'select', options: (deliveryStatusPicklistQ.data ?? []).filter((p) => !TERMINAL_STAGES.includes(p.value)).map((p) => ({ value: p.value, label: p.label })), helper: 'Completion, cancellation and archival are governed actions — use the buttons above.' },
           { key: 'baselineStart', label: 'Baseline start', kind: 'date' },
           { key: 'baselineEnd', label: 'Baseline end', kind: 'date' },
           { key: 'forecastEnd', label: 'Forecast end', kind: 'date' },
@@ -821,6 +920,87 @@ export function ProjectCardDetailView({ card, theme }: {
       />
 
       <StrataFormModal
+        open={form === 'complete'}
+        onClose={() => setForm(null)}
+        title="Complete project"
+        description="Governed closure. The server verifies alignment (primary objective), ownership (Business Owner + PM), baselined dates, all milestones resolved, no open risks or blocking dependencies, and separation of duties before the project is completed. A reason is required and audited."
+        submitLabel="Complete project"
+        fields={[{ key: 'reason', label: 'Completion reason', kind: 'textarea', required: true }]}
+        onSubmit={submitAndRefresh((v) => executionApi.completeProjectCard(card.id, String(v.reason ?? '').trim()))}
+        testId="strata-project-complete-modal"
+      />
+
+      <StrataFormModal
+        open={form === 'cancel'}
+        onClose={() => setForm(null)}
+        title="Cancel project"
+        description="Governed cancellation of an abandoned project. Records the reason, actor and audit, and freezes the project history (terminal). Distinct from archive."
+        submitLabel="Cancel project"
+        fields={[{ key: 'reason', label: 'Cancellation reason', kind: 'textarea', required: true }]}
+        onSubmit={submitAndRefresh((v) => executionApi.cancelProjectCard(card.id, String(v.reason ?? '').trim()))}
+        testId="strata-project-cancel-modal"
+      />
+
+      <StrataFormModal
+        open={form === 'set-objective'}
+        onClose={() => setForm(null)}
+        title="Set primary Strategic Objective"
+        description="A governed project must align to exactly one primary Strategic Objective within its Theme; the Theme is retained as context. A project cannot advance beyond planning until aligned."
+        submitLabel="Link objective"
+        fields={[{
+          key: 'objectiveId', label: 'Strategic Objective', kind: 'select', required: true,
+          options: themeObjectives.filter((o) => o.parent_id === card.theme_id).map((o) => ({ value: o.id, label: o.name })),
+          helper: 'Only objectives within this project’s Theme are eligible.',
+        }]}
+        initial={card.objective_element_id ? { objectiveId: card.objective_element_id } : undefined}
+        onSubmit={submitAndRefresh((v) => executionApi.linkCardObjective(card.id, String(v.objectiveId ?? '')))}
+        testId="strata-project-set-objective-modal"
+      />
+
+      <StrataFormModal
+        open={form === 'link-benefit'}
+        onClose={() => setForm(null)}
+        title="Link governed benefit"
+        description="Attribute value to this project by linking an existing governed benefit. Benefit definitions and realized values are never changed here."
+        submitLabel="Link benefit"
+        fields={[
+          {
+            key: 'benefitId', label: 'Governed benefit', kind: 'select', required: true,
+            options: allBenefits.filter((b) => !linkedBenefits.some((l) => l.benefit_id === b.id)).map((b) => ({ value: b.id, label: b.name })),
+            helper: allBenefits.length === 0 ? 'No governed benefits are available to link.' : 'Select an existing benefit from the governed dictionary.',
+          },
+          { key: 'attributionShare', label: 'Attribution share (%)', kind: 'text', helper: 'Optional — 0 to 100.' },
+        ]}
+        onSubmit={submitAndRefresh((v) => executionApi.linkBenefitProjectCard(
+          String(v.benefitId ?? ''), card.id,
+          fvStr(v.attributionShare) ? Number(fvStr(v.attributionShare)) : undefined,
+        ))}
+        testId="strata-project-link-benefit-modal"
+      />
+
+      <StrataFormModal
+        open={form === 'submit'}
+        onClose={() => setForm(null)}
+        title="Submit project for approval"
+        description="Submits this project for governance approval. The server requires a primary Strategic Objective, a Business Owner and a Project Manager first. The approver must be someone other than you and the creator."
+        submitLabel="Submit for approval"
+        fields={[{ key: 'reason', label: 'Submission reason', kind: 'textarea', required: true }]}
+        onSubmit={submitAndRefresh((v) => executionApi.submitProjectCard(card.id, String(v.reason ?? '').trim()))}
+        testId="strata-project-submit-modal"
+      />
+
+      <StrataFormModal
+        open={form === 'approve'}
+        onClose={() => setForm(null)}
+        title="Approve project"
+        description="Approves this submitted project. Segregation of duties is enforced on the server — you cannot approve a project you created or submitted. A reason is recorded to the audit trail."
+        submitLabel="Approve project"
+        fields={[{ key: 'reason', label: 'Approval reason', kind: 'textarea', required: true }]}
+        onSubmit={submitAndRefresh((v) => executionApi.approveProjectCard(card.id, String(v.reason ?? '').trim()))}
+        testId="strata-project-approve-modal"
+      />
+
+      <StrataFormModal
         open={form === 'new-objective'}
         onClose={() => setForm(null)}
         title="New project objective"
@@ -846,28 +1026,36 @@ export function ProjectCardDetailView({ card, theme }: {
       <StrataFormModal
         open={form === 'new-kpi'}
         onClose={() => setForm(null)}
-        title="New project KPI / measure"
-        description="Uses the same KPI framework as Theme KPIs."
-        submitLabel="Create"
+        title="Link governed KPI / measure"
+        description="Project Cards reuse an approved KPI from the governed dictionary. Contribution and target context are recorded on the link — no new KPI is created and official KPI/Scorecard results are unchanged."
+        submitLabel="Link measure"
         fields={[
-          { key: 'name', label: 'Measure name', kind: 'text', required: true },
-          { key: 'unit', label: 'Unit of measure', kind: 'text' },
-          { key: 'direction', label: 'Directionality', kind: 'select', options: KPI_DIRECTION_OPTIONS.map((d) => ({ value: d, label: labelize(d) })) },
-          { key: 'frequency', label: 'Measurement frequency', kind: 'select', options: KPI_FREQUENCY_OPTIONS.map((f) => ({ value: f, label: labelize(f) })) },
+          {
+            key: 'kpiId', label: 'Governed KPI', kind: 'select', required: true,
+            options: approvedKpis.map((k) => ({ value: k.id, label: k.name })),
+            helper: approvedKpis.length === 0
+              ? 'No approved governed KPIs are available to reuse yet.'
+              : 'Select an approved KPI from the governed dictionary',
+          },
+          {
+            key: 'contribution', label: 'Contribution', kind: 'select',
+            options: [{ value: 'direct', label: 'Direct' }, { value: 'supporting', label: 'Supporting' }],
+          },
+          {
+            key: 'targetNote', label: 'Contribution / target context', kind: 'text',
+            helper: 'Optional — how this project contributes to the KPI (stored on the link, not the KPI definition)',
+          },
           {
             key: 'parentThemeKpiId', label: 'Roll up to Theme KPI', kind: 'select',
             options: themeKpis.map((k) => ({ value: k.id, label: k.name })),
-            helper: 'Optional — links this Project KPI upward',
+            helper: 'Optional — links this measure upward',
           },
-          { key: 'accountableOwnerId', label: 'Measure Owner', kind: 'user' },
-          { key: 'validatorId', label: 'Validator', kind: 'user', helper: 'Must differ from the measure owner' },
         ]}
-        initial={{ direction: 'higher_better', frequency: 'quarterly' }}
-        onSubmit={submitAndRefresh((v) => executionApi.createProjectKpi({
-          projectId: card.id, name: String(v.name ?? '').trim(), unit: fvStr(v.unit),
-          direction: fvStr(v.direction), frequency: fvStr(v.frequency), entryMethod: 'manual',
-          parentThemeKpiId: fvStr(v.parentThemeKpiId), accountableOwnerId: fvStr(v.accountableOwnerId),
-          validatorId: fvStr(v.validatorId),
+        initial={{ contribution: 'supporting' }}
+        onSubmit={submitAndRefresh((v) => executionApi.linkProjectKpi({
+          projectId: card.id, kpiId: String(v.kpiId ?? ''),
+          contribution: fvStr(v.contribution), targetNote: fvStr(v.targetNote),
+          parentThemeKpiId: fvStr(v.parentThemeKpiId),
         }))}
         testId="strata-project-kpi-create-modal"
       />

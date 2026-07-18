@@ -362,6 +362,43 @@ export const useKpis = () => useQuery({ queryKey: ['strata', 'kpis'], queryFn: k
 export const useKpiBySlug = (slug?: string) =>
   useQuery({ queryKey: ['strata', 'kpi', slug], queryFn: () => kpiApi.bySlug(slug!), enabled: !!slug, staleTime: STALE });
 /**
+ * KO-DEF-001 — unmet governed prerequisites for a KPI (empty = approvable). Only meaningful for
+ * a draft, so it is not fetched otherwise. staleTime 0: the user fixes prerequisites on this very
+ * page, and a cached list would keep Submit disabled after they are satisfied.
+ */
+export const useKpiSubmissionBlockers = (kpiId?: string, enabled = true) =>
+  useQuery({
+    queryKey: ['strata', 'kpi-blockers', kpiId],
+    queryFn: () => configApi.kpiSubmissionBlockers(kpiId!),
+    enabled: !!kpiId && enabled,
+    staleTime: 0,
+  });
+/** KO-DEF-002 — dependency impact for a KPI. Fetched on demand (retire/revise modal), not
+ *  on every KPI page load, so the join scan runs only when a governed action needs it. */
+/** KO-DEF-003 — eligible persisted reviews for OKR review linkage. */
+export const useReviews = () =>
+  useQuery({ queryKey: ['strata', 'reviews'], queryFn: governanceApi.reviews, staleTime: STALE });
+/** KO-DEF-003 — server-resolved KR reportability (never recomputed client-side). */
+export const useKrReportability = (krId?: string) =>
+  useQuery({
+    queryKey: ['strata', 'kr-reportability', krId],
+    queryFn: () => kpiApi.krReportability(krId!),
+    enabled: !!krId, staleTime: 0,
+  });
+export const useOkrOfficialProgress = (okrId?: string, enabled = true) =>
+  useQuery({
+    queryKey: ['strata', 'okr-progress', okrId],
+    queryFn: () => kpiApi.okrOfficialProgress(okrId!),
+    enabled: !!okrId && enabled, staleTime: 0,
+  });
+export const useKpiDependencyImpact = (kpiId?: string, enabled = true) =>
+  useQuery({
+    queryKey: ['strata', 'kpi-dep-impact', kpiId],
+    queryFn: () => configApi.kpiDependencyImpact(kpiId!),
+    enabled: !!kpiId && enabled,
+    staleTime: 0,
+  });
+/**
  * F-9: targets and actuals are read across the KPI's whole LINEAGE, not just the version whose page
  * is open. `id` identifies a version; `lineage_id` identifies the KPI as a continuing concept, so
  * reading one id makes the trend silently restart at every revision — the history would look like it
@@ -530,6 +567,14 @@ export const useBenefitProjectCards = () =>
  *  traceability source for "Benefit at stake" on the Project Card end (PB-DEF-006). */
 export const useSharedBenefitAttributions = () =>
   useQuery({ queryKey: ['strata', 'shared-benefit-attributions'], queryFn: valueApi.sharedBenefitAttributions, staleTime: STALE });
+/** PC-DEF-005 — per-card governed audit history (actor / time / action / before-after). */
+export const useCardAudit = (projectId?: string) =>
+  useQuery({
+    queryKey: ['strata', 'card-audit', projectId],
+    queryFn: () => executionApi.cardAuditHistory(projectId!),
+    enabled: !!projectId,
+    staleTime: STALE,
+  });
 export const useValueAtRisk = (portfolioId?: string) =>
   useQuery({
     queryKey: ['strata', 'var', portfolioId],
