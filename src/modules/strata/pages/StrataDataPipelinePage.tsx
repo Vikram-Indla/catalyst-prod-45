@@ -1622,6 +1622,21 @@ export function owningRouteForEntity(
 }
 
 /**
+ * DL-DEF-009: scorecard dependents rendered by governed model identity — one
+ * distinguishable label per model. Same-name model versions are told apart by
+ * version, multi-measure links carry an explicit count, and a residual label
+ * collision falls back to the model id prefix. Never two identical labels.
+ */
+export function formatScorecardDependents(
+  models: Array<{ id: string; name: string; version: number | null; measureCount: number }>,
+): string[] {
+  const labels = models.map((m) =>
+    `${m.name}${m.version != null ? ` (v${m.version})` : ''}${m.measureCount > 1 ? ` · ${m.measureCount} measures` : ''}`);
+  return labels.map((label, i) =>
+    labels.filter((l) => l === label).length > 1 ? `${label} · ${models[i].id.slice(0, 8)}` : label);
+}
+
+/**
  * Entity audit/lineage lookup over the EXISTING append-only audit store
  * (strata_entity_audit RPC — no parallel audit system). Renders action, actor
  * display name, timestamp, before/after, note, upstream run/staging provenance
@@ -1633,10 +1648,24 @@ function EntityAuditPanel() {
   const profilesQ = useProfileNames();
   const kpisQ = useKpis();
   const runsQ = useUploadRuns();
-  const [entityType, setEntityType] = useState<string>('');
-  const [entityId, setEntityId] = useState('');
+  // DL-DEF-002 D: entity identity is URL state (?etype/?eid) so global search
+  // and deep links can open the panel with the exact entity pre-selected.
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [entityType, setEntityTypeState] = useState<string>(() => searchParams.get('etype') ?? '');
+  const [entityId, setEntityIdState] = useState(() => searchParams.get('eid') ?? '');
+  const syncUrl = (etype: string, eid: string) =>
+    setSearchParams(applyListParams(searchParams.toString(), { etype: etype || null, eid: eid || null }), { replace: true });
+  const setEntityType = (v: string) => { setEntityTypeState(v); syncUrl(v, entityId); };
+  const setEntityId = (v: string) => { setEntityIdState(v); syncUrl(entityType, v); };
   const [term, setTerm] = useState('');
   const [pickedRoute, setPickedRoute] = useState<string | null>(null);
+  // External URL changes (global-search navigation while already mounted) win.
+  useEffect(() => {
+    const t = searchParams.get('etype') ?? '';
+    const i = searchParams.get('eid') ?? '';
+    if (t !== entityType) setEntityTypeState(t);
+    if (i !== entityId) setEntityIdState(i);
+  }, [searchParams]); // eslint-disable-line react-hooks/exhaustive-deps
   const trimmedId = entityId.trim();
   const validId = isEntityUuid(trimmedId);
   const canSearch = !!entityType && validId;
@@ -1900,7 +1929,25 @@ function EntityAuditPanel() {
                   <span>Scorecard dependents: none — no scorecard model measures this KPI.</span>
                 ) : (
                   <span data-testid="strata-entity-scorecard-impact">
-                    Scorecard dependents: {relationsQ.data.scorecardModels.map((m) => m.name).join(', ')}
+                    Scorecard dependents: {formatScorecardDependents(relationsQ.data.scorecardModels).join(', ')}
+                  </span>
+                )}
+                {(relationsQ.data.snapshots ?? []).length === 0 ? (
+                  <span data-testid="strata-entity-snapshot-impact">
+                    Snapshot impact: none — no locked snapshot includes this KPI's scorecard models.
+                  </span>
+                ) : (
+                  <span data-testid="strata-entity-snapshot-impact">
+                    Snapshot impact:{' '}
+                    {(relationsQ.data.snapshots ?? []).map((s, i) => (
+                      <span key={s.id}>
+                        {i > 0 ? ', ' : ''}
+                        <Button appearance="subtle-link" spacing="none" onClick={() => navigate(Routes.strata.review(s.snapshot_key))}>
+                          {s.snapshot_key}
+                        </Button>
+                        {` (${labelize(s.status)})`}
+                      </span>
+                    ))}
                   </span>
                 )}
               </div>
@@ -1915,12 +1962,114 @@ function EntityAuditPanel() {
                   </span>
                 ))}
               </div>
+            ) : relationsQ.data.kind === 'benefit' ? (
+              <div style={{ ...captionStyle, marginTop: 4, display: 'flex', flexDirection: 'column', gap: 4 }} data-testid="strata-entity-benefit-relations">
+                <span>
+                  Portfolio:{' '}
+                  {relationsQ.data.portfolio ? (
+                    relationsQ.data.portfolio.slug ? (
+                      <Button appearance="subtle-link" spacing="none" onClick={() => navigate(Routes.strata.portfolioDetail(relationsQ.data!.kind === 'benefit' ? relationsQ.data.portfolio!.slug! : ''))}>
+                        {relationsQ.data.portfolio.name}
+                      </Button>
+                    ) : relationsQ.data.portfolio.name
+                  ) : '—'}
+                </span>
+                <span>
+                  Governed KPI:{' '}
+                  {relationsQ.data.governedKpi ? (
+                    relationsQ.data.governedKpi.slug ? (
+                      <Button appearance="subtle-link" spacing="none" onClick={() => navigate(Routes.strata.kpi(relationsQ.data!.kind === 'benefit' ? relationsQ.data.governedKpi!.slug! : ''))}>
+                        {relationsQ.data.governedKpi.name}
+                      </Button>
+                    ) : relationsQ.data.governedKpi.name
+                  ) : '—'}
+                </span>
+                {relationsQ.data.reviews.length === 0 ? (
+                  <span>Linked reviews: none recorded in the governed review-link store.</span>
+                ) : relationsQ.data.reviews.map((r) => (
+                  <span key={r.id}>Review: {r.review_key ?? ''} {r.name}{r.status ? ` · ${labelize(r.status)}` : ''} · route —</span>
+                ))}
+              </div>
+            ) : relationsQ.data.kind === 'portfolio' ? (
+              <div style={{ ...captionStyle, marginTop: 4, display: 'flex', flexDirection: 'column', gap: 4 }} data-testid="strata-entity-portfolio-relations">
+                {relationsQ.data.benefits.length === 0 ? (
+                  <span>Member benefits: none.</span>
+                ) : relationsQ.data.benefits.map((b) => (
+                  <span key={b.id}>
+                    Benefit:{' '}
+                    {b.slug ? (
+                      <Button appearance="subtle-link" spacing="none" onClick={() => navigate(Routes.strata.benefit(b.slug!))}>{b.name}</Button>
+                    ) : b.name}
+                    {b.lifecycle_stage ? ` · ${labelize(b.lifecycle_stage)}` : ''}
+                  </span>
+                ))}
+                {relationsQ.data.reviews.length === 0 ? (
+                  <span>Linked reviews: none recorded in the governed review-link store.</span>
+                ) : relationsQ.data.reviews.map((r) => (
+                  <span key={r.id}>Review: {r.review_key ?? ''} {r.name}{r.status ? ` · ${labelize(r.status)}` : ''} · route —</span>
+                ))}
+              </div>
+            ) : relationsQ.data.kind === 'review' ? (
+              <div style={{ ...captionStyle, marginTop: 4, display: 'flex', flexDirection: 'column', gap: 4 }} data-testid="strata-entity-review-relations">
+                {relationsQ.data.targets.length === 0 ? (
+                  <span>Linked records: none in the governed review-link store.</span>
+                ) : relationsQ.data.targets.map((t, i) => (
+                  <span key={i}>Linked {labelize(t.target_type)}: <span style={mono}>{t.target_id.slice(0, 8)}</span>{t.note ? ` · ${t.note}` : ''}</span>
+                ))}
+                {relationsQ.data.decisions.length === 0 ? (
+                  <span>Decisions: none recorded against this review's snapshot.</span>
+                ) : relationsQ.data.decisions.map((d) => (
+                  <span key={d.id}>Decision: {d.decision_key ?? ''} {d.title}{d.status ? ` · ${labelize(d.status)}` : ''}</span>
+                ))}
+                {relationsQ.data.snapshotKey ? (
+                  <span>
+                    Snapshot:{' '}
+                    <Button appearance="subtle-link" spacing="none" onClick={() => navigate(Routes.strata.review(relationsQ.data!.kind === 'review' ? relationsQ.data.snapshotKey! : ''))}>
+                      {relationsQ.data.snapshotKey}
+                    </Button>
+                  </span>
+                ) : <span>Snapshot: —</span>}
+              </div>
+            ) : relationsQ.data.kind === 'decision' ? (
+              <div style={{ ...captionStyle, marginTop: 4, display: 'flex', flexDirection: 'column', gap: 4 }} data-testid="strata-entity-decision-relations">
+                {relationsQ.data.actions.length === 0 ? (
+                  <span>Actions: none recorded for this decision.</span>
+                ) : relationsQ.data.actions.map((a) => (
+                  <span key={a.id}>Action: {a.action_key ?? ''} {a.title}{a.status ? ` · ${labelize(a.status)}` : ''}</span>
+                ))}
+                {relationsQ.data.snapshotKey ? (
+                  <span>
+                    Review snapshot:{' '}
+                    <Button appearance="subtle-link" spacing="none" onClick={() => navigate(Routes.strata.review(relationsQ.data!.kind === 'decision' ? relationsQ.data.snapshotKey! : ''))}>
+                      {relationsQ.data.snapshotKey}
+                    </Button>
+                  </span>
+                ) : <span>Review snapshot: —</span>}
+              </div>
             ) : null}
-            <p style={{ ...captionStyle, margin: '6px 0 0' }}>
-              {relationsQ.data?.kind === 'kpi'
-                ? 'Snapshot forward impact is not tracked.'
-                : 'Scorecard/snapshot forward impact is not tracked for this entity type.'}
-            </p>
+            {relationsQ.data && (relationsQ.data.kind === 'upload_run' || relationsQ.data.kind === 'kpi_actual') ? (
+              (relationsQ.data.snapshots ?? []).length === 0 ? (
+                <p style={{ ...captionStyle, margin: '6px 0 0' }} data-testid="strata-entity-snapshot-impact">
+                  Snapshot impact: none — no governed snapshot includes this {relationsQ.data.kind === 'upload_run' ? 'run' : "fact's source run"}.
+                </p>
+              ) : (
+                <p style={{ ...captionStyle, margin: '6px 0 0' }} data-testid="strata-entity-snapshot-impact">
+                  Snapshot impact:{' '}
+                  {(relationsQ.data.snapshots ?? []).map((s, i) => (
+                    <span key={s.id}>
+                      {i > 0 ? ', ' : ''}
+                      <Button appearance="subtle-link" spacing="none" onClick={() => navigate(Routes.strata.review(s.snapshot_key))}>{s.snapshot_key}</Button>
+                      {` (${labelize(s.status)})`}
+                    </span>
+                  ))}
+                </p>
+              )
+            ) : null}
+            {!relationsQ.data || ['data_source', 'benefit', 'portfolio', 'review', 'decision'].includes(relationsQ.data.kind) ? (
+              <p style={{ ...captionStyle, margin: '6px 0 0' }}>
+                Snapshot forward impact is not tracked for this entity type.
+              </p>
+            ) : null}
           </div>
         </div>
       )}
