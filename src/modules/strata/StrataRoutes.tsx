@@ -4,7 +4,7 @@
  * All redirects OUT of /strata live in App.tsx, outside the shell.
  */
 import { lazy, Suspense } from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, useLocation } from 'react-router-dom';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { StrataProvider } from './hooks/useStrata';
 import { StrataNotFound } from './components/StrataSystemStates';
@@ -37,13 +37,20 @@ const EvidencePage = lazy(() => import('./pages/StrataEvidencePage'));
 // mismatch instead of hiding it — now via the canonical StrataNotFound
 // (anchor 28 / P5-D5), which also offers the owning-area exit.
 
-const S = ({ children }: { children: React.ReactNode }) => (
-  <ErrorBoundary>
-    <Suspense fallback={<div style={{ padding: 32, color: 'var(--ds-text-subtle)' }}>Loading STRATA…</div>}>
-      {children}
-    </Suspense>
-  </ErrorBoundary>
-);
+// CFG-002: v7_startTransition (App.tsx) keeps the previous page mounted while a
+// lazy route chunk suspends, so Reviews & Decisions stayed visible after the URL
+// moved to /strata/admin. Keying the boundary by pathname remounts it on every
+// route change, forcing the Suspense fallback instead of the stale page.
+const S = ({ children }: { children: React.ReactNode }) => {
+  const { pathname } = useLocation();
+  return (
+    <ErrorBoundary key={pathname}>
+      <Suspense fallback={<div style={{ padding: 32, color: 'var(--ds-text-subtle)' }}>Loading STRATA…</div>}>
+        {children}
+      </Suspense>
+    </ErrorBoundary>
+  );
+};
 
 export function StrataRoutesShell() {
   return (

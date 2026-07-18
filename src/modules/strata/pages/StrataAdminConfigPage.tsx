@@ -36,6 +36,7 @@ import { StrataPageShell, StrataPanel, T } from '@/modules/strata/components/sha
 import { StrataNotFound } from '@/modules/strata/components/StrataSystemStates';
 import { StrataFormModal, str } from '@/modules/strata/components/authoring';
 import { fmtDate, fmtDateTime, labelize } from '@/modules/strata/components/format';
+import { computeModelIntegrity, draftSubmitBlockedReason } from '@/modules/strata/lib/modelIntegrity';
 import type {
   GovernedEnvelope, GovernedStatus, StrataChangeRequest, StrataNotificationRule, StrataPerspective,
   StrataModelMeasure, StrataProjectCardFieldConfig, StrataProjectCardPicklist, StrataRole, StrataScorecardModel,
@@ -571,10 +572,12 @@ function ModelWeights({ model, canEditWeights }: { model: StrataScorecardModel; 
 /** Tri-state model integrity band (anchor 05) — perspective weights must total
  * 100 before a draft model can be submitted. Glyph + word carry state (never
  * color alone). Measure-level checks are a later feature (no measures table). */
-function ModelIntegrityBand({ sum, count, measureIssues }: {
+function ModelIntegrityBand({ sum, count, measureIssues, isDraft }: {
   sum: number; count: number;
   /** Per-perspective measure-weight failures, e.g. "Customer measure weights total 90 — assign the remaining 10". */
   measureIssues?: string[];
+  /** CFG-006: the "Cannot submit" hint only makes sense on a draft — pending/approved records show the failures without it. */
+  isDraft?: boolean;
 }) {
   const ok = count > 0 && sum === 100;
   return (
@@ -598,7 +601,7 @@ function ModelIntegrityBand({ sum, count, measureIssues }: {
       {(measureIssues ?? []).map((m) => (
         <span key={m} style={{ color: 'var(--ds-text-danger)', fontWeight: 600 }}>✕ {m}</span>
       ))}
-      {!ok || (measureIssues ?? []).length > 0
+      {isDraft && (!ok || (measureIssues ?? []).length > 0)
         ? <span style={{ marginLeft: 'auto', color: T.subtlest }}>Cannot submit until integrity passes</span>
         : null}
     </div>
@@ -945,25 +948,17 @@ export function ScorecardModelsSection({ onError }: { onError: OnError }) {
       <SectionState query={q} empty={list.length === 0}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
           {list.map((m) => {
-            const wsum = weightByModel.get(m.id) ?? 0;
-            const wcount = countByModel.get(m.id) ?? 0;
-            const integrityOk = wcount > 0 && wsum === 100;
             const myMeasures = (allMeasures.data ?? []).filter((x) => x.model_id === m.id);
-            // Anchor-05 band: per-perspective measure-weight failures, named.
-            const measureIssues: string[] = [];
-            for (const g of (allMP.data ?? []).filter((x) => x.model_id === m.id)) {
-              const rows = myMeasures.filter((x) => x.perspective_id === g.perspective_id);
-              if (rows.length === 0) continue;
-              const t = rows.reduce((a, x) => a + Number(x.weight ?? 0), 0);
-              if (t !== 100) {
-                const pn = (perspectiveNameById.get(g.perspective_id) ?? 'perspective');
-                measureIssues.push(t < 100
-                  ? `${pn} measure weights total ${t} — assign the remaining ${100 - t}`
-                  : `${pn} measure weights total ${t} — remove ${t - 100}`);
-              }
-            }
-            const submitBlockedReason = m.status === 'draft' && !integrityOk
-              ? (wcount === 0 ? 'Add perspective weights totalling 100 first' : `Weights total ${wsum} — must total 100`)
+            // CFG-006: full integrity (perspective weights AND per-perspective
+            // measure coverage) in one tested helper — empty perspectives are
+            // failures, not skips, and drafts cannot submit past them.
+            const integrity = computeModelIntegrity(
+              (allMP.data ?? []).filter((x) => x.model_id === m.id),
+              myMeasures,
+              perspectiveNameById,
+            );
+            const submitBlockedReason = m.status === 'draft'
+              ? draftSubmitBlockedReason(integrity)
               : undefined;
             // D-1: only a DRAFT model's aggregate may be authored. Enforced at RLS and in the
             // set_model_measures RPC; mirrored here so the reason is visible up front rather than
@@ -979,7 +974,12 @@ export function ScorecardModelsSection({ onError }: { onError: OnError }) {
                 onError={onError}
                 submitBlockedReason={submitBlockedReason}
               >
-                <ModelIntegrityBand sum={wsum} count={wcount} measureIssues={measureIssues} />
+                <ModelIntegrityBand
+                  sum={integrity.weightSum}
+                  count={integrity.weightCount}
+                  measureIssues={integrity.measureIssues}
+                  isDraft={m.status === 'draft'}
+                />
                 {hasAuthorRole && m.status !== 'draft' ? (
                   <span style={metaStyle} data-testid="strata-model-immutable-note">
                     {labelize(m.status)} definitions are immutable — to change this model&apos;s perspective
