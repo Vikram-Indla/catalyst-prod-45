@@ -687,6 +687,9 @@ export interface StrataInitiativeProject {
 }
 
 // ── Value / VMO ──────────────────────────────────────────────────────────────
+/** PB-DEF-007 · governed portfolio lifecycle states. */
+export type PortfolioStatus = 'draft' | 'submitted' | 'active' | 'closed' | 'cancelled' | 'archived';
+
 export interface StrataPortfolio {
   id: string;
   name: string;
@@ -695,7 +698,12 @@ export interface StrataPortfolio {
   category_id: string | null;
   owner_id: string | null;
   value_target: number | null;
-  status: 'active' | 'archived';
+  status: PortfolioStatus;
+  // PB-DEF-007 · transition provenance (nullable)
+  submitted_by?: string | null;
+  approved_by?: string | null;
+  closure_reason?: string | null;
+  closure_evidence?: string | null;
 }
 
 export type BenefitLifecycleStage =

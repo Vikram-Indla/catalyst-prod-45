@@ -81,8 +81,6 @@ const ASSUMPTION_STATUS_OPTIONS = (['open', 'holding', 'broken', 'retired'] as c
 const VALUE_KIND_OPTIONS = VALUE_KINDS.map((k) => ({ value: k, label: labelize(k) }));
 const RULE_TYPE_OPTIONS = (['shared_benefit', 'counterfactual', 'double_counting'] as const)
   .map((t) => ({ value: t, label: labelize(t) }));
-const PORTFOLIO_STATUS_OPTIONS = (['active', 'archived'] as const)
-  .map((s) => ({ value: s, label: labelize(s) }));
 
 /** Clear-flag detection: the modal opened with a value and the user cleared the field. */
 const wasCleared = (initial: string | null | undefined, submitted: unknown): boolean =>
@@ -996,6 +994,7 @@ function StrataPortfolioManageView() {
 
   /** Page-level authoring modals (portfolio create/edit, benefit create). */
   const [portfolioModal, setPortfolioModal] = useState<'create' | 'edit' | null>(null);
+  const [portfolioLifecycle, setPortfolioLifecycle] = useState<'close' | 'cancel' | null>(null);
   const [benefitCreateOpen, setBenefitCreateOpen] = useState(false);
   /** Gate scheduling launched from a membership row (initiative / project card). */
   const [memberGateSubject, setMemberGateSubject] = useState<StrataGateSubject | null>(null);
@@ -1092,12 +1091,49 @@ function StrataPortfolioManageView() {
     />
   ) : null;
 
+  // PB-DEF-007 · governed lifecycle appearance + the transitions permitted from each state.
+  const PORTFOLIO_STATUS_APPEARANCE: Record<string, LozengeAppearance> = {
+    draft: 'default', submitted: 'inprogress', active: 'success',
+    closed: 'moved', cancelled: 'removed', archived: 'default',
+  };
   const headerActions = (
-    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
       {portfolioSwitcher}
+      {portfolio ? (
+        <StatusLozenge status={portfolio.status} label={labelize(portfolio.status)} appearance={PORTFOLIO_STATUS_APPEARANCE[portfolio.status] ?? 'default'} />
+      ) : null}
       {canAuthor && portfolio ? (
         <Button appearance="default" spacing="compact" onClick={() => setPortfolioModal('edit')} testId="strata-edit-portfolio">
           Edit portfolio
+        </Button>
+      ) : null}
+      {/* PB-DEF-007 · only the transitions permitted from the current status; server re-enforces. */}
+      {canAuthor && portfolio?.status === 'draft' ? (
+        <Button appearance="primary" spacing="compact" testId="strata-portfolio-submit"
+          onClick={async () => { try { await valueApi.submitPortfolio(portfolio.id); invalidate(); } catch (e) { window.alert((e as Error).message); } }}>
+          Submit for approval
+        </Button>
+      ) : null}
+      {canAuthor && portfolio?.status === 'submitted' ? (
+        <Button appearance="primary" spacing="compact" testId="strata-portfolio-approve"
+          onClick={async () => { try { await valueApi.approvePortfolio(portfolio.id); invalidate(); } catch (e) { window.alert((e as Error).message); } }}>
+          Approve
+        </Button>
+      ) : null}
+      {canAuthor && portfolio?.status === 'active' ? (
+        <Button appearance="default" spacing="compact" testId="strata-portfolio-close" onClick={() => setPortfolioLifecycle('close')}>
+          Close
+        </Button>
+      ) : null}
+      {canAuthor && portfolio && ['draft', 'submitted', 'active'].includes(portfolio.status) ? (
+        <Button appearance="subtle" spacing="compact" testId="strata-portfolio-cancel" onClick={() => setPortfolioLifecycle('cancel')}>
+          Cancel
+        </Button>
+      ) : null}
+      {canAuthor && portfolio && ['active', 'closed', 'cancelled'].includes(portfolio.status) ? (
+        <Button appearance="subtle" spacing="compact" testId="strata-portfolio-archive"
+          onClick={async () => { try { await valueApi.archivePortfolio(portfolio.id); invalidate(); } catch (e) { window.alert((e as Error).message); } }}>
+          Archive
         </Button>
       ) : null}
       {canAuthor ? (
@@ -1290,16 +1326,13 @@ function StrataPortfolioManageView() {
               options: approvedCategories.map((c) => ({ value: c.id, label: c.name })),
               helper: 'Approved value categories only',
             },
-            { key: 'ownerId', label: 'Owner', kind: 'user' },
+            { key: 'ownerId', label: 'Owner', kind: 'user', helper: 'Required before the portfolio can be submitted for approval' },
             { key: 'valueTarget', label: 'Value target', kind: 'number', min: 0, helper: 'SAR' },
-            {
-              key: 'status', label: 'Status', kind: 'select', required: true, options: PORTFOLIO_STATUS_OPTIONS,
-              helper: 'Archived portfolios leave active tracking',
-            },
+            // PB-DEF-007 · status is no longer a free edit — it moves through the governed lifecycle actions.
           ]}
           initial={{
             name: portfolio.name, description: portfolio.description, categoryId: portfolio.category_id,
-            ownerId: portfolio.owner_id, valueTarget: portfolio.value_target, status: portfolio.status,
+            ownerId: portfolio.owner_id, valueTarget: portfolio.value_target,
           }}
           onSubmit={async (v) => {
             await valueApi.updatePortfolio(portfolio.id, {
@@ -1308,7 +1341,6 @@ function StrataPortfolioManageView() {
               categoryId: (v.categoryId as string | null) ?? undefined,
               ownerId: (v.ownerId as string | null) ?? undefined,
               valueTarget: v.valueTarget != null ? Number(v.valueTarget) : undefined,
-              status: (v.status as 'active' | 'archived' | null) ?? undefined,
               // Clear affordances: the field opened with a value and the user emptied it.
               clearOwner: wasCleared(portfolio.owner_id, v.ownerId),
               clearCategory: wasCleared(portfolio.category_id, v.categoryId),
@@ -1316,6 +1348,27 @@ function StrataPortfolioManageView() {
             invalidate();
           }}
           testId="strata-edit-portfolio-modal"
+        />
+      ) : null}
+      {/* PB-DEF-007 · close / cancel require a reason + evidence (server-enforced, audited). */}
+      {portfolio ? (
+        <StrataFormModal
+          open={portfolioLifecycle != null}
+          onClose={() => setPortfolioLifecycle(null)}
+          title={`${portfolioLifecycle === 'cancel' ? 'Cancel' : 'Close'} portfolio · ${portfolio.name}`}
+          submitLabel={portfolioLifecycle === 'cancel' ? 'Cancel portfolio' : 'Close portfolio'}
+          description={`${portfolioLifecycle === 'cancel' ? 'Cancellation' : 'Closure'} requires a reason and evidence; the transition is audited with before/after status. Linked benefits, members and issued history are preserved.`}
+          fields={[
+            { key: 'reason', label: 'Reason', kind: 'textarea', required: true },
+            { key: 'evidence', label: 'Evidence', kind: 'textarea', required: true },
+          ]}
+          onSubmit={async (v) => {
+            const reason = String(v.reason ?? ''); const evidence = String(v.evidence ?? '');
+            if (portfolioLifecycle === 'cancel') await valueApi.cancelPortfolio(portfolio.id, reason, evidence);
+            else await valueApi.closePortfolio(portfolio.id, reason, evidence);
+            invalidate();
+          }}
+          testId="strata-portfolio-lifecycle-modal"
         />
       ) : null}
       <StrataFormModal

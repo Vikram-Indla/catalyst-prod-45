@@ -1000,15 +1000,26 @@ export const valueApi = {
     })),
   updatePortfolio: (portfolioId: string, patch: {
     name?: string; description?: string; categoryId?: string; ownerId?: string;
-    valueTarget?: number; status?: 'active' | 'archived';
+    valueTarget?: number;
     clearOwner?: boolean; clearCategory?: boolean;
   }) =>
     run(typedRpc('strata_update_portfolio', {
       p_portfolio: portfolioId, p_name: patch.name ?? null, p_description: patch.description ?? null,
       p_category: patch.categoryId ?? null, p_owner: patch.ownerId ?? null,
-      p_value_target: patch.valueTarget ?? null, p_status: patch.status ?? null,
+      p_value_target: patch.valueTarget ?? null, p_status: null,
       p_clear_owner: patch.clearOwner ?? false, p_clear_category: patch.clearCategory ?? false,
     })),
+  // PB-DEF-007 · governed portfolio lifecycle transitions (SoD + reason/evidence enforced server-side).
+  submitPortfolio: (portfolioId: string): Promise<void> =>
+    run(typedRpc('strata_submit_portfolio', { p_portfolio: portfolioId })),
+  approvePortfolio: (portfolioId: string): Promise<void> =>
+    run(typedRpc('strata_approve_portfolio', { p_portfolio: portfolioId })),
+  closePortfolio: (portfolioId: string, reason: string, evidence: string): Promise<void> =>
+    run(typedRpc('strata_close_portfolio', { p_portfolio: portfolioId, p_reason: reason, p_evidence: evidence })),
+  cancelPortfolio: (portfolioId: string, reason: string, evidence: string): Promise<void> =>
+    run(typedRpc('strata_cancel_portfolio', { p_portfolio: portfolioId, p_reason: reason, p_evidence: evidence })),
+  archivePortfolio: (portfolioId: string): Promise<void> =>
+    run(typedRpc('strata_archive_portfolio', { p_portfolio: portfolioId })),
   addPortfolioMember: (portfolioId: string, memberType: 'initiative' | 'project_card', memberId: string, allocationPct?: number, priority?: number) =>
     run(typedRpc('strata_add_portfolio_member', {
       p_portfolio: portfolioId, p_member_type: memberType, p_member_id: memberId,
