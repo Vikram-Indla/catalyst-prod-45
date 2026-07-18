@@ -40,6 +40,23 @@ const ENTITY_BREADCRUMB_ICON: Record<string, React.ReactElement> = {
   Roadmaps:   <AkRoadmapIcon  label="" color="currentColor" />,
 };
 
+/** href→to adapter so STRATA crumbs actually navigate. The ads Breadcrumbs
+ *  contract calls LinkComponent with `href`, but a raw react-router <Link>
+ *  ignores an `href` prop and recomputes it from `to` (undefined here) — so
+ *  every crumb rendered through a raw Link points at the current page.
+ *  Ring-fenced to the STRATA hub (2026-07-18 directive); other hubs keep the
+ *  raw Link until separately approved. */
+const StrataCrumbLink = React.forwardRef<
+  HTMLAnchorElement,
+  React.AnchorHTMLAttributes<HTMLAnchorElement> & { href: string }
+>(function StrataCrumbLink({ href, children, ...rest }, ref) {
+  return (
+    <Link ref={ref} to={href} {...rest}>
+      {children}
+    </Link>
+  );
+});
+
 function withEntityIcon(item: BreadcrumbItem): BreadcrumbItem {
   if (item.iconBefore) return item;
   // Only the root/link crumb gets the entity icon — the current (last) crumb
@@ -212,7 +229,10 @@ export function ProjectPageHeader({
         className="cat-breadcrumb-host"
         style={{ fontSize: 'var(--ds-font-size-200)', flexShrink: 0, opacity: 0.8 }}
       >
-        <Breadcrumbs items={breadcrumbItems.map(withEntityIcon)} LinkComponent={Link} />
+        <Breadcrumbs
+          items={breadcrumbItems.map(withEntityIcon)}
+          LinkComponent={hubType === "strata" ? StrataCrumbLink : Link}
+        />
       </div>
 
       {/* No dangling "/" when there is no title to follow it (Products/Projects
