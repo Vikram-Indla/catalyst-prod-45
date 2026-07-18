@@ -6,7 +6,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { Routes } from '@/lib/routes';
-import { reversalDisplayMeta, runLifecycleSteps } from '@/modules/strata/pages/StrataDataPipelinePage';
+import { buildRunKeyMap, reversalDisplayMeta, runLifecycleSteps } from '@/modules/strata/pages/StrataDataPipelinePage';
 import type { StrataUploadRun } from '@/modules/strata/types';
 
 const baseRun: StrataUploadRun = {
@@ -83,5 +83,46 @@ describe('reversalDisplayMeta — run keys and governed actor name (DL-DEF-005)'
 
   it('builds the navigable run-detail route from the resolved key', () => {
     expect(Routes.strata.run('RUN-23')).toBe('/strata/data/runs/RUN-23');
+  });
+});
+
+describe('buildRunKeyMap — resolution with the real staging RUN-23/RUN-24 shapes', () => {
+  // Exact ids/keys observed on staging for the failing retest record.
+  const run23 = { id: '4470832a-d05d-4f9a-afe1-b5cda7a4f2dc', run_key: 'RUN-23' };
+  const run24 = { id: 'ac5f085f-7ddb-401c-9cda-ec031185a6cc', run_key: 'RUN-24' };
+
+  it('resolves reversal→original from the list query (RUN-24 page shows RUN-23)', () => {
+    const map = buildRunKeyMap([run23, run24]);
+    const meta = reversalDisplayMeta(
+      { reverses_run_id: run23.id, reversed_by_run_id: null, initiated_by: null },
+      map, undefined,
+    );
+    expect(meta.reversesKey).toBe('RUN-23');
+    expect(Routes.strata.run(meta.reversesKey!)).toBe('/strata/data/runs/RUN-23');
+  });
+
+  it('resolves original→reversal (RUN-23 page shows RUN-24)', () => {
+    const map = buildRunKeyMap([run23, run24]);
+    const meta = reversalDisplayMeta(
+      { reverses_run_id: null, reversed_by_run_id: run24.id, initiated_by: null },
+      map, undefined,
+    );
+    expect(meta.reversedByKey).toBe('RUN-24');
+    expect(Routes.strata.run(meta.reversedByKey!)).toBe('/strata/data/runs/RUN-24');
+  });
+
+  it('still resolves when the full-list query returns nothing — direct by-id fetches win', () => {
+    // The Cycle 4 failure mode: list unavailable/scoped → raw UUID was shown.
+    const map = buildRunKeyMap([], run23, run24);
+    expect(map.get(run23.id)).toBe('RUN-23');
+    expect(map.get(run24.id)).toBe('RUN-24');
+  });
+
+  it('falls back honestly (null → raw UUID render) only when NOTHING resolves', () => {
+    const meta = reversalDisplayMeta(
+      { reverses_run_id: run23.id, reversed_by_run_id: null, initiated_by: null },
+      buildRunKeyMap([], null, undefined), undefined,
+    );
+    expect(meta.reversesKey).toBeNull();
   });
 });

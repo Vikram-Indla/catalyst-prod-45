@@ -1120,6 +1120,13 @@ export const lineageApi = {
     run(typedQuery('strata_upload_runs').select('*').order('started_at', { ascending: false })),
   runByKey: (runKey: string): Promise<StrataUploadRun | null> =>
     run(typedQuery('strata_upload_runs').select('*').eq('run_key', runKey).maybeSingle()),
+  /**
+   * DL-DEF-005: resolve one run id to its display key. Used by run-detail
+   * reversal linkage so resolution never depends on the full-list query
+   * (which can be empty, erroring or scoped differently at render time).
+   */
+  runKeyForId: (id: string): Promise<{ id: string; run_key: string } | null> =>
+    run(typedQuery('strata_upload_runs').select('id, run_key').eq('id', id).maybeSingle()),
   stagingRows: (uploadRunId: string): Promise<StrataStagingRow[]> =>
     run(typedQuery('strata_staging_rows').select('*').eq('upload_run_id', uploadRunId).order('row_number')),
   validationResults: (uploadRunId: string): Promise<StrataValidationResult[]> =>

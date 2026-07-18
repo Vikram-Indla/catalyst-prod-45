@@ -149,6 +149,36 @@ export function runLifecycleSteps(run: StrataUploadRun): StrataLifecycleStep[] {
 }
 
 /**
+ * DL-DEF-005: run-key resolution map. The list query is merged with direct
+ * by-id fetches of the linked runs, so a missing/failed/scoped list can never
+ * leave a resolvable relationship showing a raw UUID.
+ */
+export function buildRunKeyMap(
+  list: Array<Pick<StrataUploadRun, 'id' | 'run_key'>>,
+  ...direct: Array<{ id: string; run_key: string } | null | undefined>
+): Map<string, string> {
+  const m = new Map(list.map((r) => [r.id, r.run_key] as const));
+  for (const d of direct) if (d) m.set(d.id, d.run_key);
+  return m;
+}
+
+/**
+ * DL-DEF-004: pure URL-state reducer for the list controls. Applies `changes`
+ * to the current query string; null/empty values DELETE their key (an empty
+ * search is never serialized), and multi-key changes land in ONE update —
+ * react-router's functional setSearchParams derives from the render-time
+ * location, so two sequential calls in one tick lose the first call's edits.
+ */
+export function applyListParams(current: string, changes: Record<string, string | null>): URLSearchParams {
+  const n = new URLSearchParams(current);
+  for (const [k, v] of Object.entries(changes)) {
+    if (v == null || v === '') n.delete(k);
+    else n.set(k, v);
+  }
+  return n;
+}
+
+/**
  * DL-DEF-005: resolve a reversal run's relationships and actor to governed display
  * values. Zero-assumption — anything unresolved stays null and the caller renders
  * the raw identifier (honest evidence) rather than a guess.
@@ -275,15 +305,12 @@ function SourcesPanel() {
   const kpis = useKpis();
   const navigate = useNavigate();
   // DL-DEF-004: search + pagination with URL-preserved state (?srcq, ?srcpage).
+  // Single-call updates via applyListParams — empty values delete their key.
   const [searchParams, setSearchParams] = useSearchParams();
   const srcQ = searchParams.get('srcq') ?? '';
   const srcPage = Math.max(1, Number(searchParams.get('srcpage') ?? '1') || 1);
-  const setListParam = (k: string, v: string) => setSearchParams((prev) => {
-    const n = new URLSearchParams(prev);
-    if (v) n.set(k, v); else n.delete(k);
-    if (k !== 'srcpage') n.delete('srcpage'); // a new search resets paging
-    return n;
-  }, { replace: true });
+  const setListParams = (changes: Record<string, string | null>) =>
+    setSearchParams(applyListParams(searchParams.toString(), changes), { replace: true });
   const allRows = useMemo(
     () => buildSourceRows(sources.data ?? [], runs.data ?? [], kpis.data ?? []),
     [sources.data, runs.data, kpis.data],
@@ -359,7 +386,7 @@ function SourcesPanel() {
       <div style={{ padding: '12px 16px 0', maxWidth: 340 }}>
         <Textfield
           value={srcQ}
-          onChange={(e) => setListParam('srcq', e.target.value)}
+          onChange={(e) => setListParams({ srcq: e.target.value || null, srcpage: null })}
           placeholder="Search sources (name, type, status)"
           aria-label="Search data sources"
           isCompact
@@ -377,7 +404,7 @@ function SourcesPanel() {
               size="compact"
               header="No sources match your search"
               description={`Nothing matches "${srcQ}".`}
-              primaryAction={<Button onClick={() => setListParam('srcq', '')}>Clear search</Button>}
+              primaryAction={<Button onClick={() => setListParams({ srcq: null, srcpage: null })}>Clear search</Button>}
             />
           </div>
         ) : (
@@ -389,7 +416,7 @@ function SourcesPanel() {
             ariaLabel="Data sources"
             rowsPerPage={10}
             page={srcPage}
-            onPageChange={(p) => setSearchParams((prev) => { const n = new URLSearchParams(prev); n.set('srcpage', String(p)); return n; }, { replace: true })}
+            onPageChange={(p) => setListParams({ srcpage: p > 1 ? String(p) : null })}
             onRowClick={(r) => { if (r.source.slug) navigate(Routes.strata.source(r.source.slug)); }}
           />
         )}
@@ -414,16 +441,13 @@ function RunsPanel() {
   }, [kpis.data]);
   const hasSyncRole = (rolesQ.data ?? []).some((r) => (SYNC_ROLES as readonly string[]).includes(r));
   // DL-DEF-004: search + status filter + pagination with URL-preserved state (?runq, ?runstatus, ?runpage).
+  // Single-call updates via applyListParams — empty values delete their key.
   const [searchParams, setSearchParams] = useSearchParams();
   const runQ = searchParams.get('runq') ?? '';
   const runStatus = searchParams.get('runstatus') ?? '';
   const runPage = Math.max(1, Number(searchParams.get('runpage') ?? '1') || 1);
-  const setListParam = (k: string, v: string) => setSearchParams((prev) => {
-    const n = new URLSearchParams(prev);
-    if (v) n.set(k, v); else n.delete(k);
-    if (k !== 'runpage') n.delete('runpage'); // new search/filter resets paging
-    return n;
-  }, { replace: true });
+  const setListParams = (changes: Record<string, string | null>) =>
+    setSearchParams(applyListParams(searchParams.toString(), changes), { replace: true });
   const statusOptions = useMemo(
     () => [...new Set((runs.data ?? []).map((r) => r.status))].sort()
       .map((s) => ({ label: labelize(s), value: s })),
@@ -544,7 +568,7 @@ function RunsPanel() {
         <div style={{ flex: '1 1 220px', maxWidth: 340 }}>
           <Textfield
             value={runQ}
-            onChange={(e) => setListParam('runq', e.target.value)}
+            onChange={(e) => setListParams({ runq: e.target.value || null, runpage: null })}
             placeholder="Search runs (key, file, channel, status)"
             aria-label="Search upload runs"
             isCompact
@@ -554,7 +578,7 @@ function RunsPanel() {
           <Select
             options={statusOptions}
             value={statusOptions.find((o) => o.value === runStatus) ?? null}
-            onChange={(o) => setListParam('runstatus', o?.value ?? '')}
+            onChange={(o) => setListParams({ runstatus: o?.value ?? null, runpage: null })}
             isClearable
             isSearchable={false}
             placeholder="All statuses"
@@ -574,7 +598,7 @@ function RunsPanel() {
               size="compact"
               header="No runs match your search"
               description={runStatus ? `Nothing matches "${runQ}" with status ${labelize(runStatus)}.` : `Nothing matches "${runQ}".`}
-              primaryAction={<Button onClick={() => { setListParam('runq', ''); setListParam('runstatus', ''); }}>Clear search</Button>}
+              primaryAction={<Button onClick={() => setListParams({ runq: null, runstatus: null, runpage: null })}>Clear search</Button>}
             />
           </div>
         ) : (
@@ -586,7 +610,7 @@ function RunsPanel() {
             ariaLabel="Upload runs"
             rowsPerPage={10}
             page={runPage}
-            onPageChange={(p) => setSearchParams((prev) => { const n = new URLSearchParams(prev); n.set('runpage', String(p)); return n; }, { replace: true })}
+            onPageChange={(p) => setListParams({ runpage: p > 1 ? String(p) : null })}
           />
         )}
       </PanelState>
@@ -1005,11 +1029,27 @@ function RunDetailSection({ runKey, detail }: { runKey: string; detail: RunDetai
   const kpisQ = useKpis();       // downstream dependents (P4-D4) via strata_kpis.data_source_id
   const sourcesQ = useDataSources(); // source name for the contract/lineage rail
   // DL-DEF-005: resolve reversal relationships to run keys and the actor to a governed name.
+  // Linked runs are ALSO fetched directly by id — resolution must never depend on the
+  // full-list query being loaded, unscoped and error-free.
   const allRunsQ = useUploadRuns();
   const profilesQ = useProfileNames();
+  const reversesId = detail.data?.run.reverses_run_id ?? null;
+  const reversedById = detail.data?.run.reversed_by_run_id ?? null;
+  const reversesRunQ = useQuery({
+    queryKey: ['strata', 'run-key-for-id', reversesId],
+    queryFn: () => lineageApi.runKeyForId(reversesId!),
+    enabled: !!reversesId,
+    staleTime: 60_000,
+  });
+  const reversedByRunQ = useQuery({
+    queryKey: ['strata', 'run-key-for-id', reversedById],
+    queryFn: () => lineageApi.runKeyForId(reversedById!),
+    enabled: !!reversedById,
+    staleTime: 60_000,
+  });
   const runKeyById = useMemo(
-    () => new Map((allRunsQ.data ?? []).map((r) => [r.id, r.run_key] as const)),
-    [allRunsQ.data],
+    () => buildRunKeyMap(allRunsQ.data ?? [], reversesRunQ.data, reversedByRunQ.data),
+    [allRunsQ.data, reversesRunQ.data, reversedByRunQ.data],
   );
   const runId = detail.data?.run.id ?? null;
 
@@ -1333,7 +1373,7 @@ function RunDetailSection({ runKey, detail }: { runKey: string; detail: RunDetai
 
           {/* DL-DEF-005: a reversal run is terminal compensating evidence — no Promote surface. */}
           {isReversalRun ? (
-            <StrataPanel title="Compensating reversal" icon={<Upload size={16} />} testId="strata-reversal-panel">
+            <StrataPanel title="Compensating reversal" icon={<Upload size={16} />} testId="strata-compensating-reversal-panel">
               <div style={{ display: 'grid', gridTemplateColumns: '110px minmax(0,1fr)', gap: 8, ...captionStyle }}>
                 <span style={{ color: T.subtlest }}>Run type</span><span style={{ color: T.text }}>Reversal (terminal — nothing to promote)</span>
                 <span style={{ color: T.subtlest }}>Reverses run</span>

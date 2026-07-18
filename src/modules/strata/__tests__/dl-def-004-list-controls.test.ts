@@ -4,7 +4,7 @@
 // never a fallback set).
 import { describe, expect, it } from 'vitest';
 
-import { filterRunRows } from '@/modules/strata/pages/StrataDataPipelinePage';
+import { applyListParams, filterRunRows } from '@/modules/strata/pages/StrataDataPipelinePage';
 import type { StrataUploadRun } from '@/modules/strata/types';
 
 const mk = (over: Partial<StrataUploadRun>): StrataUploadRun => ({
@@ -40,5 +40,35 @@ describe('filterRunRows — DL-DEF-004 search/filter behavior', () => {
   it('returns an honest empty result — never a fallback set', () => {
     expect(filterRunRows(runs, 'no-such-run', '')).toEqual([]);
     expect(filterRunRows([], 'anything', '')).toEqual([]);
+  });
+});
+
+describe('applyListParams — URL state stays clean (DL-DEF-004 residual)', () => {
+  it('deleting the source search until empty removes srcq (never serialized as empty)', () => {
+    expect(applyListParams('srcq=salam', { srcq: '', srcpage: null }).toString()).toBe('');
+    expect(applyListParams('srcq=salam&srcpage=2', { srcq: null, srcpage: null }).toString()).toBe('');
+  });
+
+  it('deleting the run search until empty removes runq', () => {
+    expect(applyListParams('runq=run-23', { runq: '', runpage: null }).toString()).toBe('');
+  });
+
+  it('clearing the run status filter removes runstatus in the same single update as the page reset', () => {
+    expect(applyListParams('runq=x&runstatus=failed&runpage=3', { runstatus: null, runpage: null }).toString())
+      .toBe('runq=x');
+  });
+
+  it('Clear-search clears every key in ONE update — no stale key can survive a second call', () => {
+    expect(applyListParams('runq=x&runstatus=failed&runpage=2', { runq: null, runstatus: null, runpage: null }).toString())
+      .toBe('');
+  });
+
+  it('a new search or filter resets its page parameter to 1 (parameter removed)', () => {
+    expect(applyListParams('runq=old&runpage=4', { runq: 'new', runpage: null }).toString()).toBe('runq=new');
+    expect(applyListParams('srcq=old&srcpage=9', { srcq: 'fresh', srcpage: null }).toString()).toBe('srcq=fresh');
+  });
+
+  it('preserves unrelated parameters (back/forward and reload restoration keep working)', () => {
+    expect(applyListParams('runq=x&srcq=y', { runq: null }).toString()).toBe('srcq=y');
   });
 });
