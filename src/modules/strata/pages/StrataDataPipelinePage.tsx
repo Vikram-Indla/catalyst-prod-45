@@ -1827,6 +1827,10 @@ function EntityAuditPanel() {
             <div style={{ ...bodyStyle, fontWeight: 600 }}>Relationships</div>
             {relationsQ.isLoading ? (
               <span style={captionStyle}>Loading…</span>
+            ) : relationsQ.isError ? (
+              <p style={{ ...captionStyle, color: 'var(--ds-text-danger)', margin: '4px 0 0' }}>
+                {relationsQ.error instanceof Error ? relationsQ.error.message : String(relationsQ.error)}
+              </p>
             ) : !relationsQ.data ? (
               <p style={{ ...captionStyle, margin: '4px 0 0' }}>
                 No relationship contract is implemented for this entity type yet — none is invented.

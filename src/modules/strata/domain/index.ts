@@ -1189,9 +1189,9 @@ export const lineageApi = {
     if (table === 'strata_kpis') {
       const [actuals, measures] = await Promise.all([
         run(q('strata_kpi_actuals').select('id, validation_status').eq('kpi_id', id)),
-        run(q('strata_scorecard_model_measures').select('scorecard_model_id').eq('kpi_id', id)),
+        run(q('strata_scorecard_model_measures').select('model_id').eq('kpi_id', id)),
       ]);
-      const modelIds = [...new Set((measures as Array<{ scorecard_model_id: string }>).map((m) => m.scorecard_model_id))];
+      const modelIds = [...new Set((measures as Array<{ model_id: string }>).map((m) => m.model_id))];
       const scorecardModels = modelIds.length
         ? await run(q('strata_scorecard_models').select('id, name, slug').in('id', modelIds))
         : [];
