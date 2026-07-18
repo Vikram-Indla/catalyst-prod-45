@@ -8,6 +8,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   computeModelIntegrity,
+  coverageState,
   draftSubmitBlockedReason,
 } from '../lib/modelIntegrity';
 
@@ -79,5 +80,94 @@ describe('computeModelIntegrity (CFG-006)', () => {
       names,
     );
     expect(draftSubmitBlockedReason(short)).toBe('Weights total 80 — must total 100');
+  });
+});
+
+/**
+ * SC-GOVAPPROVAL session 002 — the four measure-coverage states are DISTINCT.
+ * Screenshot repro: Financial and Network & Infrastructure each hold measures
+ * totalling 50, yet the band claimed "has no measures assigned". Underweight,
+ * overweight, zero and valid must never collapse into each other.
+ */
+describe('measure-coverage states (SC-GOVAPPROVAL 002)', () => {
+  const twoNames = new Map([
+    ['p-fin', 'Financial'],
+    ['p-net', 'Network & Infrastructure'],
+  ]);
+
+  it('screenshot repro: measures totalling 50 report UNDERWEIGHT with 50 remaining — never "no measures"', () => {
+    const weights = [
+      { perspective_id: 'p-fin', weight: 50 },
+      { perspective_id: 'p-net', weight: 50 },
+    ];
+    const measures = [
+      // Financial: 4 measures totalling 50.
+      { perspective_id: 'p-fin', weight: 20 },
+      { perspective_id: 'p-fin', weight: 20 },
+      { perspective_id: 'p-fin', weight: 5 },
+      { perspective_id: 'p-fin', weight: 5 },
+      // Network & Infrastructure: 3 measures totalling 50.
+      { perspective_id: 'p-net', weight: 10 },
+      { perspective_id: 'p-net', weight: 10 },
+      { perspective_id: 'p-net', weight: 30 },
+    ];
+    const r = computeModelIntegrity(weights, measures, twoNames);
+    expect(r.perspectiveWeightsOk).toBe(true);
+    expect(r.ok).toBe(false);
+    expect(r.measureIssues).toEqual([
+      'Financial measure weights total 50 — assign the remaining 50',
+      'Network & Infrastructure measure weights total 50 — assign the remaining 50',
+    ]);
+    expect(r.measureIssues.join(' ')).not.toContain('no measures assigned');
+    expect(r.perspectiveCoverage).toEqual([
+      { perspectiveId: 'p-fin', name: 'Financial', state: 'underweight', measureCount: 4, total: 50, delta: 50 },
+      { perspectiveId: 'p-net', name: 'Network & Infrastructure', state: 'underweight', measureCount: 3, total: 50, delta: 50 },
+    ]);
+  });
+
+  it('overweight totals report the excess to remove — distinct from underweight', () => {
+    const weights = [{ perspective_id: 'p-fin', weight: 100 }];
+    const measures = [
+      { perspective_id: 'p-fin', weight: 80 },
+      { perspective_id: 'p-fin', weight: 45 },
+    ];
+    const r = computeModelIntegrity(weights, measures, twoNames);
+    expect(r.ok).toBe(false);
+    expect(r.measureIssues).toEqual(['Financial measure weights total 125 — remove 25']);
+    expect(r.perspectiveCoverage[0].state).toBe('overweight');
+    expect(r.perspectiveCoverage[0].delta).toBe(25);
+  });
+
+  it('zero measures stays its own state', () => {
+    const r = computeModelIntegrity(
+      [{ perspective_id: 'p-fin', weight: 100 }], [], twoNames,
+    );
+    expect(r.measureIssues).toEqual(['Financial has no measures assigned']);
+    expect(r.perspectiveCoverage[0]).toMatchObject({ state: 'no_measures', measureCount: 0, total: 0, delta: 0 });
+  });
+
+  it('valid totals within the server tolerance (±0.01) pass — fractional weights never misreport', () => {
+    const r = computeModelIntegrity(
+      [{ perspective_id: 'p-fin', weight: 100 }],
+      [
+        { perspective_id: 'p-fin', weight: 33.33 },
+        { perspective_id: 'p-fin', weight: 33.33 },
+        { perspective_id: 'p-fin', weight: 33.34 },
+      ],
+      twoNames,
+    );
+    expect(r.ok).toBe(true);
+    expect(r.measureIssues).toEqual([]);
+    expect(r.perspectiveCoverage[0].state).toBe('valid');
+  });
+
+  it('coverageState classifies all four states with the shared tolerance', () => {
+    expect(coverageState(0, 0)).toBe('no_measures');
+    expect(coverageState(2, 50)).toBe('underweight');
+    expect(coverageState(2, 125)).toBe('overweight');
+    expect(coverageState(2, 100)).toBe('valid');
+    expect(coverageState(3, 99.995)).toBe('valid');
+    expect(coverageState(2, 99.9)).toBe('underweight');
+    expect(coverageState(2, 100.1)).toBe('overweight');
   });
 });

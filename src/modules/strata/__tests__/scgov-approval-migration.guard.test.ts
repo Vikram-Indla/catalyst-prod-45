@@ -186,13 +186,30 @@ describe('SC-GOVAPPROVAL — bypass paths are closed', () => {
 });
 
 describe('SC-GOVAPPROVAL — validator and notifications', () => {
-  it('validator fails empty weighted perspectives and mismatched measure totals as BLOCKERS', () => {
+  it('validator reports the FOUR distinct measure-coverage states as BLOCKERS/passed', () => {
     const body = latestBody('strata_validate_scorecard_model');
+    // 1. zero measures — distinct from an underweight total.
     expect(body).toMatch(/has no measures assigned/);
-    expect(body).toMatch(/measure weights total %s — must total 100/);
+    // 2. underweight (< 100): remaining amount named.
+    expect(body).toMatch(/measure weights total %s — assign the remaining %s/);
+    // 3. overweight (> 100): excess amount named.
+    expect(body).toMatch(/measure weights total %s — remove %s/);
+    // 4. valid (= 100 ± tolerance): a passed entry, tolerance mirrors the client (0.01).
+    expect(body).toMatch(/measure weights total 100/);
+    expect(body).toMatch(/100 - 0\.01/);
+    expect(body).toMatch(/100 \+ 0\.01/);
     expect(body).toMatch(/'blockers'/);
     expect(body).toMatch(/'warnings'/);
     expect(body).toMatch(/'passed'/);
+  });
+
+  it('saving stays ungated on totals — set_model_measures has NO 100-total check', () => {
+    // Incomplete drafts must be saveable; only submit/approve consume the
+    // validator's blockers (the contract's "block submission, not save").
+    const body = latestBody('strata_set_model_measures');
+    expect(body).not.toMatch(/total 100/);
+    expect(body).not.toMatch(/must total/);
+    expect(body).not.toMatch(/strata_validate_scorecard_model/);
   });
 
   it('all six workflow notification rules are seeded', () => {

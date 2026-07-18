@@ -6,7 +6,7 @@
  * RPC-only — the DB enforces roles + segregation of duties; DB error text
  * is surfaced verbatim.
  */
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
   Button, CatalystInlineCode, CatalystTag, EmptyState, Lozenge, Modal, ModalBody, ModalFooter,
@@ -37,7 +37,7 @@ import { StrataAuditHistory } from '@/modules/strata/components/StrataAuditHisto
 import { StrataNotFound } from '@/modules/strata/components/StrataSystemStates';
 import { StrataFormModal, str } from '@/modules/strata/components/authoring';
 import { fmtDate, fmtDateTime, labelize } from '@/modules/strata/components/format';
-import { computeModelIntegrity, draftSubmitBlockedReason } from '@/modules/strata/lib/modelIntegrity';
+import { computeModelIntegrity, coverageState, draftSubmitBlockedReason } from '@/modules/strata/lib/modelIntegrity';
 import { auditChangedFields } from '@/modules/strata/lib/auditDiff';
 import {
   gateModelDependents, modelVersionImpact, perspectiveDependents, thresholdSchemeDependents,
@@ -1205,12 +1205,14 @@ function ModelWeights({ model, canEditWeights }: { model: StrataScorecardModel; 
 /** Tri-state model integrity band (anchor 05) — perspective weights must total
  * 100 before a draft model can be submitted. Glyph + word carry state (never
  * color alone). Measure-level checks are a later feature (no measures table). */
-function ModelIntegrityBand({ sum, count, measureIssues, isDraft }: {
+function ModelIntegrityBand({ sum, count, measureIssues, isDraft, unsaved }: {
   sum: number; count: number;
   /** Per-perspective measure-weight failures, e.g. "Customer measure weights total 90 — assign the remaining 10". */
   measureIssues?: string[];
   /** CFG-006: the "Cannot submit" hint only makes sense on a draft — pending/approved records show the failures without it. */
   isDraft?: boolean;
+  /** SC live validation: totals reflect the open measures editor, not yet persisted. */
+  unsaved?: boolean;
 }) {
   const ok = count > 0 && sum === 100;
   return (
@@ -1222,6 +1224,11 @@ function ModelIntegrityBand({ sum, count, measureIssues, isDraft }: {
       }}
     >
       <span style={{ fontWeight: 700, letterSpacing: '0.04em', color: T.subtlest }}>MODEL INTEGRITY</span>
+      {unsaved ? (
+        <span style={{ color: 'var(--ds-text-warning)', fontWeight: 600 }}>
+          △ Live — includes unsaved measure edits
+        </span>
+      ) : null}
       {count === 0 ? (
         <span style={{ color: 'var(--ds-text-warning)', fontWeight: 600 }}>△ No perspective weights configured yet</span>
       ) : ok ? (
@@ -1261,6 +1268,28 @@ interface MeasureDraft {
   targetPolicy: StrataModelMeasure['target_policy'];
 }
 
+/** Live editing state one MeasureGroups reports to the section (SC live validation). */
+interface LiveMeasureDraft {
+  /** Structural superset of modelIntegrity's MeasureRow — feeds computeModelIntegrity directly. */
+  rows: Array<{ perspective_id: string; kpi_id: string; weight: number }>;
+  /** True when the draft differs from the persisted assignment set in ANY field. */
+  dirty: boolean;
+}
+
+/** Field-exact equality between the editing draft and the persisted assignments. */
+function draftMatchesPersisted(draft: MeasureDraft[], persisted: StrataModelMeasure[]): boolean {
+  if (draft.length !== persisted.length) return false;
+  const key = (p: string, k: string, w: number, req: boolean, agg: string, pol: string) =>
+    `${p}|${k}|${w}|${req}|${agg}|${pol}`;
+  const a = draft
+    .map((d) => key(d.perspectiveId, d.kpiId, Number(d.weight) || 0, d.required, d.aggregationMethod, d.targetPolicy))
+    .sort();
+  const b = persisted
+    .map((m) => key(m.perspective_id, m.kpi_id, Number(m.weight) || 0, m.required, m.aggregation_method, m.target_policy))
+    .sort();
+  return a.every((v, i) => v === b[i]);
+}
+
 /**
  * Anchor-05 measures builder — perspective groups, each listing its measure
  * ASSIGNMENTS (M-D0). Every identity column (Measure / Direction / Threshold
@@ -1270,14 +1299,20 @@ interface MeasureDraft {
  * own facts (weight, required, aggregation) belong to the measure row.
  *
  * Authoring (part 2b) mirrors ModelWeights: local draft, editing flag,
- * Save/Cancel, Save disabled while integrity fails, DB error surfaced verbatim.
- * Save is a REPLACE-SET — it sends the full set across every group, so the draft
- * is held flat and `order_index` is re-derived from position within each group.
- * The 100-per-group rule is gated CLIENT-side only: the RPC deliberately does
- * not enforce it, because anchor 05 gates *submit*, not *save*.
+ * Save/Cancel, DB error surfaced verbatim. Save is a REPLACE-SET — it sends the
+ * full set across every group, so the draft is held flat and `order_index` is
+ * re-derived from position within each group.
+ *
+ * Incomplete totals do NOT block save: the 100-per-group rule gates *submit*,
+ * never *save* (the RPC deliberately does not enforce it either). While the
+ * editor is open, the live draft rows are reported to the parent via
+ * `onDraftChange` so the MODEL INTEGRITY band validates the current editing
+ * state instead of stale persisted rows; `null` means "not editing — use
+ * persisted rows".
  */
-function MeasureGroups({ modelId, measures, canEdit }: {
+function MeasureGroups({ modelId, measures, canEdit, onDraftChange }: {
   modelId: string; measures: StrataModelMeasure[]; canEdit: boolean;
+  onDraftChange?: (state: LiveMeasureDraft | null) => void;
 }) {
   const perspectives = usePerspectives();
   const mp = useModelPerspectives(modelId);
@@ -1293,6 +1328,26 @@ function MeasureGroups({ modelId, measures, canEdit }: {
   const kpiById = new Map((kpis.data ?? []).map((k) => [k.id, k]));
   const typeById = new Map((kpiTypes.data ?? []).map((t) => [t.id, t]));
   const groups = (mp.data ?? []);
+
+  // Report the live draft upward. Refs hold the callback AND the persisted
+  // rows: both get a fresh identity on every parent render (the parent stores
+  // this report in state, and `measures` is a per-render .filter() result), so
+  // depending on either would re-fire the effect each render and loop. Only
+  // the child-owned [editing, draft] may drive it. Unmount clears the report.
+  const onDraftChangeRef = useRef(onDraftChange);
+  onDraftChangeRef.current = onDraftChange;
+  const measuresRef = useRef(measures);
+  measuresRef.current = measures;
+  useEffect(() => {
+    if (!editing) { onDraftChangeRef.current?.(null); return; }
+    onDraftChangeRef.current?.({
+      rows: draft.map((d) => ({
+        perspective_id: d.perspectiveId, kpi_id: d.kpiId, weight: Number(d.weight) || 0,
+      })),
+      dirty: !draftMatchesPersisted(draft, measuresRef.current),
+    });
+  }, [editing, draft]);
+  useEffect(() => () => { onDraftChangeRef.current?.(null); }, []);
 
   if (groups.length === 0) return null;
 
@@ -1322,12 +1377,12 @@ function MeasureGroups({ modelId, measures, canEdit }: {
   }]);
 
   const draftRowsFor = (pid: string) => draft.filter((d) => d.perspectiveId === pid);
-  const draftTotalFor = (pid: string) => draftRowsFor(pid).reduce((a, d) => a + (Number(d.weight) || 0), 0);
-  // A group with no measures is not a failure — it mirrors ModelIntegrityBand,
-  // which flags only groups that HAVE measures. Blocking on empty groups would
-  // make the first save of a part-built model impossible (replace-set sends all).
-  const failingGroups = groups
-    .filter((g) => draftRowsFor(g.perspective_id).length > 0 && draftTotalFor(g.perspective_id) !== 100)
+  const draftTotalFor = (pid: string) =>
+    Math.round(draftRowsFor(pid).reduce((a, d) => a + (Number(d.weight) || 0), 0) * 100) / 100;
+  // Incomplete totals never block SAVE (the contract gates submit/approve only);
+  // this list feeds the informational note under the Save button.
+  const incompleteGroups = groups
+    .filter((g) => coverageState(draftRowsFor(g.perspective_id).length, draftTotalFor(g.perspective_id)) !== 'valid')
     .map((g) => pName.get(g.perspective_id) ?? '—');
   // A KPI is assigned at most once per MODEL, so the picker offers the rest.
   const assigned = new Set(draft.map((d) => d.kpiId));
@@ -1370,19 +1425,24 @@ function MeasureGroups({ modelId, measures, canEdit }: {
         const drows = draftRowsFor(g.perspective_id);
         const total = editing
           ? draftTotalFor(g.perspective_id)
-          : rows.reduce((a, m) => a + Number(m.weight ?? 0), 0);
+          : Math.round(rows.reduce((a, m) => a + Number(m.weight ?? 0), 0) * 100) / 100;
         const count = editing ? drows.length : rows.length;
+        // Four distinct states — zero measures / underweight / overweight / valid.
+        const cov = coverageState(count, total);
         return (
           <div key={g.id} style={{ border: `1px solid ${T.border}`, borderRadius: 6, overflow: 'hidden' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap', padding: '8px 12px', background: T.sunken }}>
               <strong style={{ fontSize: 'var(--ds-font-size-200)', color: T.text }}>{pName.get(g.perspective_id) ?? '—'}</strong>
               <span style={metaStyle}>perspective weight <strong style={{ color: T.text }}>{g.weight}</strong></span>
-              {count === 0 ? (
+              {cov === 'no_measures' ? (
                 <span style={{ ...metaStyle, marginLeft: 'auto' }}>No measures assigned</span>
               ) : (
                 <span style={{ marginLeft: 'auto', fontSize: 'var(--ds-font-size-100)', fontWeight: 600,
-                  color: total === 100 ? 'var(--ds-text-success)' : 'var(--ds-text-danger)' }}>
-                  {total === 100 ? '✓ measure weights total 100' : `✕ measure weights total ${total}`}
+                  color: cov === 'valid' ? 'var(--ds-text-success)' : 'var(--ds-text-danger)' }}>
+                  {cov === 'valid' ? '✓ measure weights total 100'
+                    : cov === 'underweight'
+                      ? `✕ measure weights total ${total} — assign the remaining ${Math.round((100 - total) * 100) / 100}`
+                      : `✕ measure weights total ${total} — remove ${Math.round((total - 100) * 100) / 100}`}
                 </span>
               )}
             </div>
@@ -1489,17 +1549,17 @@ function MeasureGroups({ modelId, measures, canEdit }: {
           <Button
             spacing="compact"
             appearance="primary"
-            isDisabled={saving || failingGroups.length > 0}
+            isDisabled={saving}
             onClick={() => void save()}
             testId={`strata-model-measures-save-${modelId}`}
           >
             {saving ? 'Saving…' : 'Save measures'}
           </Button>
           <Button spacing="compact" appearance="subtle" isDisabled={saving} onClick={cancel}>Cancel</Button>
-          {/* The block always states its reason — never a silent disable (anchor 05). */}
-          {failingGroups.length > 0 ? (
-            <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--ds-text-danger)' }}>
-              {failingGroups.join(', ')} must total 100 before saving
+          {/* Incomplete drafts SAVE freely; only submit/approve are gated on totals. */}
+          {incompleteGroups.length > 0 ? (
+            <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--ds-text-warning)' }}>
+              △ {incompleteGroups.join(', ')} incomplete — the draft can be saved, but submission stays blocked until every perspective totals 100
             </span>
           ) : null}
         </div>
@@ -1552,6 +1612,21 @@ export function ScorecardModelsSection({ onError }: { onError: OnError }) {
   // strata_scorecard_models was the clone-based revision RPC, which needs a model to already
   // exist, so a first model could not be authored from any surface.
   const [newModelOpen, setNewModelOpen] = useState(false);
+  // SC live validation: while a model's measures editor is open, its current
+  // draft lives here (keyed by model id). null/absent = editor closed = the
+  // persisted rows are the (authoritative-mirror) validation input. Never mix:
+  // the band shows live totals labeled as unsaved; submit gates on persisted.
+  const [liveMeasures, setLiveMeasures] = useState<Record<string, LiveMeasureDraft | null>>({});
+  const onLiveMeasures = useCallback((modelId: string, state: LiveMeasureDraft | null) => {
+    setLiveMeasures((prev) => {
+      const cur = prev[modelId] ?? null;
+      // Structural no-op guard — an identical report must not re-render (loop risk).
+      if (state === null && cur === null) return prev;
+      if (state !== null && cur !== null && cur.dirty === state.dirty
+        && JSON.stringify(cur.rows) === JSON.stringify(state.rows)) return prev;
+      return { ...prev, [modelId]: state };
+    });
+  }, []);
   const list = q.data ?? [];
   // strata_scorecard_model_perspectives write is strategy_office (matches RLS).
   // Role is necessary but NOT sufficient: RLS + the set_model_measures RPC also require the parent
@@ -1591,18 +1666,28 @@ export function ScorecardModelsSection({ onError }: { onError: OnError }) {
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
           {list.map((m) => {
             const myMeasures = (allMeasures.data ?? []).filter((x) => x.model_id === m.id);
+            const myPerspectives = (allMP.data ?? []).filter((x) => x.model_id === m.id);
             // CFG-006: full integrity (perspective weights AND per-perspective
             // measure coverage) in one tested helper — empty perspectives are
             // failures, not skips, and drafts cannot submit past them.
-            const integrity = computeModelIntegrity(
-              (allMP.data ?? []).filter((x) => x.model_id === m.id),
-              myMeasures,
-              perspectiveNameById,
-            );
+            const integrity = computeModelIntegrity(myPerspectives, myMeasures, perspectiveNameById);
+            // SC live validation: while the measures editor is open the band
+            // validates the CURRENT draft rows (an unsaved measure must never
+            // read as "no measures assigned"); persisted integrity keeps
+            // gating submit, and the server revalidates at submit/approve.
+            const live = liveMeasures[m.id] ?? null;
+            const liveIntegrity = live
+              ? computeModelIntegrity(myPerspectives, live.rows, perspectiveNameById)
+              : integrity;
+            const measuresDirty = live?.dirty ?? false;
             // SC-GOVAPPROVAL: DRAFT and CHANGES_REQUESTED are the two editable
             // states — requesting changes reopens the SAME version for editing.
             const editable = m.status === 'draft' || m.status === 'changes_requested';
-            const submitBlockedReason = editable ? draftSubmitBlockedReason(integrity) : undefined;
+            const submitBlockedReason = editable
+              ? (measuresDirty
+                ? 'Unsaved measure edits — save or cancel the measures editor before submitting'
+                : draftSubmitBlockedReason(integrity))
+              : undefined;
             // D-1: only an editable model's aggregate may be authored. Enforced at RLS and in the
             // set_model_measures RPC; mirrored here so the reason is visible up front rather than
             // discovered as a failed save. The UI is not the boundary — it is the explanation.
@@ -1628,10 +1713,11 @@ export function ScorecardModelsSection({ onError }: { onError: OnError }) {
                 copiedContents={modelVersionImpact(m.id, allMP.data ?? [], allMeasures.data ?? [])}
               >
                 <ModelIntegrityBand
-                  sum={integrity.weightSum}
-                  count={integrity.weightCount}
-                  measureIssues={integrity.measureIssues}
+                  sum={liveIntegrity.weightSum}
+                  count={liveIntegrity.weightCount}
+                  measureIssues={liveIntegrity.measureIssues}
                   isDraft={editable}
+                  unsaved={measuresDirty}
                 />
                 {m.status === 'pending_approval' ? (
                   <div data-testid={`strata-sc-pending-banner-${m.id}`}>
@@ -1691,7 +1777,12 @@ export function ScorecardModelsSection({ onError }: { onError: OnError }) {
                   <span style={metaStyle}>Granularity {labelize(m.period_granularity)}</span>
                 </div>
                 <ModelWeights model={m} canEditWeights={canAuthor} />
-                <MeasureGroups modelId={m.id} measures={myMeasures} canEdit={canAuthor} />
+                <MeasureGroups
+                  modelId={m.id}
+                  measures={myMeasures}
+                  canEdit={canAuthor}
+                  onDraftChange={(state) => onLiveMeasures(m.id, state)}
+                />
                 <div>
                   <Button
                     spacing="compact"

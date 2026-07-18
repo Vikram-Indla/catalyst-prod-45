@@ -23,3 +23,21 @@ PROOF-1/2/3 transcripts in 04_EXECUTION_LOG.md — 31/31 assertions PASS coverin
 | CEO Enterprise Scorecard | 2 | rejected (terminal, reason recorded) |
 | J Scorecard Closure Model | 1 | draft (submit blocked by integrity — unchanged) |
 | SC GovApproval E2E | 1 | retired (test model, full journey then cleaned up) |
+
+---
+
+# Session 002 — integrity states + incomplete-draft save
+
+- Unit/guard/component (quiet, ×2 consecutive, identical): `npx vitest run src/modules/strata`
+  → **520 passed / 6 failed** both runs; the 6 = documented pre-existing baseline
+  (ac6-keyboard-decision-verbs ×2, rd-cycle4-fixes ×4 — untouched surfaces).
+  New/changed suites green both runs: cfgdef-006 (9), scgov-approval-migration.guard (27),
+  scgov-live-integrity (7, NEW), scgov-lifecycle-ui (17), phase5 (15), ac6-keyboard-weight-change (2).
+- `npm run build` → exit 0. `npm run lint:colors:changed` → 0 hard-coded colours in changed files.
+- Migration `20260718210000` applied to staging `cyijbdeuehohvhnsywig`; ledger 1:1 with file.
+- DB proofs (rolled back): 4-state validator matrix; live model submit refusal with
+  "…total 50 — assign the remaining 50" ×2 (client wording byte-identical).
+- Browser ×2 (fresh reload second pass): live band flips per keystroke, labeled
+  "△ Live — includes unsaved measure edits"; incomplete draft SAVES; persisted band shows
+  underweight 50-remaining (never "no measures assigned"); submit blocked with stated reason;
+  overweight "remove 50" probed live then cancelled; console = pre-existing Atlaskit warning only.
