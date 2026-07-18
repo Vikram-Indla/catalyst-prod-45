@@ -1039,17 +1039,51 @@ function RunDetailSection({ runKey, detail }: { runKey: string; detail: RunDetai
   const kpiNameById = new Map((kpisQ.data ?? []).map((k) => [k.id, k.name] as const));
   const sourceName = run.data_source_id ? (sourcesQ.data ?? []).find((s) => s.id === run.data_source_id)?.name ?? null : null;
   const rejectedRows = rows.filter((r) => r.validation_status === 'rejected');
-  const promoteReady = hasIngestRole && run.status === 'completed';
+  // DL-DEF-005: a reversal run is terminal evidence — it never offers Promote.
+  const isReversalRun = run.run_type === 'reversal';
+  const promoteReady = hasIngestRole && run.status === 'completed' && !isReversalRun;
   const tileNum: React.CSSProperties = { fontSize: 'var(--ds-font-size-400)', fontWeight: 700, fontVariantNumeric: 'tabular-nums' };
-  /** Client-side CSV of the rejected rows — safe, no server call (anchor 09 "Download rejected"). */
+  /**
+   * Client-side CSV of the rejected rows with their exact errors — no server call.
+   * DL-DEF-006: cells are quoted CSV; non-numeric cells starting with = + - @ are
+   * apostrophe-prefixed so a spreadsheet never executes them as formulas. Only
+   * template columns + validation findings are exported — no restricted fields.
+   */
   const downloadRejected = () => {
-    const header = ['row_number', ...parsedKeys].join(',');
-    const lines = rejectedRows.map((r) => [r.row_number, ...parsedKeys.map((k) => JSON.stringify(r.raw?.[k] ?? ''))].join(','));
-    const blob = new Blob([[header, ...lines].join('\n')], { type: 'text/csv' });
+    const csvCell = (v: unknown): string => {
+      let s = v == null ? '' : String(v);
+      if (/^[=+\-@\t\r]/.test(s) && !/^-?([0-9]+([.][0-9]*)?|[.][0-9]+)$/.test(s)) s = `'${s}`;
+      return `"${s.replace(/"/g, '""')}"`;
+    };
+    const errsByRow = new Map<string, { field: string; rule: string; message: string; fix: string }[]>();
+    for (const res of results) {
+      if (!res.staging_row_id) continue;
+      const list = errsByRow.get(res.staging_row_id) ?? [];
+      list.push({ field: res.field_name ?? '', rule: res.error_code, message: res.message, fix: res.suggested_fix ?? '' });
+      errsByRow.set(res.staging_row_id, list);
+    }
+    const header = ['row_number', ...parsedKeys, 'field', 'rule', 'error', 'fix'].map(csvCell).join(',');
+    const lines = rejectedRows.map((r) => {
+      const errs = errsByRow.get(r.id) ?? [];
+      return [
+        r.row_number,
+        ...parsedKeys.map((k) => r.raw?.[k] ?? ''),
+        errs.map((e) => e.field).join(' | '),
+        errs.map((e) => e.rule).join(' | '),
+        errs.map((e) => e.message).join(' | '),
+        errs.map((e) => e.fix).join(' | '),
+      ].map(csvCell).join(',');
+    });
+    const blob = new Blob([[header, ...lines].join('\r\n')], { type: 'text/csv;charset=utf-8' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
-    a.href = url; a.download = `${run.run_key}-rejected.csv`; a.click();
-    URL.revokeObjectURL(url);
+    a.href = url;
+    a.download = `${run.run_key}-rejected.csv`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    // Deferred revoke: a synchronous revoke can abort the download in Chromium.
+    window.setTimeout(() => URL.revokeObjectURL(url), 10_000);
   };
 
   return (
@@ -1144,7 +1178,19 @@ function RunDetailSection({ runKey, detail }: { runKey: string; detail: RunDetai
             )}
           </StrataPanel>
 
-          {/* Commit panel — promote (existing RPC); honest reversibility (P4-D7: pending attestation, no reverse RPC) */}
+          {/* DL-DEF-005: a reversal run is terminal compensating evidence — no Promote surface. */}
+          {isReversalRun ? (
+            <StrataPanel title="Compensating reversal" icon={<Upload size={16} />} testId="strata-reversal-panel">
+              <div style={{ display: 'grid', gridTemplateColumns: '110px minmax(0,1fr)', gap: 8, ...captionStyle }}>
+                <span style={{ color: T.subtlest }}>Run type</span><span style={{ color: T.text }}>Reversal (terminal — nothing to promote)</span>
+                <span style={{ color: T.subtlest }}>Reverses run</span>
+                <span style={{ ...mono, color: T.text }}>{run.reverses_run_id ?? '—'}</span>
+                <span style={{ color: T.subtlest }}>Reason</span><span style={{ color: T.text }}>{run.reversal_reason ?? '—'}</span>
+                <span style={{ color: T.subtlest }}>Actor</span><span style={{ ...mono, color: T.text }}>{run.initiated_by ?? '—'}</span>
+                <span style={{ color: T.subtlest }}>Completed</span><span style={{ color: T.text }}>{run.completed_at ? fmtDateTime(run.completed_at) : '—'}</span>
+              </div>
+            </StrataPanel>
+          ) : (
           <StrataPanel title="Promote to canonical" icon={<Upload size={16} />} testId="strata-commit-panel">
             <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
               <div style={{ minWidth: 0, flex: 1 }}>
@@ -1176,6 +1222,7 @@ function RunDetailSection({ runKey, detail }: { runKey: string; detail: RunDetai
               ) : null}
             </div>
           </StrataPanel>
+          )}
         </div>
 
         {/* Downstream impact + contract/lineage rail */}
@@ -1199,7 +1246,26 @@ function RunDetailSection({ runKey, detail }: { runKey: string; detail: RunDetai
               <span style={{ color: T.subtlest }}>Source</span><span style={{ color: T.text }}>{sourceName ?? '—'}</span>
               <span style={{ color: T.subtlest }}>Template</span><span style={{ color: T.text }}>{run.template_version != null ? `v${run.template_version}` : '—'}</span>
               <span style={{ color: T.subtlest }}>Run key</span><span style={{ color: T.text, fontVariantNumeric: 'tabular-nums' }}>{run.run_key}</span>
-              <span style={{ color: T.subtlest }}>Channel</span><span style={{ color: T.text }}>{labelize(run.channel)}</span>
+              <span style={{ color: T.subtlest }}>Channel</span><span style={{ color: T.text }}>{isReversalRun ? 'System (reversal)' : labelize(run.channel)}</span>
+              <span style={{ color: T.subtlest }}>Run type</span><span style={{ color: T.text }}>{labelize(run.run_type ?? 'import')}</span>
+              {run.reverses_run_id ? (
+                <>
+                  <span style={{ color: T.subtlest }}>Reverses</span>
+                  <span style={{ ...mono, color: T.text }}>{run.reverses_run_id}</span>
+                </>
+              ) : null}
+              {run.reversed_by_run_id ? (
+                <>
+                  <span style={{ color: T.subtlest }}>Reversed by</span>
+                  <span style={{ ...mono, color: T.text }}>{run.reversed_by_run_id}</span>
+                </>
+              ) : null}
+              {run.reversal_reason ? (
+                <>
+                  <span style={{ color: T.subtlest }}>Reason</span>
+                  <span style={{ color: T.text }}>{run.reversal_reason}</span>
+                </>
+              ) : null}
               {run.file_hash ? (
                 <>
                   <span style={{ color: T.subtlest }}>Checksum</span>

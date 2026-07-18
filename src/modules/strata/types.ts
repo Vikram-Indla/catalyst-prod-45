@@ -832,6 +832,11 @@ export interface StrataUploadRun {
   error_summary: string | null;
   started_at: string;
   completed_at: string | null;
+  /** R4d reversal lineage (DL-DEF-005): 'import' | 'reversal'; a reversal run never promotes. */
+  run_type: 'import' | 'reversal' | null;
+  reverses_run_id: string | null;
+  reversed_by_run_id: string | null;
+  reversal_reason: string | null;
 }
 
 export interface StrataStagingRow {
