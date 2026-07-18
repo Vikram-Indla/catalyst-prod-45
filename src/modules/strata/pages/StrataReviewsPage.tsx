@@ -486,6 +486,48 @@ export function scheduleInputFromForm(
 }
 
 /**
+ * RD-DEF-002 · the ATTACH picker offers only ELIGIBLE snapshots: locked, and not already bound
+ * to another review (strata_reviews.snapshot_id is UNIQUE — one review per snapshot). The
+ * review's own current snapshot stays selectable so an open modal round-trips. Pure + exported
+ * so eligibility is provable without rendering the page. Offering a bound snapshot would only
+ * manufacture the conflict the server then rejects (Cycle 4: SNAP-1 reuse).
+ */
+export function eligibleSnapshotOptions(
+  snapshots: StrataSnapshot[],
+  reviews: StrataReview[],
+  forReview: StrataReview,
+): Array<{ value: string; label: string }> {
+  const boundElsewhere = new Set(
+    reviews.filter((r) => r.snapshot_id != null && r.id !== forReview.id).map((r) => r.snapshot_id as string),
+  );
+  return snapshots
+    .filter((s) => s.status === 'locked' && (!boundElsewhere.has(s.id) || s.id === forReview.snapshot_id))
+    .map((s) => ({ value: s.id, label: `${s.snapshot_key} · ${s.name} · ${labelize(s.status)}` }));
+}
+
+/**
+ * RD-DEF-006 · governed CSV of the FILTERED register with stable IDs. Pure + exported so the
+ * artifact's exact content is provable in a test (the download event itself was
+ * environment-inconclusive in Cycle 4's Chrome).
+ */
+export function buildReviewsCsv(
+  rows: StrataReview[],
+  personName: (id: string | null) => string | null,
+): string {
+  const esc = (v: unknown): string => {
+    const s = v == null ? '' : String(v);
+    return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+  };
+  const header = ['review_key', 'id', 'name', 'type', 'cadence', 'status', 'scheduled_for', 'chair', 'accountable_owner', 'snapshot_id', 'board_pack_id', 'origin', 'note'];
+  const lines = rows.map((r) => [
+    r.review_key, r.id, r.name, r.review_type, r.cadence, r.status, r.scheduled_for ?? '',
+    personName(r.chair_id) ?? '', personName(r.accountable_owner_id) ?? '',
+    r.snapshot_id ?? '', r.board_pack_id ?? '', r.origin, r.note ?? '',
+  ].map(esc).join(','));
+  return [header.join(','), ...lines].join('\n');
+}
+
+/**
  * Exported so the governed lifecycle can be tested directly, mirroring SourcesRegistry (R3).
  * Rendering the whole page in a test drags in the STRATA shell and would prove the shell.
  */
@@ -534,24 +576,19 @@ export function ScheduledReviewsSection() {
   /**
    * RD-DEF-006 — governed export of the FILTERED register with stable IDs. Contains only what
    * the register itself already shows (RLS-scoped read): no unauthorized data is widened.
+   * Content built by the pure buildReviewsCsv (tested); the anchor is appended to the DOM
+   * before click — some Chrome download interceptors ignore clicks on detached anchors, which
+   * is the likely cause of Cycle 4's missing download event.
    */
   const exportCsv = () => {
-    const esc = (v: unknown): string => {
-      const s = v == null ? '' : String(v);
-      return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
-    };
-    const header = ['review_key', 'id', 'name', 'type', 'cadence', 'status', 'scheduled_for', 'chair', 'accountable_owner', 'snapshot_id', 'board_pack_id', 'origin', 'note'];
-    const lines = rows.map((r) => [
-      r.review_key, r.id, r.name, r.review_type, r.cadence, r.status, r.scheduled_for ?? '',
-      chairName(r.chair_id) ?? '', chairName(r.accountable_owner_id) ?? '',
-      r.snapshot_id ?? '', r.board_pack_id ?? '', r.origin, r.note ?? '',
-    ].map(esc).join(','));
-    const blob = new Blob([[header.join(','), ...lines].join('\n')], { type: 'text/csv;charset=utf-8' });
+    const blob = new Blob([buildReviewsCsv(rows, chairName)], { type: 'text/csv;charset=utf-8' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
     a.download = `strata-reviews-${new Date().toISOString().slice(0, 10)}.csv`;
+    document.body.appendChild(a);
     a.click();
+    a.remove();
     URL.revokeObjectURL(url);
   };
   // The RPC's own gate, mirrored — this only avoids offering a verb the server would refuse.
@@ -917,33 +954,35 @@ export function ScheduledReviewsSection() {
         </ModalFooter>
       </Modal>
 
-      {/* Attach the snapshot a review will convene on. EVERY snapshot is offered, each labelled
-          with its own status — not just locked ones: a review may legitimately attach a snapshot
-          before it is locked, and readiness then states "snapshot is not locked" rather than the
-          UI pretending the choice does not exist. The one-review-per-snapshot constraint is the
-          database's to enforce; its rejection surfaces verbatim. */}
-      {canGovern && attachTo ? (
-        <StrataFormModal
-          open
-          onClose={() => setAttachTo(null)}
-          title={`Attach snapshot · ${attachTo.name}`}
-          description="A review convenes on one snapshot. Readiness requires that snapshot to be locked — a board pack is separate and does not gate convening."
-          fields={[{
-            key: 'snapshot_id', label: 'Snapshot', kind: 'select', required: true,
-            options: (snapshotsQ.data ?? []).map((s) => ({
-              value: s.id,
-              label: `${s.snapshot_key} · ${s.name} · ${labelize(s.status)}`,
-            })),
-          }]}
-          initial={attachTo.snapshot_id ? { snapshot_id: attachTo.snapshot_id } : undefined}
-          submitLabel="Attach snapshot"
-          onSubmit={async (v) => {
-            await governanceApi.updateReview(attachTo.id, { snapshotId: v.snapshot_id as string });
-            invalidate();
-          }}
-          testId="strata-review-attach-modal"
-        />
-      ) : null}
+      {/* RD-DEF-002 · Attach the snapshot a review will convene on. Only ELIGIBLE snapshots are
+          offered — locked AND not bound to another review (one review per snapshot). Offering a
+          bound one only manufactures the conflict the server rejects (Cycle 4: SNAP-1). When no
+          eligible snapshot exists, the modal says so and names the governed path to obtain one
+          (Lock snapshot on the review cockpit) instead of presenting an empty picker. */}
+      {canGovern && attachTo ? (() => {
+        const eligible = eligibleSnapshotOptions(snapshotsQ.data ?? [], allRows, attachTo);
+        return (
+          <StrataFormModal
+            open
+            onClose={() => setAttachTo(null)}
+            title={`Attach snapshot · ${attachTo.name}`}
+            description={eligible.length > 0
+              ? 'A review convenes on one snapshot. Only locked snapshots not already bound to another review are offered. A board pack is separate and does not gate convening.'
+              : 'No eligible snapshot: every locked snapshot is already bound to another review. Lock a snapshot for this review’s period first (open the review cockpit for the period and use Lock snapshot), then attach it here.'}
+            fields={[{
+              key: 'snapshot_id', label: 'Snapshot', kind: 'select', required: true,
+              options: eligible,
+            }]}
+            initial={attachTo.snapshot_id ? { snapshot_id: attachTo.snapshot_id } : undefined}
+            submitLabel="Attach snapshot"
+            onSubmit={async (v) => {
+              await governanceApi.updateReview(attachTo.id, { snapshotId: v.snapshot_id as string });
+              invalidate();
+            }}
+            testId="strata-review-attach-modal"
+          />
+        );
+      })() : null}
 
       {/* RD-DEF-001 — the review workspace: accountable owner, participants with roles,
           ordered agenda, governed evidence references. Server enforces every write. */}
@@ -2145,7 +2184,8 @@ export default function StrataReviewsPage() {
                       count={(boardPacksQ.data ?? []).length}
                       testId="strata-reviews-board-packs"
                       actions={
-                        <div style={{ display: 'flex', gap: 8 }}>
+                        /* RD-DEF-010: wrap, never clip, at 1024×768. */
+                        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                           <Tooltip content="Builds the executive PDF from this snapshot's frozen data, downloads it, and stores it to the shared pack library">
                             <Button
                               appearance="primary"

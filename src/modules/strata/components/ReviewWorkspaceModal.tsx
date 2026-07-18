@@ -18,7 +18,7 @@ import {
   SectionMessage, Select, Spinner, Textfield,
 } from '@/components/ads';
 import type { SelectOption } from '@/components/ads';
-import { executionApi, governanceApi, kpiApi, valueApi } from '@/modules/strata/domain';
+import { executionApi, governanceApi, kpiApi, scorecardApi, strategyApi, valueApi } from '@/modules/strata/domain';
 import { useInvalidateStrata, useProfileNames } from '@/modules/strata/hooks/useStrata';
 import { labelize } from '@/modules/strata/components/format';
 import type { StrataReview, StrataReviewParticipant } from '@/modules/strata/types';
@@ -28,13 +28,21 @@ const body: React.CSSProperties = { fontSize: 'var(--ds-font-size-200)', color: 
 
 const PARTICIPANT_ROLES: Array<StrataReviewParticipant['role']> = ['chair', 'attendee', 'presenter', 'observer'];
 
-/** Evidence-link types this picker can resolve to an existing governed master. */
-const LINK_TYPES = [
+/**
+ * Evidence-link types this picker can resolve to an existing governed master — the COMPLETE
+ * RD-DEF-001 vocabulary: strategy objectives, scorecards/models, KPIs/OKRs, project cards,
+ * portfolio/benefits, gates/assurance and locked snapshots. Every option is a read-only
+ * reference to an existing record; nothing here creates or mutates a master.
+ */
+export const LINK_TYPES = [
+  { value: 'objective', label: 'Strategy objective' },
+  { value: 'scorecard_instance', label: 'Scorecard / model' },
   { value: 'kpi', label: 'KPI' },
   { value: 'okr', label: 'OKR' },
   { value: 'project_card', label: 'Project card' },
   { value: 'portfolio', label: 'Portfolio' },
   { value: 'benefit', label: 'Benefit' },
+  { value: 'gate_instance', label: 'Gate / assurance' },
   { value: 'snapshot', label: 'Locked snapshot' },
 ] as const;
 type LinkType = (typeof LINK_TYPES)[number]['value'];
@@ -81,15 +89,28 @@ export function ReviewWorkspaceModal({ review, onClose }: { review: StrataReview
   const [linkTarget, setLinkTarget] = useState<string | null>(null);
 
   const targetsQ = useQuery({
-    queryKey: ['strata', 'review-link-targets', linkType],
+    queryKey: ['strata', 'review-link-targets', linkType, review.cycle_id],
     queryFn: async (): Promise<Array<{ id: string; label: string }>> => {
       switch (linkType) {
+        // Objectives are cycle-scoped; without a cycle on the review there is nothing to offer,
+        // and the empty state below says so rather than listing another cycle's objectives.
+        case 'objective': return review.cycle_id
+          ? (await strategyApi.elements(review.cycle_id)).map((e) => ({ id: e.id, label: e.name }))
+          : [];
+        case 'scorecard_instance': return (await scorecardApi.instances(review.cycle_id ?? undefined)).map((s) => ({ id: s.id, label: s.name }));
         case 'kpi': return (await kpiApi.list()).map((k) => ({ id: k.id, label: k.name }));
         case 'okr': return (await kpiApi.okrs()).map((o) => ({ id: o.id, label: o.name }));
         case 'project_card': return (await executionApi.projectCards()).map((p) => ({ id: p.id, label: p.name }));
         case 'portfolio': return (await valueApi.portfolios()).map((p) => ({ id: p.id, label: p.name }));
         case 'benefit': return (await valueApi.benefits()).map((b) => ({ id: b.id, label: b.name }));
-        case 'snapshot': return (await governanceApi.snapshots()).map((s) => ({ id: s.id, label: `${s.snapshot_key} · ${s.name}` }));
+        case 'gate_instance': return (await valueApi.gateInstances()).map((g) => ({
+          id: g.id,
+          label: `${labelize(g.subject_type)} gate · ${labelize(g.status)}${g.scheduled_for ? ` · ${g.scheduled_for.slice(0, 10)}` : ''}`,
+        }));
+        // Evidence references cite LOCKED snapshots only — live numbers are not evidence.
+        case 'snapshot': return (await governanceApi.snapshots())
+          .filter((s) => s.status === 'locked')
+          .map((s) => ({ id: s.id, label: `${s.snapshot_key} · ${s.name}` }));
         default: return [];
       }
     },
@@ -341,6 +362,13 @@ export function ReviewWorkspaceModal({ review, onClose }: { review: StrataReview
             Link evidence
           </Button>
         </div>
+        {targetsQ.isSuccess && (targetsQ.data ?? []).length === 0 ? (
+          <p style={{ ...caption, margin: 'var(--ds-space-100) 0 0' }} data-testid="strata-workspace-no-targets">
+            {linkType === 'objective' && !review.cycle_id
+              ? 'This review has no cycle, so cycle-scoped strategy objectives cannot be offered — set the review period/cycle first.'
+              : `No ${LINK_TYPES.find((t) => t.value === linkType)?.label ?? linkType} records exist to reference.`}
+          </p>
+        ) : null}
       </ModalBody>
       <ModalFooter>
         <Button appearance="subtle" onClick={onClose} isDisabled={busy} testId="strata-workspace-close">Close</Button>
