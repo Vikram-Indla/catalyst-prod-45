@@ -16,7 +16,7 @@
  * RPCs or frozen snapshot payloads) — the UI only renders and counts rows.
  * ADS tokens only. No silent failures: every failing query surfaces.
  */
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip as RechartsTooltip, XAxis, YAxis,
@@ -48,7 +48,20 @@ import {
   useStrataRoles,
   useBandResolver,
   useInvalidateStrata,
+  useProjectCards,
+  useActions,
+  useStrategyElements,
 } from '@/modules/strata/hooks/useStrata';
+import {
+  attentionRoute,
+  computeScoreDelta,
+  dedupeAttentionRows,
+  officialTrendSeries,
+  scopeAiOutputs,
+  scopeOpenDecisions,
+  selectDragPerspective,
+} from '@/modules/strata/pages/commandCenterLogic';
+import type { OfficialTrendPoint } from '@/modules/strata/pages/commandCenterLogic';
 import {
   T,
   StrataPageShell,
@@ -148,11 +161,14 @@ function InlineLink({ onClick, children }: { onClick: () => void; children: Reac
 }
 
 // ── Enterprise score trend ────────────────────────────────────────────────────
-interface TrendChartPoint {
-  label: string;
-  score: number;
-  statusKey: string | null;
-  slug: string | null;
+// CC-DEF-002: the chart consumes the OFFICIAL series — one point per period,
+// approval state (locked) wins over live; revision state travels with the point.
+type TrendChartPoint = OfficialTrendPoint;
+
+/** Human-readable revision/approval qualifier for a trend point (empty when unambiguous). */
+function trendRevisionNote(p: TrendChartPoint): string | null {
+  if (p.revisions <= 1) return null;
+  return `official ${p.officialState === 'locked' ? 'locked' : p.officialState} score · ${p.revisions - 1} superseded ${p.revisions - 1 === 1 ? 'revision' : 'revisions'} hidden`;
 }
 
 /** Band-toned dot; focusable link with an accessible name (§14) — keyboard
@@ -169,7 +185,7 @@ function TrendDot(props: {
   const bandLabel = bandLabelFor(payload.statusKey);
   // "Q1 2026, 73.5, Needs attention — view evidence" (§14 accessible-name shape).
   const accessibleName =
-    [payload.label, fmtScore(payload.score), bandLabel].filter(Boolean).join(', ')
+    [payload.label, fmtScore(payload.score), bandLabel, trendRevisionNote(payload)].filter(Boolean).join(', ')
     + (clickable ? ' — view evidence' : '');
   return (
     <circle
@@ -222,6 +238,11 @@ function TrendTooltip({ active, payload }: {
         </span>
         <StrataBandLozenge bandKey={p.statusKey} />
       </div>
+      {trendRevisionNote(p) ? (
+        <div style={{ fontSize: 'var(--ds-font-size-050)', color: T.subtlest, marginTop: 4 }}>
+          {trendRevisionNote(p)}
+        </div>
+      ) : null}
       {p.slug ? (
         <div style={{ fontSize: 'var(--ds-font-size-050)', color: T.subtlest, marginTop: 4 }}>Click point for evidence</div>
       ) : null}
@@ -315,6 +336,11 @@ export default function StrataCommandCenterPage() {
   // ── Governance / execution counts ──────────────────────────────────────────
   const decisionsQ = useDecisions();
   const kpisQ = useKpis();
+  // CC-DEF-003: entity lookups so every attention row drills to its EXACT owning record.
+  const projectCardsQ = useProjectCards();
+  const actionsQ = useActions();
+  // CC-DEF-005: active-cycle element set — positive-evidence scoping for theme decisions.
+  const elementsQ = useStrategyElements(activeCycle?.id);
   // Server-side rule engine feed — replaces the former client-composed inbox.
   const needsAttentionQ = useNeedsAttention(activePeriod?.id);
   // Locked-mode snapshot basis (resolves instance.locked_snapshot_id → snapshot).
@@ -350,9 +376,22 @@ export default function StrataCommandCenterPage() {
     }
   };
 
-  const openDecisions = useMemo(
-    () => (decisionsQ.data ?? []).filter((d) => d.status === 'open'),
-    [decisionsQ.data],
+  // CC-DEF-005: open decisions scoped to the active cycle; unlinked ones are a
+  // visible Global bucket, never silently added to the scoped headline count.
+  const decisionScope = useMemo(
+    () => scopeOpenDecisions(
+      decisionsQ.data ?? [],
+      snapshotsQ.data ?? [],
+      new Set((elementsQ.data ?? []).map((e) => e.id)),
+      activeCycle?.id ?? null,
+    ),
+    [decisionsQ.data, snapshotsQ.data, elementsQ.data, activeCycle],
+  );
+  // CC-DEF-005: advisories from another cycle's snapshot are excluded; unlinked
+  // (live-data) advisories are kept but visibly labelled Global.
+  const scopedAdvisories = useMemo(
+    () => scopeAiOutputs(aiOutputsQ.data ?? [], snapshotsQ.data ?? [], activeCycle?.id ?? null),
+    [aiOutputsQ.data, snapshotsQ.data, activeCycle],
   );
   const kpiById = useMemo(
     () => new Map((kpisQ.data ?? []).map((k) => [k.id, k])),
@@ -363,69 +402,64 @@ export default function StrataCommandCenterPage() {
     [benefitsQ.data],
   );
 
-  // ── Trend points: period-named, ordered by period starts_on ───────────────
-  const trendPoints: TrendChartPoint[] = useMemo(() => {
-    const periodById = new Map(periods.map((p) => [p.id, p]));
-    return (trendQ.data ?? [])
-      .map((pt) => {
-        const period = pt.periodId ? periodById.get(pt.periodId) : undefined;
-        return {
-          label: period?.name ?? '—',
-          startsOn: period?.starts_on ?? '',
-          score: pt.score,
-          statusKey: pt.statusKey,
-          slug: pt.slug,
-        };
-      })
-      .sort((a, b) => (a.startsOn < b.startsOn ? -1 : a.startsOn > b.startsOn ? 1 : 0))
-      .map(({ startsOn: _startsOn, ...rest }) => rest);
-  }, [trendQ.data, periods]);
+  // ── Trend points: ONE official score per period (CC-DEF-002) ──────────────
+  // Approval state wins (locked > live > pending_validation > draft); superseded
+  // revisions are counted and disclosed on the point, never plotted as duplicates.
+  const trendPoints: TrendChartPoint[] = useMemo(
+    () => officialTrendSeries(trendQ.data ?? [], instancesQ.data ?? [], periods),
+    [trendQ.data, instancesQ.data, periods],
+  );
 
   const openTrendEvidence = (p: TrendChartPoint) => {
     if (p.slug) navigate(Routes.strata.scorecardEvidence(p.slug, Routes.strata.root()));
   };
 
-  // ── Needs attention rows (server rule engine → drill to owning surface) ────
+  // ── Needs attention rows (server rule engine → drill to owning record) ────
+  // CC-DEF-004: identical engine rows reconcile to ONE row under a stable
+  // identity key (no positional index); the panel total equals the visible rows.
+  // CC-DEF-003: each row resolves to its EXACT owning record's route.
   const attentionRows: AttentionRow[] = useMemo(() => {
-    /** Each row drills to the surface that owns its entity type. */
-    const navFor = (entityType: string, entityId: string): (() => void) | undefined => {
-      switch (entityType) {
-        case 'kpi': {
-          const slug = kpiById.get(entityId)?.slug;
-          return () => navigate(slug ? Routes.strata.kpi(slug) : Routes.strata.kpis());
-        }
-        case 'benefit': {
-          // Drill to the benefit detail via its slug; fall back to the portfolio index when unresolved.
-          const slug = benefitById.get(entityId)?.slug;
-          return () => navigate(slug ? Routes.strata.benefit(slug) : Routes.strata.portfolio());
-        }
-        case 'portfolio':
-          return () => navigate(Routes.strata.portfolio());
-        case 'initiative':
-        case 'project_card':
-          return () => navigate(Routes.strata.execution());
-        case 'action':
-        case 'decision':
-          return () => navigate(Routes.strata.reviews());
-        case 'upload_run':
-          return () => navigate(Routes.strata.data());
-        case 'element':
-          return () => navigate(Routes.strata.strategy());
-        default:
-          return undefined;
-      }
+    const portfolioById = new Map((portfoliosQ.data ?? []).map((p) => [p.id, p]));
+    const projectCardById = new Map((projectCardsQ.data ?? []).map((c) => [c.id, c]));
+    const elementById = new Map((elementsQ.data ?? []).map((e) => [e.id, e]));
+    const runById = new Map((uploadRunsQ.data ?? []).map((r) => [r.id, r]));
+    const decisionById = new Map((decisionsQ.data ?? []).map((d) => [d.id, d]));
+    const actionById = new Map((actionsQ.data ?? []).map((a) => [a.id, a]));
+    const snapshotById = new Map((snapshotsQ.data ?? []).map((s) => [s.id, s]));
+    const snapshotKeyForDecision = (decisionId: string): string | null => {
+      const d = decisionById.get(decisionId);
+      return d?.snapshot_id ? snapshotById.get(d.snapshot_id)?.snapshot_key ?? null : null;
     };
-    return (needsAttentionQ.data ?? []).map((r, i) => ({
-      id: `${r.item_type}-${r.entity_id}-${i}`,
-      itemType: r.item_type,
-      severity: r.severity,
-      entityName: r.entity_name,
-      detail: r.detail,
-      due: r.due_date,
-      ownerId: r.owner_id,
-      nav: navFor(r.entity_type, r.entity_id),
-    }));
-  }, [needsAttentionQ.data, kpiById, benefitById, navigate]);
+    const lookups = {
+      kpiSlug: (id: string) => kpiById.get(id)?.slug,
+      benefitSlug: (id: string) => benefitById.get(id)?.slug,
+      portfolioSlug: (id: string) => portfolioById.get(id)?.slug,
+      projectCardSlug: (id: string) => projectCardById.get(id)?.slug,
+      elementSlug: (id: string) => elementById.get(id)?.slug,
+      runKey: (id: string) => runById.get(id)?.run_key,
+      decisionSnapshotKey: snapshotKeyForDecision,
+      actionSnapshotKey: (id: string) => {
+        const a = actionById.get(id);
+        return a?.decision_id ? snapshotKeyForDecision(a.decision_id) : null;
+      },
+    };
+    return dedupeAttentionRows(needsAttentionQ.data ?? []).map((r) => {
+      const path = attentionRoute(r.entity_type, r.entity_id, lookups, Routes.strata.root());
+      return {
+        id: r.key,
+        itemType: r.item_type,
+        severity: r.severity,
+        entityName: r.entity_name,
+        detail: r.detail,
+        due: r.due_date,
+        ownerId: r.owner_id,
+        nav: path ? () => navigate(path) : undefined,
+      };
+    });
+  }, [
+    needsAttentionQ.data, kpiById, benefitById, portfoliosQ.data, projectCardsQ.data,
+    elementsQ.data, uploadRunsQ.data, decisionsQ.data, actionsQ.data, snapshotsQ.data, navigate,
+  ]);
 
   // ── "Mine" filter (CLOSEOUT W4): narrow the org-wide feed to items I must act on ──
   const myUserId = useStrataUserId().data ?? null;
@@ -543,48 +577,53 @@ export default function StrataCommandCenterPage() {
   }, [refSnapshot, calc, refItemsQ.data]);
 
   // ── Judgment band inputs (anchor 01: one composed executive argument) ───────
-  // Worst-scoring perspective — the one that drags the enterprise score.
-  const worstPerspective = useMemo(() => {
-    const scored = (calc?.perspectives ?? []).filter((p) => p.has_data && p.score != null);
-    if (scored.length === 0) return null;
-    return scored.reduce((lo, p) => (p.score < lo.score ? p : lo));
-  }, [calc]);
-  // Δ vs the prior period on the enterprise-score trend.
-  const scoreDelta = useMemo((): { delta: number; priorLabel: string } | null => {
-    if (trendPoints.length < 2) return null;
-    const curIdx = activePeriod ? trendPoints.findIndex((p) => p.label === activePeriod.name) : trendPoints.length - 1;
-    const cur = curIdx >= 0 ? trendPoints[curIdx] : trendPoints[trendPoints.length - 1];
-    const prior = curIdx > 0 ? trendPoints[curIdx - 1] : null;
-    if (!cur || !prior) return null;
-    return { delta: cur.score - prior.score, priorLabel: prior.label };
-  }, [trendPoints, activePeriod]);
+  // CC-DEF-001: a perspective "drags" ONLY when it sits strictly below the
+  // server-calculated enterprise score. All perspectives at the enterprise score
+  // (e.g. all 100 / On track) → no drag clause, truthful no-drag state instead.
+  const dragPerspective = useMemo(() => selectDragPerspective(calc), [calc]);
+  // CC-DEF-002: Δ derives from the SAME official series the trend chart renders.
+  const scoreDelta = useMemo(
+    () => computeScoreDelta(trendPoints, activePeriod?.name ?? null),
+    [trendPoints, activePeriod],
+  );
   // Composed exception clauses — zero-assumption: only data-bearing clauses appear.
   const judgmentClauses: React.ReactNode[] = [];
-  if (worstPerspective) {
+  if (dragPerspective) {
     judgmentClauses.push(
       <React.Fragment key="persp">
         <InlineLink onClick={() => { if (instance?.slug) navigate(Routes.strata.scorecard(instance.slug)); }}>
-          {`${worstPerspective.name} (${fmtScore(worstPerspective.score)})`}
+          {`${dragPerspective.name} (${fmtScore(dragPerspective.score)})`}
         </InlineLink>
         {' drags the enterprise score'}
       </React.Fragment>,
     );
   }
   if (!varQ.isError && varQ.data?.value != null && portfolio?.slug) {
+    // CC-DEF-005: portfolios carry no cycle/period — the VaR figure is a
+    // deliberate Global exception and is labelled as such, never period-scoped.
     judgmentClauses.push(
       <React.Fragment key="var">
         <InlineLink onClick={() => navigate(Routes.strata.portfolioEvidence(portfolio.slug!, Routes.strata.root()))}>
           {fmtSarCompact(varQ.data.value)}
         </InlineLink>
-        {' of portfolio value is at risk against plan'}
+        {' of portfolio value is at risk against plan (Global — not period-scoped)'}
       </React.Fragment>,
     );
   }
-  if (openDecisions.length > 0) {
+  if (decisionScope.scoped > 0) {
     judgmentClauses.push(
       <React.Fragment key="dec">
         <InlineLink onClick={() => navigate(Routes.strata.reviews())}>
-          {`${openDecisions.length} ${openDecisions.length === 1 ? 'decision is' : 'decisions are'} waiting`}
+          {`${decisionScope.scoped} ${decisionScope.scoped === 1 ? 'decision is' : 'decisions are'} waiting in this cycle`}
+        </InlineLink>
+      </React.Fragment>,
+    );
+  }
+  if (decisionScope.global > 0) {
+    judgmentClauses.push(
+      <React.Fragment key="dec-global">
+        <InlineLink onClick={() => navigate(Routes.strata.reviews())}>
+          {`${decisionScope.global} Global ${decisionScope.global === 1 ? 'decision' : 'decisions'} (no cycle) ${decisionScope.global === 1 ? 'is' : 'are'} open`}
         </InlineLink>
       </React.Fragment>,
     );
@@ -601,7 +640,7 @@ export default function StrataCommandCenterPage() {
         {'.'}
       </>
     )
-    : 'All perspectives are within plan and no decisions are waiting.';
+    : 'No perspective is below the enterprise score and no decisions are waiting in this cycle.';
 
   // ── Context-spine scope + freshness (from real data; omit when unknown) ────
   const latestRunAt = useMemo(() => {
@@ -624,11 +663,28 @@ export default function StrataCommandCenterPage() {
       Scope <strong style={{ color: T.text, fontWeight: 600 }}>Enterprise</strong>
     </span>
   );
+  // CC-DEF-005: upload runs carry no period — freshness is a Global data-plane
+  // fact and is labelled so it is never read as a period-scoped claim.
   const freshnessNode = latestRunAt ? (
     <span style={{ fontSize: 'var(--ds-font-size-100)', color: T.subtlest }}>
-      Data as of <strong style={{ color: T.text, fontWeight: 600 }}>{fmtDate(latestRunAt)}</strong>
+      Data as of <strong style={{ color: T.text, fontWeight: 600 }}>{fmtDate(latestRunAt)}</strong> · Global
     </span>
   ) : null;
+
+  // CC-DEF-006: stack the trend/health row on narrow viewports (1024×768, 200% zoom)
+  // so no Command Center control needs document-level horizontal scrolling.
+  const [isNarrow, setIsNarrow] = useState(
+    () => typeof window !== 'undefined'
+      && typeof window.matchMedia === 'function'
+      && window.matchMedia('(max-width: 1279px)').matches,
+  );
+  useEffect(() => {
+    if (typeof window.matchMedia !== 'function') return undefined;
+    const mq = window.matchMedia('(max-width: 1279px)');
+    const onChange = (e: MediaQueryListEvent) => setIsNarrow(e.matches);
+    mq.addEventListener('change', onChange);
+    return () => mq.removeEventListener('change', onChange);
+  }, []);
 
   return (
     <StrataPageShell
@@ -676,6 +732,7 @@ export default function StrataCommandCenterPage() {
                 border: `1px solid ${T.border}`, borderRadius: 8, background: T.raised,
                 boxShadow: 'var(--ds-shadow-raised)', padding: 'var(--ds-space-250)',
                 display: 'flex', gap: 'var(--ds-space-250)', alignItems: 'center', minWidth: 0,
+                flexWrap: 'wrap',
               }}
             >
               <StrataScoreRing
@@ -725,7 +782,7 @@ export default function StrataCommandCenterPage() {
           </div>
 
           {/* ── Row 2: enterprise score trend + perspective health ─────────── */}
-          <div style={{ gridColumn: 'span 8', minWidth: 0, display: 'flex', flexDirection: 'column' }}>
+          <div style={{ gridColumn: `span ${isNarrow ? 12 : 8}`, minWidth: 0, display: 'flex', flexDirection: 'column' }}>
             <StrataPanel
               title="Enterprise score trend"
               icon={<TrendingUp size={16} />}
@@ -784,7 +841,7 @@ export default function StrataCommandCenterPage() {
             </StrataPanel>
           </div>
 
-          <div style={{ gridColumn: 'span 4', minWidth: 0, display: 'flex', flexDirection: 'column' }}>
+          <div style={{ gridColumn: `span ${isNarrow ? 12 : 4}`, minWidth: 0, display: 'flex', flexDirection: 'column' }}>
             <StrataPanel
               title="Perspective health"
               icon={<PieChart size={16} />}
@@ -964,7 +1021,7 @@ export default function StrataCommandCenterPage() {
             <StrataPanel
               title="AI advisory"
               icon={<Sparkles size={16} />}
-              count={aiOutputsQ.isLoading ? null : (aiOutputsQ.data ?? []).length}
+              count={aiOutputsQ.isLoading ? null : scopedAdvisories.length}
               testId="strata-cc-ai-advisory"
               actions={canAdvise ? (
                 <Button
@@ -991,7 +1048,7 @@ export default function StrataCommandCenterPage() {
                 <PanelError error={aiOutputsQ.error} />
               ) : aiOutputsQ.isLoading ? (
                 <div aria-hidden style={{ height: 96, borderRadius: 8, background: T.neutral }} />
-              ) : (aiOutputsQ.data ?? []).length === 0 ? (
+              ) : scopedAdvisories.length === 0 ? (
                 <EmptyState
                   size="compact"
                   header="No advisories yet"
@@ -1002,7 +1059,7 @@ export default function StrataCommandCenterPage() {
                     : 'Advisory drafts generated by the strategy office appear here after human review.'}
                 />
               ) : (
-                (aiOutputsQ.data ?? []).map((a) => {
+                scopedAdvisories.map((a) => {
                   const isPending = a.human_review_status === 'pending';
                   const confidence = fmtAdvisoryConfidence(a.confidence);
                   return (
@@ -1016,6 +1073,7 @@ export default function StrataCommandCenterPage() {
                           {isPending ? 'Pending human review' : labelize(a.human_review_status)}
                         </Lozenge>
                         {a.model ? <CatalystTag text={a.model} /> : null}
+                        {a.scopeLabel === 'global' ? <Lozenge appearance="default">Global — not cycle-scoped</Lozenge> : null}
                         <span style={{ fontSize: 'var(--ds-font-size-100)', color: T.subtlest }}>
                           {[
                             confidence ? `Confidence ${confidence}` : null,
@@ -1073,7 +1131,7 @@ export default function StrataCommandCenterPage() {
                 fontSize: 'var(--ds-font-size-100)', color: T.subtle,
               }}
             >
-              <span style={{ fontWeight: 600, letterSpacing: '0.04em', color: T.subtlest, fontSize: 'var(--ds-font-size-050)' }}>DATA TRUST</span>
+              <span style={{ fontWeight: 600, letterSpacing: '0.04em', color: T.subtlest, fontSize: 'var(--ds-font-size-050)' }}>DATA TRUST · GLOBAL (ALL PERIODS)</span>
               {dataSourcesQ.isError ? (
                 <span style={{ color: 'var(--ds-text-danger)' }}>Sources could not be loaded</span>
               ) : dataSourcesQ.isLoading ? (
