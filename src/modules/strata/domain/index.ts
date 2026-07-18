@@ -990,7 +990,8 @@ export const valueApi = {
   }>> =>
     run(typedRpc('strata_entity_audit', { p_entity_table: entityTable, p_entity_id: entityId })),
   // PB-DEF-010 · governed Reviews ↔ portfolio/benefit/gate references (bidirectional).
-  linkReview: (reviewId: string, targetType: 'portfolio' | 'benefit' | 'benefit_value' | 'gate_instance', targetId: string, note?: string): Promise<string> =>
+  // RD-DEF-001 widened the vocabulary: objectives, KPIs/OKRs, scorecards, project cards, snapshots.
+  linkReview: (reviewId: string, targetType: 'portfolio' | 'benefit' | 'benefit_value' | 'gate_instance' | 'objective' | 'kpi' | 'okr' | 'scorecard_instance' | 'project_card' | 'snapshot', targetId: string, note?: string): Promise<string> =>
     run(typedRpc('strata_link_review', { p_review: reviewId, p_target_type: targetType, p_target_id: targetId, p_note: note ?? null })),
   unlinkReview: (reviewId: string, targetType: string, targetId: string): Promise<void> =>
     run(typedRpc('strata_unlink_review', { p_review: reviewId, p_target_type: targetType, p_target_id: targetId })),
@@ -1406,6 +1407,10 @@ export const governanceApi = {
       agenda?: unknown;
       chairId?: string | null;
       note?: string | null;
+      /** RD-DEF-001 — accountable owner; readiness names its absence. */
+      accountableOwnerId?: string | null;
+      /** RD-DEF-007 — reschedule; server rejects stale/impossible dates. */
+      scheduledFor?: string | null;
     },
   ): Promise<void> =>
     run(typedRpc('strata_update_review', {
@@ -1416,7 +1421,23 @@ export const governanceApi = {
       p_agenda: (patch.agenda ?? null) as never,
       p_chair: patch.chairId ?? null,
       p_note: patch.note ?? null,
+      p_accountable_owner: patch.accountableOwnerId ?? null,
+      p_scheduled_for: patch.scheduledFor ?? null,
     })),
+  /**
+   * RD-DEF-001 — participants are direct table writes under RLS (strategy_office); the
+   * trg_strata_review_participants_guard trigger refuses writes once the review is terminal.
+   */
+  addReviewParticipant: async (reviewId: string, userId: string, role: StrataReviewParticipant['role']): Promise<void> => {
+    // .select() so an RLS-silent zero-row write surfaces instead of reporting a save that never happened.
+    const rows = await run(typedQuery('strata_review_participants')
+      .insert({ review_id: reviewId, user_id: userId, role } as never).select('id'));
+    if (!Array.isArray(rows) || rows.length === 0) throw new Error('participant was not added — your role may not permit editing this review');
+  },
+  removeReviewParticipant: async (participantId: string): Promise<void> => {
+    const rows = await run(typedQuery('strata_review_participants').delete().eq('id', participantId).select('id'));
+    if (!Array.isArray(rows) || rows.length === 0) throw new Error('participant was not removed — your role may not permit editing this review');
+  },
   // ── R2/F1 · board-pack editorial lifecycle ────────────────────────────────
   /**
    * F-3 qualification, derived from the integrity register. `is_qualified=false` means no exception
@@ -1585,13 +1606,21 @@ export const governanceApi = {
       p_snapshot: input.snapshotId ?? null, p_evidence_refs: input.evidenceRefs ?? null,
       p_element: input.elementId ?? null,
     })),
+  /**
+   * RD-DEF-003 — moving to 'decided' is the OFFICIAL act: the server requires an explicit
+   * outcome + rationale and a DISTINCT approver (creator self-approval is refused, zero rows).
+   * Transitions are explicit: open → decided → closed. Closed decisions are immutable.
+   */
   updateDecision: (decisionId: string, patch: {
     status?: 'open' | 'decided' | 'closed'; description?: string; ownerId?: string; dueDate?: string;
+    outcome?: StrataDecision['outcome']; rationale?: string; evidenceRefs?: unknown;
   }) =>
     run(typedRpc('strata_update_decision', {
       p_decision: decisionId, p_status: patch.status ?? null,
       p_description: patch.description ?? null, p_owner: patch.ownerId ?? null,
       p_due_date: patch.dueDate ?? null,
+      p_outcome: patch.outcome ?? null, p_rationale: patch.rationale ?? null,
+      p_evidence_refs: (patch.evidenceRefs ?? null) as never,
     })),
   createAction: (input: {
     decisionId: string; title: string; ownerId?: string; dueDate?: string; note?: string;

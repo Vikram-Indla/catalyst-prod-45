@@ -58,7 +58,7 @@ export function StrataAuditHistory({
               const before = jsonPreview(r.before);
               const after = jsonPreview(r.after);
               return (
-                <div key={r.id} style={{ padding: '10px 16px', borderTop: `1px solid ${T.border}`, display: 'flex', flexDirection: 'column', gap: 2 }}>
+                <div key={r.id} style={{ padding: '8px 16px', borderTop: `1px solid ${T.border}`, display: 'flex', flexDirection: 'column', gap: 2 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', gap: 8, alignItems: 'baseline' }}>
                     <span style={{ color: T.text, fontWeight: 600, fontSize: 'var(--ds-font-size-100)' }}>{labelize(r.action.replace(/^RPC:/, ''))}</span>
                     <span style={{ color: T.subtlest, fontSize: 'var(--ds-font-size-075)', fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap' }}>{fmtWhen(r.created_at)}</span>
