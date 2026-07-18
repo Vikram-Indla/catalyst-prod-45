@@ -59,11 +59,11 @@ import {
   EditElementModal, gateModelSelectOptions, NewElementModal, perspectiveSelectOptions, StrataFormModal, str,
   themeParentOptions, ThemeCharterModal,
 } from '@/modules/strata/components/authoring';
-import { governanceApi, kpiApi, strategyApi } from '@/modules/strata/domain';
+import { executionApi, governanceApi, kpiApi, strategyApi } from '@/modules/strata/domain';
 import { Modal, ModalBody, ModalFooter, ModalHeader, ModalTitle, SectionMessage } from '@/components/ads';
 import { fmtDate, fmtDateTime, formatAuditAction, labelize } from '@/modules/strata/components/format';
 import { isThemeElement } from '@/modules/strata/types';
-import type { StrataDecision, StrataStrategyElement } from '@/modules/strata/types';
+import type { StrataDecision, StrataProjectCard, StrataStrategyElement } from '@/modules/strata/types';
 
 /** Roles allowed to author strategy structure — UI gate only; DB RPCs enforce (mirrors Strategy Room). */
 const AUTHOR_ROLES = ['strategy_office', 'strata_admin'] as const;
@@ -79,6 +79,8 @@ type AuthoringState =
   | { kind: 'charter'; element: StrataStrategyElement }
   | { kind: 'add-objective' }
   | { kind: 'record-decision' }
+  | { kind: 'link-card' }
+  | { kind: 'unlink-card'; card: StrataProjectCard }
   | { kind: 'create-action'; decisionId: string; decisionTitle: string };
 
 const STATUS_APPEARANCE: Record<string, React.ComponentProps<typeof Lozenge>['appearance']> = {
@@ -193,10 +195,14 @@ export default function StrataStrategyElementDetailPage() {
   }
 
   const isTheme = isThemeElement(element.element_type);
+  const isObjective = element.element_type === 'objective';
+  /** Display noun for copy that used to hard-code "Theme" before SR-DEF-003 widened these panels. */
+  const elementNoun = isTheme ? 'Theme' : labelize(element.element_type);
 
-  const charter = isTheme
-    ? chartersQ.data?.find((c) => c.element_id === element.id)
-    : undefined;
+  // Charter is available on any non-retired element (SR-DEF-003). `strata_theme_charters`
+  // is keyed by element_id and `strata_upsert_theme_charter` imposes no element_type
+  // restriction — the Theme-only limit was a UI gate, not a governance rule.
+  const charter = chartersQ.data?.find((c) => c.element_id === element.id);
   const charterComplete = !!(charter && charter.hypothesis && charter.value_thesis && charter.owner_id);
 
   const linkedKpis = (elementKpisQ.data ?? [])
@@ -239,6 +245,22 @@ export default function StrataStrategyElementDetailPage() {
   // (V6-OPEN-030 — same rule as the Execution surface).
   const themeCards = (projectCardsQ.data ?? []).filter((c) => c.theme_id === element.id && c.stage !== 'archived');
   const cardRollup = computeCardRollup(themeCards, []);
+
+  // SR-DEF-003 — an Objective's own linked cards come from the direct card→objective
+  // edge (strata_project_cards.objective_element_id), not the Theme roll-up.
+  const objectiveCards = (projectCardsQ.data ?? []).filter(
+    (c) => c.objective_element_id === element.id && c.stage !== 'archived',
+  );
+  const panelCards = isTheme ? themeCards : objectiveCards;
+  // Locked rules 5–6: only non-archived cards under this objective's parent Theme, not
+  // already linked to it, are eligible. The server re-enforces both.
+  const linkableCards = isObjective
+    ? (projectCardsQ.data ?? []).filter(
+        (c) => c.stage !== 'archived'
+          && c.theme_id === element.parent_id
+          && c.objective_element_id !== element.id,
+      )
+    : [];
 
   // Governance — Theme-scoped decisions (element_id) + their actions (decision_id).
   const themeDecisions = (decisionsQ.data ?? []).filter((d) => d.element_id === element.id);
@@ -304,9 +326,7 @@ export default function StrataStrategyElementDetailPage() {
             <Button appearance="primary" onClick={() => { setPromoteError(null); setPromoteOpen(true); }}>Promote to active</Button>
           ) : null}
           <Button onClick={() => setAuthoring({ kind: 'edit-element', element })}>Edit</Button>
-          {isTheme ? (
-            <Button onClick={() => setAuthoring({ kind: 'charter', element })}>Charter</Button>
-          ) : null}
+          <Button onClick={() => setAuthoring({ kind: 'charter', element })}>Charter</Button>
           {isTheme ? (
             <Button iconBefore={<Plus size={14} />} onClick={() => setAuthoring({ kind: 'add-objective' })}>
               Add Objective
@@ -331,7 +351,6 @@ export default function StrataStrategyElementDetailPage() {
           </section>
           {/* In the chain */}
           <StrataChainStrip segments={chainSegments} testId="strata-element-detail-chain" />
-        {isTheme ? (
           <StrataPanel
             title="Charter"
             icon={<GitBranch size={16} />}
@@ -349,14 +368,15 @@ export default function StrataStrategyElementDetailPage() {
               <EmptyState
                 size="compact"
                 header="No charter yet"
-                description={canAuthor ? 'Author a charter for this Theme.' : 'No charter has been authored for this Theme yet.'}
+                description={canAuthor
+                  ? `Author a charter for this ${elementNoun}.`
+                  : `No charter has been authored for this ${elementNoun} yet.`}
                 primaryAction={canAuthor ? (
                   <Button onClick={() => setAuthoring({ kind: 'charter', element })}>Author charter</Button>
                 ) : undefined}
               />
             )}
           </StrataPanel>
-        ) : null}
 
         {isTheme ? (
           <StrataPanel title="Objectives" icon={<Target size={16} />} count={objectives.length}>
@@ -404,7 +424,11 @@ export default function StrataStrategyElementDetailPage() {
         <StrataPanel
           title="OKR Performance"
           icon={<Target size={16} />}
-          count={themeOkrs.length + linkedKpis.length}
+          // Counts OKRs only — the entity the panel's own list renders (SR-DEF-004).
+          // This previously added `linkedKpis.length`, so an objective with 1 OKR and
+          // 1 linked KPI reported "2" while rendering a single OKR. Linked KPIs are a
+          // different entity and keep their own sub-heading below.
+          count={themeOkrs.length}
         >
           <div style={{ display: 'grid', gap: 16 }}>
             <div>
@@ -462,32 +486,72 @@ export default function StrataStrategyElementDetailPage() {
           </div>
         </StrataPanel>
 
-        {isTheme ? (
-          <StrataPanel title="Linked Project Cards" icon={<Briefcase size={16} />} count={themeCards.length}>
-            {themeCards.length === 0 ? (
-              <EmptyState size="compact" header="No Project Cards linked" description="Project Cards are linked to a Theme from the Execution workspace." />
+          <StrataPanel
+            title="Linked Project Cards"
+            icon={<Briefcase size={16} />}
+            count={panelCards.length}
+            actions={isObjective && canAuthor ? (
+              <Button
+                spacing="compact"
+                iconBefore={<Plus size={14} />}
+                isDisabled={linkableCards.length === 0}
+                onClick={() => setAuthoring({ kind: 'link-card' })}
+              >
+                Link Project Card
+              </Button>
+            ) : undefined}
+          >
+            {panelCards.length === 0 ? (
+              <EmptyState
+                size="compact"
+                header="No Project Cards linked"
+                description={isObjective
+                  ? 'Link a Project Card from this Objective’s Theme to show delivery against it.'
+                  : 'Project Cards are linked to a Theme from the Execution workspace.'}
+                primaryAction={isObjective && canAuthor && linkableCards.length > 0 ? (
+                  <Button onClick={() => setAuthoring({ kind: 'link-card' })}>Link Project Card</Button>
+                ) : undefined}
+              />
             ) : (
               <div style={{ display: 'grid', gap: 10, minWidth: 0 }}>
-                {themeCards.map((card) => {
+                {panelCards.map((card) => {
                   const linkedObjective = card.objective_element_id ? elementById.get(card.objective_element_id) : undefined;
                   const source = forecastSource(card);
                   return (
-                    <button
+                    <div
                       key={card.id}
-                      type="button"
-                      onClick={() => card.slug && navigate(`${Routes.strata.projectCard(card.slug)}${cardCtxSuffix}`)}
                       style={{
                         display: 'grid', gap: 2, width: '100%', minWidth: 0,
-                        background: 'none', border: 'none', padding: '6px 0', textAlign: 'left',
-                        cursor: card.slug ? 'pointer' : 'default', color: T.text, font: 'inherit',
+                        padding: '6px 0', color: T.text,
                         borderBottom: `1px solid ${T.border}`,
                       }}
+                      data-testid={`strata-objective-linked-card-${card.id}`}
                     >
                       <span style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8, minWidth: 0 }}>
-                        <span style={{ fontWeight: 600, flex: '1 1 auto', minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        {/* Nav is its own control: an Unlink button cannot be nested inside
+                            a row-level <button> (invalid interactive nesting). */}
+                        <button
+                          type="button"
+                          onClick={() => card.slug && navigate(`${Routes.strata.projectCard(card.slug)}${cardCtxSuffix}`)}
+                          style={{
+                            fontWeight: 600, flex: '1 1 auto', minWidth: 0, overflow: 'hidden',
+                            textOverflow: 'ellipsis', whiteSpace: 'nowrap', textAlign: 'left',
+                            background: 'none', border: 'none', padding: 0, font: 'inherit',
+                            color: T.text, cursor: card.slug ? 'pointer' : 'default',
+                          }}
+                        >
                           {card.name}
-                        </span>
+                        </button>
                         <StrataExecutionHealthLozenge health={card.calculated_health} />
+                        {isObjective && canAuthor ? (
+                          <Button
+                            spacing="compact"
+                            appearance="subtle"
+                            onClick={() => setAuthoring({ kind: 'unlink-card', card })}
+                          >
+                            Unlink
+                          </Button>
+                        ) : null}
                       </span>
                       <span style={{ fontSize: 'var(--ds-font-size-050)', color: T.subtlest, minWidth: 0, whiteSpace: 'normal', wordBreak: 'break-word' }}>
                         {card.lead_business_unit ?? '—'} · {ownerName(card.pm_id)}
@@ -497,13 +561,12 @@ export default function StrataStrategyElementDetailPage() {
                         {' · '}{card.actual_progress != null ? `${card.actual_progress}% progress` : 'progress —'}
                         {linkedObjective ? ` · Objective: ${linkedObjective.name}` : ''}
                       </span>
-                    </button>
+                    </div>
                   );
                 })}
               </div>
             )}
           </StrataPanel>
-        ) : null}
 
         {isTheme ? (
           <StrataPanel title="Execution Summary" icon={<Briefcase size={16} />} count={cardRollup.total}>
@@ -527,7 +590,10 @@ export default function StrataStrategyElementDetailPage() {
           </StrataPanel>
         ) : null}
 
-        {isTheme ? (
+          {/* Governance is element-scoped, not Theme-scoped (SR-DEF-003): strata_decisions
+              .element_id and strata_create_decision's p_element accept ANY element type —
+              the Theme-only gate here was the whole reason an objective could not record
+              or see a decision. */}
           <StrataPanel
             title="Governance"
             icon={<ClipboardList size={16} />}
@@ -545,8 +611,8 @@ export default function StrataStrategyElementDetailPage() {
             {themeDecisions.length === 0 ? (
               <EmptyState
                 size="compact"
-                header="No decisions recorded for this Theme yet."
-                description={canGovern ? undefined : 'Decisions and actions for this Theme will appear here.'}
+                header={`No decisions recorded for this ${elementNoun} yet.`}
+                description={canGovern ? undefined : `Decisions and actions for this ${elementNoun} will appear here.`}
                 primaryAction={canGovern ? (
                   <Button onClick={() => setAuthoring({ kind: 'record-decision' })}>Record Decision</Button>
                 ) : undefined}
@@ -597,7 +663,6 @@ export default function StrataStrategyElementDetailPage() {
               </div>
             )}
           </StrataPanel>
-        ) : null}
 
         <StrataPanel title="Strategy relationships" icon={<Network size={16} />} count={incomingEdges.length + outgoingEdges.length}>
           {incomingEdges.length === 0 && outgoingEdges.length === 0 ? (
@@ -750,6 +815,57 @@ export default function StrataStrategyElementDetailPage() {
               ownerId: str(v.ownerId), dueDate: str(v.dueDate),
               elementId: element.id,
             });
+            invalidate();
+          }}
+        />
+      ) : null}
+
+      {/* SR-DEF-003 — Project Card ↔ Objective link/unlink. Options are restricted to
+          non-archived cards in this Objective's parent Theme (locked rules 5–6); the
+          server re-enforces the same rules, so a stale list cannot bypass governance. */}
+      {authoring?.kind === 'link-card' ? (
+        <StrataFormModal
+          open
+          onClose={() => setAuthoring(null)}
+          title="Link Project Card"
+          description={<>Link a Project Card to <strong>{element.name}</strong>.</>}
+          fields={[
+            {
+              key: 'cardId',
+              label: 'Project Card',
+              kind: 'select',
+              required: true,
+              options: linkableCards.map((c) => ({ value: c.id, label: c.name })),
+              helper: 'Cards in this Objective’s Theme',
+            },
+          ]}
+          submitLabel="Link"
+          testId="strata-link-card-modal"
+          onSubmit={async (v) => {
+            await executionApi.linkCardObjective(String(v.cardId), element.id);
+            invalidate();
+          }}
+        />
+      ) : null}
+
+      {authoring?.kind === 'unlink-card' ? (
+        <StrataFormModal
+          open
+          onClose={() => setAuthoring(null)}
+          title="Unlink Project Card"
+          description={(
+            <>
+              Remove the link between <strong>{authoring.card.name}</strong> and{' '}
+              <strong>{element.name}</strong>? The Project Card and the Objective are both kept —
+              only the link is removed.
+            </>
+          )}
+          fields={[]}
+          submitLabel="Unlink"
+          width="small"
+          testId="strata-unlink-card-modal"
+          onSubmit={async () => {
+            await executionApi.unlinkCardObjective(authoring.card.id);
             invalidate();
           }}
         />

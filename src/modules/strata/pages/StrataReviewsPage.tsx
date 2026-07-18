@@ -34,6 +34,7 @@ import {
 import { governanceApi, kpiApi } from '@/modules/strata/domain';
 import {
   useStrataContext,
+  useStrategyElements,
   useSnapshots,
   useSnapshotItems,
   useDecisions,
@@ -867,6 +868,18 @@ export default function StrataReviewsPage() {
   const { snapshotKey } = useParams<{ snapshotKey?: string }>();
   const { cycles, periods, activeCycle, activePeriod } = useStrataContext();
 
+  // SR-DEF-003 — strategy elements for the New decision form's objective reference.
+  // strata_decisions.element_id has always existed; the form simply never offered it,
+  // so a decision could only ever bind to a snapshot.
+  const elementsQ = useStrategyElements(activeCycle?.id);
+  const decisionElementOptions = useMemo(
+    () => (elementsQ.data ?? [])
+      .filter((e) => e.status !== 'retired')
+      .map((e) => ({ value: e.id, label: `${labelize(e.element_type)} · ${e.name}` }))
+      .sort((a, b) => a.label.localeCompare(b.label)),
+    [elementsQ.data],
+  );
+
   const snapshotsQ = useSnapshots();
   const snapshots = useMemo(() => snapshotsQ.data ?? [], [snapshotsQ.data]);
   const selected: StrataSnapshot | null = useMemo(
@@ -1428,6 +1441,11 @@ export default function StrataReviewsPage() {
   const renderDecision = (d: StrataDecision) => {
     const recorded = d.status === 'decided' || d.status === 'closed';
     const evidenceRefs = d.evidence_refs ?? [];
+    // SR-DEF-003 — the strategic entity this decision governs. Zero-assumption: when the
+    // element is absent or not loaded, render nothing rather than a placeholder link.
+    const linkedElement = d.element_id
+      ? (elementsQ.data ?? []).find((e) => e.id === d.element_id)
+      : undefined;
     return (
       <div key={d.id} style={{ padding: 16, borderBottom: `1px solid ${T.border}` }} data-testid={`strata-reviews-decision-${d.decision_key}`}>
         <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, minWidth: 0 }}>
@@ -1439,6 +1457,22 @@ export default function StrataReviewsPage() {
               <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: T.subtle }}>{d.decision_key}</span>
               <span style={{ ...bodyStyle, fontWeight: 600 }}>{d.title}</span>
             </div>
+            {linkedElement ? (
+              <div style={{ marginTop: 4 }}>
+                <button
+                  type="button"
+                  onClick={() => linkedElement.slug && navigate(Routes.strata.strategyElement(linkedElement.slug))}
+                  style={{
+                    background: 'none', border: 'none', padding: 0, font: 'inherit',
+                    ...captionStyle, color: T.brandText,
+                    cursor: linkedElement.slug ? 'pointer' : 'default', textAlign: 'left',
+                  }}
+                  data-testid={`strata-reviews-decision-element-${d.decision_key}`}
+                >
+                  {labelize(linkedElement.element_type)}: {linkedElement.name}
+                </button>
+              </div>
+            ) : null}
             {/* Snapshot evidence that motivates the decision */}
             <p style={{ margin: '4px 0 0', ...captionStyle, color: T.subtle, lineHeight: 1.5 }}>{d.description ?? '—'}</p>
             {/* Verdict record — once recorded, the outcome + who/when + against-SNAP */}
@@ -2086,6 +2120,14 @@ export default function StrataReviewsPage() {
           fields={[
             { key: 'title', label: 'Title', kind: 'text', required: true },
             { key: 'decision_type', label: 'Type', kind: 'select', required: true, options: DECISION_TYPE_OPTIONS },
+            {
+              key: 'element_id',
+              label: 'Strategic objective / theme',
+              kind: 'select',
+              options: decisionElementOptions,
+              isClearable: true,
+              helper: 'Optional — links this decision to the strategy chain',
+            },
             { key: 'forum', label: 'Forum', kind: 'text', placeholder: 'e.g. Quarterly business review' },
             { key: 'description', label: 'Description', kind: 'textarea' },
             { key: 'owner_id', label: 'Owner', kind: 'user' },
@@ -2101,7 +2143,10 @@ export default function StrataReviewsPage() {
               description: (v.description as string | null) || undefined,
               ownerId: (v.owner_id as string | null) || undefined,
               dueDate: (v.due_date as string | null) || undefined,
+              // Snapshot governance is preserved untouched; the element reference is
+              // additive and independent (strata_decisions carries both columns).
               snapshotId: isDetail && selected ? selected.id : undefined,
+              elementId: (v.element_id as string | null) || undefined,
             });
             invalidate();
           }}

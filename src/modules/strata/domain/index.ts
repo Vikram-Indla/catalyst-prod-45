@@ -697,6 +697,43 @@ export const executionApi = {
     })),
   unlinkInitiativeProject: (initiativeId: string, projectId: string) =>
     run(typedRpc('strata_unlink_initiative_project', { p_initiative: initiativeId, p_project: projectId })),
+  /**
+   * Project Card ↔ Strategic Objective edge (SR-DEF-003). Server enforces locked rules
+   * 5–6: the target must be a theme-context objective belonging to the card's own Theme.
+   * Unlink clears the edge only — neither the card nor the objective is deleted.
+   */
+  linkCardObjective: (projectId: string, objectiveElementId: string) =>
+    run(typedRpc('strata_link_card_objective', { p_card: projectId, p_objective: objectiveElementId })),
+  unlinkCardObjective: (projectId: string) =>
+    run(typedRpc('strata_unlink_card_objective', { p_card: projectId })),
+  /** PC-DEF-003 — governed completion. Server enforces alignment (primary objective),
+   * ownership (business owner + PM), baselined dates, all milestones resolved, no open
+   * risks / blocking dependencies, separation of duties, reason and audit. */
+  completeProjectCard: (projectId: string, reason: string) =>
+    run(typedRpc('strata_complete_project_card', { p_project: projectId, p_reason: reason })),
+  /** PC-DEF-005 — governed cancellation of an abandoned project (reason + actor + audit). */
+  cancelProjectCard: (projectId: string, reason: string) =>
+    run(typedRpc('strata_cancel_project_card', { p_project: projectId, p_reason: reason })),
+  /** PC-DEF-005 — submit a non-terminal card for approval (requires primary objective +
+   * Business Owner + PM + reason). */
+  submitProjectCard: (projectId: string, reason: string) =>
+    run(typedRpc('strata_submit_project_card', { p_project: projectId, p_reason: reason })),
+  /** PC-DEF-005 — approve a submitted card. Server enforces SoD (approver ≠ creator ≠ submitter). */
+  approveProjectCard: (projectId: string, reason: string) =>
+    run(typedRpc('strata_approve_project_card', { p_project: projectId, p_reason: reason })),
+  /** PC-DEF-005 — governed, reversible benefit ↔ project-card linkage. Does not alter
+   * benefit definitions or realized values. */
+  linkBenefitProjectCard: (benefitId: string, projectId: string, attributionShare?: number) =>
+    run(typedRpc('strata_link_benefit_project_card', {
+      p_benefit: benefitId, p_project: projectId, p_attribution_share: attributionShare ?? null,
+    })),
+  unlinkBenefitProjectCard: (benefitId: string, projectId: string) =>
+    run(typedRpc('strata_unlink_benefit_project_card', { p_benefit: benefitId, p_project: projectId })),
+  /** PC-DEF-005 — per-card governed audit history (actor / time / before-after). */
+  cardAuditHistory: (projectId: string, limit = 50) =>
+    run(typedQuery('strata_audit_events').select('*')
+      .eq('entity_table', 'strata_project_cards').eq('entity_id', projectId)
+      .order('created_at', { ascending: false }).limit(limit)),
   createProjectCard: (input: {
     name: string; sourceSystem?: 'manual' | 'upload' | 'api' | 'jira'; sourceKey?: string;
     pmId?: string; sector?: string; budget?: number; baselineStart?: string;
@@ -779,17 +816,18 @@ export const executionApi = {
     if (links.length === 0) return [];
     return run(typedQuery('strata_strategy_elements').select('*').in('id', links.map((l) => l.to_id)));
   },
-  /** Project KPIs / Measures (Execution Reconciliation §K rule 8) — same strata_kpis
-   * framework as Theme KPIs, linked to the card + optionally rolled up to a Theme KPI. */
-  createProjectKpi: (input: {
-    projectId: string; name: string; unit?: string; direction?: string; frequency?: string;
-    entryMethod?: string; parentThemeKpiId?: string; accountableOwnerId?: string; validatorId?: string;
+  /** Project KPIs / Measures (Execution Reconciliation §K rule 8, PC-DEF-002) —
+   * REUSE an approved governed KPI on the card and record contribution/target
+   * context on the link. Never mints a KPI master (that path is server-disabled)
+   * and never mutates KPI targets/actuals, so official results are unchanged. */
+  linkProjectKpi: (input: {
+    projectId: string; kpiId: string; contribution?: string; targetNote?: string; parentThemeKpiId?: string;
   }): Promise<string> =>
-    run(typedRpc('strata_create_project_kpi', {
-      p_project: input.projectId, p_name: input.name, p_unit: input.unit ?? null,
-      p_direction: input.direction ?? 'higher_better', p_frequency: input.frequency ?? 'quarterly',
-      p_entry_method: input.entryMethod ?? 'manual', p_parent_theme_kpi: input.parentThemeKpiId ?? null,
-      p_accountable_owner: input.accountableOwnerId ?? null, p_validator: input.validatorId ?? null,
+    run(typedRpc('strata_link_project_kpi', {
+      p_project: input.projectId, p_kpi: input.kpiId,
+      p_contribution: input.contribution ?? 'supporting',
+      p_target_note: input.targetNote ?? null,
+      p_parent_theme_kpi: input.parentThemeKpiId ?? null,
     })),
   projectKpis: async (projectId: string): Promise<StrataKpi[]> => {
     const links: Array<{ to_id: string }> = await run(
