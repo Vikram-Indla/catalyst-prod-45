@@ -1310,9 +1310,12 @@ function draftMatchesPersisted(draft: MeasureDraft[], persisted: StrataModelMeas
  * state instead of stale persisted rows; `null` means "not editing — use
  * persisted rows".
  */
-function MeasureGroups({ modelId, measures, canEdit, onDraftChange }: {
+function MeasureGroups({ modelId, measures, canEdit, onDraftChange, concurrencyToken }: {
   modelId: string; measures: StrataModelMeasure[]; canEdit: boolean;
   onDraftChange?: (state: LiveMeasureDraft | null) => void;
+  /** The model's updated_at — required by the save RPC; a stale token conflicts
+   * with zero mutation and the editor keeps the dirty values (gap-5 behavior). */
+  concurrencyToken: string;
 }) {
   const perspectives = usePerspectives();
   const mp = useModelPerspectives(modelId);
@@ -1407,7 +1410,7 @@ function MeasureGroups({ modelId, measures, canEdit, onDraftChange }: {
           aggregationMethod: d.aggregationMethod,
           targetPolicy: d.targetPolicy,
         };
-      }));
+      }), concurrencyToken);
       invalidate();
       setEditing(false);
     } catch (e) {
@@ -1782,6 +1785,7 @@ export function ScorecardModelsSection({ onError }: { onError: OnError }) {
                   measures={myMeasures}
                   canEdit={canAuthor}
                   onDraftChange={(state) => onLiveMeasures(m.id, state)}
+                  concurrencyToken={m.updated_at}
                 />
                 <div>
                   <Button

@@ -205,11 +205,31 @@ describe('SC-GOVAPPROVAL — validator and notifications', () => {
 
   it('saving stays ungated on totals — set_model_measures has NO 100-total check', () => {
     // Incomplete drafts must be saveable; only submit/approve consume the
-    // validator's blockers (the contract's "block submission, not save").
+    // validator's blockers (the contract's "block submission, not save"). The
+    // validator may be CALLED for the returned payload, but never to refuse.
     const body = latestBody('strata_set_model_measures');
     expect(body).not.toMatch(/total 100/);
     expect(body).not.toMatch(/must total/);
-    expect(body).not.toMatch(/strata_validate_scorecard_model/);
+    expect(body).not.toMatch(/approval blocked|submission blocked/);
+  });
+
+  it('measure saves are optimistic-concurrency-safe: required token, row lock, stale refusal, token bump', () => {
+    const body = latestBody('strata_set_model_measures');
+    // The model row's updated_at is the token; the row is locked for the check.
+    expect(body).toMatch(/p_expected_updated_at timestamptz/);
+    expect(body).toMatch(/FOR UPDATE/);
+    // Missing and stale tokens are refused BEFORE any mutation.
+    expect(body).toMatch(/p_expected_updated_at IS NULL[\s\S]*RAISE EXCEPTION/);
+    expect(body).toMatch(/IS DISTINCT FROM p_expected_updated_at[\s\S]*RAISE EXCEPTION/);
+    // Success bumps the token atomically and returns the STORED value (RETURNING
+    // survives touch triggers) with persisted validation.
+    expect(body).toMatch(/SET updated_at = clock_timestamp\(\)/);
+    expect(body).toMatch(/RETURNING updated_at INTO v_new/);
+    expect(body).toMatch(/'updated_at', v_new/);
+    expect(body).toMatch(/'validation', public\.strata_validate_scorecard_model/);
+    // The token-less 2-arg overload is dropped (no unprotected path remains).
+    const migration = latestMatching('p_expected_updated_at timestamptz');
+    expect(migration).toMatch(/DROP FUNCTION IF EXISTS public\.strata_set_model_measures\(uuid, jsonb\);/);
   });
 
   it('all six workflow notification rules are seeded', () => {

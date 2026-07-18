@@ -514,11 +514,16 @@ export const scorecardApi = {
     run(typedQuery('strata_scorecard_model_measures').select('*').eq('model_id', modelId).order('order_index')),
   allModelMeasures: (): Promise<StrataModelMeasure[]> =>
     run(typedQuery('strata_scorecard_model_measures').select('*')),
-  /** Replace-set the model's measure assignments. Server rejects a perspective not on the model. */
+  /**
+   * Replace-set the model's measure assignments. Server rejects a perspective not
+   * on the model, and REQUIRES the model's updated_at as an optimistic-concurrency
+   * token — a stale token conflicts with zero mutation. Returns the new
+   * authoritative token plus the persisted validation result.
+   */
   setModelMeasures: (modelId: string, measures: Array<{
     perspectiveId: string; kpiId: string; weight: number; orderIndex?: number;
     required?: boolean; aggregationMethod?: string; targetPolicy?: string;
-  }>): Promise<void> =>
+  }>, expectedUpdatedAt: string): Promise<{ updated_at: string; validation: unknown }> =>
     run(typedRpc('strata_set_model_measures', {
       p_model: modelId,
       p_measures: measures.map((m) => ({
@@ -527,6 +532,7 @@ export const scorecardApi = {
         aggregation_method: m.aggregationMethod ?? 'weighted_average',
         target_policy: m.targetPolicy ?? 'default',
       })),
+      p_expected_updated_at: expectedUpdatedAt,
     })),
   instances: (cycleId?: string): Promise<StrataScorecardInstance[]> => {
     let q = typedQuery('strata_scorecard_instances').select('*').order('created_at', { ascending: false });

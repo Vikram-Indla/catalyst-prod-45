@@ -221,8 +221,10 @@ describe('incomplete drafts save; only submission is gated', () => {
 
     await user.click(save);
     await waitFor(() => expect(rpc.setModelMeasures).toHaveBeenCalledTimes(1));
-    const [, rows] = rpc.setModelMeasures.mock.calls[0] as [string, Array<{ kpiId: string; weight: number }>];
+    const [, rows, token] = rpc.setModelMeasures.mock.calls[0] as [string, Array<{ kpiId: string; weight: number }>, string];
     expect(rows.find((r) => r.kpiId === 'k1')?.weight).toBe(50);
+    // P1 concurrency: the UI sends the model's updated_at as the save token.
+    expect(token).toBe('x');
     // Editor closed → live label gone; persisted validation is authoritative again.
     await waitFor(() => {
       expect(screen.queryByText(/Live — includes unsaved measure edits/)).not.toBeInTheDocument();
