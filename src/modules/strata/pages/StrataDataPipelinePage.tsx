@@ -80,7 +80,7 @@ interface SourceRow {
   statusLabel: string;
   statusAppearance: LozengeAppearance;
 }
-function buildSourceRows(sources: StrataDataSource[], runs: StrataUploadRun[], kpis: StrataKpi[]): SourceRow[] {
+export function buildSourceRows(sources: StrataDataSource[], runs: StrataUploadRun[], kpis: StrataKpi[]): SourceRow[] {
   const runsBySource = new Map<string, StrataUploadRun[]>();
   runs.forEach((r) => { if (r.data_source_id) runsBySource.set(r.data_source_id, [...(runsBySource.get(r.data_source_id) ?? []), r]); });
   const namesBySource = new Map<string, string[]>();
@@ -261,6 +261,7 @@ function SourcesPanel() {
   const sources = useDataSources();
   const runs = useUploadRuns();
   const kpis = useKpis();
+  const navigate = useNavigate();
   const rows = useMemo(
     () => buildSourceRows(sources.data ?? [], runs.data ?? [], kpis.data ?? []),
     [sources.data, runs.data, kpis.data],
@@ -339,6 +340,7 @@ function SourcesPanel() {
           getRowId={(r) => r.source.id}
           showRowCount={false}
           ariaLabel="Data sources"
+          onRowClick={(r) => { if (r.source.slug) navigate(Routes.strata.source(r.source.slug)); }}
         />
       </PanelState>
     </StrataPanel>
@@ -1374,20 +1376,188 @@ function RunDetailSection({ runKey, detail }: { runKey: string; detail: RunDetai
   );
 }
 
+// ── Source detail (DL-DEF-001) ───────────────────────────────────────────────
+/**
+ * Registered-source drill-down: identity/owner/status, governed contract version,
+ * freshness + last success/failure, import-run history, append-only mapping
+ * memory, and downstream KPI dependents with owning-module navigation.
+ * Zero-assumption: anything not recorded renders '—' / an explicit empty state.
+ */
+function SourceDetailSection({ sourceSlug }: { sourceSlug: string }) {
+  const navigate = useNavigate();
+  const sourcesQ = useDataSources();
+  const runsQ = useUploadRuns();
+  const kpisQ = useKpis();
+  const profilesQ = useProfileNames();
+  const source = (sourcesQ.data ?? []).find((s) => s.slug === sourceSlug) ?? null;
+  const summary = useMemo(
+    () => buildSourceRows(sourcesQ.data ?? [], runsQ.data ?? [], kpisQ.data ?? [])
+      .find((r) => r.source.slug === sourceSlug) ?? null,
+    [sourcesQ.data, runsQ.data, kpisQ.data, sourceSlug],
+  );
+  const sourceRuns = useMemo(
+    () => (runsQ.data ?? []).filter((r) => r.data_source_id === source?.id),
+    [runsQ.data, source?.id],
+  );
+  const lastSuccess = sourceRuns.find((r) => r.status === 'completed') ?? null;
+  const lastFailure = sourceRuns.find((r) => r.status === 'failed') ?? null;
+  const mappingQ = useQuery({
+    queryKey: ['strata', 'mapping-memory', source?.id],
+    queryFn: () => lineageApi.mappingMemoryForSource(source!.id),
+    enabled: !!source,
+    staleTime: 30_000,
+  });
+  const dependents = useMemo(
+    () => (kpisQ.data ?? []).filter((k) => k.data_source_id === source?.id),
+    [kpisQ.data, source?.id],
+  );
+  const nameOf = (id: string | null) => (id ? profilesQ.data?.get(id)?.name ?? null : null);
+
+  if (sourcesQ.isLoading || runsQ.isLoading) {
+    return <div style={{ display: 'flex', justifyContent: 'center', padding: 32 }}><Spinner size="large" /></div>;
+  }
+  if (!source) {
+    return (
+      <EmptyState
+        header="Source not found"
+        description={`No registered data source matches "${sourceSlug}".`}
+        primaryAction={<Button onClick={() => navigate(Routes.strata.data())}>Back to pipeline</Button>}
+      />
+    );
+  }
+
+  const runColumns: Column<StrataUploadRun>[] = [
+    {
+      id: 'run', label: 'Run', width: 16,
+      cell: ({ row }) => <span style={{ ...captionStyle, color: T.subtle, fontWeight: 600 }}>{row.run_key}</span>,
+    },
+    {
+      id: 'started', label: 'Started', width: 16,
+      cell: ({ row }) => <span style={{ ...captionStyle, fontVariantNumeric: 'tabular-nums' }}>{fmtDateTime(row.started_at)}</span>,
+    },
+    {
+      id: 'actor', label: 'Actor', width: 16,
+      cell: ({ row }) => <span style={captionStyle}>{nameOf(row.initiated_by) ?? row.initiated_by ?? '—'}</span>,
+    },
+    {
+      id: 'counts', label: 'Rows', width: 14,
+      cell: ({ row }) => <span style={{ ...captionStyle, fontVariantNumeric: 'tabular-nums' }}>{row.row_count_valid} valid · {row.row_count_rejected} rejected</span>,
+    },
+    {
+      id: 'status', label: 'Status', width: 12,
+      cell: ({ row }) => <StatusLozenge status={row.status} label={labelize(row.status)} appearance={runStatusAppearance(row.status)} />,
+    },
+  ];
+
+  const grid: React.CSSProperties = { display: 'grid', gridTemplateColumns: '130px minmax(0,1fr)', gap: 8, ...captionStyle };
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }} data-testid="strata-source-detail">
+      <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', alignItems: 'stretch' }}>
+        <div style={{ flex: '2 1 420px', minWidth: 0, display: 'flex', flexDirection: 'column', gap: 16 }}>
+          <StrataPanel title="Source identity" icon={<Database size={16} />} testId="strata-source-identity">
+            <div style={grid}>
+              <span style={{ color: T.subtlest }}>Name</span><span style={{ ...bodyStyle, fontWeight: 600 }}>{source.name}</span>
+              <span style={{ color: T.subtlest }}>Type</span><span style={{ color: T.text }}>{labelize(source.system_type)}</span>
+              <span style={{ color: T.subtlest }}>Owner</span><span style={{ color: T.text }}>{nameOf(source.owner_id) ?? '—'}</span>
+              <span style={{ color: T.subtlest }}>Status</span>
+              <span>{summary ? <StatusLozenge status={summary.statusLabel.toLowerCase()} label={summary.statusLabel} appearance={summary.statusAppearance} /> : <StatusLozenge status={source.status} label={labelize(source.status)} appearance="default" />}</span>
+              <span style={{ color: T.subtlest }}>Contract</span>
+              <span style={{ color: T.text }}>{summary?.contractVersion != null ? `Template v${summary.contractVersion} (last run)` : '— no run has recorded a template version'}</span>
+            </div>
+          </StrataPanel>
+          <StrataPanel title="Freshness" icon={<RefreshCw size={16} />} testId="strata-source-freshness">
+            <div style={grid}>
+              <span style={{ color: T.subtlest }}>Refresh rule</span><span style={{ color: T.text }}>{source.refresh_cadence ?? '— not recorded'}</span>
+              <span style={{ color: T.subtlest }}>Last activity</span>
+              <span style={{ color: T.text }}>{summary?.lastRunAt ? `${fmtDateTime(summary.lastRunAt)}${summary.freshnessDays != null ? ` · ${summary.freshnessDays}d ago` : ''}` : 'never run'}</span>
+              <span style={{ color: T.subtlest }}>Last success</span>
+              <span style={{ color: T.text }}>{lastSuccess ? `${lastSuccess.run_key} · ${fmtDateTime(lastSuccess.started_at)}` : '—'}</span>
+              <span style={{ color: T.subtlest }}>Last failure</span>
+              <span style={{ color: T.text }}>{lastFailure ? `${lastFailure.run_key} · ${fmtDateTime(lastFailure.started_at)}${lastFailure.error_summary ? ` · ${lastFailure.error_summary}` : ''}` : '—'}</span>
+              {summary?.statusLabel === 'Stale' ? (
+                <>
+                  <span style={{ color: T.subtlest }}>Stale reason</span>
+                  <span style={{ color: 'var(--ds-text-warning)' }}>No successful load within the expected cadence{source.refresh_cadence ? ` (${source.refresh_cadence})` : ''}.</span>
+                </>
+              ) : null}
+            </div>
+          </StrataPanel>
+          <StrataPanel title="Import runs" icon={<Upload size={16} />} count={sourceRuns.length} noPadding testId="strata-source-runs">
+            {sourceRuns.length === 0 ? (
+              <div style={{ padding: 16 }}>
+                <EmptyState size="compact" header="No import runs" description="This source has never been loaded." />
+              </div>
+            ) : (
+              <JiraTable<StrataUploadRun>
+                columns={runColumns}
+                data={sourceRuns}
+                getRowId={(r) => r.id}
+                showRowCount={false}
+                ariaLabel={`Import runs for ${source.name}`}
+                onRowClick={(r) => navigate(Routes.strata.run(r.run_key))}
+              />
+            )}
+          </StrataPanel>
+        </div>
+        <aside style={{ flex: '1 1 300px', minWidth: 0, display: 'flex', flexDirection: 'column', gap: 16 }}>
+          <StrataPanel title="Mapping memory" icon={<Network size={16} />} count={(mappingQ.data ?? []).length} testId="strata-source-mapping-memory">
+            {(mappingQ.data ?? []).length === 0 ? (
+              <p style={{ ...captionStyle, margin: 0 }}>No column-mapping confirmations recorded for this source.</p>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                {(mappingQ.data ?? []).map((m) => (
+                  <div key={m.id} style={{ minWidth: 0 }}>
+                    <span style={{ ...bodyStyle, display: 'block' }}><span style={mono}>{m.source_key}</span> → <span style={mono}>{m.target_column}</span></span>
+                    <span style={captionStyle}>{nameOf(m.confirmed_by) ?? '—'} · {fmtDateTime(m.confirmed_at)}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </StrataPanel>
+          <StrataPanel title="Downstream KPI dependents" icon={<Network size={16} />} count={dependents.length} testId="strata-source-dependents">
+            {dependents.length === 0 ? (
+              <p style={{ ...captionStyle, margin: 0 }}>No KPIs are backward-linked to this source. Scorecard/snapshot forward impact is not tracked.</p>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                {dependents.map((k) => (
+                  k.slug ? (
+                    <Button
+                      key={k.id}
+                      appearance="subtle-link"
+                      spacing="none"
+                      onClick={() => navigate(Routes.strata.kpi(k.slug!))}
+                      testId={`strata-source-dependent-${k.slug}`}
+                    >
+                      {k.name}
+                    </Button>
+                  ) : (
+                    <span key={k.id} style={bodyStyle}>{k.name}</span>
+                  )
+                ))}
+                <span style={{ ...captionStyle, marginTop: 4 }}>Scorecard/snapshot forward impact is not tracked.</span>
+              </div>
+            )}
+          </StrataPanel>
+        </aside>
+      </div>
+    </div>
+  );
+}
+
 // ── Page ─────────────────────────────────────────────────────────────────────
 export default function StrataDataPipelinePage() {
-  const { runKey } = useParams<{ runKey?: string }>();
+  const { runKey, sourceSlug } = useParams<{ runKey?: string; sourceSlug?: string }>();
   const navigate = useNavigate();
   // Lifted to page level so the pipeline stepper reflects the viewed run's state.
   const detail = useRunDetail(runKey);
 
   return (
     <StrataPageShell
-      trail={runKey ? [
+      trail={runKey || sourceSlug ? [
         { text: 'Data pipeline', href: Routes.strata.data() },
-        { text: runKey },
+        { text: runKey ?? sourceSlug ?? '' },
       ] : undefined}
-      docTitle={runKey ?? undefined}
+      docTitle={runKey ?? sourceSlug ?? undefined}
       headerActions={
         <Button
           appearance="primary"
@@ -1404,6 +1574,8 @@ export default function StrataDataPipelinePage() {
       <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
         {runKey ? (
           <RunDetailSection runKey={runKey} detail={detail} />
+        ) : sourceSlug ? (
+          <SourceDetailSection sourceSlug={sourceSlug} />
         ) : (
           <>
             <DataLandingJudgment />

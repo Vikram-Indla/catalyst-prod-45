@@ -71,6 +71,7 @@ export function StrataRoutesShell() {
         <Route path="data" element={<S><DataPipelinePage /></S>} />
         <Route path="data/upload" element={<S><UploadWizardPage /></S>} />
         <Route path="data/runs/:runKey" element={<S><DataPipelinePage /></S>} />
+        <Route path="data/sources/:sourceSlug" element={<S><DataPipelinePage /></S>} />
         <Route path="reviews" element={<S><ReviewsPage /></S>} />
         <Route path="reviews/:snapshotKey/pack" element={<S><BoardPackPage /></S>} />
         <Route path="reviews/:snapshotKey" element={<S><ReviewsPage /></S>} />

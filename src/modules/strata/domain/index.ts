@@ -1127,6 +1127,20 @@ export const lineageApi = {
   lineageForEntity: (entityTable: string, entityId: string) =>
     run(typedQuery('strata_lineage_records').select('*').eq('entity_table', entityTable).eq('entity_id', entityId)),
   /**
+   * DL-DEF-001 (source detail): the append-only mapping-memory ledger for one
+   * registered source. Read-only evidence — rows are never updated or deleted;
+   * RLS (current_user_is_approved) governs visibility.
+   */
+  mappingMemoryForSource: (dataSourceId: string): Promise<Array<{
+    id: string; data_source_id: string; template_id: string; source_key: string;
+    target_column: string; confirmed_by: string | null; confirmed_at: string;
+    upload_run_id: string | null;
+  }>> =>
+    run(typedQuery('strata_mapping_memory')
+      .select('id, data_source_id, template_id, source_key, target_column, confirmed_by, confirmed_at, upload_run_id')
+      .eq('data_source_id', dataSourceId)
+      .order('confirmed_at', { ascending: false })),
+  /**
    * Governed ingest adapter (upload wizard). There is NO strata_ingest_* RPC
    * yet — RLS permits the run initiator (data_steward / kpi_owner /
    * strategy_office) to insert runs + staging rows directly, so this is the
