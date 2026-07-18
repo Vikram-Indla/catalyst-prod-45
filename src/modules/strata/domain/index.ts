@@ -1134,6 +1134,17 @@ export const lineageApi = {
   lineageForEntity: (entityTable: string, entityId: string) =>
     run(typedQuery('strata_lineage_records').select('*').eq('entity_table', entityTable).eq('entity_id', entityId)),
   /**
+   * DL-DEF-002 foundation: append-only audit events for one entity, via the
+   * shared RLS-gated strata_entity_audit RPC (reads the EXISTING
+   * strata_audit_events store — no parallel audit system).
+   */
+  entityAudit: (entityTable: string, entityId: string): Promise<Array<{
+    id: string; entity_table: string; entity_id: string; action: string;
+    actor_id: string | null; before: unknown; after: unknown; note: string | null;
+    created_at: string;
+  }>> =>
+    run(typedRpc('strata_entity_audit', { p_entity_table: entityTable, p_entity_id: entityId })),
+  /**
    * DL-DEF-001 (source detail): the append-only mapping-memory ledger for one
    * registered source. Read-only evidence — rows are never updated or deleted;
    * RLS (current_user_is_approved) governs visibility.

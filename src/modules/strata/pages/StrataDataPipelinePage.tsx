@@ -1523,6 +1523,193 @@ function RunDetailSection({ runKey, detail }: { runKey: string; detail: RunDetai
   );
 }
 
+// ── Entity audit/lineage foundation (DL-DEF-002) ─────────────────────────────
+/** Governed entity types offered for audit lookup — the module-7 cross-module chain. */
+export const ENTITY_AUDIT_TYPES: Array<{ value: string; label: string }> = [
+  { value: 'strata_strategy_elements', label: 'Strategy element' },
+  { value: 'strata_kpis', label: 'KPI' },
+  { value: 'strata_kpi_actuals', label: 'KPI actual' },
+  { value: 'strata_okrs', label: 'OKR' },
+  { value: 'strata_scorecard_models', label: 'Scorecard model' },
+  { value: 'strata_snapshots', label: 'Snapshot' },
+  { value: 'strata_project_cards', label: 'Project card' },
+  { value: 'strata_benefits', label: 'Benefit' },
+  { value: 'strata_portfolios', label: 'Portfolio' },
+  { value: 'strata_reviews', label: 'Review' },
+  { value: 'strata_decisions', label: 'Decision' },
+  { value: 'strata_data_sources', label: 'Data source' },
+  { value: 'strata_upload_runs', label: 'Upload run' },
+];
+
+/** Exact-UUID validation for the entity lookup — nothing fuzzy, nothing guessed. */
+export const isEntityUuid = (v: string): boolean =>
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(v.trim());
+
+/**
+ * DL-DEF-002: owning-module route for an audited entity, ONLY where a
+ * table-specific id→slug/key mapping is actually loaded. Null → the caller
+ * renders '—' (never a fabricated link).
+ */
+export function owningRouteForEntity(
+  table: string,
+  id: string,
+  kpiSlugById: Map<string, string>,
+  runKeyById: Map<string, string>,
+): string | null {
+  if (table === 'strata_kpis') {
+    const slug = kpiSlugById.get(id);
+    return slug ? Routes.strata.kpi(slug) : null;
+  }
+  if (table === 'strata_upload_runs') {
+    const key = runKeyById.get(id);
+    return key ? Routes.strata.run(key) : null;
+  }
+  return null;
+}
+
+/**
+ * Entity audit/lineage lookup over the EXISTING append-only audit store
+ * (strata_entity_audit RPC — no parallel audit system). Renders action, actor
+ * display name, timestamp, before/after, note, upstream run/staging provenance
+ * and owning-module navigation where an id→slug mapping exists. Forward
+ * scorecard/snapshot impact is explicitly NOT tracked and stated as such.
+ */
+function EntityAuditPanel() {
+  const navigate = useNavigate();
+  const profilesQ = useProfileNames();
+  const kpisQ = useKpis();
+  const runsQ = useUploadRuns();
+  const [entityType, setEntityType] = useState<string>('');
+  const [entityId, setEntityId] = useState('');
+  const trimmedId = entityId.trim();
+  const validId = isEntityUuid(trimmedId);
+  const canSearch = !!entityType && validId;
+  const auditQ = useQuery({
+    queryKey: ['strata', 'entity-audit', entityType, trimmedId],
+    queryFn: () => lineageApi.entityAudit(entityType, trimmedId),
+    enabled: canSearch,
+    staleTime: 30_000,
+  });
+  const lineageQ = useQuery({
+    queryKey: ['strata', 'entity-lineage', entityType, trimmedId],
+    queryFn: () => lineageApi.lineageForEntity(entityType, trimmedId),
+    enabled: canSearch,
+    staleTime: 30_000,
+  });
+  const kpiSlugById = useMemo(
+    () => new Map((kpisQ.data ?? []).filter((k) => k.slug).map((k) => [k.id, k.slug!] as const)),
+    [kpisQ.data],
+  );
+  const runKeyById = useMemo(
+    () => new Map((runsQ.data ?? []).map((r) => [r.id, r.run_key] as const)),
+    [runsQ.data],
+  );
+  const owningRoute = canSearch ? owningRouteForEntity(entityType, trimmedId, kpiSlugById, runKeyById) : null;
+  const j = (v: unknown) => (v == null ? null : JSON.stringify(v));
+  const typeOption = ENTITY_AUDIT_TYPES.find((o) => o.value === entityType) ?? null;
+
+  return (
+    <StrataPanel title="Entity audit & lineage" icon={<Network size={16} />} testId="strata-entity-audit-panel">
+      <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
+        <div style={{ width: 210 }}>
+          <Select
+            options={ENTITY_AUDIT_TYPES}
+            value={typeOption}
+            onChange={(o) => setEntityType(o?.value ?? '')}
+            isClearable
+            isSearchable
+            placeholder="Entity type"
+            aria-label="Entity type for audit lookup"
+          />
+        </div>
+        <div style={{ flex: '1 1 260px', maxWidth: 380 }}>
+          <Textfield
+            value={entityId}
+            onChange={(e) => setEntityId(e.target.value)}
+            placeholder="Exact entity ID (UUID)"
+            aria-label="Exact entity ID for audit lookup"
+            isCompact
+            isInvalid={entityId.length > 0 && !validId}
+          />
+        </div>
+      </div>
+      {entityId.length > 0 && !validId ? (
+        <p style={{ ...captionStyle, color: 'var(--ds-text-danger)', margin: '8px 0 0' }}>
+          Enter a full UUID (8-4-4-4-12 hex) — partial or fuzzy lookup is not supported.
+        </p>
+      ) : null}
+      {!canSearch ? (
+        <p style={{ ...captionStyle, margin: '12px 0 0' }}>
+          Pick a governed entity type and paste its exact ID to read its append-only audit history.
+          Scorecard/snapshot forward impact is not tracked.
+        </p>
+      ) : auditQ.isLoading ? (
+        <div style={{ display: 'flex', justifyContent: 'center', padding: 24 }}><Spinner /></div>
+      ) : auditQ.isError ? (
+        <p style={{ ...captionStyle, color: 'var(--ds-text-danger)', margin: '12px 0 0' }}>
+          {auditQ.error instanceof Error ? auditQ.error.message : String(auditQ.error)}
+        </p>
+      ) : (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: 12 }} data-testid="strata-entity-audit-results">
+          <div style={{ display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
+            <span style={captionStyle}>
+              {typeOption?.label} · <span style={mono}>{trimmedId}</span>
+            </span>
+            {owningRoute ? (
+              <Button appearance="subtle-link" spacing="none" onClick={() => navigate(owningRoute)} testId="strata-entity-audit-owning-link">
+                Open in owning module
+              </Button>
+            ) : (
+              <span style={captionStyle}>Owning module: —</span>
+            )}
+          </div>
+          {(auditQ.data ?? []).length === 0 ? (
+            <EmptyState
+              size="compact"
+              header="No audit events recorded"
+              description="The append-only store has no events for this entity — or your role cannot read them."
+            />
+          ) : (
+            (auditQ.data ?? []).map((e) => (
+              <div key={e.id} style={{ borderTop: `1px solid ${T.border}`, paddingTop: 8, minWidth: 0 }}>
+                <div style={{ ...bodyStyle, fontWeight: 600 }}>
+                  {e.action}
+                  <span style={{ ...captionStyle, fontWeight: 400, marginLeft: 8 }}>
+                    {(e.actor_id ? profilesQ.data?.get(e.actor_id)?.name ?? e.actor_id : '—')} · {fmtDateTime(e.created_at)}
+                  </span>
+                </div>
+                {e.note ? <div style={{ ...captionStyle, marginTop: 2 }}>{e.note}</div> : null}
+                {j(e.before) ? <div style={{ ...captionStyle, ...mono, marginTop: 2, overflowWrap: 'anywhere' }}>before: {j(e.before)!.slice(0, 240)}</div> : null}
+                {j(e.after) ? <div style={{ ...captionStyle, ...mono, marginTop: 2, overflowWrap: 'anywhere' }}>after: {j(e.after)!.slice(0, 240)}</div> : null}
+              </div>
+            ))
+          )}
+          <div style={{ borderTop: `1px solid ${T.border}`, paddingTop: 8 }}>
+            <div style={{ ...bodyStyle, fontWeight: 600 }}>Upstream provenance</div>
+            {((lineageQ.data ?? []) as Array<{ id: string; upload_run_id: string | null; staging_row_id: string | null }>).length === 0 ? (
+              <p style={{ ...captionStyle, margin: '4px 0 0' }}>No upload-run provenance recorded for this entity.</p>
+            ) : (
+              ((lineageQ.data ?? []) as Array<{ id: string; upload_run_id: string | null; staging_row_id: string | null }>).map((l) => (
+                <div key={l.id} style={{ ...captionStyle, marginTop: 4 }}>
+                  {l.upload_run_id && runKeyById.get(l.upload_run_id) ? (
+                    <Button appearance="subtle-link" spacing="none" onClick={() => navigate(Routes.strata.run(runKeyById.get(l.upload_run_id!)!))}>
+                      {runKeyById.get(l.upload_run_id)}
+                    </Button>
+                  ) : (
+                    <span style={mono}>{l.upload_run_id ?? '—'}</span>
+                  )}
+                  {l.staging_row_id ? <span style={{ marginLeft: 8 }}>staging row <span style={mono}>{l.staging_row_id.slice(0, 8)}</span></span> : null}
+                </div>
+              ))
+            )}
+            <p style={{ ...captionStyle, margin: '6px 0 0' }}>Scorecard/snapshot forward impact is not tracked.</p>
+          </div>
+        </div>
+      )}
+    </StrataPanel>
+  );
+}
+
 // ── Source detail (DL-DEF-001) ───────────────────────────────────────────────
 /**
  * Registered-source drill-down: identity/owner/status, governed contract version,
@@ -1728,6 +1915,7 @@ export default function StrataDataPipelinePage() {
             <DataLandingJudgment />
             <SourcesPanel />
             <RunsPanel />
+            <EntityAuditPanel />
           </>
         )}
       </div>
