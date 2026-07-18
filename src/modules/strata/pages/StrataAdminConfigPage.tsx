@@ -20,7 +20,7 @@ import { StatusLozenge } from '@/components/shared/StatusLozenge';
 import type { LozengeAppearance } from '@/components/shared/StatusLozenge';
 import { Routes } from '@/lib/routes';
 import {
-  BarChart3, Bell, CheckCircle2, Clock, Gem, GitBranch, Layers, ListChecks,
+  BarChart3, Bell, Calendar, CheckCircle2, Clock, Gem, GitBranch, Layers, ListChecks,
   MoveRight, Rocket, Scale, ShieldCheck, Upload, Users,
 } from '@/lib/atlaskit-icons';
 import Toggle from '@atlaskit/toggle';
@@ -29,7 +29,7 @@ import {
   useAllModelMeasures, useAllModelPerspectives, useChangeRequests, useGateModels, useInvalidateStrata, useKpiTypes, useKpis, useModelPerspectives,
   usePerspectives, useProfileNames, useProjectCardFieldConfigs, useProjectCardPicklists,
   useProjectCardSectionConfigs, useProjectCardTabConfigs, useRoleAssignments, useScorecardModels,
-  useStrataAudit, useStrataNotificationRules, useStrataRoles, useStrataUserId, useThresholdSchemes, useUploadTemplates, useValueCategories,
+  useStrataAudit, useStrataContext, useStrataNotificationRules, useStrataRoles, useStrataUserId, useThresholdSchemes, useUploadTemplates, useValueCategories,
   useWorkflowConfigs,
 } from '@/modules/strata/hooks/useStrata';
 import { StrataPageShell, StrataPanel, T } from '@/modules/strata/components/shared';
@@ -37,8 +37,10 @@ import { StrataNotFound } from '@/modules/strata/components/StrataSystemStates';
 import { StrataFormModal, str } from '@/modules/strata/components/authoring';
 import { fmtDate, fmtDateTime, labelize } from '@/modules/strata/components/format';
 import { computeModelIntegrity, draftSubmitBlockedReason } from '@/modules/strata/lib/modelIntegrity';
+import { auditChangedFields } from '@/modules/strata/lib/auditDiff';
+import { perspectiveDependents, thresholdSchemeDependents, modelVersionImpact } from '@/modules/strata/lib/dependents';
 import type {
-  GovernedEnvelope, GovernedStatus, StrataChangeRequest, StrataNotificationRule, StrataPerspective,
+  GovernedEnvelope, GovernedStatus, StrataChangeRequest, StrataCycle, StrataNotificationRule, StrataPeriod, StrataPerspective,
   StrataModelMeasure, StrataProjectCardFieldConfig, StrataProjectCardPicklist, StrataRole, StrataScorecardModel,
   StrataThresholdPreview, StrataThresholdPreviewMove, StrataThresholdScheme, ThresholdBand,
 } from '@/modules/strata/types';
@@ -97,7 +99,7 @@ const REVISION_RPC: Record<string, ((id: string, reason: string) => Promise<unkn
 };
 
 /** Governance lifecycle actions — RPC-only; DB errors surface verbatim. */
-export function GovActions({ table, record, isScorecardModel, onError, submitBlockedReason }: {
+export function GovActions({ table, record, isScorecardModel, onError, submitBlockedReason, impact }: {
   table: string;
   record: { id: string; status: GovernedStatus };
   isScorecardModel?: boolean;
@@ -105,6 +107,9 @@ export function GovActions({ table, record, isScorecardModel, onError, submitBlo
   /** When set, the draft "Submit for approval" action is disabled and the
    * reason is shown inline (never a silent disable — anchor 05 states rule). */
   submitBlockedReason?: string | null;
+  /** CFG-004: downstream dependents shown in the Retire / Create-new-version
+   * dialogs. undefined = unknown (render nothing); [] = checked, none. */
+  impact?: string[];
 }) {
   const invalidate = useInvalidateStrata();
   const [busy, setBusy] = useState(false);
@@ -113,6 +118,28 @@ export function GovActions({ table, record, isScorecardModel, onError, submitBlo
   const [versionOpen, setVersionOpen] = useState(false);
   const [versionReason, setVersionReason] = useState('');
   const createVersion = REVISION_RPC[table];
+  // CFG-004: blast-radius block for the lifecycle dialogs. undefined = the
+  // caller could not compute dependents — say nothing rather than guess.
+  const impactBlock = impact === undefined ? null : (
+    <div
+      data-testid="strata-lifecycle-impact"
+      style={{
+        margin: '0 0 12px', padding: '8px 12px', border: `1px solid ${T.border}`,
+        borderRadius: 6, background: T.sunken, display: 'flex', flexDirection: 'column', gap: 4,
+      }}
+    >
+      <span style={{ fontWeight: 700, letterSpacing: '0.04em', fontSize: 'var(--ds-font-size-075)', color: T.subtlest }}>
+        DOWNSTREAM IMPACT
+      </span>
+      {impact.length === 0 ? (
+        <span style={{ fontSize: 'var(--ds-font-size-100)', color: T.subtle }}>
+          No downstream records reference this version.
+        </span>
+      ) : impact.map((line) => (
+        <span key={line} style={{ fontSize: 'var(--ds-font-size-100)', color: T.subtle }}>• {line}</span>
+      ))}
+    </div>
+  );
   const act = async (fn: () => Promise<unknown>) => {
     setBusy(true);
     onError(null);
@@ -185,6 +212,7 @@ export function GovActions({ table, record, isScorecardModel, onError, submitBlo
               threshold scheme — into a new draft at version {(record.version ?? 1) + 1}. The approved
               version stays unchanged and keeps producing results until the draft is approved.
             </p>
+            {impactBlock}
             <Textfield
               value={versionReason}
               onChange={(e) => setVersionReason(e.target.value)}
@@ -217,6 +245,7 @@ export function GovActions({ table, record, isScorecardModel, onError, submitBlo
             <p style={{ margin: '0 0 12px', fontSize: 'var(--ds-font-size-200)', color: T.subtle }}>
               Retiring is a governed lifecycle change — the reason is recorded in the audit trail.
             </p>
+            {impactBlock}
             <Textfield
               value={retireReason}
               onChange={(e) => setRetireReason(e.target.value)}
@@ -246,7 +275,7 @@ export function GovActions({ table, record, isScorecardModel, onError, submitBlo
 }
 
 /** Card wrapper for one governed record: name + envelope + lifecycle actions. */
-function GovRecordCard({ name, table, record, isScorecardModel, onError, headerActions, submitBlockedReason, children }: {
+function GovRecordCard({ name, table, record, isScorecardModel, onError, headerActions, submitBlockedReason, impact, children }: {
   name: string;
   table: string;
   record: GovernedEnvelope & { id: string };
@@ -256,6 +285,8 @@ function GovRecordCard({ name, table, record, isScorecardModel, onError, headerA
   headerActions?: React.ReactNode;
   /** Forwarded to GovActions — blocks Submit with a visible reason. */
   submitBlockedReason?: string | null;
+  /** Forwarded to GovActions — CFG-004 downstream impact in lifecycle dialogs. */
+  impact?: string[];
   children?: React.ReactNode;
 }) {
   return (
@@ -270,7 +301,7 @@ function GovRecordCard({ name, table, record, isScorecardModel, onError, headerA
         <strong style={{ fontSize: 'var(--ds-font-size-200)', color: T.text }}>{name}</strong>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
           {headerActions}
-          <GovActions table={table} record={record} isScorecardModel={isScorecardModel} onError={onError} submitBlockedReason={submitBlockedReason} />
+          <GovActions table={table} record={record} isScorecardModel={isScorecardModel} onError={onError} submitBlockedReason={submitBlockedReason} impact={impact} />
         </div>
       </div>
       <GovEnvelope r={record} />
@@ -325,6 +356,10 @@ function PerspectivesSection({ onError }: { onError: OnError }) {
   const q = usePerspectives();
   const roles = useStrataRoles();
   const invalidate = useInvalidateStrata();
+  // CFG-004: models referencing each perspective — same cached queries the
+  // Scorecard models section uses, so no extra network beyond first paint.
+  const modelsQ = useScorecardModels();
+  const allMPQ = useAllModelPerspectives();
   const list = q.data ?? [];
   const nameById = new Map(list.map((p) => [p.id, p.name]));
   // Same gate the DB enforces for INSERT/UPDATE on strata_perspectives.
@@ -357,6 +392,9 @@ function PerspectivesSection({ onError }: { onError: OnError }) {
               table="strata_perspectives"
               record={p}
               onError={onError}
+              impact={modelsQ.data && allMPQ.data
+                ? perspectiveDependents(p.id, modelsQ.data, allMPQ.data)
+                : undefined}
               headerActions={canConfigure && p.status === 'draft' ? (
                 <Button
                   spacing="compact"
@@ -973,6 +1011,7 @@ export function ScorecardModelsSection({ onError }: { onError: OnError }) {
                 isScorecardModel
                 onError={onError}
                 submitBlockedReason={submitBlockedReason}
+                impact={modelVersionImpact(m.id, allMP.data ?? [], allMeasures.data ?? [])}
               >
                 <ModelIntegrityBand
                   sum={integrity.weightSum}
@@ -1461,6 +1500,8 @@ export function ThresholdsSection({ onError }: { onError: OnError }) {
   const q = useThresholdSchemes();
   const roles = useStrataRoles();
   const userId = useStrataUserId();
+  // CFG-004: KPIs rated by each scheme, for the lifecycle dialogs.
+  const kpisQ = useKpis();
   const [editingId, setEditingId] = useState<string | null>(null);
   const list = q.data ?? [];
   // Mirrors strata_is_admin() — useStrataRoles already folds the platform-admin RPC into the
@@ -1505,6 +1546,7 @@ export function ThresholdsSection({ onError }: { onError: OnError }) {
                 : 'Only this draft’s author or a strata_admin can edit its bands — the database refuses anyone else.');
             return (
             <GovRecordCard key={s.id} name={s.name} table="strata_threshold_schemes" record={s} onError={onError}
+              impact={kpisQ.data ? thresholdSchemeDependents(s.id, kpisQ.data) : undefined}
               headerActions={canEditBands && editingId !== s.id ? (
                 <Button spacing="compact" onClick={() => setEditingId(s.id)} testId={`strata-band-edit-${s.id}`}>
                   Edit bands
@@ -1917,6 +1959,10 @@ interface AuditEventRow {
   action: string | null;
   actor_id: string | null;
   created_at: string;
+  // CFG-001: the ledger has always stored these — the UI was dropping them.
+  before: unknown;
+  after: unknown;
+  note: string | null;
 }
 
 const CR_COLUMNS: Column<StrataChangeRequest>[] = [
@@ -1960,13 +2006,36 @@ function ChangeLogSection() {
         : <span style={{ color: T.subtlest }}>—</span>),
     },
     {
-      id: 'action', label: 'Action', flex: true,
+      id: 'action', label: 'Action', width: 12,
       cell: ({ row }) => (row.action
         ? <span style={bodyStyle}>{labelize(row.action)}</span>
         : <span style={{ color: T.subtlest }}>—</span>),
     },
     {
-      id: 'actor', label: 'Actor', width: 18,
+      // CFG-001: exact before → after values per changed field, plus rationale.
+      id: 'change', label: 'Change', flex: true,
+      cell: ({ row }) => {
+        const { changes, truncated } = auditChangedFields(row.before, row.after);
+        if (changes.length === 0 && !row.note) return <span style={{ color: T.subtlest }}>—</span>;
+        return (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 2, padding: '2px 0' }}>
+            {changes.map((c) => (
+              <span key={c.field} style={{ ...codeStyle, fontSize: 'var(--ds-font-size-075)', color: T.subtle, whiteSpace: 'normal', overflowWrap: 'anywhere' }}>
+                {c.field}: {c.from ?? '—'} → {c.to ?? '—'}
+              </span>
+            ))}
+            {truncated > 0 ? (
+              <span style={{ color: T.subtlest, fontSize: 'var(--ds-font-size-075)' }}>+{truncated} more field{truncated === 1 ? '' : 's'}</span>
+            ) : null}
+            {row.note ? (
+              <span style={{ color: T.subtle, fontSize: 'var(--ds-font-size-075)' }}>Rationale: {row.note}</span>
+            ) : null}
+          </div>
+        );
+      },
+    },
+    {
+      id: 'actor', label: 'Actor', width: 14,
       cell: ({ row }) => {
         const name = row.actor_id ? profilesQ.data?.get(row.actor_id)?.name ?? null : null;
         return name ? <span style={metaStyle}>{name}</span> : <span style={{ color: T.subtlest }}>—</span>;
@@ -2291,7 +2360,124 @@ function NotificationsSection({ onError }: { onError: OnError }) {
   );
 }
 
-const SECTIONS: Array<{
+// ── Cycles & periods (CFG-003) ───────────────────────────────────────────────
+// The calendar every scorecard, review and snapshot anchors to was previously
+// unreachable from Configuration: creation lives in Strategy Room authoring and
+// nothing linked to it. This is the administration VIEW — governed authoring
+// stays where it is (one authoring surface, no duplicate create/edit modal).
+const CYCLE_STATUS: Record<StrataCycle['status'], LozengeAppearance> = {
+  draft: 'default', active: 'success', locked: 'moved', closed: 'removed',
+};
+const PERIOD_CLOSE: Record<StrataPeriod['close_status'], LozengeAppearance> = {
+  open: 'success', pending_close: 'moved', closed: 'default',
+};
+
+function CyclesSection() {
+  const navigate = useNavigate();
+  const { cycles, periods, activeCycle } = useStrataContext();
+
+  const cycleColumns: Column<StrataCycle>[] = [
+    {
+      id: 'name', label: 'Cycle', flex: true,
+      cell: ({ row }) => (
+        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+          <span style={{ ...bodyStyle, fontWeight: 600 }}>{row.name}</span>
+          {activeCycle?.id === row.id ? <CatalystTag text="Viewing" /> : null}
+        </span>
+      ),
+    },
+    {
+      id: 'granularity', label: 'Granularity', width: 14,
+      cell: ({ row }) => <span style={metaStyle}>{labelize(row.period_granularity)}</span>,
+    },
+    {
+      id: 'status', label: 'Status', width: 13,
+      cell: ({ row }) => <StatusLozenge status={row.status} label={labelize(row.status)} appearance={CYCLE_STATUS[row.status] ?? 'default'} />,
+    },
+    {
+      id: 'starts', label: 'Starts', width: 14,
+      cell: ({ row }) => <span style={{ ...bodyStyle, fontVariantNumeric: 'tabular-nums' }}>{fmtDate(row.starts_on)}</span>,
+    },
+    {
+      id: 'ends', label: 'Ends', width: 14,
+      cell: ({ row }) => <span style={{ ...bodyStyle, fontVariantNumeric: 'tabular-nums' }}>{fmtDate(row.ends_on)}</span>,
+    },
+  ];
+
+  const periodColumns: Column<StrataPeriod>[] = [
+    { id: 'name', label: 'Period', flex: true, cell: ({ row }) => <span style={{ ...bodyStyle, fontWeight: 600 }}>{row.name}</span> },
+    { id: 'type', label: 'Type', width: 14, cell: ({ row }) => <span style={metaStyle}>{labelize(row.period_type)}</span> },
+    {
+      id: 'close', label: 'Close status', width: 16,
+      cell: ({ row }) => <StatusLozenge status={row.close_status} label={labelize(row.close_status)} appearance={PERIOD_CLOSE[row.close_status] ?? 'default'} />,
+    },
+    {
+      id: 'starts', label: 'Starts', width: 14,
+      cell: ({ row }) => <span style={{ ...bodyStyle, fontVariantNumeric: 'tabular-nums' }}>{fmtDate(row.starts_on)}</span>,
+    },
+    {
+      id: 'ends', label: 'Ends', width: 14,
+      cell: ({ row }) => <span style={{ ...bodyStyle, fontVariantNumeric: 'tabular-nums' }}>{fmtDate(row.ends_on)}</span>,
+    },
+  ];
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+      <StrataPanel
+        title="Cycles"
+        icon={<Calendar size={16} />}
+        count={cycles.length}
+        noPadding
+        testId="strata-admin-cycles"
+        actions={
+          <Button spacing="compact" onClick={() => navigate(Routes.strata.strategy())} testId="strata-admin-cycles-authoring">
+            Open Strategy Room authoring
+          </Button>
+        }
+      >
+        <p style={{ ...captionStyle, padding: '12px 16px 0' }}>
+          Cycles are governed records — creating a cycle and generating its periods happens in Strategy
+          Room authoring, which this button opens. Use the page-header Cycle picker to change which
+          cycle&apos;s periods are shown below.
+        </p>
+        {cycles.length === 0 ? (
+          <EmptyState size="compact" header="No cycles yet" description="Create the first cycle from Strategy Room authoring." />
+        ) : (
+          <JiraTable<StrataCycle>
+            columns={cycleColumns}
+            data={cycles}
+            getRowId={(c) => c.id}
+            showRowCount={false}
+            ariaLabel="Reporting cycles"
+          />
+        )}
+      </StrataPanel>
+      <StrataPanel
+        title={activeCycle ? `Periods — ${activeCycle.name}` : 'Periods'}
+        icon={<Clock size={16} />}
+        count={periods.length}
+        noPadding
+        testId="strata-admin-periods"
+      >
+        {!activeCycle ? (
+          <p style={{ ...captionStyle, padding: '12px 16px' }}>Select a cycle to see its periods.</p>
+        ) : periods.length === 0 ? (
+          <EmptyState size="compact" header="No periods generated" description="Periods are generated when the cycle is created in Strategy Room authoring." />
+        ) : (
+          <JiraTable<StrataPeriod>
+            columns={periodColumns}
+            data={periods}
+            getRowId={(p) => p.id}
+            showRowCount={false}
+            ariaLabel={`Periods for ${activeCycle.name}`}
+          />
+        )}
+      </StrataPanel>
+    </div>
+  );
+}
+
+export const SECTIONS: Array<{
   key: string;
   label: string;
   icon: React.ComponentType<{ size?: number }>;
@@ -2305,6 +2491,7 @@ const SECTIONS: Array<{
   { key: 'kpi-types', label: 'KPI types', icon: ListChecks, render: (e) => <KpiTypesSection onError={e} /> },
   { key: 'upload-templates', label: 'Upload templates', icon: Upload, render: (e) => <UploadTemplatesSection onError={e} /> },
   { key: 'workflows', label: 'Workflows', icon: GitBranch, render: (e) => <WorkflowsSection onError={e} /> },
+  { key: 'cycles', label: 'Cycles & periods', icon: Calendar, render: () => <CyclesSection /> },
   { key: 'project-card', label: 'Project Card', icon: Rocket, render: (e) => <ProjectCardConfigSection onError={e} /> },
   { key: 'roles', label: 'Roles', icon: Users, render: (e) => <RolesSection onError={e} /> },
   { key: 'notifications', label: 'Notifications', icon: Bell, render: (e) => <NotificationsSection onError={e} /> },
@@ -2316,7 +2503,7 @@ const SECTIONS: Array<{
 // its primary section today (:section); measurement/data/access repoint to their
 // own domain pages as those slices land. Pending counts + change log are the
 // governance signal — nothing is fabricated.
-const DOMAINS: Array<{
+export const DOMAINS: Array<{
   key: string;
   name: string;
   icon: React.ComponentType<{ size?: number }>;
@@ -2348,6 +2535,13 @@ const DOMAINS: Array<{
     key: 'workflow-access', name: 'Workflow & access', icon: Users,
     governs: 'Lifecycle workflows and the role assignments that decide who can act.',
     to: Routes.strata.adminAccess(), sectionLabels: ['Role assignments', 'Workflow transitions'],
+  },
+  {
+    // CFG-003: previously unreachable from Configuration — authoring lives in
+    // Strategy Room; this card makes the administration view navigable.
+    key: 'cycles-periods', name: 'Cycles & periods', icon: Calendar,
+    governs: 'Reporting cycles and their periods — the calendar every scorecard, review and snapshot anchors to.',
+    to: Routes.strata.adminSection('cycles'), sectionLabels: ['Cycles', 'Periods'],
   },
   {
     key: 'reference-display', name: 'Reference & display', icon: Rocket,

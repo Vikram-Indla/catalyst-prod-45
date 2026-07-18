@@ -58,6 +58,8 @@ vi.mock('@/modules/strata/hooks/useStrata', () => ({
   useStrataRoles: () => H.ok(ROLES),
   useStrataUserId: () => H.ok(USER_ID),
   useInvalidateStrata: () => H.invalidate,
+  // CFG-004: ThresholdsSection now reads KPIs to show scheme dependents.
+  useKpis: () => H.ok([]),
 }));
 
 vi.mock('@/modules/strata/domain', () => ({
