@@ -37,6 +37,47 @@ export function thresholdSchemeDependents(schemeId: string, kpis: KpiRef[]): str
     .map((k) => `KPI ${label(k.name, null, k.status ?? null)}`);
 }
 
+interface CategoryRef { name: string; category_id: string | null; status?: string | null }
+interface GateInstanceRef { gate_model_id: string; status: string }
+
+/** Portfolios and benefits classified under this value category. */
+export function valueCategoryDependents(
+  categoryId: string,
+  portfolios: CategoryRef[],
+  benefits: CategoryRef[],
+): string[] {
+  return [
+    ...portfolios.filter((p) => p.category_id === categoryId)
+      .map((p) => `Portfolio ${label(p.name, null, p.status ?? null)}`),
+    ...benefits.filter((b) => b.category_id === categoryId)
+      .map((b) => `Benefit ${label(b.name, null, b.status ?? null)}`),
+  ];
+}
+
+/** Gate instances recorded under this gate model, summarised by status. */
+export function gateModelDependents(gateModelId: string, instances: GateInstanceRef[]): string[] {
+  const mine = instances.filter((i) => i.gate_model_id === gateModelId);
+  if (mine.length === 0) return [];
+  const byStatus = new Map<string, number>();
+  for (const i of mine) byStatus.set(i.status, (byStatus.get(i.status) ?? 0) + 1);
+  const parts = [...byStatus.entries()].map(([s, n]) => `${n} ${s.replace(/_/g, ' ')}`).join(', ');
+  return [`${mine.length} gate instance${mine.length === 1 ? '' : 's'} recorded under this model (${parts}) — decided history is preserved`];
+}
+
+/**
+ * Records governed by a workflow config, per its entity_type. Returns
+ * undefined when the entity type has no enumerable client source — the dialog
+ * then says nothing rather than inventing a count.
+ */
+export function workflowEntityDependents(
+  entityType: string,
+  tally: { label: string; count: number; qualifier?: string } | undefined,
+): string[] | undefined {
+  if (!tally) return undefined;
+  if (tally.count === 0) return [];
+  return [`${tally.count} ${tally.label}${tally.count === 1 ? '' : 's'}${tally.qualifier ? ` ${tally.qualifier}` : ''} follow this workflow's transitions`];
+}
+
 /** What this scorecard-model version carries — stated as facts, not forecasts. */
 export function modelVersionImpact(
   modelId: string,

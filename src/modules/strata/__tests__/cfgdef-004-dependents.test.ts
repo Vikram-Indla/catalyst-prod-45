@@ -5,9 +5,12 @@
  */
 import { describe, expect, it } from 'vitest';
 import {
+  gateModelDependents,
   modelVersionImpact,
   perspectiveDependents,
   thresholdSchemeDependents,
+  valueCategoryDependents,
+  workflowEntityDependents,
 } from '../lib/dependents';
 
 const models = [
@@ -43,6 +46,58 @@ describe('thresholdSchemeDependents (CFG-004)', () => {
     ];
     expect(thresholdSchemeDependents('s1', kpis)).toEqual(['KPI Churn Rate · approved']);
     expect(thresholdSchemeDependents('s9', kpis)).toEqual([]);
+  });
+});
+
+describe('valueCategoryDependents (CFG-004 C6)', () => {
+  const portfolios = [
+    { name: 'Growth Portfolio', category_id: 'cat-1', status: 'active' },
+    { name: 'Run Portfolio', category_id: 'cat-2', status: 'active' },
+  ];
+  const benefits = [
+    { name: 'Churn Reduction', category_id: 'cat-1', status: 'planned' },
+    { name: 'Unclassified Benefit', category_id: null },
+  ];
+
+  it('names portfolios and benefits classified under the category', () => {
+    expect(valueCategoryDependents('cat-1', portfolios, benefits)).toEqual([
+      'Portfolio Growth Portfolio · active',
+      'Benefit Churn Reduction · planned',
+    ]);
+  });
+
+  it('returns [] (checked, none) for an unused category — null category_id never matches', () => {
+    expect(valueCategoryDependents('cat-9', portfolios, benefits)).toEqual([]);
+  });
+});
+
+describe('gateModelDependents (CFG-004 C6)', () => {
+  it('summarises instances by status and preserves decided history wording', () => {
+    const instances = [
+      { gate_model_id: 'g1', status: 'open' },
+      { gate_model_id: 'g1', status: 'decided' },
+      { gate_model_id: 'g1', status: 'decided' },
+      { gate_model_id: 'g2', status: 'open' },
+    ];
+    expect(gateModelDependents('g1', instances)).toEqual([
+      '3 gate instances recorded under this model (1 open, 2 decided) — decided history is preserved',
+    ]);
+    expect(gateModelDependents('g9', instances)).toEqual([]);
+  });
+});
+
+describe('workflowEntityDependents (CFG-004 C6)', () => {
+  it('counts enumerable entity types with qualifier', () => {
+    expect(workflowEntityDependents('strategy_element', { label: 'strategy element', count: 4, qualifier: 'in FY2026' }))
+      .toEqual(["4 strategy elements in FY2026 follow this workflow's transitions"]);
+  });
+
+  it('zero records is an explicit checked-none, not silence', () => {
+    expect(workflowEntityDependents('kpi', { label: 'KPI', count: 0 })).toEqual([]);
+  });
+
+  it('an unmapped entity type yields undefined — the dialog claims nothing', () => {
+    expect(workflowEntityDependents('mystery_type', undefined)).toBeUndefined();
   });
 });
 

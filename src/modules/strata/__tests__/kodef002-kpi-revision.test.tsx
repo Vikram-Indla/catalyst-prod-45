@@ -106,9 +106,10 @@ describe('KO-DEF-002 UI — revision is reachable on an Approved KPI', () => {
     const user = userEvent.setup({ delay: null });
     renderPage();
     await user.click(screen.getByTestId('strata-kpi-new-version'));
+    // Both are mandatory server-side; CFG-007 disables the action outright so
+    // a blank submission never spends the round-trip.
+    expect(screen.getByRole('button', { name: 'Create draft version' })).toBeDisabled();
     await user.click(screen.getByRole('button', { name: 'Create draft version' }));
-    // Both are mandatory server-side; the modal must not spend a round-trip to learn that.
-    expect(screen.getByText(/Required: Change reason, Materiality/)).toBeTruthy();
     expect(createDraftVersion).not.toHaveBeenCalled();
   });
 

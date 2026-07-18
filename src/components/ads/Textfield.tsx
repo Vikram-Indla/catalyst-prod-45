@@ -34,6 +34,9 @@ export interface TextfieldProps {
   maxLength?: number;
   'aria-label'?: string;
   'aria-describedby'?: string;
+  /** CFG-007: required/invalid semantics forwarded to the native input. */
+  'aria-required'?: boolean;
+  'aria-invalid'?: boolean;
   testId?: string;
 }
 
@@ -84,6 +87,8 @@ export function Textfield({
         maxLength={maxLength}
         aria-label={rest['aria-label']}
         aria-describedby={rest['aria-describedby']}
+        aria-required={rest['aria-required']}
+        aria-invalid={rest['aria-invalid']}
         testId={testId}
       />
     </div>

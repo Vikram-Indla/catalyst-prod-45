@@ -159,6 +159,9 @@ describe('SR-DEF-001 — invalid input stays blocked with field-specific message
     renderCycleModal(onSubmit);
 
     await user.type(dateInput('Name'), 'No dates');
+    // CFG-007 note: date fields deliberately do NOT disable the button (their
+    // blur-commit races the click — SR-DEF-001), so the click lands and the
+    // required guard blocks with named fields.
     await user.click(submitBtn());
 
     await waitFor(() => expect(screen.getByText('Required: Starts on, Ends on')).toBeTruthy());
@@ -175,10 +178,10 @@ describe('SR-DEF-001 — invalid input stays blocked with field-specific message
     await user.click(dateInput('Name')); // blur → the field flags itself invalid
     await waitFor(() => expect(screen.getByText('Enter a date as dd/mm/yyyy.')).toBeTruthy());
     await enterValidDate(user, 'Ends on', '31/12/2027');
+    // CFG-007: an unparseable, already-flagged date disables submit outright;
+    // the field keeps its own message and nothing reaches the RPC.
+    expect(submitBtn()).toBeDisabled();
     await user.click(submitBtn());
-
-    await waitFor(() =>
-      expect(screen.getByText(/Enter a valid date \(dd\/mm\/yyyy\) for: Starts on/)).toBeTruthy());
     expect(onSubmit).not.toHaveBeenCalled();
   });
 

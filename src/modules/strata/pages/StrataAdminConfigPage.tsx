@@ -8,7 +8,6 @@
  */
 import React, { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import Tabs, { Tab, TabList, TabPanel } from '@atlaskit/tabs';
 import {
   Button, CatalystInlineCode, CatalystTag, EmptyState, Lozenge, Modal, ModalBody, ModalFooter,
   ModalHeader, ModalTitle, SectionMessage, Select, Spinner, Textfield,
@@ -29,8 +28,9 @@ import {
   useAllModelMeasures, useAllModelPerspectives, useChangeRequests, useGateModels, useInvalidateStrata, useKpiTypes, useKpis, useModelPerspectives,
   usePerspectives, useProfileNames, useProjectCardFieldConfigs, useProjectCardPicklists,
   useProjectCardSectionConfigs, useProjectCardTabConfigs, useRoleAssignments, useScorecardModels,
-  useStrataAudit, useStrataContext, useStrataNotificationRules, useStrataRoles, useStrataUserId, useThresholdSchemes, useUploadTemplates, useValueCategories,
-  useWorkflowConfigs,
+  useBenefits, useGateInstances, usePortfolios, useProjectCards, useStrataAudit, useStrataContext,
+  useStrataNotificationRules, useStrataRoles, useStrataUserId, useStrategyElements, useThresholdSchemes,
+  useUploadRuns, useUploadTemplates, useValueCategories, useWorkflowConfigs,
 } from '@/modules/strata/hooks/useStrata';
 import { StrataPageShell, StrataPanel, T } from '@/modules/strata/components/shared';
 import { StrataNotFound } from '@/modules/strata/components/StrataSystemStates';
@@ -38,7 +38,11 @@ import { StrataFormModal, str } from '@/modules/strata/components/authoring';
 import { fmtDate, fmtDateTime, labelize } from '@/modules/strata/components/format';
 import { computeModelIntegrity, draftSubmitBlockedReason } from '@/modules/strata/lib/modelIntegrity';
 import { auditChangedFields } from '@/modules/strata/lib/auditDiff';
-import { perspectiveDependents, thresholdSchemeDependents, modelVersionImpact } from '@/modules/strata/lib/dependents';
+import {
+  gateModelDependents, modelVersionImpact, perspectiveDependents, thresholdSchemeDependents,
+  valueCategoryDependents, workflowEntityDependents,
+} from '@/modules/strata/lib/dependents';
+import { deriveEffectiveAdminRows } from '@/modules/strata/lib/effectiveRoles';
 import type {
   GovernedEnvelope, GovernedStatus, StrataChangeRequest, StrataCycle, StrataNotificationRule, StrataPeriod, StrataPerspective,
   StrataModelMeasure, StrataProjectCardFieldConfig, StrataProjectCardPicklist, StrataRole, StrataScorecardModel,
@@ -99,7 +103,7 @@ const REVISION_RPC: Record<string, ((id: string, reason: string) => Promise<unkn
 };
 
 /** Governance lifecycle actions — RPC-only; DB errors surface verbatim. */
-export function GovActions({ table, record, isScorecardModel, onError, submitBlockedReason, impact }: {
+export function GovActions({ table, record, isScorecardModel, onError, submitBlockedReason, approveBlockedReasons, impact, copiedContents }: {
   table: string;
   record: { id: string; status: GovernedStatus };
   isScorecardModel?: boolean;
@@ -107,9 +111,15 @@ export function GovActions({ table, record, isScorecardModel, onError, submitBlo
   /** When set, the draft "Submit for approval" action is disabled and the
    * reason is shown inline (never a silent disable — anchor 05 states rule). */
   submitBlockedReason?: string | null;
+  /** CFG-006 (Cycle 4): when non-empty, Approve is disabled and every reason
+   * is shown — the full integrity gate applies to approval, not just submit. */
+  approveBlockedReasons?: string[];
   /** CFG-004: downstream dependents shown in the Retire / Create-new-version
    * dialogs. undefined = unknown (render nothing); [] = checked, none. */
   impact?: string[];
+  /** CFG-004 (Cycle 4): what a new draft version COPIES — distinct from
+   * downstream impact; shown only in the Create-new-version dialog. */
+  copiedContents?: string[];
 }) {
   const invalidate = useInvalidateStrata();
   const [busy, setBusy] = useState(false);
@@ -169,17 +179,29 @@ export function GovActions({ table, record, isScorecardModel, onError, submitBlo
     );
   }
   if (record.status === 'pending_approval') {
+    // CFG-006 (Cycle 4): the integrity gate applies to APPROVAL too. A model
+    // that reached pending while failing integrity must not be approvable —
+    // blocked with every visible reason, never a silent disable.
+    const approveBlocked = (approveBlockedReasons ?? []).length > 0;
     return (
-      <Button
-        spacing="compact"
-        appearance="default"
+      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
+        <Button
+          spacing="compact"
+          appearance="default"
         iconBefore={<CheckCircle2 size={14} />}
-        isDisabled={busy}
-        onClick={() => void act(() =>
-          isScorecardModel ? configApi.approveScorecardModel(record.id) : configApi.approveRecord(table, record.id))}
-      >
-        Approve
-      </Button>
+          isDisabled={busy || approveBlocked}
+          testId={`strata-approve-${record.id}`}
+          onClick={() => void act(() =>
+            isScorecardModel ? configApi.approveScorecardModel(record.id) : configApi.approveRecord(table, record.id))}
+        >
+          Approve
+        </Button>
+        {approveBlocked ? (
+          <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-danger)', textAlign: 'right' }} data-testid={`strata-approve-blocked-${record.id}`}>
+            Cannot approve: {(approveBlockedReasons ?? []).join('; ')}
+          </span>
+        ) : null}
+      </span>
     );
   }
   if (record.status === 'approved') {
@@ -212,7 +234,31 @@ export function GovActions({ table, record, isScorecardModel, onError, submitBlo
               threshold scheme — into a new draft at version {(record.version ?? 1) + 1}. The approved
               version stays unchanged and keeps producing results until the draft is approved.
             </p>
+            {/* CFG-004 (Cycle 4): copied definition contents are NOT downstream
+                impact — label each honestly, and state the draft's live effect. */}
+            {copiedContents !== undefined ? (
+              <div
+                data-testid="strata-version-copied-contents"
+                style={{
+                  margin: '0 0 12px', padding: '8px 12px', border: `1px solid ${T.border}`,
+                  borderRadius: 6, background: T.sunken, display: 'flex', flexDirection: 'column', gap: 4,
+                }}
+              >
+                <span style={{ fontWeight: 700, letterSpacing: '0.04em', fontSize: 'var(--ds-font-size-075)', color: T.subtlest }}>
+                  COPIED DEFINITION CONTENTS
+                </span>
+                {copiedContents.length === 0 ? (
+                  <span style={{ fontSize: 'var(--ds-font-size-100)', color: T.subtle }}>Nothing is defined on this version yet.</span>
+                ) : copiedContents.map((line) => (
+                  <span key={line} style={{ fontSize: 'var(--ds-font-size-100)', color: T.subtle }}>• {line}</span>
+                ))}
+              </div>
+            ) : null}
             {impactBlock}
+            <p style={{ margin: '0 0 12px', fontSize: 'var(--ds-font-size-100)', color: T.subtle }} data-testid="strata-version-no-live-effect">
+              Downstream impact: creating a draft has no live downstream effect — consumers keep using the
+              approved version until the new draft is itself approved.
+            </p>
             <Textfield
               value={versionReason}
               onChange={(e) => setVersionReason(e.target.value)}
@@ -275,7 +321,7 @@ export function GovActions({ table, record, isScorecardModel, onError, submitBlo
 }
 
 /** Card wrapper for one governed record: name + envelope + lifecycle actions. */
-function GovRecordCard({ name, table, record, isScorecardModel, onError, headerActions, submitBlockedReason, impact, children }: {
+function GovRecordCard({ name, table, record, isScorecardModel, onError, headerActions, submitBlockedReason, approveBlockedReasons, impact, copiedContents, children }: {
   name: string;
   table: string;
   record: GovernedEnvelope & { id: string };
@@ -285,8 +331,12 @@ function GovRecordCard({ name, table, record, isScorecardModel, onError, headerA
   headerActions?: React.ReactNode;
   /** Forwarded to GovActions — blocks Submit with a visible reason. */
   submitBlockedReason?: string | null;
+  /** Forwarded to GovActions — CFG-006 blocks Approve with visible reasons. */
+  approveBlockedReasons?: string[];
   /** Forwarded to GovActions — CFG-004 downstream impact in lifecycle dialogs. */
   impact?: string[];
+  /** Forwarded to GovActions — CFG-004 copied contents in the version dialog. */
+  copiedContents?: string[];
   children?: React.ReactNode;
 }) {
   return (
@@ -301,7 +351,7 @@ function GovRecordCard({ name, table, record, isScorecardModel, onError, headerA
         <strong style={{ fontSize: 'var(--ds-font-size-200)', color: T.text }}>{name}</strong>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
           {headerActions}
-          <GovActions table={table} record={record} isScorecardModel={isScorecardModel} onError={onError} submitBlockedReason={submitBlockedReason} impact={impact} />
+          <GovActions table={table} record={record} isScorecardModel={isScorecardModel} onError={onError} submitBlockedReason={submitBlockedReason} approveBlockedReasons={approveBlockedReasons} impact={impact} copiedContents={copiedContents} />
         </div>
       </div>
       <GovEnvelope r={record} />
@@ -1011,7 +1061,12 @@ export function ScorecardModelsSection({ onError }: { onError: OnError }) {
                 isScorecardModel
                 onError={onError}
                 submitBlockedReason={submitBlockedReason}
-                impact={modelVersionImpact(m.id, allMP.data ?? [], allMeasures.data ?? [])}
+                approveBlockedReasons={m.status === 'pending_approval' && !integrity.ok
+                  ? (integrity.perspectiveWeightsOk
+                    ? integrity.measureIssues
+                    : [`Perspective weights total ${integrity.weightSum} — must total 100`, ...integrity.measureIssues])
+                  : undefined}
+                copiedContents={modelVersionImpact(m.id, allMP.data ?? [], allMeasures.data ?? [])}
               >
                 <ModelIntegrityBand
                   sum={integrity.weightSum}
@@ -1588,13 +1643,26 @@ export function ThresholdsSection({ onError }: { onError: OnError }) {
 
 function ValueTaxonomySection({ onError }: { onError: OnError }) {
   const q = useValueCategories();
+  // CFG-004 (C6): portfolios/benefits classified under each category are its
+  // real consumers — both unfiltered queries existed, they were never wired.
+  const portfoliosQ = usePortfolios();
+  const benefitsQ = useBenefits();
   const list = q.data ?? [];
   return (
     <StrataPanel title="Value taxonomy" icon={<Gem size={16} />} count={list.length} testId="strata-admin-value-taxonomy">
       <SectionState query={q} empty={list.length === 0}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
           {list.map((c) => (
-            <GovRecordCard key={c.id} name={c.name} table="strata_value_categories" record={c} onError={onError}>
+            <GovRecordCard
+              key={c.id}
+              name={c.name}
+              table="strata_value_categories"
+              record={c}
+              onError={onError}
+              impact={portfoliosQ.data && benefitsQ.data
+                ? valueCategoryDependents(c.id, portfoliosQ.data, benefitsQ.data)
+                : undefined}
+            >
               <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'center' }}>
                 <span style={metaStyle}>Unit {c.measurement_unit ?? '—'}</span>
                 {c.validator_role ? <CatalystTag text={labelize(c.validator_role)} /> : null}
@@ -1610,13 +1678,22 @@ function ValueTaxonomySection({ onError }: { onError: OnError }) {
 
 function GatesSection({ onError }: { onError: OnError }) {
   const q = useGateModels();
+  // CFG-004 (C6): gate instances recorded under each model are its consumers.
+  const instancesQ = useGateInstances();
   const list = q.data ?? [];
   return (
     <StrataPanel title="Gate models" icon={<ShieldCheck size={16} />} count={list.length} testId="strata-admin-gates">
       <SectionState query={q} empty={list.length === 0}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
           {list.map((g) => (
-            <GovRecordCard key={g.id} name={g.name} table="strata_gate_models" record={g} onError={onError}>
+            <GovRecordCard
+              key={g.id}
+              name={g.name}
+              table="strata_gate_models"
+              record={g}
+              onError={onError}
+              impact={instancesQ.data ? gateModelDependents(g.id, instancesQ.data) : undefined}
+            >
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                 {(g.stages ?? []).map((st) => (
                   <div key={st.id} style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
@@ -1640,13 +1717,24 @@ function GatesSection({ onError }: { onError: OnError }) {
 
 export function KpiTypesSection({ onError }: { onError: OnError }) {
   const q = useKpiTypes();
+  // CFG-004: KPIs referencing each type — the lifecycle dialogs show them.
+  const kpisQ = useKpis();
   const list = q.data ?? [];
   return (
     <StrataPanel title="KPI types" icon={<ListChecks size={16} />} count={list.length} testId="strata-admin-kpi-types">
       <SectionState query={q} empty={list.length === 0}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
           {list.map((k) => (
-            <GovRecordCard key={k.id} name={k.name} table="strata_kpi_type_configs" record={k} onError={onError}>
+            <GovRecordCard
+              key={k.id}
+              name={k.name}
+              table="strata_kpi_type_configs"
+              record={k}
+              onError={onError}
+              impact={kpisQ.data
+                ? kpisQ.data.filter((x) => x.kpi_type_id === k.id).map((x) => `KPI ${x.name}${x.status ? ` · ${labelize(x.status)}` : ''}`)
+                : undefined}
+            >
               <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'center' }}>
                 <CatalystInlineCode>{k.formula_template}</CatalystInlineCode>
                 <span style={metaStyle}>{DIRECTIONALITY_LABEL[k.directionality] ?? labelize(k.directionality)}</span>
@@ -1686,13 +1774,27 @@ const TEMPLATE_COLUMNS: Column<TemplateColumnRow>[] = [
 
 export function UploadTemplatesSection({ onError }: { onError: OnError }) {
   const q = useUploadTemplates();
+  // CFG-004: upload runs validated under each template are its consumers.
+  const runsQ = useUploadRuns();
   const list = q.data ?? [];
   return (
     <StrataPanel title="Upload templates" icon={<Upload size={16} />} count={list.length} testId="strata-admin-upload-templates">
       <SectionState query={q} empty={list.length === 0}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
           {list.map((t) => (
-            <GovRecordCard key={t.id} name={t.name} table="strata_upload_templates" record={t} onError={onError}>
+            <GovRecordCard
+              key={t.id}
+              name={t.name}
+              table="strata_upload_templates"
+              record={t}
+              onError={onError}
+              impact={runsQ.data
+                ? (() => {
+                  const n = runsQ.data.filter((r) => r.template_id === t.id).length;
+                  return n > 0 ? [`${n} upload run${n === 1 ? ' was' : 's were'} validated under this template — promoted history keeps this version`] : [];
+                })()
+                : undefined}
+            >
               <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
                 <span style={metaStyle}>Target entity {labelize(t.target_entity)}</span>
                 <span style={metaStyle}>{(t.validation_rules ?? []).length} validation rules</span>
@@ -1716,13 +1818,39 @@ export function UploadTemplatesSection({ onError }: { onError: OnError }) {
 
 export function WorkflowsSection({ onError }: { onError: OnError }) {
   const q = useWorkflowConfigs();
+  // CFG-004 (C6): a workflow's consumers are the records of its entity_type.
+  // Enumerable types are counted from real queries; an unmapped type yields
+  // undefined and the dialog stays silent — never an invented count.
+  const kpisQ = useKpis();
+  const modelsQ = useScorecardModels();
+  const cardsQ = useProjectCards();
+  const { activeCycle } = useStrataContext();
+  const elementsQ = useStrategyElements(activeCycle?.id);
+  const tallyFor = (entityType: string) => {
+    switch (entityType) {
+      case 'kpi': return kpisQ.data ? { label: 'KPI', count: kpisQ.data.length } : undefined;
+      case 'scorecard_model': return modelsQ.data ? { label: 'scorecard model', count: modelsQ.data.length } : undefined;
+      case 'project_card': return cardsQ.data ? { label: 'Project Card', count: cardsQ.data.length } : undefined;
+      case 'strategy_element': return elementsQ.data && activeCycle
+        ? { label: 'strategy element', count: elementsQ.data.length, qualifier: `in ${activeCycle.name}` }
+        : undefined;
+      default: return undefined;
+    }
+  };
   const list = q.data ?? [];
   return (
     <StrataPanel title="Workflows" icon={<GitBranch size={16} />} count={list.length} testId="strata-admin-workflows">
       <SectionState query={q} empty={list.length === 0}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
           {list.map((w) => (
-            <GovRecordCard key={w.id} name={w.name} table="strata_workflow_configs" record={w} onError={onError}>
+            <GovRecordCard
+              key={w.id}
+              name={w.name}
+              table="strata_workflow_configs"
+              record={w}
+              onError={onError}
+              impact={workflowEntityDependents(w.entity_type, tallyFor(w.entity_type))}
+            >
               <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
                 <span style={metaStyle}>Entity {labelize(w.entity_type)}</span>
                 {(w.states ?? []).map((s) => <CatalystTag key={s.key} text={s.label} />)}
@@ -1790,7 +1918,10 @@ interface RoleAssignmentRow {
   scope_type: string;
   scope_entity_id: string | null;
   granted_by: string | null;
-  granted_at: string;
+  /** null on CFG-005 derived rows — a bypass role has no grant event. */
+  granted_at: string | null;
+  /** CFG-005: true when derived from the platform-admin bypass, not a grant. */
+  derived?: boolean;
 }
 
 const ASSIGNABLE_ROLES: Array<{ value: string; label: string }> =
@@ -1809,6 +1940,12 @@ function RolesSection({ onError }: { onError: OnError }) {
   // server-side, even without a strata_admin assignment row.
   const isStrataAdmin = mine.includes('strata_admin');
   const assignments = (assignmentsQ.data ?? []) as RoleAssignmentRow[];
+  // CFG-005 (Cycle 4): this section — /strata/admin/roles — is a second roles
+  // surface; the derived platform-admin row previously landed only on
+  // /strata/admin/access. Same helper, same labelling, no Revoke for derived.
+  const userIdQ = useStrataUserId();
+  const derivedRows = deriveEffectiveAdminRows(userIdQ.data, roles.data, assignments) as unknown as RoleAssignmentRow[];
+  const displayRows = [...assignments, ...derivedRows];
   const profileName = (id: string | null): string | null =>
     id ? profilesQ.data?.get(id)?.name ?? null : null;
 
@@ -1835,7 +1972,21 @@ function RolesSection({ onError }: { onError: OnError }) {
     },
     {
       id: 'role', label: 'Role', width: 18,
-      cell: ({ row }) => <StatusLozenge status={row.role} label={labelize(row.role)} appearance="default" />,
+      cell: ({ row }) => (
+        <span style={{ display: 'flex', flexDirection: 'column', gap: 2, alignItems: 'flex-start' }}>
+          <StatusLozenge status={row.role} label={labelize(row.role)} appearance="default" />
+          {row.derived ? (
+            // CFG-008 (C6): the caption must WRAP inside the fixed-width Role
+            // column — it was ellipsizing at ≤1204px.
+            <span
+              style={{ ...metaStyle, fontSize: 'var(--ds-font-size-075)', whiteSpace: 'normal', overflowWrap: 'anywhere', lineHeight: 1.3 }}
+              data-testid="strata-admin-derived-role"
+            >
+              via platform admin — no explicit grant
+            </span>
+          ) : null}
+        </span>
+      ),
     },
     {
       id: 'scope', label: 'Scope', width: 12,
@@ -1843,7 +1994,9 @@ function RolesSection({ onError }: { onError: OnError }) {
     },
     {
       id: 'granted', label: 'Granted', width: 13,
-      cell: ({ row }) => <span style={{ ...bodyStyle, fontVariantNumeric: 'tabular-nums' }}>{fmtDate(row.granted_at)}</span>,
+      cell: ({ row }) => (row.granted_at
+        ? <span style={{ ...bodyStyle, fontVariantNumeric: 'tabular-nums' }}>{fmtDate(row.granted_at)}</span>
+        : <span style={{ color: T.subtlest }}>—</span>),
     },
     {
       id: 'granted-by', label: 'Granted by', width: 15,
@@ -1854,7 +2007,9 @@ function RolesSection({ onError }: { onError: OnError }) {
     },
     ...(isStrataAdmin ? [{
       id: 'revoke', label: '', width: 10, align: 'end' as const,
-      cell: ({ row }: { row: RoleAssignmentRow }) => (
+      // CFG-005: derived access has no assignment row to revoke — offering the
+      // verb would promise an action the server cannot perform.
+      cell: ({ row }: { row: RoleAssignmentRow }) => (row.derived ? null : (
         <Button
           spacing="compact"
           appearance="subtle"
@@ -1864,7 +2019,7 @@ function RolesSection({ onError }: { onError: OnError }) {
         >
           Revoke
         </Button>
-      ),
+      )),
     }] : []),
   ];
 
@@ -1873,7 +2028,7 @@ function RolesSection({ onError }: { onError: OnError }) {
       <StrataPanel
         title="Role assignments"
         icon={<Users size={16} />}
-        count={assignments.length}
+        count={displayRows.length}
         noPadding
         testId="strata-admin-role-assignments"
         actions={isStrataAdmin ? (
@@ -1887,14 +2042,24 @@ function RolesSection({ onError }: { onError: OnError }) {
           </Button>
         ) : undefined}
       >
-        <SectionState query={assignmentsQ} empty={assignments.length === 0} emptyLabel="No role assignments">
-          <JiraTable<RoleAssignmentRow>
-            columns={assignmentColumns}
-            data={assignments}
-            getRowId={(r) => r.id}
-            showRowCount={false}
-            ariaLabel="STRATA role assignments"
-          />
+        <SectionState query={assignmentsQ} empty={displayRows.length === 0} emptyLabel="No role assignments">
+          <div style={{ padding: '8px 16px 0' }}>
+            <p style={captionStyle}>
+              {assignments.length} explicit grant{assignments.length === 1 ? '' : 's'}
+              {derivedRows.length > 0 ? ` · ${derivedRows.length} derived from platform admin` : ''}
+            </p>
+          </div>
+          {/* CFG-008: six columns clip at 1024 — the table scrolls inside its
+              own container instead of truncating cells. */}
+          <div style={{ overflowX: 'auto', minWidth: 0 }}>
+            <JiraTable<RoleAssignmentRow>
+              columns={assignmentColumns}
+              data={displayRows}
+              getRowId={(r) => r.id}
+              showRowCount={false}
+              ariaLabel="STRATA role assignments"
+            />
+          </div>
         </SectionState>
       </StrataPanel>
 
@@ -2017,6 +2182,9 @@ function ChangeLogSection() {
       cell: ({ row }) => {
         const { changes, truncated } = auditChangedFields(row.before, row.after);
         if (changes.length === 0 && !row.note) return <span style={{ color: T.subtlest }}>—</span>;
+        // CFG-001 (Cycle 4): trigger-fed rows (INSERT/UPDATE/DELETE) carry no
+        // note — say so honestly instead of leaving rationale ambiguous.
+        const isTriggerFed = !!row.action && !row.action.startsWith('RPC:');
         return (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 2, padding: '2px 0' }}>
             {changes.map((c) => (
@@ -2029,6 +2197,8 @@ function ChangeLogSection() {
             ) : null}
             {row.note ? (
               <span style={{ color: T.subtle, fontSize: 'var(--ds-font-size-075)' }}>Rationale: {row.note}</span>
+            ) : isTriggerFed ? (
+              <span style={{ color: T.subtlest, fontSize: 'var(--ds-font-size-075)' }}>System/trigger event — rationale not supplied</span>
             ) : null}
           </div>
         );
@@ -2477,6 +2647,59 @@ function CyclesSection() {
   );
 }
 
+// ── Organization & scopes (CFG-003) ──────────────────────────────────────────
+// The smallest HONEST surface over the data model that actually exists. There
+// is no org-structure schema: no hierarchy, no effective dating, no lifecycle
+// — this section states that plainly and shows the scope vocabulary STRATA
+// really uses (the scorecard-model owner-scope enum) with live usage counts.
+// See docs/ways-of-working/STRATA_ORG_STRUCTURE_DECISION.md for the schema
+// decision this surface deliberately does not pre-empt.
+function OrgScopesSection() {
+  const models = useScorecardModels();
+  const usage = new Map<string, number>();
+  for (const m of models.data ?? []) {
+    usage.set(m.owner_scope_type, (usage.get(m.owner_scope_type) ?? 0) + 1);
+  }
+  interface ScopeRow { scope: string; count: number }
+  const rows: ScopeRow[] = ['enterprise', 'sector', 'function', 'portfolio', 'initiative', 'custom']
+    .map((s) => ({ scope: s, count: usage.get(s) ?? 0 }));
+  const scopeColumns: Column<ScopeRow>[] = [
+    { id: 'scope', label: 'Scope', flex: true, cell: ({ row }) => <span style={{ ...bodyStyle, fontWeight: 600 }}>{labelize(row.scope)}</span> },
+    {
+      id: 'usage', label: 'Used by', width: 30,
+      cell: ({ row }) => (row.count > 0
+        ? <span style={metaStyle}>{row.count} scorecard model{row.count === 1 ? '' : 's'}</span>
+        : <span style={{ color: T.subtlest }}>—</span>),
+    },
+  ];
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+      <SectionMessage appearance="information" title="No organization-structure schema exists">
+        <p>
+          Organizational structures are not configured — there is no org-unit table, hierarchy,
+          effective dating or lifecycle in the schema. Nothing here can create one; that is a
+          product/schema decision recorded in STRATA_ORG_STRUCTURE_DECISION.md (owner: Vikram).
+          What follows is the scope vocabulary STRATA actually uses today.
+        </p>
+      </SectionMessage>
+      <StrataPanel title="Organizational scopes in use" icon={<Users size={16} />} count={rows.length} noPadding testId="strata-admin-org-scopes">
+        <p style={{ ...captionStyle, padding: '12px 16px 0' }}>
+          The fixed owner-scope vocabulary on scorecard models — a flat enum, not an org hierarchy.
+          Free-text Project Card fields (sector, lead business unit) are governed under
+          Reference &amp; display → Project Card picklists.
+        </p>
+        <JiraTable<ScopeRow>
+          columns={scopeColumns}
+          data={rows}
+          getRowId={(r) => r.scope}
+          showRowCount={false}
+          ariaLabel="Organizational scopes in use"
+        />
+      </StrataPanel>
+    </div>
+  );
+}
+
 export const SECTIONS: Array<{
   key: string;
   label: string;
@@ -2492,6 +2715,7 @@ export const SECTIONS: Array<{
   { key: 'upload-templates', label: 'Upload templates', icon: Upload, render: (e) => <UploadTemplatesSection onError={e} /> },
   { key: 'workflows', label: 'Workflows', icon: GitBranch, render: (e) => <WorkflowsSection onError={e} /> },
   { key: 'cycles', label: 'Cycles & periods', icon: Calendar, render: () => <CyclesSection /> },
+  { key: 'org-scopes', label: 'Organization & scopes', icon: Users, render: () => <OrgScopesSection /> },
   { key: 'project-card', label: 'Project Card', icon: Rocket, render: (e) => <ProjectCardConfigSection onError={e} /> },
   { key: 'roles', label: 'Roles', icon: Users, render: (e) => <RolesSection onError={e} /> },
   { key: 'notifications', label: 'Notifications', icon: Bell, render: (e) => <NotificationsSection onError={e} /> },
@@ -2542,6 +2766,13 @@ export const DOMAINS: Array<{
     key: 'cycles-periods', name: 'Cycles & periods', icon: Calendar,
     governs: 'Reporting cycles and their periods — the calendar every scorecard, review and snapshot anchors to.',
     to: Routes.strata.adminSection('cycles'), sectionLabels: ['Cycles', 'Periods'],
+  },
+  {
+    // CFG-003: honest read surface — states that no org-structure schema
+    // exists and shows the scope vocabulary actually in use. Implies nothing.
+    key: 'org-scopes', name: 'Organization & scopes', icon: Users,
+    governs: 'The organizational scope vocabulary STRATA uses today — no org-structure schema exists yet.',
+    to: Routes.strata.adminSection('org-scopes'), sectionLabels: ['Scopes in use'],
   },
   {
     key: 'reference-display', name: 'Reference & display', icon: Rocket,
@@ -2725,43 +2956,47 @@ export default function StrataAdminConfigPage() {
       docTitle={sectionEntry ? `${sectionEntry.label} · Administration` : undefined}
       testId="strata-admin-chrome"
     >
-      <Tabs
-        id="strata-admin-tabs"
-        selected={selected}
-        onChange={(i) => { setActionError(null); navigate(Routes.strata.adminSection(SECTIONS[i].key)); }}
-      >
-        {/* 11 tabs overflow narrow viewports — scroll the strip instead of
-          * wrapping/clipping (Jira admin parity). */}
-        <div style={{ overflowX: 'auto', minWidth: 0 }}>
-          <TabList>
-            {SECTIONS.map((s) => {
-              const Icon = s.icon;
-              return (
-                <Tab key={s.key}>
-                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, whiteSpace: 'nowrap' }}>
-                    <Icon size={14} />
-                    {s.label}
-                  </span>
-                </Tab>
-              );
-            })}
-          </TabList>
-        </div>
-        {SECTIONS.map((s) => (
-          <TabPanel key={s.key}>
-            <div style={{ width: '100%', paddingTop: 16 }}>
-              {actionError ? (
-                <div style={{ marginBottom: 16 }}>
-                  <SectionMessage appearance="error" title="Governance action rejected by the database">
-                    <p>{actionError}</p>
-                  </SectionMessage>
-                </div>
-              ) : null}
-              {s.render(setActionError)}
-            </div>
-          </TabPanel>
-        ))}
-      </Tabs>
+      {/* CFG-008: the 13-item horizontal tab strip clipped labels to fragments
+        * ("Persp", "Scoreca") and hid destinations at 1024×768. Replaced with a
+        * WRAPPING nav of full-label buttons — every destination identifiable and
+        * reachable with no horizontal scrolling; keyboard/focus/aria preserved
+        * via real <button aria-current>. */}
+      <nav aria-label="Configuration sections" style={{ display: 'flex', flexWrap: 'wrap', gap: 4, borderBottom: `2px solid ${T.border}`, paddingBottom: 8 }}>
+        {SECTIONS.map((s, i) => {
+          const Icon = s.icon;
+          const active = i === selected;
+          return (
+            <button
+              key={s.key}
+              type="button"
+              aria-current={active ? 'page' : undefined}
+              data-testid={`strata-admin-nav-${s.key}`}
+              onClick={() => { setActionError(null); navigate(Routes.strata.adminSection(s.key)); }}
+              style={{
+                display: 'inline-flex', alignItems: 'center', gap: 6, whiteSpace: 'nowrap',
+                padding: '6px 10px', borderRadius: 6, cursor: 'pointer', font: 'inherit',
+                fontSize: 'var(--ds-font-size-100)', fontWeight: active ? 700 : 400,
+                border: '1px solid transparent',
+                background: active ? 'var(--ds-background-selected)' : 'transparent',
+                color: active ? 'var(--ds-text-brand)' : T.subtle,
+              }}
+            >
+              <Icon size={14} />
+              {s.label}
+            </button>
+          );
+        })}
+      </nav>
+      <div style={{ width: '100%', paddingTop: 16 }}>
+        {actionError ? (
+          <div style={{ marginBottom: 16 }}>
+            <SectionMessage appearance="error" title="Governance action rejected by the database">
+              <p>{actionError}</p>
+            </SectionMessage>
+          </div>
+        ) : null}
+        {SECTIONS[selected]?.render(setActionError)}
+      </div>
     </StrataPageShell>
   );
 }
