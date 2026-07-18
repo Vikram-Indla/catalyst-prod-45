@@ -983,6 +983,12 @@ export const valueApi = {
     run(typedRpc('strata_calc_benefit_realization', { p_benefit: benefitId })),
   valueAtRisk: (portfolioId: string) =>
     run(typedRpc('strata_calc_value_at_risk', { p_portfolio: portfolioId })),
+  /** PB-DEF-008 · append-only entity audit/lineage over strata_audit_events (RLS-safe read). */
+  entityAudit: (entityTable: string, entityId: string): Promise<Array<{
+    id: string; entity_table: string; entity_id: string; action: string;
+    actor_id: string | null; before: unknown; after: unknown; note: string | null; created_at: string;
+  }>> =>
+    run(typedRpc('strata_entity_audit', { p_entity_table: entityTable, p_entity_id: entityId })),
   // ── Authoring write paths (Recovery: Lane E) ──────────────────────────────
   createPortfolio: (input: {
     name: string; description?: string; categoryId?: string; ownerId?: string; valueTarget?: number;

@@ -20,6 +20,7 @@ import { useQueries } from '@tanstack/react-query';
 import { Button, CatalystTag, EmptyState, SectionMessage, Spinner } from '@/components/ads';
 import { JiraTable } from '@/components/shared/JiraTable';
 import type { Column } from '@/components/shared/JiraTable';
+import { StrataAuditHistory } from '@/modules/strata/components/StrataAuditHistory';
 import { StatusLozenge } from '@/components/shared/StatusLozenge';
 import type { LozengeAppearance } from '@/components/shared/StatusLozenge';
 import { Routes } from '@/lib/routes';
@@ -457,6 +458,9 @@ export default function StrataPortfolioDetailPage() {
           <p style={{ display: 'flex', alignItems: 'center', gap: 6, margin: 0, fontSize: 'var(--ds-font-size-100)', color: T.subtlest }}>
             <ListChecks size={12} /> Completion is not benefit: realized value counts only once assured (owner-confirmed, independently validated, or accepted with exception).
           </p>
+
+          {/* PB-DEF-008 · portfolio audit/lineage, reachable from the record. */}
+          <StrataAuditHistory entityTable="strata_portfolios" entityId={portfolio.id} title="Portfolio history" />
         </div>
       )}
 

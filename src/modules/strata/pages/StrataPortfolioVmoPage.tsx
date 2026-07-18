@@ -27,6 +27,7 @@ import { StrataChipMenu,
   StrataBandBar, StrataDecisionModal, StrataPageShell, StrataPanel, StrataStatStrip, StrataValueBar, T,
 } from '@/modules/strata/components/shared';
 import { StrataFormModal } from '@/modules/strata/components/authoring';
+import { StrataAuditHistory } from '@/modules/strata/components/StrataAuditHistory';
 import {
   StrataAttributionRuleModal, StrataPortfolioMembersPanel, StrataScheduleGateModal,
   VMO_AUTHOR_ROLES, VMO_VALUE_ROLES,
@@ -608,6 +609,9 @@ function BenefitDetailSection({ benefit, isFirst, canAuthor, canAuthorValues }: 
           </div>
         )}
       </StrataPanel>
+
+      {/* PB-DEF-008 · benefit definition + assurance history, reachable from the record itself. */}
+      <StrataAuditHistory entityTable="strata_benefits" entityId={benefit.id} title="Governance history" />
 
       {/* Governance verdict modals — verdicts are governed per-stage config;
           the RPC rejects anything outside stage.decision_options + enforces SoD. */}
