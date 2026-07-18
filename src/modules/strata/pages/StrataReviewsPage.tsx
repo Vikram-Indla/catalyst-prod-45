@@ -528,6 +528,146 @@ export function buildReviewsCsv(
 }
 
 /**
+ * Decision-register card (anchor 10) — EXPORTED so the cockpit's metadata + responsive
+ * behaviour (RD-DEF-008/010) is testable without mounting the whole page. Every control row
+ * and metadata line wraps; nothing is clipped by the parent panel's overflow:hidden.
+ */
+export function DecisionCard({ d, canAuthor, busy, snapshotKey, profileName, onDecide, onCloseDecision, onNewAction, onHistory }: {
+  d: StrataDecision;
+  canAuthor: boolean;
+  busy: boolean;
+  snapshotKey: string | null;
+  profileName: (id: string | null | undefined) => string | null;
+  onDecide: () => void;
+  onCloseDecision: () => void;
+  onNewAction: () => void;
+  onHistory: () => void;
+}) {
+  const recorded = d.status === 'decided' || d.status === 'closed';
+  const evidenceRefs = d.evidence_refs ?? [];
+  return (
+    <div style={{ padding: 16, borderBottom: `1px solid ${T.border}` }} data-testid={`strata-reviews-decision-${d.decision_key}`}>
+      <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, minWidth: 0, flexWrap: 'wrap' }}>
+        <span style={{ flexShrink: 0 }}>
+          <StatusLozenge status={d.status} label={labelize(d.status)} appearance={DECISION_LOZENGE[d.status] ?? 'default'} />
+        </span>
+        <div style={{ minWidth: 0, flex: '1 1 240px' }}>
+          <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, flexWrap: 'wrap' }}>
+            <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: T.subtle }}>{d.decision_key}</span>
+            <span style={{ ...bodyStyle, fontWeight: 600, overflowWrap: 'anywhere' }}>{d.title}</span>
+          </div>
+          {/* RD-DEF-008: the entered metadata, rendered — type, forum, owner. Absent = absent. */}
+          <div style={{ display: 'flex', gap: 12, marginTop: 4, ...captionStyle, flexWrap: 'wrap' }} data-testid={`strata-reviews-decision-meta-${d.decision_key}`}>
+            <span>type <span style={{ color: T.subtle, fontWeight: 600 }}>{labelize(d.decision_type)}</span></span>
+            {d.forum ? <span style={{ overflowWrap: 'anywhere' }}>forum <span style={{ color: T.subtle, fontWeight: 600 }}>{d.forum}</span></span> : null}
+            {d.owner_id ? <span>owner <span style={{ color: T.subtle, fontWeight: 600 }}>{profileName(d.owner_id) ?? '—'}</span></span> : null}
+          </div>
+          {/* Snapshot evidence that motivates the decision */}
+          <p style={{ margin: '4px 0 0', ...captionStyle, color: T.subtle, lineHeight: 1.5, overflowWrap: 'anywhere' }}>{d.description ?? '—'}</p>
+          {/* Verdict record — outcome + rationale + approver + who/when + against-SNAP.
+              RD-DEF-003: outcome is separate from type; the approver is the distinct identity
+              the server required. NULL on pre-vocabulary history renders as absent, never filled. */}
+          {recorded ? (
+            <div style={{ marginTop: 8, padding: '8px 12px', borderRadius: 6, background: T.sunken, border: `1px solid ${T.border}`, ...captionStyle, color: T.text, lineHeight: 1.5, overflowWrap: 'anywhere' }} data-testid={`strata-reviews-decision-verdict-${d.decision_key}`}>
+              <strong>{labelize(d.status)}{d.outcome ? ` · ${labelize(d.outcome)}` : ''}</strong>
+              {d.rationale ? (
+                <span style={{ display: 'block', marginTop: 4 }}>{d.rationale}</span>
+              ) : null}
+              <span style={{ display: 'block', marginTop: 4, color: T.subtlest }}>
+                Recorded by {profileName(d.decided_by) ?? '—'} · {d.decided_at ? fmtDateTime(d.decided_at) : '—'} · against {snapshotKey ?? '—'}
+                {d.approved_by ? ` · approved by ${profileName(d.approved_by) ?? '—'}` : ''}
+              </span>
+            </div>
+          ) : d.due_date ? (
+            <p style={{ margin: '4px 0 0', ...captionStyle }}>Due {fmtDate(d.due_date)}</p>
+          ) : null}
+          {evidenceRefs.length > 0 ? (
+            <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginTop: 8 }}>
+              {evidenceRefs.map((ref, i) => (
+                <CatalystTag key={`${ref.entity_type}-${i}`} text={ref.note ? `${labelize(ref.entity_type)} · ${ref.note}` : labelize(ref.entity_type)} />
+              ))}
+            </div>
+          ) : null}
+          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 8 }} data-testid={`strata-reviews-decision-controls-${d.decision_key}`}>
+            {canAuthor && d.status === 'open' ? (
+              // RD-DEF-003: deciding is the OFFICIAL act — it opens the outcome/rationale form,
+              // and the server refuses the creator approving their own decision (SoD, verbatim).
+              <Button spacing="compact" isDisabled={busy} onClick={onDecide} testId={`strata-reviews-decide-${d.decision_key}`}>
+                Record decision…
+              </Button>
+            ) : null}
+            {canAuthor && d.status === 'decided' ? (
+              <Tooltip content="Blocked by the server while this decision still has open actions. Closing is final — a closed decision and its actions become immutable history.">
+                <Button spacing="compact" isDisabled={busy} onClick={onCloseDecision} testId={`strata-reviews-close-decision-${d.decision_key}`}>
+                  Close decision
+                </Button>
+              </Tooltip>
+            ) : null}
+            {/* RD-DEF-005: no New action on a closed decision — the record is frozen history. */}
+            {canAuthor && d.status !== 'closed' ? (
+              <Button spacing="compact" appearance="default" onClick={onNewAction} testId={`strata-reviews-new-action-${d.decision_key}`}>
+                New action
+              </Button>
+            ) : null}
+            {d.status === 'closed' ? (
+              <span style={captionStyle} data-testid={`strata-reviews-decision-terminal-${d.decision_key}`}>
+                Closed — immutable history; record a new superseding decision instead.
+              </span>
+            ) : null}
+            {/* RD-DEF-009: reachable history for every decision, straight from the audit store. */}
+            <Button spacing="compact" appearance="subtle" onClick={onHistory} testId={`strata-reviews-history-${d.decision_key}`}>
+              History
+            </Button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/** Actions-register row (anchor 10) — exported for the same RD-DEF-010 testability reason. */
+export function ActionRow({ a, decisionKey, canAuthor, busy, todayISO, profileName, onTransition, onHistory }: {
+  a: StrataAction;
+  decisionKey: string;
+  canAuthor: boolean;
+  busy: boolean;
+  todayISO: string;
+  profileName: (id: string | null | undefined) => string | null;
+  onTransition: (status: StrataAction['status']) => void;
+  onHistory: () => void;
+}) {
+  const overdue = (a.status === 'open' || a.status === 'in_progress') && a.due_date != null && a.due_date < todayISO;
+  return (
+    <div style={{ padding: '12px 16px', borderBottom: `1px solid ${T.border}` }} data-testid={`strata-reviews-action-${a.action_key}`}>
+      <div style={{ ...bodyStyle, fontWeight: 600, overflowWrap: 'anywhere' }}>{a.title}</div>
+      <div style={{ display: 'flex', gap: 12, marginTop: 4, ...captionStyle, flexWrap: 'wrap', alignItems: 'center' }} data-testid={`strata-reviews-action-meta-${a.action_key}`}>
+        <span>from <span style={{ color: T.subtle, fontWeight: 600 }}>{decisionKey}</span></span>
+        <span>owner <span style={{ color: T.subtle, fontWeight: 600 }}>{profileName(a.owner_id) ?? '—'}</span></span>
+        {a.due_date ? (
+          <span style={{ color: overdue ? 'var(--ds-text-danger)' : T.subtle, fontWeight: overdue ? 600 : 400 }}>Due {fmtDate(a.due_date)}</span>
+        ) : null}
+        <StatusLozenge status={a.status} label={labelize(a.status)} appearance={ACTION_LOZENGE[a.status] ?? 'default'} />
+      </div>
+      <div style={{ display: 'flex', gap: 8, marginTop: 8, flexWrap: 'wrap' }} data-testid={`strata-reviews-action-controls-${a.action_key}`}>
+        {canAuthor && a.status === 'open' ? (
+          <Button spacing="compact" appearance="subtle" isDisabled={busy} onClick={() => onTransition('in_progress')} testId={`strata-reviews-start-${a.action_key}`}>Start</Button>
+        ) : null}
+        {canAuthor && a.status === 'in_progress' ? (
+          <Button spacing="compact" appearance="subtle" isDisabled={busy} onClick={() => onTransition('done')} testId={`strata-reviews-done-${a.action_key}`}>Done</Button>
+        ) : null}
+        {canAuthor && (a.status === 'open' || a.status === 'in_progress') ? (
+          <Button spacing="compact" appearance="subtle" isDisabled={busy} onClick={() => onTransition('cancelled')} testId={`strata-reviews-cancel-${a.action_key}`}>Cancel</Button>
+        ) : null}
+        {/* RD-DEF-009: reachable history for every action. */}
+        <Button spacing="compact" appearance="subtle" onClick={onHistory} testId={`strata-reviews-history-${a.action_key}`}>
+          History
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+/**
  * Exported so the governed lifecycle can be tested directly, mirroring SourcesRegistry (R3).
  * Rendering the whole page in a test drags in the STRATA shell and would prove the shell.
  */
@@ -589,7 +729,11 @@ export function ScheduledReviewsSection() {
     document.body.appendChild(a);
     a.click();
     a.remove();
-    URL.revokeObjectURL(url);
+    // Revoking synchronously after click() can abort the download in Chrome/in-app browsers —
+    // the fetch of the blob: URL races the revoke (the likely cause of Cycle 4's two silent
+    // export attempts). Defer cleanup one minute: long enough for any download to start,
+    // bounded so repeated exports do not leak blob URLs indefinitely.
+    window.setTimeout(() => URL.revokeObjectURL(url), 60_000);
   };
   // The RPC's own gate, mirrored — this only avoids offering a verb the server would refuse.
   const canGovern = (rolesQ.data ?? []).some((r) => REVIEW_GOVERN_ROLES.includes(r));
@@ -1621,124 +1765,36 @@ export default function StrataReviewsPage() {
     },
   ];
 
-  // Decision-register card (anchor 10): status lozenge + title + snapshot-evidence
-  // prose + verdict-record band (once recorded) + evidence refs + governed authoring.
-  const renderDecision = (d: StrataDecision) => {
-    const recorded = d.status === 'decided' || d.status === 'closed';
-    const evidenceRefs = d.evidence_refs ?? [];
-    return (
-      <div key={d.id} style={{ padding: 16, borderBottom: `1px solid ${T.border}` }} data-testid={`strata-reviews-decision-${d.decision_key}`}>
-        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, minWidth: 0 }}>
-          <span style={{ flexShrink: 0 }}>
-            <StatusLozenge status={d.status} label={labelize(d.status)} appearance={DECISION_LOZENGE[d.status] ?? 'default'} />
-          </span>
-          <div style={{ minWidth: 0, flex: 1 }}>
-            <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, flexWrap: 'wrap' }}>
-              <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: T.subtle }}>{d.decision_key}</span>
-              <span style={{ ...bodyStyle, fontWeight: 600 }}>{d.title}</span>
-            </div>
-            {/* RD-DEF-008: the entered metadata, rendered — type, forum, owner. Absent = absent. */}
-            <div style={{ display: 'flex', gap: 12, marginTop: 4, ...captionStyle, flexWrap: 'wrap' }} data-testid={`strata-reviews-decision-meta-${d.decision_key}`}>
-              <span>type <span style={{ color: T.subtle, fontWeight: 600 }}>{labelize(d.decision_type)}</span></span>
-              {d.forum ? <span>forum <span style={{ color: T.subtle, fontWeight: 600 }}>{d.forum}</span></span> : null}
-              {d.owner_id ? <span>owner <span style={{ color: T.subtle, fontWeight: 600 }}>{profileName(d.owner_id) ?? '—'}</span></span> : null}
-            </div>
-            {/* Snapshot evidence that motivates the decision */}
-            <p style={{ margin: '4px 0 0', ...captionStyle, color: T.subtle, lineHeight: 1.5 }}>{d.description ?? '—'}</p>
-            {/* Verdict record — outcome + rationale + approver + who/when + against-SNAP.
-                RD-DEF-003: outcome is separate from type; the approver is the distinct identity
-                the server required. NULL on pre-vocabulary history renders as absent, never filled. */}
-            {recorded ? (
-              <div style={{ marginTop: 8, padding: '8px 12px', borderRadius: 6, background: T.sunken, border: `1px solid ${T.border}`, ...captionStyle, color: T.text, lineHeight: 1.5 }} data-testid={`strata-reviews-decision-verdict-${d.decision_key}`}>
-                <strong>{labelize(d.status)}{d.outcome ? ` · ${labelize(d.outcome)}` : ''}</strong>
-                {d.rationale ? (
-                  <span style={{ display: 'block', marginTop: 4 }}>{d.rationale}</span>
-                ) : null}
-                <span style={{ display: 'block', marginTop: 4, color: T.subtlest }}>
-                  Recorded by {profileName(d.decided_by) ?? '—'} · {d.decided_at ? fmtDateTime(d.decided_at) : '—'} · against {selected?.snapshot_key ?? '—'}
-                  {d.approved_by ? ` · approved by ${profileName(d.approved_by) ?? '—'}` : ''}
-                </span>
-              </div>
-            ) : d.due_date ? (
-              <p style={{ margin: '4px 0 0', ...captionStyle }}>Due {fmtDate(d.due_date)}</p>
-            ) : null}
-            {evidenceRefs.length > 0 ? (
-              <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginTop: 8 }}>
-                {evidenceRefs.map((ref, i) => (
-                  <CatalystTag key={`${ref.entity_type}-${i}`} text={ref.note ? `${labelize(ref.entity_type)} · ${ref.note}` : labelize(ref.entity_type)} />
-                ))}
-              </div>
-            ) : null}
-            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 8 }}>
-              {canAuthor && d.status === 'open' ? (
-                // RD-DEF-003: deciding is the OFFICIAL act — it opens the outcome/rationale form,
-                // and the server refuses the creator approving their own decision (SoD, verbatim).
-                <Button spacing="compact" isDisabled={govBusyId === d.id} onClick={() => setDecideTarget(d)} testId={`strata-reviews-decide-${d.decision_key}`}>
-                  Record decision…
-                </Button>
-              ) : null}
-              {canAuthor && d.status === 'decided' ? (
-                <Tooltip content="Blocked by the server while this decision still has open actions. Closing is final — a closed decision and its actions become immutable history.">
-                  <Button spacing="compact" isDisabled={govBusyId === d.id} onClick={() => void transition('decision', d.id, 'closed')} testId={`strata-reviews-close-decision-${d.decision_key}`}>
-                    Close decision
-                  </Button>
-                </Tooltip>
-              ) : null}
-              {/* RD-DEF-005: no New action on a closed decision — the record is frozen history. */}
-              {canAuthor && d.status !== 'closed' ? (
-                <Button spacing="compact" appearance="default" onClick={() => setActionTargetId(d.id)} testId={`strata-reviews-new-action-${d.decision_key}`}>
-                  New action
-                </Button>
-              ) : null}
-              {d.status === 'closed' ? (
-                <span style={captionStyle} data-testid={`strata-reviews-decision-terminal-${d.decision_key}`}>
-                  Closed — immutable history; record a new superseding decision instead.
-                </span>
-              ) : null}
-              {/* RD-DEF-009: reachable history for every decision, straight from the audit store. */}
-              <Button spacing="compact" appearance="subtle" onClick={() => setGovHistoryFor({ table: 'strata_decisions', id: d.id, title: `${d.decision_key} · ${d.title}` })} testId={`strata-reviews-history-${d.decision_key}`}>
-                History
-              </Button>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  };
+  // Decision-register card — extracted to the exported DecisionCard so the cockpit's
+  // responsive/metadata behaviour is testable without mounting the whole page (RD-DEF-010).
+  const renderDecision = (d: StrataDecision) => (
+    <DecisionCard
+      key={d.id}
+      d={d}
+      canAuthor={canAuthor}
+      busy={govBusyId === d.id}
+      snapshotKey={selected?.snapshot_key ?? null}
+      profileName={profileName}
+      onDecide={() => setDecideTarget(d)}
+      onCloseDecision={() => void transition('decision', d.id, 'closed')}
+      onNewAction={() => setActionTargetId(d.id)}
+      onHistory={() => setGovHistoryFor({ table: 'strata_decisions', id: d.id, title: `${d.decision_key} · ${d.title}` })}
+    />
+  );
 
-  // Actions-register row (anchor 10): title + decision ancestry + owner + due tone
-  // + governed transitions. Overdue = open/in-progress past its due date.
-  const renderActionRow = (a: StrataAction, decisionKey: string) => {
-    const overdue = (a.status === 'open' || a.status === 'in_progress') && a.due_date != null && a.due_date < todayISO;
-    return (
-      <div key={a.id} style={{ padding: '12px 16px', borderBottom: `1px solid ${T.border}` }} data-testid={`strata-reviews-action-${a.action_key}`}>
-        <div style={{ ...bodyStyle, fontWeight: 600 }}>{a.title}</div>
-        <div style={{ display: 'flex', gap: 12, marginTop: 4, ...captionStyle, flexWrap: 'wrap', alignItems: 'center' }}>
-          <span>from <span style={{ color: T.subtle, fontWeight: 600 }}>{decisionKey}</span></span>
-          <span>owner <span style={{ color: T.subtle, fontWeight: 600 }}>{profileName(a.owner_id) ?? '—'}</span></span>
-          {a.due_date ? (
-            <span style={{ color: overdue ? 'var(--ds-text-danger)' : T.subtle, fontWeight: overdue ? 600 : 400 }}>Due {fmtDate(a.due_date)}</span>
-          ) : null}
-          <StatusLozenge status={a.status} label={labelize(a.status)} appearance={ACTION_LOZENGE[a.status] ?? 'default'} />
-        </div>
-        <div style={{ display: 'flex', gap: 8, marginTop: 8, flexWrap: 'wrap' }}>
-          {canAuthor && a.status === 'open' ? (
-            <Button spacing="compact" appearance="subtle" isDisabled={govBusyId === a.id} onClick={() => void transition('action', a.id, 'in_progress')} testId={`strata-reviews-start-${a.action_key}`}>Start</Button>
-          ) : null}
-          {canAuthor && a.status === 'in_progress' ? (
-            <Button spacing="compact" appearance="subtle" isDisabled={govBusyId === a.id} onClick={() => void transition('action', a.id, 'done')} testId={`strata-reviews-done-${a.action_key}`}>Done</Button>
-          ) : null}
-          {canAuthor && (a.status === 'open' || a.status === 'in_progress') ? (
-            <Button spacing="compact" appearance="subtle" isDisabled={govBusyId === a.id} onClick={() => void transition('action', a.id, 'cancelled')} testId={`strata-reviews-cancel-${a.action_key}`}>Cancel</Button>
-          ) : null}
-          {/* RD-DEF-009: reachable history for every action. */}
-          <Button spacing="compact" appearance="subtle" onClick={() => setGovHistoryFor({ table: 'strata_actions', id: a.id, title: `${a.action_key} · ${a.title}` })} testId={`strata-reviews-history-${a.action_key}`}>
-            History
-          </Button>
-        </div>
-      </div>
-    );
-  };
+  const renderActionRow = (a: StrataAction, decisionKey: string) => (
+    <ActionRow
+      key={a.id}
+      a={a}
+      decisionKey={decisionKey}
+      canAuthor={canAuthor}
+      busy={govBusyId === a.id}
+      todayISO={todayISO}
+      profileName={profileName}
+      onTransition={(status) => void transition('action', a.id, status)}
+      onHistory={() => setGovHistoryFor({ table: 'strata_actions', id: a.id, title: `${a.action_key} · ${a.title}` })}
+    />
+  );
 
   const skeletonBlock = (height: number): React.ReactNode => (
     <div aria-hidden style={{ height, borderRadius: 8, background: T.neutral }} />
@@ -2232,8 +2288,9 @@ export default function StrataReviewsPage() {
                           const isReady = bp.status === 'ready';
                           const isUrl = typeof bp.storage_path === 'string' && /^https?:\/\//.test(bp.storage_path);
                           const hasStoredBinary = typeof bp.storage_path === 'string' && bp.storage_path.length > 0 && !isUrl;
+                          // RD-DEF-010: wrap so Download stays reachable at 1024×768.
                           return (
-                            <div key={bp.id} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 4px', borderBottom: `1px solid ${T.border}` }} data-testid={`strata-reviews-pack-${bp.id}`}>
+                            <div key={bp.id} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 4px', borderBottom: `1px solid ${T.border}`, flexWrap: 'wrap', minWidth: 0 }} data-testid={`strata-reviews-pack-${bp.id}`}>
                               <CatalystTag text={bp.format.toUpperCase()} />
                               <StatusLozenge status={bp.status} label={labelize(bp.status)} appearance={PACK_LOZENGE[bp.status] ?? 'default'} />
                               <span style={{ ...captionStyle, flex: 1 }}>{fmtDateTime(bp.generated_at)}</span>

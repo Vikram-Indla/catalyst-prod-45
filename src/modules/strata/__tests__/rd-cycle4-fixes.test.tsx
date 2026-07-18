@@ -19,11 +19,11 @@ import { describe, expect, it, vi } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
-import { LINK_TYPES } from '@/modules/strata/components/ReviewWorkspaceModal';
-import { buildReviewsCsv, eligibleSnapshotOptions } from '@/modules/strata/pages/StrataReviewsPage';
+import { LINK_TYPES, objectiveOptions } from '@/modules/strata/components/ReviewWorkspaceModal';
+import { ActionRow, DecisionCard, buildReviewsCsv, eligibleSnapshotOptions } from '@/modules/strata/pages/StrataReviewsPage';
 import { StrataFormModal } from '@/modules/strata/components/authoring';
 import { StrataPanel } from '@/modules/strata/components/shared';
-import type { StrataReview, StrataSnapshot } from '@/modules/strata/types';
+import type { StrataAction, StrataDecision, StrataReview, StrataSnapshot } from '@/modules/strata/types';
 
 vi.mock('@/modules/strata/hooks/useStrata', async (importOriginal) => ({
   ...(await importOriginal<Record<string, unknown>>()),
@@ -149,6 +149,23 @@ describe('RD-DEF-011 — modal recovery after a rejected submission', () => {
     expect(onClose).not.toHaveBeenCalled();
   });
 
+  it('the header/backdrop close path (Escape) also dismisses immediately after a rejection', async () => {
+    const user = userEvent.setup();
+    const onClose = vi.fn();
+    render(
+      <StrataFormModal
+        open onClose={onClose} title="Attach snapshot" fields={fields}
+        onSubmit={async () => { throw new Error('rejected by the database'); }}
+      />,
+    );
+    await user.type(screen.getByLabelText('Value'), 'x');
+    await user.click(screen.getByRole('button', { name: 'Create' }));
+    await waitFor(() => expect(screen.getByText('rejected by the database')).toBeTruthy());
+    await user.keyboard('{Escape}');
+    expect(onClose).toHaveBeenCalled();
+    expect(screen.queryByText('Discard unsaved changes?')).toBeNull();
+  });
+
   it('reopening after a rejection shows a clean modal — no stale error or values', async () => {
     const user = userEvent.setup();
     const refusal = 'rejected by the database';
@@ -166,6 +183,82 @@ describe('RD-DEF-011 — modal recovery after a rejected submission', () => {
     rerender(ui(true));
     expect(screen.queryByText(refusal)).toBeNull();
     expect((screen.getByLabelText('Value') as HTMLInputElement).value).toBe('');
+  });
+});
+
+describe('RD-DEF-001 — Strategy objective picker semantics (mixed fixtures)', () => {
+  const mixed = [
+    { id: 'e-obj', name: 'Grow ARPU', element_type: 'objective' },
+    { id: 'e-theme', name: 'J Cycle 1 Strategy Theme', element_type: 'theme' },
+    { id: 'e-play', name: 'Fiber build-out', element_type: 'play' },
+    { id: 'e-obj2', name: 'Reduce churn', element_type: 'objective' },
+  ];
+  it('offers ONLY element_type=objective — the Codex theme finding is excluded', () => {
+    const opts = objectiveOptions(mixed);
+    expect(opts.map((o) => o.id).sort()).toEqual(['e-obj', 'e-obj2']);
+    expect(opts.some((o) => o.label === 'J Cycle 1 Strategy Theme')).toBe(false);
+    expect(opts.some((o) => o.label === 'Grow ARPU')).toBe(true);
+  });
+  it('is empty (honest empty state) when no objectives exist', () => {
+    expect(objectiveOptions(mixed.filter((e) => e.element_type !== 'objective'))).toHaveLength(0);
+  });
+});
+
+const decision = (over: Partial<StrataDecision>): StrataDecision => ({
+  id: 'd-1', decision_key: 'DEC-9', forum: null, snapshot_id: null, element_id: null,
+  decision_type: 'governance', title: 'T', description: null, owner_id: null,
+  decided_by: null, decided_at: null, due_date: null, status: 'open', evidence_refs: null,
+  outcome: null, rationale: null, approved_by: null, approved_at: null, created_by: null,
+  ...over,
+});
+
+describe('RD-DEF-010 — cockpit decision/action surfaces wrap at narrow widths', () => {
+  const LONG = 'A very long forum name that would otherwise push controls past the 1024 viewport edge and clip them irrecoverably';
+  const noop = () => {};
+
+  it('DecisionCard: metadata, verdict and control rows all declare wrap; long text breaks safely', () => {
+    render(
+      <DecisionCard
+        d={decision({ forum: LONG, owner_id: 'u1', status: 'decided', outcome: 'approved', rationale: 'because', decided_by: 'u2', approved_by: 'u2' })}
+        canAuthor busy={false} snapshotKey="SNAP-8" profileName={() => 'Vikram Indla'}
+        onDecide={noop} onCloseDecision={noop} onNewAction={noop} onHistory={noop}
+      />,
+    );
+    const meta = document.querySelector('[data-testid="strata-reviews-decision-meta-DEC-9"]') as HTMLElement;
+    const controls = document.querySelector('[data-testid="strata-reviews-decision-controls-DEC-9"]') as HTMLElement;
+    const verdict = document.querySelector('[data-testid="strata-reviews-decision-verdict-DEC-9"]') as HTMLElement;
+    expect(meta.style.flexWrap).toBe('wrap');
+    expect(controls.style.flexWrap).toBe('wrap');
+    expect(verdict.style.overflowWrap).toBe('anywhere');
+    // Controls remain present (reachable), not conditionally dropped, at any width:
+    expect(screen.getByTestId('strata-reviews-close-decision-DEC-9')).toBeTruthy();
+    expect(screen.getByTestId('strata-reviews-history-DEC-9')).toBeTruthy();
+  });
+
+  it('DecisionCard (closed): terminal notice + History wrap row; no New action', () => {
+    render(
+      <DecisionCard
+        d={decision({ decision_key: 'DEC-C', status: 'closed' })}
+        canAuthor busy={false} snapshotKey={null} profileName={() => null}
+        onDecide={noop} onCloseDecision={noop} onNewAction={noop} onHistory={noop}
+      />,
+    );
+    expect(screen.getByTestId('strata-reviews-decision-terminal-DEC-C')).toBeTruthy();
+    expect(screen.queryByTestId('strata-reviews-new-action-DEC-C')).toBeNull();
+    expect((document.querySelector('[data-testid="strata-reviews-decision-controls-DEC-C"]') as HTMLElement).style.flexWrap).toBe('wrap');
+  });
+
+  it('ActionRow: metadata and control rows declare wrap and stay keyboard-reachable', () => {
+    const a: StrataAction = { id: 'a-1', action_key: 'ACT-9', decision_id: 'd-1', title: 'Follow up', owner_id: 'u1', due_date: '2026-07-31', status: 'in_progress', note: null };
+    render(
+      <ActionRow a={a} decisionKey="DEC-9" canAuthor busy={false} todayISO="2026-07-18"
+        profileName={() => 'Vikram Indla'} onTransition={noop} onHistory={noop} />,
+    );
+    expect((document.querySelector('[data-testid="strata-reviews-action-meta-ACT-9"]') as HTMLElement).style.flexWrap).toBe('wrap');
+    expect((document.querySelector('[data-testid="strata-reviews-action-controls-ACT-9"]') as HTMLElement).style.flexWrap).toBe('wrap');
+    // Done/Cancel/History are real buttons — keyboard-focusable by nature.
+    expect(screen.getByTestId('strata-reviews-done-ACT-9').tagName).toBe('BUTTON');
+    expect(screen.getByTestId('strata-reviews-history-ACT-9').tagName).toBe('BUTTON');
   });
 });
 

@@ -47,6 +47,17 @@ export const LINK_TYPES = [
 ] as const;
 type LinkType = (typeof LINK_TYPES)[number]['value'];
 
+/**
+ * RD-DEF-001 · the "Strategy objective" picker offers ONLY element_type='objective' rows.
+ * A theme or any other element type under that label would misdescribe the record (Codex:
+ * "J Cycle 1 Strategy Theme" appeared here). Pure + exported so mixed-fixture exclusion is provable.
+ */
+export function objectiveOptions(
+  elements: Array<{ id: string; name: string; element_type: string }>,
+): Array<{ id: string; label: string }> {
+  return elements.filter((e) => e.element_type === 'objective').map((e) => ({ id: e.id, label: e.name }));
+}
+
 /** The agenda's canonical shape: an ORDERED jsonb array of `{ title }` items. */
 function agendaItems(agenda: unknown): string[] {
   if (!Array.isArray(agenda)) return [];
@@ -94,8 +105,10 @@ export function ReviewWorkspaceModal({ review, onClose }: { review: StrataReview
       switch (linkType) {
         // Objectives are cycle-scoped; without a cycle on the review there is nothing to offer,
         // and the empty state below says so rather than listing another cycle's objectives.
+        // objectiveOptions() keeps ONLY element_type='objective' — the server refuses
+        // mismatches too (20260718190000).
         case 'objective': return review.cycle_id
-          ? (await strategyApi.elements(review.cycle_id)).map((e) => ({ id: e.id, label: e.name }))
+          ? objectiveOptions(await strategyApi.elements(review.cycle_id))
           : [];
         case 'scorecard_instance': return (await scorecardApi.instances(review.cycle_id ?? undefined)).map((s) => ({ id: s.id, label: s.name }));
         case 'kpi': return (await kpiApi.list()).map((k) => ({ id: k.id, label: k.name }));
