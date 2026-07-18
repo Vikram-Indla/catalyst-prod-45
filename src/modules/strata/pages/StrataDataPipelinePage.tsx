@@ -4,11 +4,11 @@
  * UI renders DB/RPC values only — no business logic computed here.
  */
 import React, { useEffect, useMemo, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import {
   Button, CatalystTag, EmptyState, Modal, ModalBody, ModalFooter, ModalHeader, ModalTitle,
-  SectionMessage, Spinner, Textfield, Tooltip,
+  SectionMessage, Select, Spinner, Textfield, Tooltip,
 } from '@/components/ads';
 import { JiraTable } from '@/components/shared/JiraTable';
 import type { Column } from '@/components/shared/JiraTable';
@@ -165,6 +165,18 @@ export function reversalDisplayMeta(
   };
 }
 
+/**
+ * DL-DEF-004: run-collection search/filter predicate. Matches run key, file name,
+ * channel, status and run type case-insensitively; a status filter is exact.
+ */
+export function filterRunRows(runs: StrataUploadRun[], q: string, status: string): StrataUploadRun[] {
+  const needle = q.toLowerCase();
+  return runs.filter((r) => {
+    const hay = `${r.run_key} ${r.file_name ?? ''} ${labelize(r.channel)} ${labelize(r.status)} ${labelize(r.run_type ?? 'import')}`.toLowerCase();
+    return (!q || hay.includes(needle)) && (!status || r.status === status);
+  });
+}
+
 /** Client-side error clustering (anchor 09, P4-D3) — group validation results by cause. */
 interface ErrorCluster { key: string; code: string; field: string | null; count: number; message: string; fix: string | null; severity: string; }
 function clusterErrors(results: StrataValidationResult[]): ErrorCluster[] {
@@ -262,10 +274,26 @@ function SourcesPanel() {
   const runs = useUploadRuns();
   const kpis = useKpis();
   const navigate = useNavigate();
-  const rows = useMemo(
+  // DL-DEF-004: search + pagination with URL-preserved state (?srcq, ?srcpage).
+  const [searchParams, setSearchParams] = useSearchParams();
+  const srcQ = searchParams.get('srcq') ?? '';
+  const srcPage = Math.max(1, Number(searchParams.get('srcpage') ?? '1') || 1);
+  const setListParam = (k: string, v: string) => setSearchParams((prev) => {
+    const n = new URLSearchParams(prev);
+    if (v) n.set(k, v); else n.delete(k);
+    if (k !== 'srcpage') n.delete('srcpage'); // a new search resets paging
+    return n;
+  }, { replace: true });
+  const allRows = useMemo(
     () => buildSourceRows(sources.data ?? [], runs.data ?? [], kpis.data ?? []),
     [sources.data, runs.data, kpis.data],
   );
+  const rows = useMemo(() => {
+    if (!srcQ) return allRows;
+    const needle = srcQ.toLowerCase();
+    return allRows.filter((r) =>
+      `${r.source.name} ${labelize(r.source.system_type)} ${r.statusLabel} ${r.lastRunKey ?? ''}`.toLowerCase().includes(needle));
+  }, [allRows, srcQ]);
 
   const columns: Column<SourceRow>[] = [
     {
@@ -328,20 +356,43 @@ function SourcesPanel() {
       testId="strata-sources-panel"
       actions={<span style={captionStyle}>Sorted by consequence: stale &gt; aging &gt; healthy</span>}
     >
+      <div style={{ padding: '12px 16px 0', maxWidth: 340 }}>
+        <Textfield
+          value={srcQ}
+          onChange={(e) => setListParam('srcq', e.target.value)}
+          placeholder="Search sources (name, type, status)"
+          aria-label="Search data sources"
+          isCompact
+        />
+      </div>
       <PanelState
         query={sources}
-        empty={rows.length === 0}
+        empty={allRows.length === 0}
         emptyHeader="No data sources registered yet"
         emptyDescription="Register a source to begin governed ingestion — its freshness and downstream KPIs appear here."
       >
-        <JiraTable<SourceRow>
-          columns={columns}
-          data={rows}
-          getRowId={(r) => r.source.id}
-          showRowCount={false}
-          ariaLabel="Data sources"
-          onRowClick={(r) => { if (r.source.slug) navigate(Routes.strata.source(r.source.slug)); }}
-        />
+        {rows.length === 0 ? (
+          <div style={{ padding: 16 }}>
+            <EmptyState
+              size="compact"
+              header="No sources match your search"
+              description={`Nothing matches "${srcQ}".`}
+              primaryAction={<Button onClick={() => setListParam('srcq', '')}>Clear search</Button>}
+            />
+          </div>
+        ) : (
+          <JiraTable<SourceRow>
+            columns={columns}
+            data={rows}
+            getRowId={(r) => r.source.id}
+            showRowCount={false}
+            ariaLabel="Data sources"
+            rowsPerPage={10}
+            page={srcPage}
+            onPageChange={(p) => setSearchParams((prev) => { const n = new URLSearchParams(prev); n.set('srcpage', String(p)); return n; }, { replace: true })}
+            onRowClick={(r) => { if (r.source.slug) navigate(Routes.strata.source(r.source.slug)); }}
+          />
+        )}
       </PanelState>
     </StrataPanel>
   );
@@ -362,6 +413,26 @@ function RunsPanel() {
     return m;
   }, [kpis.data]);
   const hasSyncRole = (rolesQ.data ?? []).some((r) => (SYNC_ROLES as readonly string[]).includes(r));
+  // DL-DEF-004: search + status filter + pagination with URL-preserved state (?runq, ?runstatus, ?runpage).
+  const [searchParams, setSearchParams] = useSearchParams();
+  const runQ = searchParams.get('runq') ?? '';
+  const runStatus = searchParams.get('runstatus') ?? '';
+  const runPage = Math.max(1, Number(searchParams.get('runpage') ?? '1') || 1);
+  const setListParam = (k: string, v: string) => setSearchParams((prev) => {
+    const n = new URLSearchParams(prev);
+    if (v) n.set(k, v); else n.delete(k);
+    if (k !== 'runpage') n.delete('runpage'); // new search/filter resets paging
+    return n;
+  }, { replace: true });
+  const statusOptions = useMemo(
+    () => [...new Set((runs.data ?? []).map((r) => r.status))].sort()
+      .map((s) => ({ label: labelize(s), value: s })),
+    [runs.data],
+  );
+  const filteredRuns = useMemo(
+    () => filterRunRows(runs.data ?? [], runQ, runStatus),
+    [runs.data, runQ, runStatus],
+  );
   const [syncBusy, setSyncBusy] = useState(false);
   const [syncError, setSyncError] = useState<string | null>(null);
   const [syncNote, setSyncNote] = useState<string | null>(null);
@@ -469,19 +540,55 @@ function RunsPanel() {
           </SectionMessage>
         </div>
       ) : null}
+      <div style={{ display: 'flex', gap: 8, padding: '12px 16px 0', alignItems: 'center', flexWrap: 'wrap' }}>
+        <div style={{ flex: '1 1 220px', maxWidth: 340 }}>
+          <Textfield
+            value={runQ}
+            onChange={(e) => setListParam('runq', e.target.value)}
+            placeholder="Search runs (key, file, channel, status)"
+            aria-label="Search upload runs"
+            isCompact
+          />
+        </div>
+        <div style={{ width: 190 }}>
+          <Select
+            options={statusOptions}
+            value={statusOptions.find((o) => o.value === runStatus) ?? null}
+            onChange={(o) => setListParam('runstatus', o?.value ?? '')}
+            isClearable
+            isSearchable={false}
+            placeholder="All statuses"
+            aria-label="Filter runs by status"
+          />
+        </div>
+      </div>
       <PanelState
         query={runs}
         empty={(runs.data ?? []).length === 0}
         emptyHeader="No upload runs yet for this period"
         emptyDescription="Runs appear here as soon as data is uploaded through a registered source."
       >
-        <JiraTable<StrataUploadRun>
-          columns={columns}
-          data={runs.data ?? []}
-          getRowId={(r) => r.id}
-          onRowClick={(r) => navigate(Routes.strata.run(r.run_key))}
-          ariaLabel="Upload runs"
-        />
+        {filteredRuns.length === 0 ? (
+          <div style={{ padding: 16 }}>
+            <EmptyState
+              size="compact"
+              header="No runs match your search"
+              description={runStatus ? `Nothing matches "${runQ}" with status ${labelize(runStatus)}.` : `Nothing matches "${runQ}".`}
+              primaryAction={<Button onClick={() => { setListParam('runq', ''); setListParam('runstatus', ''); }}>Clear search</Button>}
+            />
+          </div>
+        ) : (
+          <JiraTable<StrataUploadRun>
+            columns={columns}
+            data={filteredRuns}
+            getRowId={(r) => r.id}
+            onRowClick={(r) => navigate(Routes.strata.run(r.run_key))}
+            ariaLabel="Upload runs"
+            rowsPerPage={10}
+            page={runPage}
+            onPageChange={(p) => setSearchParams((prev) => { const n = new URLSearchParams(prev); n.set('runpage', String(p)); return n; }, { replace: true })}
+          />
+        )}
       </PanelState>
     </StrataPanel>
   );
