@@ -113,7 +113,17 @@ function buildSourceRows(sources: StrataDataSource[], runs: StrataUploadRun[], k
  * `strata_reverse_run` (migration 20260717190000): a promoted run is reversible for 24 hours, before
  * a lock or an issuance. RunReversalSection asks the eligibility RPC rather than asserting either way.
  */
-function runLifecycleSteps(run: StrataUploadRun): StrataLifecycleStep[] {
+export function runLifecycleSteps(run: StrataUploadRun): StrataLifecycleStep[] {
+  // DL-DEF-005: a compensating reversal is terminal evidence. It never maps onto the
+  // 7-step import journey — there is no Promote or Calculated stage to be "in progress".
+  if (run.run_type === 'reversal') {
+    const terminal = run.status === 'completed' || run.status === 'failed';
+    return [
+      { id: 'created', label: 'Reversal created', state: 'done', note: run.reversal_reason ?? undefined },
+      { id: 'applied', label: 'Originals marked reversed', state: terminal ? 'done' : 'current', note: 'original evidence preserved' },
+      { id: 'terminal', label: 'Terminal', state: run.status === 'failed' ? 'failed' : terminal ? 'done' : 'todo', note: 'nothing to promote' },
+    ];
+  }
   const s = run.status;
   const rejects = run.row_count_rejected ?? 0;
   const failed = s === 'failed';
@@ -136,6 +146,23 @@ function runLifecycleSteps(run: StrataUploadRun): StrataLifecycleStep[] {
     { id: 'promote', label: 'Promote', state: st(5), note: 'pending attestation' },
     { id: 'calculated', label: 'Calculated', state: st(6), note: undefined },
   ];
+}
+
+/**
+ * DL-DEF-005: resolve a reversal run's relationships and actor to governed display
+ * values. Zero-assumption — anything unresolved stays null and the caller renders
+ * the raw identifier (honest evidence) rather than a guess.
+ */
+export function reversalDisplayMeta(
+  run: Pick<StrataUploadRun, 'reverses_run_id' | 'reversed_by_run_id' | 'initiated_by'>,
+  runKeyById: Map<string, string>,
+  profileNameById: Map<string, { name: string | null }> | undefined,
+): { reversesKey: string | null; reversedByKey: string | null; actorName: string | null } {
+  return {
+    reversesKey: run.reverses_run_id ? runKeyById.get(run.reverses_run_id) ?? null : null,
+    reversedByKey: run.reversed_by_run_id ? runKeyById.get(run.reversed_by_run_id) ?? null : null,
+    actorName: run.initiated_by ? profileNameById?.get(run.initiated_by)?.name ?? null : null,
+  };
 }
 
 /** Client-side error clustering (anchor 09, P4-D3) — group validation results by cause. */
@@ -868,6 +895,13 @@ function RunDetailSection({ runKey, detail }: { runKey: string; detail: RunDetai
   const invalidate = useInvalidateStrata();
   const kpisQ = useKpis();       // downstream dependents (P4-D4) via strata_kpis.data_source_id
   const sourcesQ = useDataSources(); // source name for the contract/lineage rail
+  // DL-DEF-005: resolve reversal relationships to run keys and the actor to a governed name.
+  const allRunsQ = useUploadRuns();
+  const profilesQ = useProfileNames();
+  const runKeyById = useMemo(
+    () => new Map((allRunsQ.data ?? []).map((r) => [r.id, r.run_key] as const)),
+    [allRunsQ.data],
+  );
   const runId = detail.data?.run.id ?? null;
 
   // Attestation applies to strata_kpi_actuals (not staging rows). There is no
@@ -1041,6 +1075,16 @@ function RunDetailSection({ runKey, detail }: { runKey: string; detail: RunDetai
   const rejectedRows = rows.filter((r) => r.validation_status === 'rejected');
   // DL-DEF-005: a reversal run is terminal evidence — it never offers Promote.
   const isReversalRun = run.run_type === 'reversal';
+  const revMeta = reversalDisplayMeta(run, runKeyById, profilesQ.data);
+  /** Run-key link when resolvable; raw id (honest evidence) when not. */
+  const runRef = (id: string | null, key: string | null, testId: string) =>
+    id == null ? <span style={{ color: T.text }}>—</span>
+    : key == null ? <span style={{ ...mono, color: T.text }}>{id}</span>
+    : (
+      <Button appearance="subtle-link" spacing="none" onClick={() => navigate(Routes.strata.run(key))} testId={testId}>
+        {key}
+      </Button>
+    );
   const promoteReady = hasIngestRole && run.status === 'completed' && !isReversalRun;
   const tileNum: React.CSSProperties = { fontSize: 'var(--ds-font-size-400)', fontWeight: 700, fontVariantNumeric: 'tabular-nums' };
   /**
@@ -1184,9 +1228,10 @@ function RunDetailSection({ runKey, detail }: { runKey: string; detail: RunDetai
               <div style={{ display: 'grid', gridTemplateColumns: '110px minmax(0,1fr)', gap: 8, ...captionStyle }}>
                 <span style={{ color: T.subtlest }}>Run type</span><span style={{ color: T.text }}>Reversal (terminal — nothing to promote)</span>
                 <span style={{ color: T.subtlest }}>Reverses run</span>
-                <span style={{ ...mono, color: T.text }}>{run.reverses_run_id ?? '—'}</span>
+                <span>{runRef(run.reverses_run_id, revMeta.reversesKey, 'strata-reversal-reverses-link')}</span>
                 <span style={{ color: T.subtlest }}>Reason</span><span style={{ color: T.text }}>{run.reversal_reason ?? '—'}</span>
-                <span style={{ color: T.subtlest }}>Actor</span><span style={{ ...mono, color: T.text }}>{run.initiated_by ?? '—'}</span>
+                <span style={{ color: T.subtlest }}>Actor</span>
+                <span style={revMeta.actorName ? { color: T.text } : { ...mono, color: T.text }} data-testid="strata-reversal-actor">{revMeta.actorName ?? run.initiated_by ?? '—'}</span>
                 <span style={{ color: T.subtlest }}>Completed</span><span style={{ color: T.text }}>{run.completed_at ? fmtDateTime(run.completed_at) : '—'}</span>
               </div>
             </StrataPanel>
@@ -1251,13 +1296,13 @@ function RunDetailSection({ runKey, detail }: { runKey: string; detail: RunDetai
               {run.reverses_run_id ? (
                 <>
                   <span style={{ color: T.subtlest }}>Reverses</span>
-                  <span style={{ ...mono, color: T.text }}>{run.reverses_run_id}</span>
+                  <span>{runRef(run.reverses_run_id, revMeta.reversesKey, 'strata-lineage-reverses-link')}</span>
                 </>
               ) : null}
               {run.reversed_by_run_id ? (
                 <>
                   <span style={{ color: T.subtlest }}>Reversed by</span>
-                  <span style={{ ...mono, color: T.text }}>{run.reversed_by_run_id}</span>
+                  <span>{runRef(run.reversed_by_run_id, revMeta.reversedByKey, 'strata-lineage-reversed-by-link')}</span>
                 </>
               ) : null}
               {run.reversal_reason ? (
