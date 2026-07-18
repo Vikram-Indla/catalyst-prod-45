@@ -7,7 +7,8 @@
  * The unions below mirror DB CHECK constraints (system states), not tenant taxonomy.
  */
 
-export type GovernedStatus = 'draft' | 'pending_approval' | 'approved' | 'retired' | 'superseded';
+export type GovernedStatus =
+  | 'draft' | 'pending_approval' | 'changes_requested' | 'approved' | 'retired' | 'superseded' | 'rejected';
 export type DataState = 'live' | 'draft' | 'pending_validation' | 'locked';
 // E-6: accepted_with_exception COUNTS after Strategy Office authorization but is NOT independent
 // validation — it never collapses into 'validated'. reversed = superseded by a reversal (D-7/E-5).
@@ -271,6 +272,49 @@ export interface StrataScorecardModel extends GovernedEnvelope {
   rollup_method: string;
   threshold_scheme_id: string | null;
   period_granularity: string;
+  /** Governed approval workflow (CAT-STRATA-SC-GOVAPPROVAL-20260718-001).
+   * 0 = never submitted through the workflow (pre-migration row). */
+  submission_attempt: number;
+  submitted_by: string | null;
+  submitted_at: string | null;
+  assigned_approver_id: string | null;
+  assignment_source: 'selected' | 'policy' | 'delegated' | null;
+  /** Latest request-changes/reject comment; full history in audit events. */
+  review_comment: string | null;
+  rejected_by: string | null;
+  rejected_at: string | null;
+}
+
+/** One approval task per submission attempt; exactly one 'open' per pending version (DB-enforced). */
+export interface StrataScorecardApprovalTask {
+  id: string;
+  model_id: string;
+  status: 'open' | 'completed' | 'cancelled' | 'superseded';
+  assigned_to: string;
+  submission_attempt: number;
+  due_date: string | null;
+  outcome: 'approved' | 'changes_requested' | 'rejected' | null;
+  created_by: string | null;
+  created_at: string;
+  completed_by: string | null;
+  completed_at: string | null;
+  cancelled_at: string | null;
+  cancel_reason: string | null;
+}
+
+/** strata_scorecard_approver_candidates row — permitted directory scope only. */
+export interface StrataApproverCandidate {
+  user_id: string;
+  display_name: string | null;
+  email: string | null;
+  roles: string[];
+}
+
+/** strata_validate_scorecard_model checklist — the ONE server-side authority. */
+export interface StrataScorecardValidation {
+  blockers: string[];
+  warnings: string[];
+  passed: string[];
 }
 
 export interface StrataModelPerspective {

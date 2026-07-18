@@ -53,6 +53,8 @@ vi.mock('@/modules/strata/hooks/useStrata', () => ({
   useModelPerspectives: (id: string) => H.ok(MP.filter((r) => r.model_id === id)),
   usePerspectives: () => H.ok(H.PERSPECTIVES),
   useStrataRoles: () => H.ok(['strategy_office', 'strata_admin']),
+  // SC-GOVAPPROVAL: identity hook used by ScorecardLifecycleActions (submit/decide affordances).
+  useStrataUserId: () => H.ok('test-user-id'),
   useInvalidateStrata: () => H.invalidate,
   useChangeRequests: () => H.ok([]),
   useGateModels: () => H.ok([]),

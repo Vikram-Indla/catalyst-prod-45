@@ -30,6 +30,10 @@ function areaFor(n: StrataNotification): string {
       return Routes.strata.portfolio();
     case 'strata_kpis':
       return Routes.strata.kpis();
+    case 'strata_scorecard_models':
+      // SC-GOVAPPROVAL: submitted/withdrawn/changes-requested/rejected/approved/
+      // assigned all land on the Model Builder, where the lifecycle card lives.
+      return Routes.strata.adminSection('scorecard-models');
     default:
       // config_pending_approval and anything else → the admin change log.
       return Routes.strata.adminSection('change-log');

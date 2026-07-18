@@ -20,7 +20,8 @@ import type {
   StrataPeriod, StrataPerspective, StrataThemeCharter, StrataPortfolio, StrataProjectCard,
   StrataProjectCardFieldConfig, StrataProjectCardPicklist, StrataProjectCardSectionConfig,
   StrataModelMeasure, StrataNotificationTarget, StrataProjectCardTabConfig, StrataRoleSod, StrataRisk, StrataRole, StrataScorecardInstance, StrataScorecardLine,
-  StrataScorecardModel, StrataSnapshot, StrataStagingRow, StrataStrategyElement, StrataThresholdPreview, StrataThresholdScheme,
+  StrataScorecardModel, StrataScorecardApprovalTask, StrataApproverCandidate, StrataScorecardValidation,
+  StrataSnapshot, StrataStagingRow, StrataStrategyElement, StrataThresholdPreview, StrataThresholdScheme,
   StrataUploadRun, StrataUploadTemplate, StrataValidationResult, StrataValueCategory,
   StrataWorkflowConfig, ThresholdBand,
 } from '../types';
@@ -126,8 +127,47 @@ export const configApi = {
     run(typedRpc('strata_approve_record', { p_table: table, p_id: id, p_note: note ?? null })),
   retireRecord: (table: string, id: string, reason?: string) =>
     run(typedRpc('strata_retire_record', { p_table: table, p_id: id, p_reason: reason ?? null })),
-  approveScorecardModel: (modelId: string, note?: string) =>
-    run(typedRpc('strata_approve_scorecard_model', { p_model: modelId, p_note: note ?? null })),
+  /**
+   * Governed scorecard approval workflow (CAT-STRATA-SC-GOVAPPROVAL-20260718-001).
+   * Every verb is a dedicated RPC: the DB enforces the assigned-approver rule,
+   * maker-checker, the shared validator, one-open-task and the optimistic
+   * concurrency token — the UI only explains those rules up front.
+   * `expectedUpdatedAt` is the model row's updated_at as loaded; the server
+   * refuses stale tokens so a decision never lands on a definition the actor
+   * did not see.
+   */
+  approveScorecardModel: (modelId: string, note?: string, expectedUpdatedAt?: string) =>
+    run(typedRpc('strata_approve_scorecard_model', {
+      p_model: modelId, p_note: note ?? null, p_expected_updated_at: expectedUpdatedAt ?? null,
+    })),
+  submitScorecardModel: (modelId: string, approverId: string, note?: string, expectedUpdatedAt?: string) =>
+    run(typedRpc('strata_submit_scorecard_model', {
+      p_model: modelId, p_approver: approverId, p_note: note ?? null,
+      p_expected_updated_at: expectedUpdatedAt ?? null,
+    })),
+  withdrawScorecardModel: (modelId: string, reason?: string) =>
+    run(typedRpc('strata_withdraw_scorecard_model', { p_model: modelId, p_reason: reason ?? null })),
+  requestScorecardChanges: (modelId: string, comment: string) =>
+    run(typedRpc('strata_request_scorecard_changes', { p_model: modelId, p_comment: comment })),
+  rejectScorecardModel: (modelId: string, reason: string) =>
+    run(typedRpc('strata_reject_scorecard_model', { p_model: modelId, p_reason: reason })),
+  /** strata_admin remediation/reassignment — never a decision verb. */
+  assignScorecardApprover: (modelId: string, approverId: string, reason?: string) =>
+    run(typedRpc('strata_assign_scorecard_approver', {
+      p_model: modelId, p_approver: approverId, p_reason: reason ?? null,
+    })),
+  /** Eligible approvers for the chooser — server re-validates at submit; this list is never trusted. */
+  scorecardApproverCandidates: (modelId: string): Promise<StrataApproverCandidate[]> =>
+    run(typedRpc('strata_scorecard_approver_candidates', { p_model: modelId }))
+      .then((r) => (r as StrataApproverCandidate[] | null) ?? []),
+  /** The ONE server-side validation checklist (blockers/warnings/passed) — same authority submit + approve enforce. */
+  validateScorecardModel: (modelId: string): Promise<StrataScorecardValidation> =>
+    run(typedRpc('strata_validate_scorecard_model', { p_model: modelId }))
+      .then((r) => (r as StrataScorecardValidation | null) ?? { blockers: [], warnings: [], passed: [] }),
+  /** Approval tasks (read-only; writes are RPC-only). All tasks for the given model, newest first. */
+  scorecardApprovalTasks: (modelId: string): Promise<StrataScorecardApprovalTask[]> =>
+    run(typedQuery('strata_scorecard_approval_tasks').select('*')
+      .eq('model_id', modelId).order('created_at', { ascending: false })),
   /**
    * D-2/D-3: the governed way to change an APPROVED model. Clones the complete aggregate into a
    * new draft at version+1 with supersedes_id set, and leaves the predecessor untouched. Approving
@@ -319,6 +359,33 @@ export const configApi = {
           + 'if this model is approved, create a new draft version to change its weights.',
         );
       }
+    }
+  },
+  /**
+   * SC-GOVAPPROVAL: attach/detach a perspective on an EDITABLE model. No RPC on
+   * purpose — RLS on strata_scorecard_model_perspectives is the entire gate
+   * (strategy_office AND parent status IN draft/changes_requested), same shape
+   * as updateThresholdBands. `.select()` is load-bearing: an RLS-filtered write
+   * matches zero rows with NO error, and we refuse to report a save that never
+   * happened.
+   */
+  addModelPerspective: async (modelId: string, perspectiveId: string, weight = 0, orderIndex = 0): Promise<void> => {
+    const rows = await run<Array<{ id: string }>>(
+      typedQuery('strata_scorecard_model_perspectives')
+        .insert({ model_id: modelId, perspective_id: perspectiveId, weight, order_index: orderIndex })
+        .select('id'),
+    );
+    if ((rows?.length ?? 0) === 0) {
+      throw new Error('Adding the perspective was rejected — only draft or changes-requested models can be edited.');
+    }
+  },
+  removeModelPerspective: async (modelId: string, perspectiveId: string): Promise<void> => {
+    const rows = await run<Array<{ id: string }>>(
+      typedQuery('strata_scorecard_model_perspectives')
+        .delete().eq('model_id', modelId).eq('perspective_id', perspectiveId).select('id'),
+    );
+    if ((rows?.length ?? 0) === 0) {
+      throw new Error('Removing the perspective was rejected — only draft or changes-requested models can be edited.');
     }
   },
 };

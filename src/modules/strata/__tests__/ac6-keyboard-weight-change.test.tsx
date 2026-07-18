@@ -61,6 +61,8 @@ vi.mock('@/modules/strata/hooks/useStrata', () => ({
   usePerspectives: () => H.ok(H.PERSPECTIVES),
   // strategy_office is the role the weights editor gates on (matches RLS).
   useStrataRoles: () => H.ok(['strategy_office', 'strata_admin']),
+  // SC-GOVAPPROVAL: identity hook used by ScorecardLifecycleActions (submit/decide affordances).
+  useStrataUserId: () => H.ok('test-user-id'),
   useInvalidateStrata: () => H.invalidate,
   useChangeRequests: () => H.ok([]),
   useGateModels: () => H.ok([]),

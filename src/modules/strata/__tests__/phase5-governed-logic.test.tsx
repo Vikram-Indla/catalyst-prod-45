@@ -17,6 +17,15 @@ const H = vi.hoisted(() => {
     period_granularity: 'quarter', version: 1, status, effective_from: '2026-07-05', effective_to: null,
     approved_by: null, approved_at: null, change_reason: null, supersedes_id: null,
     created_by: null, created_at: 'x', updated_at: 'x',
+    // SC-GOVAPPROVAL: pending models carry an assigned approver; the mocked
+    // signed-in user IS the assignee so the decision verbs render and the
+    // integrity gate on Approve stays observable (its original intent).
+    submission_attempt: status === 'pending_approval' ? 1 : 0,
+    submitted_by: status === 'pending_approval' ? 'someone-else' : null,
+    submitted_at: status === 'pending_approval' ? '2026-07-18' : null,
+    assigned_approver_id: status === 'pending_approval' ? 'test-user-id' : null,
+    assignment_source: status === 'pending_approval' ? 'selected' : null,
+    review_comment: null, rejected_by: null, rejected_at: null,
   });
   return {
     mkModel,
@@ -35,6 +44,8 @@ vi.mock('@/modules/strata/hooks/useStrata', () => ({
   useModelPerspectives: () => H.ok(H.modelPerspectives),
   usePerspectives: () => H.ok([{ id: 'p1', name: 'Financial' }, { id: 'p2', name: 'Customer' }]),
   useStrataRoles: () => H.ok(['strata_admin']),
+  // SC-GOVAPPROVAL: identity hook used by ScorecardLifecycleActions (submit/decide affordances).
+  useStrataUserId: () => H.ok('test-user-id'),
   useInvalidateStrata: () => vi.fn(),
   useChangeRequests: () => H.ok([]),
   useGateModels: () => H.ok([]),
@@ -170,12 +181,12 @@ describe('ModelIntegrityBand — anchor 05 tri-state + blocking', () => {
 
   it('CFG-006 C4: Approve on a PENDING model failing integrity is blocked with visible reasons', () => {
     renderWith([60, 40], 'pending_approval'); // weights pass, no measures anywhere
-    expect(screen.getByRole('button', { name: /Approve/i })).toBeDisabled();
+    expect(screen.getByRole('button', { name: /^Approve$/ })).toBeDisabled();
     expect(screen.getByText(/Cannot approve: Financial has no measures assigned; Customer has no measures assigned/)).toBeInTheDocument();
   });
 
   it('CFG-006 C4: Approve stays enabled on a PENDING model with full integrity', () => {
     renderWith([60, 40], 'pending_approval', true);
-    expect(screen.getByRole('button', { name: /Approve/i })).not.toBeDisabled();
+    expect(screen.getByRole('button', { name: /^Approve$/ })).not.toBeDisabled();
   });
 });

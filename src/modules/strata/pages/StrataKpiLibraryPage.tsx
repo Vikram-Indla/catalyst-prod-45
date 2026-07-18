@@ -63,8 +63,10 @@ const GOVERNED_LOZENGE: Record<GovernedStatus, { label: string; appearance: Reac
   approved: { label: 'Approved', appearance: 'success' },
   draft: { label: 'Draft', appearance: 'default' },
   pending_approval: { label: 'Pending approval', appearance: 'moved' },
+  changes_requested: { label: 'Changes requested', appearance: 'inprogress' },
   retired: { label: 'Retired', appearance: 'removed' },
   superseded: { label: 'Superseded', appearance: 'default' },
+  rejected: { label: 'Rejected', appearance: 'removed' },
 };
 
 export function StrataGovernedStatusLozenge({ status }: { status: GovernedStatus | string | null | undefined }) {

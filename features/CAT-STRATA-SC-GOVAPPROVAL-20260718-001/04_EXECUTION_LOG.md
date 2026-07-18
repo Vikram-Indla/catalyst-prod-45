@@ -1,0 +1,25 @@
+# Execution log — CAT-STRATA-SC-GOVAPPROVAL-20260718-001 (2026-07-18)
+
+## Slices delivered
+1. **Migration** `supabase/migrations/20260718200000_strata_scorecard_governed_approval.sql` — states (`changes_requested`, `rejected`), submission/assignment metadata, `strata_scorecard_approval_tasks` (one-open partial unique index), status-guard trigger (GUC handshake), RLS widened to draft+changes_requested, shared validator, candidates+eligibility fns, submit/withdraw/request-changes/reject/approve/assign RPCs, generic-verb redirect, draft-version RPC hardening (approved-source only, monotonic version numbers), notification rules ×6, SoD registry update. Applied to staging `cyijbdeuehohvhnsywig`; ledger row `20260718200000` 1:1 with the file.
+2. **API/types/hooks** — `configApi` verbs + candidates/validation/tasks readers; add/remove model perspective (RLS-gated table writes with zero-rows guard); widened `GovernedStatus`; new types; 3 read hooks.
+3. **UI** (`ScorecardModelsSection` + `ScorecardLifecycleActions`) — submit/resubmit dialog (server checklist, approver chooser scoped to eligible candidates, resolved-approver line, note, concurrency token), pending banner with contract-mandated copy + attempt/assignee metadata, decision verbs for the assigned approver only, withdraw (submitter/admin), admin assign/reassign, changes-requested and rejected banners, add/remove perspectives in the weights editor, lazy approval-history panel (StrataAuditHistory), bell routing for `strata_scorecard_models`, KPI-library lozenge coverage for new states.
+4. **Tests** — `scgov-approval-migration.guard.test.ts` (26 asserts on latest RPC bodies), `scgov-lifecycle-ui.test.tsx` (17 role/state UI tests); 4 existing suites' mocks extended (additive only); phase5 pending fixture now models the assigned approver (original intent preserved).
+
+## DB proof suites (all rolled back; staging data untouched)
+- PROOF-1 (9/9): generic submit/approve redirect; legacy pending not decidable without assignee; validation blocks submit; self/ineligible approver refused; superuser direct status UPDATE blocked by trigger; validator blockers on B2B v2; candidates exclude self+creator.
+- PROOF-2 (12/12): assign → request-changes (empty comment refused) → same-version edit via RPC → resubmit (attempt 2, stale token refused, one open task) → submitter/unrelated approve refused → stale token at approve refused → approve = atomic activate + supersede + task completion → duplicate approval refused → 4 audit rows, notifications correct.
+- PROOF-3 (10/10): non-submitter withdraw refused; admin withdraw cancels task → draft; resubmit; empty reject reason refused; reject terminal (no resubmit/edit/clone); post-rejection revision numbered v3; predecessor stayed active.
+
+## Browser journeys (localhost:8080 served from THIS checkout; user = Vikram Indla; second identity Jahanara Khan via server-side impersonated RPCs)
+- E2E model (SC GovApproval E2E, author Jahanara → approver Vikram): approver saw 3 verbs; Request changes (comment mandatory) → changes-requested banner + same version + editable; weights edited 65/35 in changes_requested; resubmit dialog as non-author showed "No eligible approver available" with confirm disabled; author resubmitted (attempt 2); Approve dialog (checklist all ✓, activation summary) → APPROVED; retired at cleanup.
+- B2B Sector Scorecard v2 (the defect-pack subject): withdrew in browser → draft; added measures to both empty perspectives via Edit measures; resubmitted via dialog (8-item checklist all green, chooser listed only Jahanara, "Approval will be assigned to Jahanara Khan"); author-pending view = Withdraw + Reassign, NO decision verbs; Jahanara approved (server) → **v2 APPROVED / v1 SUPERSEDED** — the screenshot defect closed on real data.
+- CEO Enterprise Scorecard v2 (legacy pending, no assignee): "Awaiting approver assignment" + admin-must-assign copy; admin Assign dialog → Jahanara; Jahanara rejected (reason) → REJECTED banner, terminal copy, v1 still active.
+- Forbidden direct API (real browser token): approve-non-pending 400; edit-rejected-measures 400 (immutable); generic submit bypass 400 (redirect); direct PATCH status = RLS zero rows, row unchanged.
+- Approval history panel: 10 append-only events with actor/timestamps/before-after/comments. Notification bell: 6 event types delivered to correct parties.
+- Console: only pre-existing Atlaskit dev warnings (legacy context API/defaultProps); zero app errors. Keyboard: focus-visible traversal OK (plus AC-6 keyboard suites green).
+
+## Known environmental notes
+- ads-audit-gate (+9 tokens) and ads-color-strict-gate (+1 named) fail on a PRISTINE main checkout — pre-existing debt from hook-bypassing merge commits; my changed files are clean (changed-files gate ✅, both failures reproduced with all my changes stashed). Follow-up task chip spawned.
+- 6 vitest failures (ac6-keyboard-decision-verbs ×2, rd-cycle4-fixes ×4) are pre-existing on pristine main; identical before/after across 3 consecutive runs.
+- Chrome MCP window manager refused a true 1024×768 resize (min-width); no horizontal overflow at any tested width; dialogs are 600px.

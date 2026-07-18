@@ -280,6 +280,29 @@ export const useModelMeasures = (modelId?: string) =>
   });
 export const useAllModelMeasures = () =>
   useQuery({ queryKey: ['strata', 'model-measures-all'], queryFn: scorecardApi.allModelMeasures, staleTime: STALE });
+// Governed approval workflow (CAT-STRATA-SC-GOVAPPROVAL-20260718-001) — reads only;
+// every transition is a configApi RPC and the DB is the authority.
+export const useScorecardApprovalTasks = (modelId?: string) =>
+  useQuery({
+    queryKey: ['strata', 'scorecard-approval-tasks', modelId],
+    queryFn: () => configApi.scorecardApprovalTasks(modelId!),
+    enabled: !!modelId,
+    staleTime: STALE,
+  });
+export const useScorecardApproverCandidates = (modelId?: string, enabled = true) =>
+  useQuery({
+    queryKey: ['strata', 'scorecard-approver-candidates', modelId],
+    queryFn: () => configApi.scorecardApproverCandidates(modelId!),
+    enabled: !!modelId && enabled,
+    staleTime: STALE,
+  });
+export const useScorecardValidation = (modelId?: string) =>
+  useQuery({
+    queryKey: ['strata', 'scorecard-validation', modelId],
+    queryFn: () => configApi.validateScorecardModel(modelId!),
+    enabled: !!modelId,
+    staleTime: STALE,
+  });
 export const useAllModelPerspectives = () =>
   useQuery({ queryKey: ['strata', 'model-perspectives-all'], queryFn: scorecardApi.allModelPerspectives, staleTime: STALE });
 export const useScorecardInstances = (cycleId?: string) =>

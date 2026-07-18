@@ -33,6 +33,7 @@ import {
   useUploadRuns, useUploadTemplates, useValueCategories, useWorkflowConfigs,
 } from '@/modules/strata/hooks/useStrata';
 import { StrataPageShell, StrataPanel, T } from '@/modules/strata/components/shared';
+import { StrataAuditHistory } from '@/modules/strata/components/StrataAuditHistory';
 import { StrataNotFound } from '@/modules/strata/components/StrataSystemStates';
 import { StrataFormModal, str } from '@/modules/strata/components/authoring';
 import { fmtDate, fmtDateTime, labelize } from '@/modules/strata/components/format';
@@ -44,9 +45,9 @@ import {
 } from '@/modules/strata/lib/dependents';
 import { deriveEffectiveAdminRows } from '@/modules/strata/lib/effectiveRoles';
 import type {
-  GovernedEnvelope, GovernedStatus, StrataChangeRequest, StrataCycle, StrataNotificationRule, StrataPeriod, StrataPerspective,
+  GovernedEnvelope, GovernedStatus, StrataApproverCandidate, StrataChangeRequest, StrataCycle, StrataNotificationRule, StrataPeriod, StrataPerspective,
   StrataModelMeasure, StrataProjectCardFieldConfig, StrataProjectCardPicklist, StrataRole, StrataScorecardModel,
-  StrataThresholdPreview, StrataThresholdPreviewMove, StrataThresholdScheme, ThresholdBand,
+  StrataScorecardValidation, StrataThresholdPreview, StrataThresholdPreviewMove, StrataThresholdScheme, ThresholdBand,
 } from '@/modules/strata/types';
 
 type OnError = (msg: string | null) => void;
@@ -60,7 +61,8 @@ const codeStyle: React.CSSProperties = {
 };
 
 const GOV_LOZENGE: Record<GovernedStatus, LozengeAppearance> = {
-  approved: 'success', draft: 'default', pending_approval: 'moved', retired: 'removed', superseded: 'removed',
+  approved: 'success', draft: 'default', pending_approval: 'moved', changes_requested: 'inprogress',
+  retired: 'removed', superseded: 'removed', rejected: 'removed',
 };
 
 /** Governed directionality → executive-readable label (not naive labelize). */
@@ -162,6 +164,20 @@ export function GovActions({ table, record, isScorecardModel, onError, submitBlo
       setBusy(false);
     }
   };
+  // SC-GOVAPPROVAL: scorecard models carry a richer workflow (assigned approver,
+  // approval task, withdraw / request-changes / reject, resubmission of the SAME
+  // version). The generic submit/approve verbs now REFUSE this table server-side,
+  // so the pre-approval states route to the dedicated actions component.
+  if (isScorecardModel && ['draft', 'changes_requested', 'pending_approval'].includes(record.status)) {
+    return (
+      <ScorecardLifecycleActions
+        model={record as StrataScorecardModel}
+        onError={onError}
+        submitBlockedReason={submitBlockedReason}
+        approveBlockedReasons={approveBlockedReasons}
+      />
+    );
+  }
   if (record.status === 'draft') {
     return (
       <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
@@ -318,6 +334,460 @@ export function GovActions({ table, record, isScorecardModel, onError, submitBlo
     );
   }
   return null;
+}
+
+/**
+ * SC-GOVAPPROVAL — governed scorecard approval workflow actions.
+ *
+ * Every rule shown here is enforced server-side by the dedicated RPCs
+ * (assigned-approver-only decisions, maker-checker both ways, shared validator
+ * rerun at approve, one open task, optimistic concurrency). The UI's job is to
+ * expose the right verb to the right person and explain refusals up front —
+ * it is the explanation, never the boundary.
+ */
+function ScorecardLifecycleActions({ model, onError, submitBlockedReason, approveBlockedReasons }: {
+  model: StrataScorecardModel;
+  onError: OnError;
+  submitBlockedReason?: string | null;
+  approveBlockedReasons?: string[];
+}) {
+  const invalidate = useInvalidateStrata();
+  const userIdQ = useStrataUserId();
+  const rolesQ = useStrataRoles();
+  const namesQ = useProfileNames();
+  const [busy, setBusy] = useState(false);
+  const [dialog, setDialog] = useState<
+    null | 'submit' | 'withdraw' | 'approve' | 'request_changes' | 'reject' | 'assign'
+  >(null);
+  const [dialogError, setDialogError] = useState<string | null>(null);
+  const [comment, setComment] = useState('');
+  // Submit/assign dialog data — fetched on open, never while closed, so the
+  // always-mounted tree stays cheap and the chooser reflects the server's
+  // CURRENT eligibility (it is revalidated again at submission).
+  const [candidates, setCandidates] = useState<StrataApproverCandidate[] | null>(null);
+  const [validation, setValidation] = useState<StrataScorecardValidation | null>(null);
+  const [approverId, setApproverId] = useState<string | null>(null);
+
+  const userId = userIdQ.data ?? null;
+  const isAdmin = (rolesQ.data ?? []).includes('strata_admin');
+  const nameOf = (id: string | null): string | null => {
+    if (!id) return null;
+    const p = namesQ.data?.get(id);
+    return p?.name ?? p?.email ?? `${id.slice(0, 8)}…`;
+  };
+
+  const openDialog = (which: NonNullable<typeof dialog>) => {
+    setComment('');
+    setApproverId(null);
+    setDialogError(null);
+    setDialog(which);
+    if (which === 'submit' || which === 'assign' || which === 'approve') {
+      setCandidates(null);
+      setValidation(null);
+      void configApi.validateScorecardModel(model.id)
+        .then(setValidation)
+        .catch((e) => setDialogError(e instanceof Error ? e.message : String(e)));
+      if (which !== 'approve') {
+        void configApi.scorecardApproverCandidates(model.id)
+          .then(setCandidates)
+          .catch((e) => setDialogError(e instanceof Error ? e.message : String(e)));
+      }
+    }
+  };
+  const close = () => { setDialog(null); setDialogError(null); };
+  const act = async (fn: () => Promise<unknown>) => {
+    setBusy(true);
+    setDialogError(null);
+    onError(null);
+    try {
+      await fn();
+      invalidate();
+      setDialog(null);
+    } catch (e) {
+      // Server refusal text is the contract — surfaced verbatim inside the dialog.
+      setDialogError(e instanceof Error ? e.message : String(e));
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const isSubmitter = userId != null && model.submitted_by === userId;
+  const isAssignee = userId != null && model.assigned_approver_id === userId;
+  const serverBlockers = validation?.blockers ?? [];
+  const candidateOptions: SelectOption[] = (candidates ?? []).map((c) => ({
+    value: c.user_id,
+    label: c.display_name ? `${c.display_name}${c.email ? ` (${c.email})` : ''}` : (c.email ?? c.user_id),
+  }));
+
+  /** Blockers/warnings/passed — the server checklist, never a single boolean. */
+  const checklist = validation === null ? (
+    <div style={{ display: 'flex', justifyContent: 'center', padding: 8 }}><Spinner size="small" /></div>
+  ) : (
+    <div
+      data-testid={`strata-sc-validation-${model.id}`}
+      style={{
+        margin: '0 0 12px', padding: '8px 12px', border: `1px solid ${T.border}`,
+        borderRadius: 6, background: T.sunken, display: 'flex', flexDirection: 'column', gap: 4,
+        fontSize: 'var(--ds-font-size-100)',
+      }}
+    >
+      <span style={{ fontWeight: 700, letterSpacing: '0.04em', fontSize: 'var(--ds-font-size-075)', color: T.subtlest }}>
+        VALIDATION CHECKLIST
+      </span>
+      {validation.blockers.map((b) => (
+        <span key={b} style={{ color: 'var(--ds-text-danger)', fontWeight: 600 }}>✕ {b}</span>
+      ))}
+      {validation.warnings.map((w) => (
+        <span key={w} style={{ color: 'var(--ds-text-warning)', fontWeight: 600 }}>△ {w}</span>
+      ))}
+      {validation.passed.map((p) => (
+        <span key={p} style={{ color: 'var(--ds-text-success)' }}>✓ {p}</span>
+      ))}
+    </div>
+  );
+
+  const dialogErrorBlock = dialogError ? (
+    <SectionMessage appearance="error" title="Action rejected">
+      <p style={{ whiteSpace: 'pre-wrap' }}>{dialogError}</p>
+    </SectionMessage>
+  ) : null;
+
+  // ── Draft / changes requested: submit or resubmit the SAME version ─────────
+  if (model.status === 'draft' || model.status === 'changes_requested') {
+    const resubmit = model.status === 'changes_requested' || (model.submission_attempt ?? 0) > 0;
+    // Mirror of the server rule: only the version author (or an admin) submits.
+    const canSubmit = isAdmin || (userId != null && model.created_by === userId);
+    if (!canSubmit) {
+      return (
+        <span style={{ fontSize: 'var(--ds-font-size-100)', color: T.subtle }} data-testid={`strata-sc-not-author-${model.id}`}>
+          Only the version author{nameOf(model.created_by) ? ` (${nameOf(model.created_by)})` : ''} or an admin can submit it for approval.
+        </span>
+      );
+    }
+    return (
+      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
+        <Button
+          spacing="compact"
+          isDisabled={busy || !!submitBlockedReason}
+          testId={`strata-model-submit-${model.id}`}
+          onClick={() => openDialog('submit')}
+        >
+          {resubmit ? 'Resubmit for approval' : 'Submit for approval'}
+        </Button>
+        {submitBlockedReason ? (
+          <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-danger)' }}>{submitBlockedReason}</span>
+        ) : null}
+        <Modal isOpen={dialog === 'submit'} onClose={close} width="medium">
+          <ModalHeader>
+            <ModalTitle>{resubmit ? `Resubmit version ${model.version} for approval` : `Submit version ${model.version} for approval`}</ModalTitle>
+          </ModalHeader>
+          <ModalBody>
+            {checklist}
+            <p style={{ margin: '0 0 12px', fontSize: 'var(--ds-font-size-100)', color: T.subtle }}>
+              {resubmit
+                ? `Resubmission keeps version ${model.version} — this will be submission attempt ${(model.submission_attempt ?? 0) + 1}. `
+                : ''}
+              The version becomes effective immediately when the approver approves it
+              {model.supersedes_id ? '; the currently active version is superseded at that moment' : ''}.
+              While pending, the definition is locked.
+            </p>
+            <div style={{ margin: '0 0 12px' }}>
+              <label style={{ display: 'block', fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: T.text, marginBottom: 4 }} htmlFor={`sc-approver-${model.id}`}>
+                Approver <span aria-hidden style={{ color: 'var(--ds-text-danger)' }}>*</span>
+              </label>
+              <Select
+                inputId={`sc-approver-${model.id}`}
+                options={candidateOptions}
+                value={candidateOptions.find((o) => o.value === approverId) ?? null}
+                onChange={(o) => setApproverId(o?.value ?? null)}
+                isLoading={candidates === null}
+                isDisabled={busy}
+                usePortal
+                placeholder={candidates !== null && candidateOptions.length === 0
+                  ? 'No eligible approver available'
+                  : 'Select an eligible approver…'}
+                aria-label="Approver"
+                testId={`strata-sc-approver-select-${model.id}`}
+              />
+              <span style={{ display: 'block', marginTop: 4, fontSize: 'var(--ds-font-size-075)', color: T.subtlest }}>
+                Only active approval-role holders are listed; you and the version creator are excluded
+                (the submitter can never approve their own submission).
+              </span>
+              {approverId ? (
+                <span style={{ display: 'block', marginTop: 4, fontSize: 'var(--ds-font-size-100)', color: T.subtle }} data-testid={`strata-sc-resolved-approver-${model.id}`}>
+                  Approval will be assigned to <strong style={{ color: T.text }}>{nameOf(approverId)}</strong>.
+                </span>
+              ) : null}
+            </div>
+            <Textfield
+              value={comment}
+              onChange={(e) => setComment(e.target.value)}
+              placeholder="Submission note (optional)"
+              aria-label="Submission note"
+            />
+            {dialogErrorBlock}
+          </ModalBody>
+          <ModalFooter>
+            <Button appearance="subtle" onClick={close} isDisabled={busy}>Cancel</Button>
+            <Button
+              appearance="primary"
+              isDisabled={busy || !approverId || validation === null || serverBlockers.length > 0}
+              testId={`strata-sc-submit-confirm-${model.id}`}
+              onClick={() => void act(() => configApi.submitScorecardModel(
+                model.id, approverId!, comment.trim() || undefined, model.updated_at))}
+            >
+              {resubmit ? 'Resubmit' : 'Submit'}
+            </Button>
+          </ModalFooter>
+        </Modal>
+      </span>
+    );
+  }
+
+  // ── Pending approval ────────────────────────────────────────────────────────
+  const clientApproveBlocked = (approveBlockedReasons ?? []).length > 0;
+  return (
+    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
+      {isAssignee ? (
+        <>
+          <Button
+            spacing="compact"
+            appearance="primary"
+            iconBefore={<CheckCircle2 size={14} />}
+            isDisabled={busy || clientApproveBlocked}
+            testId={`strata-approve-${model.id}`}
+            onClick={() => openDialog('approve')}
+          >
+            Approve
+          </Button>
+          <Button
+            spacing="compact"
+            isDisabled={busy}
+            testId={`strata-sc-request-changes-${model.id}`}
+            onClick={() => openDialog('request_changes')}
+          >
+            Request changes
+          </Button>
+          <Button
+            spacing="compact"
+            appearance="danger"
+            isDisabled={busy}
+            testId={`strata-sc-reject-${model.id}`}
+            onClick={() => openDialog('reject')}
+          >
+            Reject
+          </Button>
+        </>
+      ) : null}
+      {clientApproveBlocked && isAssignee ? (
+        <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-danger)', textAlign: 'right' }} data-testid={`strata-approve-blocked-${model.id}`}>
+          Cannot approve: {(approveBlockedReasons ?? []).join('; ')}
+        </span>
+      ) : null}
+      {isSubmitter || isAdmin ? (
+        <Button
+          spacing="compact"
+          isDisabled={busy}
+          testId={`strata-sc-withdraw-${model.id}`}
+          onClick={() => openDialog('withdraw')}
+        >
+          Withdraw submission
+        </Button>
+      ) : null}
+      {isAdmin ? (
+        <Button
+          spacing="compact"
+          appearance="subtle"
+          isDisabled={busy}
+          testId={`strata-sc-assign-${model.id}`}
+          onClick={() => openDialog('assign')}
+        >
+          {model.assigned_approver_id ? 'Reassign approver' : 'Assign approver'}
+        </Button>
+      ) : null}
+      {!isAssignee && !isSubmitter && !isAdmin ? (
+        <span style={{ fontSize: 'var(--ds-font-size-100)', color: T.subtle }} data-testid={`strata-sc-readonly-${model.id}`}>
+          Awaiting {nameOf(model.assigned_approver_id) ?? 'approver assignment'} — only the assigned approver can decide.
+        </span>
+      ) : null}
+
+      <Modal isOpen={dialog === 'approve'} onClose={close} width="medium">
+        <ModalHeader>
+          <ModalTitle>Approve version {model.version}</ModalTitle>
+        </ModalHeader>
+        <ModalBody>
+          {checklist}
+          <p style={{ margin: '0 0 12px', fontSize: 'var(--ds-font-size-100)', color: T.subtle }}>
+            Approving makes version {model.version} the active version immediately
+            {model.supersedes_id ? ' and supersedes the currently active version in the same transaction' : ''}.
+            Validation is run again on the server before the decision lands.
+          </p>
+          <Textfield
+            value={comment}
+            onChange={(e) => setComment(e.target.value)}
+            placeholder="Approval note (optional)"
+            aria-label="Approval note"
+          />
+          {dialogErrorBlock}
+        </ModalBody>
+        <ModalFooter>
+          <Button appearance="subtle" onClick={close} isDisabled={busy}>Cancel</Button>
+          <Button
+            appearance="primary"
+            isDisabled={busy || validation === null || serverBlockers.length > 0}
+            testId={`strata-sc-approve-confirm-${model.id}`}
+            onClick={() => void act(() => configApi.approveScorecardModel(
+              model.id, comment.trim() || undefined, model.updated_at))}
+          >
+            Approve and activate
+          </Button>
+        </ModalFooter>
+      </Modal>
+
+      <Modal isOpen={dialog === 'request_changes'} onClose={close} width="medium">
+        <ModalHeader>
+          <ModalTitle>Request changes on version {model.version}</ModalTitle>
+        </ModalHeader>
+        <ModalBody>
+          <p style={{ margin: '0 0 12px', fontSize: 'var(--ds-font-size-100)', color: T.subtle }}>
+            Version {model.version} returns to the author for editing — the version number does not
+            change, and the full history of this submission is kept. Your comment is shown to the
+            author and recorded in the audit trail.
+          </p>
+          <Textfield
+            value={comment}
+            onChange={(e) => setComment(e.target.value)}
+            placeholder="What needs to change (required)"
+            aria-label="What needs to change (required)"
+            aria-required="true"
+            autoFocus
+          />
+          {dialogErrorBlock}
+        </ModalBody>
+        <ModalFooter>
+          <Button appearance="subtle" onClick={close} isDisabled={busy}>Cancel</Button>
+          <Button
+            appearance="primary"
+            isDisabled={busy || comment.trim() === ''}
+            testId={`strata-sc-request-changes-confirm-${model.id}`}
+            onClick={() => void act(() => configApi.requestScorecardChanges(model.id, comment.trim()))}
+          >
+            Request changes
+          </Button>
+        </ModalFooter>
+      </Modal>
+
+      <Modal isOpen={dialog === 'reject'} onClose={close} width="medium">
+        <ModalHeader>
+          <ModalTitle>Reject version {model.version}</ModalTitle>
+        </ModalHeader>
+        <ModalBody>
+          <p style={{ margin: '0 0 12px', fontSize: 'var(--ds-font-size-100)', color: T.subtle }}>
+            Rejection is final for this version — it can never be edited, resubmitted or activated.
+            Revising means creating a new version from the approved one. If you want the author to
+            fix and resubmit this version, use Request changes instead.
+          </p>
+          <Textfield
+            value={comment}
+            onChange={(e) => setComment(e.target.value)}
+            placeholder="Rejection reason (required)"
+            aria-label="Rejection reason (required)"
+            aria-required="true"
+            autoFocus
+          />
+          {dialogErrorBlock}
+        </ModalBody>
+        <ModalFooter>
+          <Button appearance="subtle" onClick={close} isDisabled={busy}>Cancel</Button>
+          <Button
+            appearance="danger"
+            isDisabled={busy || comment.trim() === ''}
+            testId={`strata-sc-reject-confirm-${model.id}`}
+            onClick={() => void act(() => configApi.rejectScorecardModel(model.id, comment.trim()))}
+          >
+            Reject submission
+          </Button>
+        </ModalFooter>
+      </Modal>
+
+      <Modal isOpen={dialog === 'withdraw'} onClose={close} width="medium">
+        <ModalHeader>
+          <ModalTitle>Withdraw submission</ModalTitle>
+        </ModalHeader>
+        <ModalBody>
+          <p style={{ margin: '0 0 12px', fontSize: 'var(--ds-font-size-100)', color: T.subtle }}>
+            Version {model.version} returns to draft and becomes editable again. The open approval
+            task is cancelled and {nameOf(model.assigned_approver_id) ?? 'the approver'} is notified.
+          </p>
+          <Textfield
+            value={comment}
+            onChange={(e) => setComment(e.target.value)}
+            placeholder="Withdrawal reason (optional)"
+            aria-label="Withdrawal reason"
+            autoFocus
+          />
+          {dialogErrorBlock}
+        </ModalBody>
+        <ModalFooter>
+          <Button appearance="subtle" onClick={close} isDisabled={busy}>Cancel</Button>
+          <Button
+            appearance="warning"
+            isDisabled={busy}
+            testId={`strata-sc-withdraw-confirm-${model.id}`}
+            onClick={() => void act(() => configApi.withdrawScorecardModel(model.id, comment.trim() || undefined))}
+          >
+            Withdraw submission
+          </Button>
+        </ModalFooter>
+      </Modal>
+
+      <Modal isOpen={dialog === 'assign'} onClose={close} width="medium">
+        <ModalHeader>
+          <ModalTitle>{model.assigned_approver_id ? 'Reassign approver' : 'Assign approver'}</ModalTitle>
+        </ModalHeader>
+        <ModalBody>
+          <p style={{ margin: '0 0 12px', fontSize: 'var(--ds-font-size-100)', color: T.subtle }}>
+            {model.assigned_approver_id
+              ? `Currently assigned to ${nameOf(model.assigned_approver_id)}. The original assignment stays in the task history; both parties are notified.`
+              : 'This submission predates approver assignment and cannot be decided until an approver is assigned.'}
+            {' '}Assigning is an administrative act — it never decides the submission.
+          </p>
+          <div style={{ margin: '0 0 12px' }}>
+            <Select
+              options={candidateOptions.filter((o) => o.value !== model.assigned_approver_id)}
+              value={candidateOptions.find((o) => o.value === approverId) ?? null}
+              onChange={(o) => setApproverId(o?.value ?? null)}
+              isLoading={candidates === null}
+              isDisabled={busy}
+              usePortal
+              placeholder="Select an eligible approver…"
+              aria-label="Approver"
+              testId={`strata-sc-assign-select-${model.id}`}
+            />
+          </div>
+          <Textfield
+            value={comment}
+            onChange={(e) => setComment(e.target.value)}
+            placeholder="Assignment reason (optional)"
+            aria-label="Assignment reason"
+          />
+          {dialogErrorBlock}
+        </ModalBody>
+        <ModalFooter>
+          <Button appearance="subtle" onClick={close} isDisabled={busy}>Cancel</Button>
+          <Button
+            appearance="primary"
+            isDisabled={busy || !approverId}
+            testId={`strata-sc-assign-confirm-${model.id}`}
+            onClick={() => void act(() => configApi.assignScorecardApprover(
+              model.id, approverId!, comment.trim() || undefined))}
+          >
+            Assign approver
+          </Button>
+        </ModalFooter>
+      </Modal>
+    </span>
+  );
 }
 
 /** Card wrapper for one governed record: name + envelope + lifecycle actions. */
@@ -542,10 +1012,75 @@ function ModelWeights({ model, canEditWeights }: { model: StrataScorecardModel; 
     return <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-danger)' }}>Failed to load weights</span>;
   }
   const rows = mp.data ?? [];
-  if (rows.length === 0) {
-    return <span style={metaStyle}>No perspective weights configured.</span>;
-  }
   const nameById = new Map((perspectives.data ?? []).map((p) => [p.id, p.name]));
+  // SC-GOVAPPROVAL: attach/detach perspectives on an editable model. RLS is the
+  // gate (strategy_office AND parent draft/changes_requested); ops are immediate
+  // server writes with the zero-rows-means-refused guard.
+  const attached = new Set(rows.map((r) => r.perspective_id));
+  const addOptions: SelectOption[] = (perspectives.data ?? [])
+    .filter((p) => !attached.has(p.id) && p.status === 'approved')
+    .map((p) => ({ value: p.id, label: p.name }));
+  const addPerspective = async (perspectiveId: string) => {
+    setSaving(true);
+    setError(null);
+    try {
+      await configApi.addModelPerspective(model.id, perspectiveId, 0, rows.length);
+      invalidate();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : String(e));
+    } finally {
+      setSaving(false);
+    }
+  };
+  const removePerspective = async (perspectiveId: string) => {
+    setSaving(true);
+    setError(null);
+    try {
+      await configApi.removeModelPerspective(model.id, perspectiveId);
+      setDraft((prev) => {
+        const next = { ...prev };
+        delete next[perspectiveId];
+        return next;
+      });
+      invalidate();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : String(e));
+    } finally {
+      setSaving(false);
+    }
+  };
+  const addSelect = (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+      <span style={metaStyle}>+ Add perspective</span>
+      <div style={{ minWidth: 220 }}>
+        <Select
+          options={addOptions}
+          value={null}
+          onChange={(o) => o && void addPerspective(o.value)}
+          isDisabled={saving || addOptions.length === 0}
+          isLoading={perspectives.isLoading}
+          usePortal
+          placeholder={addOptions.length === 0 ? 'Every approved perspective is attached' : 'Select a perspective…'}
+          aria-label="Add perspective to model"
+          testId={`strata-model-perspective-add-${model.id}`}
+        />
+      </div>
+    </div>
+  );
+
+  if (rows.length === 0) {
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+        <span style={metaStyle}>No perspective weights configured.</span>
+        {canEditWeights ? addSelect : null}
+        {error ? (
+          <SectionMessage appearance="error" title="Action rejected">
+            <p style={{ whiteSpace: 'pre-wrap' }}>{error}</p>
+          </SectionMessage>
+        ) : null}
+      </div>
+    );
+  }
   // Display of config integrity (sum shown to the admin) — not business logic.
   const sum = rows.reduce((acc, r) => acc + r.weight, 0);
 
@@ -594,8 +1129,18 @@ function ModelWeights({ model, canEditWeights }: { model: StrataScorecardModel; 
                 testId={`strata-model-weight-input-${r.perspective_id}`}
               />
             </div>
+            <Button
+              spacing="compact"
+              appearance="subtle"
+              isDisabled={saving}
+              onClick={() => void removePerspective(r.perspective_id)}
+              testId={`strata-model-perspective-remove-${r.perspective_id}`}
+            >
+              Remove
+            </Button>
           </div>
         ))}
+        {addSelect}
         <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'center' }}>
           <span style={metaStyle}>
             Total <strong style={{ color: T.text, fontVariantNumeric: 'tabular-nums' }}>{draftTotal}%</strong>
@@ -993,7 +1538,16 @@ export function ScorecardModelsSection({ onError }: { onError: OnError }) {
   const allMeasures = useAllModelMeasures();
   const roles = useStrataRoles();
   const schemes = useThresholdSchemes();
+  const names = useProfileNames();
   const invalidateModels = useInvalidateStrata();
+  // SC-GOVAPPROVAL: per-model expanded approval-history panels (lazy — the
+  // audit query runs only once a history is opened).
+  const [historyOpen, setHistoryOpen] = useState<Record<string, boolean>>({});
+  const nameOf = (id: string | null): string | null => {
+    if (!id) return null;
+    const p = names.data?.get(id);
+    return p?.name ?? p?.email ?? `${id.slice(0, 8)}…`;
+  };
   // SC-DEF-001: net-new model creation. Previously unreachable — the only writer of
   // strata_scorecard_models was the clone-based revision RPC, which needs a model to already
   // exist, so a first model could not be authored from any surface.
@@ -1045,13 +1599,18 @@ export function ScorecardModelsSection({ onError }: { onError: OnError }) {
               myMeasures,
               perspectiveNameById,
             );
-            const submitBlockedReason = m.status === 'draft'
-              ? draftSubmitBlockedReason(integrity)
-              : undefined;
-            // D-1: only a DRAFT model's aggregate may be authored. Enforced at RLS and in the
+            // SC-GOVAPPROVAL: DRAFT and CHANGES_REQUESTED are the two editable
+            // states — requesting changes reopens the SAME version for editing.
+            const editable = m.status === 'draft' || m.status === 'changes_requested';
+            const submitBlockedReason = editable ? draftSubmitBlockedReason(integrity) : undefined;
+            // D-1: only an editable model's aggregate may be authored. Enforced at RLS and in the
             // set_model_measures RPC; mirrored here so the reason is visible up front rather than
             // discovered as a failed save. The UI is not the boundary — it is the explanation.
-            const canAuthor = hasAuthorRole && m.status === 'draft';
+            const canAuthor = hasAuthorRole && editable;
+            // The active predecessor this version proposes to replace (for honest pending copy).
+            const activePredecessor = m.supersedes_id
+              ? list.find((x) => x.id === m.supersedes_id && x.status === 'approved')
+              : undefined;
             return (
               <GovRecordCard
                 key={m.id}
@@ -1072,9 +1631,54 @@ export function ScorecardModelsSection({ onError }: { onError: OnError }) {
                   sum={integrity.weightSum}
                   count={integrity.weightCount}
                   measureIssues={integrity.measureIssues}
-                  isDraft={m.status === 'draft'}
+                  isDraft={editable}
                 />
-                {hasAuthorRole && m.status !== 'draft' ? (
+                {m.status === 'pending_approval' ? (
+                  <div data-testid={`strata-sc-pending-banner-${m.id}`}>
+                    <SectionMessage
+                      appearance="information"
+                      title={`Awaiting ${nameOf(m.assigned_approver_id) ?? 'approver assignment'}`}
+                    >
+                      <p style={{ margin: 0 }}>
+                        Version {m.version} is pending approval and cannot be edited.
+                        {activePredecessor
+                          ? ` Version ${activePredecessor.version} remains active and continues producing results until the proposed version is approved and becomes effective.`
+                          : ''}
+                        {' '}Withdraw the submission or request changes to edit version {m.version}.
+                        {m.assigned_approver_id ? '' : ' A STRATA admin must assign an approver before this submission can be decided.'}
+                      </p>
+                      <p style={{ margin: '4px 0 0', fontSize: 'var(--ds-font-size-100)' }}>
+                        {m.submitted_by ? `Submitted by ${nameOf(m.submitted_by)}` : 'Submitted before the governed workflow (submitter unrecorded)'}
+                        {m.submitted_at ? ` on ${fmtDateTime(m.submitted_at)}` : ''}
+                        {(m.submission_attempt ?? 0) > 0 ? ` · submission attempt ${m.submission_attempt}` : ''}
+                        {' · effective immediately on approval'}
+                      </p>
+                    </SectionMessage>
+                  </div>
+                ) : null}
+                {m.status === 'changes_requested' ? (
+                  <div data-testid={`strata-sc-changes-banner-${m.id}`}>
+                    <SectionMessage appearance="warning" title={`Changes requested by ${nameOf(m.assigned_approver_id) ?? 'the approver'}`}>
+                      <p style={{ margin: 0, whiteSpace: 'pre-wrap' }}>{m.review_comment ?? '—'}</p>
+                      <p style={{ margin: '4px 0 0', fontSize: 'var(--ds-font-size-100)' }}>
+                        Version {m.version} is editable again — fix the definition and resubmit.
+                        Resubmission keeps the same version number.
+                      </p>
+                    </SectionMessage>
+                  </div>
+                ) : null}
+                {m.status === 'rejected' ? (
+                  <div data-testid={`strata-sc-rejected-banner-${m.id}`}>
+                    <SectionMessage appearance="error" title={`Rejected by ${nameOf(m.rejected_by) ?? 'the approver'}`}>
+                      <p style={{ margin: 0, whiteSpace: 'pre-wrap' }}>{m.review_comment ?? '—'}</p>
+                      <p style={{ margin: '4px 0 0', fontSize: 'var(--ds-font-size-100)' }}>
+                        A rejected version is final — it can never be edited, resubmitted or activated.
+                        To try again, create a new version from the approved model.
+                      </p>
+                    </SectionMessage>
+                  </div>
+                ) : null}
+                {hasAuthorRole && !editable && m.status !== 'pending_approval' && m.status !== 'rejected' ? (
                   <span style={metaStyle} data-testid="strata-model-immutable-note">
                     {labelize(m.status)} definitions are immutable — to change this model&apos;s perspective
                     weights or measures, use Create new version. Version {m.version} keeps producing results
@@ -1088,6 +1692,19 @@ export function ScorecardModelsSection({ onError }: { onError: OnError }) {
                 </div>
                 <ModelWeights model={m} canEditWeights={canAuthor} />
                 <MeasureGroups modelId={m.id} measures={myMeasures} canEdit={canAuthor} />
+                <div>
+                  <Button
+                    spacing="compact"
+                    appearance="subtle"
+                    testId={`strata-sc-history-toggle-${m.id}`}
+                    onClick={() => setHistoryOpen((prev) => ({ ...prev, [m.id]: !prev[m.id] }))}
+                  >
+                    {historyOpen[m.id] ? 'Hide approval history' : 'Show approval history'}
+                  </Button>
+                </div>
+                {historyOpen[m.id] ? (
+                  <StrataAuditHistory entityTable="strata_scorecard_models" entityId={m.id} title="Approval history" />
+                ) : null}
               </GovRecordCard>
             );
           })}
