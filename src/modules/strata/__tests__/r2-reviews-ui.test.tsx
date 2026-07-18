@@ -183,7 +183,7 @@ describe('R2 UI — readiness is the locked snapshot alone', () => {
 describe('R2 UI — a closed review is not editable', () => {
   it('offers no transition on a closed review and says why', async () => {
     await renderReviews();
-    expect(q('strata-review-closed-r2')?.textContent).toMatch(/cannot be edited/i);
+    expect(q('strata-review-terminal-r2')?.textContent).toMatch(/cannot be edited/i);
     expect(q('strata-review-in_progress-r2')).toBeNull();
     expect(q('strata-review-closed-r2-btn')).toBeNull();
     expect(q('strata-review-cancelled-r2')).toBeNull();
@@ -191,8 +191,10 @@ describe('R2 UI — a closed review is not editable', () => {
 
   it('a scheduled review DOES offer the transitions the RPC permits', async () => {
     await renderReviews();
+    // RD-DEF-002 transition matrix: scheduled → in progress | cancelled. Close is NOT offered
+    // from scheduled — a review must convene before it can record a closure.
     expect(q('strata-review-in_progress-r1')).not.toBeNull();
-    expect(q('strata-review-closed-r1')).not.toBeNull();
+    expect(q('strata-review-closed-r1')).toBeNull();
     expect(q('strata-review-cancelled-r1')).not.toBeNull();
   });
 
@@ -205,11 +207,14 @@ describe('R2 UI — a closed review is not editable', () => {
 
 describe('R2 UI — server refusals surface verbatim', () => {
   it('renders the RPC refusal exactly as the database worded it', async () => {
-    const refusal = 'a review cannot close on a snapshot that is not locked (it is superseded) — closing here would record a decision against numbers that have been replaced';
+    // RD-DEF-002: Start is now readiness-gated server-side; the server names every gap and
+    // the surface renders that refusal verbatim (driven here via Start, the verb a scheduled
+    // review actually offers).
+    const refusal = 'this review is not ready to move to in_progress: no snapshot attached; no chair recorded; no accountable owner recorded; no participants recorded; agenda is empty';
     H.updateReview.mockRejectedValueOnce(new Error(refusal));
     const user = userEvent.setup();
     await renderReviews();
-    await user.click(q('strata-review-closed-r1') as HTMLElement);
+    await user.click(q('strata-review-in_progress-r1') as HTMLElement);
     await user.click(q('strata-review-status-confirm') as HTMLElement);
     await waitFor(() => expect(q('strata-review-error')).not.toBeNull());
     expect(q('strata-review-error')?.textContent).toBe(refusal);

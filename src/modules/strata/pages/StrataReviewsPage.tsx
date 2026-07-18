@@ -21,8 +21,10 @@ import { useNavigate, useParams } from 'react-router-dom';
 import {
   Button, CatalystTag, Checkbox, EmptyState, Heading, Lozenge,
   Modal, ModalBody, ModalFooter, ModalHeader, ModalTitle,
-  SectionMessage, Spinner, Textfield, Tooltip,
+  SectionMessage, Select, Spinner, Textfield, Tooltip,
 } from '@/components/ads';
+import { StrataAuditHistory } from '@/modules/strata/components/StrataAuditHistory';
+import { ReviewWorkspaceModal } from '@/modules/strata/components/ReviewWorkspaceModal';
 import { JiraTable } from '@/components/shared/JiraTable';
 import type { Column } from '@/components/shared/JiraTable';
 import { StatusLozenge } from '@/components/shared/StatusLozenge';
@@ -424,24 +426,23 @@ const REVIEW_STATUS_LOZENGE: Record<StrataReview['status'], LozengeAppearance> =
 };
 
 /**
- * Exactly the transitions strata_update_review permits. The RPC has no transition graph:
- * its ONLY refusal is on a review whose CURRENT status is already 'closed' ("a closed review
- * records a meeting that already happened and cannot be edited"). So closed is terminal here
- * and every other status may still move. Closing additionally requires a LOCKED snapshot —
- * that check is left to the server and its refusal is surfaced verbatim, because the readiness
- * view already names the gap and a client copy of the rule could disagree with it.
+ * Exactly the transitions strata_update_review permits (RD-DEF-002): scheduled → in progress
+ * or cancelled; in progress → closed or cancelled. Closed AND cancelled are both terminal
+ * (RD-DEF-005) — no Reinstate: a cancelled review is a historical record, and reviving it
+ * would rewrite history rather than schedule the meeting that will actually happen.
+ * Readiness for Start/Close is enforced BY THE SERVER, which names every missing
+ * prerequisite; its refusal is surfaced verbatim rather than predicted here.
  */
 const REVIEW_NEXT_STATUS: Record<StrataReview['status'], Array<{ to: StrataReview['status']; label: string; danger?: boolean }>> = {
   scheduled: [
     { to: 'in_progress', label: 'Start' },
-    { to: 'closed', label: 'Close' },
     { to: 'cancelled', label: 'Cancel', danger: true },
   ],
   in_progress: [
     { to: 'closed', label: 'Close' },
     { to: 'cancelled', label: 'Cancel', danger: true },
   ],
-  cancelled: [{ to: 'scheduled', label: 'Reinstate' }],
+  cancelled: [],
   closed: [],
 };
 
@@ -450,7 +451,7 @@ const NOT_RECORDED = 'Not recorded';
 export const REVIEW_MIGRATED_NOTICE =
   'Reconstructed from a locked snapshot by the migration — its chair, participants, agenda and meeting date were never recorded. Absent, not empty.';
 const REVIEW_READINESS_RULE =
-  'Ready means the snapshot is locked. A board pack is reported separately and does not gate convening.';
+  'Ready means: locked snapshot, chair, accountable owner, at least one participant and an agenda. A board pack is reported separately and does not gate convening.';
 const CADENCE_HELPER =
   'Optional — left unset, the server applies its own default (departmental → monthly, executive → quarterly).';
 
@@ -511,8 +512,48 @@ export function ScheduledReviewsSection() {
   const [note, setNote] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // RD-DEF-001/009 — review workspace + entity history surfaces.
+  const [workspaceFor, setWorkspaceFor] = useState<StrataReview | null>(null);
+  const [historyFor, setHistoryFor] = useState<{ table: string; id: string; title: string } | null>(null);
+  // RD-DEF-006 — discovery: search + filters. Empty string = no filter.
+  const [search, setSearch] = useState('');
+  const [statusFilter, setStatusFilter] = useState('');
+  const [typeFilter, setTypeFilter] = useState('');
+  const [cadenceFilter, setCadenceFilter] = useState('');
 
-  const rows = reviewsQ.data ?? [];
+  const allRows = reviewsQ.data ?? [];
+  const rows = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    return allRows.filter((r) =>
+      (!q || r.name.toLowerCase().includes(q) || r.review_key.toLowerCase().includes(q)) &&
+      (!statusFilter || r.status === statusFilter) &&
+      (!typeFilter || r.review_type === typeFilter) &&
+      (!cadenceFilter || r.cadence === cadenceFilter));
+  }, [allRows, search, statusFilter, typeFilter, cadenceFilter]);
+
+  /**
+   * RD-DEF-006 — governed export of the FILTERED register with stable IDs. Contains only what
+   * the register itself already shows (RLS-scoped read): no unauthorized data is widened.
+   */
+  const exportCsv = () => {
+    const esc = (v: unknown): string => {
+      const s = v == null ? '' : String(v);
+      return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+    };
+    const header = ['review_key', 'id', 'name', 'type', 'cadence', 'status', 'scheduled_for', 'chair', 'accountable_owner', 'snapshot_id', 'board_pack_id', 'origin', 'note'];
+    const lines = rows.map((r) => [
+      r.review_key, r.id, r.name, r.review_type, r.cadence, r.status, r.scheduled_for ?? '',
+      chairName(r.chair_id) ?? '', chairName(r.accountable_owner_id) ?? '',
+      r.snapshot_id ?? '', r.board_pack_id ?? '', r.origin, r.note ?? '',
+    ].map(esc).join(','));
+    const blob = new Blob([[header.join(','), ...lines].join('\n')], { type: 'text/csv;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `strata-reviews-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
   // The RPC's own gate, mirrored — this only avoids offering a verb the server would refuse.
   const canGovern = (rolesQ.data ?? []).some((r) => REVIEW_GOVERN_ROLES.includes(r));
 
@@ -653,15 +694,34 @@ export function ScheduledReviewsSection() {
               appearance={REVIEW_STATUS_LOZENGE[row.status] ?? 'default'}
             />
           </span>
-          {!canGovern ? null : row.status === 'closed' ? (
-            // Terminal by rule. Saying so beats rendering buttons the server will refuse.
-            <span style={captionStyle} data-testid={`strata-review-closed-${row.id}`}>
-              Closed — this records a meeting that already happened and cannot be edited.
+          {!canGovern ? (
+            // History is a read surface — reachable regardless of governing role (RD-DEF-009).
+            <span>
+              <Button spacing="compact" appearance="subtle" testId={`strata-review-history-${row.id}`}
+                onClick={() => setHistoryFor({ table: 'strata_reviews', id: row.id, title: `${row.review_key} · ${row.name}` })}>
+                History
+              </Button>
             </span>
+          ) : row.status === 'closed' || row.status === 'cancelled' ? (
+            // RD-DEF-005: BOTH terminal states. Saying so beats rendering buttons the server refuses —
+            // no Attach snapshot, no Reinstate, no mutation controls on a historical record.
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--ds-space-050)' }}>
+              <span style={captionStyle} data-testid={`strata-review-terminal-${row.id}`}>
+                {row.status === 'closed'
+                  ? 'Closed — this records a meeting that already happened and cannot be edited.'
+                  : 'Cancelled — a terminal historical record. Schedule a new review instead.'}
+              </span>
+              <span>
+                <Button spacing="compact" appearance="subtle" testId={`strata-review-history-${row.id}`}
+                  onClick={() => setHistoryFor({ table: 'strata_reviews', id: row.id, title: `${row.review_key} · ${row.name}` })}>
+                  History
+                </Button>
+              </span>
+            </div>
           ) : (
             <span style={{ display: 'inline-flex', gap: 'var(--ds-space-075)', flexWrap: 'wrap' }}>
               {/* Without this, "no snapshot attached" would be a blocker the surface states but
-                  gives no way to resolve. Re-pointing is permitted while the review is not closed —
+                  gives no way to resolve. Re-pointing is permitted while the review is active —
                   nothing has been recorded against it yet. */}
               <Button
                 spacing="compact"
@@ -671,6 +731,20 @@ export function ScheduledReviewsSection() {
                 onClick={() => { setError(null); setAttachTo(row); }}
               >
                 {row.snapshot_id ? 'Change snapshot' : 'Attach snapshot'}
+              </Button>
+              {/* RD-DEF-001: the workspace — participants, accountable owner, agenda, evidence. */}
+              <Button
+                spacing="compact"
+                appearance="subtle"
+                isDisabled={busy}
+                testId={`strata-review-manage-${row.id}`}
+                onClick={() => { setError(null); setWorkspaceFor(row); }}
+              >
+                Manage
+              </Button>
+              <Button spacing="compact" appearance="subtle" testId={`strata-review-history-${row.id}`}
+                onClick={() => setHistoryFor({ table: 'strata_reviews', id: row.id, title: `${row.review_key} · ${row.name}` })}>
+                History
               </Button>
               {(REVIEW_NEXT_STATUS[row.status] ?? []).map((n) => (
                 <Button
@@ -715,6 +789,48 @@ export function ScheduledReviewsSection() {
         Monthly departmental and quarterly executive are the server&apos;s defaults, not laws: a body
         that meets off-cadence is recorded as it meets.
       </p>
+      {/* RD-DEF-006 — discovery: search, filters and a governed export of the filtered register. */}
+      <div style={{ display: 'flex', gap: 'var(--ds-space-100)', flexWrap: 'wrap', alignItems: 'center', padding: 'var(--ds-space-150) var(--ds-space-200) 0' }}>
+        <div style={{ minWidth: 220, flex: '1 1 220px' }}>
+          <Textfield
+            value={search}
+            onChange={(e) => setSearch((e.target as HTMLInputElement).value)}
+            placeholder="Search name or key"
+            aria-label="Search reviews"
+            testId="strata-review-search"
+          />
+        </div>
+        <div style={{ minWidth: 150 }}>
+          <Select
+            options={[{ value: '', label: 'All statuses' }, { value: 'scheduled', label: 'Scheduled' }, { value: 'in_progress', label: 'In progress' }, { value: 'closed', label: 'Closed' }, { value: 'cancelled', label: 'Cancelled' }]}
+            value={{ value: statusFilter, label: statusFilter ? labelize(statusFilter) : 'All statuses' }}
+            onChange={(o) => setStatusFilter(o?.value ?? '')}
+            aria-label="Filter by status"
+          />
+        </div>
+        <div style={{ minWidth: 150 }}>
+          <Select
+            options={[{ value: '', label: 'All types' }, { value: 'departmental', label: 'Departmental' }, { value: 'executive', label: 'Executive' }]}
+            value={{ value: typeFilter, label: typeFilter ? labelize(typeFilter) : 'All types' }}
+            onChange={(o) => setTypeFilter(o?.value ?? '')}
+            aria-label="Filter by type"
+          />
+        </div>
+        <div style={{ minWidth: 150 }}>
+          <Select
+            options={[{ value: '', label: 'All cadences' }, { value: 'monthly', label: 'Monthly' }, { value: 'quarterly', label: 'Quarterly' }, { value: 'ad_hoc', label: 'Ad hoc' }]}
+            value={{ value: cadenceFilter, label: cadenceFilter ? labelize(cadenceFilter) : 'All cadences' }}
+            onChange={(o) => setCadenceFilter(o?.value ?? '')}
+            aria-label="Filter by cadence"
+          />
+        </div>
+        <Button spacing="compact" onClick={exportCsv} isDisabled={rows.length === 0} testId="strata-review-export">
+          Export CSV
+        </Button>
+        {rows.length !== allRows.length ? (
+          <span style={captionStyle} aria-live="polite">{rows.length} of {allRows.length} reviews</span>
+        ) : null}
+      </div>
       {error ? (
         <div style={{ padding: 'var(--ds-space-150) var(--ds-space-200) 0' }}>
           <SectionMessage appearance="error" title="Review update rejected by the database">
@@ -741,13 +857,19 @@ export function ScheduledReviewsSection() {
           />
         </div>
       ) : (
-        <JiraTable<StrataReview>
-          columns={columns}
-          data={rows}
-          getRowId={(r) => r.id}
-          showRowCount={false}
-          ariaLabel="Scheduled reviews"
-        />
+        /* RD-DEF-010: deliberate horizontal-overflow recovery at narrow viewports (1024×768) —
+           the register scrolls inside its own container instead of clipping actions off-screen. */
+        <div style={{ overflowX: 'auto' }} tabIndex={0} role="region" aria-label="Scheduled reviews table (scrolls horizontally on narrow screens)">
+          <div style={{ minWidth: 880 }}>
+            <JiraTable<StrataReview>
+              columns={columns}
+              data={rows}
+              getRowId={(r) => r.id}
+              showRowCount={false}
+              ariaLabel="Scheduled reviews"
+            />
+          </div>
+        </div>
       )}
 
       {/* Status transition. Nothing is pre-gated beyond the RPC's own terminal rule: closing
@@ -765,6 +887,15 @@ export function ScheduledReviewsSection() {
                 ? 'Cancelling records that this review will not convene. It stays on the register.'
                 : 'This changes the review’s status on the register.'}
           </p>
+          {/* RD-DEF-008: the server's refusal must be visible WHERE the user acted — inside the
+              modal — not only at the top of the panel behind it. Rendered verbatim. */}
+          {error ? (
+            <div style={{ marginBottom: 'var(--ds-space-150)' }} role="alert">
+              <SectionMessage appearance="error" title="Rejected by the database">
+                <p style={{ whiteSpace: 'pre-wrap' }} data-testid="strata-review-modal-error">{error}</p>
+              </SectionMessage>
+            </div>
+          ) : null}
           <Textfield
             value={note}
             onChange={(e) => setNote((e.target as HTMLInputElement).value)}
@@ -813,6 +944,30 @@ export function ScheduledReviewsSection() {
           testId="strata-review-attach-modal"
         />
       ) : null}
+
+      {/* RD-DEF-001 — the review workspace: accountable owner, participants with roles,
+          ordered agenda, governed evidence references. Server enforces every write. */}
+      {canGovern && workspaceFor ? (
+        <ReviewWorkspaceModal
+          review={workspaceFor}
+          onClose={() => { setWorkspaceFor(null); invalidate(); }}
+        />
+      ) : null}
+
+      {/* RD-DEF-009 — entity history from the canonical append-only audit store. */}
+      <Modal isOpen={!!historyFor} onClose={() => setHistoryFor(null)} width="large">
+        <ModalHeader>
+          <ModalTitle>{historyFor ? `History · ${historyFor.title}` : ''}</ModalTitle>
+        </ModalHeader>
+        <ModalBody>
+          {historyFor ? (
+            <StrataAuditHistory entityTable={historyFor.table} entityId={historyFor.id} />
+          ) : null}
+        </ModalBody>
+        <ModalFooter>
+          <Button appearance="subtle" onClick={() => setHistoryFor(null)}>Close</Button>
+        </ModalFooter>
+      </Modal>
 
       {/* Schedule — the server assigns REV-xxxx. Cadence is deliberately optional and NOT
           pre-filled: the default is stated as a hint, because a pre-filled default would be
@@ -935,6 +1090,10 @@ export default function StrataReviewsPage() {
   const [actionTargetId, setActionTargetId] = useState<string | null>(null);
   const [govError, setGovError] = useState<string | null>(null);
   const [govBusyId, setGovBusyId] = useState<string | null>(null);
+  // RD-DEF-003 — recording the official decision: outcome + rationale, SoD enforced server-side.
+  const [decideTarget, setDecideTarget] = useState<StrataDecision | null>(null);
+  // RD-DEF-009 — decision/action history modal (canonical audit store).
+  const [govHistoryFor, setGovHistoryFor] = useState<{ table: string; id: string; title: string } | null>(null);
 
   // ── Client-side board-pack generation (Q7: PDF + PPTX; server engine has no channel yet) ──
   const rolesQ = useStrataRoles();
@@ -1439,14 +1598,26 @@ export default function StrataReviewsPage() {
               <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: T.subtle }}>{d.decision_key}</span>
               <span style={{ ...bodyStyle, fontWeight: 600 }}>{d.title}</span>
             </div>
+            {/* RD-DEF-008: the entered metadata, rendered — type, forum, owner. Absent = absent. */}
+            <div style={{ display: 'flex', gap: 12, marginTop: 4, ...captionStyle, flexWrap: 'wrap' }} data-testid={`strata-reviews-decision-meta-${d.decision_key}`}>
+              <span>type <span style={{ color: T.subtle, fontWeight: 600 }}>{labelize(d.decision_type)}</span></span>
+              {d.forum ? <span>forum <span style={{ color: T.subtle, fontWeight: 600 }}>{d.forum}</span></span> : null}
+              {d.owner_id ? <span>owner <span style={{ color: T.subtle, fontWeight: 600 }}>{profileName(d.owner_id) ?? '—'}</span></span> : null}
+            </div>
             {/* Snapshot evidence that motivates the decision */}
             <p style={{ margin: '4px 0 0', ...captionStyle, color: T.subtle, lineHeight: 1.5 }}>{d.description ?? '—'}</p>
-            {/* Verdict record — once recorded, the outcome + who/when + against-SNAP */}
+            {/* Verdict record — outcome + rationale + approver + who/when + against-SNAP.
+                RD-DEF-003: outcome is separate from type; the approver is the distinct identity
+                the server required. NULL on pre-vocabulary history renders as absent, never filled. */}
             {recorded ? (
-              <div style={{ marginTop: 8, padding: '8px 12px', borderRadius: 6, background: T.sunken, border: `1px solid ${T.border}`, ...captionStyle, color: T.text, lineHeight: 1.5 }}>
-                <strong>{labelize(d.status)}</strong>
+              <div style={{ marginTop: 8, padding: '8px 12px', borderRadius: 6, background: T.sunken, border: `1px solid ${T.border}`, ...captionStyle, color: T.text, lineHeight: 1.5 }} data-testid={`strata-reviews-decision-verdict-${d.decision_key}`}>
+                <strong>{labelize(d.status)}{d.outcome ? ` · ${labelize(d.outcome)}` : ''}</strong>
+                {d.rationale ? (
+                  <span style={{ display: 'block', marginTop: 4 }}>{d.rationale}</span>
+                ) : null}
                 <span style={{ display: 'block', marginTop: 4, color: T.subtlest }}>
                   Recorded by {profileName(d.decided_by) ?? '—'} · {d.decided_at ? fmtDateTime(d.decided_at) : '—'} · against {selected?.snapshot_key ?? '—'}
+                  {d.approved_by ? ` · approved by ${profileName(d.approved_by) ?? '—'}` : ''}
                 </span>
               </div>
             ) : d.due_date ? (
@@ -1459,25 +1630,37 @@ export default function StrataReviewsPage() {
                 ))}
               </div>
             ) : null}
-            {canAuthor ? (
-              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 8 }}>
-                {d.status === 'open' ? (
-                  <Button spacing="compact" isDisabled={govBusyId === d.id} onClick={() => void transition('decision', d.id, 'decided')} testId={`strata-reviews-decide-${d.decision_key}`}>
-                    Mark decided
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 8 }}>
+              {canAuthor && d.status === 'open' ? (
+                // RD-DEF-003: deciding is the OFFICIAL act — it opens the outcome/rationale form,
+                // and the server refuses the creator approving their own decision (SoD, verbatim).
+                <Button spacing="compact" isDisabled={govBusyId === d.id} onClick={() => setDecideTarget(d)} testId={`strata-reviews-decide-${d.decision_key}`}>
+                  Record decision…
+                </Button>
+              ) : null}
+              {canAuthor && d.status === 'decided' ? (
+                <Tooltip content="Blocked by the server while this decision still has open actions. Closing is final — a closed decision and its actions become immutable history.">
+                  <Button spacing="compact" isDisabled={govBusyId === d.id} onClick={() => void transition('decision', d.id, 'closed')} testId={`strata-reviews-close-decision-${d.decision_key}`}>
+                    Close decision
                   </Button>
-                ) : null}
-                {d.status === 'decided' ? (
-                  <Tooltip content="Blocked by the server while this decision still has open actions">
-                    <Button spacing="compact" isDisabled={govBusyId === d.id} onClick={() => void transition('decision', d.id, 'closed')} testId={`strata-reviews-close-decision-${d.decision_key}`}>
-                      Close decision
-                    </Button>
-                  </Tooltip>
-                ) : null}
+                </Tooltip>
+              ) : null}
+              {/* RD-DEF-005: no New action on a closed decision — the record is frozen history. */}
+              {canAuthor && d.status !== 'closed' ? (
                 <Button spacing="compact" appearance="default" onClick={() => setActionTargetId(d.id)} testId={`strata-reviews-new-action-${d.decision_key}`}>
                   New action
                 </Button>
-              </div>
-            ) : null}
+              ) : null}
+              {d.status === 'closed' ? (
+                <span style={captionStyle} data-testid={`strata-reviews-decision-terminal-${d.decision_key}`}>
+                  Closed — immutable history; record a new superseding decision instead.
+                </span>
+              ) : null}
+              {/* RD-DEF-009: reachable history for every decision, straight from the audit store. */}
+              <Button spacing="compact" appearance="subtle" onClick={() => setGovHistoryFor({ table: 'strata_decisions', id: d.id, title: `${d.decision_key} · ${d.title}` })} testId={`strata-reviews-history-${d.decision_key}`}>
+                History
+              </Button>
+            </div>
           </div>
         </div>
       </div>
@@ -1499,17 +1682,21 @@ export default function StrataReviewsPage() {
           ) : null}
           <StatusLozenge status={a.status} label={labelize(a.status)} appearance={ACTION_LOZENGE[a.status] ?? 'default'} />
         </div>
-        {canAuthor && (a.status === 'open' || a.status === 'in_progress') ? (
-          <div style={{ display: 'flex', gap: 8, marginTop: 8, flexWrap: 'wrap' }}>
-            {a.status === 'open' ? (
-              <Button spacing="compact" appearance="subtle" isDisabled={govBusyId === a.id} onClick={() => void transition('action', a.id, 'in_progress')} testId={`strata-reviews-start-${a.action_key}`}>Start</Button>
-            ) : null}
-            {a.status === 'in_progress' ? (
-              <Button spacing="compact" appearance="subtle" isDisabled={govBusyId === a.id} onClick={() => void transition('action', a.id, 'done')} testId={`strata-reviews-done-${a.action_key}`}>Done</Button>
-            ) : null}
+        <div style={{ display: 'flex', gap: 8, marginTop: 8, flexWrap: 'wrap' }}>
+          {canAuthor && a.status === 'open' ? (
+            <Button spacing="compact" appearance="subtle" isDisabled={govBusyId === a.id} onClick={() => void transition('action', a.id, 'in_progress')} testId={`strata-reviews-start-${a.action_key}`}>Start</Button>
+          ) : null}
+          {canAuthor && a.status === 'in_progress' ? (
+            <Button spacing="compact" appearance="subtle" isDisabled={govBusyId === a.id} onClick={() => void transition('action', a.id, 'done')} testId={`strata-reviews-done-${a.action_key}`}>Done</Button>
+          ) : null}
+          {canAuthor && (a.status === 'open' || a.status === 'in_progress') ? (
             <Button spacing="compact" appearance="subtle" isDisabled={govBusyId === a.id} onClick={() => void transition('action', a.id, 'cancelled')} testId={`strata-reviews-cancel-${a.action_key}`}>Cancel</Button>
-          </div>
-        ) : null}
+          ) : null}
+          {/* RD-DEF-009: reachable history for every action. */}
+          <Button spacing="compact" appearance="subtle" onClick={() => setGovHistoryFor({ table: 'strata_actions', id: a.id, title: `${a.action_key} · ${a.title}` })} testId={`strata-reviews-history-${a.action_key}`}>
+            History
+          </Button>
+        </div>
       </div>
     );
   };
@@ -2140,6 +2327,56 @@ export default function StrataReviewsPage() {
           />
         );
       })() : null}
+
+      {/* ── RD-DEF-003: record the OFFICIAL decision — outcome + rationale required; the server
+             refuses the creator approving their own decision (SoD) and its refusal renders
+             verbatim inside this modal. ── */}
+      {canAuthor && decideTarget ? (
+        <StrataFormModal
+          open
+          onClose={() => setDecideTarget(null)}
+          title={`Record decision — ${decideTarget.decision_key}`}
+          description={<>Making <strong style={{ color: T.text }}>{decideTarget.title}</strong> official requires an explicit outcome, a rationale, and an approver who is not its creator. The database enforces the segregation of duties.</>}
+          fields={[
+            {
+              key: 'outcome', label: 'Outcome', kind: 'select', required: true,
+              options: [
+                { value: 'approved', label: 'Approved' },
+                { value: 'rejected', label: 'Rejected' },
+                { value: 'deferred', label: 'Deferred' },
+                { value: 'escalated', label: 'Escalated' },
+                { value: 'noted', label: 'Noted' },
+              ],
+            },
+            { key: 'rationale', label: 'Rationale', kind: 'textarea', required: true },
+          ]}
+          submitLabel="Record official decision"
+          onSubmit={async (v) => {
+            await governanceApi.updateDecision(decideTarget.id, {
+              status: 'decided',
+              outcome: v.outcome as StrataDecision['outcome'],
+              rationale: (v.rationale as string).trim(),
+            });
+            invalidate();
+          }}
+          testId="strata-reviews-decide-modal"
+        />
+      ) : null}
+
+      {/* ── RD-DEF-009: decision/action history from the canonical audit store ── */}
+      <Modal isOpen={!!govHistoryFor} onClose={() => setGovHistoryFor(null)} width="large">
+        <ModalHeader>
+          <ModalTitle>{govHistoryFor ? `History · ${govHistoryFor.title}` : ''}</ModalTitle>
+        </ModalHeader>
+        <ModalBody>
+          {govHistoryFor ? (
+            <StrataAuditHistory entityTable={govHistoryFor.table} entityId={govHistoryFor.id} />
+          ) : null}
+        </ModalBody>
+        <ModalFooter>
+          <Button appearance="subtle" onClick={() => setGovHistoryFor(null)}>Close</Button>
+        </ModalFooter>
+      </Modal>
     </StrataPageShell>
   );
 }

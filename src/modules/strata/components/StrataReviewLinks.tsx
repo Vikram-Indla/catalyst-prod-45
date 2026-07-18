@@ -54,7 +54,7 @@ export function StrataReviewLinks({
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column' }}>
             {rows.map((r) => (
-              <div key={r.review_id} style={{ padding: '10px 16px', borderTop: `1px solid ${T.border}`, display: 'flex', alignItems: 'center', gap: 8, justifyContent: 'space-between' }}>
+              <div key={r.review_id} style={{ padding: '8px 16px', borderTop: `1px solid ${T.border}`, display: 'flex', alignItems: 'center', gap: 8, justifyContent: 'space-between' }}>
                 <div style={{ minWidth: 0 }}>
                   <Button appearance="link" spacing="none" onClick={() => navigate(Routes.strata.reviews())}>
                     {r.review_name}

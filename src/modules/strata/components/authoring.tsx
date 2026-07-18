@@ -16,6 +16,7 @@ import {
 import type { SelectOption } from '@/components/ads';
 import TextArea from '@atlaskit/textarea';
 import { DatePicker } from '@atlaskit/datetime-picker';
+import { parseDayFirstDate } from './vmoAuthoring';
 import { useProfileNames } from '../hooks/useStrata';
 import { useBeforeUnload } from '../hooks/useBeforeUnload';
 import { T } from './shared';
@@ -118,6 +119,12 @@ function FieldControl({
           value={(value as string) ?? ''}
           onChange={(iso) => onChange(iso || null)}
           isDisabled={field.isDisabled}
+          // RD-DEF-007, same root cause as PB-DEF-005 (vmoAuthoring): @atlaskit's default parser
+          // reads typed input US-first, so a valid day-first 31/12/2026 was silently DISCARDED on
+          // Enter/blur while calendar selection worked. Parse day-first explicitly — typed text
+          // and calendar selection must commit identically.
+          dateFormat="DD/MM/YYYY"
+          parseInputValue={parseDayFirstDate}
           shouldShowCalendarButton
           clearControlLabel={`Clear ${field.label}`}
           label={field.label}
@@ -125,7 +132,7 @@ function FieldControl({
           // (`new Date(1993, 1, 18)` → "2/18/1993") whenever no `placeholder`
           // is supplied — an empty string is also treated as absent. Pass a
           // real hint so empty optional date fields never show the 1993 value.
-          placeholder={field.placeholder ?? 'Select date'}
+          placeholder={field.placeholder ?? 'DD/MM/YYYY'}
         />
       );
     case 'select': {
