@@ -28,8 +28,9 @@ import {
   useAllModelMeasures, useAllModelPerspectives, useChangeRequests, useGateModels, useInvalidateStrata, useKpiTypes, useKpis, useModelPerspectives,
   usePerspectives, useProfileNames, useProjectCardFieldConfigs, useProjectCardPicklists,
   useProjectCardSectionConfigs, useProjectCardTabConfigs, useRoleAssignments, useScorecardModels,
-  useStrataAudit, useStrataContext, useStrataNotificationRules, useStrataRoles, useStrataUserId, useThresholdSchemes, useUploadRuns, useUploadTemplates, useValueCategories,
-  useWorkflowConfigs,
+  useBenefits, useGateInstances, usePortfolios, useProjectCards, useStrataAudit, useStrataContext,
+  useStrataNotificationRules, useStrataRoles, useStrataUserId, useStrategyElements, useThresholdSchemes,
+  useUploadRuns, useUploadTemplates, useValueCategories, useWorkflowConfigs,
 } from '@/modules/strata/hooks/useStrata';
 import { StrataPageShell, StrataPanel, T } from '@/modules/strata/components/shared';
 import { StrataNotFound } from '@/modules/strata/components/StrataSystemStates';
@@ -37,7 +38,10 @@ import { StrataFormModal, str } from '@/modules/strata/components/authoring';
 import { fmtDate, fmtDateTime, labelize } from '@/modules/strata/components/format';
 import { computeModelIntegrity, draftSubmitBlockedReason } from '@/modules/strata/lib/modelIntegrity';
 import { auditChangedFields } from '@/modules/strata/lib/auditDiff';
-import { perspectiveDependents, thresholdSchemeDependents, modelVersionImpact } from '@/modules/strata/lib/dependents';
+import {
+  gateModelDependents, modelVersionImpact, perspectiveDependents, thresholdSchemeDependents,
+  valueCategoryDependents, workflowEntityDependents,
+} from '@/modules/strata/lib/dependents';
 import { deriveEffectiveAdminRows } from '@/modules/strata/lib/effectiveRoles';
 import type {
   GovernedEnvelope, GovernedStatus, StrataChangeRequest, StrataCycle, StrataNotificationRule, StrataPeriod, StrataPerspective,
@@ -1639,13 +1643,26 @@ export function ThresholdsSection({ onError }: { onError: OnError }) {
 
 function ValueTaxonomySection({ onError }: { onError: OnError }) {
   const q = useValueCategories();
+  // CFG-004 (C6): portfolios/benefits classified under each category are its
+  // real consumers — both unfiltered queries existed, they were never wired.
+  const portfoliosQ = usePortfolios();
+  const benefitsQ = useBenefits();
   const list = q.data ?? [];
   return (
     <StrataPanel title="Value taxonomy" icon={<Gem size={16} />} count={list.length} testId="strata-admin-value-taxonomy">
       <SectionState query={q} empty={list.length === 0}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
           {list.map((c) => (
-            <GovRecordCard key={c.id} name={c.name} table="strata_value_categories" record={c} onError={onError}>
+            <GovRecordCard
+              key={c.id}
+              name={c.name}
+              table="strata_value_categories"
+              record={c}
+              onError={onError}
+              impact={portfoliosQ.data && benefitsQ.data
+                ? valueCategoryDependents(c.id, portfoliosQ.data, benefitsQ.data)
+                : undefined}
+            >
               <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'center' }}>
                 <span style={metaStyle}>Unit {c.measurement_unit ?? '—'}</span>
                 {c.validator_role ? <CatalystTag text={labelize(c.validator_role)} /> : null}
@@ -1661,13 +1678,22 @@ function ValueTaxonomySection({ onError }: { onError: OnError }) {
 
 function GatesSection({ onError }: { onError: OnError }) {
   const q = useGateModels();
+  // CFG-004 (C6): gate instances recorded under each model are its consumers.
+  const instancesQ = useGateInstances();
   const list = q.data ?? [];
   return (
     <StrataPanel title="Gate models" icon={<ShieldCheck size={16} />} count={list.length} testId="strata-admin-gates">
       <SectionState query={q} empty={list.length === 0}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
           {list.map((g) => (
-            <GovRecordCard key={g.id} name={g.name} table="strata_gate_models" record={g} onError={onError}>
+            <GovRecordCard
+              key={g.id}
+              name={g.name}
+              table="strata_gate_models"
+              record={g}
+              onError={onError}
+              impact={instancesQ.data ? gateModelDependents(g.id, instancesQ.data) : undefined}
+            >
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                 {(g.stages ?? []).map((st) => (
                   <div key={st.id} style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
@@ -1792,13 +1818,39 @@ export function UploadTemplatesSection({ onError }: { onError: OnError }) {
 
 export function WorkflowsSection({ onError }: { onError: OnError }) {
   const q = useWorkflowConfigs();
+  // CFG-004 (C6): a workflow's consumers are the records of its entity_type.
+  // Enumerable types are counted from real queries; an unmapped type yields
+  // undefined and the dialog stays silent — never an invented count.
+  const kpisQ = useKpis();
+  const modelsQ = useScorecardModels();
+  const cardsQ = useProjectCards();
+  const { activeCycle } = useStrataContext();
+  const elementsQ = useStrategyElements(activeCycle?.id);
+  const tallyFor = (entityType: string) => {
+    switch (entityType) {
+      case 'kpi': return kpisQ.data ? { label: 'KPI', count: kpisQ.data.length } : undefined;
+      case 'scorecard_model': return modelsQ.data ? { label: 'scorecard model', count: modelsQ.data.length } : undefined;
+      case 'project_card': return cardsQ.data ? { label: 'Project Card', count: cardsQ.data.length } : undefined;
+      case 'strategy_element': return elementsQ.data && activeCycle
+        ? { label: 'strategy element', count: elementsQ.data.length, qualifier: `in ${activeCycle.name}` }
+        : undefined;
+      default: return undefined;
+    }
+  };
   const list = q.data ?? [];
   return (
     <StrataPanel title="Workflows" icon={<GitBranch size={16} />} count={list.length} testId="strata-admin-workflows">
       <SectionState query={q} empty={list.length === 0}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
           {list.map((w) => (
-            <GovRecordCard key={w.id} name={w.name} table="strata_workflow_configs" record={w} onError={onError}>
+            <GovRecordCard
+              key={w.id}
+              name={w.name}
+              table="strata_workflow_configs"
+              record={w}
+              onError={onError}
+              impact={workflowEntityDependents(w.entity_type, tallyFor(w.entity_type))}
+            >
               <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
                 <span style={metaStyle}>Entity {labelize(w.entity_type)}</span>
                 {(w.states ?? []).map((s) => <CatalystTag key={s.key} text={s.label} />)}
@@ -1924,7 +1976,12 @@ function RolesSection({ onError }: { onError: OnError }) {
         <span style={{ display: 'flex', flexDirection: 'column', gap: 2, alignItems: 'flex-start' }}>
           <StatusLozenge status={row.role} label={labelize(row.role)} appearance="default" />
           {row.derived ? (
-            <span style={{ ...metaStyle, fontSize: 'var(--ds-font-size-075)' }} data-testid="strata-admin-derived-role">
+            // CFG-008 (C6): the caption must WRAP inside the fixed-width Role
+            // column — it was ellipsizing at ≤1204px.
+            <span
+              style={{ ...metaStyle, fontSize: 'var(--ds-font-size-075)', whiteSpace: 'normal', overflowWrap: 'anywhere', lineHeight: 1.3 }}
+              data-testid="strata-admin-derived-role"
+            >
               via platform admin — no explicit grant
             </span>
           ) : null}

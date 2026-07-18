@@ -294,7 +294,10 @@ function RoleAssignments({ onError }: { onError: OnError }) {
         <span style={{ display: 'flex', flexDirection: 'column', gap: 2, alignItems: 'flex-start' }}>
           <StatusLozenge status={row.role} label={labelize(row.role)} appearance="default" />
           {row.derived ? (
-            <span style={{ ...metaStyle, fontSize: 'var(--ds-font-size-075)' }} data-testid="strata-access-derived-role">
+            <span
+              style={{ ...metaStyle, fontSize: 'var(--ds-font-size-075)', whiteSpace: 'normal', overflowWrap: 'anywhere', lineHeight: 1.3 }}
+              data-testid="strata-access-derived-role"
+            >
               via platform admin — no explicit grant
             </span>
           ) : null}
