@@ -526,6 +526,14 @@ export const useGateInstances = () =>
 /** Benefit ↔ Project Card attribution (Execution Reconciliation §K rule 19). */
 export const useBenefitProjectCards = () =>
   useQuery({ queryKey: ['strata', 'benefit-project-cards'], queryFn: valueApi.benefitProjectCards, staleTime: STALE });
+/** PC-DEF-005 — per-card governed audit history (actor / time / action / before-after). */
+export const useCardAudit = (projectId?: string) =>
+  useQuery({
+    queryKey: ['strata', 'card-audit', projectId],
+    queryFn: () => executionApi.cardAuditHistory(projectId!),
+    enabled: !!projectId,
+    staleTime: STALE,
+  });
 export const useValueAtRisk = (portfolioId?: string) =>
   useQuery({
     queryKey: ['strata', 'var', portfolioId],
