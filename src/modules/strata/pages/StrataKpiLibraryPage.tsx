@@ -324,6 +324,7 @@ function OkrPanel() {
               isOpen={expanded.has(okr.id)}
               onToggle={() => toggle(okr.id)}
               onAddKeyResult={canAuthor ? () => setKrOkr(okr) : undefined}
+              onLifecycle={canAuthor}
             />
           ))}
         </div>

@@ -25,6 +25,39 @@ import type {
   StrataWorkflowConfig, ThresholdBand,
 } from '../types';
 
+/** Shape of strata_kpi_dependency_impact (KO-DEF-002). Counts only; no identifiers leak. */
+export interface StrataKpiDependencyImpact {
+  kpi_id: string;
+  lineage_id: string;
+  versions_in_lineage: number;
+  current: {
+    element_links: number; model_measures: number; scorecard_lines: number;
+    key_results: number; initiative_links: number;
+  };
+  historical: {
+    element_links: number; model_measures: number;
+    scorecard_lines_locked: number; key_results_closed: number;
+  };
+  active_total: number;
+}
+
+/** KO-DEF-003 KR reportability (server-resolved). */
+export interface StrataKrReportability {
+  reportable: boolean;
+  kind: 'standalone' | 'kpi_backed';
+  label: string;
+  qualified: boolean;
+  kpi_state?: string | null;
+  kpi_id?: string | null;
+  kpi_name?: string | null;
+  resolved_kpi_id?: string | null;
+  actual_status?: string | null;
+  reason?: string | null;
+}
+export interface StrataOkrOfficialProgress {
+  okr_id: string; reportable_krs: number; excluded_krs: number; official_progress: number | null;
+}
+
 /** Maps known Postgres/RPC errors to business-facing copy so schema, table and
  * constraint identifiers never reach the UI (V6-OPEN-024). Every domain call
  * funnels through run(), so this one map covers the whole STRATA module. Unknown
@@ -80,6 +113,13 @@ export const configApi = {
     return run(q);
   },
   /** Governed-record lifecycle — RPC-only transitions (SoD enforced in DB). */
+  /**
+   * Unmet governed prerequisites for a KPI, empty when approvable (KO-DEF-001).
+   * The SAME function the submit gate enforces — so the list shown to the user cannot drift
+   * from the list the server applies.
+   */
+  kpiSubmissionBlockers: (kpiId: string): Promise<string[]> =>
+    run(typedRpc('strata_kpi_submission_blockers', { p_kpi: kpiId })).then((r) => (r as string[] | null) ?? []),
   submitRecord: (table: string, id: string) =>
     run(typedRpc('strata_submit_record', { p_table: table, p_id: id })),
   approveRecord: (table: string, id: string, note?: string) =>
@@ -97,6 +137,38 @@ export const configApi = {
    */
   createModelDraftVersion: (modelId: string, reason: string): Promise<string> =>
     run(typedRpc('strata_create_model_draft_version', { p_model: modelId, p_reason: reason })),
+  /**
+   * D-2's KPI revision RPC (KO-DEF-002). Takes a THIRD argument the other two do not — the
+   * revision class — which is why it cannot be expressed through the (id, reason) REVISION_RPC
+   * map used by models/threshold schemes and is wired directly from the KPI detail page instead.
+   *
+   * The server clones definition columns + formula versions only, keeps the source lineage_id,
+   * sets version = max+1 and supersedes_id, and leaves the Approved predecessor untouched.
+   * Actuals, targets, Key Results, Scorecard lines, element links and model measures are
+   * deliberately NOT copied — facts keep the version that produced them.
+   */
+  createKpiDraftVersion: (
+    kpiId: string, reason: string, revisionClass: 'non_material' | 'material',
+    effectiveFrom?: string | null,
+  ): Promise<string> =>
+    run(typedRpc('strata_create_kpi_draft_version', {
+      p_kpi: kpiId, p_reason: reason, p_revision_class: revisionClass,
+      p_effective_from: effectiveFrom ?? null,
+    })),
+  /** Dependency impact for a KPI across its lineage (KO-DEF-002). One server definition, shared
+   *  by the retirement gate, the retirement modal and the revision modal — no client duplication. */
+  kpiDependencyImpact: (kpiId: string): Promise<StrataKpiDependencyImpact> =>
+    run(typedRpc('strata_kpi_dependency_impact', { p_kpi: kpiId })) as Promise<StrataKpiDependencyImpact>,
+  /** Prospective governed retirement. Server blocks unless the dependency state is safe, or a
+   *  replacement/exception is supplied; rejection text is surfaced verbatim in the modal. */
+  retireKpi: (input: {
+    kpiId: string; reason: string; effectiveTo: string;
+    replacementId?: string | null; exception?: string | null;
+  }): Promise<unknown> =>
+    run(typedRpc('strata_retire_kpi', {
+      p_kpi: input.kpiId, p_reason: input.reason, p_effective_to: input.effectiveTo,
+      p_replacement: input.replacementId ?? null, p_exception: input.exception ?? null,
+    })),
   /**
    * D-2's third revision RPC. Separate from the model one by ruling ("dedicated revision RPCs —
    * NOT one generic polymorphic RPC"), and separate in fact: a threshold scheme has no aggregate
@@ -344,6 +416,25 @@ export const strategyApi = {
 export const scorecardApi = {
   models: (): Promise<StrataScorecardModel[]> =>
     run(typedQuery('strata_scorecard_models').select('*').order('name')),
+  /**
+   * Create a NET-NEW scorecard model at version 1 / status draft (SC-DEF-001).
+   * Distinct from `configApi.createModelDraftVersion`, which REVISES an existing model by
+   * cloning it (D-2/D-3) and cannot bootstrap a first model. Perspectives and KPI measures
+   * are authored afterwards via setModelPerspectiveWeights / setModelMeasures, both of
+   * which require the model to be a draft.
+   */
+  createModel: (input: {
+    name: string; ownerScopeType: string; rollupMethod: string; periodGranularity: string;
+    description?: string; thresholdSchemeId?: string;
+  }): Promise<string> =>
+    run(typedRpc('strata_create_scorecard_model', {
+      p_name: input.name,
+      p_owner_scope_type: input.ownerScopeType,
+      p_rollup_method: input.rollupMethod,
+      p_period_granularity: input.periodGranularity,
+      p_description: input.description ?? null,
+      p_threshold_scheme: input.thresholdSchemeId ?? null,
+    })),
   modelPerspectives: (modelId: string): Promise<StrataModelPerspective[]> =>
     run(typedQuery('strata_scorecard_model_perspectives').select('*').eq('model_id', modelId).order('order_index')),
   // Every model→perspective link, unfiltered — lets the measurement domain page
@@ -614,6 +705,22 @@ export const kpiApi = {
       p_target: input.target ?? null, p_current_value: input.currentValue ?? null,
       p_direction: input.direction ?? 'higher_better',
     })),
+  /** KO-DEF-003 OKR lifecycle — server-governed (Draft→Active→Closed). Errors surface verbatim. */
+  updateOkr: (okrId: string, patch: { ownerId?: string; objectiveElementId?: string; cycleId?: string; startPeriodId?: string; endPeriodId?: string }) =>
+    run(typedRpc('strata_update_okr', {
+      p_okr: okrId, p_owner: patch.ownerId ?? null, p_objective: patch.objectiveElementId ?? null,
+      p_cycle: patch.cycleId ?? null, p_period_start: patch.startPeriodId ?? null, p_period_end: patch.endPeriodId ?? null,
+    })),
+  activateOkr: (okrId: string) => run(typedRpc('strata_activate_okr', { p_okr: okrId })),
+  linkOkrReview: (okrId: string, reviewId: string) =>
+    run(typedRpc('strata_link_okr_review', { p_okr: okrId, p_review: reviewId })),
+  closeOkr: (okrId: string, finalStatus: string, reason: string) =>
+    run(typedRpc('strata_close_okr', { p_okr: okrId, p_final_status: finalStatus, p_reason: reason })),
+  /** KR reportability — the single server definition; never recomputed client-side (KO-DEF-003). */
+  krReportability: (krId: string): Promise<StrataKrReportability> =>
+    run(typedRpc('strata_kr_reportability', { p_kr: krId })) as Promise<StrataKrReportability>,
+  okrOfficialProgress: (okrId: string): Promise<StrataOkrOfficialProgress> =>
+    run(typedRpc('strata_okr_official_progress', { p_okr: okrId })) as Promise<StrataOkrOfficialProgress>,
   updateKeyResult: (krId: string, patch: {
     currentValue?: number; name?: string; target?: number; status?: string; kpiId?: string;
   }) =>

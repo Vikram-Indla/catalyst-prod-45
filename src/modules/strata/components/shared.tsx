@@ -14,16 +14,17 @@
 import React, { useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import {
-  Button, DropdownMenu, Heading, Lozenge, ProgressBar,
+  Button, DropdownMenu, Heading, Lozenge, ProgressBar, Select,
   Modal, ModalBody, ModalFooter, ModalHeader, ModalTitle, SectionMessage, Spinner, Textfield, Tooltip,
 } from '@/components/ads';
+import TextArea from '@atlaskit/textarea';
 import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
 import VisuallyHidden from '@atlaskit/visually-hidden';
 import { ChevronDown, ChevronRight, Plus } from '@/lib/atlaskit-icons';
 import { JiraTable } from '@/components/shared/JiraTable';
 import type { Column } from '@/components/shared/JiraTable';
 import { kpiApi } from '../domain';
-import { useBandResolver, useStrataContext } from '../hooks/useStrata';
+import { useBandResolver, useInvalidateStrata, useKrReportability, useOkrOfficialProgress, useProfileNames, useReviews, useStrataContext, useStrategyElements } from '../hooks/useStrata';
 import { StrataNotificationBell } from './StrataNotificationBell';
 import { StrataNotificationBand } from './StrataSystemStates';
 import { fmtDate, fmtPct, fmtRatioPct, fmtSarCompact, fmtScore, fmtUnit, labelize } from './format';
@@ -1111,6 +1112,49 @@ export const krProgressFraction = (kr: StrataKeyResult): number | null => {
 };
 
 /** Lazy key-result fetch — mounts only when the OKR row is expanded (S-115/S-116). */
+/** KO-DEF-003 — server-resolved reportability badge for a Key Result. Shows linked KPI name,
+ *  lifecycle state, effective version and the Non-reportable / Standalone / Reportable label.
+ *  The client never recomputes eligibility — it renders strata_kr_reportability verbatim. */
+export function KrReportabilityBadge({ krId }: { krId: string }) {
+  const q = useKrReportability(krId);
+  const r = q.data;
+  if (q.isLoading || !r) return <span style={{ color: T.subtlest, fontSize: 'var(--ds-font-size-050)' }}>—</span>;
+  const appearance: React.ComponentProps<typeof Lozenge>['appearance'] =
+    !r.reportable ? 'removed' : r.qualified ? 'moved' : r.kind === 'standalone' ? 'default' : 'success';
+  return (
+    <span style={{ display: 'inline-flex', flexDirection: 'column', gap: 2 }} data-testid={`strata-kr-reportability-${krId}`}>
+      <Lozenge appearance={appearance}>{r.label}</Lozenge>
+      {r.kind === 'kpi_backed' ? (
+        <span style={{ fontSize: 'var(--ds-font-size-050)', color: T.subtlest }}>
+          {r.kpi_name ? `${r.kpi_name} · ` : ''}{r.kpi_state ? labelize(r.kpi_state) : ''}
+          {r.resolved_kpi_id ? ' · effective version resolved' : ''}
+          {r.reason ? ` — ${r.reason}` : ''}
+        </span>
+      ) : null}
+    </span>
+  );
+}
+
+/** KO-DEF-003 item 9 — official progress excludes non-reportable KPI-backed KRs, and says why. */
+export function OkrOfficialProgress({ okrId }: { okrId: string }) {
+  const q = useOkrOfficialProgress(okrId);
+  const p = q.data;
+  if (!p) return null;
+  return (
+    <div data-testid={`strata-okr-official-progress-${okrId}`}
+      style={{ margin: '4px 0 8px', fontSize: 'var(--ds-font-size-050)', color: T.subtle }}>
+      Official progress:{' '}
+      <strong style={{ color: T.text }}>
+        {p.official_progress != null ? `${Math.round(p.official_progress * 100)}%` : '—'}
+      </strong>{' '}
+      over {p.reportable_krs} reportable KR{p.reportable_krs === 1 ? '' : 's'}
+      {p.excluded_krs > 0
+        ? ` · ${p.excluded_krs} non-reportable KR${p.excluded_krs === 1 ? '' : 's'} excluded (Draft/Pending KPI or no eligible actual)`
+        : ''}
+    </div>
+  );
+}
+
 export function KeyResultsList({ okrId }: { okrId: string }) {
   const q = useQuery({
     queryKey: ['strata', 'key-results', okrId],
@@ -1160,6 +1204,12 @@ export function KeyResultsList({ okrId }: { okrId: string }) {
           : <ProgressBar value={frac} aria-label={`Progress ${Math.round(frac * 100)}%`} />;
       },
     },
+    {
+      id: 'reportability',
+      label: 'Reportability',
+      width: 22,
+      cell: ({ row }) => <KrReportabilityBadge krId={row.id} />,
+    },
   ], []);
 
   if (q.isLoading) return <div style={{ padding: '8px 0' }}><Spinner size="small" aria-label="Loading key results" /></div>;
@@ -1186,12 +1236,14 @@ export function KeyResultsList({ okrId }: { okrId: string }) {
 }
 
 /** Accordion row — canonical chrome: chevron icon, hover bg, structured header (S-117). */
-export function OkrRow({ okr, objectiveName, isOpen, onToggle, onAddKeyResult }: {
+export function OkrRow({ okr, objectiveName, isOpen, onToggle, onAddKeyResult, onLifecycle }: {
   okr: StrataOkr;
   objectiveName: string | null;
   isOpen: boolean;
   onToggle: () => void;
   onAddKeyResult?: () => void;
+  /** When set (strategy-office), renders governed lifecycle actions (activate/close). */
+  onLifecycle?: boolean;
 }) {
   const [hover, setHover] = useState(false);
   const status = OKR_STATUS_LOZENGE[okr.status];
@@ -1234,8 +1286,10 @@ export function OkrRow({ okr, objectiveName, isOpen, onToggle, onAddKeyResult }:
       </button>
       {isOpen ? (
         <div style={{ padding: '0 8px 12px 32px' }}>
+          <OkrOfficialProgress okrId={okr.id} />
           <KeyResultsList okrId={okr.id} />
-          {onAddKeyResult ? (
+          {onLifecycle ? <OkrLifecycleActions okr={okr} /> : null}
+          {onAddKeyResult && okr.status !== 'closed' ? (
             <div style={{ marginTop: 8 }}>
               <Button
                 appearance="default"
@@ -1249,6 +1303,175 @@ export function OkrRow({ okr, objectiveName, isOpen, onToggle, onAddKeyResult }:
             </div>
           ) : null}
         </div>
+      ) : null}
+    </div>
+  );
+}
+
+/** KO-DEF-003 lifecycle actions — server-governed. Buttons reflect the state; the RPC is the
+ *  authority and its rejection text is surfaced verbatim. Closed shows the frozen final status. */
+function OkrLifecycleActions({ okr }: { okr: StrataOkr }) {
+  const invalidate = useInvalidateStrata();
+  const { periods } = useStrataContext();
+  const elementsQ = useStrategyElements();
+  const profiles = useProfileNames();
+  const reviewsQ = useReviews();
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [closeOpen, setCloseOpen] = useState(false);
+  const [finalStatus, setFinalStatus] = useState('achieved');
+  const [closeReason, setCloseReason] = useState('');
+  const [editOpen, setEditOpen] = useState(false);
+  const [reviewOpen, setReviewOpen] = useState(false);
+  const [owner, setOwner] = useState<string | null>((okr as { owner_id?: string | null }).owner_id ?? null);
+  const [objective, setObjective] = useState<string | null>(okr.objective_element_id ?? null);
+  const [startP, setStartP] = useState<string | null>((okr as { start_period_id?: string | null }).start_period_id ?? null);
+  const [endP, setEndP] = useState<string | null>((okr as { end_period_id?: string | null }).end_period_id ?? null);
+  const [reviewId, setReviewId] = useState<string | null>((okr as { review_id?: string | null }).review_id ?? null);
+
+  const periodOpts = (periods ?? []).map((p) => ({ value: p.id, label: p.name }));
+  const objectiveOpts = (elementsQ.data ?? []).filter((e) => e.element_type === 'objective').map((e) => ({ value: e.id, label: e.name }));
+  const ownerOpts = Array.from((profiles.data ?? new Map()).entries()).map(([id, p]) => ({ value: id, label: (p as { name?: string }).name ?? id }));
+  const reviewOpts = (reviewsQ.data ?? []).map((r) => ({ value: r.id, label: (r as { title?: string; review_key?: string }).title ?? (r as { review_key?: string }).review_key ?? r.id }));
+  const startIso = periods?.find((p) => p.id === startP)?.starts_on;
+  const endIso = periods?.find((p) => p.id === endP)?.ends_on;
+  const rangeInvalid = !!startIso && !!endIso && endIso < startIso;
+  const linkedReview = (reviewsQ.data ?? []).find((r) => r.id === (okr as { review_id?: string | null }).review_id);
+
+  const run = async (fn: () => Promise<unknown>) => {
+    setBusy(true); setError(null);
+    try { await fn(); invalidate(); } catch (e) { setError(e instanceof Error ? e.message : String(e)); }
+    finally { setBusy(false); }
+  };
+
+  if (okr.status === 'closed') {
+    return (
+      <div style={{ marginTop: 8 }} data-testid={`strata-okr-closed-${okr.id}`}>
+        <SectionMessage appearance="information" title={`Closed — ${labelize(okr.final_status ?? 'closed')}`}>
+          <p style={{ margin: 0 }}>
+            {okr.closure_reason ?? 'This OKR is closed.'} Its final status, key results and history are frozen.
+          </p>
+        </SectionMessage>
+        {linkedReview ? (
+          <div style={{ marginTop: 'var(--ds-space-075)', fontSize: 'var(--ds-font-size-050)', color: T.subtle }} data-testid={`strata-okr-linked-review-${okr.id}`}>
+            Linked review: <strong style={{ color: T.text }}>{(linkedReview as { title?: string; review_key?: string }).title ?? (linkedReview as { review_key?: string }).review_key ?? linkedReview.id}</strong>
+            {' '}— retained as closed-history evidence (read-only).
+          </div>
+        ) : null}
+      </div>
+    );
+  }
+
+  return (
+    <div style={{ marginTop: 8, display: 'flex', flexDirection: 'column', gap: 8 }}>
+      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+        {okr.status === 'draft' ? (
+          <Button spacing="compact" isDisabled={busy} testId={`strata-okr-edit-${okr.id}`}
+            onClick={() => setEditOpen((v) => !v)}>
+            Edit OKR
+          </Button>
+        ) : null}
+        {okr.status === 'draft' ? (
+          <Button spacing="compact" isDisabled={busy} testId={`strata-okr-activate-${okr.id}`}
+            onClick={() => run(() => kpiApi.activateOkr(okr.id))}>
+            Activate
+          </Button>
+        ) : null}
+        {okr.status === 'active' ? (
+          <Button spacing="compact" isDisabled={busy} testId={`strata-okr-review-${okr.id}`}
+            onClick={() => setReviewOpen((v) => !v)}>
+            Review OKR
+          </Button>
+        ) : null}
+        {okr.status === 'active' ? (
+          <Button spacing="compact" appearance="primary" isDisabled={busy} testId={`strata-okr-close-${okr.id}`}
+            onClick={() => setCloseOpen(true)}>
+            Close OKR
+          </Button>
+        ) : null}
+      </div>
+
+      {editOpen && okr.status === 'draft' ? (
+        <div style={{ display: 'grid', gap: 6, maxWidth: 460 }} data-testid={`strata-okr-edit-form-${okr.id}`}>
+          <Select options={ownerOpts} value={ownerOpts.find((o) => o.value === owner) ?? null}
+            onChange={(o) => setOwner(o?.value ?? null)} placeholder="Accountable owner…" isClearable usePortal aria-label="Accountable owner" />
+          <Select options={objectiveOpts} value={objectiveOpts.find((o) => o.value === objective) ?? null}
+            onChange={(o) => setObjective(o?.value ?? null)} placeholder="Strategy objective…" isClearable usePortal aria-label="Strategy objective" />
+          <Select options={periodOpts} value={periodOpts.find((o) => o.value === startP) ?? null}
+            onChange={(o) => setStartP(o?.value ?? null)} placeholder="Start period…" isClearable usePortal aria-label="Start period" />
+          <Select options={periodOpts} value={periodOpts.find((o) => o.value === endP) ?? null}
+            onChange={(o) => setEndP(o?.value ?? null)} placeholder="End period…" isClearable usePortal aria-label="End period" />
+          {rangeInvalid ? (
+            <span style={{ color: 'var(--ds-text-danger)', fontSize: 'var(--ds-font-size-050)' }}>End period cannot precede start period.</span>
+          ) : null}
+          <div style={{ display: 'flex', gap: 8 }}>
+            <Button spacing="compact" appearance="subtle" isDisabled={busy} onClick={() => setEditOpen(false)}>Cancel</Button>
+            <Button spacing="compact" appearance="primary" isDisabled={busy || rangeInvalid}
+              testId={`strata-okr-edit-save-${okr.id}`}
+              onClick={() => run(async () => {
+                await kpiApi.updateOkr(okr.id, {
+                  ownerId: owner ?? undefined, objectiveElementId: objective ?? undefined,
+                  startPeriodId: startP ?? undefined, endPeriodId: endP ?? undefined,
+                });
+                setEditOpen(false);
+              })}>
+              Save
+            </Button>
+          </div>
+        </div>
+      ) : null}
+
+      {reviewOpen && okr.status === 'active' ? (
+        <div style={{ display: 'grid', gap: 6, maxWidth: 460 }} data-testid={`strata-okr-review-form-${okr.id}`}>
+          <Select options={reviewOpts} value={reviewOpts.find((o) => o.value === reviewId) ?? null}
+            onChange={(o) => setReviewId(o?.value ?? null)} placeholder="Select a persisted review…" usePortal aria-label="Persisted review" />
+          <div style={{ display: 'flex', gap: 8 }}>
+            <Button spacing="compact" appearance="subtle" isDisabled={busy} onClick={() => setReviewOpen(false)}>Cancel</Button>
+            <Button spacing="compact" appearance="primary" isDisabled={busy || !reviewId}
+              testId={`strata-okr-review-save-${okr.id}`}
+              onClick={() => run(async () => { await kpiApi.linkOkrReview(okr.id, reviewId!); setReviewOpen(false); })}>
+              Link review
+            </Button>
+          </div>
+        </div>
+      ) : null}
+
+      {linkedReview ? (
+        <div style={{ fontSize: 'var(--ds-font-size-050)', color: T.subtle }} data-testid={`strata-okr-linked-review-${okr.id}`}>
+          Linked review: <strong style={{ color: T.text }}>{(linkedReview as { title?: string; review_key?: string }).title ?? (linkedReview as { review_key?: string }).review_key ?? linkedReview.id}</strong>
+          {' '}· commentary, decisions and corrective actions are recorded on the review.
+        </div>
+      ) : null}
+      {closeOpen ? (
+        <div style={{ display: 'grid', gap: 6, maxWidth: 420 }}>
+          <Select
+            options={[
+              { value: 'achieved', label: 'Achieved' },
+              { value: 'partially_achieved', label: 'Partially achieved' },
+              { value: 'missed', label: 'Missed' },
+            ]}
+            value={{ value: finalStatus, label: labelize(finalStatus) }}
+            onChange={(o) => setFinalStatus(o?.value ?? 'achieved')}
+            aria-label="Final status"
+          />
+          <TextArea value={closeReason} minimumRows={2}
+            onChange={(e) => setCloseReason((e.target as HTMLTextAreaElement).value)}
+            placeholder="Closure reason and final evidence" aria-label="Closure reason"
+            data-testid={`strata-okr-close-reason-${okr.id}`} />
+          <div style={{ display: 'flex', gap: 8 }}>
+            <Button spacing="compact" appearance="subtle" onClick={() => setCloseOpen(false)} isDisabled={busy}>Cancel</Button>
+            <Button spacing="compact" appearance="primary" isDisabled={busy || closeReason.trim() === ''}
+              testId={`strata-okr-close-confirm-${okr.id}`}
+              onClick={() => run(() => kpiApi.closeOkr(okr.id, finalStatus, closeReason.trim()))}>
+              Confirm close
+            </Button>
+          </div>
+        </div>
+      ) : null}
+      {error ? (
+        <SectionMessage appearance="error" title="Action rejected">
+          <p style={{ whiteSpace: 'pre-wrap', margin: 0 }}>{error}</p>
+        </SectionMessage>
       ) : null}
     </div>
   );
