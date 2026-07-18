@@ -356,13 +356,13 @@ export function ProjectCardDetailView({ card, theme }: {
     { id: 'weight', label: 'Weight', width: 8, align: 'end', cell: ({ row }) => <span style={{ fontVariantNumeric: 'tabular-nums', color: T.subtle }}>{row.weight}</span> },
     { id: 'source', label: 'Source', width: 10, cell: ({ row }) => (row.source_system ? <CatalystTag text={`${labelize(row.source_system)}${row.source_reference_key ? ` · ${row.source_reference_key}` : ''}`} /> : <Dash />) },
     { id: 'status', label: 'Status', width: 11, cell: ({ row }) => <StatusLozenge status={row.status} appearance={MILESTONE_STATUS[row.status] ?? 'default'} /> },
-    ...(canWrite ? [{
+    ...(canWrite && !isTerminal ? [{
       id: 'actions', label: '', width: 8, align: 'end' as const,
       cell: ({ row }: { row: StrataMilestone }) => (
         <Button appearance="subtle" spacing="compact" onClick={() => { setEditMilestone(row); setForm('edit-milestone'); }}>Edit</Button>
       ),
     }] : []),
-  ], [canWrite]);
+  ], [canWrite, isTerminal]);
 
   const dependencyColumns = useMemo<Column<StrataDependency>[]>(() => [
     { id: 'name', label: 'Dependency', flex: true, cell: ({ row }) => <span style={{ fontWeight: 600, color: T.text }}>{row.name ?? row.description ?? labelize(row.dependency_type)}</span> },
@@ -380,7 +380,7 @@ export function ProjectCardDetailView({ card, theme }: {
       id: 'impact', label: 'Impact / blocker note', width: 16,
       cell: ({ row }) => (row.impact ? <Tooltip content={row.impact}><span style={{ display: 'block', color: T.subtle, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{row.impact}</span></Tooltip> : <Dash />),
     },
-    ...(canWrite ? [{
+    ...(canWrite && !isTerminal ? [{
       id: 'actions', label: '', width: 8, align: 'end' as const,
       cell: ({ row }: { row: StrataDependency }) => (
         <Button appearance="subtle" spacing="compact" onClick={() => { setEditDependency(row); setForm('edit-dependency'); }}>Edit</Button>
@@ -396,7 +396,7 @@ export function ProjectCardDetailView({ card, theme }: {
     { id: 'owner', label: 'Owner', width: 12, cell: ({ row }) => (profileName(row.owner_id) ? <span style={{ color: T.subtle }}>{profileName(row.owner_id)}</span> : <Dash />) },
     { id: 'target', label: 'Target', width: 11, cell: ({ row }) => (row.target_resolution_date ? <span style={{ color: T.subtle }}>{fmtDate(row.target_resolution_date)}</span> : <Dash />) },
     { id: 'status', label: 'Status', width: 11, cell: ({ row }) => <StatusLozenge status={row.status} appearance={RISK_STATUS[row.status] ?? 'default'} /> },
-    ...(canWrite ? [{
+    ...(canWrite && !isTerminal ? [{
       id: 'actions', label: '', width: 8, align: 'end' as const,
       cell: ({ row }: { row: StrataRisk }) => (
         <Button appearance="subtle" spacing="compact" onClick={() => { setEditRisk(row); setForm('edit-risk'); }}>Edit</Button>
@@ -583,7 +583,7 @@ export function ProjectCardDetailView({ card, theme }: {
             {sectionVisible('scope_measures', 'project_objectives') ? (
               <TabSection
                 title={`Project Objectives (${objectives.length})`}
-                action={canWriteObjective ? <Button spacing="compact" onClick={() => setForm('new-objective')} testId="strata-new-project-objective">New objective</Button> : undefined}
+                action={canWriteObjective && !isTerminal ? <Button spacing="compact" onClick={() => setForm('new-objective')} testId="strata-new-project-objective">New objective</Button> : undefined}
               >
                 {objectives.length === 0 ? (
                   <EmptyState size="compact" header="No project objectives" description="Project Objectives use the same framework as Theme Objectives and may link upward to one." />
@@ -596,7 +596,7 @@ export function ProjectCardDetailView({ card, theme }: {
             {sectionVisible('scope_measures', 'project_kpis') ? (
               <TabSection
                 title={`Project KPIs / Measures (${projectKpis.length})`}
-                action={canWriteKpi ? <Button spacing="compact" onClick={() => setForm('new-kpi')} testId="strata-new-project-kpi">Link KPI</Button> : undefined}
+                action={canWriteKpi && !isTerminal ? <Button spacing="compact" onClick={() => setForm('new-kpi')} testId="strata-new-project-kpi">Link KPI</Button> : undefined}
               >
                 {projectKpis.length === 0 ? (
                   <EmptyState size="compact" header="No project KPIs" description="Project KPIs / Measures use the same framework as Theme KPIs and may roll up to one." />
@@ -691,7 +691,7 @@ export function ProjectCardDetailView({ card, theme }: {
             {sectionVisible('delivery', 'milestones') ? (
               <TabSection
                 title={`Milestones (${milestones.length})`}
-                action={canWrite ? <Button spacing="compact" onClick={() => setForm('new-milestone')} testId="strata-new-milestone">New milestone</Button> : undefined}
+                action={canWrite && !isTerminal ? <Button spacing="compact" onClick={() => setForm('new-milestone')} testId="strata-new-milestone">New milestone</Button> : undefined}
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                   <span style={{ ...captionStyle, fontWeight: 600 }}>Project progress</span>
@@ -714,7 +714,7 @@ export function ProjectCardDetailView({ card, theme }: {
             {sectionVisible('delivery', 'risks') ? (
               <TabSection
                 title={`Risks (${risks.length})`}
-                action={canWrite ? <Button spacing="compact" onClick={() => { setEditRisk(null); setForm('new-risk'); }} testId="strata-new-risk">New risk</Button> : undefined}
+                action={canWrite && !isTerminal ? <Button spacing="compact" onClick={() => { setEditRisk(null); setForm('new-risk'); }} testId="strata-new-risk">New risk</Button> : undefined}
               >
                 {risks.length === 0 ? (
                   <EmptyState size="compact" header="No risks" description="Track delivery risks with a likelihood × impact assessment and mitigation." />
@@ -727,7 +727,7 @@ export function ProjectCardDetailView({ card, theme }: {
             {sectionVisible('delivery', 'dependencies') ? (
               <TabSection
                 title={`Blockers (${blockers.length})`}
-                action={canWrite ? <Button spacing="compact" onClick={() => setForm('new-blocker')} testId="strata-new-blocker">New blocker</Button> : undefined}
+                action={canWrite && !isTerminal ? <Button spacing="compact" onClick={() => setForm('new-blocker')} testId="strata-new-blocker">New blocker</Button> : undefined}
               >
                 {blockers.length === 0 ? (
                   <EmptyState size="compact" header="No active blockers" description="Blocking dependencies in either direction surface here until resolved." />
@@ -740,7 +740,7 @@ export function ProjectCardDetailView({ card, theme }: {
             {sectionVisible('delivery', 'dependencies') ? (
               <TabSection
                 title={`Delivery Dependencies (${projectDependencies.length})`}
-                action={canWrite ? <Button spacing="compact" onClick={() => setForm('new-dependency')} testId="strata-new-project-dependency">New dependency</Button> : undefined}
+                action={canWrite && !isTerminal ? <Button spacing="compact" onClick={() => setForm('new-dependency')} testId="strata-new-project-dependency">New dependency</Button> : undefined}
               >
                 {projectDependencies.length === 0 ? (
                   <EmptyState size="compact" header="No delivery dependencies" description="Dependencies where this project is requesting or serving appear here." />
