@@ -989,6 +989,15 @@ export const valueApi = {
     actor_id: string | null; before: unknown; after: unknown; note: string | null; created_at: string;
   }>> =>
     run(typedRpc('strata_entity_audit', { p_entity_table: entityTable, p_entity_id: entityId })),
+  // PB-DEF-010 · governed Reviews ↔ portfolio/benefit/gate references (bidirectional).
+  linkReview: (reviewId: string, targetType: 'portfolio' | 'benefit' | 'benefit_value' | 'gate_instance', targetId: string, note?: string): Promise<string> =>
+    run(typedRpc('strata_link_review', { p_review: reviewId, p_target_type: targetType, p_target_id: targetId, p_note: note ?? null })),
+  unlinkReview: (reviewId: string, targetType: string, targetId: string): Promise<void> =>
+    run(typedRpc('strata_unlink_review', { p_review: reviewId, p_target_type: targetType, p_target_id: targetId })),
+  reviewLinksOf: (reviewId: string): Promise<Array<{ id: string; target_type: string; target_id: string; target_name: string | null; note: string | null; created_at: string }>> =>
+    run(typedRpc('strata_review_links_of', { p_review: reviewId })),
+  reviewsReferencing: (targetType: string, targetId: string): Promise<Array<{ review_id: string; review_key: string; review_name: string; review_slug: string | null; scheduled_for: string | null; note: string | null }>> =>
+    run(typedRpc('strata_reviews_referencing', { p_target_type: targetType, p_target_id: targetId })),
   // ── Authoring write paths (Recovery: Lane E) ──────────────────────────────
   createPortfolio: (input: {
     name: string; description?: string; categoryId?: string; ownerId?: string; valueTarget?: number;

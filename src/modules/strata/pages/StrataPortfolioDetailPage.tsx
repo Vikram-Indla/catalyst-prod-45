@@ -21,6 +21,7 @@ import { Button, CatalystTag, EmptyState, SectionMessage, Spinner } from '@/comp
 import { JiraTable } from '@/components/shared/JiraTable';
 import type { Column } from '@/components/shared/JiraTable';
 import { StrataAuditHistory } from '@/modules/strata/components/StrataAuditHistory';
+import { StrataReviewLinks } from '@/modules/strata/components/StrataReviewLinks';
 import { StatusLozenge } from '@/components/shared/StatusLozenge';
 import type { LozengeAppearance } from '@/components/shared/StatusLozenge';
 import { Routes } from '@/lib/routes';
@@ -461,6 +462,9 @@ export default function StrataPortfolioDetailPage() {
 
           {/* PB-DEF-008 · portfolio audit/lineage, reachable from the record. */}
           <StrataAuditHistory entityTable="strata_portfolios" entityId={portfolio.id} title="Portfolio history" />
+
+          {/* PB-DEF-010 · reviews referencing this portfolio, navigable both ways. */}
+          <StrataReviewLinks targetType="portfolio" targetId={portfolio.id} />
         </div>
       )}
 
