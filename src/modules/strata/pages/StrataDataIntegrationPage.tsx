@@ -35,6 +35,7 @@ import {
   useDataSources, useInvalidateStrata, useProfileNames, useStrataRoles, useUploadRuns,
 } from '@/modules/strata/hooks/useStrata';
 import { lineageApi } from '@/modules/strata/domain';
+import { canGovernData } from '@/modules/strata/lib/permissions';
 import { StrataFreshnessGlyph, StrataPageShell, StrataPanel, T } from '@/modules/strata/components/shared';
 import { labelize } from '@/modules/strata/components/format';
 import { UploadTemplatesSection } from './StrataAdminConfigPage';
@@ -133,7 +134,11 @@ export function SourcesRegistry({ onError }: { onError: OnError }) {
   const list = q.data ?? [];
   // Mirrors the RPC's role gate exactly — the server is the boundary; this only avoids offering a
   // verb it would refuse.
-  const canGovern = (roles.data ?? []).some((r) => r === 'strategy_office' || r === 'data_steward' || r === 'strata_admin');
+  // CFG-005 (final pack): ONE canonical tri-state decision. null = roles still
+  // loading/errored — claim nothing; the old code collapsed that to "no roles"
+  // and asserted "Read-only for your role" against an effective strata_admin.
+  const govern = canGovernData(roles);
+  const canGovern = govern === true;
 
   const [impact, setImpact] = useState<{ source: StrataDataSource; blast: StrataBlastRadius } | null>(null);
   const [pending, setPending] = useState<{ source: StrataDataSource; to: StrataDataSource['status'] } | null>(null);
@@ -258,7 +263,9 @@ export function SourcesRegistry({ onError }: { onError: OnError }) {
       icon={<Database size={16} />}
       count={list.length}
       testId="strata-data-sources"
-      actions={canGovern ? null : <Lozenge appearance="new">Read-only for your role</Lozenge>}
+      // CFG-005: the read-only claim renders only on a LOADED verdict — while
+      // roles are unknown (null) the page asserts nothing about permissions.
+      actions={govern === false ? <Lozenge appearance="new">Read-only for your role</Lozenge> : null}
     >
       <p style={captionStyle}>
         The systems STRATA is allowed to believe — each with an owner, because data problems are owned problems.

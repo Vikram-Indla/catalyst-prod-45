@@ -189,14 +189,27 @@ function StrataDateField({
 }
 
 function FieldControl({
-  field, value, onChange, userOptions, onDateValidityChange,
+  field, value, onChange, userOptions, onDateValidityChange, invalid, errorId,
 }: {
   field: StrataFieldSpec;
   value: string | number | boolean | null;
   onChange: (next: string | number | boolean | null) => void;
   userOptions: SelectOption<string>[];
   onDateValidityChange: (invalid: boolean) => void;
+  /** CFG-007: submission was attempted and this required field is still empty. */
+  invalid?: boolean;
+  /** CFG-007: id of the visible validation message, wired via aria-describedby. */
+  errorId?: string;
 }) {
+  // CFG-007: required state carried in the accessible name so screen readers
+  // announce it even where a component drops the required attribute.
+  const a11yName = field.required ? `${field.label} (required)` : field.label;
+  const a11y = {
+    'aria-label': a11yName,
+    'aria-required': field.required ? true : undefined,
+    'aria-invalid': invalid ? true : undefined,
+    'aria-describedby': invalid ? errorId : undefined,
+  } as const;
   switch (field.kind) {
     case 'textarea': {
       const max = field.maxLength ?? 5000;
@@ -210,7 +223,7 @@ function FieldControl({
             maxLength={max}
             isDisabled={field.isDisabled}
             onChange={(e) => onChange((e.target as HTMLTextAreaElement).value)}
-            aria-label={field.label}
+            {...a11y}
           />
           <div style={{ marginTop: 4, textAlign: 'right', fontSize: 'var(--ds-font-size-100)', color: len >= max ? 'var(--ds-text-danger)' : T.subtlest }}>
             {len}/{max}
@@ -229,7 +242,7 @@ function FieldControl({
             const raw = (e.target as HTMLInputElement).value;
             onChange(raw === '' ? null : Number(raw));
           }}
-          aria-label={field.label}
+          {...a11y}
         />
       );
     case 'date':
@@ -254,7 +267,7 @@ function FieldControl({
           isClearable={field.isClearable ?? !field.required}
           isSearchable
           usePortal
-          aria-label={field.label}
+          aria-label={a11yName}
         />
       );
     }
@@ -270,7 +283,7 @@ function FieldControl({
           isClearable={field.isClearable ?? !field.required}
           isSearchable
           usePortal
-          aria-label={field.label}
+          aria-label={a11yName}
         />
       );
     }
@@ -295,7 +308,7 @@ function FieldControl({
             maxLength={max}
             isDisabled={field.isDisabled}
             onChange={(e) => onChange((e.target as HTMLInputElement).value)}
-            aria-label={field.label}
+            {...a11y}
           />
           {len > max * 0.8 ? (
             <div style={{ marginTop: 4, textAlign: 'right', fontSize: 'var(--ds-font-size-100)', color: len >= max ? 'var(--ds-text-danger)' : T.subtlest }}>
@@ -341,6 +354,9 @@ export function StrataFormModal({
    * forced a page reload). The rejection message itself stays on screen until then.
    */
   const [rejected, setRejected] = useState(false);
+  // CFG-007: a submit was attempted (e.g. Enter) while required fields were
+  // empty — per-field messages render and focus moves to the first invalid.
+  const [attempted, setAttempted] = useState(false);
   // Date fields whose typed text could not be parsed (SR-DEF-001). Keyed by field key.
   const [invalidDates, setInvalidDates] = useState<Record<string, boolean>>({});
   const { data: profiles } = useProfileNames();
@@ -353,6 +369,7 @@ export function StrataFormModal({
       setBusy(false);
       setConfirmDiscard(false);
       setRejected(false);
+      setAttempted(false);
       setInvalidDates({});
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -393,13 +410,27 @@ export function StrataFormModal({
 
   if (!open) return null;
 
-  const missingRequired = fields
+  const missingRequiredFields = fields
     .filter((f) => f.required)
     .filter((f) => {
       const v = values[f.key];
       return v == null || (typeof v === 'string' && v.trim() === '');
-    })
-    .map((f) => f.label);
+    });
+  const missingRequired = missingRequiredFields.map((f) => f.label);
+  const isMissing = (key: string) => missingRequiredFields.some((f) => f.key === key);
+  // CFG-007 vs SR-DEF-001: date pickers commit on blur, and clicking Submit IS
+  // the blur — a button disabled on "date still empty" would swallow that very
+  // click. Dates therefore never drive the disabled state; submit()'s guard
+  // (message + focus) still blocks them after the blur has flushed.
+  const missingRequiredBlocking = missingRequiredFields.filter((f) => f.kind !== 'date');
+
+  // CFG-007: move keyboard focus to the first invalid field's control.
+  const focusFirstInvalid = () => {
+    const first = missingRequiredFields[0];
+    if (!first) return;
+    const host = document.getElementById(`strata-field-${first.key}`);
+    (host?.querySelector('input, textarea, [tabindex]') as HTMLElement | null)?.focus();
+  };
 
   // Unparseable date text blocks with a field-specific message of its own — reporting
   // it as "Required" would misdescribe a field the user demonstrably filled in.
@@ -413,7 +444,10 @@ export function StrataFormModal({
       return;
     }
     if (missingRequired.length > 0) {
+      // CFG-007: per-field messages + focus, alongside the summary banner.
+      setAttempted(true);
       setError(`Required: ${missingRequired.join(', ')}`);
+      focusFirstInvalid();
       return;
     }
     const crossFieldError = validate?.(values) ?? null;
@@ -445,8 +479,10 @@ export function StrataFormModal({
           <p style={{ margin: '0 0 12px', fontSize: 'var(--ds-font-size-200)', color: T.subtle }}>{description}</p>
         ) : null}
         <div style={{ display: 'grid', gap: 12 }}>
-          {fields.map((f) => (
-            <div key={f.key}>
+          {fields.map((f) => {
+            const fieldInvalid = attempted && isMissing(f.key);
+            return (
+            <div key={f.key} id={`strata-field-${f.key}`}>
               {f.kind !== 'checkbox' ? <FieldLabel label={f.label} required={f.required} helper={f.helper} /> : null}
               <FieldControl
                 field={f}
@@ -456,9 +492,20 @@ export function StrataFormModal({
                 onDateValidityChange={(isInvalid) =>
                   setInvalidDates((prev) => (prev[f.key] === isInvalid ? prev : { ...prev, [f.key]: isInvalid }))
                 }
+                invalid={fieldInvalid}
+                errorId={`strata-field-err-${f.key}`}
               />
+              {fieldInvalid ? (
+                <div
+                  id={`strata-field-err-${f.key}`}
+                  style={{ marginTop: 4, fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-danger)' }}
+                >
+                  {f.label} is required.
+                </div>
+              ) : null}
             </div>
-          ))}
+            );
+          })}
         </div>
         {error ? (
           <div style={{ marginTop: 12 }}>
@@ -470,7 +517,15 @@ export function StrataFormModal({
       </ModalBody>
       <ModalFooter>
         <Button appearance="subtle" onClick={handleRequestClose} isDisabled={busy}>Cancel</Button>
-        <Button appearance="primary" onClick={submit} isDisabled={busy}>
+        {/* CFG-007: primary action stays disabled until every mandatory input is
+            valid. submit() keeps its guards for any other invocation path, and
+            the server remains the enforcement boundary either way. */}
+        <Button
+          appearance="primary"
+          onClick={submit}
+          isDisabled={busy || missingRequiredBlocking.length > 0 || invalidDateLabels.length > 0}
+          testId={testId ? `${testId}-submit` : undefined}
+        >
           {busy ? 'Working…' : submitLabel}
         </Button>
       </ModalFooter>

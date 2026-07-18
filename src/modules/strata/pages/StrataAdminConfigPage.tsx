@@ -1692,13 +1692,24 @@ function GatesSection({ onError }: { onError: OnError }) {
 
 export function KpiTypesSection({ onError }: { onError: OnError }) {
   const q = useKpiTypes();
+  // CFG-004: KPIs referencing each type — the lifecycle dialogs show them.
+  const kpisQ = useKpis();
   const list = q.data ?? [];
   return (
     <StrataPanel title="KPI types" icon={<ListChecks size={16} />} count={list.length} testId="strata-admin-kpi-types">
       <SectionState query={q} empty={list.length === 0}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
           {list.map((k) => (
-            <GovRecordCard key={k.id} name={k.name} table="strata_kpi_type_configs" record={k} onError={onError}>
+            <GovRecordCard
+              key={k.id}
+              name={k.name}
+              table="strata_kpi_type_configs"
+              record={k}
+              onError={onError}
+              impact={kpisQ.data
+                ? kpisQ.data.filter((x) => x.kpi_type_id === k.id).map((x) => `KPI ${x.name}${x.status ? ` · ${labelize(x.status)}` : ''}`)
+                : undefined}
+            >
               <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'center' }}>
                 <CatalystInlineCode>{k.formula_template}</CatalystInlineCode>
                 <span style={metaStyle}>{DIRECTIONALITY_LABEL[k.directionality] ?? labelize(k.directionality)}</span>
