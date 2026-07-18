@@ -180,7 +180,7 @@ export default function StrataStrategyElementDetailPage() {
 
   if (elementQ.isLoading) {
     return (
-      <StrataPageShell trail={[{ text: 'Strategy Room', onClick: () => navigate(Routes.strata.strategy()) }]}>
+      <StrataPageShell trail={[{ text: 'Strategy room', href: Routes.strata.strategy() }]} hideTitle>
         <div style={{ display: 'flex', justifyContent: 'center', padding: 48 }}><Spinner size="large" /></div>
       </StrataPageShell>
     );
@@ -188,7 +188,7 @@ export default function StrataStrategyElementDetailPage() {
 
   if (!element) {
     return (
-      <StrataPageShell trail={[{ text: 'Strategy Room', onClick: () => navigate(Routes.strata.strategy()) }]}>
+      <StrataPageShell trail={[{ text: 'Strategy room', href: Routes.strata.strategy() }]} hideTitle>
         <EmptyState header="Element not found" description={`No strategy element matches "${slug}".`} />
       </StrataPageShell>
     );
@@ -315,7 +315,7 @@ export default function StrataStrategyElementDetailPage() {
 
   return (
     <StrataPageShell
-      trail={[{ text: 'Strategy Room', onClick: () => navigate(Routes.strata.strategy()) }]}
+      trail={[{ text: 'Strategy room', href: Routes.strata.strategy() }]}
       title={element.name}
       docTitle={element.name}
       state={element.status}

@@ -254,14 +254,14 @@ export default function StrataEvidencePage() {
     ? [
         { text: meta.indexLabel, href: meta.indexHref },
         { text: entity.name, href: meta.detailHref(slug) },
-        { text: 'Evidence' },
       ]
     : [{ text: meta.indexLabel, href: meta.indexHref }];
 
   return (
     <StrataPageShell
       trail={trail}
-      title={entity ? `${entity.name} — Evidence` : 'Evidence'}
+      title="Evidence"
+      hideTitle={!entity}
       docTitle={entity ? `${entity.name} — Evidence` : undefined}
       testId="strata-evidence-page"
     >

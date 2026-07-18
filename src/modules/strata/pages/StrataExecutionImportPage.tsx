@@ -580,7 +580,8 @@ export default function StrataExecutionImportPage() {
 
   return (
     <StrataPageShell
-      trail={[{ text: 'Execution', href: Routes.strata.execution() }, { text: 'Import' }]}
+      trail={[{ text: 'Execution', href: Routes.strata.execution() }]}
+      title="Import"
       docTitle="Execution import"
       testId="strata-execution-import-chrome"
     >

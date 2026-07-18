@@ -464,14 +464,14 @@ export default function StrataScorecardDetailPage() {
   const stateTrail = [{ text: 'Scorecards', href: Routes.strata.scorecards() }];
   if (instanceQ.isLoading || rolesQ.isLoading) {
     return (
-      <StrataPageShell trail={stateTrail} testId="strata-scorecard-chrome">
+      <StrataPageShell trail={stateTrail} hideTitle testId="strata-scorecard-chrome">
         <DetailSkeleton />
       </StrataPageShell>
     );
   }
   if (noStrataRole) {
     return (
-      <StrataPageShell trail={stateTrail} testId="strata-scorecard-chrome">
+      <StrataPageShell trail={stateTrail} hideTitle testId="strata-scorecard-chrome">
         <EmptyState
           size="default"
           header="You don't have access to this scorecard"
@@ -483,7 +483,7 @@ export default function StrataScorecardDetailPage() {
   }
   if (instanceQ.isError) {
     return (
-      <StrataPageShell trail={stateTrail} testId="strata-scorecard-chrome">
+      <StrataPageShell trail={stateTrail} hideTitle testId="strata-scorecard-chrome">
         <SectionMessage appearance="error" title="Could not load scorecard">
           <p>{(instanceQ.error as Error)?.message ?? 'Unknown error.'}</p>
         </SectionMessage>
@@ -492,7 +492,7 @@ export default function StrataScorecardDetailPage() {
   }
   if (!instance) {
     return (
-      <StrataPageShell trail={stateTrail} testId="strata-scorecard-chrome">
+      <StrataPageShell trail={stateTrail} hideTitle testId="strata-scorecard-chrome">
         <EmptyState
           header="Scorecard not found"
           description="No scorecard instance matches this address. It may have been renamed or removed."
