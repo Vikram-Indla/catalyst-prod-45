@@ -199,6 +199,7 @@ function BenefitDetailSection({ benefit, isFirst, canAuthor, canAuthorValues }: 
   const [decision, setDecision] = useState<
     | { kind: 'gate'; gate: StrataGateInstance; stage: StrataGateModelStage }
     | { kind: 'validate-value'; id: string; label: string; valueKind: StrataBenefitValue['value_kind'] }
+    | { kind: 'reverse-value'; id: string; label: string; valueKind: StrataBenefitValue['value_kind'] }
     | null
   >(null);
   /** Authoring modal — create/edit flows against the Lane E RPCs. */
@@ -208,6 +209,7 @@ function BenefitDetailSection({ benefit, isFirst, canAuthor, canAuthorValues }: 
     | { kind: 'add-assumption' }
     | { kind: 'edit-assumption'; assumption: StrataAssumption }
     | { kind: 'add-rule' }
+    | { kind: 'except-value'; id: string; label: string; valueKind: StrataBenefitValue['value_kind'] }
     | null
   >(null);
   const [gateSubject, setGateSubject] = useState<StrataGateSubject | null>(null);
@@ -286,7 +288,9 @@ function BenefitDetailSection({ benefit, isFirst, canAuthor, canAuthorValues }: 
               label={labelize(v.validation_status)}
               appearance={VALIDATION_STATUS[v.validation_status] ?? 'default'}
             />
-            {canAuthorValues && v.validation_status === 'reported' ? (
+            {/* PB-DEF-003 — only the transitions permitted from the current assurance state.
+                Server RPCs re-enforce role + SoD; rejections surface verbatim. */}
+            {canAuthorValues && (v.validation_status === 'reported' || v.validation_status === 'owner_confirmed') ? (
               <Button
                 appearance="default"
                 spacing="compact"
@@ -294,6 +298,26 @@ function BenefitDetailSection({ benefit, isFirst, canAuthor, canAuthorValues }: 
                 testId={`strata-validate-value-${v.id}`}
               >
                 Assure
+              </Button>
+            ) : null}
+            {canAuthorValues && (v.validation_status === 'reported' || v.validation_status === 'owner_confirmed') ? (
+              <Button
+                appearance="subtle"
+                spacing="compact"
+                onClick={() => setAuthor({ kind: 'except-value', id: v.id, label: `${labelize(kind)} · ${row.periodName}`, valueKind: v.value_kind })}
+                testId={`strata-except-value-${v.id}`}
+              >
+                Accept w/ exception
+              </Button>
+            ) : null}
+            {canAuthorValues && v.validation_status !== 'reversed' ? (
+              <Button
+                appearance="subtle"
+                spacing="compact"
+                onClick={() => setDecision({ kind: 'reverse-value', id: v.id, label: `${labelize(kind)} · ${row.periodName}`, valueKind: v.value_kind })}
+                testId={`strata-reverse-value-${v.id}`}
+              >
+                Reverse
               </Button>
             ) : null}
           </span>
@@ -387,7 +411,7 @@ function BenefitDetailSection({ benefit, isFirst, canAuthor, canAuthorValues }: 
               ariaLabel={`Value profile for ${benefit.name}`}
             />
             <p style={{ fontSize: 'var(--ds-font-size-100)', color: T.subtlest, margin: 0, padding: '8px 16px 12px' }}>
-              Realized values require independent finance validation.
+              Realized values count only once assured — owner-confirmed, independently validated, or accepted with exception.
             </p>
           </>
         )}
@@ -643,6 +667,53 @@ function BenefitDetailSection({ benefit, isFirst, canAuthor, canAuthorValues }: 
         }}
         testId="strata-validate-value-modal"
       />
+      {/* PB-DEF-003 · reverse / supersede — append-only; the value and its history are preserved. */}
+      <StrataDecisionModal
+        open={decision?.kind === 'reverse-value'}
+        onClose={() => setDecision(null)}
+        title={`Reverse / supersede · ${decision?.kind === 'reverse-value' ? decision.label : ''}`}
+        description="Reversal is append-only: the value and its assurance history are preserved, but it stops counting toward realization. A reason is required and audited."
+        options={[{ value: 'reversed', label: 'Reverse / supersede', appearance: 'danger' }]}
+        requireNote
+        onConfirm={async (_verdict, note) => {
+          if (decision?.kind !== 'reverse-value') return;
+          await valueApi.reverseBenefitValue(decision.id, note);
+          try {
+            if (decision.valueKind === 'realized') {
+              await valueApi.benefitRealization(benefit.id);
+              if (benefit.portfolio_id) await valueApi.valueAtRisk(benefit.portfolio_id);
+            }
+          } finally {
+            invalidate();
+          }
+        }}
+        testId="strata-reverse-value-modal"
+      />
+      {/* PB-DEF-003 · accept with exception — Strategy Office, different actor, visible reason + evidence. */}
+      <StrataFormModal
+        open={author?.kind === 'except-value'}
+        onClose={() => setAuthor(null)}
+        title={`Accept with exception · ${author?.kind === 'except-value' ? author.label : ''}`}
+        submitLabel="Accept with exception"
+        description="Strategy Office only, and never the submitter (segregation of duties). The value counts by authorization despite failing normal assurance; the reason and evidence stay visible downstream and never read as independent validation."
+        fields={[
+          { key: 'reason', label: 'Exception reason', kind: 'textarea', required: true },
+          { key: 'evidence', label: 'Evidence', kind: 'textarea', required: true, helper: 'Reference or link substantiating the exception' },
+        ]}
+        onSubmit={async (v) => {
+          if (author?.kind !== 'except-value') return;
+          await valueApi.authorizeBenefitException(author.id, String(v.reason ?? ''), String(v.evidence ?? ''));
+          try {
+            if (author.valueKind === 'realized') {
+              await valueApi.benefitRealization(benefit.id);
+              if (benefit.portfolio_id) await valueApi.valueAtRisk(benefit.portfolio_id);
+            }
+          } finally {
+            invalidate();
+          }
+        }}
+        testId="strata-except-value-modal"
+      />
 
       {/* ── Authoring modals (Lane E) — RPC-validated; rejections surface verbatim ── */}
       <StrataFormModal
@@ -688,7 +759,7 @@ function BenefitDetailSection({ benefit, isFirst, canAuthor, canAuthorValues }: 
         open={author?.kind === 'add-value'}
         onClose={() => setAuthor(null)}
         title={`Add value · ${benefit.name}`}
-        description="Values enter as pending; realized values must be validated by a different user than the submitter."
+        description="Values enter as reported (no assurance yet); realized values must be independently validated by a different user than the submitter."
         fields={[
           { key: 'valueKind', label: 'Value kind', kind: 'select', required: true, options: VALUE_KIND_OPTIONS },
           {

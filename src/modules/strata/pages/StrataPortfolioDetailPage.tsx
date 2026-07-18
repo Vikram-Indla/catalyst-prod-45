@@ -455,7 +455,7 @@ export default function StrataPortfolioDetailPage() {
           </StrataPanel>
 
           <p style={{ display: 'flex', alignItems: 'center', gap: 6, margin: 0, fontSize: 'var(--ds-font-size-100)', color: T.subtlest }}>
-            <ListChecks size={12} /> Completion is not benefit: realized value counts only after independent finance validation.
+            <ListChecks size={12} /> Completion is not benefit: realized value counts only once assured (owner-confirmed, independently validated, or accepted with exception).
           </p>
         </div>
       )}

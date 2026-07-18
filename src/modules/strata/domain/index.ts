@@ -972,6 +972,13 @@ export const valueApi = {
    */
   validateBenefitValue: (valueId: string, verdict: 'owner_confirmed' | 'independently_validated' | 'rejected', note?: string) =>
     run(typedRpc('strata_validate_benefit_value', { p_value: valueId, p_verdict: verdict, p_note: note ?? null })),
+  /** PB-DEF-003 · accept a value with exception (Strategy Office, different actor, reason + evidence
+   *  mandatory). It COUNTS by governed rule and the exception stays visible downstream. */
+  authorizeBenefitException: (valueId: string, reason: string, evidence: string): Promise<void> =>
+    run(typedRpc('strata_authorize_benefit_exception', { p_value: valueId, p_reason: reason, p_evidence: evidence })),
+  /** PB-DEF-003 · reverse/supersede a value (append-only — history preserved; it stops counting). */
+  reverseBenefitValue: (valueId: string, reason: string): Promise<void> =>
+    run(typedRpc('strata_reverse_benefit_value', { p_value: valueId, p_reason: reason })),
   benefitRealization: (benefitId: string) =>
     run(typedRpc('strata_calc_benefit_realization', { p_benefit: benefitId })),
   valueAtRisk: (portfolioId: string) =>
