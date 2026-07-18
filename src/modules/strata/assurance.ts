@@ -24,3 +24,15 @@ export const countsTowardRealization = (status: BenefitAssuranceStatus): boolean
 /** `reported` = submitted with no assurance yet, i.e. awaiting attestation. rejected/reversed are
  *  terminal and do not "await" anything. */
 export const awaitsAssurance = (status: BenefitAssuranceStatus): boolean => status === 'reported';
+
+/**
+ * PB-DEF-009 — period-close readiness contract for a REALIZED value. This mirrors the server rule
+ * in strata_needs_attention (migration 20260718100000): period close requires independent
+ * assurance, so a realized value blocks close while it is only `reported` (no assurance) or
+ * `owner_confirmed` (owner stands behind it, but not independently validated). Once
+ * `independently_validated` or `accepted_with_exception` it is eligible; `rejected` / `reversed`
+ * are terminal (they simply do not count and do not block). The server RPC is the enforcement
+ * point — this is the client-visible contract of the same rule.
+ */
+export const blocksPeriodCloseReadiness = (status: BenefitAssuranceStatus): boolean =>
+  status === 'reported' || status === 'owner_confirmed';
