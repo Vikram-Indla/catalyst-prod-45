@@ -708,7 +708,7 @@ export default function StrataBoardPackPage() {
 
   return (
     <StrataPageShell
-      trail={[{ text: 'Reviews & decisions', href: Routes.strata.reviews() }, { text: snapshotKey!, href: Routes.strata.review(snapshotKey!) }, { text: 'Board pack' }]}
+      trail={[{ text: 'Reviews & decisions', href: Routes.strata.reviews() }, { text: snapshotKey!, href: Routes.strata.review(snapshotKey!) }]}
       title={`Board pack — ${snapshot.name}`}
       docTitle={`Board pack · ${snapshotKey}`}
       state={snapshot.status}
