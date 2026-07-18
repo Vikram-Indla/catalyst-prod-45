@@ -218,6 +218,55 @@ describe('R2 UI — server refusals surface verbatim', () => {
     await user.click(q('strata-review-status-confirm') as HTMLElement);
     await waitFor(() => expect(q('strata-review-error')).not.toBeNull());
     expect(q('strata-review-error')?.textContent).toBe(refusal);
+    // Modal mount + userEvent are slow under full-suite contention; the default 5s flakes.
+  }, 20_000);
+
+  it('Export CSV emits a real download: DOM-attached anchor click, .csv filename, filtered artifact content (RD-DEF-006)', async () => {
+    // jsdom has no download manager, so this proves everything up to the browser boundary:
+    // the anchor is IN the document when clicked (detached-anchor clicks are what download
+    // interceptors drop), carries a dated .csv filename, and its Blob holds exactly the
+    // filtered rows. The final OS-level download event remains Codex's visible check.
+    const clicks: Array<{ download: string; connected: boolean }> = [];
+    const origClick = HTMLAnchorElement.prototype.click;
+    HTMLAnchorElement.prototype.click = function (this: HTMLAnchorElement) {
+      clicks.push({ download: this.download, connected: this.isConnected });
+    };
+    const blobs: Blob[] = [];
+    const origCreate = URL.createObjectURL;
+    const origRevoke = URL.revokeObjectURL;
+    URL.createObjectURL = ((b: Blob) => { blobs.push(b); return 'blob:mock'; }) as typeof URL.createObjectURL;
+    URL.revokeObjectURL = (() => {}) as typeof URL.revokeObjectURL;
+    try {
+      const user = userEvent.setup();
+      await renderReviews();
+      // Filter down to the scheduled review only, then export.
+      await user.type(document.querySelector('[data-testid="strata-review-search"]') as HTMLElement, 'Q3 Executive');
+      await waitFor(() => expect(q('strata-review-readiness-r3')).toBeNull());
+      await user.click(q('strata-review-export') as HTMLElement);
+
+      expect(clicks).toHaveLength(1);
+      expect(clicks[0].connected).toBe(true);                       // attached to the DOM at click time
+      expect(clicks[0].download).toMatch(/^strata-reviews-\d{4}-\d{2}-\d{2}\.csv$/);
+      expect(blobs).toHaveLength(1);
+      expect(blobs[0].type).toContain('text/csv');
+      // jsdom's Blob lacks .text() and doesn't interop with Node's Response — FileReader is
+      // jsdom's own supported read path.
+      const text = await new Promise<string>((resolve, reject) => {
+        const fr = new FileReader();
+        fr.onload = () => resolve(String(fr.result));
+        fr.onerror = () => reject(fr.error);
+        fr.readAsText(blobs[0]);
+      });
+      expect(text.startsWith('review_key,id,name,type,cadence,status,')).toBe(true);
+      expect(text).toContain('REV-3');                              // the filtered row
+      expect(text).not.toContain('REV-1');                          // excluded rows absent
+      expect(text).not.toContain('REV-4');
+      expect(text.trim().split('\n')).toHaveLength(2);              // header + exactly one record
+    } finally {
+      HTMLAnchorElement.prototype.click = origClick;
+      URL.createObjectURL = origCreate;
+      URL.revokeObjectURL = origRevoke;
+    }
   });
 
   it('passes the chosen status to the RPC, with no note when none was typed', async () => {

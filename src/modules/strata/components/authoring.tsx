@@ -222,14 +222,23 @@ export function StrataFormModal({
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [confirmDiscard, setConfirmDiscard] = useState(false);
+  /**
+   * RD-DEF-011: true once the server has REJECTED a submission. After a rejection the user has
+   * seen the outcome — Cancel/Close must dismiss immediately, not detour through the
+   * "Discard unsaved changes?" confirm (which is what left the modal apparently stuck and
+   * forced a page reload). The rejection message itself stays on screen until then.
+   */
+  const [rejected, setRejected] = useState(false);
   const { data: profiles } = useProfileNames();
 
   useEffect(() => {
     if (open) {
+      // Reopen is CLEAN: values reseeded, stale error/busy/rejection state cleared.
       setValues(initial ?? {});
       setError(null);
       setBusy(false);
       setConfirmDiscard(false);
+      setRejected(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
@@ -253,8 +262,10 @@ export function StrataFormModal({
 
   // User-initiated close (Modal onClose / backdrop / Cancel). Confirms discard
   // when dirty; the post-submit onClose() path bypasses this entirely.
+  // RD-DEF-011: after a REJECTED submission, close directly — the user has seen the server's
+  // verdict, and stacking a discard-confirm on top is what made Cancel appear dead.
   const handleRequestClose = () => {
-    if (isDirty && !busy) setConfirmDiscard(true);
+    if (isDirty && !busy && !rejected) setConfirmDiscard(true);
     else onClose();
   };
 
@@ -286,7 +297,10 @@ export function StrataFormModal({
       await onSubmit(values);
       onClose();
     } catch (e) {
+      // Verbatim server message preserved (RD-DEF-011 keeps the enforcement text intact) —
+      // and the rejection unlocks direct Cancel/Close above.
       setError(e instanceof Error ? e.message : String(e));
+      setRejected(true);
     } finally {
       setBusy(false);
     }
