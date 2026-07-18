@@ -343,7 +343,7 @@ function BenefitDetailSection({ benefit, isFirst, canAuthor, canAuthorValues }: 
   ];
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 16, marginTop: 16 }} data-testid="strata-benefit-detail">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 16, marginTop: 16, paddingBottom: 48 }} data-testid="strata-benefit-detail">
       {/* Selected-benefit header — makes the register→detail link explicit */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
         <span style={labelStyle}>Showing</span>

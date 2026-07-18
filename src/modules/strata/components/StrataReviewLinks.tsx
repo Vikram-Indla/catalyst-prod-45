@@ -29,57 +29,67 @@ export function StrataReviewLinks({
     queryFn: () => valueApi.reviewsReferencing(targetType, targetId),
     staleTime: 15_000,
   });
+  // Preloaded (NOT gated on the dialog) so the governed picker has its options the instant it opens —
+  // StrataFormModal reads its field options at open time, so late-arriving options render an empty picker.
   const reviewsQ = useQuery({
     queryKey: ['strata', 'reviews-all'],
     queryFn: () => governanceApi.reviews(),
     staleTime: 30_000,
-    enabled: linking,
   });
   const rows = refsQ.data ?? [];
+  const reviewOptions = (reviewsQ.data ?? []).map((r) => ({
+    value: r.id, label: `${r.name}${r.review_key ? ` · ${r.review_key}` : ''}`,
+  }));
 
   return (
-    <StrataPanel
-      title="Linked reviews"
-      count={rows.length}
-      actions={(
-        <Button appearance="default" spacing="compact" onClick={() => setLinking(true)} testId="strata-link-review">
-          Link to review
-        </Button>
-      )}
-      noPadding
-    >
-      <div data-testid="strata-review-links">
-        {rows.length === 0 ? (
-          <p style={{ color: T.subtlest, margin: 0, padding: '12px 16px', fontSize: 'var(--ds-font-size-100)' }}>Not referenced by any review yet.</p>
-        ) : (
-          <div style={{ display: 'flex', flexDirection: 'column' }}>
-            {rows.map((r) => (
-              <div key={r.review_id} style={{ padding: '8px 16px', borderTop: `1px solid ${T.border}`, display: 'flex', alignItems: 'center', gap: 8, justifyContent: 'space-between' }}>
-                <div style={{ minWidth: 0 }}>
-                  <Button appearance="link" spacing="none" onClick={() => navigate(Routes.strata.reviews())}>
-                    {r.review_name}
-                  </Button>
-                  <span style={{ color: T.subtlest, fontSize: 'var(--ds-font-size-075)', marginLeft: 8 }}>
-                    {r.review_key}{r.scheduled_for ? ` · ${fmtDate(r.scheduled_for)}` : ''}
-                  </span>
-                </div>
-                <Button appearance="subtle" spacing="compact" testId={`strata-unlink-review-${r.review_id}`}
-                  onClick={async () => { try { await valueApi.unlinkReview(r.review_id, targetType, targetId); invalidate(); refsQ.refetch(); } catch (e) { window.alert((e as Error).message); } }}>
-                  Unlink
-                </Button>
-              </div>
-            ))}
-          </div>
+    <>
+      <StrataPanel
+        title="Linked reviews"
+        count={rows.length}
+        actions={(
+          <Button appearance="default" spacing="compact" onClick={() => setLinking(true)} testId="strata-link-review">
+            Link to review
+          </Button>
         )}
-      </div>
+        noPadding
+      >
+        <div data-testid="strata-review-links">
+          {rows.length === 0 ? (
+            <p style={{ color: T.subtlest, margin: 0, padding: '12px 16px', fontSize: 'var(--ds-font-size-100)' }}>Not referenced by any review yet.</p>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column' }}>
+              {rows.map((r) => (
+                <div key={r.review_id} style={{ padding: '8px 16px', borderTop: `1px solid ${T.border}`, display: 'flex', alignItems: 'center', gap: 8, justifyContent: 'space-between' }}>
+                  <div style={{ minWidth: 0 }}>
+                    <Button appearance="link" spacing="none" onClick={() => navigate(Routes.strata.reviews())} testId={`strata-open-review-${r.review_id}`}>
+                      {r.review_name}
+                    </Button>
+                    <span style={{ color: T.subtlest, fontSize: 'var(--ds-font-size-075)', marginLeft: 8 }}>
+                      {r.review_key}{r.scheduled_for ? ` · ${fmtDate(r.scheduled_for)}` : ''}
+                    </span>
+                  </div>
+                  <Button appearance="subtle" spacing="compact" testId={`strata-unlink-review-${r.review_id}`}
+                    onClick={async () => { if (!window.confirm(`Unlink “${r.review_name}” from this ${targetType}?`)) return; try { await valueApi.unlinkReview(r.review_id, targetType, targetId); invalidate(); refsQ.refetch(); } catch (e) { window.alert((e as Error).message); } }}>
+                    Unlink
+                  </Button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </StrataPanel>
+      {/* Rendered as a SIBLING of the panel (never inside its overflow-clipped body). */}
       <StrataFormModal
         open={linking}
         onClose={() => setLinking(false)}
         title="Link to a review"
         submitLabel="Link"
-        description="Governed reference — the review and this record must both exist. The review's locked snapshot and issued board pack are untouched."
+        description="Governed reference — pick an existing review. The RPC validates that both the review and this record exist; the review's locked snapshot and issued board pack are untouched."
         fields={[
-          { key: 'reviewId', label: 'Review', kind: 'select', required: true, options: (reviewsQ.data ?? []).map((r) => ({ value: r.id, label: `${r.name}${r.review_key ? ` · ${r.review_key}` : ''}` })) },
+          {
+            key: 'reviewId', label: 'Review', kind: 'select', required: true, options: reviewOptions,
+            helper: reviewsQ.isLoading ? 'Loading reviews…' : reviewOptions.length === 0 ? 'No reviews available' : 'Search and select a review',
+          },
           { key: 'note', label: 'Note', kind: 'textarea' },
         ]}
         onSubmit={async (v) => {
@@ -89,6 +99,6 @@ export function StrataReviewLinks({
         }}
         testId="strata-link-review-modal"
       />
-    </StrataPanel>
+    </>
   );
 }
