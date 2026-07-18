@@ -841,7 +841,7 @@ export interface StrataUploadRun {
   data_source_id: string | null;
   template_id: string | null;
   template_version: number | null;
-  channel: 'excel' | 'manual' | 'jira' | 'api';
+  channel: 'excel' | 'manual' | 'jira' | 'api' | 'system';
   initiated_by: string | null;
   storage_path: string | null;
   file_name: string | null;
@@ -853,6 +853,11 @@ export interface StrataUploadRun {
   error_summary: string | null;
   started_at: string;
   completed_at: string | null;
+  /** R4d reversal lineage (DL-DEF-005): 'import' | 'reversal'; a reversal run never promotes. */
+  run_type: 'import' | 'reversal' | null;
+  reverses_run_id: string | null;
+  reversed_by_run_id: string | null;
+  reversal_reason: string | null;
 }
 
 export interface StrataStagingRow {

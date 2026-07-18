@@ -4,11 +4,11 @@
  * UI renders DB/RPC values only — no business logic computed here.
  */
 import React, { useEffect, useMemo, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import {
   Button, CatalystTag, EmptyState, Modal, ModalBody, ModalFooter, ModalHeader, ModalTitle,
-  SectionMessage, Spinner, Textfield, Tooltip,
+  SectionMessage, Select, Spinner, Textfield, Tooltip,
 } from '@/components/ads';
 import { JiraTable } from '@/components/shared/JiraTable';
 import type { Column } from '@/components/shared/JiraTable';
@@ -80,7 +80,7 @@ interface SourceRow {
   statusLabel: string;
   statusAppearance: LozengeAppearance;
 }
-function buildSourceRows(sources: StrataDataSource[], runs: StrataUploadRun[], kpis: StrataKpi[]): SourceRow[] {
+export function buildSourceRows(sources: StrataDataSource[], runs: StrataUploadRun[], kpis: StrataKpi[]): SourceRow[] {
   const runsBySource = new Map<string, StrataUploadRun[]>();
   runs.forEach((r) => { if (r.data_source_id) runsBySource.set(r.data_source_id, [...(runsBySource.get(r.data_source_id) ?? []), r]); });
   const namesBySource = new Map<string, string[]>();
@@ -113,7 +113,17 @@ function buildSourceRows(sources: StrataDataSource[], runs: StrataUploadRun[], k
  * `strata_reverse_run` (migration 20260717190000): a promoted run is reversible for 24 hours, before
  * a lock or an issuance. RunReversalSection asks the eligibility RPC rather than asserting either way.
  */
-function runLifecycleSteps(run: StrataUploadRun): StrataLifecycleStep[] {
+export function runLifecycleSteps(run: StrataUploadRun): StrataLifecycleStep[] {
+  // DL-DEF-005: a compensating reversal is terminal evidence. It never maps onto the
+  // 7-step import journey — there is no Promote or Calculated stage to be "in progress".
+  if (run.run_type === 'reversal') {
+    const terminal = run.status === 'completed' || run.status === 'failed';
+    return [
+      { id: 'created', label: 'Reversal created', state: 'done', note: run.reversal_reason ?? undefined },
+      { id: 'applied', label: 'Originals marked reversed', state: terminal ? 'done' : 'current', note: 'original evidence preserved' },
+      { id: 'terminal', label: 'Terminal', state: run.status === 'failed' ? 'failed' : terminal ? 'done' : 'todo', note: 'nothing to promote' },
+    ];
+  }
   const s = run.status;
   const rejects = run.row_count_rejected ?? 0;
   const failed = s === 'failed';
@@ -136,6 +146,65 @@ function runLifecycleSteps(run: StrataUploadRun): StrataLifecycleStep[] {
     { id: 'promote', label: 'Promote', state: st(5), note: 'pending attestation' },
     { id: 'calculated', label: 'Calculated', state: st(6), note: undefined },
   ];
+}
+
+/**
+ * DL-DEF-005: run-key resolution map. The list query is merged with direct
+ * by-id fetches of the linked runs, so a missing/failed/scoped list can never
+ * leave a resolvable relationship showing a raw UUID.
+ */
+export function buildRunKeyMap(
+  list: Array<Pick<StrataUploadRun, 'id' | 'run_key'>>,
+  ...direct: Array<{ id: string; run_key: string } | null | undefined>
+): Map<string, string> {
+  const m = new Map(list.map((r) => [r.id, r.run_key] as const));
+  for (const d of direct) if (d) m.set(d.id, d.run_key);
+  return m;
+}
+
+/**
+ * DL-DEF-004: pure URL-state reducer for the list controls. Applies `changes`
+ * to the current query string; null/empty values DELETE their key (an empty
+ * search is never serialized), and multi-key changes land in ONE update —
+ * react-router's functional setSearchParams derives from the render-time
+ * location, so two sequential calls in one tick lose the first call's edits.
+ */
+export function applyListParams(current: string, changes: Record<string, string | null>): URLSearchParams {
+  const n = new URLSearchParams(current);
+  for (const [k, v] of Object.entries(changes)) {
+    if (v == null || v === '') n.delete(k);
+    else n.set(k, v);
+  }
+  return n;
+}
+
+/**
+ * DL-DEF-005: resolve a reversal run's relationships and actor to governed display
+ * values. Zero-assumption — anything unresolved stays null and the caller renders
+ * the raw identifier (honest evidence) rather than a guess.
+ */
+export function reversalDisplayMeta(
+  run: Pick<StrataUploadRun, 'reverses_run_id' | 'reversed_by_run_id' | 'initiated_by'>,
+  runKeyById: Map<string, string>,
+  profileNameById: Map<string, { name: string | null }> | undefined,
+): { reversesKey: string | null; reversedByKey: string | null; actorName: string | null } {
+  return {
+    reversesKey: run.reverses_run_id ? runKeyById.get(run.reverses_run_id) ?? null : null,
+    reversedByKey: run.reversed_by_run_id ? runKeyById.get(run.reversed_by_run_id) ?? null : null,
+    actorName: run.initiated_by ? profileNameById?.get(run.initiated_by)?.name ?? null : null,
+  };
+}
+
+/**
+ * DL-DEF-004: run-collection search/filter predicate. Matches run key, file name,
+ * channel, status and run type case-insensitively; a status filter is exact.
+ */
+export function filterRunRows(runs: StrataUploadRun[], q: string, status: string): StrataUploadRun[] {
+  const needle = q.toLowerCase();
+  return runs.filter((r) => {
+    const hay = `${r.run_key} ${r.file_name ?? ''} ${labelize(r.channel)} ${labelize(r.status)} ${labelize(r.run_type ?? 'import')}`.toLowerCase();
+    return (!q || hay.includes(needle)) && (!status || r.status === status);
+  });
 }
 
 /** Client-side error clustering (anchor 09, P4-D3) — group validation results by cause. */
@@ -230,21 +299,31 @@ function DataLandingJudgment() {
 }
 
 // ── Sources — freshness and who depends on them (anchor 19) ───────────────────
-function SourcesPanel() {
-  const sources = useDataSources();
-  const runs = useUploadRuns();
-  const kpis = useKpis();
-  const rows = useMemo(
-    () => buildSourceRows(sources.data ?? [], runs.data ?? [], kpis.data ?? []),
-    [sources.data, runs.data, kpis.data],
-  );
-
-  const columns: Column<SourceRow>[] = [
+/**
+ * DL-DEF-001: production source-registry columns, exported for rendered-adapter
+ * tests. The source name is an explicit LINK (native button: Tab-focusable,
+ * Enter/Space activate, visible focus ring) for slugged sources; a null-slug
+ * source renders plain text and is not actionable. stopPropagation prevents a
+ * double navigation through the row's pointer onRowClick.
+ */
+export function buildSourceColumns(navigate: (path: string) => void): Column<SourceRow>[] {
+  return [
     {
       id: 'source', label: 'Source', flex: true,
       cell: ({ row }) => (
         <div style={{ minWidth: 0 }}>
-          <span style={{ ...bodyStyle, fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'block' }}>{row.source.name}</span>
+          {row.source.slug ? (
+            <Button
+              appearance="subtle-link"
+              spacing="none"
+              onClick={(e: React.MouseEvent | React.KeyboardEvent) => { e.stopPropagation?.(); navigate(Routes.strata.source(row.source.slug!)); }}
+              testId={`strata-source-link-${row.source.slug}`}
+            >
+              <span style={{ ...bodyStyle, fontWeight: 600 }}>{row.source.name}</span>
+            </Button>
+          ) : (
+            <span style={{ ...bodyStyle, fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'block' }}>{row.source.name}</span>
+          )}
           <span style={{ ...captionStyle, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'block' }}>
             {labelize(row.source.system_type)}{row.source.refresh_cadence ? ` · ${row.source.refresh_cadence}` : ''}
           </span>
@@ -290,6 +369,32 @@ function SourcesPanel() {
       cell: ({ row }) => <StatusLozenge status={row.statusLabel.toLowerCase()} label={row.statusLabel} appearance={row.statusAppearance} />,
     },
   ];
+}
+
+function SourcesPanel() {
+  const sources = useDataSources();
+  const runs = useUploadRuns();
+  const kpis = useKpis();
+  const navigate = useNavigate();
+  // DL-DEF-004: search + pagination with URL-preserved state (?srcq, ?srcpage).
+  // Single-call updates via applyListParams — empty values delete their key.
+  const [searchParams, setSearchParams] = useSearchParams();
+  const srcQ = searchParams.get('srcq') ?? '';
+  const srcPage = Math.max(1, Number(searchParams.get('srcpage') ?? '1') || 1);
+  const setListParams = (changes: Record<string, string | null>) =>
+    setSearchParams(applyListParams(searchParams.toString(), changes), { replace: true });
+  const allRows = useMemo(
+    () => buildSourceRows(sources.data ?? [], runs.data ?? [], kpis.data ?? []),
+    [sources.data, runs.data, kpis.data],
+  );
+  const rows = useMemo(() => {
+    if (!srcQ) return allRows;
+    const needle = srcQ.toLowerCase();
+    return allRows.filter((r) =>
+      `${r.source.name} ${labelize(r.source.system_type)} ${r.statusLabel} ${r.lastRunKey ?? ''}`.toLowerCase().includes(needle));
+  }, [allRows, srcQ]);
+
+  const columns = useMemo(() => buildSourceColumns(navigate), [navigate]);
 
   return (
     <StrataPanel
@@ -300,19 +405,43 @@ function SourcesPanel() {
       testId="strata-sources-panel"
       actions={<span style={captionStyle}>Sorted by consequence: stale &gt; aging &gt; healthy</span>}
     >
+      <div style={{ padding: '12px 16px 0', maxWidth: 340 }}>
+        <Textfield
+          value={srcQ}
+          onChange={(e) => setListParams({ srcq: e.target.value || null, srcpage: null })}
+          placeholder="Search sources (name, type, status)"
+          aria-label="Search data sources"
+          isCompact
+        />
+      </div>
       <PanelState
         query={sources}
-        empty={rows.length === 0}
+        empty={allRows.length === 0}
         emptyHeader="No data sources registered yet"
         emptyDescription="Register a source to begin governed ingestion — its freshness and downstream KPIs appear here."
       >
-        <JiraTable<SourceRow>
-          columns={columns}
-          data={rows}
-          getRowId={(r) => r.source.id}
-          showRowCount={false}
-          ariaLabel="Data sources"
-        />
+        {rows.length === 0 ? (
+          <div style={{ padding: 16 }}>
+            <EmptyState
+              size="compact"
+              header="No sources match your search"
+              description={`Nothing matches "${srcQ}".`}
+              primaryAction={<Button onClick={() => setListParams({ srcq: null, srcpage: null })}>Clear search</Button>}
+            />
+          </div>
+        ) : (
+          <JiraTable<SourceRow>
+            columns={columns}
+            data={rows}
+            getRowId={(r) => r.source.id}
+            showRowCount={false}
+            ariaLabel="Data sources"
+            rowsPerPage={10}
+            page={srcPage}
+            onPageChange={(p) => setListParams({ srcpage: p > 1 ? String(p) : null })}
+            onRowClick={(r) => { if (r.source.slug) navigate(Routes.strata.source(r.source.slug)); }}
+          />
+        )}
       </PanelState>
     </StrataPanel>
   );
@@ -333,6 +462,23 @@ function RunsPanel() {
     return m;
   }, [kpis.data]);
   const hasSyncRole = (rolesQ.data ?? []).some((r) => (SYNC_ROLES as readonly string[]).includes(r));
+  // DL-DEF-004: search + status filter + pagination with URL-preserved state (?runq, ?runstatus, ?runpage).
+  // Single-call updates via applyListParams — empty values delete their key.
+  const [searchParams, setSearchParams] = useSearchParams();
+  const runQ = searchParams.get('runq') ?? '';
+  const runStatus = searchParams.get('runstatus') ?? '';
+  const runPage = Math.max(1, Number(searchParams.get('runpage') ?? '1') || 1);
+  const setListParams = (changes: Record<string, string | null>) =>
+    setSearchParams(applyListParams(searchParams.toString(), changes), { replace: true });
+  const statusOptions = useMemo(
+    () => [...new Set((runs.data ?? []).map((r) => r.status))].sort()
+      .map((s) => ({ label: labelize(s), value: s })),
+    [runs.data],
+  );
+  const filteredRuns = useMemo(
+    () => filterRunRows(runs.data ?? [], runQ, runStatus),
+    [runs.data, runQ, runStatus],
+  );
   const [syncBusy, setSyncBusy] = useState(false);
   const [syncError, setSyncError] = useState<string | null>(null);
   const [syncNote, setSyncNote] = useState<string | null>(null);
@@ -440,19 +586,55 @@ function RunsPanel() {
           </SectionMessage>
         </div>
       ) : null}
+      <div style={{ display: 'flex', gap: 8, padding: '12px 16px 0', alignItems: 'center', flexWrap: 'wrap' }}>
+        <div style={{ flex: '1 1 220px', maxWidth: 340 }}>
+          <Textfield
+            value={runQ}
+            onChange={(e) => setListParams({ runq: e.target.value || null, runpage: null })}
+            placeholder="Search runs (key, file, channel, status)"
+            aria-label="Search upload runs"
+            isCompact
+          />
+        </div>
+        <div style={{ width: 190 }}>
+          <Select
+            options={statusOptions}
+            value={statusOptions.find((o) => o.value === runStatus) ?? null}
+            onChange={(o) => setListParams({ runstatus: o?.value ?? null, runpage: null })}
+            isClearable
+            isSearchable={false}
+            placeholder="All statuses"
+            aria-label="Filter runs by status"
+          />
+        </div>
+      </div>
       <PanelState
         query={runs}
         empty={(runs.data ?? []).length === 0}
         emptyHeader="No upload runs yet for this period"
         emptyDescription="Runs appear here as soon as data is uploaded through a registered source."
       >
-        <JiraTable<StrataUploadRun>
-          columns={columns}
-          data={runs.data ?? []}
-          getRowId={(r) => r.id}
-          onRowClick={(r) => navigate(Routes.strata.run(r.run_key))}
-          ariaLabel="Upload runs"
-        />
+        {filteredRuns.length === 0 ? (
+          <div style={{ padding: 16 }}>
+            <EmptyState
+              size="compact"
+              header="No runs match your search"
+              description={runStatus ? `Nothing matches "${runQ}" with status ${labelize(runStatus)}.` : `Nothing matches "${runQ}".`}
+              primaryAction={<Button onClick={() => setListParams({ runq: null, runstatus: null, runpage: null })}>Clear search</Button>}
+            />
+          </div>
+        ) : (
+          <JiraTable<StrataUploadRun>
+            columns={columns}
+            data={filteredRuns}
+            getRowId={(r) => r.id}
+            onRowClick={(r) => navigate(Routes.strata.run(r.run_key))}
+            ariaLabel="Upload runs"
+            rowsPerPage={10}
+            page={runPage}
+            onPageChange={(p) => setListParams({ runpage: p > 1 ? String(p) : null })}
+          />
+        )}
       </PanelState>
     </StrataPanel>
   );
@@ -868,6 +1050,29 @@ function RunDetailSection({ runKey, detail }: { runKey: string; detail: RunDetai
   const invalidate = useInvalidateStrata();
   const kpisQ = useKpis();       // downstream dependents (P4-D4) via strata_kpis.data_source_id
   const sourcesQ = useDataSources(); // source name for the contract/lineage rail
+  // DL-DEF-005: resolve reversal relationships to run keys and the actor to a governed name.
+  // Linked runs are ALSO fetched directly by id — resolution must never depend on the
+  // full-list query being loaded, unscoped and error-free.
+  const allRunsQ = useUploadRuns();
+  const profilesQ = useProfileNames();
+  const reversesId = detail.data?.run.reverses_run_id ?? null;
+  const reversedById = detail.data?.run.reversed_by_run_id ?? null;
+  const reversesRunQ = useQuery({
+    queryKey: ['strata', 'run-key-for-id', reversesId],
+    queryFn: () => lineageApi.runKeyForId(reversesId!),
+    enabled: !!reversesId,
+    staleTime: 60_000,
+  });
+  const reversedByRunQ = useQuery({
+    queryKey: ['strata', 'run-key-for-id', reversedById],
+    queryFn: () => lineageApi.runKeyForId(reversedById!),
+    enabled: !!reversedById,
+    staleTime: 60_000,
+  });
+  const runKeyById = useMemo(
+    () => buildRunKeyMap(allRunsQ.data ?? [], reversesRunQ.data, reversedByRunQ.data),
+    [allRunsQ.data, reversesRunQ.data, reversedByRunQ.data],
+  );
   const runId = detail.data?.run.id ?? null;
 
   // Attestation applies to strata_kpi_actuals (not staging rows). There is no
@@ -1039,17 +1244,61 @@ function RunDetailSection({ runKey, detail }: { runKey: string; detail: RunDetai
   const kpiNameById = new Map((kpisQ.data ?? []).map((k) => [k.id, k.name] as const));
   const sourceName = run.data_source_id ? (sourcesQ.data ?? []).find((s) => s.id === run.data_source_id)?.name ?? null : null;
   const rejectedRows = rows.filter((r) => r.validation_status === 'rejected');
-  const promoteReady = hasIngestRole && run.status === 'completed';
+  // DL-DEF-005: a reversal run is terminal evidence — it never offers Promote.
+  const isReversalRun = run.run_type === 'reversal';
+  const revMeta = reversalDisplayMeta(run, runKeyById, profilesQ.data);
+  /** Run-key link when resolvable; raw id (honest evidence) when not. */
+  const runRef = (id: string | null, key: string | null, testId: string) =>
+    id == null ? <span style={{ color: T.text }}>—</span>
+    : key == null ? <span style={{ ...mono, color: T.text }}>{id}</span>
+    : (
+      <Button appearance="subtle-link" spacing="none" onClick={() => navigate(Routes.strata.run(key))} testId={testId}>
+        {key}
+      </Button>
+    );
+  const promoteReady = hasIngestRole && run.status === 'completed' && !isReversalRun;
   const tileNum: React.CSSProperties = { fontSize: 'var(--ds-font-size-400)', fontWeight: 700, fontVariantNumeric: 'tabular-nums' };
-  /** Client-side CSV of the rejected rows — safe, no server call (anchor 09 "Download rejected"). */
+  /**
+   * Client-side CSV of the rejected rows with their exact errors — no server call.
+   * DL-DEF-006: cells are quoted CSV; non-numeric cells starting with = + - @ are
+   * apostrophe-prefixed so a spreadsheet never executes them as formulas. Only
+   * template columns + validation findings are exported — no restricted fields.
+   */
   const downloadRejected = () => {
-    const header = ['row_number', ...parsedKeys].join(',');
-    const lines = rejectedRows.map((r) => [r.row_number, ...parsedKeys.map((k) => JSON.stringify(r.raw?.[k] ?? ''))].join(','));
-    const blob = new Blob([[header, ...lines].join('\n')], { type: 'text/csv' });
+    const csvCell = (v: unknown): string => {
+      let s = v == null ? '' : String(v);
+      if (/^[=+\-@\t\r]/.test(s) && !/^-?([0-9]+([.][0-9]*)?|[.][0-9]+)$/.test(s)) s = `'${s}`;
+      return `"${s.replace(/"/g, '""')}"`;
+    };
+    const errsByRow = new Map<string, { field: string; rule: string; message: string; fix: string }[]>();
+    for (const res of results) {
+      if (!res.staging_row_id) continue;
+      const list = errsByRow.get(res.staging_row_id) ?? [];
+      list.push({ field: res.field_name ?? '', rule: res.error_code, message: res.message, fix: res.suggested_fix ?? '' });
+      errsByRow.set(res.staging_row_id, list);
+    }
+    const header = ['row_number', ...parsedKeys, 'field', 'rule', 'error', 'fix'].map(csvCell).join(',');
+    const lines = rejectedRows.map((r) => {
+      const errs = errsByRow.get(r.id) ?? [];
+      return [
+        r.row_number,
+        ...parsedKeys.map((k) => r.raw?.[k] ?? ''),
+        errs.map((e) => e.field).join(' | '),
+        errs.map((e) => e.rule).join(' | '),
+        errs.map((e) => e.message).join(' | '),
+        errs.map((e) => e.fix).join(' | '),
+      ].map(csvCell).join(',');
+    });
+    const blob = new Blob([[header, ...lines].join('\r\n')], { type: 'text/csv;charset=utf-8' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
-    a.href = url; a.download = `${run.run_key}-rejected.csv`; a.click();
-    URL.revokeObjectURL(url);
+    a.href = url;
+    a.download = `${run.run_key}-rejected.csv`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    // Deferred revoke: a synchronous revoke can abort the download in Chromium.
+    window.setTimeout(() => URL.revokeObjectURL(url), 10_000);
   };
 
   return (
@@ -1144,7 +1393,20 @@ function RunDetailSection({ runKey, detail }: { runKey: string; detail: RunDetai
             )}
           </StrataPanel>
 
-          {/* Commit panel — promote (existing RPC); honest reversibility (P4-D7: pending attestation, no reverse RPC) */}
+          {/* DL-DEF-005: a reversal run is terminal compensating evidence — no Promote surface. */}
+          {isReversalRun ? (
+            <StrataPanel title="Compensating reversal" icon={<Upload size={16} />} testId="strata-compensating-reversal-panel">
+              <div style={{ display: 'grid', gridTemplateColumns: '110px minmax(0,1fr)', gap: 8, ...captionStyle }}>
+                <span style={{ color: T.subtlest }}>Run type</span><span style={{ color: T.text }}>Reversal (terminal — nothing to promote)</span>
+                <span style={{ color: T.subtlest }}>Reverses run</span>
+                <span>{runRef(run.reverses_run_id, revMeta.reversesKey, 'strata-reversal-reverses-link')}</span>
+                <span style={{ color: T.subtlest }}>Reason</span><span style={{ color: T.text }}>{run.reversal_reason ?? '—'}</span>
+                <span style={{ color: T.subtlest }}>Actor</span>
+                <span style={revMeta.actorName ? { color: T.text } : { ...mono, color: T.text }} data-testid="strata-reversal-actor">{revMeta.actorName ?? run.initiated_by ?? '—'}</span>
+                <span style={{ color: T.subtlest }}>Completed</span><span style={{ color: T.text }}>{run.completed_at ? fmtDateTime(run.completed_at) : '—'}</span>
+              </div>
+            </StrataPanel>
+          ) : (
           <StrataPanel title="Promote to canonical" icon={<Upload size={16} />} testId="strata-commit-panel">
             <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
               <div style={{ minWidth: 0, flex: 1 }}>
@@ -1176,6 +1438,7 @@ function RunDetailSection({ runKey, detail }: { runKey: string; detail: RunDetai
               ) : null}
             </div>
           </StrataPanel>
+          )}
         </div>
 
         {/* Downstream impact + contract/lineage rail */}
@@ -1199,7 +1462,26 @@ function RunDetailSection({ runKey, detail }: { runKey: string; detail: RunDetai
               <span style={{ color: T.subtlest }}>Source</span><span style={{ color: T.text }}>{sourceName ?? '—'}</span>
               <span style={{ color: T.subtlest }}>Template</span><span style={{ color: T.text }}>{run.template_version != null ? `v${run.template_version}` : '—'}</span>
               <span style={{ color: T.subtlest }}>Run key</span><span style={{ color: T.text, fontVariantNumeric: 'tabular-nums' }}>{run.run_key}</span>
-              <span style={{ color: T.subtlest }}>Channel</span><span style={{ color: T.text }}>{labelize(run.channel)}</span>
+              <span style={{ color: T.subtlest }}>Channel</span><span style={{ color: T.text }}>{isReversalRun ? 'System (reversal)' : labelize(run.channel)}</span>
+              <span style={{ color: T.subtlest }}>Run type</span><span style={{ color: T.text }}>{labelize(run.run_type ?? 'import')}</span>
+              {run.reverses_run_id ? (
+                <>
+                  <span style={{ color: T.subtlest }}>Reverses</span>
+                  <span>{runRef(run.reverses_run_id, revMeta.reversesKey, 'strata-lineage-reverses-link')}</span>
+                </>
+              ) : null}
+              {run.reversed_by_run_id ? (
+                <>
+                  <span style={{ color: T.subtlest }}>Reversed by</span>
+                  <span>{runRef(run.reversed_by_run_id, revMeta.reversedByKey, 'strata-lineage-reversed-by-link')}</span>
+                </>
+              ) : null}
+              {run.reversal_reason ? (
+                <>
+                  <span style={{ color: T.subtlest }}>Reason</span>
+                  <span style={{ color: T.text }}>{run.reversal_reason}</span>
+                </>
+              ) : null}
               {run.file_hash ? (
                 <>
                   <span style={{ color: T.subtlest }}>Checksum</span>
@@ -1263,20 +1545,720 @@ function RunDetailSection({ runKey, detail }: { runKey: string; detail: RunDetai
   );
 }
 
+// ── Entity audit/lineage foundation (DL-DEF-002) ─────────────────────────────
+/** Governed entity types offered for audit lookup — the module-7 cross-module chain. */
+export const ENTITY_AUDIT_TYPES: Array<{ value: string; label: string }> = [
+  { value: 'strata_strategy_elements', label: 'Strategy element' },
+  { value: 'strata_kpis', label: 'KPI' },
+  { value: 'strata_kpi_actuals', label: 'KPI actual' },
+  { value: 'strata_okrs', label: 'OKR' },
+  { value: 'strata_scorecard_models', label: 'Scorecard model' },
+  { value: 'strata_snapshots', label: 'Snapshot' },
+  { value: 'strata_project_cards', label: 'Project card' },
+  { value: 'strata_benefits', label: 'Benefit' },
+  { value: 'strata_portfolios', label: 'Portfolio' },
+  { value: 'strata_reviews', label: 'Review' },
+  { value: 'strata_decisions', label: 'Decision' },
+  { value: 'strata_data_sources', label: 'Data source' },
+  { value: 'strata_upload_runs', label: 'Upload run' },
+  { value: 'strata_actions', label: 'Action' },
+];
+
+/**
+ * DL-DEF-002: per-table discovery + owning-route contract. matchCols are the
+ * REAL human-readable columns of each governed table; route() builds the
+ * owning-module route from the row's own slug/key — never derived from a
+ * display name, never guessed. route: null = no routeable surface exists ('—').
+ * strata_kpi_actuals has no human-readable key and stays UUID-only.
+ */
+export interface EntityDiscoveryConfig {
+  matchCols: string[];
+  selectCols: string;
+  display: (r: Record<string, unknown>) => string;
+  route: (r: Record<string, unknown>) => string | null;
+}
+const slugRoute = (build: (slug: string) => string) => (r: Record<string, unknown>) =>
+  r.slug ? build(String(r.slug)) : null;
+export const ENTITY_DISCOVERY: Record<string, EntityDiscoveryConfig> = {
+  strata_strategy_elements: { matchCols: ['name', 'slug'], selectCols: 'id, name, slug', display: (r) => String(r.name), route: slugRoute(Routes.strata.strategyElement) },
+  strata_kpis: { matchCols: ['name', 'slug'], selectCols: 'id, name, slug', display: (r) => String(r.name), route: slugRoute(Routes.strata.kpi) },
+  strata_okrs: { matchCols: ['name', 'slug'], selectCols: 'id, name, slug', display: (r) => String(r.name), route: () => null },
+  strata_scorecard_models: { matchCols: ['name', 'slug'], selectCols: 'id, name, slug', display: (r) => String(r.name), route: () => null },
+  strata_snapshots: { matchCols: ['name', 'snapshot_key'], selectCols: 'id, name, snapshot_key', display: (r) => String(r.name ?? r.snapshot_key), route: (r) => (r.snapshot_key ? Routes.strata.review(String(r.snapshot_key)) : null) },
+  strata_project_cards: { matchCols: ['name', 'slug'], selectCols: 'id, name, slug', display: (r) => String(r.name), route: slugRoute(Routes.strata.projectCard) },
+  strata_benefits: { matchCols: ['name', 'slug'], selectCols: 'id, name, slug', display: (r) => String(r.name), route: slugRoute(Routes.strata.benefit) },
+  strata_portfolios: { matchCols: ['name', 'slug'], selectCols: 'id, name, slug', display: (r) => String(r.name), route: slugRoute((s) => Routes.strata.portfolioDetail(s)) },
+  strata_reviews: { matchCols: ['name', 'slug'], selectCols: 'id, name, slug', display: (r) => String(r.name), route: () => null },
+  strata_decisions: { matchCols: ['title'], selectCols: 'id, title', display: (r) => String(r.title), route: () => null },
+  strata_actions: { matchCols: ['title'], selectCols: 'id, title', display: (r) => String(r.title), route: () => null },
+  strata_data_sources: { matchCols: ['name', 'slug'], selectCols: 'id, name, slug', display: (r) => String(r.name), route: slugRoute(Routes.strata.source) },
+  strata_upload_runs: { matchCols: ['run_key'], selectCols: 'id, run_key', display: (r) => String(r.run_key), route: (r) => (r.run_key ? Routes.strata.run(String(r.run_key)) : null) },
+};
+
+/** Exact-UUID validation for the entity lookup — nothing fuzzy, nothing guessed. */
+export const isEntityUuid = (v: string): boolean =>
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(v.trim());
+
+/**
+ * DL-DEF-002: owning-module route for an audited entity, ONLY where a
+ * table-specific id→slug/key mapping is actually loaded. Null → the caller
+ * renders '—' (never a fabricated link).
+ */
+export function owningRouteForEntity(
+  table: string,
+  id: string,
+  kpiSlugById: Map<string, string>,
+  runKeyById: Map<string, string>,
+): string | null {
+  if (table === 'strata_kpis') {
+    const slug = kpiSlugById.get(id);
+    return slug ? Routes.strata.kpi(slug) : null;
+  }
+  if (table === 'strata_upload_runs') {
+    const key = runKeyById.get(id);
+    return key ? Routes.strata.run(key) : null;
+  }
+  return null;
+}
+
+/**
+ * DL-DEF-009: scorecard dependents rendered by governed model identity — one
+ * distinguishable label per model. Same-name model versions are told apart by
+ * version, multi-measure links carry an explicit count, and a residual label
+ * collision falls back to the model id prefix. Never two identical labels.
+ */
+export function formatScorecardDependents(
+  models: Array<{ id: string; name: string; version: number | null; measureCount: number }>,
+): string[] {
+  const labels = models.map((m) =>
+    `${m.name}${m.version != null ? ` (v${m.version})` : ''}${m.measureCount > 1 ? ` · ${m.measureCount} measures` : ''}`);
+  return labels.map((label, i) =>
+    labels.filter((l) => l === label).length > 1 ? `${label} · ${models[i].id.slice(0, 8)}` : label);
+}
+
+/**
+ * Entity audit/lineage lookup over the EXISTING append-only audit store
+ * (strata_entity_audit RPC — no parallel audit system). Renders action, actor
+ * display name, timestamp, before/after, note, upstream run/staging provenance
+ * and owning-module navigation where an id→slug mapping exists. Forward
+ * scorecard/snapshot impact is explicitly NOT tracked and stated as such.
+ */
+function EntityAuditPanel() {
+  const navigate = useNavigate();
+  const profilesQ = useProfileNames();
+  const kpisQ = useKpis();
+  const runsQ = useUploadRuns();
+  // DL-DEF-002 D: entity identity is URL state (?etype/?eid) so global search
+  // and deep links can open the panel with the exact entity pre-selected.
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [entityType, setEntityTypeState] = useState<string>(() => searchParams.get('etype') ?? '');
+  const [entityId, setEntityIdState] = useState(() => searchParams.get('eid') ?? '');
+  const syncUrl = (etype: string, eid: string) =>
+    setSearchParams(applyListParams(searchParams.toString(), { etype: etype || null, eid: eid || null }), { replace: true });
+  const setEntityType = (v: string) => { setEntityTypeState(v); syncUrl(v, entityId); };
+  const setEntityId = (v: string) => { setEntityIdState(v); syncUrl(entityType, v); };
+  const [term, setTerm] = useState('');
+  const [pickedRoute, setPickedRoute] = useState<string | null>(null);
+  // External URL changes (global-search navigation while already mounted) win.
+  useEffect(() => {
+    const t = searchParams.get('etype') ?? '';
+    const i = searchParams.get('eid') ?? '';
+    if (t !== entityType) setEntityTypeState(t);
+    if (i !== entityId) setEntityIdState(i);
+  }, [searchParams]); // eslint-disable-line react-hooks/exhaustive-deps
+  const trimmedId = entityId.trim();
+  const validId = isEntityUuid(trimmedId);
+  const canSearch = !!entityType && validId;
+  const discovery = entityType ? ENTITY_DISCOVERY[entityType] ?? null : null;
+  const discoveryQ = useQuery({
+    queryKey: ['strata', 'entity-discovery', entityType, term.trim().toLowerCase()],
+    queryFn: () => lineageApi.discoverEntities(entityType, discovery!.matchCols, discovery!.selectCols, term),
+    enabled: !!discovery && term.trim().length >= 2,
+    staleTime: 30_000,
+  });
+  const relationsQ = useQuery({
+    queryKey: ['strata', 'entity-relations', entityType, trimmedId],
+    queryFn: () => lineageApi.relationsForEntity(entityType, trimmedId),
+    enabled: canSearch,
+    staleTime: 30_000,
+  });
+  const auditQ = useQuery({
+    queryKey: ['strata', 'entity-audit', entityType, trimmedId],
+    queryFn: () => lineageApi.entityAudit(entityType, trimmedId),
+    enabled: canSearch,
+    staleTime: 30_000,
+  });
+  const lineageQ = useQuery({
+    queryKey: ['strata', 'entity-lineage', entityType, trimmedId],
+    queryFn: () => lineageApi.lineageForEntity(entityType, trimmedId),
+    enabled: canSearch,
+    staleTime: 30_000,
+  });
+  const kpiSlugById = useMemo(
+    () => new Map((kpisQ.data ?? []).filter((k) => k.slug).map((k) => [k.id, k.slug!] as const)),
+    [kpisQ.data],
+  );
+  const kpiNamesById = useMemo(
+    () => new Map((kpisQ.data ?? []).map((k) => [k.id, k.name] as const)),
+    [kpisQ.data],
+  );
+  const runKeyById = useMemo(
+    () => new Map((runsQ.data ?? []).map((r) => [r.id, r.run_key] as const)),
+    [runsQ.data],
+  );
+  const owningRoute = canSearch
+    ? pickedRoute ?? owningRouteForEntity(entityType, trimmedId, kpiSlugById, runKeyById)
+    : null;
+  const j = (v: unknown) => (v == null ? null : JSON.stringify(v));
+  const typeOption = ENTITY_AUDIT_TYPES.find((o) => o.value === entityType) ?? null;
+  const candidates = (discoveryQ.data ?? []) as Array<Record<string, unknown>>;
+
+  return (
+    <StrataPanel title="Entity audit & lineage" icon={<Network size={16} />} testId="strata-entity-audit-panel">
+      <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
+        <div style={{ width: 210 }}>
+          <Select
+            options={ENTITY_AUDIT_TYPES}
+            value={typeOption}
+            onChange={(o) => { setEntityType(o?.value ?? ''); setTerm(''); setPickedRoute(null); }}
+            isClearable
+            isSearchable
+            placeholder="Entity type"
+            aria-label="Entity type for audit lookup"
+          />
+        </div>
+        <div style={{ flex: '1 1 200px', maxWidth: 300 }}>
+          <Textfield
+            value={term}
+            onChange={(e) => { setTerm(e.target.value); setPickedRoute(null); }}
+            placeholder={discovery ? 'Search by name / key' : entityType ? 'This type is UUID-only' : 'Search by name / key'}
+            aria-label="Search entity by name or key"
+            isCompact
+            isDisabled={!!entityType && !discovery}
+          />
+        </div>
+        <div style={{ flex: '1 1 260px', maxWidth: 380 }}>
+          <Textfield
+            value={entityId}
+            onChange={(e) => { setEntityId(e.target.value); setPickedRoute(null); }}
+            placeholder="Exact entity ID (UUID)"
+            aria-label="Exact entity ID for audit lookup"
+            isCompact
+            isInvalid={entityId.length > 0 && !validId}
+          />
+        </div>
+      </div>
+      {discovery && term.trim().length >= 2 ? (
+        <div style={{ marginTop: 8 }} data-testid="strata-entity-discovery-results">
+          {discoveryQ.isLoading ? (
+            <span style={captionStyle}>Searching…</span>
+          ) : candidates.length === 0 ? (
+            <span style={captionStyle} data-testid="strata-entity-discovery-empty">
+              No {typeOption?.label.toLowerCase()} matches "{term.trim()}" — nothing was selected for you.
+            </span>
+          ) : candidates.length > 10 ? (
+            <span style={captionStyle} data-testid="strata-entity-discovery-ambiguous">
+              More than 10 matches — refine the search; nothing was selected for you.
+            </span>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+              {candidates.length > 1 ? (
+                <span style={captionStyle}>{candidates.length} candidates — pick one explicitly:</span>
+              ) : null}
+              {candidates.map((r) => (
+                <div key={String(r.id)} style={{ display: 'flex', gap: 8, alignItems: 'center', minWidth: 0 }}>
+                  <Button
+                    appearance="subtle-link"
+                    spacing="none"
+                    onClick={() => { setEntityId(String(r.id)); setPickedRoute(discovery.route(r)); }}
+                    testId={`strata-entity-candidate-${String(r.id).slice(0, 8)}`}
+                  >
+                    {discovery.display(r)}
+                  </Button>
+                  <span style={{ ...captionStyle, ...mono }}>{String(r.id).slice(0, 8)}</span>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      ) : null}
+      {entityId.length > 0 && !validId ? (
+        <p style={{ ...captionStyle, color: 'var(--ds-text-danger)', margin: '8px 0 0' }}>
+          Enter a full UUID (8-4-4-4-12 hex) — partial or fuzzy lookup is not supported.
+        </p>
+      ) : null}
+      {!canSearch ? (
+        <p style={{ ...captionStyle, margin: '12px 0 0' }}>
+          Pick a governed entity type and paste its exact ID to read its append-only audit history.
+          Scorecard/snapshot forward impact is not tracked.
+        </p>
+      ) : auditQ.isLoading ? (
+        <div style={{ display: 'flex', justifyContent: 'center', padding: 24 }}><Spinner /></div>
+      ) : auditQ.isError ? (
+        <p style={{ ...captionStyle, color: 'var(--ds-text-danger)', margin: '12px 0 0' }}>
+          {auditQ.error instanceof Error ? auditQ.error.message : String(auditQ.error)}
+        </p>
+      ) : (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: 12 }} data-testid="strata-entity-audit-results">
+          <div style={{ display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
+            <span style={captionStyle}>
+              {typeOption?.label} · <span style={mono}>{trimmedId}</span>
+            </span>
+            {owningRoute ? (
+              <Button appearance="subtle-link" spacing="none" onClick={() => navigate(owningRoute)} testId="strata-entity-audit-owning-link">
+                Open in owning module
+              </Button>
+            ) : (
+              <span style={captionStyle}>Owning module: —</span>
+            )}
+          </div>
+          {(auditQ.data ?? []).length === 0 ? (
+            <EmptyState
+              size="compact"
+              header="No audit events recorded"
+              description="The append-only store has no events for this entity — or your role cannot read them."
+            />
+          ) : (
+            (auditQ.data ?? []).map((e) => (
+              <div key={e.id} style={{ borderTop: `1px solid ${T.border}`, paddingTop: 8, minWidth: 0 }}>
+                <div style={{ ...bodyStyle, fontWeight: 600 }}>
+                  {e.action}
+                  <span style={{ ...captionStyle, fontWeight: 400, marginLeft: 8 }}>
+                    {(e.actor_id ? profilesQ.data?.get(e.actor_id)?.name ?? e.actor_id : '—')} · {fmtDateTime(e.created_at)}
+                  </span>
+                </div>
+                {e.note ? <div style={{ ...captionStyle, marginTop: 2 }}>{e.note}</div> : null}
+                {j(e.before) ? <div style={{ ...captionStyle, ...mono, marginTop: 2, overflowWrap: 'anywhere' }}>before: {j(e.before)!.slice(0, 240)}</div> : null}
+                {j(e.after) ? <div style={{ ...captionStyle, ...mono, marginTop: 2, overflowWrap: 'anywhere' }}>after: {j(e.after)!.slice(0, 240)}</div> : null}
+              </div>
+            ))
+          )}
+          <div style={{ borderTop: `1px solid ${T.border}`, paddingTop: 8 }}>
+            <div style={{ ...bodyStyle, fontWeight: 600 }}>Upstream provenance</div>
+            {((lineageQ.data ?? []) as Array<{ id: string; upload_run_id: string | null; staging_row_id: string | null }>).length === 0 ? (
+              <p style={{ ...captionStyle, margin: '4px 0 0' }}>No upload-run provenance recorded for this entity.</p>
+            ) : (
+              ((lineageQ.data ?? []) as Array<{ id: string; upload_run_id: string | null; staging_row_id: string | null }>).map((l) => (
+                <div key={l.id} style={{ ...captionStyle, marginTop: 4 }}>
+                  {l.upload_run_id && runKeyById.get(l.upload_run_id) ? (
+                    <Button appearance="subtle-link" spacing="none" onClick={() => navigate(Routes.strata.run(runKeyById.get(l.upload_run_id!)!))}>
+                      {runKeyById.get(l.upload_run_id)}
+                    </Button>
+                  ) : (
+                    <span style={mono}>{l.upload_run_id ?? '—'}</span>
+                  )}
+                  {l.staging_row_id ? <span style={{ marginLeft: 8 }}>staging row <span style={mono}>{l.staging_row_id.slice(0, 8)}</span></span> : null}
+                </div>
+              ))
+            )}
+          </div>
+          <div style={{ borderTop: `1px solid ${T.border}`, paddingTop: 8 }} data-testid="strata-entity-relations">
+            <div style={{ ...bodyStyle, fontWeight: 600 }}>Relationships</div>
+            {relationsQ.isLoading ? (
+              <span style={captionStyle}>Loading…</span>
+            ) : relationsQ.isError ? (
+              <p style={{ ...captionStyle, color: 'var(--ds-text-danger)', margin: '4px 0 0' }}>
+                {relationsQ.error instanceof Error ? relationsQ.error.message : String(relationsQ.error)}
+              </p>
+            ) : !relationsQ.data ? (
+              <p style={{ ...captionStyle, margin: '4px 0 0' }}>
+                No relationship contract is implemented for this entity type yet — none is invented.
+              </p>
+            ) : relationsQ.data.kind === 'upload_run' ? (
+              <div style={{ ...captionStyle, marginTop: 4, display: 'flex', flexDirection: 'column', gap: 4 }}>
+                <span>
+                  Staging evidence: {relationsQ.data.staging.length} row{relationsQ.data.staging.length === 1 ? '' : 's'}
+                  {' — '}
+                  {(() => {
+                    const staging = relationsQ.data.kind === 'upload_run' ? relationsQ.data.staging : [];
+                    return ['valid', 'rejected', 'reversed', 'pending']
+                      .map((s) => `${staging.filter((r) => r.validation_status === s).length} ${s}`).join(' · ');
+                  })()}
+                </span>
+                {relationsQ.data.actuals.length === 0 ? (
+                  <span>Promoted official facts: none — this run wrote no canonical actuals.</span>
+                ) : relationsQ.data.actuals.map((a) => (
+                  <span key={a.id}>
+                    Official fact {kpiNamesById.get(a.kpi_id) ?? a.kpi_id.slice(0, 8)} = {a.value}
+                    {' · '}status {a.validation_status}
+                    {a.confidence != null ? ` · confidence ${a.confidence}` : ''}
+                    {a.reversed_by_run_id ? ' · REVERSED (superseded)' : ''}
+                    {' · '}
+                    {a.validation_status === 'validated' && !a.reversed_by_run_id
+                      ? 'eligible for official calculations'
+                      : `not eligible (${a.reversed_by_run_id ? 'reversed' : `status ${a.validation_status}`})`}
+                  </span>
+                ))}
+              </div>
+            ) : relationsQ.data.kind === 'kpi_actual' ? (
+              relationsQ.data.actual == null ? (
+                <p style={{ ...captionStyle, margin: '4px 0 0' }}>No canonical actual exists with this id.</p>
+              ) : (
+                <div style={{ ...captionStyle, marginTop: 4, display: 'flex', flexDirection: 'column', gap: 4 }}>
+                  <span>
+                    Value {relationsQ.data.actual.value} · status {relationsQ.data.actual.validation_status}
+                    {relationsQ.data.actual.confidence != null ? ` · confidence ${relationsQ.data.actual.confidence}` : ''}
+                    {relationsQ.data.actual.reversed_by_run_id ? ' · REVERSED (superseded)' : ''}
+                    {' · '}
+                    {relationsQ.data.actual.validation_status === 'validated' && !relationsQ.data.actual.reversed_by_run_id
+                      ? 'eligible for official calculations'
+                      : `not eligible (${relationsQ.data.actual.reversed_by_run_id ? 'reversed' : `status ${relationsQ.data.actual.validation_status}`})`}
+                  </span>
+                  <span>
+                    KPI: {kpiNamesById.get(relationsQ.data.actual.kpi_id) ?? relationsQ.data.actual.kpi_id.slice(0, 8)}
+                    {' · '}source run:{' '}
+                    {(() => {
+                      const runId2 = relationsQ.data.kind === 'kpi_actual' ? relationsQ.data.actual?.upload_run_id ?? null : null;
+                      const key = runId2 ? runKeyById.get(runId2) : null;
+                      return key ? (
+                        <Button appearance="subtle-link" spacing="none" onClick={() => navigate(Routes.strata.run(key))}>{key}</Button>
+                      ) : '—';
+                    })()}
+                  </span>
+                </div>
+              )
+            ) : relationsQ.data.kind === 'kpi' ? (
+              <div style={{ ...captionStyle, marginTop: 4, display: 'flex', flexDirection: 'column', gap: 4 }}>
+                <span>
+                  Canonical actuals: {relationsQ.data.actuals.length}
+                  {relationsQ.data.actuals.length > 0
+                    ? ` (${relationsQ.data.actuals.filter((a) => a.validation_status === 'validated').length} validated)`
+                    : ''}
+                </span>
+                {relationsQ.data.scorecardModels.length === 0 ? (
+                  <span>Scorecard dependents: none — no scorecard model measures this KPI.</span>
+                ) : (
+                  <span data-testid="strata-entity-scorecard-impact">
+                    Scorecard dependents: {formatScorecardDependents(relationsQ.data.scorecardModels).join(', ')}
+                  </span>
+                )}
+                {(relationsQ.data.snapshots ?? []).length === 0 ? (
+                  <span data-testid="strata-entity-snapshot-impact">
+                    Snapshot impact: none — no locked snapshot includes this KPI's scorecard models.
+                  </span>
+                ) : (
+                  <span data-testid="strata-entity-snapshot-impact">
+                    Snapshot impact:{' '}
+                    {(relationsQ.data.snapshots ?? []).map((s, i) => (
+                      <span key={s.id}>
+                        {i > 0 ? ', ' : ''}
+                        <Button appearance="subtle-link" spacing="none" onClick={() => navigate(Routes.strata.review(s.snapshot_key))}>
+                          {s.snapshot_key}
+                        </Button>
+                        {` (${labelize(s.status)})`}
+                      </span>
+                    ))}
+                  </span>
+                )}
+              </div>
+            ) : relationsQ.data.kind === 'data_source' ? (
+              <div style={{ ...captionStyle, marginTop: 4, display: 'flex', flexDirection: 'column', gap: 4 }}>
+                {relationsQ.data.runs.length === 0 ? (
+                  <span>No import runs — this source has never been loaded.</span>
+                ) : relationsQ.data.runs.map((r) => (
+                  <span key={r.id}>
+                    <Button appearance="subtle-link" spacing="none" onClick={() => navigate(Routes.strata.run(r.run_key))}>{r.run_key}</Button>
+                    {' · '}{labelize(r.status)}{r.run_type === 'reversal' ? ' · reversal' : ''}
+                  </span>
+                ))}
+              </div>
+            ) : relationsQ.data.kind === 'benefit' ? (
+              <div style={{ ...captionStyle, marginTop: 4, display: 'flex', flexDirection: 'column', gap: 4 }} data-testid="strata-entity-benefit-relations">
+                <span>
+                  Portfolio:{' '}
+                  {relationsQ.data.portfolio ? (
+                    relationsQ.data.portfolio.slug ? (
+                      <Button appearance="subtle-link" spacing="none" onClick={() => navigate(Routes.strata.portfolioDetail(relationsQ.data!.kind === 'benefit' ? relationsQ.data.portfolio!.slug! : ''))}>
+                        {relationsQ.data.portfolio.name}
+                      </Button>
+                    ) : relationsQ.data.portfolio.name
+                  ) : '—'}
+                </span>
+                <span>
+                  Governed KPI:{' '}
+                  {relationsQ.data.governedKpi ? (
+                    relationsQ.data.governedKpi.slug ? (
+                      <Button appearance="subtle-link" spacing="none" onClick={() => navigate(Routes.strata.kpi(relationsQ.data!.kind === 'benefit' ? relationsQ.data.governedKpi!.slug! : ''))}>
+                        {relationsQ.data.governedKpi.name}
+                      </Button>
+                    ) : relationsQ.data.governedKpi.name
+                  ) : '—'}
+                </span>
+                {relationsQ.data.reviews.length === 0 ? (
+                  <span>Linked reviews: none recorded in the governed review-link store.</span>
+                ) : relationsQ.data.reviews.map((r) => (
+                  <span key={r.id}>Review: {r.review_key ?? ''} {r.name}{r.status ? ` · ${labelize(r.status)}` : ''} · route —</span>
+                ))}
+              </div>
+            ) : relationsQ.data.kind === 'portfolio' ? (
+              <div style={{ ...captionStyle, marginTop: 4, display: 'flex', flexDirection: 'column', gap: 4 }} data-testid="strata-entity-portfolio-relations">
+                {relationsQ.data.benefits.length === 0 ? (
+                  <span>Member benefits: none.</span>
+                ) : relationsQ.data.benefits.map((b) => (
+                  <span key={b.id}>
+                    Benefit:{' '}
+                    {b.slug ? (
+                      <Button appearance="subtle-link" spacing="none" onClick={() => navigate(Routes.strata.benefit(b.slug!))}>{b.name}</Button>
+                    ) : b.name}
+                    {b.lifecycle_stage ? ` · ${labelize(b.lifecycle_stage)}` : ''}
+                  </span>
+                ))}
+                {relationsQ.data.reviews.length === 0 ? (
+                  <span>Linked reviews: none recorded in the governed review-link store.</span>
+                ) : relationsQ.data.reviews.map((r) => (
+                  <span key={r.id}>Review: {r.review_key ?? ''} {r.name}{r.status ? ` · ${labelize(r.status)}` : ''} · route —</span>
+                ))}
+              </div>
+            ) : relationsQ.data.kind === 'review' ? (
+              <div style={{ ...captionStyle, marginTop: 4, display: 'flex', flexDirection: 'column', gap: 4 }} data-testid="strata-entity-review-relations">
+                {relationsQ.data.targets.length === 0 ? (
+                  <span>Linked records: none in the governed review-link store.</span>
+                ) : relationsQ.data.targets.map((t, i) => (
+                  <span key={i}>Linked {labelize(t.target_type)}: <span style={mono}>{t.target_id.slice(0, 8)}</span>{t.note ? ` · ${t.note}` : ''}</span>
+                ))}
+                {relationsQ.data.decisions.length === 0 ? (
+                  <span>Decisions: none recorded against this review's snapshot.</span>
+                ) : relationsQ.data.decisions.map((d) => (
+                  <span key={d.id}>Decision: {d.decision_key ?? ''} {d.title}{d.status ? ` · ${labelize(d.status)}` : ''}</span>
+                ))}
+                {relationsQ.data.snapshotKey ? (
+                  <span>
+                    Snapshot:{' '}
+                    <Button appearance="subtle-link" spacing="none" onClick={() => navigate(Routes.strata.review(relationsQ.data!.kind === 'review' ? relationsQ.data.snapshotKey! : ''))}>
+                      {relationsQ.data.snapshotKey}
+                    </Button>
+                  </span>
+                ) : <span>Snapshot: —</span>}
+              </div>
+            ) : relationsQ.data.kind === 'decision' ? (
+              <div style={{ ...captionStyle, marginTop: 4, display: 'flex', flexDirection: 'column', gap: 4 }} data-testid="strata-entity-decision-relations">
+                {relationsQ.data.actions.length === 0 ? (
+                  <span>Actions: none recorded for this decision.</span>
+                ) : relationsQ.data.actions.map((a) => (
+                  <span key={a.id}>Action: {a.action_key ?? ''} {a.title}{a.status ? ` · ${labelize(a.status)}` : ''}</span>
+                ))}
+                {relationsQ.data.snapshotKey ? (
+                  <span>
+                    Review snapshot:{' '}
+                    <Button appearance="subtle-link" spacing="none" onClick={() => navigate(Routes.strata.review(relationsQ.data!.kind === 'decision' ? relationsQ.data.snapshotKey! : ''))}>
+                      {relationsQ.data.snapshotKey}
+                    </Button>
+                  </span>
+                ) : <span>Review snapshot: —</span>}
+              </div>
+            ) : null}
+            {relationsQ.data && (relationsQ.data.kind === 'upload_run' || relationsQ.data.kind === 'kpi_actual') ? (
+              (relationsQ.data.snapshots ?? []).length === 0 ? (
+                <p style={{ ...captionStyle, margin: '6px 0 0' }} data-testid="strata-entity-snapshot-impact">
+                  Snapshot impact: none — no governed snapshot includes this {relationsQ.data.kind === 'upload_run' ? 'run' : "fact's source run"}.
+                </p>
+              ) : (
+                <p style={{ ...captionStyle, margin: '6px 0 0' }} data-testid="strata-entity-snapshot-impact">
+                  Snapshot impact:{' '}
+                  {(relationsQ.data.snapshots ?? []).map((s, i) => (
+                    <span key={s.id}>
+                      {i > 0 ? ', ' : ''}
+                      <Button appearance="subtle-link" spacing="none" onClick={() => navigate(Routes.strata.review(s.snapshot_key))}>{s.snapshot_key}</Button>
+                      {` (${labelize(s.status)})`}
+                    </span>
+                  ))}
+                </p>
+              )
+            ) : null}
+            {!relationsQ.data || ['data_source', 'benefit', 'portfolio', 'review', 'decision'].includes(relationsQ.data.kind) ? (
+              <p style={{ ...captionStyle, margin: '6px 0 0' }}>
+                Snapshot forward impact is not tracked for this entity type.
+              </p>
+            ) : null}
+          </div>
+        </div>
+      )}
+    </StrataPanel>
+  );
+}
+
+// ── Source detail (DL-DEF-001) ───────────────────────────────────────────────
+/**
+ * Registered-source drill-down: identity/owner/status, governed contract version,
+ * freshness + last success/failure, import-run history, append-only mapping
+ * memory, and downstream KPI dependents with owning-module navigation.
+ * Zero-assumption: anything not recorded renders '—' / an explicit empty state.
+ */
+function SourceDetailSection({ sourceSlug }: { sourceSlug: string }) {
+  const navigate = useNavigate();
+  const sourcesQ = useDataSources();
+  const runsQ = useUploadRuns();
+  const kpisQ = useKpis();
+  const profilesQ = useProfileNames();
+  const source = (sourcesQ.data ?? []).find((s) => s.slug === sourceSlug) ?? null;
+  const summary = useMemo(
+    () => buildSourceRows(sourcesQ.data ?? [], runsQ.data ?? [], kpisQ.data ?? [])
+      .find((r) => r.source.slug === sourceSlug) ?? null,
+    [sourcesQ.data, runsQ.data, kpisQ.data, sourceSlug],
+  );
+  const sourceRuns = useMemo(
+    () => (runsQ.data ?? []).filter((r) => r.data_source_id === source?.id),
+    [runsQ.data, source?.id],
+  );
+  const lastSuccess = sourceRuns.find((r) => r.status === 'completed') ?? null;
+  const lastFailure = sourceRuns.find((r) => r.status === 'failed') ?? null;
+  const mappingQ = useQuery({
+    queryKey: ['strata', 'mapping-memory', source?.id],
+    queryFn: () => lineageApi.mappingMemoryForSource(source!.id),
+    enabled: !!source,
+    staleTime: 30_000,
+  });
+  const dependents = useMemo(
+    () => (kpisQ.data ?? []).filter((k) => k.data_source_id === source?.id),
+    [kpisQ.data, source?.id],
+  );
+  const nameOf = (id: string | null) => (id ? profilesQ.data?.get(id)?.name ?? null : null);
+
+  if (sourcesQ.isLoading || runsQ.isLoading) {
+    return <div style={{ display: 'flex', justifyContent: 'center', padding: 32 }}><Spinner size="large" /></div>;
+  }
+  if (!source) {
+    return (
+      <EmptyState
+        header="Source not found"
+        description={`No registered data source matches "${sourceSlug}".`}
+        primaryAction={<Button onClick={() => navigate(Routes.strata.data())}>Back to pipeline</Button>}
+      />
+    );
+  }
+
+  const runColumns: Column<StrataUploadRun>[] = [
+    {
+      id: 'run', label: 'Run', width: 16,
+      cell: ({ row }) => <span style={{ ...captionStyle, color: T.subtle, fontWeight: 600 }}>{row.run_key}</span>,
+    },
+    {
+      id: 'started', label: 'Started', width: 16,
+      cell: ({ row }) => <span style={{ ...captionStyle, fontVariantNumeric: 'tabular-nums' }}>{fmtDateTime(row.started_at)}</span>,
+    },
+    {
+      id: 'actor', label: 'Actor', width: 16,
+      cell: ({ row }) => <span style={captionStyle}>{nameOf(row.initiated_by) ?? row.initiated_by ?? '—'}</span>,
+    },
+    {
+      id: 'counts', label: 'Rows', width: 14,
+      cell: ({ row }) => <span style={{ ...captionStyle, fontVariantNumeric: 'tabular-nums' }}>{row.row_count_valid} valid · {row.row_count_rejected} rejected</span>,
+    },
+    {
+      id: 'status', label: 'Status', width: 12,
+      cell: ({ row }) => <StatusLozenge status={row.status} label={labelize(row.status)} appearance={runStatusAppearance(row.status)} />,
+    },
+  ];
+
+  const grid: React.CSSProperties = { display: 'grid', gridTemplateColumns: '130px minmax(0,1fr)', gap: 8, ...captionStyle };
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }} data-testid="strata-source-detail">
+      <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', alignItems: 'stretch' }}>
+        <div style={{ flex: '2 1 420px', minWidth: 0, display: 'flex', flexDirection: 'column', gap: 16 }}>
+          <StrataPanel title="Source identity" icon={<Database size={16} />} testId="strata-source-identity">
+            <div style={grid}>
+              <span style={{ color: T.subtlest }}>Name</span><span style={{ ...bodyStyle, fontWeight: 600 }}>{source.name}</span>
+              <span style={{ color: T.subtlest }}>Type</span><span style={{ color: T.text }}>{labelize(source.system_type)}</span>
+              <span style={{ color: T.subtlest }}>Owner</span><span style={{ color: T.text }}>{nameOf(source.owner_id) ?? '—'}</span>
+              <span style={{ color: T.subtlest }}>Status</span>
+              <span>{summary ? <StatusLozenge status={summary.statusLabel.toLowerCase()} label={summary.statusLabel} appearance={summary.statusAppearance} /> : <StatusLozenge status={source.status} label={labelize(source.status)} appearance="default" />}</span>
+              <span style={{ color: T.subtlest }}>Contract</span>
+              <span style={{ color: T.text }}>{summary?.contractVersion != null ? `Template v${summary.contractVersion} (last run)` : '— no run has recorded a template version'}</span>
+            </div>
+          </StrataPanel>
+          <StrataPanel title="Freshness" icon={<RefreshCw size={16} />} testId="strata-source-freshness">
+            <div style={grid}>
+              <span style={{ color: T.subtlest }}>Refresh rule</span><span style={{ color: T.text }}>{source.refresh_cadence ?? '— not recorded'}</span>
+              <span style={{ color: T.subtlest }}>Last activity</span>
+              <span style={{ color: T.text }}>{summary?.lastRunAt ? `${fmtDateTime(summary.lastRunAt)}${summary.freshnessDays != null ? ` · ${summary.freshnessDays}d ago` : ''}` : 'never run'}</span>
+              <span style={{ color: T.subtlest }}>Last success</span>
+              <span style={{ color: T.text }}>{lastSuccess ? `${lastSuccess.run_key} · ${fmtDateTime(lastSuccess.started_at)}` : '—'}</span>
+              <span style={{ color: T.subtlest }}>Last failure</span>
+              <span style={{ color: T.text }}>{lastFailure ? `${lastFailure.run_key} · ${fmtDateTime(lastFailure.started_at)}${lastFailure.error_summary ? ` · ${lastFailure.error_summary}` : ''}` : '—'}</span>
+              {summary?.statusLabel === 'Stale' ? (
+                <>
+                  <span style={{ color: T.subtlest }}>Stale reason</span>
+                  <span style={{ color: 'var(--ds-text-warning)' }}>No successful load within the expected cadence{source.refresh_cadence ? ` (${source.refresh_cadence})` : ''}.</span>
+                </>
+              ) : null}
+            </div>
+          </StrataPanel>
+          <StrataPanel title="Import runs" icon={<Upload size={16} />} count={sourceRuns.length} noPadding testId="strata-source-runs">
+            {sourceRuns.length === 0 ? (
+              <div style={{ padding: 16 }}>
+                <EmptyState size="compact" header="No import runs" description="This source has never been loaded." />
+              </div>
+            ) : (
+              <JiraTable<StrataUploadRun>
+                columns={runColumns}
+                data={sourceRuns}
+                getRowId={(r) => r.id}
+                showRowCount={false}
+                ariaLabel={`Import runs for ${source.name}`}
+                onRowClick={(r) => navigate(Routes.strata.run(r.run_key))}
+              />
+            )}
+          </StrataPanel>
+        </div>
+        <aside style={{ flex: '1 1 300px', minWidth: 0, display: 'flex', flexDirection: 'column', gap: 16 }}>
+          <StrataPanel title="Mapping memory" icon={<Network size={16} />} count={(mappingQ.data ?? []).length} testId="strata-source-mapping-memory">
+            {(mappingQ.data ?? []).length === 0 ? (
+              <p style={{ ...captionStyle, margin: 0 }}>No column-mapping confirmations recorded for this source.</p>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                {(mappingQ.data ?? []).map((m) => (
+                  <div key={m.id} style={{ minWidth: 0 }}>
+                    <span style={{ ...bodyStyle, display: 'block' }}><span style={mono}>{m.source_key}</span> → <span style={mono}>{m.target_column}</span></span>
+                    <span style={captionStyle}>{nameOf(m.confirmed_by) ?? '—'} · {fmtDateTime(m.confirmed_at)}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </StrataPanel>
+          <StrataPanel title="Downstream KPI dependents" icon={<Network size={16} />} count={dependents.length} testId="strata-source-dependents">
+            {dependents.length === 0 ? (
+              <p style={{ ...captionStyle, margin: 0 }}>No KPIs are backward-linked to this source. Scorecard/snapshot forward impact is not tracked.</p>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                {dependents.map((k) => (
+                  k.slug ? (
+                    <Button
+                      key={k.id}
+                      appearance="subtle-link"
+                      spacing="none"
+                      onClick={() => navigate(Routes.strata.kpi(k.slug!))}
+                      testId={`strata-source-dependent-${k.slug}`}
+                    >
+                      {k.name}
+                    </Button>
+                  ) : (
+                    <span key={k.id} style={bodyStyle}>{k.name}</span>
+                  )
+                ))}
+                <span style={{ ...captionStyle, marginTop: 4 }}>Scorecard/snapshot forward impact is not tracked.</span>
+              </div>
+            )}
+          </StrataPanel>
+        </aside>
+      </div>
+    </div>
+  );
+}
+
 // ── Page ─────────────────────────────────────────────────────────────────────
 export default function StrataDataPipelinePage() {
-  const { runKey } = useParams<{ runKey?: string }>();
+  const { runKey, sourceSlug } = useParams<{ runKey?: string; sourceSlug?: string }>();
   const navigate = useNavigate();
   // Lifted to page level so the pipeline stepper reflects the viewed run's state.
   const detail = useRunDetail(runKey);
 
   return (
     <StrataPageShell
-      trail={runKey ? [
+      trail={runKey || sourceSlug ? [
         { text: 'Data pipeline', href: Routes.strata.data() },
-        { text: runKey },
+        { text: runKey ?? sourceSlug ?? '' },
       ] : undefined}
-      docTitle={runKey ?? undefined}
+      docTitle={runKey ?? sourceSlug ?? undefined}
       headerActions={
         <Button
           appearance="primary"
@@ -1293,11 +2275,14 @@ export default function StrataDataPipelinePage() {
       <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
         {runKey ? (
           <RunDetailSection runKey={runKey} detail={detail} />
+        ) : sourceSlug ? (
+          <SourceDetailSection sourceSlug={sourceSlug} />
         ) : (
           <>
             <DataLandingJudgment />
             <SourcesPanel />
             <RunsPanel />
+            <EntityAuditPanel />
           </>
         )}
       </div>

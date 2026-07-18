@@ -19,6 +19,7 @@ import { workItemStarType } from '@/lib/starType';
 import type { StarredItemType } from '@/hooks/home/useStarredItems';
 import { FilterDropdown, FilterOption } from './FilterDropdown';
 import { catalystToast } from '@/lib/catalystToast';
+import { lineageApi } from '@/modules/strata/domain';
 import type { SearchResult } from '@/types/global-search';
 
 // ── Data hooks ────────────────────────────────────────────────────────────────
@@ -207,8 +208,40 @@ export function GlobalSearchPanel({ query, onQueryChange, onClose }: GlobalSearc
   const isSearching = debouncedQuery.length >= 2;
   const itemsToShow: SearchResult[] = isSearching ? searchResults : recents.slice(0, 7);
 
+  // DL-DEF-002 D: governed STRATA entities are discoverable from the global
+  // header search. Exact identity (table + id) rides in URL state to the
+  // Data & Lineage entity panel — no guessed match, no silent redirect.
+  const { data: strataResults = [] } = useQuery({
+    queryKey: ['global-search', 'strata-entities', debouncedQuery.toLowerCase()],
+    queryFn: () => lineageApi.strataGlobalSearch(debouncedQuery),
+    enabled: isSearching,
+    staleTime: 30_000,
+  });
+
   const rows: Row[] = useMemo(() => {
     const out: Row[] = [];
+
+    if (isSearching) {
+      strataResults.forEach((r) => {
+        out.push({
+          kind: 'suggestion',
+          id: `strata-${r.table}-${r.id}`,
+          label: <><Lozenge appearance="inprogress">STRATA</Lozenge> {r.typeLabel}: <strong>{r.display}</strong> — open lineage</>,
+          activate: () => {
+            navigate(`/strata/data?etype=${encodeURIComponent(r.table)}&eid=${encodeURIComponent(r.id)}`);
+            onClose();
+          },
+        });
+      });
+      if (strataResults.length > 0) {
+        out.push({
+          kind: 'suggestion',
+          id: 'strata-more',
+          label: <>Search <strong>Data &amp; Lineage</strong> for "{debouncedQuery}"</>,
+          activate: () => { navigate('/strata/data'); onClose(); },
+        });
+      }
+    }
 
     if (!isSearching) {
       out.push({
@@ -251,7 +284,7 @@ export function GlobalSearchPanel({ query, onQueryChange, onClose }: GlobalSearc
     });
 
     return out;
-  }, [isSearching, itemsToShow, assigneeIds, memberOptions, navigate, onClose]);
+  }, [isSearching, itemsToShow, assigneeIds, memberOptions, navigate, onClose, strataResults, debouncedQuery]);
 
   useEffect(() => { setActiveIndex(0); }, [rows.length]);
 

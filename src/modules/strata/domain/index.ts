@@ -1323,12 +1323,195 @@ export const lineageApi = {
     run(typedQuery('strata_upload_runs').select('*').order('started_at', { ascending: false })),
   runByKey: (runKey: string): Promise<StrataUploadRun | null> =>
     run(typedQuery('strata_upload_runs').select('*').eq('run_key', runKey).maybeSingle()),
+  /**
+   * DL-DEF-005: resolve one run id to its display key. Used by run-detail
+   * reversal linkage so resolution never depends on the full-list query
+   * (which can be empty, erroring or scoped differently at render time).
+   */
+  runKeyForId: (id: string): Promise<{ id: string; run_key: string } | null> =>
+    run(typedQuery('strata_upload_runs').select('id, run_key').eq('id', id).maybeSingle()),
   stagingRows: (uploadRunId: string): Promise<StrataStagingRow[]> =>
     run(typedQuery('strata_staging_rows').select('*').eq('upload_run_id', uploadRunId).order('row_number')),
   validationResults: (uploadRunId: string): Promise<StrataValidationResult[]> =>
     run(typedQuery('strata_validation_results').select('*').eq('upload_run_id', uploadRunId)),
   lineageForEntity: (entityTable: string, entityId: string) =>
     run(typedQuery('strata_lineage_records').select('*').eq('entity_table', entityTable).eq('entity_id', entityId)),
+  /**
+   * DL-DEF-002 foundation: append-only audit events for one entity, via the
+   * shared RLS-gated strata_entity_audit RPC (reads the EXISTING
+   * strata_audit_events store — no parallel audit system).
+   */
+  entityAudit: (entityTable: string, entityId: string): Promise<Array<{
+    id: string; entity_table: string; entity_id: string; action: string;
+    actor_id: string | null; before: unknown; after: unknown; note: string | null;
+    created_at: string;
+  }>> =>
+    run(typedRpc('strata_entity_audit', { p_entity_table: entityTable, p_entity_id: entityId })),
+  /**
+   * DL-DEF-002: governed entity discovery by human-readable name/slug/key.
+   * Case-insensitive CONTAINS match to surface candidates; the caller NEVER
+   * auto-selects — one-or-many candidates are shown for an explicit pick, so a
+   * fuzzy match can never silently choose the wrong entity. RLS applies.
+   */
+  discoverEntities: (table: string, matchCols: string[], selectCols: string, term: string): Promise<Array<Record<string, unknown>>> => {
+    const t = term.trim().replace(/[%,()*]/g, '');
+    if (!t) return Promise.resolve([]);
+    const orExpr = matchCols.map((c) => `${c}.ilike.*${t}*`).join(',');
+    return run((typedQuery as unknown as (tbl: string) => ReturnType<typeof typedQuery>)(table)
+      .select(selectCols)
+      .or(orExpr)
+      .limit(11));
+  },
+  /**
+   * DL-DEF-002 D: bounded governed-entity search for the GLOBAL header search.
+   * Queries a curated set of governed tables in parallel (contains-match on
+   * their real human-readable columns, ≤3 hits each) and returns typed results
+   * carrying the exact table + id — the caller navigates to the Data & Lineage
+   * panel with that identity in URL state; nothing is guessed.
+   */
+  strataGlobalSearch: async (term: string): Promise<Array<{ table: string; typeLabel: string; id: string; display: string }>> => {
+    const types: Array<{ table: string; typeLabel: string; cols: string[]; sel: string; disp: (r: Record<string, unknown>) => string }> = [
+      { table: 'strata_strategy_elements', typeLabel: 'Strategy element', cols: ['name', 'slug'], sel: 'id, name', disp: (r) => String(r.name) },
+      { table: 'strata_kpis', typeLabel: 'KPI', cols: ['name', 'slug'], sel: 'id, name', disp: (r) => String(r.name) },
+      { table: 'strata_benefits', typeLabel: 'Benefit', cols: ['name', 'slug'], sel: 'id, name', disp: (r) => String(r.name) },
+      { table: 'strata_portfolios', typeLabel: 'Portfolio', cols: ['name', 'slug'], sel: 'id, name', disp: (r) => String(r.name) },
+      { table: 'strata_data_sources', typeLabel: 'Data source', cols: ['name', 'slug'], sel: 'id, name', disp: (r) => String(r.name) },
+      { table: 'strata_upload_runs', typeLabel: 'Upload run', cols: ['run_key'], sel: 'id, run_key', disp: (r) => String(r.run_key) },
+    ];
+    const settled = await Promise.allSettled(types.map((t) =>
+      lineageApi.discoverEntities(t.table, t.cols, t.sel, term).then((rows) =>
+        rows.slice(0, 3).map((r) => ({ table: t.table, typeLabel: t.typeLabel, id: String(r.id), display: t.disp(r) })))));
+    return settled.flatMap((s) => (s.status === 'fulfilled' ? s.value : []));
+  },
+  /**
+   * DL-DEF-002: real upstream/downstream relationships for the Module-7 core
+   * chain, read from the EXISTING governed stores (staging rows, canonical
+   * actuals, scorecard model measures, runs). Types outside the chain return
+   * null and the panel renders an honest empty state — nothing is invented.
+   */
+  relationsForEntity: async (table: string, id: string): Promise<
+    | { kind: 'upload_run'; staging: Array<{ validation_status: string | null }>; actuals: Array<{ id: string; kpi_id: string; period_id: string; value: number; validation_status: string; confidence: number | null; reversed_by_run_id: string | null }>; snapshots: Array<{ id: string; snapshot_key: string; name: string | null; status: string }> }
+    | { kind: 'kpi_actual'; actual: { id: string; kpi_id: string; period_id: string; value: number; validation_status: string; confidence: number | null; reversed_by_run_id: string | null; upload_run_id: string | null; staging_row_id: string | null } | null; snapshots: Array<{ id: string; snapshot_key: string; name: string | null; status: string }> }
+    | { kind: 'kpi'; actuals: Array<{ id: string; validation_status: string }>; scorecardModels: Array<{ id: string; name: string; slug: string | null; version: number | null; measureCount: number }>; snapshots: Array<{ id: string; snapshot_key: string; name: string | null; status: string }> }
+    | { kind: 'data_source'; runs: Array<{ id: string; run_key: string; status: string; run_type: string | null }> }
+    | { kind: 'benefit'; reviews: Array<{ id: string; review_key: string | null; name: string; slug: string | null; status: string | null; snapshot_id: string | null }>; portfolio: { id: string; name: string; slug: string | null } | null; governedKpi: { id: string; name: string; slug: string | null } | null }
+    | { kind: 'portfolio'; reviews: Array<{ id: string; review_key: string | null; name: string; slug: string | null; status: string | null; snapshot_id: string | null }>; benefits: Array<{ id: string; name: string; slug: string | null; lifecycle_stage: string | null }> }
+    | { kind: 'review'; targets: Array<{ target_type: string; target_id: string; note: string | null }>; decisions: Array<{ id: string; decision_key: string | null; title: string; status: string | null }>; snapshotKey: string | null }
+    | { kind: 'decision'; actions: Array<{ id: string; action_key: string | null; title: string; status: string | null }>; snapshotKey: string | null }
+    | null
+  > => {
+    const q = (typedQuery as unknown as (tbl: string) => ReturnType<typeof typedQuery>);
+    /** snapshots holding a given upload run in their governed data_run_ids array. */
+    const snapshotsForRuns = (runIds: string[]) => runIds.length === 0 ? Promise.resolve([]) :
+      run(q('strata_snapshots').select('id, snapshot_key, name, status').overlaps('data_run_ids', runIds));
+    /** reviews linked to a target via the governed strata_review_links store. */
+    const reviewsForTarget = async (targetType: string, targetId: string) => {
+      const links = await run(q('strata_review_links').select('review_id').eq('target_type', targetType).eq('target_id', targetId));
+      const reviewIds = [...new Set((links as Array<{ review_id: string }>).map((l) => l.review_id))];
+      return reviewIds.length === 0 ? [] :
+        run(q('strata_reviews').select('id, review_key, name, slug, status, snapshot_id').in('id', reviewIds));
+    };
+    if (table === 'strata_upload_runs') {
+      const [staging, actuals, snapshots] = await Promise.all([
+        run(q('strata_staging_rows').select('validation_status').eq('upload_run_id', id)),
+        run(q('strata_kpi_actuals').select('id, kpi_id, period_id, value, validation_status, confidence, reversed_by_run_id').eq('upload_run_id', id)),
+        snapshotsForRuns([id]),
+      ]);
+      return { kind: 'upload_run', staging, actuals, snapshots };
+    }
+    if (table === 'strata_kpi_actuals') {
+      const actual = await run(q('strata_kpi_actuals')
+        .select('id, kpi_id, period_id, value, validation_status, confidence, reversed_by_run_id, upload_run_id, staging_row_id')
+        .eq('id', id).maybeSingle());
+      const snapshots = actual?.upload_run_id ? await snapshotsForRuns([actual.upload_run_id]) : [];
+      return { kind: 'kpi_actual', actual, snapshots };
+    }
+    if (table === 'strata_kpis') {
+      const [actuals, measures] = await Promise.all([
+        run(q('strata_kpi_actuals').select('id, validation_status').eq('kpi_id', id)),
+        run(q('strata_scorecard_model_measures').select('model_id').eq('kpi_id', id)),
+      ]);
+      const measureCountByModel = new Map<string, number>();
+      for (const m of measures as Array<{ model_id: string }>) {
+        measureCountByModel.set(m.model_id, (measureCountByModel.get(m.model_id) ?? 0) + 1);
+      }
+      const modelIds = [...measureCountByModel.keys()];
+      const models = modelIds.length
+        ? await run(q('strata_scorecard_models').select('id, name, slug, version').in('id', modelIds))
+        : [];
+      const scorecardModels = (models as Array<{ id: string; name: string; slug: string | null; version: number | null }>)
+        .map((m) => ({ ...m, measureCount: measureCountByModel.get(m.id) ?? 0 }));
+      // Snapshot forward impact — provable chain: model → scorecard instance → locked snapshot.
+      const instances = modelIds.length
+        ? await run(q('strata_scorecard_instances').select('locked_snapshot_id').in('model_id', modelIds).not('locked_snapshot_id', 'is', null))
+        : [];
+      const snapIds = [...new Set((instances as Array<{ locked_snapshot_id: string }>).map((i) => i.locked_snapshot_id))];
+      const snapshots = snapIds.length
+        ? await run(q('strata_snapshots').select('id, snapshot_key, name, status').in('id', snapIds))
+        : [];
+      return { kind: 'kpi', actuals, scorecardModels, snapshots };
+    }
+    if (table === 'strata_data_sources') {
+      const runs = await run(q('strata_upload_runs').select('id, run_key, status, run_type').eq('data_source_id', id).order('started_at', { ascending: false }));
+      return { kind: 'data_source', runs };
+    }
+    if (table === 'strata_benefits') {
+      const [reviews, benefit] = await Promise.all([
+        reviewsForTarget('benefit', id),
+        run(q('strata_benefits').select('portfolio_id, governed_kpi_id').eq('id', id).maybeSingle()),
+      ]);
+      const [portfolio, governedKpi] = await Promise.all([
+        benefit?.portfolio_id ? run(q('strata_portfolios').select('id, name, slug').eq('id', benefit.portfolio_id).maybeSingle()) : Promise.resolve(null),
+        benefit?.governed_kpi_id ? run(q('strata_kpis').select('id, name, slug').eq('id', benefit.governed_kpi_id).maybeSingle()) : Promise.resolve(null),
+      ]);
+      return { kind: 'benefit', reviews, portfolio, governedKpi };
+    }
+    if (table === 'strata_portfolios') {
+      const [reviews, benefits] = await Promise.all([
+        reviewsForTarget('portfolio', id),
+        run(q('strata_benefits').select('id, name, slug, lifecycle_stage').eq('portfolio_id', id)),
+      ]);
+      return { kind: 'portfolio', reviews, benefits };
+    }
+    if (table === 'strata_reviews') {
+      const review = await run(q('strata_reviews').select('snapshot_id').eq('id', id).maybeSingle());
+      const [targets, decisions, snap] = await Promise.all([
+        run(q('strata_review_links').select('target_type, target_id, note').eq('review_id', id)),
+        review?.snapshot_id
+          ? run(q('strata_decisions').select('id, decision_key, title, status').eq('snapshot_id', review.snapshot_id))
+          : Promise.resolve([]),
+        review?.snapshot_id
+          ? run(q('strata_snapshots').select('snapshot_key').eq('id', review.snapshot_id).maybeSingle())
+          : Promise.resolve(null),
+      ]);
+      return { kind: 'review', targets, decisions, snapshotKey: snap?.snapshot_key ?? null };
+    }
+    if (table === 'strata_decisions') {
+      const decision = await run(q('strata_decisions').select('snapshot_id').eq('id', id).maybeSingle());
+      const [actions, snap] = await Promise.all([
+        run(q('strata_actions').select('id, action_key, title, status').eq('decision_id', id)),
+        decision?.snapshot_id
+          ? run(q('strata_snapshots').select('snapshot_key').eq('id', decision.snapshot_id).maybeSingle())
+          : Promise.resolve(null),
+      ]);
+      return { kind: 'decision', actions, snapshotKey: snap?.snapshot_key ?? null };
+    }
+    return null;
+  },
+  /**
+   * DL-DEF-001 (source detail): the append-only mapping-memory ledger for one
+   * registered source. Read-only evidence — rows are never updated or deleted;
+   * RLS (current_user_is_approved) governs visibility.
+   */
+  mappingMemoryForSource: (dataSourceId: string): Promise<Array<{
+    id: string; data_source_id: string; template_id: string; source_key: string;
+    target_column: string; confirmed_by: string | null; confirmed_at: string;
+    upload_run_id: string | null;
+  }>> =>
+    run(typedQuery('strata_mapping_memory')
+      .select('id, data_source_id, template_id, source_key, target_column, confirmed_by, confirmed_at, upload_run_id')
+      .eq('data_source_id', dataSourceId)
+      .order('confirmed_at', { ascending: false })),
   /**
    * Governed ingest adapter (upload wizard). There is NO strata_ingest_* RPC
    * yet — RLS permits the run initiator (data_steward / kpi_owner /

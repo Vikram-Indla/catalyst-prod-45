@@ -286,6 +286,8 @@ export const strataRoutes = {
   upload: () => '/strata/data/upload',
   // runKey is the display key e.g. "RUN-1001" — no UUID in URL
   run: (runKey: string) => `/strata/data/runs/${runKey}`,
+  // DL-DEF-001: registered-source detail — slug per the slug contract, no UUID
+  source: (sourceSlug: string) => `/strata/data/sources/${sourceSlug}`,
   reviews: () => '/strata/reviews',
   // snapshotKey is the display key e.g. "SNAP-1001"
   review: (snapshotKey: string) => `/strata/reviews/${snapshotKey}`,

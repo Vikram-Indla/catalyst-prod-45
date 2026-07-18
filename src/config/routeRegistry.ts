@@ -27,6 +27,7 @@ export const ROUTE_REGISTRY: Record<string, RouteConfig> = {
   '/strata/portfolio': { section: 'Value Management Office', pageTitle: 'Value Management Office' },
   '/strata/data': { section: 'Governance', pageTitle: 'Data Pipeline & Lineage' },
   '/strata/data/runs/:runKey': { section: 'Governance', pageTitle: 'Upload Run' },
+  '/strata/data/sources/:sourceSlug': { section: 'Governance', pageTitle: 'Data Source' },
   '/strata/reviews': { section: 'Governance', pageTitle: 'Reviews & Decisions' },
   '/strata/reviews/:snapshotKey': { section: 'Governance', pageTitle: 'Snapshot' },
   '/strata/admin': { section: '', pageTitle: 'STRATA Configuration' },
