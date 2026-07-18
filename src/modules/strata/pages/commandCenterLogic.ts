@@ -258,6 +258,101 @@ export function scopeAiOutputs<T extends { snapshot_id: string | null }>(
   return out;
 }
 
+// ── CC-DEF-005 (Cycle 4): relationship-based scoping of the attention feed ───
+// A row is admitted to the selected-cycle population ONLY via an explicit,
+// auditable relationship (element.cycle, kpi→element link, project card theme/
+// objective element, initiative.cycle_id, decision snapshot/element, action→
+// decision). Entities whose relationships point at ANOTHER cycle are excluded
+// outright — never relabelled Global. Only entities with NO cycle relationship
+// by design (portfolio-plane, data-plane, unlinked governance) are Global.
+
+export type AttentionScopeClass = 'scoped' | 'global' | 'excluded';
+
+export interface AttentionRelationships {
+  activeCycleId: string | null;
+  /** Strategy elements belonging to the ACTIVE cycle (the hook is cycle-keyed). */
+  activeCycleElementIds: ReadonlySet<string>;
+  /** kpi id → element ids it is explicitly linked to (strata_element_kpis). */
+  kpiElementIds: ReadonlyMap<string, readonly string[]>;
+  /** project card id → its explicit element relationships (theme_id, objective_element_id). */
+  projectCardElementIds: ReadonlyMap<string, readonly string[]>;
+  /** initiative id → cycle_id (null = deliberately cycle-less). */
+  initiativeCycleId: ReadonlyMap<string, string | null>;
+  decisionById: ReadonlyMap<string, { snapshot_id: string | null; element_id: string | null }>;
+  /** action id → owning decision id. */
+  actionDecisionId: ReadonlyMap<string, string | null>;
+  snapshotCycleId: ReadonlyMap<string, string | null>;
+}
+
+/** Classify one entity against the active cycle through its explicit relationships. */
+export function classifyAttentionEntity(
+  entityType: string,
+  entityId: string,
+  rel: AttentionRelationships,
+): AttentionScopeClass {
+  const inActive = (elementIds: readonly string[]): AttentionScopeClass => {
+    if (elementIds.length === 0) return 'global';
+    return elementIds.some((e) => rel.activeCycleElementIds.has(e)) ? 'scoped' : 'excluded';
+  };
+  const classifyDecision = (decisionId: string): AttentionScopeClass => {
+    const d = rel.decisionById.get(decisionId);
+    if (!d) return 'global'; // unresolvable client-side — keep visible, never in the scoped total
+    if (d.snapshot_id != null) {
+      const cyc = rel.snapshotCycleId.get(d.snapshot_id);
+      if (cyc == null) return 'global';
+      return cyc === rel.activeCycleId ? 'scoped' : 'excluded';
+    }
+    if (d.element_id != null) return inActive([d.element_id]);
+    return 'global';
+  };
+  switch (entityType) {
+    case 'element':
+      // Elements are cycle-bound by definition: not in this cycle ⇒ another cycle's.
+      return rel.activeCycleElementIds.has(entityId) ? 'scoped' : 'excluded';
+    case 'kpi':
+      return inActive(rel.kpiElementIds.get(entityId) ?? []);
+    case 'project_card':
+      return inActive(rel.projectCardElementIds.get(entityId) ?? []);
+    case 'initiative': {
+      if (!rel.initiativeCycleId.has(entityId)) return 'global';
+      const cyc = rel.initiativeCycleId.get(entityId);
+      if (cyc == null) return 'global';
+      return cyc === rel.activeCycleId ? 'scoped' : 'excluded';
+    }
+    case 'decision':
+      return classifyDecision(entityId);
+    case 'action': {
+      const decisionId = rel.actionDecisionId.get(entityId);
+      return decisionId ? classifyDecision(decisionId) : 'global';
+    }
+    // Deliberately cycle-less planes: portfolio/value and data ingestion.
+    case 'benefit':
+    case 'portfolio':
+    case 'upload_run':
+      return 'global';
+    default:
+      return 'global'; // unknown types stay visible in the Global section — never silently dropped
+  }
+}
+
+export interface PartitionedAttention<T> {
+  /** Rows admitted to the selected cycle via an explicit relationship — the ONLY rows in the headline total. */
+  scoped: T[];
+  /** Rows with no cycle/period relationship by design — separate labelled section, excluded from the total. */
+  global: T[];
+  /** Rows whose relationships point at a different cycle — not rendered in this context. */
+  excluded: T[];
+}
+
+export function partitionAttentionRows<T extends { entity_type: string; entity_id: string }>(
+  rows: T[],
+  rel: AttentionRelationships,
+): PartitionedAttention<T> {
+  const out: PartitionedAttention<T> = { scoped: [], global: [], excluded: [] };
+  for (const r of rows) out[classifyAttentionEntity(r.entity_type, r.entity_id, rel)].push(r);
+  return out;
+}
+
 // ── CC-DEF-003: exact-record drill routes ────────────────────────────────────
 
 export interface AttentionRouteLookups {

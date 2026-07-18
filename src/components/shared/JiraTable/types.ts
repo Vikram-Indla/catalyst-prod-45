@@ -128,6 +128,9 @@ export interface JiraTableProps<TRow> {
   getRowId: (row: TRow) => string;
   /** Click anywhere on a row that isn't an editor → opens detail. */
   onRowClick?: (row: TRow) => void;
+  /** Accessible name per row. With onRowClick, rows become Tab-focusable and
+   *  Enter/Space activate the same path as mouse click (CC-DEF-003 a11y). */
+  rowAriaLabel?: (row: TRow) => string;
   /**
    * Indent depth for hierarchy rendering. Returns the depth (0 = top-level,
    * 1 = first child, etc.). The first visible cell gets `depth * 16px` of

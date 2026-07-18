@@ -17,7 +17,7 @@
  * ADS tokens only. No silent failures: every failing query surfaces.
  */
 import React, { useEffect, useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
   Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip as RechartsTooltip, XAxis, YAxis,
 } from 'recharts';
@@ -51,12 +51,15 @@ import {
   useProjectCards,
   useActions,
   useStrategyElements,
+  useElementKpis,
+  useInitiatives,
 } from '@/modules/strata/hooks/useStrata';
 import {
   attentionRoute,
   computeScoreDelta,
   dedupeAttentionRows,
   officialTrendSeries,
+  partitionAttentionRows,
   scopeAiOutputs,
   scopeOpenDecisions,
   selectDragPerspective,
@@ -263,6 +266,8 @@ interface AttentionRow {
   due: string | null;
   /** Owner of the item (null where no single personal owner) — drives the "Mine" filter. */
   ownerId: string | null;
+  /** CC-DEF-003: full accessible name — type, item, detail, due state, destination. */
+  ariaLabel: string;
   nav?: () => void;
 }
 
@@ -320,7 +325,41 @@ export default function StrataCommandCenterPage() {
     [instancesQ.data, activePeriod],
   );
   const calcQ = useScorecardCalc(instance);
-  const calc: ScorecardCalcResult | null = calcQ.data ?? null;
+
+  // ── CC-DEF-001 closure-proof fixture (DEV-only, non-production) ───────────
+  // /strata?ccFixture=all100 | ?ccFixture=degraded feeds a deterministic
+  // synthetic calc through the REAL rendering + derivation path (judgment band,
+  // selectDragPerspective, perspective health). Never active in production
+  // builds; reads no live records and writes nothing. A visible banner labels it.
+  const [searchParams] = useSearchParams();
+  const fixtureKey = import.meta.env.DEV ? searchParams.get('ccFixture') : null;
+  const fixtureCalc = useMemo((): ScorecardCalcResult | null => {
+    if (!fixtureKey) return null;
+    const persp = (id: string, name: string, score: number) => ({
+      perspective_id: `fixture-${id}`, name, weight: 25, score, has_data: true,
+      status_key: score >= 85 ? 'on_track' : 'off_track',
+    });
+    const base = {
+      instance_id: 'fixture-instance', period_id: activePeriod?.id ?? null,
+      rollup_method: 'weighted_average', model_id: 'fixture-model', model_version: 1,
+      lines: [], calculated_at: '2026-07-18T00:00:00Z', has_data: true,
+    };
+    if (fixtureKey === 'all100') {
+      return {
+        ...base, score: 100, status_key: 'on_track',
+        perspectives: [persp('fin', 'Financial', 100), persp('cus', 'Customer', 100), persp('int', 'Internal Process', 100), persp('lrn', 'Learning & Growth', 100)],
+      };
+    }
+    if (fixtureKey === 'degraded') {
+      // Weighted mean (60+100+100+100)/4 = 90 — Financial strictly below it.
+      return {
+        ...base, score: 90, status_key: 'on_track',
+        perspectives: [persp('fin', 'Financial', 60), persp('cus', 'Customer', 100), persp('int', 'Internal Process', 100), persp('lrn', 'Learning & Growth', 100)],
+      };
+    }
+    return null;
+  }, [fixtureKey, activePeriod]);
+  const calc: ScorecardCalcResult | null = fixtureCalc ?? calcQ.data ?? null;
 
   // ── Enterprise score trend (server-calculated history only) ───────────────
   const trendQ = useEnterpriseScoreTrend(activeCycle?.id);
@@ -341,6 +380,9 @@ export default function StrataCommandCenterPage() {
   const actionsQ = useActions();
   // CC-DEF-005: active-cycle element set — positive-evidence scoping for theme decisions.
   const elementsQ = useStrategyElements(activeCycle?.id);
+  // CC-DEF-005 (Cycle 4): explicit relationship tables for the attention feed.
+  const elementKpisQ = useElementKpis();
+  const initiativesQ = useInitiatives();
   // Server-side rule engine feed — replaces the former client-composed inbox.
   const needsAttentionQ = useNeedsAttention(activePeriod?.id);
   // Locked-mode snapshot basis (resolves instance.locked_snapshot_id → snapshot).
@@ -417,8 +459,11 @@ export default function StrataCommandCenterPage() {
   // ── Needs attention rows (server rule engine → drill to owning record) ────
   // CC-DEF-004: identical engine rows reconcile to ONE row under a stable
   // identity key (no positional index); the panel total equals the visible rows.
+  // CC-DEF-005 (Cycle 4): rows are partitioned by explicit relationship — only
+  // active-cycle rows count; cycle-less rows render in a separate Global section;
+  // other-cycle rows are excluded.
   // CC-DEF-003: each row resolves to its EXACT owning record's route.
-  const attentionRows: AttentionRow[] = useMemo(() => {
+  const attentionPartition = useMemo(() => {
     const portfolioById = new Map((portfoliosQ.data ?? []).map((p) => [p.id, p]));
     const projectCardById = new Map((projectCardsQ.data ?? []).map((c) => [c.id, c]));
     const elementById = new Map((elementsQ.data ?? []).map((e) => [e.id, e]));
@@ -443,8 +488,38 @@ export default function StrataCommandCenterPage() {
         return a?.decision_id ? snapshotKeyForDecision(a.decision_id) : null;
       },
     };
-    return dedupeAttentionRows(needsAttentionQ.data ?? []).map((r) => {
+    // Explicit, auditable relationships driving cycle admission (CC-DEF-005).
+    const rel = {
+      activeCycleId: activeCycle?.id ?? null,
+      activeCycleElementIds: new Set((elementsQ.data ?? []).map((e) => e.id)),
+      kpiElementIds: (() => {
+        const m = new Map<string, string[]>();
+        for (const l of elementKpisQ.data ?? []) {
+          const arr = m.get(l.kpi_id) ?? [];
+          arr.push(l.element_id);
+          m.set(l.kpi_id, arr);
+        }
+        return m;
+      })(),
+      projectCardElementIds: new Map((projectCardsQ.data ?? []).map((c) => [
+        c.id, [c.theme_id, c.objective_element_id].filter((x): x is string => x != null),
+      ])),
+      initiativeCycleId: new Map((initiativesQ.data ?? []).map((i) => [i.id, i.cycle_id])),
+      decisionById: new Map((decisionsQ.data ?? []).map((d) => [d.id, d])),
+      actionDecisionId: new Map((actionsQ.data ?? []).map((a) => [a.id, a.decision_id])),
+      snapshotCycleId: new Map((snapshotsQ.data ?? []).map((s) => [s.id, s.cycle_id])),
+    };
+    const toRow = (r: ReturnType<typeof dedupeAttentionRows>[number]): AttentionRow => {
       const path = attentionRoute(r.entity_type, r.entity_id, lookups, Routes.strata.root());
+      const typeLabel = ATTENTION_TYPE_LABEL[r.item_type] ?? labelize(r.item_type);
+      // CC-DEF-003: accessible name — type, item, detail, due state, destination.
+      const ariaLabel = [
+        typeLabel,
+        r.entity_name ?? 'unnamed item',
+        r.detail,
+        r.due_date ? (isOverdue(r.due_date) ? `overdue since ${fmtDate(r.due_date)}` : `due ${fmtDate(r.due_date)}`) : 'no due date',
+        path ? `press Enter to open ${path}` : 'no destination available',
+      ].join(', ');
       return {
         id: r.key,
         itemType: r.item_type,
@@ -453,13 +528,23 @@ export default function StrataCommandCenterPage() {
         detail: r.detail,
         due: r.due_date,
         ownerId: r.owner_id,
+        ariaLabel,
         nav: path ? () => navigate(path) : undefined,
       };
-    });
+    };
+    const parts = partitionAttentionRows(dedupeAttentionRows(needsAttentionQ.data ?? []), rel);
+    return {
+      scoped: parts.scoped.map(toRow),
+      global: parts.global.map(toRow),
+      excludedCount: parts.excluded.length,
+    };
   }, [
     needsAttentionQ.data, kpiById, benefitById, portfoliosQ.data, projectCardsQ.data,
-    elementsQ.data, uploadRunsQ.data, decisionsQ.data, actionsQ.data, snapshotsQ.data, navigate,
+    elementsQ.data, elementKpisQ.data, initiativesQ.data, uploadRunsQ.data,
+    decisionsQ.data, actionsQ.data, snapshotsQ.data, activeCycle, navigate,
   ]);
+  const attentionRows = attentionPartition.scoped;
+  const globalAttentionRows = attentionPartition.global;
 
   // ── "Mine" filter (CLOSEOUT W4): narrow the org-wide feed to items I must act on ──
   const myUserId = useStrataUserId().data ?? null;
@@ -713,6 +798,13 @@ export default function StrataCommandCenterPage() {
         />
       ) : (
         <>
+        {fixtureCalc ? (
+          <div style={{ marginBottom: 16 }} data-testid="strata-cc-fixture-banner">
+            <SectionMessage appearance="warning" title="Fixture mode — synthetic scorecard data">
+              <p>{`This page is rendering the deterministic '${fixtureKey}' test fixture through the real Command Center derivation path. No live records are read or modified. Remove ?ccFixture from the URL to return to live data.`}</p>
+            </SectionMessage>
+          </div>
+        ) : null}
         {dataState === 'locked' && lockedSnapshot ? (
           <div style={{ marginBottom: 16 }}>
             <StrataSnapshotBand
@@ -1009,10 +1101,32 @@ export default function StrataCommandCenterPage() {
                   data={visibleAttentionRows}
                   getRowId={(r) => r.id}
                   onRowClick={(r) => r.nav?.()}
+                  rowAriaLabel={(r) => r.ariaLabel}
                   showRowCount={false}
-                  ariaLabel="Items needing attention"
+                  ariaLabel="Items needing attention in the selected cycle"
                 />
               )}
+              {/* CC-DEF-005: deliberately cycle-less sources — visibly separate,
+                  NEVER included in the selected-period total above. */}
+              {!needsAttentionQ.isLoading && globalAttentionRows.length > 0 ? (
+                <div data-testid="strata-cc-attention-global" style={{ borderTop: `1px solid ${T.border}` }}>
+                  <div style={{
+                    padding: '12px 16px 4px', fontSize: 'var(--ds-font-size-050)', fontWeight: 600,
+                    color: T.subtlest, letterSpacing: '0.04em',
+                  }}>
+                    {`GLOBAL — NOT CYCLE/PERIOD-SCOPED (${globalAttentionRows.length}) · EXCLUDED FROM THE TOTAL ABOVE`}
+                  </div>
+                  <JiraTable<AttentionRow>
+                    columns={attentionColumns}
+                    data={globalAttentionRows}
+                    getRowId={(r) => r.id}
+                    onRowClick={(r) => r.nav?.()}
+                    rowAriaLabel={(r) => `Global, not cycle-scoped: ${r.ariaLabel}`}
+                    showRowCount={false}
+                    ariaLabel="Global items not scoped to any cycle or period"
+                  />
+                </div>
+              ) : null}
             </StrataPanel>
           </div>
 
