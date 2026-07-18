@@ -465,6 +465,8 @@ export default function StrataPortfolioDetailPage() {
 
           {/* PB-DEF-010 · reviews referencing this portfolio, navigable both ways. */}
           <StrataReviewLinks targetType="portfolio" targetId={portfolio.id} />
+          {/* PB-DEF-010 · clearance so the panel's action button never sits under the floating Caty control. */}
+          <div aria-hidden style={{ height: 120 }} />
         </div>
       )}
 
