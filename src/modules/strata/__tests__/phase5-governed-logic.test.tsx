@@ -22,6 +22,7 @@ const H = vi.hoisted(() => {
     mkModel,
     models: [] as unknown[],
     modelPerspectives: [] as unknown[],
+    measures: [] as unknown[],
     ok: (data: unknown) => ({ data, isLoading: false, isError: false, error: null }),
   };
 });
@@ -29,7 +30,7 @@ const H = vi.hoisted(() => {
 vi.mock('@/modules/strata/hooks/useStrata', () => ({
   useScorecardModels: () => H.ok(H.models),
   useAllModelPerspectives: () => H.ok(H.modelPerspectives),
-  useAllModelMeasures: () => H.ok([]),
+  useAllModelMeasures: () => H.ok(H.measures),
   useKpis: () => H.ok([]),
   useModelPerspectives: () => H.ok(H.modelPerspectives),
   usePerspectives: () => H.ok([{ id: 'p1', name: 'Financial' }, { id: 'p2', name: 'Customer' }]),
@@ -108,11 +109,19 @@ describe('bandRows — anchor 25 boundary derivation', () => {
 });
 
 describe('ModelIntegrityBand — anchor 05 tri-state + blocking', () => {
-  const renderWith = (weights: number[], status = 'approved') => {
+  const renderWith = (weights: number[], status = 'approved', measured = false) => {
     H.models = [H.mkModel('m1', status)];
     H.modelPerspectives = weights.map((w, i) => ({
       id: `mp${i}`, model_id: 'm1', perspective_id: `p${i + 1}`, weight: w, order_index: i,
     }));
+    // CFG-006: measure coverage is part of integrity — measured=true gives every
+    // perspective one measure at weight 100 so full integrity passes.
+    H.measures = measured
+      ? weights.map((_, i) => ({
+        id: `ms${i}`, model_id: 'm1', perspective_id: `p${i + 1}`, kpi_id: `k${i + 1}`,
+        weight: 100, required: false, aggregation_method: 'weighted_average', target_policy: 'required',
+      }))
+      : [];
     return render(<ScorecardModelsSection onError={() => {}} />);
   };
 
@@ -123,7 +132,9 @@ describe('ModelIntegrityBand — anchor 05 tri-state + blocking', () => {
   });
 
   it('✕ under 100 tells you how much to ASSIGN', () => {
-    renderWith([60, 30]); // 90
+    // CFG-006: the "Cannot submit" hint is draft-only — pending/approved
+    // records show the failures without a submit hint that has no verb.
+    renderWith([60, 30], 'draft'); // 90
     expect(screen.getByText(/✕ Perspective weights total 90 — assign the remaining 10/)).toBeInTheDocument();
     expect(screen.getByText(/Cannot submit until integrity passes/)).toBeInTheDocument();
   });
@@ -145,8 +156,15 @@ describe('ModelIntegrityBand — anchor 05 tri-state + blocking', () => {
     expect(screen.getByText(/Weights total 90 — must total 100/)).toBeInTheDocument();
   });
 
-  it('a DRAFT model at 100 can be submitted', () => {
-    renderWith([60, 40], 'draft');
+  it('a DRAFT model at 100 with full measure coverage can be submitted', () => {
+    renderWith([60, 40], 'draft', true);
     expect(screen.getByRole('button', { name: /Submit for approval/i })).not.toBeDisabled();
+  });
+
+  it('CFG-006: a DRAFT model at 100 with a measure-less perspective is blocked with a VISIBLE reason', () => {
+    renderWith([60, 40], 'draft'); // weights pass, but no perspective has measures
+    expect(screen.getByRole('button', { name: /Submit for approval/i })).toBeDisabled();
+    expect(screen.getByText(/Financial has no measures assigned/)).toBeInTheDocument();
+    expect(screen.getByText(/Each perspective needs measure weights totalling 100 before submit/)).toBeInTheDocument();
   });
 });

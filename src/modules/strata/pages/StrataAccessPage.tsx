@@ -30,8 +30,9 @@ import { Routes } from '@/lib/routes';
 import { ArrowLeft, GitBranch, Users } from '@/lib/atlaskit-icons';
 import { governanceApi } from '@/modules/strata/domain';
 import {
-  useInvalidateStrata, useProfileNames, useRoleAssignments, useStrataRoles,
+  useInvalidateStrata, useProfileNames, useRoleAssignments, useStrataRoles, useStrataUserId,
 } from '@/modules/strata/hooks/useStrata';
+import { deriveEffectiveAdminRows } from '@/modules/strata/lib/effectiveRoles';
 import { StrataPageShell, StrataPanel, T } from '@/modules/strata/components/shared';
 import { StrataRestricted } from '@/modules/strata/components/StrataSystemStates';
 import { StrataFormModal } from '@/modules/strata/components/authoring';
@@ -60,7 +61,10 @@ interface RoleAssignmentRow {
   scope_type: string;
   scope_entity_id: string | null;
   granted_by: string | null;
-  granted_at: string;
+  /** null on CFG-005 derived rows — a bypass role has no grant event. */
+  granted_at: string | null;
+  /** CFG-005: true when the row is derived from the platform-admin bypass. */
+  derived?: boolean;
 }
 
 const ROLE_PURPOSE = new Map(ROLE_DOCS.map((r) => [r.role, r.purpose]));
@@ -223,14 +227,25 @@ function RoleAssignments({ onError }: { onError: OnError }) {
   const isStrataAdmin = (rolesQ.data ?? []).includes('strata_admin');
   const profile = (id: string | null) => (id ? profilesQ.data?.get(id) ?? null : null);
 
+  // CFG-005: strata_admin can be held via the platform-admin bypass
+  // (strata_is_admin) with no strata_role_assignments row — real and
+  // server-enforced, yet invisible in an explicit-grants-only list. Surface it
+  // as a distinctly-labelled derived row for the signed-in user.
+  const userIdQ = useStrataUserId();
+  const derivedRows = useMemo(
+    () => deriveEffectiveAdminRows(userIdQ.data, rolesQ.data, assignments) as unknown as RoleAssignmentRow[],
+    [userIdQ.data, rolesQ.data, assignments],
+  );
+  const displayRows = useMemo(() => [...assignments, ...derivedRows], [assignments, derivedRows]);
+
   const byUser = useMemo(() => {
     const m = new Map<string, RoleAssignmentRow[]>();
-    for (const a of assignments) {
+    for (const a of displayRows) {
       if (!m.has(a.user_id)) m.set(a.user_id, []);
       m.get(a.user_id)!.push(a);
     }
     return m;
-  }, [assignments]);
+  }, [displayRows]);
 
   // F1a: the SoD verdict comes from the ENGINE (strata_check_role_sod), which
   // projects the four real rules. Never computed here — P5-D4 bans a client engine.
@@ -275,7 +290,16 @@ function RoleAssignments({ onError }: { onError: OnError }) {
     },
     {
       id: 'role', label: 'Role', width: 20,
-      cell: ({ row }) => <StatusLozenge status={row.role} label={labelize(row.role)} appearance="default" />,
+      cell: ({ row }) => (
+        <span style={{ display: 'flex', flexDirection: 'column', gap: 2, alignItems: 'flex-start' }}>
+          <StatusLozenge status={row.role} label={labelize(row.role)} appearance="default" />
+          {row.derived ? (
+            <span style={{ ...metaStyle, fontSize: 'var(--ds-font-size-075)' }} data-testid="strata-access-derived-role">
+              via platform admin — no explicit grant
+            </span>
+          ) : null}
+        </span>
+      ),
     },
     {
       id: 'sod', label: 'SoD', width: 16,
@@ -293,7 +317,9 @@ function RoleAssignments({ onError }: { onError: OnError }) {
     },
     {
       id: 'since', label: 'Since', width: 15,
-      cell: ({ row }) => <span style={{ ...bodyStyle, fontVariantNumeric: 'tabular-nums' }}>{fmtDate(row.granted_at)}</span>,
+      cell: ({ row }) => (row.granted_at
+        ? <span style={{ ...bodyStyle, fontVariantNumeric: 'tabular-nums' }}>{fmtDate(row.granted_at)}</span>
+        : <span style={{ color: T.subtlest }}>—</span>),
     },
   ];
 
@@ -324,7 +350,8 @@ function RoleAssignments({ onError }: { onError: OnError }) {
             ) : undefined}
           >
             <p style={captionStyle}>
-              {ROLE_DOCS.length} roles · {assignments.length} assignment{assignments.length === 1 ? '' : 's'} ·{' '}
+              {ROLE_DOCS.length} roles · {assignments.length} explicit grant{assignments.length === 1 ? '' : 's'}
+              {derivedRows.length > 0 ? ` · ${derivedRows.length} derived from platform admin` : ''} ·{' '}
               {distinctPeople} {distinctPeople === 1 ? 'person' : 'people'} — this page mirrors the server role engine,
               it never replaces it. Segregation of duties is enforced in the database when an action is attempted.
             </p>
@@ -334,7 +361,7 @@ function RoleAssignments({ onError }: { onError: OnError }) {
               <SectionMessage appearance="error" title="Failed to load role assignments">
                 <p>{assignmentsQ.error instanceof Error ? assignmentsQ.error.message : 'Unknown error'}</p>
               </SectionMessage>
-            ) : assignments.length === 0 ? (
+            ) : displayRows.length === 0 ? (
               <EmptyState
                 size="compact"
                 header="No role assignments"
@@ -343,7 +370,7 @@ function RoleAssignments({ onError }: { onError: OnError }) {
             ) : (
               <JiraTable<RoleAssignmentRow>
                 columns={columns}
-                data={assignments}
+                data={displayRows}
                 getRowId={(r) => r.id}
                 onRowClick={(r) => setSelectedUserId(r.user_id)}
                 showRowCount={false}
