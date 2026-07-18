@@ -16,7 +16,7 @@
  */
 import AkSelect, { type OptionType as AkOptionType } from '@atlaskit/select';
 import { portalSelectStyles } from '@/lib/select-portal-styles';
-import { type ReactNode } from 'react';
+import { type ReactNode, useEffect, useRef } from 'react';
 
 export interface SelectOption<V extends string | number = string> {
   value: V;
@@ -42,6 +42,11 @@ export interface SelectProps<V extends string | number = string> {
   /** Portal menu to document.body — use inside scrollable parents. */
   usePortal?: boolean;
   'aria-label'?: string;
+  /** CFG-007: react-select does not forward these to its role="combobox"
+   * input, so the wrapper stamps them on it directly (see effect below). */
+  'aria-required'?: boolean;
+  'aria-invalid'?: boolean;
+  'aria-describedby'?: string;
   testId?: string;
   width?: number | 'xsmall' | 'small' | 'medium' | 'large' | 'xlarge';
 }
@@ -61,7 +66,25 @@ export function Select<V extends string | number = string>({
   width = 'medium',
   ...rest
 }: SelectProps<V>) {
+  // CFG-007: react-select owns the role="combobox" input and drops unknown
+  // aria props — apply required/invalid/describedby to it after render.
+  const hostRef = useRef<HTMLDivElement>(null);
+  const ariaRequired = rest['aria-required'];
+  const ariaInvalid = rest['aria-invalid'];
+  const ariaDescribedby = rest['aria-describedby'];
+  useEffect(() => {
+    const combobox = hostRef.current?.querySelector('[role="combobox"]');
+    if (!combobox) return;
+    const stamp = (name: string, v: boolean | string | undefined) => {
+      if (v === undefined || v === false) combobox.removeAttribute(name);
+      else combobox.setAttribute(name, v === true ? 'true' : v);
+    };
+    stamp('aria-required', ariaRequired);
+    stamp('aria-invalid', ariaInvalid);
+    stamp('aria-describedby', ariaDescribedby);
+  }, [ariaRequired, ariaInvalid, ariaDescribedby, isDisabled, options.length]);
   return (
+    <div ref={hostRef} style={{ display: 'contents' }}>
     <AkSelect<AkOptionType>
       options={options as unknown as AkOptionType[]}
       value={value as unknown as AkOptionType | null | undefined}
@@ -81,5 +104,6 @@ export function Select<V extends string | number = string>({
       appearance="default"
       width={width}
     />
+    </div>
   );
 }

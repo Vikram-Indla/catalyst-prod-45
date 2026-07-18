@@ -268,6 +268,9 @@ function FieldControl({
           isSearchable
           usePortal
           aria-label={a11yName}
+          aria-required={field.required || undefined}
+          aria-invalid={invalid || undefined}
+          aria-describedby={invalid ? errorId : undefined}
         />
       );
     }
@@ -284,6 +287,9 @@ function FieldControl({
           isSearchable
           usePortal
           aria-label={a11yName}
+          aria-required={field.required || undefined}
+          aria-invalid={invalid || undefined}
+          aria-describedby={invalid ? errorId : undefined}
         />
       );
     }

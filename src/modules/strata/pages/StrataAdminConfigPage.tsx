@@ -8,7 +8,6 @@
  */
 import React, { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import Tabs, { Tab, TabList, TabPanel } from '@atlaskit/tabs';
 import {
   Button, CatalystInlineCode, CatalystTag, EmptyState, Lozenge, Modal, ModalBody, ModalFooter,
   ModalHeader, ModalTitle, SectionMessage, Select, Spinner, Textfield,
@@ -29,7 +28,7 @@ import {
   useAllModelMeasures, useAllModelPerspectives, useChangeRequests, useGateModels, useInvalidateStrata, useKpiTypes, useKpis, useModelPerspectives,
   usePerspectives, useProfileNames, useProjectCardFieldConfigs, useProjectCardPicklists,
   useProjectCardSectionConfigs, useProjectCardTabConfigs, useRoleAssignments, useScorecardModels,
-  useStrataAudit, useStrataContext, useStrataNotificationRules, useStrataRoles, useStrataUserId, useThresholdSchemes, useUploadTemplates, useValueCategories,
+  useStrataAudit, useStrataContext, useStrataNotificationRules, useStrataRoles, useStrataUserId, useThresholdSchemes, useUploadRuns, useUploadTemplates, useValueCategories,
   useWorkflowConfigs,
 } from '@/modules/strata/hooks/useStrata';
 import { StrataPageShell, StrataPanel, T } from '@/modules/strata/components/shared';
@@ -1749,13 +1748,27 @@ const TEMPLATE_COLUMNS: Column<TemplateColumnRow>[] = [
 
 export function UploadTemplatesSection({ onError }: { onError: OnError }) {
   const q = useUploadTemplates();
+  // CFG-004: upload runs validated under each template are its consumers.
+  const runsQ = useUploadRuns();
   const list = q.data ?? [];
   return (
     <StrataPanel title="Upload templates" icon={<Upload size={16} />} count={list.length} testId="strata-admin-upload-templates">
       <SectionState query={q} empty={list.length === 0}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
           {list.map((t) => (
-            <GovRecordCard key={t.id} name={t.name} table="strata_upload_templates" record={t} onError={onError}>
+            <GovRecordCard
+              key={t.id}
+              name={t.name}
+              table="strata_upload_templates"
+              record={t}
+              onError={onError}
+              impact={runsQ.data
+                ? (() => {
+                  const n = runsQ.data.filter((r) => r.template_id === t.id).length;
+                  return n > 0 ? [`${n} upload run${n === 1 ? ' was' : 's were'} validated under this template — promoted history keeps this version`] : [];
+                })()
+                : undefined}
+            >
               <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
                 <span style={metaStyle}>Target entity {labelize(t.target_entity)}</span>
                 <span style={metaStyle}>{(t.validation_rules ?? []).length} validation rules</span>
@@ -1979,13 +1992,17 @@ function RolesSection({ onError }: { onError: OnError }) {
               {derivedRows.length > 0 ? ` · ${derivedRows.length} derived from platform admin` : ''}
             </p>
           </div>
-          <JiraTable<RoleAssignmentRow>
-            columns={assignmentColumns}
-            data={displayRows}
-            getRowId={(r) => r.id}
-            showRowCount={false}
-            ariaLabel="STRATA role assignments"
-          />
+          {/* CFG-008: six columns clip at 1024 — the table scrolls inside its
+              own container instead of truncating cells. */}
+          <div style={{ overflowX: 'auto', minWidth: 0 }}>
+            <JiraTable<RoleAssignmentRow>
+              columns={assignmentColumns}
+              data={displayRows}
+              getRowId={(r) => r.id}
+              showRowCount={false}
+              ariaLabel="STRATA role assignments"
+            />
+          </div>
         </SectionState>
       </StrataPanel>
 
@@ -2573,6 +2590,59 @@ function CyclesSection() {
   );
 }
 
+// ── Organization & scopes (CFG-003) ──────────────────────────────────────────
+// The smallest HONEST surface over the data model that actually exists. There
+// is no org-structure schema: no hierarchy, no effective dating, no lifecycle
+// — this section states that plainly and shows the scope vocabulary STRATA
+// really uses (the scorecard-model owner-scope enum) with live usage counts.
+// See docs/ways-of-working/STRATA_ORG_STRUCTURE_DECISION.md for the schema
+// decision this surface deliberately does not pre-empt.
+function OrgScopesSection() {
+  const models = useScorecardModels();
+  const usage = new Map<string, number>();
+  for (const m of models.data ?? []) {
+    usage.set(m.owner_scope_type, (usage.get(m.owner_scope_type) ?? 0) + 1);
+  }
+  interface ScopeRow { scope: string; count: number }
+  const rows: ScopeRow[] = ['enterprise', 'sector', 'function', 'portfolio', 'initiative', 'custom']
+    .map((s) => ({ scope: s, count: usage.get(s) ?? 0 }));
+  const scopeColumns: Column<ScopeRow>[] = [
+    { id: 'scope', label: 'Scope', flex: true, cell: ({ row }) => <span style={{ ...bodyStyle, fontWeight: 600 }}>{labelize(row.scope)}</span> },
+    {
+      id: 'usage', label: 'Used by', width: 30,
+      cell: ({ row }) => (row.count > 0
+        ? <span style={metaStyle}>{row.count} scorecard model{row.count === 1 ? '' : 's'}</span>
+        : <span style={{ color: T.subtlest }}>—</span>),
+    },
+  ];
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+      <SectionMessage appearance="information" title="No organization-structure schema exists">
+        <p>
+          Organizational structures are not configured — there is no org-unit table, hierarchy,
+          effective dating or lifecycle in the schema. Nothing here can create one; that is a
+          product/schema decision recorded in STRATA_ORG_STRUCTURE_DECISION.md (owner: Vikram).
+          What follows is the scope vocabulary STRATA actually uses today.
+        </p>
+      </SectionMessage>
+      <StrataPanel title="Organizational scopes in use" icon={<Users size={16} />} count={rows.length} noPadding testId="strata-admin-org-scopes">
+        <p style={{ ...captionStyle, padding: '12px 16px 0' }}>
+          The fixed owner-scope vocabulary on scorecard models — a flat enum, not an org hierarchy.
+          Free-text Project Card fields (sector, lead business unit) are governed under
+          Reference &amp; display → Project Card picklists.
+        </p>
+        <JiraTable<ScopeRow>
+          columns={scopeColumns}
+          data={rows}
+          getRowId={(r) => r.scope}
+          showRowCount={false}
+          ariaLabel="Organizational scopes in use"
+        />
+      </StrataPanel>
+    </div>
+  );
+}
+
 export const SECTIONS: Array<{
   key: string;
   label: string;
@@ -2588,6 +2658,7 @@ export const SECTIONS: Array<{
   { key: 'upload-templates', label: 'Upload templates', icon: Upload, render: (e) => <UploadTemplatesSection onError={e} /> },
   { key: 'workflows', label: 'Workflows', icon: GitBranch, render: (e) => <WorkflowsSection onError={e} /> },
   { key: 'cycles', label: 'Cycles & periods', icon: Calendar, render: () => <CyclesSection /> },
+  { key: 'org-scopes', label: 'Organization & scopes', icon: Users, render: () => <OrgScopesSection /> },
   { key: 'project-card', label: 'Project Card', icon: Rocket, render: (e) => <ProjectCardConfigSection onError={e} /> },
   { key: 'roles', label: 'Roles', icon: Users, render: (e) => <RolesSection onError={e} /> },
   { key: 'notifications', label: 'Notifications', icon: Bell, render: (e) => <NotificationsSection onError={e} /> },
@@ -2638,6 +2709,13 @@ export const DOMAINS: Array<{
     key: 'cycles-periods', name: 'Cycles & periods', icon: Calendar,
     governs: 'Reporting cycles and their periods — the calendar every scorecard, review and snapshot anchors to.',
     to: Routes.strata.adminSection('cycles'), sectionLabels: ['Cycles', 'Periods'],
+  },
+  {
+    // CFG-003: honest read surface — states that no org-structure schema
+    // exists and shows the scope vocabulary actually in use. Implies nothing.
+    key: 'org-scopes', name: 'Organization & scopes', icon: Users,
+    governs: 'The organizational scope vocabulary STRATA uses today — no org-structure schema exists yet.',
+    to: Routes.strata.adminSection('org-scopes'), sectionLabels: ['Scopes in use'],
   },
   {
     key: 'reference-display', name: 'Reference & display', icon: Rocket,
@@ -2821,43 +2899,47 @@ export default function StrataAdminConfigPage() {
       docTitle={sectionEntry ? `${sectionEntry.label} · Administration` : undefined}
       testId="strata-admin-chrome"
     >
-      <Tabs
-        id="strata-admin-tabs"
-        selected={selected}
-        onChange={(i) => { setActionError(null); navigate(Routes.strata.adminSection(SECTIONS[i].key)); }}
-      >
-        {/* 11 tabs overflow narrow viewports — scroll the strip instead of
-          * wrapping/clipping (Jira admin parity). */}
-        <div style={{ overflowX: 'auto', minWidth: 0 }}>
-          <TabList>
-            {SECTIONS.map((s) => {
-              const Icon = s.icon;
-              return (
-                <Tab key={s.key}>
-                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, whiteSpace: 'nowrap' }}>
-                    <Icon size={14} />
-                    {s.label}
-                  </span>
-                </Tab>
-              );
-            })}
-          </TabList>
-        </div>
-        {SECTIONS.map((s) => (
-          <TabPanel key={s.key}>
-            <div style={{ width: '100%', paddingTop: 16 }}>
-              {actionError ? (
-                <div style={{ marginBottom: 16 }}>
-                  <SectionMessage appearance="error" title="Governance action rejected by the database">
-                    <p>{actionError}</p>
-                  </SectionMessage>
-                </div>
-              ) : null}
-              {s.render(setActionError)}
-            </div>
-          </TabPanel>
-        ))}
-      </Tabs>
+      {/* CFG-008: the 13-item horizontal tab strip clipped labels to fragments
+        * ("Persp", "Scoreca") and hid destinations at 1024×768. Replaced with a
+        * WRAPPING nav of full-label buttons — every destination identifiable and
+        * reachable with no horizontal scrolling; keyboard/focus/aria preserved
+        * via real <button aria-current>. */}
+      <nav aria-label="Configuration sections" style={{ display: 'flex', flexWrap: 'wrap', gap: 4, borderBottom: `2px solid ${T.border}`, paddingBottom: 8 }}>
+        {SECTIONS.map((s, i) => {
+          const Icon = s.icon;
+          const active = i === selected;
+          return (
+            <button
+              key={s.key}
+              type="button"
+              aria-current={active ? 'page' : undefined}
+              data-testid={`strata-admin-nav-${s.key}`}
+              onClick={() => { setActionError(null); navigate(Routes.strata.adminSection(s.key)); }}
+              style={{
+                display: 'inline-flex', alignItems: 'center', gap: 6, whiteSpace: 'nowrap',
+                padding: '6px 10px', borderRadius: 6, cursor: 'pointer', font: 'inherit',
+                fontSize: 'var(--ds-font-size-100)', fontWeight: active ? 700 : 400,
+                border: '1px solid transparent',
+                background: active ? 'var(--ds-background-selected)' : 'transparent',
+                color: active ? 'var(--ds-text-brand)' : T.subtle,
+              }}
+            >
+              <Icon size={14} />
+              {s.label}
+            </button>
+          );
+        })}
+      </nav>
+      <div style={{ width: '100%', paddingTop: 16 }}>
+        {actionError ? (
+          <div style={{ marginBottom: 16 }}>
+            <SectionMessage appearance="error" title="Governance action rejected by the database">
+              <p>{actionError}</p>
+            </SectionMessage>
+          </div>
+        ) : null}
+        {SECTIONS[selected]?.render(setActionError)}
+      </div>
     </StrataPageShell>
   );
 }
