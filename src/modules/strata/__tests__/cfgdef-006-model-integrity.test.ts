@@ -171,3 +171,17 @@ describe('measure-coverage states (SC-GOVAPPROVAL 002)', () => {
     expect(coverageState(2, 100.1)).toBe('overweight');
   });
 });
+
+/** Evidence-gap closure (20-min pass): gap 1 — a weight-0 ASSIGNED measure is underweight, never no_measures. */
+describe('gap 1 — zero-weight assigned measure', () => {
+  it('counts as assigned: underweight with the full 100 remaining, never "no measures"', () => {
+    const r = computeModelIntegrity(
+      [{ perspective_id: 'p-fin', weight: 100 }],
+      [{ perspective_id: 'p-fin', weight: 0 }],
+      new Map([['p-fin', 'Financial']]),
+    );
+    expect(r.perspectiveCoverage[0]).toMatchObject({ state: 'underweight', measureCount: 1, total: 0, delta: 100 });
+    expect(r.measureIssues).toEqual(['Financial measure weights total 0 — assign the remaining 100']);
+    expect(coverageState(1, 0)).toBe('underweight');
+  });
+});

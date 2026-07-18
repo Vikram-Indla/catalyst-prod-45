@@ -230,3 +230,40 @@ describe('incomplete drafts save; only submission is gated', () => {
     expect(screen.getByTestId('strata-model-measures-edit-m1')).toBeInTheDocument();
   });
 });
+
+/** Evidence-gap closure (20-min pass): gaps 4 + 5. */
+describe('gap 4 — incomplete CHANGES_REQUESTED saves and stays editable; resubmit stays blocked', () => {
+  it('Save is enabled at 50/100 in changes_requested, RPC fires, and the resubmit gate states the totals reason', async () => {
+    const user = userEvent.setup();
+    H.state.models = [H.mkModel({ status: 'changes_requested', review_comment: 'fix totals', assigned_approver_id: null })];
+    H.state.measures = [measure('ms1', 'p1', 'k1', 50), measure('ms2', 'p2', 'k2', 100)];
+    render(<ScorecardModelsSection onError={() => {}} />);
+    // Editable in changes_requested: the editor opens.
+    await user.click(screen.getByTestId('strata-model-measures-edit-m1'));
+    const save = screen.getByTestId('strata-model-measures-save-m1');
+    expect(save).not.toBeDisabled();
+    await user.click(save);
+    await waitFor(() => expect(rpc.setModelMeasures).toHaveBeenCalledTimes(1));
+    // Resubmission stays blocked on the persisted underweight total.
+    expect(screen.getByText(/Each perspective needs measure weights totalling 100 before submit/)).toBeInTheDocument();
+  });
+});
+
+describe('gap 5 — a failed save preserves dirty values and never presents them as persisted', () => {
+  it('rejection keeps the editor open with the typed value, the verbatim error, and the unsaved label', async () => {
+    const user = userEvent.setup();
+    rpc.setModelMeasures.mockRejectedValueOnce(new Error('deliberate refusal — network down'));
+    H.state.measures = [measure('ms1', 'p1', 'k1', 100), measure('ms2', 'p2', 'k2', 100)];
+    render(<ScorecardModelsSection onError={() => {}} />);
+    await user.click(screen.getByTestId('strata-model-measures-edit-m1'));
+    const field = screen.getByTestId('strata-measure-weight-k1');
+    await user.clear(field);
+    await user.type(field, '50');
+    await user.click(screen.getByTestId('strata-model-measures-save-m1'));
+    // Error surfaced verbatim; editor still open; typed value retained; still marked unsaved.
+    expect(await screen.findByText(/deliberate refusal — network down/)).toBeInTheDocument();
+    expect((screen.getByTestId('strata-measure-weight-k1') as HTMLInputElement).value).toBe('50');
+    expect(screen.getByText(/Live — includes unsaved measure edits/)).toBeInTheDocument();
+    expect(screen.getByText(/Unsaved measure edits — save or cancel the measures editor before submitting/)).toBeInTheDocument();
+  });
+});
