@@ -339,8 +339,8 @@ export default function StrataStrategyMapPage() {
 
   return (
     <StrataPageShell
-      trail={[{ text: 'Strategy room', href: Routes.strata.strategy() }, { text: 'Map' }]}
-      title="Strategy Map"
+      trail={[{ text: 'Strategy room', href: Routes.strata.strategy() }]}
+      title="Map"
       docTitle="Strategy Map"
       testId="strata-strategy-map-chrome"
     >

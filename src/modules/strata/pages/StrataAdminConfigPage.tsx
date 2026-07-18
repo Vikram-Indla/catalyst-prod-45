@@ -2951,8 +2951,8 @@ export default function StrataAdminConfigPage() {
     <StrataPageShell
       trail={sectionEntry ? [
         { text: 'Administration', href: Routes.strata.admin() },
-        { text: sectionEntry.label },
       ] : undefined}
+      title={sectionEntry?.label}
       docTitle={sectionEntry ? `${sectionEntry.label} · Administration` : undefined}
       testId="strata-admin-chrome"
     >

@@ -2256,8 +2256,8 @@ export default function StrataDataPipelinePage() {
     <StrataPageShell
       trail={runKey || sourceSlug ? [
         { text: 'Data pipeline', href: Routes.strata.data() },
-        { text: runKey ?? sourceSlug ?? '' },
       ] : undefined}
+      title={runKey ?? sourceSlug ?? undefined}
       docTitle={runKey ?? sourceSlug ?? undefined}
       headerActions={
         <Button

@@ -2023,7 +2023,8 @@ export default function StrataReviewsPage() {
 
   return (
     <StrataPageShell
-      trail={isDetail ? [{ text: 'Reviews & decisions', href: Routes.strata.reviews() }, { text: snapshotKey! }] : undefined}
+      trail={isDetail ? [{ text: 'Reviews & decisions', href: Routes.strata.reviews() }] : undefined}
+      title={isDetail ? snapshotKey : undefined}
       docTitle={isDetail ? snapshotKey : 'Reviews & decisions'}
       state={selected?.status ?? null}
       testId="strata-reviews-shell"

@@ -664,11 +664,11 @@ export default function StrataBoardPackPage() {
   }); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (snapQ.isLoading) {
-    return <StrataPageShell docTitle="Board pack" testId="strata-board-pack-chrome"><div style={{ display: 'flex', justifyContent: 'center', padding: 32 }}><Spinner size="large" /></div></StrataPageShell>;
+    return <StrataPageShell trail={[{ text: 'Reviews & decisions', href: Routes.strata.reviews() }]} hideTitle docTitle="Board pack" testId="strata-board-pack-chrome"><div style={{ display: 'flex', justifyContent: 'center', padding: 32 }}><Spinner size="large" /></div></StrataPageShell>;
   }
   if (!snapshot) {
     return (
-      <StrataPageShell docTitle="Board pack" testId="strata-board-pack-chrome">
+      <StrataPageShell trail={[{ text: 'Reviews & decisions', href: Routes.strata.reviews() }]} hideTitle docTitle="Board pack" testId="strata-board-pack-chrome">
         <EmptyState
           header={`Snapshot ${snapshotKey} not found`}
           description="This board pack has no locked snapshot to render from."
@@ -708,7 +708,7 @@ export default function StrataBoardPackPage() {
 
   return (
     <StrataPageShell
-      trail={[{ text: 'Reviews & decisions', href: Routes.strata.reviews() }, { text: snapshotKey!, href: Routes.strata.review(snapshotKey!) }, { text: 'Board pack' }]}
+      trail={[{ text: 'Reviews & decisions', href: Routes.strata.reviews() }, { text: snapshotKey!, href: Routes.strata.review(snapshotKey!) }]}
       title={`Board pack — ${snapshot.name}`}
       docTitle={`Board pack · ${snapshotKey}`}
       state={snapshot.status}

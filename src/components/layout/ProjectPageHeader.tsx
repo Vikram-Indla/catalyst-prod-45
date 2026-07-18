@@ -40,6 +40,28 @@ const ENTITY_BREADCRUMB_ICON: Record<string, React.ReactElement> = {
   Roadmaps:   <AkRoadmapIcon  label="" color="currentColor" />,
 };
 
+/** href→to adapter so STRATA crumbs actually navigate. The ads Breadcrumbs
+ *  contract calls LinkComponent with `href`, but a raw react-router <Link>
+ *  ignores an `href` prop and recomputes it from `to` (undefined here) — so
+ *  every crumb rendered through a raw Link points at the current page.
+ *  Ring-fenced to the STRATA hub (2026-07-18 directive); other hubs keep the
+ *  raw Link until separately approved. */
+const StrataCrumbLink = React.forwardRef<
+  HTMLAnchorElement,
+  React.AnchorHTMLAttributes<HTMLAnchorElement> & { href: string }
+>(function StrataCrumbLink({ href, children, 'aria-current': _ariaCurrent, ...rest }, ref) {
+  // _ariaCurrent is dropped deliberately: @atlaskit/breadcrumbs clones the LAST
+  // item with aria-current="page" unconditionally, which falsely marks an
+  // ancestor link as current on loading shells (ancestors-only trail). In
+  // STRATA the true current page always carries its own aria-current (terminal
+  // h2 / span) — a navigable ancestor never does.
+  return (
+    <Link ref={ref} to={href} {...rest}>
+      {children}
+    </Link>
+  );
+});
+
 function withEntityIcon(item: BreadcrumbItem): BreadcrumbItem {
   if (item.iconBefore) return item;
   // Only the root/link crumb gets the entity icon — the current (last) crumb
@@ -169,20 +191,52 @@ export function ProjectPageHeader({
   // creates a confusing "X / X" visual for pages that are one hop from root.
   // Level-2+ pages (trail provided): breadcrumb shows [entity] / trail…
   // where the trail supplies real back-links and a terminal current-page crumb.
+  // STRATA breadcrumb semantics (2026-07-18 QA criteria, ring-fenced):
+  //  - on the hub root itself, "STRATA" is the non-clickable current location
+  //    (aria-current), never a self-link;
+  //  - on every other page the title renders INSIDE the nav as the terminal
+  //    crumb (same 18/22px heading visuals) so the current page carries
+  //    aria-current="page" within the breadcrumb set.
+  const strataAtRoot =
+    hubType === "strata" && (pathname === rootHref || pathname === `${rootHref}/`);
+  const titleNode = title ?? routeWord;
+  const strataTitleInNav =
+    hubType === "strata" && !strataAtRoot && !hideTitle && !!titleNode;
+
   const trailItems = trail
     ? trail.map((c, i) => ({
         key: `trail-${i}`,
         text: c.text,
         href: c.href,
         onClick: c.onClick,
-        isCurrent: i === trail.length - 1 && !c.href,
+        // When the STRATA title is the terminal crumb, a trailing href-less
+        // trail entry is an ancestor label, not the current page — only one
+        // element in the set may carry aria-current.
+        isCurrent: i === trail.length - 1 && !c.href && !strataTitleInNav,
       }))
+    : [];
+
+  const strataCurrentItem: BreadcrumbItem[] = strataTitleInNav
+    ? [{
+        key: "current-page",
+        text: "",
+        ariaLabel: typeof titleNode === "string" ? titleNode : undefined,
+        render: () => (
+          // ads-scanner:ignore-next-line — depth-aware heading: 22px level-1 / 18px level-2; no ADS token maps to these exact values
+          <h2 aria-current="page" style={{ fontSize: trail ? 18 : 22, fontWeight: 600, lineHeight: 1.2, color: 'var(--ds-text)', margin: 0, whiteSpace: 'nowrap' }}>
+            {titleNode}
+          </h2>
+        ),
+      }]
     : [];
 
   const breadcrumbItems: BreadcrumbItem[] = isGlobalHub
     ? [
-        { key: "root", text: rootLabel, href: rootHref },
+        strataAtRoot
+          ? { key: "root", text: rootLabel, isCurrent: true }
+          : { key: "root", text: rootLabel, href: rootHref },
         ...trailItems,
+        ...strataCurrentItem,
       ]
     : [
         {
@@ -212,15 +266,35 @@ export function ProjectPageHeader({
         className="cat-breadcrumb-host"
         style={{ fontSize: 'var(--ds-font-size-200)', flexShrink: 0, opacity: 0.8 }}
       >
-        <Breadcrumbs items={breadcrumbItems.map(withEntityIcon)} LinkComponent={Link} />
+        <Breadcrumbs
+          items={breadcrumbItems.map(withEntityIcon)}
+          LinkComponent={hubType === "strata" ? StrataCrumbLink : Link}
+          maxItems={hubType === "strata" ? 8 : 4}
+        />
       </div>
+
+      {/* STRATA: the title is the terminal crumb inside the nav — only the
+          right-side actions remain out here. */}
+      {strataTitleInNav && actions && (
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 8,
+            flexShrink: 0,
+            marginLeft: "auto",
+          }}
+        >
+          {actions}
+        </div>
+      )}
 
       {/* No dangling "/" when there is no title to follow it (Products/Projects
           index pages derive an empty route word). Global hubs additionally
           suppress a derived title that merely repeats the root crumb —
           otherwise /release-hub/releases-management reads "Releases / Releases"
           (same for Incidents). An explicit `title` prop always renders. */}
-      {!hideTitle && (title ?? routeWord) &&
+      {!strataTitleInNav && !hideTitle && (title ?? routeWord) &&
         !(isGlobalHub && !title && routeWord.toLowerCase() === rootLabel.toLowerCase()) && (
         <>
           <span

@@ -1155,8 +1155,9 @@ function StrataPortfolioManageView() {
   return (
     <StrataPageShell
       trail={trailBenefit
-        ? [{ text: 'Portfolio & VMO', href: Routes.strata.portfolio() }, { text: trailBenefit.name }]
+        ? [{ text: 'Portfolio & VMO', href: Routes.strata.portfolio() }]
         : undefined}
+      title={trailBenefit ? trailBenefit.name : undefined}
       docTitle={trailBenefit ? trailBenefit.name : 'Portfolio / VMO'}
       headerActions={headerActions}
       testId="strata-portfolio-chrome"

@@ -744,7 +744,7 @@ export default function StrataKpiDetailPage() {
   const stateTrail = [{ text: 'KPI library', href: Routes.strata.kpis() }];
   if (kpiQ.isLoading) {
     return (
-      <StrataPageShell trail={stateTrail} testId="strata-kpi-detail-chrome">
+      <StrataPageShell trail={stateTrail} hideTitle testId="strata-kpi-detail-chrome">
         <div style={{ display: 'flex', justifyContent: 'center', padding: 48 }}>
           <Spinner size="large" aria-label="Loading KPI" />
         </div>
@@ -753,7 +753,7 @@ export default function StrataKpiDetailPage() {
   }
   if (kpiQ.isError) {
     return (
-      <StrataPageShell trail={stateTrail} testId="strata-kpi-detail-chrome">
+      <StrataPageShell trail={stateTrail} hideTitle testId="strata-kpi-detail-chrome">
         <SectionMessage appearance="error" title="Failed to load KPI">
           <p>{(kpiQ.error as Error)?.message ?? 'Unknown error'}</p>
         </SectionMessage>
@@ -762,7 +762,7 @@ export default function StrataKpiDetailPage() {
   }
   if (!kpi) {
     return (
-      <StrataPageShell trail={stateTrail} testId="strata-kpi-detail-chrome">
+      <StrataPageShell trail={stateTrail} hideTitle testId="strata-kpi-detail-chrome">
         <EmptyState
           header="KPI not found"
           description={`No KPI exists with slug "${slug ?? ''}".`}
