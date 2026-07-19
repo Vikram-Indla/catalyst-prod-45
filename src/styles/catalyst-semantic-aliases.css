@@ -1,0 +1,125 @@
+/* ============================================================================
+   catalyst-semantic-aliases.css — THE --cp-* → --ds-* BRIDGE
+   CAT-DS-TOKEN-POISON-20260710-001 (Goal 2: single-owner one-way bridge)
+   ----------------------------------------------------------------------------
+   ONE-WAY CONTRACT — every rule below is enforced by the token graph
+   (design-governance/token-graph):
+     • Each alias maps to exactly ONE --ds-* token of the SAME semantic
+       category (text→text, background→background/surface, border→border,
+       shadow→shadow, typography→font-family, radius→border-radius).
+     • No fallbacks. No hex. No --cp-* → --cp-* chains.
+     • Atlaskit (@atlaskit/tokens runtime, via setGlobalTheme) owns ALL --ds-*
+       values; this file never declares a --ds-* token.
+     • This file is the ONLY global owner of every name declared here.
+       Do not redeclare these names anywhere else (global or scoped).
+     • Mode-divergent aliases (sanctioned exception — the semantic genuinely
+       differs per color mode) get exactly one override in the dark block.
+   These aliases exist only to keep legacy consumers rendering correctly while
+   they are swept to direct --ds-* usage; do not add new consumers.
+   ============================================================================ */
+
+:root {
+  /* ── Text ─────────────────────────────────────────────────────────────── */
+  --cp-text-primary: var(--ds-text);
+  --cp-text-secondary: var(--ds-text-subtle);
+  --cp-text-tertiary: var(--ds-text-subtlest);
+  --cp-text-muted: var(--ds-text-subtlest);
+  --cp-text-inverse: var(--ds-text-inverse);
+  --cp-text-link: var(--ds-link);
+  --cp-success-text: var(--ds-text-success);
+  --cp-warning-text: var(--ds-text-warning);
+  --cp-danger-text: var(--ds-text-danger);
+  --cp-ai-t: var(--ds-text-brand);
+  --cp-lozenge-grey-text: var(--ds-text-subtle);
+  --cp-lozenge-blue-text: var(--ds-text-inverse);
+  --cp-lozenge-green-text: var(--ds-text-success); /* mode-divergent */
+  --cp-lz-gy-t: var(--ds-text-subtle); /* mode-divergent */
+  --cp-lz-bl-t: var(--ds-text-inverse);
+  --cp-lz-gn-t: var(--ds-text-success); /* mode-divergent */
+  --status-todo-text: var(--ds-text-inverse);
+  --status-inprogress-text: var(--ds-text-inverse);
+  --status-done-text: var(--ds-text-inverse);
+
+  /* ── Background / surface ─────────────────────────────────────────────── */
+  --cp-bg-page: var(--ds-surface); /* mode-divergent (hub-page pattern) */
+  --cp-bg: var(--ds-surface); /* mode-divergent */
+  --cp-bg-surface: var(--ds-surface);
+  --cp-float: var(--ds-surface-raised);
+  --cp-bg-overlay: var(--ds-surface-overlay);
+  --cp-interact-hover: var(--ds-background-neutral-subtle-hovered);
+  --cp-interact-press: var(--ds-background-neutral-subtle-pressed);
+  --cp-interact-selected: var(--ds-background-selected);
+  --cp-interact-selected-hover: var(--ds-background-selected-hovered);
+  --cp-blue-wash: var(--ds-background-selected);
+  --cp-primary-light: var(--ds-background-information);
+  --cp-success-light: var(--ds-background-success);
+  --cp-warning-light: var(--ds-background-warning);
+  --cp-danger-light: var(--ds-background-danger);
+  --cp-success-10: var(--ds-background-success);
+  --cp-danger-10: var(--ds-background-danger);
+  --cp-bg-blue-light: var(--ds-background-information);
+  --cp-bg-teal-light: var(--ds-background-success);
+  --cp-bg-orange-light: var(--ds-background-warning);
+  --cp-bg-red-light: var(--ds-background-danger);
+  --cp-input-bg: var(--ds-background-input);
+  --cp-toolbar-bg: var(--ds-background-neutral);
+  --cp-toolbar-bg-hover: var(--ds-background-neutral-hovered);
+  --cp-toolbar-bg-press: var(--ds-background-neutral-pressed);
+  --cp-toolbar-bg-active: var(--ds-background-selected);
+  --cp-ai-bg: var(--ds-background-information);
+  --cp-lozenge-blue-bg: var(--ds-background-information-bold);
+  --cp-lozenge-green-bg: var(--ds-background-success); /* mode-divergent */
+  --cp-lz-gy-bg: var(--ds-background-neutral); /* mode-divergent */
+  --cp-lz-bl-bg: var(--ds-background-information-bold);
+  --cp-lz-gn-bg: var(--ds-background-success); /* mode-divergent */
+  --status-todo-bg: var(--ds-background-neutral-bold);
+  --status-inprogress-bg: var(--ds-background-information-bold);
+  --status-done-bg: var(--ds-background-success-bold);
+  --status-success-bg: var(--ds-background-success);
+  --status-info-bg: var(--ds-background-information);
+  --status-warning-bg: var(--ds-background-warning);
+  --status-danger-bg: var(--ds-background-danger);
+  --cp-status-done-green: var(--ds-background-success-bold);
+
+  /* ── Border / shape ───────────────────────────────────────────────────── */
+  --cp-border: var(--ds-border);
+  --cp-border-default: var(--ds-border);
+  --cp-border-subtle: var(--ds-border);
+  --cp-border-strong: var(--ds-border-bold);
+  --cp-bd: var(--ds-border);
+  --cp-focus-ring: var(--ds-border-focused);
+  --cp-input-border: var(--ds-border-input);
+  --cp-input-border-hover: var(--ds-border-input);
+  --cp-ai-bd: var(--ds-border-information);
+  --status-success-border: var(--ds-border-success);
+  --status-info-border: var(--ds-border-information);
+  --status-warning-border: var(--ds-border-warning);
+  --status-danger-border: var(--ds-border-danger);
+  --cp-radius-sm: var(--ds-radius-xsmall);
+  --cp-radius-md: var(--ds-radius-small);
+  --cp-radius-default: var(--ds-radius-small);
+  --cp-radius-lg: var(--ds-radius-large);
+  --cp-radius-full: var(--ds-radius-full);
+
+  /* ── Shadow ───────────────────────────────────────────────────────────── */
+  --cp-shadow-xs: var(--ds-shadow-raised);
+  --cp-shadow-overlay: var(--ds-shadow-overlay);
+
+  /* ── Typography ───────────────────────────────────────────────────────── */
+  --cp-font-body: var(--ds-font-family-body);
+  --cp-font-heading: var(--ds-font-family-heading);
+  --cp-font-mono: var(--ds-font-family-code);
+}
+
+/* Mode-divergent overrides ONLY — sanctioned exception (8 aliases). */
+.dark,
+[data-color-mode="dark"] {
+  --cp-bg-page: var(--ds-surface-sunken);
+  --cp-bg: var(--ds-surface-sunken);
+  --cp-lozenge-green-bg: var(--ds-background-success-bold);
+  --cp-lozenge-green-text: var(--ds-text-inverse);
+  --cp-lz-gy-bg: var(--ds-background-neutral-bold);
+  --cp-lz-gy-t: var(--ds-text-inverse);
+  --cp-lz-gn-bg: var(--ds-background-success-bold);
+  --cp-lz-gn-t: var(--ds-text-inverse);
+}

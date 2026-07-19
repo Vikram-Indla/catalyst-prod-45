@@ -1,0 +1,11 @@
+/* Clean fixture — zero findings expected. Not imported by the app. */
+:root {
+  --cp-fixture-clean-text: var(--ds-text);
+  /* ads-scanner:ignore-next-line — R12 false-positive proof: one-off brand color, no ADS token equivalent (mirrors --cat-locate-accent in src/styles/catalyst-colors.css) */
+  --cp-fixture-clean-brand-accent: #964ac0;
+}
+.fixture-clean {
+  color: var(--cp-fixture-clean-text);
+  background: var(--ds-surface);
+  border: 1px solid var(--ds-border);
+}

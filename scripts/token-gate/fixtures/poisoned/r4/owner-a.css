@@ -1,0 +1,4 @@
+/* R4 fixture (file 1 of 2) — duplicate global owner. Not imported by the app. */
+:root {
+  --cp-fixture-duplicate: var(--ds-text);
+}

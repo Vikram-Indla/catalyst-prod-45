@@ -1,0 +1,6 @@
+/* R8 fixture — hard-coded colors in color-bearing properties, no ignore pragma. Not imported by the app. */
+.fixture-hardcoded {
+  color: #ff0000;
+  background: rgba(0, 0, 0, 0.5);
+  border-color: tomato;
+}
