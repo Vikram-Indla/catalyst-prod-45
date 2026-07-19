@@ -1153,10 +1153,38 @@ export function KrReportabilityBadge({ krId }: { krId: string }) {
   );
 }
 
-/** KO-DEF-003 item 9 — official progress excludes non-reportable KPI-backed KRs, and says why. */
-export function OkrOfficialProgress({ okrId }: { okrId: string }) {
-  const q = useOkrOfficialProgress(okrId);
-  const p = q.data;
+/** Official OKR progress. Theme-owned OKRs use the observation-based v2 roll-up (reportable-only,
+ *  coverage/critical disclosed, CAT-STRATA-THEMEOKR-20260719-001); legacy OKRs keep the KPI-actual
+ *  roll-up (KO-DEF-003). Excludes non-reportable KRs and says why. */
+export function OkrOfficialProgress({ okrId, themeOwned = false }: { okrId: string; themeOwned?: boolean }) {
+  const legacyQ = useOkrOfficialProgress(okrId, !themeOwned);
+  const v2Q = useQuery({
+    queryKey: ['strata', 'okr-official-progress-v2', okrId],
+    queryFn: () => kpiApi.okrOfficialProgressV2(okrId),
+    enabled: themeOwned,
+    staleTime: 0,
+  });
+  if (themeOwned) {
+    const p = v2Q.data as {
+      official_progress?: number | null; reportable_krs?: number; excluded_krs?: number;
+      krs_with_eligible_observation?: number; critical_failures?: number;
+    } | undefined;
+    if (!p) return null;
+    const reportable = p.reportable_krs ?? 0;
+    const awaiting = reportable - (p.krs_with_eligible_observation ?? 0);
+    return (
+      <div data-testid={`strata-okr-official-progress-${okrId}`}
+        style={{ margin: '4px 0 8px', fontSize: 'var(--ds-font-size-050)', color: T.subtle }}>
+        Official progress:{' '}
+        <strong style={{ color: T.text }}>{p.official_progress != null ? `${Math.round(p.official_progress * 100)}%` : '—'}</strong>{' '}
+        over {reportable} reportable KR{reportable === 1 ? '' : 's'}
+        {awaiting > 0 ? ` · ${awaiting} awaiting an eligible observation` : ''}
+        {(p.critical_failures ?? 0) > 0 ? ` · ${p.critical_failures} critical KR failing` : ''}
+        {p.excluded_krs ? ` · ${p.excluded_krs} non-reportable excluded` : ''}
+      </div>
+    );
+  }
+  const p = legacyQ.data;
   if (!p) return null;
   return (
     <div data-testid={`strata-okr-official-progress-${okrId}`}
@@ -1445,7 +1473,7 @@ export function OkrRow({ okr, objectiveName, isOpen, onToggle, onAddKeyResult, o
       </button>
       {isOpen ? (
         <div style={{ padding: '0 8px 12px 32px' }}>
-          <OkrOfficialProgress okrId={okr.id} />
+          <OkrOfficialProgress okrId={okr.id} themeOwned={okr.theme_id != null} />
           <KeyResultsList okrId={okr.id} canUpdate={canUpdateKr} canValidate={canValidateObs} />
           {onLifecycle ? <OkrLifecycleActions okr={okr} /> : null}
           {onAddKeyResult && okr.status !== 'closed' ? (
