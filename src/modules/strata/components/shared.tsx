@@ -1201,6 +1201,40 @@ export function OkrOfficialProgress({ okrId, themeOwned = false }: { okrId: stri
   );
 }
 
+/** Observation-driven KR cells (CAT-STRATA-THEMEOKR-20260719-001). Both cells share one
+ *  strata_kr_progress query per KR (React Query dedupes by key), so the grid shows the latest
+ *  eligible observation's actual + rounded progress + performance status; falls back to the legacy
+ *  flat current_value while loading/erroring or when no observation exists. KO-DEF-004 preserved
+ *  (progress_pct is a whole integer — never a raw float in visible or a11y text). */
+const KR_PERF_LOZENGE: Record<string, { label: string; appearance: React.ComponentProps<typeof Lozenge>['appearance'] }> = {
+  on_track: { label: 'On track', appearance: 'success' },
+  at_risk: { label: 'At risk', appearance: 'moved' },
+  off_track: { label: 'Off track', appearance: 'removed' },
+};
+function useKrProgressCell(krId: string) {
+  return useQuery({ queryKey: ['strata', 'kr-progress', krId], queryFn: () => kpiApi.krProgress(krId), staleTime: 0 });
+}
+function KrCurrentCell({ kr }: { kr: StrataKeyResult }) {
+  const q = useKrProgressCell(kr.id);
+  const d = q.data as { actual?: number | string | null } | undefined;
+  const val = d?.actual != null ? Number(d.actual) : kr.current_value;
+  return <span style={{ fontWeight: 600, color: T.text, fontVariantNumeric: 'tabular-nums' }}>{fmtUnit(val, kr.unit)}</span>;
+}
+function KrProgressCell({ kr }: { kr: StrataKeyResult }) {
+  const q = useKrProgressCell(kr.id);
+  const d = q.data as { progress_pct?: number | null; performance_status?: string } | undefined;
+  const pct = d?.progress_pct != null ? Number(d.progress_pct) : krProgressPercent(kr);
+  if (pct == null) return <OkrDash />;
+  const lz = d?.performance_status && d.performance_status !== 'not_assessed' ? KR_PERF_LOZENGE[d.performance_status] : null;
+  return (
+    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+      <ProgressBar value={pct / 100} aria-label={`Progress ${pct}%`} />
+      <span style={{ color: T.subtle, fontVariantNumeric: 'tabular-nums' }}>{pct}%</span>
+      {lz ? <Lozenge appearance={lz.appearance}>{lz.label}</Lozenge> : null}
+    </span>
+  );
+}
+
 export function KeyResultsList({ okrId, canUpdate = false, canValidate = false }: {
   okrId: string;
   /** Reporter/owner may submit observations (manual channel). */
@@ -1240,29 +1274,13 @@ export function KeyResultsList({ okrId, canUpdate = false, canValidate = false }
       id: 'current_value',
       label: 'Current',
       width: 12,
-      cell: ({ row }) => (
-        <span style={{ fontWeight: 600, color: T.text, fontVariantNumeric: 'tabular-nums' }}>
-          {fmtUnit(row.current_value, row.unit)}
-        </span>
-      ),
+      cell: ({ row }) => <KrCurrentCell kr={row} />,
     },
     {
       id: 'progress',
       label: 'Progress',
       width: 16,
-      cell: ({ row }) => {
-        // KO-DEF-004: expose only the authoritative rounded percent in visible + a11y text;
-        // pass the rounded value to ProgressBar so aria-valuenow can never carry a raw float.
-        const pct = krProgressPercent(row);
-        return pct == null
-          ? <OkrDash />
-          : (
-            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
-              <ProgressBar value={pct / 100} aria-label={`Progress ${pct}%`} />
-              <span style={{ color: T.subtle, fontVariantNumeric: 'tabular-nums' }}>{pct}%</span>
-            </span>
-          );
-      },
+      cell: ({ row }) => <KrProgressCell kr={row} />,
     },
     {
       id: 'reportability',
