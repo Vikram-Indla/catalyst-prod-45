@@ -18,6 +18,7 @@ import {
   Modal, ModalBody, ModalFooter, ModalHeader, ModalTitle, SectionMessage, Spinner, Textfield, Tooltip,
 } from '@/components/ads';
 import TextArea from '@atlaskit/textarea';
+import { Routes } from '@/lib/routes';
 import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
 import VisuallyHidden from '@atlaskit/visually-hidden';
 import { ChevronDown, ChevronRight, Plus } from '@/lib/atlaskit-icons';
@@ -1254,7 +1255,12 @@ export function KeyResultsList({ okrId, canUpdate = false, canValidate = false }
       id: 'name',
       label: 'Key result',
       flex: true,
-      cell: ({ row }) => (
+      cell: ({ row }) => row.slug ? (
+        <a href={Routes.strata.kr(row.slug)}
+          style={{ fontWeight: 600, color: 'var(--ds-text-brand)', fontSize: 'var(--ds-font-size-400)', lineHeight: 'var(--ds-line-height-body)', textDecoration: 'none' }}>
+          {row.name}
+        </a>
+      ) : (
         <span style={{ fontWeight: 600, color: T.text, fontSize: 'var(--ds-font-size-400)', lineHeight: 'var(--ds-line-height-body)' }}>
           {row.name}
         </span>
@@ -1491,6 +1497,13 @@ export function OkrRow({ okr, objectiveName, isOpen, onToggle, onAddKeyResult, o
       </button>
       {isOpen ? (
         <div style={{ padding: '0 8px 12px 32px' }}>
+          {okr.slug ? (
+            <div style={{ marginBottom: 4 }}>
+              <a href={Routes.strata.okr(okr.slug)} style={{ color: 'var(--ds-text-brand)', fontSize: 'var(--ds-font-size-050)', textDecoration: 'none' }}>
+                Open OKR page ↗
+              </a>
+            </div>
+          ) : null}
           <OkrOfficialProgress okrId={okr.id} themeOwned={okr.theme_id != null} />
           <KeyResultsList okrId={okr.id} canUpdate={canUpdateKr} canValidate={canValidateObs} />
           {onLifecycle ? <OkrLifecycleActions okr={okr} /> : null}
@@ -1515,7 +1528,7 @@ export function OkrRow({ okr, objectiveName, isOpen, onToggle, onAddKeyResult, o
 
 /** KO-DEF-003 lifecycle actions — server-governed. Buttons reflect the state; the RPC is the
  *  authority and its rejection text is surfaced verbatim. Closed shows the frozen final status. */
-function OkrLifecycleActions({ okr }: { okr: StrataOkr }) {
+export function OkrLifecycleActions({ okr }: { okr: StrataOkr }) {
   const invalidate = useInvalidateStrata();
   const { periods } = useStrataContext();
   const elementsQ = useStrategyElements();

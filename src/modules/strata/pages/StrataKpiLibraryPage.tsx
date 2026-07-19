@@ -303,7 +303,7 @@ function OkrPanel() {
           appearance="default"
           spacing="compact"
           iconBefore={<Plus size={14} />}
-          onClick={() => navigate(Routes.strata.strategy)}
+          onClick={() => navigate(Routes.strata.strategy())}
           testId="strata-new-okr"
         >
           Add OKR on a Theme

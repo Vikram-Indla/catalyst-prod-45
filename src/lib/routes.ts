@@ -265,6 +265,10 @@ export const strataRoutes = {
   kpi: (kpiSlug: string) => `/strata/kpis/${kpiSlug}`,
   kpiEvidence: (kpiSlug: string, from?: string) =>
     `/strata/kpis/${kpiSlug}/evidence${from ? `?from=${encodeURIComponent(from)}` : ''}`,
+  // Theme-owned OKR / Key Result deep-links (CAT-STRATA-THEMEOKR-20260719-001) —
+  // slug per the SLUG CONTRACT (no UUID params). strata_okrs.slug / strata_key_results.slug.
+  okr: (okrSlug: string) => `/strata/okrs/${okrSlug}`,
+  kr: (krSlug: string) => `/strata/krs/${krSlug}`,
   execution: () => '/strata/execution',
   // Manual Excel import wizard (session 007) — static slug-safe path, matched
   // before execution/:slug by React Router's static-over-dynamic ranking.

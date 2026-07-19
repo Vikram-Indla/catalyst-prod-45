@@ -687,6 +687,15 @@ export const kpiApi = {
   okrs: (): Promise<StrataOkr[]> => run(typedQuery('strata_okrs').select('*').order('created_at', { ascending: false })),
   keyResults: (okrId: string): Promise<StrataKeyResult[]> =>
     run(typedQuery('strata_key_results').select('*').eq('okr_id', okrId).order('order_index')),
+  // Slug resolution for deep-link detail pages (CAT-STRATA-THEMEOKR-20260719-001).
+  okrBySlug: (slug: string): Promise<StrataOkr | null> =>
+    run((supabase.from('strata_okrs' as never).select('*').eq('slug', slug).maybeSingle()) as never) as Promise<StrataOkr | null>,
+  krBySlug: (slug: string): Promise<StrataKeyResult | null> =>
+    run((supabase.from('strata_key_results' as never).select('*').eq('slug', slug).maybeSingle()) as never) as Promise<StrataKeyResult | null>,
+  okr: (okrId: string): Promise<StrataOkr | null> =>
+    run((supabase.from('strata_okrs' as never).select('*').eq('id', okrId).maybeSingle()) as never) as Promise<StrataOkr | null>,
+  okrVersions: (okrId: string): Promise<Array<Record<string, unknown>>> =>
+    run((supabase.from('strata_okr_versions' as never).select('version, status, objective_statement, commitment, change_rationale, materiality, effective_from, approved_at').eq('okr_id', okrId).order('version', { ascending: false })) as never) as Promise<Array<Record<string, unknown>>>,
   commentary: (entityType: string, entityId: string) =>
     run(typedQuery('strata_commentary').select('*').eq('entity_type', entityType).eq('entity_id', entityId).order('created_at', { ascending: false })),
   // ── Authoring write paths (Recovery: Lane B) ──────────────────────────────
