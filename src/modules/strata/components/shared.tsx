@@ -1224,7 +1224,7 @@ export function KeyResultsList({ okrId }: { okrId: string }) {
           : (
             <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
               <ProgressBar value={pct / 100} aria-label={`Progress ${pct}%`} />
-              <span style={{ color: T.subtle, fontVariantNumeric: 'tabular-nums', fontSize: 'var(--ds-font-size-050)' }}>{pct}%</span>
+              <span style={{ color: T.subtle, fontVariantNumeric: 'tabular-nums' }}>{pct}%</span>
             </span>
           );
       },
