@@ -298,6 +298,9 @@ export const strataRoutes = {
   adminMeasurement: () => '/strata/admin/measurement',
   adminData: () => '/strata/admin/data',
   adminAccess: () => '/strata/admin/access',
+  // Strategy Framework governance (CAT-STRATA-GOVFRAMEWORK-20260719-001) — slug-based.
+  frameworks: () => '/strata/admin/frameworks',
+  framework: (frameworkSlug: string) => `/strata/admin/frameworks/${frameworkSlug}`,
 };
 
 // ---------------------------------------------------------------------------

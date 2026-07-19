@@ -561,14 +561,25 @@ export const str = (v: string | number | boolean | null | undefined): string | u
   return t === '' ? undefined : t;
 };
 
-/** Approved-only perspective options, current value kept selectable even if not approved. */
+/**
+ * Perspective options for strategy-element authoring.
+ * CAT-STRATA-GOVFRAMEWORK-20260719-001: when `frameworkMemberIds` is provided, options are
+ * restricted to the perspectives that are MEMBERS of the effective framework version (and still
+ * approved) — perspectives outside the effective framework, and draft framework members, must not
+ * appear as ordinary selectable options. The current value is always kept selectable (so historical
+ * or retired perspectives remain readable/editable on existing elements — never silently nulled).
+ * When `frameworkMemberIds` is omitted, falls back to the legacy all-approved list.
+ */
 export function perspectiveSelectOptions(
   perspectives: StrataPerspective[],
   currentId?: string | null,
+  frameworkMemberIds?: ReadonlySet<string> | null,
 ): SelectOption[] {
-  const approved = perspectives.filter((p) => p.status === 'approved');
-  const opts = approved.map((p) => ({ value: p.id, label: p.name }));
-  if (currentId && !approved.some((p) => p.id === currentId)) {
+  const eligible = perspectives.filter(
+    (p) => p.status === 'approved' && (!frameworkMemberIds || frameworkMemberIds.has(p.id)),
+  );
+  const opts = eligible.map((p) => ({ value: p.id, label: p.name }));
+  if (currentId && !eligible.some((p) => p.id === currentId)) {
     const current = perspectives.find((p) => p.id === currentId);
     opts.push({ value: currentId, label: current?.name ?? '—' });
   }

@@ -21,7 +21,7 @@ import {
   ChevronDown, ChevronRight, Gem, GitBranch, Target, X,
 } from '@/lib/atlaskit-icons';
 import {
-  useBandResolver, useBenefits, useBenefitProjectCards, useElementKpis, useGateModels, useInvalidateStrata, useKpis, usePerspectives,
+  useBandResolver, useBenefits, useBenefitProjectCards, useEffectiveFrameworkMemberIds, useElementKpis, useGateModels, useInvalidateStrata, useKpis, usePerspectives,
   useProjectCards, useThemeCharters, useProfileNames, useStrataContext, useStrataRoles, useStrategyElements,
 } from '@/modules/strata/hooks/useStrata';
 import { kpiApi, strategyApi } from '@/modules/strata/domain';
@@ -303,6 +303,7 @@ export default function StrataStrategyRoomPage() {
   const navigate = useNavigate();
   const { activeCycle, activePeriod, isLoading: contextLoading } = useStrataContext();
   const resolveBand = useBandResolver();
+  const frameworkMemberIds = useEffectiveFrameworkMemberIds();
   const elementsQ = useStrategyElements(activeCycle?.id);
   const chartersQ = useThemeCharters();
   const elementKpisQ = useElementKpis();
@@ -574,7 +575,11 @@ export default function StrataStrategyRoomPage() {
   // ── Authoring option builders — approved-only, current value kept selectable.
   //    Shared with the detail pages via components/authoring.tsx so both call
   //    sites derive options identically (CAT-STRATA-THEME-DETAIL-20260710-001). ──
-  const approvedPerspectiveOptions = (currentId?: string | null) => perspectiveSelectOptions(perspectives, currentId);
+  // Restrict new-element authoring to the effective corporate framework's members
+  // (CAT-STRATA-GOVFRAMEWORK-20260719-001); the current value stays selectable for historical edits.
+  // `frameworkMemberIds` is resolved at the top of the component (rules-of-hooks).
+  const approvedPerspectiveOptions = (currentId?: string | null) =>
+    perspectiveSelectOptions(perspectives, currentId, frameworkMemberIds);
   const parentOptions = (excludeId?: string) => themeParentOptions(elements, excludeId);
   const gateModelOptions = (currentId?: string | null) => gateModelSelectOptions(gateModelsQ.data ?? [], currentId);
 

@@ -24,6 +24,9 @@ import type {
   StrataSnapshot, StrataStagingRow, StrataStrategyElement, StrataThresholdPreview, StrataThresholdScheme,
   StrataUploadRun, StrataUploadTemplate, StrataValidationResult, StrataValueCategory,
   StrataWorkflowConfig, ThresholdBand,
+  StrataStrategyFramework, StrataFrameworkVersion, StrataFrameworkMember, StrataFrameworkValidation,
+  StrataFrameworkApprovalTask, StrataFrameworkApproverCandidate, StrataFrameworkDependencyImpact,
+  StrataFrameworkMemberDraft,
 } from '../types';
 
 /** Shape of strata_kpi_dependency_impact (KO-DEF-002). Counts only; no identifiers leak. */
@@ -2094,4 +2097,85 @@ export const governanceApi = {
     owner_id: string | null;
   }>> =>
     run(typedRpc('strata_needs_attention', { p_period: periodId ?? null })),
+};
+
+// ── Strategy Framework (CAT-STRATA-GOVFRAMEWORK-20260719-001) ─────────────────
+// Reads are plain typedQuery; every lifecycle transition is a dedicated RPC whose DB
+// enforces the assigned-approver rule, both-sided maker-checker, the shared validator,
+// one-open-task and the optimistic-concurrency token. The UI only explains those rules.
+export const frameworkApi = {
+  frameworks: (): Promise<StrataStrategyFramework[]> =>
+    run(typedQuery('strata_strategy_frameworks').select('*').order('name')),
+  frameworkBySlug: (slug: string): Promise<StrataStrategyFramework | null> =>
+    run(typedQuery('strata_strategy_frameworks').select('*').eq('slug', slug).maybeSingle()),
+  versions: (frameworkId?: string): Promise<StrataFrameworkVersion[]> => {
+    let q = typedQuery('strata_strategy_framework_versions').select('*').order('version', { ascending: false });
+    if (frameworkId) q = q.eq('framework_id', frameworkId);
+    return run(q);
+  },
+  /** The single currently-effective approved version of a framework (or null). */
+  effectiveVersion: (frameworkId: string): Promise<StrataFrameworkVersion | null> =>
+    run(typedQuery('strata_strategy_framework_versions').select('*')
+      .eq('framework_id', frameworkId).eq('status', 'approved').is('effective_to', null)
+      .order('version', { ascending: false }).limit(1).maybeSingle()),
+  members: (versionId: string): Promise<StrataFrameworkMember[]> =>
+    run(typedQuery('strata_strategy_framework_members').select('*')
+      .eq('framework_version_id', versionId).order('order_index')),
+  approvalTasks: (versionId: string): Promise<StrataFrameworkApprovalTask[]> =>
+    run(typedQuery('strata_strategy_framework_approval_tasks').select('*')
+      .eq('framework_version_id', versionId).order('created_at', { ascending: false })),
+  validate: (versionId: string): Promise<StrataFrameworkValidation> =>
+    run(typedRpc('strata_validate_strategy_framework_version', { p_version: versionId })),
+  dependencyImpact: (versionId: string): Promise<StrataFrameworkDependencyImpact> =>
+    run(typedRpc('strata_framework_dependency_impact', { p_version: versionId })),
+  approverCandidates: (versionId: string): Promise<StrataFrameworkApproverCandidate[]> =>
+    run(typedRpc('strata_framework_approver_candidates', { p_version: versionId })).then(
+      (r) => (r as StrataFrameworkApproverCandidate[] | null) ?? []),
+
+  // ── lifecycle (RPC-only) ──
+  create: (name: string, description?: string, key?: string): Promise<{ framework_id: string; version_id: string }> =>
+    run(typedRpc('strata_create_strategy_framework', {
+      p_name: name, p_description: description ?? null, p_framework_key: key ?? null,
+    })),
+  createDraftVersion: (frameworkId: string, reason: string): Promise<string> =>
+    run(typedRpc('strata_create_framework_draft_version', { p_framework: frameworkId, p_reason: reason })),
+  updateDraft: (versionId: string, changeReason: string, expectedUpdatedAt?: string) =>
+    run(typedRpc('strata_update_framework_draft', {
+      p_version: versionId, p_change_reason: changeReason, p_expected_updated_at: expectedUpdatedAt ?? null,
+    })),
+  /** Replace ALL members atomically — the weight/order editor's write path. */
+  replaceMembers: (versionId: string, members: StrataFrameworkMemberDraft[], expectedUpdatedAt?: string) =>
+    run(typedRpc('strata_replace_framework_members', {
+      p_version: versionId, p_members: members, p_expected_updated_at: expectedUpdatedAt ?? null,
+    })),
+  submit: (versionId: string, approverId: string, note?: string, expectedUpdatedAt?: string) =>
+    run(typedRpc('strata_submit_framework_version', {
+      p_version: versionId, p_approver: approverId, p_note: note ?? null,
+      p_expected_updated_at: expectedUpdatedAt ?? null,
+    })),
+  withdraw: (versionId: string, reason?: string) =>
+    run(typedRpc('strata_withdraw_framework_version', { p_version: versionId, p_reason: reason ?? null })),
+  /** strata_admin remediation/reassignment — never a decision verb. */
+  assignApprover: (versionId: string, approverId: string, reason?: string) =>
+    run(typedRpc('strata_assign_framework_approver', {
+      p_version: versionId, p_approver: approverId, p_reason: reason ?? null,
+    })),
+  requestChanges: (versionId: string, comment: string) =>
+    run(typedRpc('strata_request_framework_changes', { p_version: versionId, p_comment: comment })),
+  approve: (versionId: string, note?: string, expectedUpdatedAt?: string) =>
+    run(typedRpc('strata_approve_framework_version', {
+      p_version: versionId, p_note: note ?? null, p_expected_updated_at: expectedUpdatedAt ?? null,
+    })),
+  reject: (versionId: string, reason: string) =>
+    run(typedRpc('strata_reject_framework_version', { p_version: versionId, p_reason: reason })),
+  retire: (versionId: string, reason?: string) =>
+    run(typedRpc('strata_retire_strategy_framework_version', { p_version: versionId, p_reason: reason ?? null })),
+
+  // ── cross-cutting: perspective revision + model inheritance ──
+  createPerspectiveDraftVersion: (perspectiveId: string, reason: string): Promise<string> =>
+    run(typedRpc('strata_create_perspective_draft_version', { p_perspective: perspectiveId, p_reason: reason })),
+  seedModelPerspectivesFromFramework: (modelId: string, versionId: string, expectedUpdatedAt?: string) =>
+    run(typedRpc('strata_seed_model_perspectives_from_framework', {
+      p_model: modelId, p_framework_version: versionId, p_expected_updated_at: expectedUpdatedAt ?? null,
+    })),
 };

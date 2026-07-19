@@ -48,7 +48,7 @@ import { Briefcase, ClipboardList, GitBranch, Network, Plus, Target } from '@/li
 import { Routes } from '@/lib/routes';
 import {
   useActions, useBandResolver, useBenefitProjectCards, useBenefits, useDecisions, useElementKpis, useGateModels, useInvalidateStrata, useKpis, useMapEdges, useOkrs,
-  ctxToken, usePerspectives, useProjectCards, useThemeCharters, useProfileNames, useStrataAudit, useStrataContext,
+  ctxToken, useEffectiveFrameworkMemberIds, usePerspectives, useProjectCards, useThemeCharters, useProfileNames, useStrataAudit, useStrataContext,
   useStrataRoles, useStrategyElementBySlug, useStrategyElements,
 } from '@/modules/strata/hooks/useStrata';
 import {
@@ -104,6 +104,8 @@ export default function StrataStrategyElementDetailPage() {
   const elementKpisQ = useElementKpis();
   const kpisQ = useKpis();
   const perspectivesQ = usePerspectives();
+  // Restrict authoring options to the effective corporate framework members (current value kept).
+  const frameworkMemberIds = useEffectiveFrameworkMemberIds();
   const gateModelsQ = useGateModels();
   const okrsQ = useOkrs();
   const projectCardsQ = useProjectCards();
@@ -757,7 +759,7 @@ export default function StrataStrategyElementDetailPage() {
       {authoring?.kind === 'edit-element' ? (
         <EditElementModal
           element={authoring.element}
-          perspectiveOptions={perspectiveSelectOptions(perspectivesQ.data ?? [], authoring.element.perspective_id)}
+          perspectiveOptions={perspectiveSelectOptions(perspectivesQ.data ?? [], authoring.element.perspective_id, frameworkMemberIds)}
           parentOptions={themeParentOptions(elements, authoring.element.id)}
           onClose={() => setAuthoring(null)}
           onSaved={invalidate}
@@ -782,7 +784,7 @@ export default function StrataStrategyElementDetailPage() {
           cycleId={element.cycle_id}
           cycleName={elementCycle?.name ?? '—'}
           themeOptions={[{ value: element.id, label: element.name }]}
-          perspectiveOptions={perspectiveSelectOptions(perspectivesQ.data ?? [], null)}
+          perspectiveOptions={perspectiveSelectOptions(perspectivesQ.data ?? [], null, frameworkMemberIds)}
           lockElementType="objective"
           lockParentId={element.id}
           onClose={() => setAuthoring(null)}

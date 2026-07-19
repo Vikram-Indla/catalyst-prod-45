@@ -27,6 +27,7 @@ const ReviewsPage = lazy(() => import('./pages/StrataReviewsPage'));
 const BoardPackPage = lazy(() => import('./pages/StrataBoardPackPage'));
 const AdminConfigPage = lazy(() => import('./pages/StrataAdminConfigPage'));
 const MeasurementPage = lazy(() => import('./pages/StrataMeasurementPage'));
+const FrameworkPage = lazy(() => import('./pages/StrataFrameworkPage'));
 const DataIntegrationPage = lazy(() => import('./pages/StrataDataIntegrationPage'));
 const AccessPage = lazy(() => import('./pages/StrataAccessPage'));
 const EvidencePage = lazy(() => import('./pages/StrataEvidencePage'));
@@ -86,6 +87,8 @@ export function StrataRoutesShell() {
         {/* Consequence-domain pages (Phase 5). Static segments outrank
             admin/:section by React Router specificity — no shadow. */}
         <Route path="admin/measurement" element={<S><MeasurementPage /></S>} />
+        <Route path="admin/frameworks" element={<S><FrameworkPage /></S>} />
+        <Route path="admin/frameworks/:frameworkSlug" element={<S><FrameworkPage /></S>} />
         <Route path="admin/data" element={<S><DataIntegrationPage /></S>} />
         <Route path="admin/access" element={<S><AccessPage /></S>} />
         <Route path="admin/:section" element={<S><AdminConfigPage /></S>} />

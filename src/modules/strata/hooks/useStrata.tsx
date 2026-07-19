@@ -8,7 +8,7 @@ import { useSearchParams } from 'react-router-dom';
 import { useQuery, useQueries, useQueryClient } from '@tanstack/react-query';
 import { supabase, typedRpc } from '@/integrations/supabase/client';
 import {
-  configApi, executionApi, governanceApi, kpiApi, lineageApi, scorecardApi, strategyApi, valueApi,
+  configApi, executionApi, frameworkApi, governanceApi, kpiApi, lineageApi, scorecardApi, strategyApi, valueApi,
 } from '../domain';
 import type {
   ScorecardCalcResult, ScorecardPlanVariance,
@@ -220,6 +220,84 @@ export const useChangeRequests = () =>
   useQuery({ queryKey: ['strata', 'change-requests'], queryFn: configApi.changeRequests, staleTime: STALE });
 export const useStrataAudit = (entityTable?: string) =>
   useQuery({ queryKey: ['strata', 'audit', entityTable], queryFn: () => configApi.auditEvents(entityTable), staleTime: STALE });
+
+// ── Strategy Framework (CAT-STRATA-GOVFRAMEWORK-20260719-001) ─────────────────
+// Reads only; every transition is a frameworkApi RPC and the DB is the authority.
+export const useStrategyFrameworks = () =>
+  useQuery({ queryKey: ['strata', 'frameworks'], queryFn: frameworkApi.frameworks, staleTime: STALE });
+export const useFrameworkBySlug = (slug?: string) =>
+  useQuery({
+    queryKey: ['strata', 'framework', slug],
+    queryFn: () => frameworkApi.frameworkBySlug(slug!),
+    enabled: !!slug,
+    staleTime: STALE,
+  });
+export const useFrameworkVersions = (frameworkId?: string) =>
+  useQuery({
+    queryKey: ['strata', 'framework-versions', frameworkId],
+    queryFn: () => frameworkApi.versions(frameworkId),
+    staleTime: STALE,
+  });
+export const useEffectiveFrameworkVersion = (frameworkId?: string) =>
+  useQuery({
+    queryKey: ['strata', 'framework-effective', frameworkId],
+    queryFn: () => frameworkApi.effectiveVersion(frameworkId!),
+    enabled: !!frameworkId,
+    staleTime: STALE,
+  });
+export const useFrameworkMembers = (versionId?: string) =>
+  useQuery({
+    queryKey: ['strata', 'framework-members', versionId],
+    queryFn: () => frameworkApi.members(versionId!),
+    enabled: !!versionId,
+    staleTime: STALE,
+  });
+export const useFrameworkValidation = (versionId?: string) =>
+  useQuery({
+    queryKey: ['strata', 'framework-validation', versionId],
+    queryFn: () => frameworkApi.validate(versionId!),
+    enabled: !!versionId,
+    staleTime: STALE,
+  });
+export const useFrameworkApprovalTasks = (versionId?: string) =>
+  useQuery({
+    queryKey: ['strata', 'framework-approval-tasks', versionId],
+    queryFn: () => frameworkApi.approvalTasks(versionId!),
+    enabled: !!versionId,
+    staleTime: STALE,
+  });
+export const useFrameworkApproverCandidates = (versionId?: string, enabled = true) =>
+  useQuery({
+    queryKey: ['strata', 'framework-approver-candidates', versionId],
+    queryFn: () => frameworkApi.approverCandidates(versionId!),
+    enabled: !!versionId && enabled,
+    staleTime: STALE,
+  });
+export const useFrameworkDependencyImpact = (versionId?: string) =>
+  useQuery({
+    queryKey: ['strata', 'framework-impact', versionId],
+    queryFn: () => frameworkApi.dependencyImpact(versionId!),
+    enabled: !!versionId,
+    staleTime: STALE,
+  });
+
+/**
+ * Perspective ids that are members of the effective corporate framework version.
+ * Returns null while resolving OR when no effective framework exists — callers then fall back to
+ * the legacy all-approved list rather than showing an empty picker. Used to restrict new
+ * strategy-element authoring to the effective framework's perspectives (draft members excluded).
+ */
+export function useEffectiveFrameworkMemberIds(): ReadonlySet<string> | null {
+  const frameworks = useStrategyFrameworks();
+  const list = frameworks.data ?? [];
+  const corporate = list.find((f) => f.framework_key === 'corporate') ?? list[0] ?? null;
+  const effective = useEffectiveFrameworkVersion(corporate?.id);
+  const members = useFrameworkMembers(effective.data?.id);
+  return useMemo(
+    () => (members.data ? new Set(members.data.map((m) => m.perspective_id)) : null),
+    [members.data],
+  );
+}
 
 /** Resolve a band key (org-configured) to its label + ADS appearance from governed config. */
 export function useBandResolver() {
