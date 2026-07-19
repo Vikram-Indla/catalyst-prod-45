@@ -1346,6 +1346,23 @@ const OBS_STATUS_LOZENGE: Record<string, { label: string; appearance: React.Comp
   reversed: { label: 'Reversed', appearance: 'default' },
   superseded: { label: 'Superseded', appearance: 'default' },
 };
+/**
+ * Persistent field label for the observation form — canonical Catalyst field chrome
+ * (12px/600 subtle label above a 14px/20px ADS control, optional required marker).
+ * Mirrors authoring.tsx `FieldLabel`; kept local to avoid a shared↔authoring import cycle.
+ */
+function ObsFieldLabel({ label, required, children }: { label: string; required?: boolean; children: React.ReactNode }) {
+  return (
+    <div>
+      <span style={{ display: 'block', marginBottom: 4, fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: T.subtle }}>
+        {label}
+        {required ? <span style={{ color: 'var(--ds-text-danger)' }}> *</span> : null}
+      </span>
+      {children}
+    </div>
+  );
+}
+
 export function KrObservations({ krId, krName, canValidate, onClose, embedded = false }: {
   krId: string; krName: string; canValidate: boolean; onClose: () => void;
   /** True when rendered inline on a detail page (no toggle) — hides the redundant heading + Close. */
@@ -1385,20 +1402,32 @@ export function KrObservations({ krId, krName, canValidate, onClose, embedded = 
           <Button appearance="subtle" spacing="compact" onClick={onClose}>Close</Button>
         </div>
       ) : null}
-      <div style={{ display: 'grid', gap: 6, maxWidth: 540, marginBottom: 12 }}>
-        <div style={{ display: 'flex', gap: 8 }}>
-          <Textfield type="date" value={asOf} onChange={(e) => setAsOf((e.target as HTMLInputElement).value)} aria-label="As-of date" />
-          <Textfield type="number" value={value} onChange={(e) => setValue((e.target as HTMLInputElement).value)} aria-label="Actual value" placeholder="Value" />
+      <div style={{ display: 'grid', gap: 16, maxWidth: 640, marginBottom: 16 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 16 }}>
+          <ObsFieldLabel label="As-of date">
+            <Textfield type="date" value={asOf} onChange={(e) => setAsOf((e.target as HTMLInputElement).value)} aria-label="As-of date" />
+          </ObsFieldLabel>
+          <ObsFieldLabel label="Actual value" required>
+            <Textfield type="number" value={value} onChange={(e) => setValue((e.target as HTMLInputElement).value)} aria-label="Actual value" placeholder="e.g. 60" />
+          </ObsFieldLabel>
         </div>
-        <Select options={periodOpts} value={periodOpts.find((o) => o.value === period) ?? null}
-          onChange={(o) => setPeriod(o?.value ?? null)} placeholder="Reporting period…" isClearable usePortal aria-label="Reporting period" />
-        <div style={{ display: 'flex', gap: 8 }}>
-          <Textfield type="number" value={forecast} onChange={(e) => setForecast((e.target as HTMLInputElement).value)} aria-label="Year-end forecast" placeholder="Forecast (optional)" />
-          <Select options={confOpts} value={confOpts.find((o) => o.value === confidence) ?? null}
-            onChange={(o) => setConfidence((o?.value as 'high' | 'medium' | 'low' | 'not_set') ?? 'not_set')} usePortal aria-label="Confidence" />
+        <ObsFieldLabel label="Reporting period">
+          <Select options={periodOpts} value={periodOpts.find((o) => o.value === period) ?? null}
+            onChange={(o) => setPeriod(o?.value ?? null)} placeholder="Select a period" isClearable usePortal aria-label="Reporting period" />
+        </ObsFieldLabel>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 16 }}>
+          <ObsFieldLabel label="Year-end forecast">
+            <Textfield type="number" value={forecast} onChange={(e) => setForecast((e.target as HTMLInputElement).value)} aria-label="Year-end forecast" placeholder="e.g. 75" />
+          </ObsFieldLabel>
+          <ObsFieldLabel label="Confidence">
+            <Select options={confOpts} value={confOpts.find((o) => o.value === confidence) ?? null}
+              onChange={(o) => setConfidence((o?.value as 'high' | 'medium' | 'low' | 'not_set') ?? 'not_set')} usePortal aria-label="Confidence" />
+          </ObsFieldLabel>
         </div>
-        <TextArea value={commentary} minimumRows={2} onChange={(e) => setCommentary((e.target as HTMLTextAreaElement).value)}
-          placeholder="Commentary (optional)" aria-label="Commentary" />
+        <ObsFieldLabel label="Commentary">
+          <TextArea value={commentary} minimumRows={2} onChange={(e) => setCommentary((e.target as HTMLTextAreaElement).value)}
+            placeholder="e.g. Q2 uptake ahead of plan" aria-label="Commentary" />
+        </ObsFieldLabel>
         <div>
           <Button appearance="primary" spacing="compact" isDisabled={busy || value.trim() === ''} testId={`strata-kr-obs-submit-${krId}`}
             onClick={() => run(async () => {
