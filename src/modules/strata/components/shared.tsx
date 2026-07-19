@@ -1137,14 +1137,14 @@ export const krProgressPercent = (kr: StrataKeyResult): number | null => {
 export function KrReportabilityBadge({ krId }: { krId: string }) {
   const q = useKrReportability(krId);
   const r = q.data;
-  if (q.isLoading || !r) return <span style={{ color: T.subtlest, fontSize: 'var(--ds-font-size-050)' }}>—</span>;
+  if (q.isLoading || !r) return <span style={{ color: T.subtlest, fontSize: 'var(--ds-font-size-100)' }}>—</span>;
   const appearance: React.ComponentProps<typeof Lozenge>['appearance'] =
     !r.reportable ? 'removed' : r.qualified ? 'moved' : r.kind === 'standalone' ? 'default' : 'success';
   return (
     <span style={{ display: 'inline-flex', flexDirection: 'column', gap: 2 }} data-testid={`strata-kr-reportability-${krId}`}>
       <Lozenge appearance={appearance}>{r.label}</Lozenge>
       {r.kind === 'kpi_backed' ? (
-        <span style={{ fontSize: 'var(--ds-font-size-050)', color: T.subtlest }}>
+        <span style={{ fontSize: 'var(--ds-font-size-100)', color: T.subtlest }}>
           {r.kpi_name ? `${r.kpi_name} · ` : ''}{r.kpi_state ? labelize(r.kpi_state) : ''}
           {r.resolved_kpi_id ? ' · effective version resolved' : ''}
           {r.reason ? ` — ${r.reason}` : ''}
@@ -1175,7 +1175,7 @@ export function OkrOfficialProgress({ okrId, themeOwned = false }: { okrId: stri
     const awaiting = reportable - (p.krs_with_eligible_observation ?? 0);
     return (
       <div data-testid={`strata-okr-official-progress-${okrId}`}
-        style={{ margin: '4px 0 8px', fontSize: 'var(--ds-font-size-050)', color: T.subtle }}>
+        style={{ margin: '4px 0 8px', fontSize: 'var(--ds-font-size-100)', color: T.subtle }}>
         Official progress:{' '}
         <strong style={{ color: T.text }}>{p.official_progress != null ? `${Math.round(p.official_progress * 100)}%` : '—'}</strong>{' '}
         over {reportable} reportable KR{reportable === 1 ? '' : 's'}
@@ -1189,7 +1189,7 @@ export function OkrOfficialProgress({ okrId, themeOwned = false }: { okrId: stri
   if (!p) return null;
   return (
     <div data-testid={`strata-okr-official-progress-${okrId}`}
-      style={{ margin: '4px 0 8px', fontSize: 'var(--ds-font-size-050)', color: T.subtle }}>
+      style={{ margin: '4px 0 8px', fontSize: 'var(--ds-font-size-100)', color: T.subtle }}>
       Official progress:{' '}
       <strong style={{ color: T.text }}>
         {p.official_progress != null ? `${Math.round(p.official_progress * 100)}%` : '—'}
@@ -1425,7 +1425,7 @@ export function KrObservations({ krId, krName, canValidate, onClose, embedded = 
                     <span style={{ fontVariantNumeric: 'tabular-nums', minWidth: 90 }}>{String(o.as_of_date)}</span>
                     <strong style={{ minWidth: 60, textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{o.actual_value != null ? String(o.actual_value) : '—'}</strong>
                     <Lozenge appearance={st.appearance}>{st.label}</Lozenge>
-                    <span style={{ color: T.subtle, fontSize: 'var(--ds-font-size-050)' }}>
+                    <span style={{ color: T.subtle, fontSize: 'var(--ds-font-size-100)' }}>
                       by {nameOf(String(o.submitted_by))}{o.validated_by ? ` · validated by ${nameOf(String(o.validated_by))}` : ''}
                     </span>
                     {canValidate && isPending ? (
@@ -1503,7 +1503,7 @@ export function OkrRow({ okr, objectiveName, isOpen, onToggle, onAddKeyResult, o
         <div style={{ padding: '0 8px 12px 32px' }}>
           {okr.slug ? (
             <div style={{ marginBottom: 4 }}>
-              <a href={Routes.strata.okr(okr.slug)} style={{ color: 'var(--ds-text-brand)', fontSize: 'var(--ds-font-size-050)', textDecoration: 'none' }}>
+              <a href={Routes.strata.okr(okr.slug)} style={{ color: 'var(--ds-text-brand)', fontSize: 'var(--ds-font-size-100)', textDecoration: 'none' }}>
                 Open OKR page ↗
               </a>
             </div>
@@ -1579,7 +1579,7 @@ export function OkrLifecycleActions({ okr }: { okr: StrataOkr }) {
           </p>
         </SectionMessage>
         {linkedReview ? (
-          <div style={{ marginTop: 'var(--ds-space-075)', fontSize: 'var(--ds-font-size-050)', color: T.subtle }} data-testid={`strata-okr-linked-review-${okr.id}`}>
+          <div style={{ marginTop: 'var(--ds-space-075)', fontSize: 'var(--ds-font-size-100)', color: T.subtle }} data-testid={`strata-okr-linked-review-${okr.id}`}>
             Linked review: <strong style={{ color: T.text }}>{(linkedReview as { title?: string; review_key?: string }).title ?? (linkedReview as { review_key?: string }).review_key ?? linkedReview.id}</strong>
             {' '}— retained as closed-history evidence (read-only).
           </div>
@@ -1621,12 +1621,12 @@ export function OkrLifecycleActions({ okr }: { okr: StrataOkr }) {
           ) : null}
         </div>
         {s === 'submitted' ? (
-          <span style={{ fontSize: 'var(--ds-font-size-050)', color: T.subtle }}>
+          <span style={{ fontSize: 'var(--ds-font-size-100)', color: T.subtle }}>
             Pending approval — an approver other than the submitter must approve (maker-checker).
           </span>
         ) : null}
         {s === 'rejected' ? (
-          <span style={{ fontSize: 'var(--ds-font-size-050)', color: 'var(--ds-text-danger)' }}>
+          <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-danger)' }}>
             Rejected{(okr as { rejection_reason?: string }).rejection_reason ? ` — ${(okr as { rejection_reason?: string }).rejection_reason}` : ''}. Revise and resubmit.
           </span>
         ) : null}
@@ -1703,7 +1703,7 @@ export function OkrLifecycleActions({ okr }: { okr: StrataOkr }) {
           <Select options={periodOpts} value={periodOpts.find((o) => o.value === endP) ?? null}
             onChange={(o) => setEndP(o?.value ?? null)} placeholder="End period…" isClearable usePortal aria-label="End period" />
           {rangeInvalid ? (
-            <span style={{ color: 'var(--ds-text-danger)', fontSize: 'var(--ds-font-size-050)' }}>End period cannot precede start period.</span>
+            <span style={{ color: 'var(--ds-text-danger)', fontSize: 'var(--ds-font-size-100)' }}>End period cannot precede start period.</span>
           ) : null}
           <div style={{ display: 'flex', gap: 8 }}>
             <Button spacing="compact" appearance="subtle" isDisabled={busy} onClick={() => setEditOpen(false)}>Cancel</Button>
@@ -1738,7 +1738,7 @@ export function OkrLifecycleActions({ okr }: { okr: StrataOkr }) {
       ) : null}
 
       {linkedReview ? (
-        <div style={{ fontSize: 'var(--ds-font-size-050)', color: T.subtle }} data-testid={`strata-okr-linked-review-${okr.id}`}>
+        <div style={{ fontSize: 'var(--ds-font-size-100)', color: T.subtle }} data-testid={`strata-okr-linked-review-${okr.id}`}>
           Linked review: <strong style={{ color: T.text }}>{(linkedReview as { title?: string; review_key?: string }).title ?? (linkedReview as { review_key?: string }).review_key ?? linkedReview.id}</strong>
           {' '}· commentary, decisions and corrective actions are recorded on the review.
         </div>

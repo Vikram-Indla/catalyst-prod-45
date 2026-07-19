@@ -77,6 +77,7 @@ export default function StrataKrDetailPage() {
       headerActions={<KrReportabilityBadge krId={kr.id} />}
       testId={`strata-kr-detail-${kr.id}`}
     >
+      <div style={{ display: 'grid', gap: 16 }}>
       <StrataPanel title="Progress" icon={<Target size={16} />}>
         <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap', alignItems: 'baseline' }}>
           <div>
@@ -119,6 +120,7 @@ export default function StrataKrDetailPage() {
         <Button appearance="subtle" spacing="compact" onClick={() => navigate(okr?.slug ? Routes.strata.okr(okr.slug) : Routes.strata.strategy())}>
           ← Back to {okr ? okr.name : 'Strategy'}
         </Button>
+      </div>
       </div>
     </StrataPageShell>
   );

@@ -64,6 +64,7 @@ export default function StrataOkrDetailPage() {
       headerActions={status ? <Lozenge appearance={status.appearance}>{status.label}</Lozenge> : undefined}
       testId={`strata-okr-detail-${okr.id}`}
     >
+      <div style={{ display: 'grid', gap: 16 }}>
       <StrataPanel title="Objective" icon={<Target size={16} />}>
         <div style={{ display: 'grid', gap: 8 }}>
           <p style={{ margin: 0, color: T.text, fontSize: 'var(--ds-font-size-200)' }}>
@@ -104,6 +105,7 @@ export default function StrataOkrDetailPage() {
         <Button appearance="subtle" spacing="compact" onClick={() => navigate(theme?.slug ? Routes.strata.strategyElement(theme.slug) : Routes.strata.strategy())}>
           ← Back to {theme ? theme.name : 'Strategy'}
         </Button>
+      </div>
       </div>
     </StrataPageShell>
   );
