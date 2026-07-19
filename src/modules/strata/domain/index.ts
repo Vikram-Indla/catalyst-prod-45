@@ -85,6 +85,14 @@ async function run<T>(q: PromiseLike<{ data: T | null; error: { message: string;
   return data as T;
 }
 
+/** Untyped RPC bridge for the Theme-owned OKR functions (CAT-STRATA-THEMEOKR-20260719-001).
+ *  These RPCs post-date the last generated-types snapshot; regenerate src/integrations/supabase/types.ts
+ *  to fold them into typedRpc, at which point this bridge can be removed. Runtime behaviour is identical. */
+const rpcAny = (fn: string, args: Record<string, unknown>) =>
+  (supabase.rpc as unknown as (
+    f: string, a: Record<string, unknown>,
+  ) => PromiseLike<{ data: unknown; error: { message: string; code?: string } | null }>)(fn, args);
+
 // ── Config engine ────────────────────────────────────────────────────────────
 export const configApi = {
   perspectives: (): Promise<StrataPerspective[]> =>
@@ -801,6 +809,86 @@ export const kpiApi = {
       p_kr: krId, p_current_value: patch.currentValue ?? null, p_name: patch.name ?? null,
       p_target: patch.target ?? null, p_status: patch.status ?? null, p_kpi: patch.kpiId ?? null,
     })),
+  // ── Theme-owned OKR v2 (CAT-STRATA-THEMEOKR-20260719-001) — governed direct-Theme model ──
+  orgUnits: (): Promise<Array<{ id: string; name: string; slug: string | null }>> =>
+    run(typedQuery('strata_org_units' as never).select('id,name,slug').eq('status', 'active').order('name') as never),
+  unitsOfMeasure: (): Promise<Array<{ id: string; code: string; name: string; symbol: string | null; category: string }>> =>
+    run(typedQuery('strata_units_of_measure' as never).select('id,code,name,symbol,category').eq('status', 'active').order('name') as never),
+  createOkrV2: (input: {
+    themeId: string; name: string; objectiveStatement: string; cycleId?: string; ownerId?: string;
+    owningOrgId?: string; commitment?: 'committed' | 'aspirational'; startPeriodId?: string; endPeriodId?: string;
+  }): Promise<string> =>
+    run(rpcAny('strata_create_okr_v2', {
+      p_theme: input.themeId, p_name: input.name, p_objective_statement: input.objectiveStatement,
+      p_cycle: input.cycleId ?? null, p_owner: input.ownerId ?? null, p_owning_org: input.owningOrgId ?? null,
+      p_commitment: input.commitment ?? 'committed', p_start_period: input.startPeriodId ?? null, p_end_period: input.endPeriodId ?? null,
+    })) as Promise<string>,
+  submitOkr: (okrId: string, lockVersion?: number) =>
+    run(rpcAny('strata_submit_okr', { p_okr: okrId, p_lock_version: lockVersion ?? null })),
+  approveOkr: (okrId: string, lockVersion?: number) =>
+    run(rpcAny('strata_approve_okr', { p_okr: okrId, p_lock_version: lockVersion ?? null })),
+  rejectOkr: (okrId: string, reason: string) => run(rpcAny('strata_reject_okr', { p_okr: okrId, p_reason: reason })),
+  withdrawOkr: (okrId: string, reason?: string) => run(rpcAny('strata_withdraw_okr', { p_okr: okrId, p_reason: reason ?? null })),
+  cancelOkr: (okrId: string, reason: string) => run(rpcAny('strata_cancel_okr', { p_okr: okrId, p_reason: reason })),
+  versionOkr: (okrId: string, objectiveStatement: string, rationale: string, materiality?: string): Promise<string> =>
+    run(rpcAny('strata_version_okr', { p_okr: okrId, p_objective_statement: objectiveStatement, p_rationale: rationale, p_materiality: materiality ?? 'material' })) as Promise<string>,
+  okrValidate: (okrId: string, stage: 'submit' | 'approve' = 'submit'): Promise<{ valid: boolean; codes: string[]; kr_count?: number }> =>
+    run(rpcAny('strata_okr_validate', { p_okr: okrId, p_stage: stage })) as never,
+  addKr: (input: {
+    okrId: string; name: string; businessDefinition?: string; unitId?: string; baseline?: number; baselineDate?: string;
+    target?: number; targetDate?: string; direction?: string; updateMethod?: string; accountableOwnerId?: string;
+    owningOrgId?: string; reporterId?: string; dataStewardId?: string; observationFrequency?: string; isCritical?: boolean; weight?: number;
+  }): Promise<string> =>
+    run(rpcAny('strata_add_kr', {
+      p_okr: input.okrId, p_name: input.name, p_business_definition: input.businessDefinition ?? null,
+      p_unit_id: input.unitId ?? null, p_baseline: input.baseline ?? null, p_baseline_date: input.baselineDate ?? null,
+      p_target: input.target ?? null, p_target_date: input.targetDate ?? null, p_direction: input.direction ?? 'higher_better',
+      p_update_method: input.updateMethod ?? 'manual', p_accountable_owner: input.accountableOwnerId ?? null,
+      p_owning_org: input.owningOrgId ?? null, p_reporter: input.reporterId ?? null, p_data_steward: input.dataStewardId ?? null,
+      p_observation_frequency: input.observationFrequency ?? 'monthly', p_is_critical: input.isCritical ?? false, p_weight: input.weight ?? null,
+    })) as Promise<string>,
+  assignKrRoles: (krId: string, roles: { accountableOwnerId?: string; owningOrgId?: string; reporterId?: string; dataStewardId?: string; escalationOwnerId?: string }) =>
+    run(rpcAny('strata_assign_kr_roles', {
+      p_kr: krId, p_accountable_owner: roles.accountableOwnerId ?? null, p_owning_org: roles.owningOrgId ?? null,
+      p_reporter: roles.reporterId ?? null, p_data_steward: roles.dataStewardId ?? null, p_escalation_owner: roles.escalationOwnerId ?? null,
+    })),
+  configureKrPhasing: (krId: string, periodId: string, phasedTarget?: number, milestoneLabel?: string): Promise<string> =>
+    run(rpcAny('strata_configure_kr_phasing', { p_kr: krId, p_period: periodId, p_phased_target: phasedTarget ?? null, p_milestone_label: milestoneLabel ?? null })) as Promise<string>,
+  retireKr: (krId: string, reason: string) => run(rpcAny('strata_retire_kr', { p_kr: krId, p_reason: reason })),
+  krValidateContract: (krId: string): Promise<{ valid: boolean; codes: string[]; milestone?: boolean }> =>
+    run(rpcAny('strata_kr_validate_contract', { p_kr: krId })) as never,
+  // observations
+  submitKrObservation: (input: {
+    krId: string; periodId?: string; asOf?: string; value: number; numerator?: number; denominator?: number;
+    commentary?: string; forecast?: number; confidence?: 'high' | 'medium' | 'low' | 'not_set'; confidenceRationale?: string; evidence?: Record<string, unknown>;
+  }): Promise<string> =>
+    run(rpcAny('strata_submit_kr_observation', {
+      p_kr: input.krId, p_period: input.periodId ?? null, p_as_of: input.asOf ?? null, p_value: input.value,
+      p_numerator: input.numerator ?? null, p_denominator: input.denominator ?? null, p_commentary: input.commentary ?? null,
+      p_forecast: input.forecast ?? null, p_confidence: input.confidence ?? null, p_confidence_rationale: input.confidenceRationale ?? null, p_evidence: input.evidence ?? null,
+    })) as Promise<string>,
+  ingestKrObservation: (input: { krId: string; sourceEventKey: string; value: number; asOf: string; periodId?: string; integrationRun?: string }): Promise<{ observation_id: string; idempotent_replay: boolean }> =>
+    run(rpcAny('strata_ingest_kr_observation', {
+      p_kr: input.krId, p_source_event_key: input.sourceEventKey, p_value: input.value, p_as_of: input.asOf,
+      p_period: input.periodId ?? null, p_integration_run: input.integrationRun ?? null,
+    })) as never,
+  validateObservation: (obsId: string, verdict: 'validated' | 'rejected' | 'quarantined' | 'accepted_with_exception', note?: string, exceptionReason?: string) =>
+    run(rpcAny('strata_validate_observation', { p_obs: obsId, p_verdict: verdict, p_note: note ?? null, p_exception_reason: exceptionReason ?? null })),
+  reverseObservation: (obsId: string, reason: string): Promise<string> =>
+    run(rpcAny('strata_reverse_observation', { p_obs: obsId, p_reason: reason })) as Promise<string>,
+  krProgress: (krId: string, asOf?: string): Promise<Record<string, unknown>> =>
+    run(rpcAny('strata_kr_progress', { p_kr: krId, p_as_of: asOf ?? null })) as Promise<Record<string, unknown>>,
+  okrOfficialProgressV2: (okrId: string, asOf?: string): Promise<Record<string, unknown>> =>
+    run(rpcAny('strata_okr_official_progress_v2', { p_okr: okrId, p_as_of: asOf ?? null })) as Promise<Record<string, unknown>>,
+  // review / close
+  beginOkrClosingReview: (okrId: string) => run(rpcAny('strata_begin_okr_closing_review', { p_okr: okrId })),
+  createOkrCheckin: (input: { okrId: string; periodId?: string; type?: string; managementStatus?: string; assessment?: string; decisions?: string; correctiveActions?: string }): Promise<string> =>
+    run(rpcAny('strata_create_okr_checkin', {
+      p_okr: input.okrId, p_period: input.periodId ?? null, p_type: input.type ?? 'monthly', p_management_status: input.managementStatus ?? null,
+      p_assessment: input.assessment ?? null, p_decisions: input.decisions ?? null, p_corrective_actions: input.correctiveActions ?? null,
+    })) as Promise<string>,
+  closeAndSnapshotOkr: (okrId: string, finalStatus: string, reason: string, allowException?: boolean, exceptionReason?: string): Promise<Record<string, unknown>> =>
+    run(rpcAny('strata_close_and_snapshot_okr', { p_okr: okrId, p_final_status: finalStatus, p_reason: reason, p_allow_exception: allowException ?? false, p_exception_reason: exceptionReason ?? null })) as Promise<Record<string, unknown>>,
   /** Full evidence chain for one KPI+period (F-REP-005). Honest nulls. */
   evidenceChain: (kpiId: string, periodId: string): Promise<Record<string, unknown>> =>
     run(typedRpc('strata_kpi_evidence_chain', { p_kpi: kpiId, p_period: periodId })),
