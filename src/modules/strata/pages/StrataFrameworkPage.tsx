@@ -13,7 +13,7 @@
  */
 import React, { useMemo, useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import {
   Button, EmptyState, Lozenge, Modal, ModalBody, ModalFooter, ModalHeader, ModalTitle,
   SectionMessage, Select, Spinner, Textfield,
@@ -23,7 +23,9 @@ import { JiraTable } from '@/components/shared/JiraTable';
 import type { Column } from '@/components/shared/JiraTable';
 import { StatusLozenge } from '@/components/shared/StatusLozenge';
 import { supabase } from '@/integrations/supabase/client';
-import { ArrowDown, ArrowUp, Layers, Plus, Trash2 } from '@/lib/atlaskit-icons';
+import { ArrowDown, ArrowUp, Layers, MoveRight, Plus, Trash2 } from '@/lib/atlaskit-icons';
+import { Routes } from '@/lib/routes';
+import { StrataConfigNav } from '@/modules/strata/pages/StrataAdminConfigPage';
 import { frameworkApi } from '@/modules/strata/domain';
 import {
   useEffectiveFrameworkVersion, useFrameworkApproverCandidates, useFrameworkDependencyImpact,
@@ -334,6 +336,7 @@ export default function StrataFrameworkPage() {
   const effectiveMembers = useFrameworkMembers(effective.data?.id);
   const effVal = useFrameworkValidation(effective.data?.id);
 
+  const navigate = useNavigate();
   const refresh = () => qc.invalidateQueries({ queryKey: ['strata'] });
   const nameById = useMemo(() => new Map((perspectives.data ?? []).map((p) => [p.id, p.name])), [perspectives.data]);
 
@@ -354,6 +357,24 @@ export default function StrataFrameworkPage() {
       docTitle="Strategy framework"
       trail={[{ text: 'Configuration' }, { text: 'Strategy framework' }]}
     >
+      <div style={{ marginBottom: 16 }}>
+        <StrataConfigNav activeKey="frameworks" />
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap', marginTop: 12 }}>
+          <p style={{ margin: 0, fontSize: 'var(--ds-font-size-100)', color: T.subtle, flex: 1, minWidth: 260 }}>
+            Govern the approved corporate perspective set, order and weights. The complete framework must total 100%.
+            Approved versions cannot be edited in place — create a governed revision; the current approved version
+            remains effective until a replacement is approved.
+          </p>
+          <Button appearance="subtle" iconAfter={<MoveRight size={14} />}
+            onClick={() => navigate(Routes.strata.adminSection('perspectives'))} testId="strata-framework-to-perspectives">
+            View perspective definitions
+          </Button>
+          <Button appearance="subtle" iconAfter={<MoveRight size={14} />}
+            onClick={() => navigate(Routes.strata.adminSection('scorecard-models'))} testId="strata-framework-to-models">
+            Manage scorecard models
+          </Button>
+        </div>
+      </div>
       {error ? <div style={{ marginBottom: 12 }}><SectionMessage appearance="error" title="Action failed">{error}</SectionMessage></div> : null}
 
       {!framework ? (

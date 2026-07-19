@@ -68,6 +68,20 @@ export interface StrataOkrOfficialProgress {
  * errors pass their original message through unchanged. */
 function mapStrataError(error: { message: string; code?: string }): string {
   const msg = error.message ?? '';
+  // CAT-STRATA-GOVFRAMEWORK — segregation-of-duties rejections read as raw DB text ("segregation
+  // of duties: the creator cannot approve their own record"). Translate to plain guidance; the
+  // structured technical text is still available to diagnostics via the original thrown Error/logs.
+  if (/segregation of duties/i.test(msg)) {
+    if (/creator cannot approve their own record|the creator cannot approve/i.test(msg)) {
+      return 'You cannot approve a version you created. The assigned approver must review it — return to the pending version to see who that is, or withdraw it if you need to make corrections.';
+    }
+    if (/submitter cannot approve their own submission|the submitter cannot approve/i.test(msg)) {
+      return 'You cannot approve a submission you sent. The assigned approver must decide it.';
+    }
+    if (/cannot be the approver|creator cannot be its approver/i.test(msg)) {
+      return 'The approver must be a different person from the version’s author and submitter (maker-checker).';
+    }
+  }
   if (error.code === '23505') {
     // unique_violation — map the STRATA constraints we own by name.
     if (msg.includes('strata_benefit_values_benefit_id_period_id_value_kind')) {

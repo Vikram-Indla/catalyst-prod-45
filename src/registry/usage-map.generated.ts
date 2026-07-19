@@ -4,8 +4,8 @@
  * Do NOT edit by hand. Run `npx tsx scripts/scan-components.ts` to regenerate
  * after changing any import in src/.
  *
- * Captured: 2026-07-19T17:13:26.805Z
- * Stats: 4037 components observed (662 atlaskit, 3375 internal).
+ * Captured: 2026-07-19T18:50:03.385Z
+ * Stats: 4038 components observed (662 atlaskit, 3376 internal).
  */
 
 export interface UsageMapEntry {
@@ -29416,7 +29416,8 @@ export const usageMap: UsageMap = {
     "origin": "internal",
     "consumers": [
       "src/modules/backlog/components/BulkMoveDialog.tsx",
-      "src/modules/strata/pages/StrataAdminConfigPage.tsx"
+      "src/modules/strata/pages/StrataAdminConfigPage.tsx",
+      "src/modules/strata/pages/StrataFrameworkPage.tsx"
     ]
   },
   "MoveRowDownIcon::@atlaskit/icon/core/table-row-move-down": {
@@ -29651,6 +29652,7 @@ export const usageMap: UsageMap = {
       "src/components/layout/WikiSidebar.tsx",
       "src/components/project-hub/shell/SidebarProjectNav.tsx",
       "src/features/my-test-scope/components/ScopeTabs.tsx",
+      "src/modules/strata/pages/StrataAdminConfigPage.tsx",
       "src/modules/strata/pages/StrataDataPipelinePage.tsx",
       "src/modules/strata/pages/StrataKpiDetailPage.tsx",
       "src/modules/strata/pages/StrataStrategyElementDetailPage.tsx",
@@ -35849,6 +35851,7 @@ export const usageMap: UsageMap = {
       "src/modules/strata/pages/StrataEvidencePage.tsx",
       "src/modules/strata/pages/StrataExecutionImportPage.tsx",
       "src/modules/strata/pages/StrataExecutionPage.tsx",
+      "src/modules/strata/pages/StrataFrameworkPage.tsx",
       "src/modules/strata/pages/StrataKpiDetailPage.tsx",
       "src/modules/strata/pages/StrataKpiLibraryPage.tsx",
       "src/modules/strata/pages/StrataMeasurementPage.tsx",
@@ -40646,6 +40649,14 @@ export const usageMap: UsageMap = {
       "src/modules/strata/pages/StrataKpiLibraryPage.tsx",
       "src/modules/strata/pages/StrataPortfolioVmoPage.tsx",
       "src/modules/strata/pages/StrataStrategyRoomPage.tsx"
+    ]
+  },
+  "StrataConfigNav::@/modules/strata/pages/StrataAdminConfigPage": {
+    "name": "StrataConfigNav",
+    "source": "@/modules/strata/pages/StrataAdminConfigPage",
+    "origin": "internal",
+    "consumers": [
+      "src/modules/strata/pages/StrataFrameworkPage.tsx"
     ]
   },
   "StrataDataStateLozenge::@/modules/strata/components/shared": {
@@ -48341,10 +48352,10 @@ export const usageMap: UsageMap = {
 };
 
 export const usageMapStats = {
-  total: 4037,
+  total: 4038,
   atlaskit: 662,
-  internal: 3375,
-  generatedAt: '2026-07-19T17:13:26.810Z',
+  internal: 3376,
+  generatedAt: '2026-07-19T18:50:03.401Z',
 };
 
 /**
