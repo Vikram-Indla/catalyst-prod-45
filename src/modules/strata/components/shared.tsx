@@ -1105,13 +1105,23 @@ export const OKR_STATUS_LOZENGE: Record<StrataOkr['status'], { label: string; ap
   closed: { label: 'Closed', appearance: 'default' },
 };
 
-/** Display-only progress of current within baseline→target (mandated by S-116). */
+/** Display-only progress of current within baseline→target (mandated by S-116).
+ *  Full precision — internal/evidence use only. Never render this directly (KO-DEF-004);
+ *  render krProgressPercent for any visible or accessibility text. */
 export const krProgressFraction = (kr: StrataKeyResult): number | null => {
   if (kr.target == null || kr.current_value == null) return null;
   const base = kr.baseline ?? 0;
   const span = kr.target - base;
   if (span === 0) return null;
   return Math.max(0, Math.min(1, (kr.current_value - base) / span));
+};
+
+/** KO-DEF-004 — authoritative rounded whole-percent for display + accessibility text.
+ *  The full-precision fraction stays internal (krProgressFraction) and in the server calc
+ *  (strata_kr_progress.progress_pct); no raw float is ever exposed to a user or a screen reader. */
+export const krProgressPercent = (kr: StrataKeyResult): number | null => {
+  const frac = krProgressFraction(kr);
+  return frac == null ? null : Math.round(frac * 100);
 };
 
 /** Lazy key-result fetch — mounts only when the OKR row is expanded (S-115/S-116). */
@@ -1201,10 +1211,17 @@ export function KeyResultsList({ okrId }: { okrId: string }) {
       label: 'Progress',
       width: 16,
       cell: ({ row }) => {
-        const frac = krProgressFraction(row);
-        return frac == null
+        // KO-DEF-004: expose only the authoritative rounded percent in visible + a11y text;
+        // pass the rounded value to ProgressBar so aria-valuenow can never carry a raw float.
+        const pct = krProgressPercent(row);
+        return pct == null
           ? <OkrDash />
-          : <ProgressBar value={frac} aria-label={`Progress ${Math.round(frac * 100)}%`} />;
+          : (
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+              <ProgressBar value={pct / 100} aria-label={`Progress ${pct}%`} />
+              <span style={{ color: T.subtle, fontVariantNumeric: 'tabular-nums', fontSize: 'var(--ds-font-size-050)' }}>{pct}%</span>
+            </span>
+          );
       },
     },
     {
