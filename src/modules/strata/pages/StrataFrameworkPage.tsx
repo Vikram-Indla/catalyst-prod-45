@@ -103,7 +103,7 @@ function MemberEditor({
   };
 
   return (
-    <Modal onClose={onClose} width="large">
+    <Modal isOpen onClose={onClose} width="large">
       <ModalHeader><ModalTitle>Edit framework members — v{version.version}</ModalTitle></ModalHeader>
       <ModalBody>
         <div style={{ display: 'flex', gap: 12, alignItems: 'center', marginBottom: 12 }}>
@@ -167,7 +167,7 @@ function SubmitModal({ version, onClose, onDone, onError }: {
     finally { setBusy(false); }
   };
   return (
-    <Modal onClose={onClose} width="medium">
+    <Modal isOpen onClose={onClose} width="medium">
       <ModalHeader><ModalTitle>Submit v{version.version} for approval</ModalTitle></ModalHeader>
       <ModalBody>
         <SectionMessage appearance="information" title="Maker–checker">
@@ -200,7 +200,7 @@ function CommentModal({ title, label, required, confirmLabel, appearance, onClos
   const [busy, setBusy] = useState(false);
   const go = async () => { setBusy(true); try { await onConfirm(text); } finally { setBusy(false); } };
   return (
-    <Modal onClose={onClose} width="medium">
+    <Modal isOpen onClose={onClose} width="medium">
       <ModalHeader><ModalTitle>{title}</ModalTitle></ModalHeader>
       <ModalBody>
         <span style={meta}>{label}</span>
