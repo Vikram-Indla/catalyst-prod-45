@@ -124,9 +124,9 @@ function MemberEditor({
                   aria-label={`Weight for ${nameById.get(r.perspective_id) ?? 'perspective'}`}
                 />
               </div>
-              <Button appearance="subtle" iconBefore={<ArrowUp size="small" label="Move up" />} onClick={() => move(r.perspective_id, -1)} isDisabled={i === 0} />
-              <Button appearance="subtle" iconBefore={<ArrowDown size="small" label="Move down" />} onClick={() => move(r.perspective_id, 1)} isDisabled={i === rows.length - 1} />
-              <Button appearance="subtle" iconBefore={<Trash2 size="small" label="Remove" />} onClick={() => remove(r.perspective_id)} />
+              <Button appearance="subtle" iconBefore={<ArrowUp size={16} label="Move up" />} onClick={() => move(r.perspective_id, -1)} isDisabled={i === 0} />
+              <Button appearance="subtle" iconBefore={<ArrowDown size={16} label="Move down" />} onClick={() => move(r.perspective_id, 1)} isDisabled={i === rows.length - 1} />
+              <Button appearance="subtle" iconBefore={<Trash2 size={16} label="Remove" />} onClick={() => remove(r.perspective_id)} />
             </div>
           ))}
           {rows.length === 0 ? <span style={meta}>No perspectives yet — add at least one.</span> : null}
@@ -247,7 +247,7 @@ function VersionCard({ version, current, perspectives, userId, onError, refresh 
       <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
         <span style={{ ...bodyStyle, fontWeight: 600 }}>Version {version.version}</span>
         <StatusLozenge status={version.status} />
-        {version.provenance === 'legacy_unverified' ? <Lozenge appearance="moved">Legacy / unverified provenance</Lozenge> : null}
+        {version.provenance === 'legacy_unverified' ? <Lozenge appearance="moved" maxWidth={320}>Legacy / unverified provenance</Lozenge> : null}
         <span style={{ ...meta, marginLeft: 'auto' }}>{version.change_reason ?? ''}</span>
       </div>
 
@@ -357,10 +357,10 @@ export default function StrataFrameworkPage() {
       {error ? <div style={{ marginBottom: 12 }}><SectionMessage appearance="error" title="Action failed">{error}</SectionMessage></div> : null}
 
       {!framework ? (
-        <StrataPanel title="Strategy framework" icon={<Layers size="small" label="" />}>
+        <StrataPanel title="Strategy framework" icon={<Layers size={16} label="" />}>
           <div style={{ padding: 16 }}>
             <EmptyState header="No framework yet" description="Create the corporate strategy framework to govern perspective membership and weights." />
-            <Button appearance="primary" iconBefore={<Plus size="small" label="" />} isLoading={creating}
+            <Button appearance="primary" iconBefore={<Plus size={16} label="" />} isLoading={creating}
               onClick={async () => {
                 setCreating(true); setError(null);
                 try { await frameworkApi.create('Corporate Strategy Framework', 'The enterprise strategy framework.', 'corporate'); refresh(); }
@@ -373,7 +373,7 @@ export default function StrataFrameworkPage() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
           {/* Current framework */}
           <StrataPanel
-            title="Current framework" icon={<Layers size="small" label="" />}
+            title="Current framework" icon={<Layers size={16} label="" />}
             count={effectiveMembers.data?.length ?? null}
             actions={
               effective.data && open.length === 0 ? (
@@ -389,11 +389,11 @@ export default function StrataFrameworkPage() {
               {effective.data ? (
                 <>
                   <div style={{ display: 'flex', gap: 12, alignItems: 'center', marginBottom: 12, flexWrap: 'wrap' }}>
-                    <span style={{ ...bodyStyle, fontWeight: 600 }}>{framework.name}</span>
+                    <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: T.text }}>{framework.name}</span>
                     <StatusLozenge status={effective.data.status} />
                     <span style={meta}>v{effective.data.version}</span>
                     <Lozenge appearance={effVal.data?.valid ? 'success' : 'removed'}>{effVal.data ? `Total ${effVal.data.total_weight}%` : '—'}</Lozenge>
-                    {effective.data.provenance === 'legacy_unverified' ? <Lozenge appearance="moved">Legacy / unverified provenance</Lozenge> : null}
+                    {effective.data.provenance === 'legacy_unverified' ? <Lozenge appearance="moved" maxWidth={320}>Legacy / unverified provenance</Lozenge> : null}
                     <span style={{ ...meta, marginLeft: 'auto' }}>Effective {fmtDate(effective.data.effective_from)}</span>
                   </div>
                   <JiraTable<StrataFrameworkMember>
