@@ -1,0 +1,4 @@
+/* R5 fixture — cross-category mapping: text-named token -> background ADS token. Not imported by the app. */
+:root {
+  --cp-fixture-text-primary: var(--ds-background-neutral);
+}

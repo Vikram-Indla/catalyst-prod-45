@@ -1,0 +1,4 @@
+/* R1 fixture — app-authored --ds-* declaration. Not imported by the app. */
+:root {
+  --ds-fixture-fake-token: var(--ds-text);
+}

@@ -1,0 +1,4 @@
+/* R4 fixture (file 2 of 2) — duplicate global owner. Not imported by the app. */
+html.dark {
+  --cp-fixture-duplicate: var(--ds-text);
+}

@@ -1,0 +1,4 @@
+/* R3 fixture — reference to an undefined token. Not imported by the app. */
+.fixture-widget {
+  color: var(--fixture-totally-phantom-token);
+}

@@ -1,0 +1,5 @@
+/* R2 fixture — custom-property dependency cycle (indirect). Not imported by the app. */
+:root {
+  --fixture-loop-alpha: var(--fixture-loop-beta);
+  --fixture-loop-beta: var(--fixture-loop-alpha);
+}

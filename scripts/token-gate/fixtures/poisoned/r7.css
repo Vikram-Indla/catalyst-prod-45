@@ -1,0 +1,7 @@
+/* R7 fixture — banned/ambiguous legacy token names declared and referenced. Not imported by the app. */
+:root {
+  --cp-ink-strong: var(--ds-text);
+}
+.fixture-legacy {
+  color: var(--cp-t1);
+}

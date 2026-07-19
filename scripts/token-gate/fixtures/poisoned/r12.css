@@ -1,0 +1,4 @@
+/* R12 fixture — hard-coded color baked into a custom-property's own declared value, no ignore pragma. Not imported by the app. */
+.fixture-token-poison {
+  --fixture-token: #ff0000;
+}

@@ -1,0 +1,7 @@
+/* R10 fixture — var(--ds-*)/var(--cp-*) with a hex fallback (token-only rule). Not imported by the app. */
+.fixture-fallback {
+  color: var(--ds-text, #172b4d);
+}
+.fixture-fallback-cp {
+  background: var(--cp-bg-page, #ffffff);
+}
