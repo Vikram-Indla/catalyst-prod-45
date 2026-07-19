@@ -20,7 +20,7 @@ import type { LozengeAppearance } from '@/components/shared/StatusLozenge';
 import { Routes } from '@/lib/routes';
 import {
   BarChart3, Bell, Calendar, CheckCircle2, Clock, Gem, GitBranch, Layers, ListChecks,
-  MoveRight, Rocket, Scale, ShieldCheck, Upload, Users,
+  MoveRight, Network, Rocket, Scale, ShieldCheck, Upload, Users,
 } from '@/lib/atlaskit-icons';
 import Toggle from '@atlaskit/toggle';
 import { configApi, governanceApi, scorecardApi } from '@/modules/strata/domain';
@@ -857,22 +857,25 @@ function SectionState({ query, empty, emptyLabel, children }: {
  * it is nullable/unused and the DB requires an ADS token NAME string — with no
  * curated token list to source from, we render nothing rather than invent one. */
 function perspectiveFields(list: StrataPerspective[], excludeId?: string): React.ComponentProps<typeof StrataFormModal>['fields'] {
+  // CAT-STRATA-GOVFRAMEWORK — legacy fields removed from perspective authoring (evidence + decision):
+  //  • orderIndex / defaultWeight: deprecated columns (schema-commented DEPRECATED). Corporate order and
+  //    weight are now owned per-version by strata_strategy_framework_members and edited in Strategy framework.
+  //    No active consumer requires user ENTRY (the only reads are the framework-v1 backfill, already done,
+  //    and the Strategy Map legend colour by order_index — presentation only). DB columns are retained for
+  //    compatibility; they are NOT dropped and NOT presented here as corporate truth.
+  //  • parentId: no hierarchy/rollup capability consumes it today (parent selection was hidden in the
+  //    framework work; no approved rollup rule exists). Existing parent_id values are preserved in the DB;
+  //    they are simply no longer user-editable here (never silently removed).
+  void list; void excludeId;
   return [
     { key: 'name', label: 'Name', kind: 'text', required: true },
     { key: 'description', label: 'Description', kind: 'textarea' },
-    { key: 'orderIndex', label: 'Order index', kind: 'number', min: 0 },
-    { key: 'defaultWeight', label: 'Default weight', kind: 'number', min: 0 },
-    {
-      key: 'parentId', label: 'Parent perspective', kind: 'select',
-      options: list.filter((p) => p.id !== excludeId).map((p) => ({ value: p.id, label: p.name })),
-    },
   ];
 }
 
-const numOrUndef = (v: string | number | boolean | null): number | undefined =>
-  v == null || v === '' ? undefined : Number(v);
 
 function PerspectivesSection({ onError }: { onError: OnError }) {
+  const navigate = useNavigate();
   const q = usePerspectives();
   const roles = useStrataRoles();
   const invalidate = useInvalidateStrata();
@@ -889,19 +892,28 @@ function PerspectivesSection({ onError }: { onError: OnError }) {
 
   return (
     <StrataPanel
-      title="Perspectives"
+      title="Perspective definitions"
       icon={<Layers size={16} />}
       count={list.length}
       testId="strata-admin-perspectives"
-      actions={canConfigure ? (
-        <Button spacing="compact" onClick={() => setCreateOpen(true)} testId="strata-perspective-new">
-          New perspective
-        </Button>
-      ) : undefined}
+      actions={(
+        <div style={{ display: 'inline-flex', gap: 8, alignItems: 'center' }}>
+          <Button spacing="compact" appearance="subtle" iconAfter={<MoveRight size={14} />}
+            onClick={() => navigate(Routes.strata.frameworks())} testId="strata-perspectives-to-framework">
+            Manage strategy framework
+          </Button>
+          {canConfigure ? (
+            <Button spacing="compact" onClick={() => setCreateOpen(true)} testId="strata-perspective-new">
+              New perspective
+            </Button>
+          ) : null}
+        </div>
+      )}
     >
       <p style={captionStyle}>
-        Perspectives are versioned, approved records. New perspectives start as a draft; only drafts can be
-        edited — submit a draft for approval from its lifecycle actions.
+        Define and govern reusable strategic perspectives. Corporate membership, order and weights are managed
+        in <strong>Strategy framework</strong> — not here. Perspectives are versioned, approved records: new ones
+        start as a draft; only drafts can be edited — submit a draft for approval from its lifecycle actions.
       </p>
       <SectionState query={q} empty={list.length === 0}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
@@ -926,10 +938,12 @@ function PerspectivesSection({ onError }: { onError: OnError }) {
                 </Button>
               ) : undefined}
             >
+              {/* CAT-STRATA-GOVFRAMEWORK: deprecated order_index/default_weight no longer shown —
+                * corporate order + weight are the Strategy framework's truth, not the definition's.
+                * An existing parent relationship is preserved but shown read-only as legacy hierarchy. */}
               <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-                <span style={metaStyle}>Order {p.order_index}</span>
-                <span style={metaStyle}>Default weight {p.default_weight ?? '—'}</span>
-                {p.parent_id ? <span style={metaStyle}>Parent {nameById.get(p.parent_id) ?? '—'}</span> : null}
+                <span style={metaStyle}>v{p.version}</span>
+                {p.parent_id ? <span style={metaStyle}>Legacy hierarchy — parent {nameById.get(p.parent_id) ?? '—'}</span> : null}
               </div>
             </GovRecordCard>
           ))}
@@ -945,12 +959,11 @@ function PerspectivesSection({ onError }: { onError: OnError }) {
         submitLabel="Create perspective"
         testId="strata-perspective-create-modal"
         onSubmit={async (v) => {
+          // Legacy order/weight/parent are no longer authored here (framework owns order+weight;
+          // no hierarchy consumer). DB columns keep their defaults.
           await configApi.createPerspective({
             name: String(v.name ?? '').trim(),
             description: str(v.description),
-            orderIndex: numOrUndef(v.orderIndex),
-            defaultWeight: numOrUndef(v.defaultWeight),
-            parentId: str(v.parentId),
           });
           invalidate();
         }}
@@ -966,19 +979,15 @@ function PerspectivesSection({ onError }: { onError: OnError }) {
           initial={{
             name: editTarget.name,
             description: editTarget.description,
-            orderIndex: editTarget.order_index,
-            defaultWeight: editTarget.default_weight,
-            parentId: editTarget.parent_id,
           }}
           submitLabel="Save"
           testId="strata-perspective-edit-modal"
           onSubmit={async (v) => {
+            // Partial update — deprecated order_index/default_weight/parent_id are left untouched
+            // in the DB (not editable here; framework owns corporate order + weight).
             await configApi.updatePerspective(editTarget.id, {
               name: String(v.name ?? '').trim(),
               description: str(v.description),
-              orderIndex: numOrUndef(v.orderIndex),
-              defaultWeight: numOrUndef(v.defaultWeight),
-              parentId: str(v.parentId),
             });
             invalidate();
           }}
@@ -1636,6 +1645,7 @@ export function ScorecardModelsSection({ onError }: { onError: OnError }) {
   // model to be status='draft' (P0-A, D-1). Authoring is gated per-model below, not here.
   const hasAuthorRole = (roles.data ?? []).includes('strategy_office');
 
+  const navigate = useNavigate();
   const perspectivesForNames = usePerspectives();
   const perspectiveNameById = new Map((perspectivesForNames.data ?? []).map((p) => [p.id, p.name]));
 
@@ -1653,17 +1663,31 @@ export function ScorecardModelsSection({ onError }: { onError: OnError }) {
       icon={<Scale size={16} />}
       count={list.length}
       testId="strata-admin-scorecard-models"
-      actions={hasAuthorRole ? (
-        <Button spacing="compact" onClick={() => setNewModelOpen(true)} testId="strata-new-model-button">
-          New model
-        </Button>
-      ) : undefined}
+      actions={(
+        <div style={{ display: 'inline-flex', gap: 8, alignItems: 'center' }}>
+          <Button spacing="compact" appearance="subtle" iconAfter={<MoveRight size={14} />}
+            onClick={() => navigate(Routes.strata.frameworks())} testId="strata-models-to-framework">
+            View strategy framework
+          </Button>
+          <Button spacing="compact" appearance="subtle" iconAfter={<MoveRight size={14} />}
+            onClick={() => navigate(Routes.strata.adminSection('perspectives'))} testId="strata-models-to-perspectives">
+            View perspective definitions
+          </Button>
+          {hasAuthorRole ? (
+            <Button spacing="compact" onClick={() => setNewModelOpen(true)} testId="strata-new-model-button">
+              New model
+            </Button>
+          ) : null}
+        </div>
+      )}
     >
       <p style={captionStyle}>
         The builder governs perspective weights, measures, integrity and lifecycle. Perspective weights must total 100,
         and each perspective's measure weights must total 100, before a model can be submitted for approval. A measure is
         an assignment of an existing KPI — its name, direction and threshold scheme are read from the KPI, never re-entered
-        here. Preview-with-data and version diff are later slices.
+        here. Scorecard weights may differ from the corporate Strategy framework. <strong>Approved versions are immutable</strong> —
+        use “Create new version” to change weights or measures; the current approved version remains effective until the
+        replacement is approved. Rejection is final — revise from the approved predecessor.
       </p>
       <SectionState query={q} empty={list.length === 0}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
@@ -3416,9 +3440,16 @@ export const SECTIONS: Array<{
   key: string;
   label: string;
   icon: React.ComponentType<{ size?: number }>;
+  /** Link-out entry: when set, the nav navigates here (a standalone page) instead
+   * of the inline :section route, and `render` is never used. */
+  to?: string;
   render: (onError: OnError) => React.ReactNode;
 }> = [
-  { key: 'perspectives', label: 'Perspectives', icon: Layers, render: (e) => <PerspectivesSection onError={e} /> },
+  // CAT-STRATA-GOVFRAMEWORK — the three governed authoring concepts lead the nav, in order:
+  // Perspective definitions (identity) → Strategy framework (corporate membership/order/weight)
+  // → Scorecard models (per-scorecard weights). Strategy framework is a standalone page.
+  { key: 'perspectives', label: 'Perspective definitions', icon: Layers, render: (e) => <PerspectivesSection onError={e} /> },
+  { key: 'frameworks', label: 'Strategy framework', icon: Network, to: Routes.strata.frameworks(), render: () => null },
   { key: 'scorecard-models', label: 'Scorecard models', icon: Scale, render: (e) => <ScorecardModelsSection onError={e} /> },
   { key: 'thresholds', label: 'Thresholds', icon: BarChart3, render: (e) => <ThresholdsSection onError={e} /> },
   { key: 'value-taxonomy', label: 'Value taxonomy', icon: Gem, render: (e) => <ValueTaxonomySection onError={e} /> },
@@ -3434,6 +3465,47 @@ export const SECTIONS: Array<{
   { key: 'change-log', label: 'Change log', icon: Clock, render: () => <ChangeLogSection /> },
 ];
 
+/**
+ * Shared Configuration section nav (wrapping, keyboard-accessible, aria-current).
+ * Rendered by both StrataAdminConfigPage (inline :section tabs) and the standalone
+ * StrataFrameworkPage — so Perspective definitions / Strategy framework / Scorecard
+ * models all show the nav with the correct active item, from a single source of truth
+ * (SECTIONS + canonical route helpers). Link-out entries (with `to`) navigate to a
+ * standalone page; the rest go to /strata/admin/:section.
+ */
+export function StrataConfigNav({ activeKey, onNavigate }: { activeKey?: string; onNavigate?: () => void }) {
+  const navigate = useNavigate();
+  return (
+    <nav aria-label="Configuration sections" style={{ display: 'flex', flexWrap: 'wrap', gap: 4, borderBottom: `2px solid ${T.border}`, paddingBottom: 8 }}>
+      {SECTIONS.map((s) => {
+        const Icon = s.icon;
+        const active = s.key === activeKey;
+        const to = s.to ?? Routes.strata.adminSection(s.key);
+        return (
+          <button
+            key={s.key}
+            type="button"
+            aria-current={active ? 'page' : undefined}
+            data-testid={`strata-admin-nav-${s.key}`}
+            onClick={() => { onNavigate?.(); navigate(to); }}
+            style={{
+              display: 'inline-flex', alignItems: 'center', gap: 6, whiteSpace: 'nowrap',
+              padding: '6px 10px', borderRadius: 6, cursor: 'pointer', font: 'inherit',
+              fontSize: 'var(--ds-font-size-100)', fontWeight: active ? 700 : 400,
+              border: '1px solid transparent',
+              background: active ? 'var(--ds-background-selected)' : 'transparent',
+              color: active ? 'var(--ds-text-brand)' : T.subtle,
+            }}
+          >
+            <Icon size={14} />
+            {s.label}
+          </button>
+        );
+      })}
+    </nav>
+  );
+}
+
 // ── Config landing (anchor 03) — governed control plane, bare /strata/admin ──
 // Reorganises the 12 config sections by CONSEQUENCE. Each domain card routes to
 // its primary section today (:section); measurement/data/access repoint to their
@@ -3448,9 +3520,14 @@ export const DOMAINS: Array<{
   sectionLabels: string[];
 }> = [
   {
-    key: 'strategy-framework', name: 'Strategy framework', icon: Layers,
-    governs: 'Perspectives — the scoring lens every scorecard rolls up through.',
-    to: Routes.strata.adminSection('perspectives'), sectionLabels: ['Perspectives'],
+    key: 'perspective-definitions', name: 'Perspective definitions', icon: Layers,
+    governs: 'Define and govern reusable strategic perspectives. Corporate membership, order and weights are managed in Strategy framework.',
+    to: Routes.strata.adminSection('perspectives'), sectionLabels: ['Perspective definitions'],
+  },
+  {
+    key: 'strategy-framework', name: 'Strategy framework', icon: Network,
+    governs: 'The approved corporate perspective set — their order and weights (the framework must total 100%) — under versioned maker-checker governance.',
+    to: Routes.strata.frameworks(), sectionLabels: ['Strategy framework'],
   },
   {
     key: 'measurement', name: 'Measurement', icon: Scale,
@@ -3668,37 +3745,10 @@ export default function StrataAdminConfigPage() {
       docTitle={sectionEntry ? `${sectionEntry.label} · Administration` : undefined}
       testId="strata-admin-chrome"
     >
-      {/* CFG-008: the 13-item horizontal tab strip clipped labels to fragments
-        * ("Persp", "Scoreca") and hid destinations at 1024×768. Replaced with a
-        * WRAPPING nav of full-label buttons — every destination identifiable and
-        * reachable with no horizontal scrolling; keyboard/focus/aria preserved
-        * via real <button aria-current>. */}
-      <nav aria-label="Configuration sections" style={{ display: 'flex', flexWrap: 'wrap', gap: 4, borderBottom: `2px solid ${T.border}`, paddingBottom: 8 }}>
-        {SECTIONS.map((s, i) => {
-          const Icon = s.icon;
-          const active = i === selected;
-          return (
-            <button
-              key={s.key}
-              type="button"
-              aria-current={active ? 'page' : undefined}
-              data-testid={`strata-admin-nav-${s.key}`}
-              onClick={() => { setActionError(null); navigate(Routes.strata.adminSection(s.key)); }}
-              style={{
-                display: 'inline-flex', alignItems: 'center', gap: 6, whiteSpace: 'nowrap',
-                padding: '6px 10px', borderRadius: 6, cursor: 'pointer', font: 'inherit',
-                fontSize: 'var(--ds-font-size-100)', fontWeight: active ? 700 : 400,
-                border: '1px solid transparent',
-                background: active ? 'var(--ds-background-selected)' : 'transparent',
-                color: active ? 'var(--ds-text-brand)' : T.subtle,
-              }}
-            >
-              <Icon size={14} />
-              {s.label}
-            </button>
-          );
-        })}
-      </nav>
+      {/* CFG-008 + CAT-STRATA-GOVFRAMEWORK: wrapping, full-label nav — now shared with
+        * the standalone Strategy framework page via StrataConfigNav so all three governed
+        * concepts show the same nav + active state. */}
+      <StrataConfigNav activeKey={sectionEntry?.key} onNavigate={() => setActionError(null)} />
       <div style={{ width: '100%', paddingTop: 16 }}>
         {actionError ? (
           <div style={{ marginBottom: 16 }}>
