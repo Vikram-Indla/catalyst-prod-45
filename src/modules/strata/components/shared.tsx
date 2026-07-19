@@ -1346,8 +1346,10 @@ const OBS_STATUS_LOZENGE: Record<string, { label: string; appearance: React.Comp
   reversed: { label: 'Reversed', appearance: 'default' },
   superseded: { label: 'Superseded', appearance: 'default' },
 };
-export function KrObservations({ krId, krName, canValidate, onClose }: {
+export function KrObservations({ krId, krName, canValidate, onClose, embedded = false }: {
   krId: string; krName: string; canValidate: boolean; onClose: () => void;
+  /** True when rendered inline on a detail page (no toggle) — hides the redundant heading + Close. */
+  embedded?: boolean;
 }) {
   const invalidate = useInvalidateStrata();
   const { periods } = useStrataContext();
@@ -1376,11 +1378,13 @@ export function KrObservations({ krId, krName, canValidate, onClose }: {
   };
 
   return (
-    <div style={{ marginTop: 8, border: `1px solid ${T.border}`, borderRadius: 4, padding: 12 }} data-testid={`strata-kr-observations-${krId}`}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-        <strong style={{ color: T.text }}>Observations · {krName}</strong>
-        <Button appearance="subtle" spacing="compact" onClick={onClose}>Close</Button>
-      </div>
+    <div style={embedded ? {} : { marginTop: 8, border: `1px solid ${T.border}`, borderRadius: 4, padding: 12 }} data-testid={`strata-kr-observations-${krId}`}>
+      {!embedded ? (
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+          <strong style={{ color: T.text }}>Observations · {krName}</strong>
+          <Button appearance="subtle" spacing="compact" onClick={onClose}>Close</Button>
+        </div>
+      ) : null}
       <div style={{ display: 'grid', gap: 6, maxWidth: 540, marginBottom: 12 }}>
         <div style={{ display: 'flex', gap: 8 }}>
           <Textfield type="date" value={asOf} onChange={(e) => setAsOf((e.target as HTMLInputElement).value)} aria-label="As-of date" />

@@ -83,15 +83,15 @@ export default function StrataKrDetailPage() {
             <div style={{ fontSize: 'var(--ds-font-size-600)', fontWeight: 700, color: T.text, fontVariantNumeric: 'tabular-nums' }}>
               {p?.progress_pct != null ? `${p.progress_pct}%` : '—'}
             </div>
-            <div style={{ fontSize: 'var(--ds-font-size-050)', color: T.subtle }}>progress</div>
+            <div style={{ fontSize: 'var(--ds-font-size-100)', color: T.subtle }}>progress</div>
           </div>
           <div>
             <div style={{ fontWeight: 600, color: T.text, fontVariantNumeric: 'tabular-nums' }}>{p?.actual != null ? fmtUnit(Number(p.actual), kr.unit) : '—'}</div>
-            <div style={{ fontSize: 'var(--ds-font-size-050)', color: T.subtle }}>current</div>
+            <div style={{ fontSize: 'var(--ds-font-size-100)', color: T.subtle }}>current</div>
           </div>
           {perf ? <Lozenge appearance={perf.appearance}>{perf.label}</Lozenge> : null}
-          {p?.confidence && p.confidence !== 'not_set' ? <span style={{ fontSize: 'var(--ds-font-size-050)', color: T.subtle }}>confidence: {labelize(p.confidence)}</span> : null}
-          {p?.data_quality ? <span style={{ fontSize: 'var(--ds-font-size-050)', color: T.subtlest }}>data: {labelize(p.data_quality)}</span> : null}
+          {p?.confidence && p.confidence !== 'not_set' ? <span style={{ fontSize: 'var(--ds-font-size-100)', color: T.subtle }}>confidence: {labelize(p.confidence)}</span> : null}
+          {p?.data_quality ? <span style={{ fontSize: 'var(--ds-font-size-100)', color: T.subtlest }}>data: {labelize(p.data_quality)}</span> : null}
         </div>
       </StrataPanel>
 
@@ -99,7 +99,7 @@ export default function StrataKrDetailPage() {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: 12 }}>
           {contract.map(([k, v]) => (
             <div key={k}>
-              <div style={{ fontSize: 'var(--ds-font-size-050)', color: T.subtle }}>{k}</div>
+              <div style={{ fontSize: 'var(--ds-font-size-100)', color: T.subtle }}>{k}</div>
               <div style={{ color: T.text, fontVariantNumeric: 'tabular-nums' }}>{v}</div>
             </div>
           ))}
@@ -111,7 +111,7 @@ export default function StrataKrDetailPage() {
 
       <StrataPanel title="Observations">
         {canUpdate || canValidate
-          ? <KrObservations krId={kr.id} krName={kr.name} canValidate={canValidate} onClose={() => { /* inline on detail page */ }} />
+          ? <KrObservations krId={kr.id} krName={kr.name} canValidate={canValidate} embedded onClose={() => { /* inline on detail page */ }} />
           : <EmptyState size="compact" header="Observations" description="You do not have permission to record or validate observations." />}
       </StrataPanel>
 
