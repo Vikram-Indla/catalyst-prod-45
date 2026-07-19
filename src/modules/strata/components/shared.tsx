@@ -1101,8 +1101,13 @@ const OkrDash = () => <span style={{ color: T.subtlest }}>—</span>;
 
 export const OKR_STATUS_LOZENGE: Record<StrataOkr['status'], { label: string; appearance: React.ComponentProps<typeof Lozenge>['appearance'] }> = {
   draft: { label: 'Draft', appearance: 'default' },
+  submitted: { label: 'Pending approval', appearance: 'inprogress' },
   active: { label: 'Active', appearance: 'inprogress' },
-  closed: { label: 'Closed', appearance: 'default' },
+  closing_review: { label: 'Closing review', appearance: 'moved' },
+  closed: { label: 'Closed', appearance: 'success' },
+  withdrawn: { label: 'Withdrawn', appearance: 'default' },
+  rejected: { label: 'Rejected', appearance: 'removed' },
+  cancelled: { label: 'Cancelled', appearance: 'removed' },
 };
 
 /** Display-only progress of current within baseline→target (mandated by S-116).

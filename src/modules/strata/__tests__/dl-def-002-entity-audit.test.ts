@@ -57,7 +57,9 @@ describe('owningRouteForEntity — navigation only where a mapping exists', () =
 describe('ENTITY_DISCOVERY — name/key discovery + owning-route contract', () => {
   it('every governed audit type except UUID-only KPI actuals has a discovery config', () => {
     for (const t of ENTITY_AUDIT_TYPES.map((o) => o.value)) {
-      if (t === 'strata_kpi_actuals') expect(ENTITY_DISCOVERY[t]).toBeUndefined();
+      // UUID-only evidence records (no human-readable key) — audit-only, not discoverable.
+      if (t === 'strata_kpi_actuals' || t === 'strata_kr_observations' || t === 'strata_okr_close_snapshots')
+        expect(ENTITY_DISCOVERY[t]).toBeUndefined();
       else expect(ENTITY_DISCOVERY[t], t).toBeDefined();
     }
   });

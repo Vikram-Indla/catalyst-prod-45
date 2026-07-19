@@ -42,7 +42,7 @@
  */
 import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useQueries } from '@tanstack/react-query';
+import { useQueries, useQuery } from '@tanstack/react-query';
 import { Button, EmptyState, Lozenge, Spinner } from '@/components/ads';
 import { Briefcase, ClipboardList, GitBranch, Network, Plus, Target } from '@/lib/atlaskit-icons';
 import { Routes } from '@/lib/routes';
@@ -106,6 +106,9 @@ export default function StrataStrategyElementDetailPage() {
   const perspectivesQ = usePerspectives();
   const gateModelsQ = useGateModels();
   const okrsQ = useOkrs();
+  // Theme-owned OKR authoring (CAT-STRATA-THEMEOKR-20260719-001).
+  const [addOkrOpen, setAddOkrOpen] = useState(false);
+  const orgUnitsQ = useQuery({ queryKey: ['strata', 'org-units'], queryFn: kpiApi.orgUnits, staleTime: 60_000 });
   const projectCardsQ = useProjectCards();
   const decisionsQ = useDecisions();
   const actionsQ = useActions();
@@ -234,7 +237,11 @@ export default function StrataStrategyElementDetailPage() {
   const relevantObjectiveIds = new Set(
     isTheme ? objectives.map((o) => o.id) : element.element_type === 'objective' ? [element.id] : [],
   );
-  const themeOkrs = okrs.filter((o) => o.objective_element_id && relevantObjectiveIds.has(o.objective_element_id));
+  // Legacy objective-linked OKRs AND new Theme-owned OKRs (theme_id === this Theme).
+  const themeOkrs = okrs.filter((o) =>
+    (o.objective_element_id && relevantObjectiveIds.has(o.objective_element_id)) ||
+    (isTheme && o.theme_id === element.id),
+  );
   const elementCycle = cycles.find((c) => c.id === element.cycle_id);
   // Carry the Theme's owning cycle to the Project Card detail route so refresh/copied
   // URL restores the correct cycle and Theme rather than the DB-active cycle (E2E-001).
@@ -429,18 +436,26 @@ export default function StrataStrategyElementDetailPage() {
           // 1 linked KPI reported "2" while rendering a single OKR. Linked KPIs are a
           // different entity and keep their own sub-heading below.
           count={themeOkrs.length}
+          // Theme-owned OKR authoring (CAT-STRATA-THEMEOKR-20260719-001): create an OKR
+          // directly on the Theme — no child Objective/KPI required. Server enforces the gate.
+          actions={isTheme && canAuthor ? (
+            <Button appearance="primary" spacing="compact" iconBefore={<Plus size={14} />}
+              onClick={() => setAddOkrOpen(true)} testId="strata-add-okr">
+              Add OKR
+            </Button>
+          ) : undefined}
         >
           <div style={{ display: 'grid', gap: 16 }}>
             <div>
               <div style={{ fontWeight: 600, fontSize: 'var(--ds-font-size-100)', color: T.subtle, marginBottom: 4 }}>
-                Objective Key Results
+                {isTheme ? 'Theme OKRs' : 'Objective Key Results'}
               </div>
               {themeOkrs.length === 0 ? (
                 <EmptyState
                   size="compact"
                   header="No OKRs yet"
                   description={isTheme
-                    ? "OKRs linked to this Theme's Objectives will appear here."
+                    ? (canAuthor ? 'Add a Theme-owned OKR — no child Objective required.' : "This Theme's OKRs will appear here.")
                     : 'OKRs linked to this Objective will appear here.'}
                 />
               ) : (
@@ -787,6 +802,41 @@ export default function StrataStrategyElementDetailPage() {
           lockParentId={element.id}
           onClose={() => setAuthoring(null)}
           onCreated={invalidate}
+        />
+      ) : null}
+
+      {addOkrOpen ? (
+        <StrataFormModal
+          open
+          onClose={() => setAddOkrOpen(false)}
+          title="Add OKR"
+          description={<>Theme-owned OKR for <strong>{element.name}</strong>. No child Objective or KPI is required.</>}
+          submitLabel="Create OKR"
+          testId="strata-add-okr-modal"
+          fields={[
+            { key: 'name', label: 'OKR name', kind: 'text', required: true },
+            { key: 'objectiveStatement', label: 'Objective statement', kind: 'textarea', required: true,
+              helper: 'The qualitative outcome this OKR commits to.' },
+            { key: 'ownerId', label: 'Accountable owner', kind: 'user' },
+            { key: 'owningOrgId', label: 'Owning organisation', kind: 'select',
+              options: (orgUnitsQ.data ?? []).map((u) => ({ value: u.id, label: u.name })) },
+            { key: 'commitment', label: 'Commitment', kind: 'select',
+              options: [{ value: 'committed', label: 'Committed' }, { value: 'aspirational', label: 'Aspirational' }] },
+          ]}
+          initial={{ commitment: 'committed' }}
+          onSubmit={async (v) => {
+            await kpiApi.createOkrV2({
+              themeId: element.id,
+              name: String(v.name),
+              objectiveStatement: String(v.objectiveStatement),
+              ownerId: v.ownerId ? String(v.ownerId) : undefined,
+              owningOrgId: v.owningOrgId ? String(v.owningOrgId) : undefined,
+              commitment: (v.commitment as 'committed' | 'aspirational') || 'committed',
+              cycleId: element.cycle_id ?? undefined,
+            });
+            setAddOkrOpen(false);
+            invalidate();
+          }}
         />
       ) : null}
 

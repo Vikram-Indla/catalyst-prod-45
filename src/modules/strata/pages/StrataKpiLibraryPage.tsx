@@ -270,7 +270,9 @@ function OkrPanel() {
   const rolesQ = useStrataRoles();
   const invalidate = useInvalidateStrata();
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
-  const [newOkrOpen, setNewOkrOpen] = useState(false);
+  // Theme-owned OKR authoring lives on the Strategy Theme page (CAT-STRATA-THEMEOKR-20260719-001);
+  // this registry is read-only. "Add OKR" routes to Strategy rather than creating here.
+  const navigate = useNavigate();
   const [krOkr, setKrOkr] = useState<StrataOkr | null>(null);
 
   const canAuthor = (rolesQ.data ?? []).some((r) => (CREATE_ROLES as readonly string[]).includes(r));
@@ -301,10 +303,10 @@ function OkrPanel() {
           appearance="default"
           spacing="compact"
           iconBefore={<Plus size={14} />}
-          onClick={() => setNewOkrOpen(true)}
+          onClick={() => navigate(Routes.strata.strategy)}
           testId="strata-new-okr"
         >
-          New OKR
+          Add OKR on a Theme
         </Button>
       ) : undefined}
     >
@@ -332,46 +334,17 @@ function OkrPanel() {
         </div>
       )}
 
-      {/* New OKR — server RPC validates; errors render in-modal */}
-      <StrataFormModal
-        open={newOkrOpen}
-        onClose={() => setNewOkrOpen(false)}
-        title="New OKR"
-        description="Creates a draft OKR in the active cycle."
-        fields={[
-          { key: 'name', label: 'Name', kind: 'text', required: true, placeholder: 'OKR objective statement' },
-          { key: 'ownerId', label: 'Owner', kind: 'user' },
-          {
-            key: 'objectiveElementId', label: 'Objective element', kind: 'select',
-            options: (elementsQ.data ?? []).map((e) => ({ value: e.id, label: e.name })),
-            helper: 'Optional link to a strategy objective',
-          },
-        ]}
-        submitLabel="Create OKR"
-        onSubmit={async (v) => {
-          await kpiApi.createOkr({
-            name: String(v.name),
-            cycleId: activeCycle?.id,
-            objectiveElementId: v.objectiveElementId ? String(v.objectiveElementId) : undefined,
-            ownerId: v.ownerId ? String(v.ownerId) : undefined,
-          });
-          invalidate();
-        }}
-        testId="strata-new-okr-modal"
-      />
+      {/* New OKR authoring moved to the Strategy Theme page (CAT-STRATA-THEMEOKR-20260719-001):
+          a Theme-owned OKR is created directly on its Theme, no child Objective/KPI required. */}
 
-      {/* Add key result — server RPC validates; errors render in-modal */}
+      {/* Add key result — server RPC validates; errors render in-modal.
+          KRs are independent contracts — no KPI-backed selection here (invariant 5). */}
       <StrataFormModal
         open={krOkr !== null}
         onClose={() => setKrOkr(null)}
         title={krOkr ? `Add key result · ${krOkr.name}` : 'Add key result'}
         fields={[
           { key: 'name', label: 'Name', kind: 'text', required: true, placeholder: 'Measurable key result' },
-          {
-            key: 'kpiId', label: 'Linked KPI', kind: 'select',
-            options: (kpisQ.data ?? []).map((k) => ({ value: k.id, label: k.name })),
-            helper: 'Optional governed KPI backing this key result',
-          },
           { key: 'unit', label: 'Unit', kind: 'text', placeholder: 'e.g. %, days, count' },
           { key: 'baseline', label: 'Baseline', kind: 'number' },
           { key: 'target', label: 'Target', kind: 'number' },
