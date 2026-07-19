@@ -62,7 +62,7 @@ import {
 import { executionApi, governanceApi, kpiApi, strategyApi } from '@/modules/strata/domain';
 import { Modal, ModalBody, ModalFooter, ModalHeader, ModalTitle, SectionMessage } from '@/components/ads';
 import { fmtDate, fmtDateTime, formatAuditAction, labelize } from '@/modules/strata/components/format';
-import { isThemeElement } from '@/modules/strata/types';
+import { isThemeElement, MEASUREMENT_METHOD_LABEL } from '@/modules/strata/types';
 import type { StrataDecision, StrataProjectCard, StrataStrategyElement } from '@/modules/strata/types';
 
 /** Roles allowed to author strategy structure — UI gate only; DB RPCs enforce (mirrors Strategy Room). */
@@ -246,6 +246,21 @@ export default function StrataStrategyElementDetailPage() {
     (o.objective_element_id && relevantObjectiveIds.has(o.objective_element_id)) ||
     (isTheme && o.theme_id === element.id),
   );
+
+  // Measurement-method mutual exclusivity (CAT-STRATA-THEMEMETHOD-20260720-001).
+  // A Theme uses EITHER Objectives & KPIs OR Theme-owned OKRs — never both. Creation actions are
+  // gated by the authoritative method (and re-enforced server-side); historical records may remain
+  // read-only. A null method (unclassified / both-conflict) freezes BOTH creation actions.
+  const themeMethod = isTheme ? element.measurement_method : null;
+  const showObjectivesPanel = isTheme && (themeMethod === 'objectives_kpis' || objectives.length > 0);
+  // OKR panel bundles two sub-sections: Theme OKRs (the okrs mechanism) and Linked KPIs (part of the
+  // objectives_kpis experience). Gate each independently so neither method loses its applicable content;
+  // show the panel whenever either sub-section has something to render.
+  const showThemeOkrsSection = !isTheme || themeMethod === 'okrs' || themeOkrs.length > 0;
+  const showLinkedKpisSection = !isTheme || themeMethod !== 'okrs'; // KPIs are not the okrs-theme mechanism
+  const showOkrPanel = showThemeOkrsSection || (showLinkedKpisSection && linkedKpis.length > 0);
+  const canAddObjective = canAuthor && isTheme && themeMethod === 'objectives_kpis';
+  const canAddOkr = canAuthor && isTheme && themeMethod === 'okrs';
   const elementCycle = cycles.find((c) => c.id === element.cycle_id);
   // Carry the Theme's owning cycle to the Project Card detail route so refresh/copied
   // URL restores the correct cycle and Theme rather than the DB-active cycle (E2E-001).
@@ -338,7 +353,7 @@ export default function StrataStrategyElementDetailPage() {
           ) : null}
           <Button onClick={() => setAuthoring({ kind: 'edit-element', element })}>Edit</Button>
           <Button onClick={() => setAuthoring({ kind: 'charter', element })}>Charter</Button>
-          {isTheme ? (
+          {canAddObjective ? (
             <Button iconBefore={<Plus size={14} />} onClick={() => setAuthoring({ kind: 'add-objective' })}>
               Add Objective
             </Button>
@@ -362,6 +377,20 @@ export default function StrataStrategyElementDetailPage() {
           </section>
           {/* In the chain */}
           <StrataChainStrip segments={chainSegments} testId="strata-element-detail-chain" />
+          {isTheme ? (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--ds-space-100)', flexWrap: 'wrap' }}
+              data-testid="strata-theme-measurement-method">
+              <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: T.subtle }}>Measurement method</span>
+              {themeMethod
+                ? <Lozenge appearance={themeMethod === 'okrs' ? 'new' : 'inprogress'}>{MEASUREMENT_METHOD_LABEL[themeMethod]}</Lozenge>
+                : <Lozenge appearance="moved">Not configured — resolve conflict</Lozenge>}
+              <span style={{ fontSize: 'var(--ds-font-size-100)', color: T.subtlest }}>
+                {themeMethod === 'okrs' ? 'Theme-owned OKRs · Objectives unavailable'
+                  : themeMethod === 'objectives_kpis' ? 'Strategic Objectives & KPIs · OKRs unavailable'
+                  : 'This Theme holds both Objectives and OKRs — awaiting governed resolution'}
+              </span>
+            </div>
+          ) : null}
           <StrataPanel
             title="Charter"
             icon={<GitBranch size={16} />}
@@ -389,14 +418,14 @@ export default function StrataStrategyElementDetailPage() {
             )}
           </StrataPanel>
 
-        {isTheme ? (
+        {showObjectivesPanel ? (
           <StrataPanel title="Objectives" icon={<Target size={16} />} count={objectives.length}>
             {objectives.length === 0 ? (
               <EmptyState
                 size="compact"
                 header="No Strategic Objectives yet"
-                description={canAuthor ? 'Add the first Objective for this Theme.' : 'No Strategic Objectives have been created for this Theme yet.'}
-                primaryAction={canAuthor ? (
+                description={canAddObjective ? 'Add the first Objective for this Theme.' : 'No Strategic Objectives have been created for this Theme yet.'}
+                primaryAction={canAddObjective ? (
                   <Button iconBefore={<Plus size={14} />} onClick={() => setAuthoring({ kind: 'add-objective' })}>
                     Add Objective
                   </Button>
@@ -432,17 +461,15 @@ export default function StrataStrategyElementDetailPage() {
           </StrataPanel>
         ) : null}
 
+        {showOkrPanel ? (
         <StrataPanel
-          title="OKR Performance"
+          title={isTheme && themeMethod === 'objectives_kpis' ? 'Linked KPIs' : 'OKR Performance'}
           icon={<Target size={16} />}
-          // Counts OKRs only — the entity the panel's own list renders (SR-DEF-004).
-          // This previously added `linkedKpis.length`, so an objective with 1 OKR and
-          // 1 linked KPI reported "2" while rendering a single OKR. Linked KPIs are a
-          // different entity and keep their own sub-heading below.
           count={themeOkrs.length}
           // Theme-owned OKR authoring (CAT-STRATA-THEMEOKR-20260719-001): create an OKR
-          // directly on the Theme — no child Objective/KPI required. Server enforces the gate.
-          actions={isTheme && canAuthor ? (
+          // directly on the Theme — no child Objective/KPI required. Gated by measurement method
+          // (CAT-STRATA-THEMEMETHOD-20260720-001) and re-enforced server-side.
+          actions={canAddOkr ? (
             <Button appearance="primary" spacing="compact" iconBefore={<Plus size={14} />}
               onClick={() => setAddOkrOpen(true)} testId="strata-add-okr">
               Add OKR
@@ -450,6 +477,7 @@ export default function StrataStrategyElementDetailPage() {
           ) : undefined}
         >
           <div style={{ display: 'grid', gap: 16 }}>
+            {showThemeOkrsSection ? (
             <div>
               <div style={{ fontWeight: 600, fontSize: 'var(--ds-font-size-100)', color: T.subtle, marginBottom: 4 }}>
                 {isTheme ? 'Theme OKRs' : 'Objective Key Results'}
@@ -480,6 +508,8 @@ export default function StrataStrategyElementDetailPage() {
                 </div>
               )}
             </div>
+            ) : null}
+            {showLinkedKpisSection ? (
             <div>
               <div style={{ fontWeight: 600, fontSize: 'var(--ds-font-size-100)', color: T.subtle, marginBottom: 4 }}>
                 Linked KPIs
@@ -506,8 +536,10 @@ export default function StrataStrategyElementDetailPage() {
                 </div>
               )}
             </div>
+            ) : null}
           </div>
         </StrataPanel>
+        ) : null}
 
           <StrataPanel
             title="Linked Project Cards"

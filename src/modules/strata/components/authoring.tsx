@@ -22,7 +22,8 @@ import { useBeforeUnload } from '../hooks/useBeforeUnload';
 import { T } from './shared';
 import { strategyApi } from '../domain';
 import { labelize } from './format';
-import type { StrataGateModel, StrataPerspective, StrataStrategyElement, StrataThemeCharter } from '../types';
+import type { StrataGateModel, StrataMeasurementMethod, StrataPerspective, StrataStrategyElement, StrataThemeCharter } from '../types';
+import { isThemeElement, MEASUREMENT_METHOD_HELPER, MEASUREMENT_METHOD_LABEL } from '../types';
 
 /** SYSTEM element types (DB CHECK on strata_strategy_elements.element_type). Never includes 'play' — new rows only. */
 const ELEMENT_TYPES = ['theme', 'objective'] as const;
@@ -632,6 +633,14 @@ export function EditElementModal({
         { key: 'description', label: 'Description', kind: 'textarea' },
         { key: 'ownerId', label: 'Owner', kind: 'user' },
         { key: 'perspectiveId', label: 'Perspective', kind: 'select', options: perspectiveOptions },
+        ...(isThemeElement(element.element_type)
+          ? [{
+              key: 'measurementMethod', label: 'Measurement method', kind: 'select' as const, required: true,
+              helper: 'Objectives & KPIs or OKRs — mutually exclusive. Changing it is blocked while conflicting child records exist.',
+              options: (Object.keys(MEASUREMENT_METHOD_LABEL) as (keyof typeof MEASUREMENT_METHOD_LABEL)[])
+                .map((m) => ({ value: m, label: MEASUREMENT_METHOD_LABEL[m] })),
+            }]
+          : []),
         ...(element.element_type === 'objective'
           ? [{ key: 'parentId', label: 'Parent (Theme)', kind: 'select' as const, required: true, options: parentOptions }]
           : []),
@@ -640,6 +649,7 @@ export function EditElementModal({
       initial={{
         name: element.name, description: element.description, ownerId: element.owner_id,
         perspectiveId: element.perspective_id, parentId: element.parent_id, stage: element.stage,
+        measurementMethod: element.measurement_method,
       }}
       submitLabel="Save"
       testId="strata-edit-element-modal"
@@ -648,6 +658,7 @@ export function EditElementModal({
           name: str(v.name), description: str(v.description),
           ownerId: str(v.ownerId), perspectiveId: str(v.perspectiveId),
           parentId: str(v.parentId), stage: str(v.stage),
+          measurementMethod: isThemeElement(element.element_type) ? str(v.measurementMethod) : undefined,
           clearOwner: !str(v.ownerId) && !!element.owner_id,
           clearParent: !str(v.parentId) && !!element.parent_id,
         });
@@ -686,15 +697,22 @@ export function NewElementModal({
   const [name, setName] = useState('');
   const [parentId, setParentId] = useState<string | null>(lockParentId ?? null);
   const [perspectiveId, setPerspectiveId] = useState<string | null>(null);
+  const [measurementMethod, setMeasurementMethod] = useState<StrataMeasurementMethod | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const typeOptions: SelectOption<string>[] = ELEMENT_TYPES.map((t) => ({ value: t, label: labelize(t) }));
+  const methodOptions: SelectOption<StrataMeasurementMethod>[] =
+    (Object.keys(MEASUREMENT_METHOD_LABEL) as StrataMeasurementMethod[]).map((m) => ({ value: m, label: MEASUREMENT_METHOD_LABEL[m] }));
   const lockParentName = lockParentId ? (themeOptions.find((o) => o.value === lockParentId)?.label ?? null) : null;
 
   const submit = async () => {
     if (!elementType) { setError('Required: Type'); return; }
     if (!name.trim()) { setError('Required: Name'); return; }
+    if (elementType === 'theme' && !measurementMethod) {
+      setError('Required: Measurement method — a Theme must use either Objectives & KPIs or OKRs');
+      return;
+    }
     if (elementType === 'objective' && !parentId) {
       setError('Required: Parent — an Objective must be parented to a Theme');
       return;
@@ -706,6 +724,7 @@ export function NewElementModal({
         cycleId, elementType, name: name.trim(),
         parentId: elementType === 'objective' ? (parentId ?? undefined) : undefined,
         perspectiveId: perspectiveId ?? undefined,
+        measurementMethod: elementType === 'theme' ? (measurementMethod ?? undefined) : undefined,
       });
       onCreated();
       onClose();
@@ -762,6 +781,24 @@ export function NewElementModal({
             <p style={{ margin: 0, fontSize: 'var(--ds-font-size-100)', color: T.subtlest }}>
               Themes are root-level — no parent to select.
             </p>
+          ) : null}
+          {elementType === 'theme' ? (
+            <div>
+              <FieldLabel label="Measurement method" required />
+              <Select
+                options={methodOptions}
+                value={methodOptions.find((o) => o.value === measurementMethod) ?? null}
+                onChange={(next) => setMeasurementMethod((next?.value as StrataMeasurementMethod) ?? null)}
+                placeholder="Select how this Theme is measured…"
+                usePortal
+                aria-label="Measurement method"
+              />
+              <p style={{ margin: '4px 0 0', fontSize: 'var(--ds-font-size-100)', color: T.subtle }}>
+                {measurementMethod
+                  ? MEASUREMENT_METHOD_HELPER[measurementMethod]
+                  : 'Choose one — Objectives & KPIs or OKRs. This is mutually exclusive and governs which items can be created under the Theme.'}
+              </p>
+            </div>
           ) : null}
           <div>
             <FieldLabel label="Perspective" />

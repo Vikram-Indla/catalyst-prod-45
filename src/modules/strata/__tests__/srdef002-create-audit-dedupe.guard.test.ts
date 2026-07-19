@@ -60,9 +60,20 @@ describe('SR-DEF-002 — exactly one create audit event per element', () => {
     ).not.toMatch(/INSERT\s+INTO\s+public\.strata_audit_events/i);
   });
 
-  it('the fix migration is the latest definition of all four RPCs', () => {
+  it('each create RPC is last defined by a known, reviewed migration (no accidental reintroduction)', () => {
+    // The SR-DEF-002 fix migration is the canonical home of these RPCs. A later migration may
+    // legitimately re-define one for a governed reason — but it must be an EXPECTED file here,
+    // and test #1 above independently re-checks the no-manual-audit-INSERT invariant on it.
+    // strata_create_strategy_element moved to the measurement-method enforcement migration
+    // (CAT-STRATA-THEMEMETHOD-20260720-001), which adds the method gate and keeps NO manual audit write.
+    const EXPECTED: Record<(typeof CREATE_RPCS)[number], string> = {
+      strata_create_strategy_element: '20260719223304_strata_theme_method_enforcement.sql',
+      strata_create_kpi: '20260718000000_strata_dedupe_create_audit_events.sql',
+      strata_create_okr: '20260718000000_strata_dedupe_create_audit_events.sql',
+      strata_create_benefit: '20260718000000_strata_dedupe_create_audit_events.sql',
+    };
     for (const fn of CREATE_RPCS) {
-      expect(latestBody(fn).file).toBe('20260718000000_strata_dedupe_create_audit_events.sql');
+      expect(latestBody(fn).file).toBe(EXPECTED[fn]);
     }
   });
 

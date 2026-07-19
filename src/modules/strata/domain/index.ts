@@ -467,22 +467,28 @@ export const strategyApi = {
   createElement: (input: {
     cycleId: string; elementType: string; name: string;
     parentId?: string; perspectiveId?: string;
+    /** Required when elementType==='theme': objectives_kpis | okrs (server enforces THEME_MEASUREMENT_METHOD_REQUIRED). */
+    measurementMethod?: string;
   }): Promise<string> =>
-    run(typedRpc('strata_create_strategy_element', {
+    run(rpcAny('strata_create_strategy_element', {
       p_cycle: input.cycleId, p_element_type: input.elementType, p_name: input.name,
       p_parent: input.parentId ?? null, p_perspective: input.perspectiveId ?? null,
-    })),
+      p_measurement_method: input.measurementMethod ?? null,
+    })) as Promise<string>,
   updateElement: (elementId: string, patch: {
     name?: string; description?: string; ownerId?: string; perspectiveId?: string;
     parentId?: string; stage?: string; orderIndex?: number;
     clearParent?: boolean; clearOwner?: boolean;
+    /** Theme only: governed, non-destructive method change (THEME_METHOD_CHANGE_CONFLICT if child records conflict). */
+    measurementMethod?: string;
   }) =>
-    run(typedRpc('strata_update_element', {
+    run(rpcAny('strata_update_element', {
       p_element: elementId, p_name: patch.name ?? null, p_description: patch.description ?? null,
       p_owner: patch.ownerId ?? null, p_perspective: patch.perspectiveId ?? null,
       p_parent: patch.parentId ?? null, p_stage: patch.stage ?? null,
       p_order_index: patch.orderIndex ?? null,
       p_clear_parent: patch.clearParent ?? false, p_clear_owner: patch.clearOwner ?? false,
+      p_measurement_method: patch.measurementMethod ?? null,
     })),
   retireElement: (elementId: string, reason?: string) =>
     run(typedRpc('strata_retire_element', { p_element: elementId, p_reason: reason ?? null })),
