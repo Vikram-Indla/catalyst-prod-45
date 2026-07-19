@@ -42,7 +42,7 @@
  */
 import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useQueries } from '@tanstack/react-query';
+import { useQueries, useQuery } from '@tanstack/react-query';
 import { Button, EmptyState, Lozenge, Spinner } from '@/components/ads';
 import { Briefcase, ClipboardList, GitBranch, Network, Plus, Target } from '@/lib/atlaskit-icons';
 import { Routes } from '@/lib/routes';
@@ -108,6 +108,11 @@ export default function StrataStrategyElementDetailPage() {
   const frameworkMemberIds = useEffectiveFrameworkMemberIds();
   const gateModelsQ = useGateModels();
   const okrsQ = useOkrs();
+  // Theme-owned OKR authoring (CAT-STRATA-THEMEOKR-20260719-001).
+  const [addOkrOpen, setAddOkrOpen] = useState(false);
+  const [krOkr, setKrOkr] = useState<{ id: string; name: string } | null>(null);
+  const orgUnitsQ = useQuery({ queryKey: ['strata', 'org-units'], queryFn: kpiApi.orgUnits, staleTime: 60_000 });
+  const uomQ = useQuery({ queryKey: ['strata', 'uom'], queryFn: kpiApi.unitsOfMeasure, staleTime: 60_000 });
   const projectCardsQ = useProjectCards();
   const decisionsQ = useDecisions();
   const actionsQ = useActions();
@@ -236,7 +241,11 @@ export default function StrataStrategyElementDetailPage() {
   const relevantObjectiveIds = new Set(
     isTheme ? objectives.map((o) => o.id) : element.element_type === 'objective' ? [element.id] : [],
   );
-  const themeOkrs = okrs.filter((o) => o.objective_element_id && relevantObjectiveIds.has(o.objective_element_id));
+  // Legacy objective-linked OKRs AND new Theme-owned OKRs (theme_id === this Theme).
+  const themeOkrs = okrs.filter((o) =>
+    (o.objective_element_id && relevantObjectiveIds.has(o.objective_element_id)) ||
+    (isTheme && o.theme_id === element.id),
+  );
   const elementCycle = cycles.find((c) => c.id === element.cycle_id);
   // Carry the Theme's owning cycle to the Project Card detail route so refresh/copied
   // URL restores the correct cycle and Theme rather than the DB-active cycle (E2E-001).
@@ -431,18 +440,26 @@ export default function StrataStrategyElementDetailPage() {
           // 1 linked KPI reported "2" while rendering a single OKR. Linked KPIs are a
           // different entity and keep their own sub-heading below.
           count={themeOkrs.length}
+          // Theme-owned OKR authoring (CAT-STRATA-THEMEOKR-20260719-001): create an OKR
+          // directly on the Theme — no child Objective/KPI required. Server enforces the gate.
+          actions={isTheme && canAuthor ? (
+            <Button appearance="primary" spacing="compact" iconBefore={<Plus size={14} />}
+              onClick={() => setAddOkrOpen(true)} testId="strata-add-okr">
+              Add OKR
+            </Button>
+          ) : undefined}
         >
           <div style={{ display: 'grid', gap: 16 }}>
             <div>
               <div style={{ fontWeight: 600, fontSize: 'var(--ds-font-size-100)', color: T.subtle, marginBottom: 4 }}>
-                Objective Key Results
+                {isTheme ? 'Theme OKRs' : 'Objective Key Results'}
               </div>
               {themeOkrs.length === 0 ? (
                 <EmptyState
                   size="compact"
                   header="No OKRs yet"
                   description={isTheme
-                    ? "OKRs linked to this Theme's Objectives will appear here."
+                    ? (canAuthor ? 'Add a Theme-owned OKR — no child Objective required.' : "This Theme's OKRs will appear here.")
                     : 'OKRs linked to this Objective will appear here.'}
                 />
               ) : (
@@ -454,6 +471,10 @@ export default function StrataStrategyElementDetailPage() {
                       objectiveName={okr.objective_element_id ? (elementById.get(okr.objective_element_id)?.name ?? null) : null}
                       isOpen={expandedOkrs.has(okr.id)}
                       onToggle={() => toggleOkr(okr.id)}
+                      onLifecycle={canAuthor}
+                      canUpdateKr={canAuthor}
+                      canValidateObs={canAuthor}
+                      onAddKeyResult={canAuthor && okr.theme_id ? () => setKrOkr({ id: okr.id, name: okr.name }) : undefined}
                     />
                   ))}
                 </div>
@@ -789,6 +810,87 @@ export default function StrataStrategyElementDetailPage() {
           lockParentId={element.id}
           onClose={() => setAuthoring(null)}
           onCreated={invalidate}
+        />
+      ) : null}
+
+      {addOkrOpen ? (
+        <StrataFormModal
+          open
+          onClose={() => setAddOkrOpen(false)}
+          title="Add OKR"
+          description={<>Theme-owned OKR for <strong>{element.name}</strong>. No child Objective or KPI is required.</>}
+          submitLabel="Create OKR"
+          testId="strata-add-okr-modal"
+          fields={[
+            { key: 'name', label: 'OKR name', kind: 'text', required: true },
+            { key: 'objectiveStatement', label: 'Objective statement', kind: 'textarea', required: true,
+              helper: 'The qualitative outcome this OKR commits to.' },
+            { key: 'ownerId', label: 'Accountable owner', kind: 'user' },
+            { key: 'owningOrgId', label: 'Owning organisation', kind: 'select',
+              options: (orgUnitsQ.data ?? []).map((u) => ({ value: u.id, label: u.name })) },
+            { key: 'commitment', label: 'Commitment', kind: 'select',
+              options: [{ value: 'committed', label: 'Committed' }, { value: 'aspirational', label: 'Aspirational' }] },
+          ]}
+          initial={{ commitment: 'committed' }}
+          onSubmit={async (v) => {
+            await kpiApi.createOkrV2({
+              themeId: element.id,
+              name: String(v.name),
+              objectiveStatement: String(v.objectiveStatement),
+              ownerId: v.ownerId ? String(v.ownerId) : undefined,
+              owningOrgId: v.owningOrgId ? String(v.owningOrgId) : undefined,
+              commitment: (v.commitment as 'committed' | 'aspirational') || 'committed',
+              cycleId: element.cycle_id ?? undefined,
+            });
+            setAddOkrOpen(false);
+            invalidate();
+          }}
+        />
+      ) : null}
+
+      {krOkr ? (
+        <StrataFormModal
+          open
+          onClose={() => setKrOkr(null)}
+          title="Add Key Result"
+          description={<>Independent measurement contract for <strong>{krOkr.name}</strong>. Not a KPI.</>}
+          submitLabel="Add Key Result"
+          testId="strata-add-kr-modal"
+          fields={[
+            { key: 'name', label: 'Key Result', kind: 'text', required: true },
+            { key: 'businessDefinition', label: 'Business definition', kind: 'textarea' },
+            { key: 'unitId', label: 'Unit', kind: 'select',
+              options: (uomQ.data ?? []).map((u) => ({ value: u.id, label: `${u.name}${u.symbol ? ` (${u.symbol})` : ''}` })) },
+            { key: 'baseline', label: 'Baseline', kind: 'number' },
+            { key: 'target', label: 'Target', kind: 'number' },
+            { key: 'direction', label: 'Direction', kind: 'select', options: [
+              { value: 'higher_better', label: 'Higher is better' }, { value: 'lower_better', label: 'Lower is better' },
+              { value: 'within_range', label: 'Within range' }, { value: 'maintain_above', label: 'Maintain above' },
+              { value: 'maintain_below', label: 'Maintain below' }, { value: 'exact_target', label: 'Exact target' },
+              { value: 'milestone', label: 'Milestone' } ] },
+            { key: 'accountableOwnerId', label: 'Accountable owner', kind: 'user' },
+            { key: 'owningOrgId', label: 'Owning organisation', kind: 'select',
+              options: (orgUnitsQ.data ?? []).map((u) => ({ value: u.id, label: u.name })) },
+            { key: 'isCritical', label: 'Critical KR', kind: 'select', options: [
+              { value: 'no', label: 'No' }, { value: 'yes', label: 'Yes' } ] },
+          ]}
+          initial={{ direction: 'higher_better', isCritical: 'no' }}
+          onSubmit={async (v) => {
+            await kpiApi.addKr({
+              okrId: krOkr.id,
+              name: String(v.name),
+              businessDefinition: v.businessDefinition ? String(v.businessDefinition) : undefined,
+              unitId: v.unitId ? String(v.unitId) : undefined,
+              baseline: v.baseline != null && v.baseline !== '' ? Number(v.baseline) : undefined,
+              target: v.target != null && v.target !== '' ? Number(v.target) : undefined,
+              direction: v.direction ? String(v.direction) : 'higher_better',
+              accountableOwnerId: v.accountableOwnerId ? String(v.accountableOwnerId) : undefined,
+              owningOrgId: v.owningOrgId ? String(v.owningOrgId) : undefined,
+              isCritical: v.isCritical === 'yes',
+            });
+            setKrOkr(null);
+            invalidate();
+          }}
         />
       ) : null}
 

@@ -1552,6 +1552,9 @@ export const ENTITY_AUDIT_TYPES: Array<{ value: string; label: string }> = [
   { value: 'strata_kpis', label: 'KPI' },
   { value: 'strata_kpi_actuals', label: 'KPI actual' },
   { value: 'strata_okrs', label: 'OKR' },
+  { value: 'strata_key_results', label: 'Key Result' },
+  { value: 'strata_kr_observations', label: 'KR observation' },
+  { value: 'strata_okr_close_snapshots', label: 'OKR close snapshot' },
   { value: 'strata_scorecard_models', label: 'Scorecard model' },
   { value: 'strata_snapshots', label: 'Snapshot' },
   { value: 'strata_project_cards', label: 'Project card' },
@@ -1582,7 +1585,10 @@ const slugRoute = (build: (slug: string) => string) => (r: Record<string, unknow
 export const ENTITY_DISCOVERY: Record<string, EntityDiscoveryConfig> = {
   strata_strategy_elements: { matchCols: ['name', 'slug'], selectCols: 'id, name, slug', display: (r) => String(r.name), route: slugRoute(Routes.strata.strategyElement) },
   strata_kpis: { matchCols: ['name', 'slug'], selectCols: 'id, name, slug', display: (r) => String(r.name), route: slugRoute(Routes.strata.kpi) },
-  strata_okrs: { matchCols: ['name', 'slug'], selectCols: 'id, name, slug', display: (r) => String(r.name), route: () => null },
+  // Theme-owned OKR + KR now have slug deep-link detail pages (CAT-STRATA-THEMEOKR-20260719-001).
+  strata_okrs: { matchCols: ['name', 'slug'], selectCols: 'id, name, slug', display: (r) => String(r.name), route: slugRoute(Routes.strata.okr) },
+  // KR observations + close snapshots are UUID-only evidence (like KPI actuals) — audit-only, no discovery.
+  strata_key_results: { matchCols: ['name', 'kr_ref', 'slug'], selectCols: 'id, name, kr_ref, slug', display: (r) => String(r.name ?? r.kr_ref), route: slugRoute(Routes.strata.kr) },
   strata_scorecard_models: { matchCols: ['name', 'slug'], selectCols: 'id, name, slug', display: (r) => String(r.name), route: () => null },
   strata_snapshots: { matchCols: ['name', 'snapshot_key'], selectCols: 'id, name, snapshot_key', display: (r) => String(r.name ?? r.snapshot_key), route: (r) => (r.snapshot_key ? Routes.strata.review(String(r.snapshot_key)) : null) },
   strata_project_cards: { matchCols: ['name', 'slug'], selectCols: 'id, name, slug', display: (r) => String(r.name), route: slugRoute(Routes.strata.projectCard) },

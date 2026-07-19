@@ -619,29 +619,55 @@ export interface StrataSavedView {
   updated_at: string;
 }
 
+/** OKR lifecycle (CAT-STRATA-THEMEOKR-20260719-001, D-1 approval gate). Legacy rows use draft/active/closed. */
+export type StrataOkrStatus =
+  | 'draft' | 'submitted' | 'active' | 'closing_review' | 'closed' | 'withdrawn' | 'rejected' | 'cancelled';
+
 export interface StrataOkr {
   id: string;
   objective_element_id: string | null;
+  /** Theme-owned model (CAT-STRATA-THEMEOKR-20260719-001) — prospective ownership; legacy rows may be null until backfilled. */
+  theme_id: string | null;
   name: string;
   slug: string | null;
+  objective_statement: string | null;
+  commitment: 'committed' | 'aspirational' | null;
   owner_id: string | null;
+  owning_org_unit_id: string | null;
   cycle_id: string | null;
   period_id: string | null;
+  start_period_id: string | null;
+  end_period_id: string | null;
   confidence: number | null;
-  status: 'draft' | 'active' | 'closed';
+  status: StrataOkrStatus;
+  current_version_id: string | null;
+  lock_version: number | null;
+  final_status: string | null;
+  closure_reason: string | null;
 }
 
 export interface StrataKeyResult {
   id: string;
   okr_id: string;
+  /** LEGACY PROVENANCE ONLY — prospective KRs are independent contracts (CAT-STRATA-THEMEOKR-20260719-001). */
   kpi_id: string | null;
+  kr_ref: string | null;
+  slug: string | null;
   name: string;
+  business_definition: string | null;
   unit: string | null;
+  unit_id: string | null;
   baseline: number | null;
   target: number | null;
   current_value: number | null;
   direction: string;
   status: string;
+  lifecycle: 'draft' | 'active' | 'retired' | 'superseded' | null;
+  update_method: 'manual' | 'upload' | 'integration' | 'composite' | null;
+  accountable_owner_id: string | null;
+  owning_org_unit_id: string | null;
+  is_critical: boolean | null;
+  weight: number | null;
 }
 
 // ── Execution ────────────────────────────────────────────────────────────────

@@ -57,7 +57,9 @@ describe('owningRouteForEntity — navigation only where a mapping exists', () =
 describe('ENTITY_DISCOVERY — name/key discovery + owning-route contract', () => {
   it('every governed audit type except UUID-only KPI actuals has a discovery config', () => {
     for (const t of ENTITY_AUDIT_TYPES.map((o) => o.value)) {
-      if (t === 'strata_kpi_actuals') expect(ENTITY_DISCOVERY[t]).toBeUndefined();
+      // UUID-only evidence records (no human-readable key) — audit-only, not discoverable.
+      if (t === 'strata_kpi_actuals' || t === 'strata_kr_observations' || t === 'strata_okr_close_snapshots')
+        expect(ENTITY_DISCOVERY[t]).toBeUndefined();
       else expect(ENTITY_DISCOVERY[t], t).toBeDefined();
     }
   });
@@ -82,7 +84,9 @@ describe('ENTITY_DISCOVERY — name/key discovery + owning-route contract', () =
   });
 
   it('renders — (null) for types without a routeable surface and for missing slugs', () => {
-    expect(ENTITY_DISCOVERY.strata_okrs.route({ id: 'x', name: 'N', slug: 'okr-1' })).toBeNull();
+    // Theme-owned OKR + KR now have slug deep-link detail pages (CAT-STRATA-THEMEOKR-20260719-001).
+    expect(ENTITY_DISCOVERY.strata_okrs.route({ id: 'x', name: 'N', slug: 'okr-1' })).toBe('/strata/okrs/okr-1');
+    expect(ENTITY_DISCOVERY.strata_key_results.route({ id: 'x', name: 'N', kr_ref: 'KR-1', slug: 'kr-1' })).toBe('/strata/krs/kr-1');
     expect(ENTITY_DISCOVERY.strata_reviews.route({ id: 'x', name: 'N', slug: 'rev-1' })).toBeNull();
     expect(ENTITY_DISCOVERY.strata_decisions.route({ id: 'x', title: 'T' })).toBeNull();
     expect(ENTITY_DISCOVERY.strata_kpis.route({ id: 'x', name: 'N', slug: null })).toBeNull();
