@@ -323,6 +323,114 @@ export interface StrataModelPerspective {
   perspective_id: string;
   weight: number;
   order_index: number;
+  /** CAT-STRATA-GOVFRAMEWORK-20260719-001: how this model weight was set.
+   * framework_default = inherited from the seeding framework version; model_override = changed
+   * on the model; null = unknown/legacy (never inferred — zero-assumption). */
+  weight_source?: 'framework_default' | 'model_override' | null;
+}
+
+// ── Strategy Framework (CAT-STRATA-GOVFRAMEWORK-20260719-001) ─────────────────
+// A framework is separate from a Perspective definition and from a Scorecard Model.
+// One effective framework version defines corporate perspective membership, order and weight,
+// totalling exactly 100%. Perspective definitions do NOT carry framework weight/position.
+export type FrameworkStatus =
+  | 'draft' | 'changes_requested' | 'pending_approval' | 'approved' | 'rejected' | 'superseded' | 'retired';
+
+export interface StrataStrategyFramework {
+  id: string;
+  organization_id: string | null;
+  framework_key: string | null;
+  name: string;
+  slug: string | null;
+  description: string | null;
+  created_by: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface StrataFrameworkVersion {
+  id: string;
+  framework_id: string;
+  version: number;
+  status: FrameworkStatus;
+  effective_from: string | null;
+  effective_to: string | null;
+  approved_by: string | null;
+  approved_at: string | null;
+  created_by: string | null;
+  created_at: string;
+  updated_at: string;
+  supersedes_id: string | null;
+  change_reason: string | null;
+  assigned_approver_id: string | null;
+  submitted_at: string | null;
+  submitted_by: string | null;
+  decision_note: string | null;
+  /** legacy_unverified = backfilled from pre-framework data with unprovable approver/timestamp. */
+  provenance: 'workflow' | 'legacy_unverified';
+}
+
+export interface StrataFrameworkMember {
+  id: string;
+  framework_version_id: string;
+  perspective_id: string;
+  weight: number;
+  order_index: number;
+  created_by: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+/** strata_validate_strategy_framework_version — the ONE server-side authority.
+ * Consumers count blockers.length; issues carries structured codes + affected perspective ids. */
+export interface StrataFrameworkValidationIssue {
+  code: string;
+  message: string;
+  perspective_ids: string[];
+}
+export interface StrataFrameworkValidation {
+  valid: boolean;
+  total_weight: number;
+  member_count: number;
+  weight_code: string;
+  blockers: string[];
+  passed: string[];
+  issues: StrataFrameworkValidationIssue[];
+}
+
+export interface StrataFrameworkApprovalTask {
+  id: string;
+  framework_version_id: string;
+  status: 'open' | 'completed' | 'cancelled' | 'superseded';
+  assigned_to: string;
+  submission_attempt: number;
+  outcome: 'approved' | 'changes_requested' | 'rejected' | null;
+  created_by: string | null;
+  created_at: string;
+  completed_by: string | null;
+  completed_at: string | null;
+  cancelled_at: string | null;
+  cancel_reason: string | null;
+}
+
+/** strata_framework_approver_candidates row — eligible, non-conflicting approvers. */
+export interface StrataFrameworkApproverCandidate {
+  user_id: string;
+  roles: string[];
+}
+
+export interface StrataFrameworkDependencyImpact {
+  version_id: string;
+  member_count: number;
+  strategy_elements_using_member_perspectives: number;
+  scorecard_models_seeded_from_version?: number;
+}
+
+/** A member draft row used by the framework authoring editor (weight/order per perspective). */
+export interface StrataFrameworkMemberDraft {
+  perspective_id: string;
+  weight: number;
+  order_index: number;
 }
 
 /**

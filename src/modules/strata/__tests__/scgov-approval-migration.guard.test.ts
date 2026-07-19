@@ -240,7 +240,10 @@ describe('SC-GOVAPPROVAL — validator and notifications', () => {
     expect(body).toMatch(/'updated_at', v_new/);
     expect(body).toMatch(/'validation', public\.strata_validate_scorecard_model/);
     // The token-less 2-arg overload is dropped (no unprotected path remains).
-    const migration = latestMatching('p_expected_updated_at timestamptz');
+    // Anchor on the DROP itself, not a generic optimistic-concurrency phrase — later
+    // migrations legitimately reuse `p_expected_updated_at timestamptz` for other tables
+    // (e.g. CAT-STRATA-GOVFRAMEWORK-20260719-001), which must not displace this check.
+    const migration = latestMatching('DROP FUNCTION IF EXISTS public.strata_set_model_measures');
     expect(migration).toMatch(/DROP FUNCTION IF EXISTS public\.strata_set_model_measures\(uuid, jsonb\);/);
   });
 
