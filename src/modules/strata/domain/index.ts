@@ -878,6 +878,12 @@ export const kpiApi = {
     run(rpcAny('strata_reverse_observation', { p_obs: obsId, p_reason: reason })) as Promise<string>,
   krProgress: (krId: string, asOf?: string): Promise<Record<string, unknown>> =>
     run(rpcAny('strata_kr_progress', { p_kr: krId, p_as_of: asOf ?? null })) as Promise<Record<string, unknown>>,
+  krObservations: (krId: string): Promise<Array<Record<string, unknown>>> =>
+    run((supabase.from('strata_kr_observations' as never)
+      .select('id, as_of_date, actual_value, validation_status, source_channel, submitted_by, validated_by, confidence, commentary, reporting_period_id')
+      .eq('kr_id', krId)
+      .order('as_of_date', { ascending: false })
+      .order('submitted_at', { ascending: false }) as never)) as Promise<Array<Record<string, unknown>>>,
   okrOfficialProgressV2: (okrId: string, asOf?: string): Promise<Record<string, unknown>> =>
     run(rpcAny('strata_okr_official_progress_v2', { p_okr: okrId, p_as_of: asOf ?? null })) as Promise<Record<string, unknown>>,
   // review / close

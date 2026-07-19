@@ -108,7 +108,9 @@ export default function StrataStrategyElementDetailPage() {
   const okrsQ = useOkrs();
   // Theme-owned OKR authoring (CAT-STRATA-THEMEOKR-20260719-001).
   const [addOkrOpen, setAddOkrOpen] = useState(false);
+  const [krOkr, setKrOkr] = useState<{ id: string; name: string } | null>(null);
   const orgUnitsQ = useQuery({ queryKey: ['strata', 'org-units'], queryFn: kpiApi.orgUnits, staleTime: 60_000 });
+  const uomQ = useQuery({ queryKey: ['strata', 'uom'], queryFn: kpiApi.unitsOfMeasure, staleTime: 60_000 });
   const projectCardsQ = useProjectCards();
   const decisionsQ = useDecisions();
   const actionsQ = useActions();
@@ -467,6 +469,10 @@ export default function StrataStrategyElementDetailPage() {
                       objectiveName={okr.objective_element_id ? (elementById.get(okr.objective_element_id)?.name ?? null) : null}
                       isOpen={expandedOkrs.has(okr.id)}
                       onToggle={() => toggleOkr(okr.id)}
+                      onLifecycle={canAuthor}
+                      canUpdateKr={canAuthor}
+                      canValidateObs={canAuthor}
+                      onAddKeyResult={canAuthor && okr.theme_id ? () => setKrOkr({ id: okr.id, name: okr.name }) : undefined}
                     />
                   ))}
                 </div>
@@ -835,6 +841,52 @@ export default function StrataStrategyElementDetailPage() {
               cycleId: element.cycle_id ?? undefined,
             });
             setAddOkrOpen(false);
+            invalidate();
+          }}
+        />
+      ) : null}
+
+      {krOkr ? (
+        <StrataFormModal
+          open
+          onClose={() => setKrOkr(null)}
+          title="Add Key Result"
+          description={<>Independent measurement contract for <strong>{krOkr.name}</strong>. Not a KPI.</>}
+          submitLabel="Add Key Result"
+          testId="strata-add-kr-modal"
+          fields={[
+            { key: 'name', label: 'Key Result', kind: 'text', required: true },
+            { key: 'businessDefinition', label: 'Business definition', kind: 'textarea' },
+            { key: 'unitId', label: 'Unit', kind: 'select',
+              options: (uomQ.data ?? []).map((u) => ({ value: u.id, label: `${u.name}${u.symbol ? ` (${u.symbol})` : ''}` })) },
+            { key: 'baseline', label: 'Baseline', kind: 'number' },
+            { key: 'target', label: 'Target', kind: 'number' },
+            { key: 'direction', label: 'Direction', kind: 'select', options: [
+              { value: 'higher_better', label: 'Higher is better' }, { value: 'lower_better', label: 'Lower is better' },
+              { value: 'within_range', label: 'Within range' }, { value: 'maintain_above', label: 'Maintain above' },
+              { value: 'maintain_below', label: 'Maintain below' }, { value: 'exact_target', label: 'Exact target' },
+              { value: 'milestone', label: 'Milestone' } ] },
+            { key: 'accountableOwnerId', label: 'Accountable owner', kind: 'user' },
+            { key: 'owningOrgId', label: 'Owning organisation', kind: 'select',
+              options: (orgUnitsQ.data ?? []).map((u) => ({ value: u.id, label: u.name })) },
+            { key: 'isCritical', label: 'Critical KR', kind: 'select', options: [
+              { value: 'no', label: 'No' }, { value: 'yes', label: 'Yes' } ] },
+          ]}
+          initial={{ direction: 'higher_better', isCritical: 'no' }}
+          onSubmit={async (v) => {
+            await kpiApi.addKr({
+              okrId: krOkr.id,
+              name: String(v.name),
+              businessDefinition: v.businessDefinition ? String(v.businessDefinition) : undefined,
+              unitId: v.unitId ? String(v.unitId) : undefined,
+              baseline: v.baseline != null && v.baseline !== '' ? Number(v.baseline) : undefined,
+              target: v.target != null && v.target !== '' ? Number(v.target) : undefined,
+              direction: v.direction ? String(v.direction) : 'higher_better',
+              accountableOwnerId: v.accountableOwnerId ? String(v.accountableOwnerId) : undefined,
+              owningOrgId: v.owningOrgId ? String(v.owningOrgId) : undefined,
+              isCritical: v.isCritical === 'yes',
+            });
+            setKrOkr(null);
             invalidate();
           }}
         />
