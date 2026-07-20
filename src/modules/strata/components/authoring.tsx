@@ -669,6 +669,95 @@ export function EditElementModal({
 }
 
 /**
+ * Governed resolution of a "both"-conflict Theme (CAT-STRATA-THEMEMETHOD-20260720-001).
+ * An administrator selects the intended method and an audited reason; incompatible records are
+ * dispositioned non-destructively server-side (Objectives → retired, Theme-owned OKRs → cancelled —
+ * history preserved). Server re-enforces every rule; this modal only collects the decision.
+ */
+export function ThemeMethodResolveModal({
+  theme, objectiveCount, themeOkrCount, onClose, onResolved,
+}: {
+  theme: StrataStrategyElement;
+  objectiveCount: number;
+  themeOkrCount: number;
+  onClose: () => void;
+  onResolved: () => void;
+}) {
+  const [method, setMethod] = useState<StrataMeasurementMethod | null>(null);
+  const [reason, setReason] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const methodOptions: SelectOption<StrataMeasurementMethod>[] =
+    (Object.keys(MEASUREMENT_METHOD_LABEL) as StrataMeasurementMethod[]).map((m) => ({ value: m, label: MEASUREMENT_METHOD_LABEL[m] }));
+
+  const consequence = method === 'okrs'
+    ? `${objectiveCount} Strategic Objective${objectiveCount === 1 ? '' : 's'} will be retired (records + lineage preserved, not deleted).`
+    : method === 'objectives_kpis'
+      ? `${themeOkrCount} Theme-owned OKR${themeOkrCount === 1 ? '' : 's'} will be cancelled (records + observations preserved, not deleted).`
+      : 'Select a method to see which incompatible records will be safely dispositioned.';
+
+  const submit = async () => {
+    if (!method) { setError('Select the intended measurement method'); return; }
+    if (!reason.trim()) { setError('An audited reason is required to resolve this conflict'); return; }
+    setBusy(true); setError(null);
+    try {
+      await strategyApi.resolveThemeMethodConflict(theme.id, method, reason.trim());
+      onResolved();
+      onClose();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : String(e));
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <Modal isOpen onClose={busy ? () => {} : onClose} width="medium" testId="strata-resolve-method-modal">
+      <ModalHeader><ModalTitle>Resolve measurement method — {theme.name}</ModalTitle></ModalHeader>
+      <ModalBody>
+        <p style={{ margin: '0 0 12px', fontSize: 'var(--ds-font-size-100)', color: T.subtle }}>
+          This Theme holds both Strategic Objectives and Theme-owned OKRs. A Theme must use exactly one
+          measurement method. Choose the intended method and an audited reason; incompatible records are
+          disposed of safely — retired or cancelled, never deleted, with full history retained.
+        </p>
+        <div style={{ display: 'grid', gap: 12 }}>
+          <div>
+            <FieldLabel label="Intended measurement method" required />
+            <Select
+              options={methodOptions}
+              value={methodOptions.find((o) => o.value === method) ?? null}
+              onChange={(next) => setMethod((next?.value as StrataMeasurementMethod) ?? null)}
+              placeholder="Select the method to keep…"
+              usePortal
+              aria-label="Intended measurement method"
+            />
+            <p style={{ margin: '4px 0 0', fontSize: 'var(--ds-font-size-100)', color: T.subtle }}>{consequence}</p>
+          </div>
+          <div>
+            <FieldLabel label="Resolution reason" required />
+            <TextArea value={reason} minimumRows={2} onChange={(e) => setReason((e.target as HTMLTextAreaElement).value)}
+              placeholder="e.g. Theme is delivery-outcome driven; standardising on OKRs" aria-label="Resolution reason" />
+          </div>
+        </div>
+        {error ? (
+          <div style={{ marginTop: 12 }}>
+            <SectionMessage appearance="error" title="Action rejected">
+              <p style={{ whiteSpace: 'pre-wrap' }}>{error}</p>
+            </SectionMessage>
+          </div>
+        ) : null}
+      </ModalBody>
+      <ModalFooter>
+        <Button appearance="subtle" onClick={onClose} isDisabled={busy}>Cancel</Button>
+        <Button appearance="primary" onClick={submit} isDisabled={busy} testId="strata-resolve-method-confirm">
+          {busy ? 'Resolving…' : 'Resolve measurement method'}
+        </Button>
+      </ModalFooter>
+    </Modal>
+  );
+}
+
+/**
  * New element — Type-reactive (Theme has no parent field at all; Objective's
  * parent is required and restricted to Themes). StrataFormModal's field spec
  * is static per render and can't react to a value chosen inside the same

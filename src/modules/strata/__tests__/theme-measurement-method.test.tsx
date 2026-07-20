@@ -112,11 +112,14 @@ describe('Detail page — creation actions gated by measurement method', () => {
     expect(screen.queryByTestId('strata-add-okr')).toBeNull();
   });
 
-  it('Unclassified (both-conflict, null method) Theme hides BOTH creation actions', () => {
+  it('Unclassified (both-conflict, null method) Theme hides BOTH creation actions + shows the resolution banner', () => {
     detailEl = THEME(null);
     renderDetail();
     expect(screen.queryByTestId('strata-add-okr')).toBeNull();
     expect(screen.queryByRole('button', { name: /Add Objective/ })).toBeNull();
+    expect(screen.getByTestId('strata-method-conflict-banner')).toBeTruthy();
+    expect(screen.getByText('Measurement method requires resolution')).toBeTruthy();
+    expect(screen.getByTestId('strata-resolve-method')).toBeTruthy();
   });
 
   it('shows the measurement-method indicator with the method label', () => {

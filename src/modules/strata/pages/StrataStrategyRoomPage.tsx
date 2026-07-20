@@ -26,6 +26,7 @@ import {
 } from '@/modules/strata/hooks/useStrata';
 import { kpiApi, strategyApi } from '@/modules/strata/domain';
 import { StrataChainStrip, StrataChipMenu, StrataPageShell, StrataPanel, T } from '@/modules/strata/components/shared';
+import { ThemeMethodConflictsPanel } from '@/modules/strata/components/ThemeMethodConflictsPanel';
 import type { StrataChainSegment, StrataMenuOption } from '@/modules/strata/components/shared';
 import {
   EditElementModal, gateModelSelectOptions, NewElementModal, perspectiveSelectOptions, StrataFormModal,
@@ -933,6 +934,8 @@ export default function StrataStrategyRoomPage() {
       toolbarActions={showData && viewMode === 'structure' ? filters : undefined}
       testId="strata-strategy-room-chrome"
     >
+
+      <ThemeMethodConflictsPanel />
 
       {isLoading ? (
         <div style={{ display: 'flex', justifyContent: 'center', padding: 32 }}>

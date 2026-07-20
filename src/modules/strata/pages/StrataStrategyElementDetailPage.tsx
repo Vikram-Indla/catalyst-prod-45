@@ -57,7 +57,7 @@ import {
 import type { StrataChainSegment } from '@/modules/strata/components/shared';
 import {
   EditElementModal, gateModelSelectOptions, NewElementModal, perspectiveSelectOptions, StrataFormModal, str,
-  themeParentOptions, ThemeCharterModal,
+  themeParentOptions, ThemeCharterModal, ThemeMethodResolveModal,
 } from '@/modules/strata/components/authoring';
 import { executionApi, governanceApi, kpiApi, strategyApi } from '@/modules/strata/domain';
 import { Modal, ModalBody, ModalFooter, ModalHeader, ModalTitle, SectionMessage } from '@/components/ads';
@@ -110,6 +110,7 @@ export default function StrataStrategyElementDetailPage() {
   const okrsQ = useOkrs();
   // Theme-owned OKR authoring (CAT-STRATA-THEMEOKR-20260719-001).
   const [addOkrOpen, setAddOkrOpen] = useState(false);
+  const [resolveMethodOpen, setResolveMethodOpen] = useState(false);
   const [krOkr, setKrOkr] = useState<{ id: string; name: string } | null>(null);
   const orgUnitsQ = useQuery({ queryKey: ['strata', 'org-units'], queryFn: kpiApi.orgUnits, staleTime: 60_000 });
   const uomQ = useQuery({ queryKey: ['strata', 'uom'], queryFn: kpiApi.unitsOfMeasure, staleTime: 60_000 });
@@ -252,6 +253,11 @@ export default function StrataStrategyElementDetailPage() {
   // gated by the authoritative method (and re-enforced server-side); historical records may remain
   // read-only. A null method (unclassified / both-conflict) freezes BOTH creation actions.
   const themeMethod = isTheme ? element.measurement_method : null;
+  // Both-conflict (unresolved) Theme: NULL method with both child Objectives and Theme-owned OKRs present.
+  const themeOwnedOkrCount = isTheme
+    ? okrs.filter((o) => o.theme_id === element.id && !['cancelled', 'withdrawn', 'rejected'].includes(String(o.status))).length
+    : 0;
+  const isMethodConflict = isTheme && themeMethod == null;
   const showObjectivesPanel = isTheme && (themeMethod === 'objectives_kpis' || objectives.length > 0);
   // OKR panel bundles two sub-sections: Theme OKRs (the okrs mechanism) and Linked KPIs (part of the
   // objectives_kpis experience). Gate each independently so neither method loses its applicable content;
@@ -389,6 +395,29 @@ export default function StrataStrategyElementDetailPage() {
                   : themeMethod === 'objectives_kpis' ? 'Strategic Objectives & KPIs · OKRs unavailable'
                   : 'This Theme holds both Objectives and OKRs — awaiting governed resolution'}
               </span>
+            </div>
+          ) : null}
+          {isMethodConflict ? (
+            <div data-testid="strata-method-conflict-banner">
+              <SectionMessage appearance="warning" title="Measurement method requires resolution">
+                <p style={{ margin: '0 0 8px' }}>
+                  This Theme holds both Strategic Objectives and Theme-owned OKRs. A Theme must use exactly one
+                  measurement method. New Objectives, KPIs and OKRs are blocked until an administrator resolves it —
+                  no records will be deleted or silently converted.
+                </p>
+                <ul style={{ margin: '0 0 8px 18px' }}>
+                  <li>{objectives.length} Strategic Objective{objectives.length === 1 ? '' : 's'}</li>
+                  <li>{themeOwnedOkrCount} Theme-owned OKR{themeOwnedOkrCount === 1 ? '' : 's'}</li>
+                  <li>{linkedKpis.length} linked KPI{linkedKpis.length === 1 ? '' : 's'}</li>
+                </ul>
+                {canAuthor ? (
+                  <Button appearance="warning" testId="strata-resolve-method" onClick={() => setResolveMethodOpen(true)}>
+                    Resolve measurement method
+                  </Button>
+                ) : (
+                  <p style={{ margin: 0, color: T.subtle }}>An administrator must resolve this conflict.</p>
+                )}
+              </SectionMessage>
             </div>
           ) : null}
           <StrataPanel
@@ -842,6 +871,16 @@ export default function StrataStrategyElementDetailPage() {
           lockParentId={element.id}
           onClose={() => setAuthoring(null)}
           onCreated={invalidate}
+        />
+      ) : null}
+
+      {resolveMethodOpen ? (
+        <ThemeMethodResolveModal
+          theme={element}
+          objectiveCount={objectives.length}
+          themeOkrCount={themeOwnedOkrCount}
+          onClose={() => setResolveMethodOpen(false)}
+          onResolved={() => invalidate()}
         />
       ) : null}
 

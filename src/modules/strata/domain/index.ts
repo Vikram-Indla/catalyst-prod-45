@@ -508,6 +508,13 @@ export const strategyApi = {
     })),
   unlinkElementKpi: (elementId: string, kpiId: string) =>
     run(typedRpc('strata_unlink_element_kpi', { p_element: elementId, p_kpi: kpiId })),
+  // Measurement-method conflict resolution (CAT-STRATA-THEMEMETHOD-20260720-001).
+  themeMethodConflicts: (): Promise<Array<{ theme_id: string; objective_count: number; theme_okr_count: number; resolved_at: string | null; theme: { name: string; slug: string | null } | null }>> =>
+    run(supabase.from('strata_theme_method_conflicts' as never)
+      .select('theme_id, objective_count, theme_okr_count, resolved_at, theme:strata_strategy_elements(name, slug)')
+      .is('resolved_at', null) as never),
+  resolveThemeMethodConflict: (themeId: string, method: 'objectives_kpis' | 'okrs', reason: string): Promise<Record<string, unknown>> =>
+    run(rpcAny('strata_resolve_theme_method_conflict', { p_theme: themeId, p_method: method, p_reason: reason })) as Promise<Record<string, unknown>>,
 };
 
 // ── Scorecards ───────────────────────────────────────────────────────────────
