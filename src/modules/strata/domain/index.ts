@@ -779,6 +779,10 @@ export const kpiApi = {
     run(rpcAny('strata_retire_contribution_mapping', { p_mapping: id, p_reason: reason ?? null, p_review: reviewId ?? null })),
   grantAlignmentException: (alignmentId: string, reason: string) =>
     run(rpcAny('strata_grant_alignment_exception', { p_alignment: alignmentId, p_reason: reason })),
+  approvedKpis: (): Promise<Array<{ id: string; name: string; unit: string | null; kr_eligible?: boolean; usage_class?: string | null }>> =>
+    run((supabase.from('strata_kpis' as never).select('id, name, unit, kr_eligible, usage_class').eq('status', 'approved').order('name')) as never) as Promise<Array<{ id: string; name: string; unit: string | null; kr_eligible?: boolean; usage_class?: string | null }>>,
+  assignmentObservations: (assignmentId: string): Promise<Array<Record<string, unknown>>> =>
+    run((supabase.from('strata_kpi_assignment_observations' as never).select('*').eq('assignment_id', assignmentId).order('as_of_date', { ascending: false })) as never) as Promise<Array<Record<string, unknown>>>,
   assignmentRollup: (parentAssignmentId: string, periodId?: string, asOf?: string): Promise<Record<string, unknown>> =>
     run(rpcAny('strata_calc_assignment_rollup', { p_parent_assignment: parentAssignmentId, p_period: periodId ?? null, p_as_of: asOf ?? null })) as Promise<Record<string, unknown>>,
   // ── KR<->Assignment bridge (STRATA-KPI-014, slice S5) ──────────────────────

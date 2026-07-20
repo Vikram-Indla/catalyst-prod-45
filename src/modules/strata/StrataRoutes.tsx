@@ -17,6 +17,7 @@ const ScorecardsPage = lazy(() => import('./pages/StrataScorecardsPage'));
 const ScorecardDetailPage = lazy(() => import('./pages/StrataScorecardDetailPage'));
 const KpiLibraryPage = lazy(() => import('./pages/StrataKpiLibraryPage'));
 const KpiDetailPage = lazy(() => import('./pages/StrataKpiDetailPage'));
+const KpiGovernancePage = lazy(() => import('./pages/StrataKpiGovernancePage'));
 const OkrDetailPage = lazy(() => import('./pages/StrataOkrDetailPage'));
 const KrDetailPage = lazy(() => import('./pages/StrataKrDetailPage'));
 const ExecutionPage = lazy(() => import('./pages/StrataExecutionPage'));
@@ -67,6 +68,7 @@ export function StrataRoutesShell() {
         <Route path="scorecards/:slug" element={<S><ScorecardDetailPage /></S>} />
         <Route path="scorecards/:slug/evidence" element={<S><EvidencePage /></S>} />
         <Route path="kpis" element={<S><KpiLibraryPage /></S>} />
+        <Route path="kpi-governance" element={<S><KpiGovernancePage /></S>} />
         <Route path="kpis/:slug" element={<S><KpiDetailPage /></S>} />
         <Route path="kpis/:slug/evidence" element={<S><EvidencePage /></S>} />
         <Route path="okrs/:slug" element={<S><OkrDetailPage /></S>} />

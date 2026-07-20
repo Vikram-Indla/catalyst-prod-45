@@ -1,0 +1,226 @@
+/**
+ * STRATA KPI Governance — /strata/kpi-governance (CAT-STRATA-KPI-OPMODEL-20260720-001).
+ * CRUD + lifecycle surface for the governed measurement spine:
+ *   - Strategic / Project KPI Assignments (create -> submit -> approve/reject -> retire),
+ *   - scoped observations (submit + maker-checker validate),
+ *   - the authoritative contribution roll-up (numerator / denominator / weights / exclusions / overlaps).
+ * All governance is server-enforced (RPCs); this surface explains the same rules.
+ */
+import React, { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { Button, Lozenge, Select, Textfield, Checkbox, EmptyState, Spinner, SectionMessage, DynamicTable } from '@/components/ads';
+import { kpiApi } from '@/modules/strata/domain';
+import { useStrataRoles } from '@/modules/strata/hooks/useStrata';
+import { StrataPageShell, StrataPanel, T } from '@/modules/strata/components/shared';
+import { labelize } from '@/modules/strata/components/format';
+
+const STATUS_LOZENGE: Record<string, { label: string; appearance: React.ComponentProps<typeof Lozenge>['appearance'] }> = {
+  draft: { label: 'Draft', appearance: 'default' },
+  submitted: { label: 'Submitted', appearance: 'inprogress' },
+  approved: { label: 'Approved', appearance: 'success' },
+  rejected: { label: 'Rejected', appearance: 'removed' },
+  retired: { label: 'Retired', appearance: 'moved' },
+};
+
+const WRITE_ROLES = ['strategy_office', 'kpi_owner', 'okr_owner', 'strata_admin'];
+const APPROVE_ROLES = ['strategy_office', 'kpi_approver', 'strata_admin'];
+
+type Assignment = { id: string; assignment_key?: string | null; kpi_id: string; scope_type: string; status: string; target?: number | null; lock_version?: number; kr_eligible?: boolean };
+
+export default function StrataKpiGovernancePage() {
+  const roles = useStrataRoles();
+  const roleList = roles.data ?? [];
+  const canWrite = roleList.some((r) => WRITE_ROLES.includes(r));
+  const canApprove = roleList.some((r) => APPROVE_ROLES.includes(r));
+
+  const assignQ = useQuery({ queryKey: ['strata', 'kpi-assignments'], queryFn: () => kpiApi.kpiAssignments(), staleTime: 0 });
+  const kpiQ = useQuery({ queryKey: ['strata', 'approved-kpis'], queryFn: () => kpiApi.approvedKpis(), staleTime: 30_000 });
+  const assignments = (assignQ.data ?? []) as unknown as Assignment[];
+  const kpis = kpiQ.data ?? [];
+
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [selected, setSelected] = useState<Assignment | null>(null);
+  const [rollup, setRollup] = useState<Record<string, unknown> | null>(null);
+
+  // create-form state
+  const [kpiId, setKpiId] = useState<string | null>(null);
+  const [scopeType, setScopeType] = useState<'strategic' | 'project'>('strategic');
+  const [target, setTarget] = useState('');
+  const [krEligible, setKrEligible] = useState(false);
+
+  const run = async (fn: () => Promise<unknown>) => {
+    setBusy(true); setError(null);
+    try { await fn(); await assignQ.refetch(); }
+    catch (e) { setError(e instanceof Error ? e.message : String(e)); }
+    finally { setBusy(false); }
+  };
+
+  const rows = assignments.map((a) => {
+    const loz = STATUS_LOZENGE[a.status] ?? STATUS_LOZENGE.draft;
+    return {
+      key: a.id,
+      cells: [
+        { key: 'k', content: <span style={{ fontFamily: 'var(--ds-font-family-code)', color: T.text }}>{a.assignment_key ?? a.id.slice(0, 8)}</span> },
+        { key: 's', content: <span style={{ color: T.subtle }}>{labelize(a.scope_type)}</span> },
+        { key: 't', content: <span style={{ color: T.text }}>{a.target ?? '—'}</span> },
+        { key: 'st', content: <Lozenge appearance={loz.appearance}>{loz.label}</Lozenge> },
+        {
+          key: 'a',
+          content: (
+            <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+              {canWrite && (a.status === 'draft' || a.status === 'rejected') ? (
+                <Button spacing="compact" appearance="primary" isDisabled={busy} testId={`assign-submit-${a.id}`}
+                  onClick={() => run(() => kpiApi.submitKpiAssignment(a.id, a.lock_version))}>Submit</Button>
+              ) : null}
+              {canApprove && a.status === 'submitted' ? (
+                <>
+                  <Button spacing="compact" appearance="primary" isDisabled={busy} testId={`assign-approve-${a.id}`}
+                    onClick={() => run(() => kpiApi.approveKpiAssignment(a.id, a.lock_version))}>Approve</Button>
+                  <Button spacing="compact" appearance="warning" isDisabled={busy} testId={`assign-reject-${a.id}`}
+                    onClick={() => run(() => kpiApi.rejectKpiAssignment(a.id, 'sent back'))}>Reject</Button>
+                </>
+              ) : null}
+              {a.status === 'approved' ? (
+                <Button spacing="compact" isDisabled={busy} testId={`assign-observe-${a.id}`}
+                  onClick={() => { setSelected(a); setRollup(null); }}>Observe / roll-up</Button>
+              ) : null}
+              {canWrite && a.status !== 'retired' ? (
+                <Button spacing="compact" appearance="subtle" isDisabled={busy} testId={`assign-retire-${a.id}`}
+                  onClick={() => run(() => kpiApi.retireKpiAssignment(a.id))}>Retire</Button>
+              ) : null}
+            </div>
+          ),
+        },
+      ],
+    };
+  });
+
+  const head = { cells: [
+    { key: 'k', content: 'Assignment' }, { key: 's', content: 'Scope' },
+    { key: 't', content: 'Target' }, { key: 'st', content: 'Status' }, { key: 'a', content: 'Actions' },
+  ] };
+
+  return (
+    <StrataPageShell title="KPI Governance" docTitle="KPI Governance" testId="strata-kpi-governance">
+      {error ? <SectionMessage appearance="error" title="Action failed"><p style={{ margin: 0, whiteSpace: 'pre-wrap' }}>{error}</p></SectionMessage> : null}
+
+      {canWrite ? (
+        <StrataPanel title="New KPI Assignment" testId="assign-create">
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 12, alignItems: 'end' }}>
+            <label style={{ display: 'grid', gap: 4, fontSize: 'var(--ds-font-size-075)', color: T.subtle }}>
+              Approved KPI
+              <Select options={kpis.map((k) => ({ value: k.id, label: k.name }))}
+                value={kpiId ? { value: kpiId, label: kpis.find((k) => k.id === kpiId)?.name ?? kpiId } : null}
+                onChange={(o) => setKpiId((o as { value?: string } | null)?.value ?? null)} usePortal aria-label="Approved KPI" />
+            </label>
+            <label style={{ display: 'grid', gap: 4, fontSize: 'var(--ds-font-size-075)', color: T.subtle }}>
+              Scope
+              <Select options={[{ value: 'strategic', label: 'Strategic' }, { value: 'project', label: 'Project' }]}
+                value={{ value: scopeType, label: labelize(scopeType) }}
+                onChange={(o) => setScopeType(((o as { value?: string } | null)?.value as 'strategic' | 'project') ?? 'strategic')} usePortal aria-label="Scope" />
+            </label>
+            <label style={{ display: 'grid', gap: 4, fontSize: 'var(--ds-font-size-075)', color: T.subtle }}>
+              Target
+              <Textfield value={target} onChange={(e) => setTarget((e.target as HTMLInputElement).value)} type="number" aria-label="Target" />
+            </label>
+            <Checkbox isChecked={krEligible} onChange={(e) => setKrEligible((e.target as HTMLInputElement).checked)} label="KR-eligible" />
+            <Button appearance="primary" isDisabled={busy || !kpiId} testId="assign-create-btn"
+              onClick={() => run(async () => {
+                await kpiApi.createKpiAssignment({ kpiId: kpiId!, scopeType, target: target ? Number(target) : undefined, krEligible });
+                setKpiId(null); setTarget(''); setKrEligible(false);
+              })}>Create draft</Button>
+          </div>
+          <p style={{ marginTop: 8, marginBottom: 0, fontSize: 'var(--ds-font-size-075)', color: T.subtlest }}>
+            Only an approved KPI Definition can be assigned. Approval is maker-checker: the submitter cannot approve their own assignment.
+          </p>
+        </StrataPanel>
+      ) : null}
+
+      <StrataPanel title="KPI Assignments" count={assignments.length} testId="assign-list">
+        {assignQ.isLoading ? <Spinner size="medium" aria-label="Loading assignments" />
+          : assignments.length === 0
+            ? <EmptyState header="No KPI assignments yet" description="Assign an approved KPI to a strategic element or a project to give it a scoped target and observations." />
+            : <DynamicTable head={head} rows={rows} isFixedSize />}
+      </StrataPanel>
+
+      {selected ? (
+        <AssignmentDetail assignment={selected} canWrite={canWrite} canApprove={canApprove}
+          rollup={rollup} onRollup={async () => { setRollup(await kpiApi.assignmentRollup(selected.id) as Record<string, unknown>); }}
+          onClose={() => { setSelected(null); setRollup(null); }} />
+      ) : null}
+    </StrataPageShell>
+  );
+}
+
+function AssignmentDetail({ assignment, canWrite, canApprove, rollup, onRollup, onClose }: {
+  assignment: { id: string; assignment_key?: string | null };
+  canWrite: boolean; canApprove: boolean;
+  rollup: Record<string, unknown> | null; onRollup: () => Promise<void>; onClose: () => void;
+}) {
+  const obsQ = useQuery({ queryKey: ['strata', 'assign-obs', assignment.id], queryFn: () => kpiApi.assignmentObservations(assignment.id), staleTime: 0 });
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [asOf, setAsOf] = useState('');
+  const [value, setValue] = useState('');
+
+  const run = async (fn: () => Promise<unknown>) => {
+    setBusy(true); setError(null);
+    try { await fn(); await obsQ.refetch(); }
+    catch (e) { setError(e instanceof Error ? e.message : String(e)); }
+    finally { setBusy(false); }
+  };
+  const observations = (obsQ.data ?? []) as Array<{ id: string; as_of_date: string; value: number | null; status: string }>;
+
+  return (
+    <StrataPanel title={`Observations — ${assignment.assignment_key ?? assignment.id.slice(0, 8)}`} testId="assign-detail"
+      actions={<Button spacing="compact" appearance="subtle" onClick={onClose}>Close</Button>}>
+      {error ? <SectionMessage appearance="error" title="Failed"><p style={{ margin: 0 }}>{error}</p></SectionMessage> : null}
+      {canWrite ? (
+        <div style={{ display: 'flex', gap: 8, alignItems: 'end', flexWrap: 'wrap', marginBottom: 12 }}>
+          <label style={{ display: 'grid', gap: 4, fontSize: 'var(--ds-font-size-075)', color: T.subtle }}>
+            As-of date
+            <Textfield value={asOf} onChange={(e) => setAsOf((e.target as HTMLInputElement).value)} type="date" aria-label="As-of date" />
+          </label>
+          <label style={{ display: 'grid', gap: 4, fontSize: 'var(--ds-font-size-075)', color: T.subtle }}>
+            Value
+            <Textfield value={value} onChange={(e) => setValue((e.target as HTMLInputElement).value)} type="number" aria-label="Observation value" />
+          </label>
+          <Button appearance="primary" isDisabled={busy || !asOf || value === ''} testId="obs-submit"
+            onClick={() => run(async () => { await kpiApi.submitAssignmentObservation({ assignmentId: assignment.id, asOf, value: Number(value) }); setValue(''); })}>Submit observation</Button>
+          <Button isDisabled={busy} testId="rollup-btn" onClick={() => run(onRollup)}>Compute roll-up</Button>
+        </div>
+      ) : null}
+
+      {observations.length === 0 ? <p style={{ color: T.subtlest, margin: 0 }}>No observations yet.</p> : (
+        <div style={{ display: 'grid', gap: 6 }}>
+          {observations.map((o) => (
+            <div key={o.id} style={{ display: 'flex', gap: 12, alignItems: 'center' }} data-testid={`obs-${o.id}`}>
+              <span style={{ color: T.subtle, minWidth: 96 }}>{o.as_of_date}</span>
+              <span style={{ color: T.text, minWidth: 64 }}>{o.value ?? '—'}</span>
+              <Lozenge appearance={o.status === 'validated' ? 'success' : o.status === 'rejected' ? 'removed' : o.status === 'accepted_with_exception' ? 'moved' : 'inprogress'}>{labelize(o.status)}</Lozenge>
+              {canApprove && o.status === 'pending' ? (
+                <>
+                  <Button spacing="compact" appearance="primary" isDisabled={busy} testId={`obs-validate-${o.id}`}
+                    onClick={() => run(() => kpiApi.validateAssignmentObservation(o.id, 'validated'))}>Validate</Button>
+                  <Button spacing="compact" appearance="warning" isDisabled={busy} testId={`obs-reject-${o.id}`}
+                    onClick={() => run(() => kpiApi.validateAssignmentObservation(o.id, 'rejected'))}>Reject</Button>
+                </>
+              ) : null}
+            </div>
+          ))}
+        </div>
+      )}
+
+      {rollup ? (
+        <div style={{ marginTop: 12, padding: 12, background: T.sunken, borderRadius: 6 }} data-testid="rollup-result">
+          <div style={{ color: T.subtle, fontSize: 'var(--ds-font-size-075)', marginBottom: 4 }}>Authoritative roll-up (direct_component only)</div>
+          <div style={{ color: T.text }}>
+            Result: <strong>{String(rollup.result ?? '—')}</strong> · method {String(rollup.method)} · included {String(rollup.included_count)}
+            {rollup.has_overlap ? <> · <span style={{ color: 'var(--ds-text-warning)' }}>overlap detected</span></> : null}
+          </div>
+        </div>
+      ) : null}
+    </StrataPanel>
+  );
+}

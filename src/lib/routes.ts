@@ -262,6 +262,7 @@ export const strataRoutes = {
   scorecardEvidence: (instanceSlug: string, from?: string) =>
     `/strata/scorecards/${instanceSlug}/evidence${from ? `?from=${encodeURIComponent(from)}` : ''}`,
   kpis: () => '/strata/kpis',
+  kpiGovernance: () => '/strata/kpi-governance',
   kpi: (kpiSlug: string) => `/strata/kpis/${kpiSlug}`,
   kpiEvidence: (kpiSlug: string, from?: string) =>
     `/strata/kpis/${kpiSlug}/evidence${from ? `?from=${encodeURIComponent(from)}` : ''}`,
