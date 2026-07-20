@@ -801,6 +801,23 @@ export const kpiApi = {
     run(rpcAny('strata_approve_objective_alignment', { p_alignment: id, p_lock_version: lockVersion ?? null })),
   retireObjectiveAlignment: (id: string, reason?: string) =>
     run(rpcAny('strata_retire_objective_alignment', { p_alignment: id, p_reason: reason ?? null })),
+  // ── Lifecycle completeness + downstream + governance (S9/S10, slices 009-052) ──
+  requestOkrChanges: (okrId: string, reason: string) =>
+    run(rpcAny('strata_request_okr_changes', { p_okr: okrId, p_reason: reason })),
+  okrVersionImpactPreview: (okrId: string): Promise<Record<string, unknown>> =>
+    run(rpcAny('strata_okr_version_impact_preview', { p_okr: okrId })) as Promise<Record<string, unknown>>,
+  assignKpiApprover: (kpiId: string, approverId: string) =>
+    run(rpcAny('strata_assign_kpi_approver', { p_kpi: kpiId, p_approver: approverId })),
+  elementOkrReadiness: (elementId: string, asOf?: string): Promise<Record<string, unknown>> =>
+    run(rpcAny('strata_element_okr_readiness', { p_element: elementId, p_as_of: asOf ?? null })) as Promise<Record<string, unknown>>,
+  elementHealthFromKr: (elementId: string, asOf?: string): Promise<Record<string, unknown>> =>
+    run(rpcAny('strata_element_health_from_kr', { p_element: elementId, p_as_of: asOf ?? null })) as Promise<Record<string, unknown>>,
+  projectKpiTrace: (projectCardId: string): Promise<Record<string, unknown>> =>
+    run(rpcAny('strata_project_kpi_trace', { p_project_card: projectCardId })) as Promise<Record<string, unknown>>,
+  snapshotGovernance: (label: string): Promise<string> =>
+    run(rpcAny('strata_snapshot_governance', { p_label: label })) as Promise<string>,
+  notifyStaleMeasurements: (days?: number): Promise<number> =>
+    run(rpcAny('strata_notify_stale_measurements', { p_days: days ?? 90 })) as Promise<number>,
   approveFormulaVersion: (formulaId: string, note?: string) =>
     run(typedRpc('strata_approve_formula_version', { p_formula: formulaId, p_note: note ?? null })),
   okrs: (): Promise<StrataOkr[]> => run(typedQuery('strata_okrs').select('*').order('created_at', { ascending: false })),
