@@ -27,7 +27,25 @@
 1. `overlaps` is a reserved SQL keyword → renamed plpgsql var to `v_overlaps` (function would not compile). Text-only guards missed it.
 2. Formula EXCLUDE would fail where a KPI has ≥2 approved formula versions → hardened backfill with `lead()` to close superseded windows.
 
-## Not done
-- Maker-checker SoD runtime proof via JWT impersonation (pattern identical to shipped OKR/scorecard SoD; deferred).
-- S7 downstream UI (041/042/044/046) + browser screenshot signoff — not built.
+## Round 2 — S9/S10/S11 + full staging verification (2026-07-20)
+Applied migrations 20260720130000/131000/132000 (11 opmodel migrations total, ledger 1:1).
+- **S9** (011/009/012/023/041/042/044): changes_requested state; approve_okr approves KR versions atomically; version impact preview; usage-class assigned-approver enforcement; element OKR readiness / health-from-KR / project-KPI-trace reads.
+- **S10** (050/052/046): immutable strata_governance_snapshots + RPC; notification rules + stale-measurement + retirement-impact notifiers; review_id provenance columns.
+- **S11**: observation inherits the assignment period (fixes silent no-data on assignment-backed KRs).
+
+### Authenticated E2E + SoD on staging (impersonation via request.jwt.claims; rolled back)
+Maker `0fd5b151`, checker `6bbd0863` (distinct strategy_office users):
+`create → submit → approve → observe → validate` all succeeded end-to-end.
+- **SoD maker-checker BLOCKED_OK** on assignment approval (submitter ≠ approver) AND observation validation (submitter ≠ validator).
+- Period-scoped resolution returns value=88 after the S11 fix.
+
+### Defect #3 caught by E2E (fixed, S11): observation logged without a period never resolved against the assignment's period → assignment-backed KRs silently blank. Fixed by inheriting the assignment period.
+
+### Regression (step 7) — full strata suite (627 tests), Node 22, sequential
+- **Zero new failures from this work.** All non-opmodel failures are pre-existing on origin/main — proven by reverting ONLY shared.tsx+domain to base and re-running: the 7 scorecard/keyboard/decision UI files (ac6-*, p0-approved, phase5, rd-cycle4, scgov-*) fail identically on base.
+- The 2 guard tests (kodef001, kodef003) that broke were MY legitimate supersession (S1/S5/S9 superseded the guarded functions); updated to verify the invariants against the new latest definitions. 49/49 opmodel guards + both updated guards green.
+
+## Genuinely NOT done (residual)
+- **UI surfaces (step 3)** for the new entities (KPI classification form, Assignment CRUD, Contribution Mapping + rollup display, Objective Alignment, KR→Assignment link) — DB + domain methods exist; no React forms built.
+- **Browser screenshot acceptance (step 4)** — requires the app running this branch against staging in a browser; not performed.
 - Nothing pushed; no PR; prod untouched.
