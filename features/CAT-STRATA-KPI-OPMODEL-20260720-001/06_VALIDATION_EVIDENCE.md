@@ -67,6 +67,27 @@ Covers assignment CRUD + lifecycle + scoped observation submit/validate + author
   4. **KR → Assignment link** (KR detail page) — link/unlink an approved KR-eligible assignment (STRATA-KPI-014); verified rendering the standalone-state message + Select.
 - **Bugs caught by execution/browser & fixed this feature: 4** — overlaps reserved-word (S3), formula-EXCLUDE backfill (S8), observation-period resolution (S11), null-as_of roll-up (S14). Text-only guards missed all four.
 
+## Round 5 — authenticated browser CRUD/lifecycle transactions on staging (2026-07-20)
+Browser session = **Vikram Indla (6bbd0863)**; maker steps used a distinct user (Strategy Maker 86d65bbf / Scorecard Approver 0fd5b151) to honour maker-checker. All test data cleaned up (0 residual).
+
+**1. KPI Classification** (browser transaction, then negatives):
+- Browser: toggled KR-eligible false→true + clicked Classify on `ZZUI Classify Demo` → **persisted** (`kr_eligible=true`, `updated_just_now`); reload showed the checkbox checked (visual persistence).
+- Validation: invalid usage class → `INVALID_USAGE_CLASS` BLOCKED_OK; operational+kr_eligible → submission gate `KR-eligibility is only valid for a strategic or project-outcome usage class` ENFORCED_OK.
+- Permission: no-role user → `STRATA_FORBIDDEN` BLOCKED_OK. Audit: 2 events.
+
+**2. Project Objective Alignment** (full lifecycle in browser + governed negatives):
+- Browser: create (project obj "Lift digital…" + strategic obj "Grow B2B Revenue", primary) → DRAFT; Submit → SUBMITTED; **Approve as Vikram → live "Failed: OWNER_SOD_CONFLICT: the submitter cannot approve their own alignment"**; approve as a different user (86d65bbf) → **approved** (audit 3 events).
+- Contradiction: primary alignment to a strategic objective under a different theme than the card's primary → `CONTRADICTS_CARD_PRIMARY_OBJECTIVE` (rejected). Exception: after `strata_grant_alignment_exception` → `exception_applied=true`, valid (rolled back).
+- Permission: no-role → `STRATA_FORBIDDEN` BLOCKED_OK.
+
+**3. KR → Strategic KPI Assignment** (end-to-end, resolved progress):
+- Created eligible KPI + assignment `KA-UILINK01` through governed RPCs with 2-user maker-checker; validated observation value 85 (audit 5 events).
+- Browser (KR detail): selected `KA-UILINK01` + clicked **Link assignment** → "Officially backed by KA-UILINK01".
+- **Resolved progress proven**: `progress_source=assignment_observation`, `actual=85` (NOT the legacy manual 50), `progress_pct=100`, `reportability_kind=assignment_backed`; reload showed **Progress 100% · current 85 · ON TRACK · REPORTABLE** (persistence).
+- Browser: **Unlink** → KR reverted to standalone (`strategic_assignment_id=null`, persisted). Permission: no-role link → `STRATA_FORBIDDEN` BLOCKED_OK.
+
+**4. Cross-cutting**: reload persistence verified for all three; audit evidence (2/5/3 events); restricted-role BLOCKED_OK on all three write paths; cleanup → 0 residual.
+
 ## Sole remaining blocker
 - **007 / 008** — the Theme `measurement_method` mutual-exclusivity rule lives UNPUSHED in the sibling worktree `strata/theme-measurement-method` (D-2). Everything around it is prepared; the precise integration dependency is: once that branch lands on origin/main, add the objectives_kpis|okrs Theme-creation gate + reconcile `strata_okr_validate`/theme-creation. This feature never modifies that worktree.
 - Nothing pushed; no PR; prod untouched. (UI surfaces + browser screenshot acceptance: DONE — see Round 4.)
