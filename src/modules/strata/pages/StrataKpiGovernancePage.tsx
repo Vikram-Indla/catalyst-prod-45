@@ -146,6 +146,7 @@ export default function StrataKpiGovernancePage() {
 
       {selected ? (
         <AssignmentDetail assignment={selected} canWrite={canWrite} canApprove={canApprove}
+          allAssignments={assignments.filter((a) => a.status === 'approved' && a.id !== selected.id)}
           rollup={rollup} onRollup={async () => { setRollup(await kpiApi.assignmentRollup(selected.id) as Record<string, unknown>); }}
           onClose={() => { setSelected(null); setRollup(null); }} />
       ) : null}
@@ -153,23 +154,29 @@ export default function StrataKpiGovernancePage() {
   );
 }
 
-function AssignmentDetail({ assignment, canWrite, canApprove, rollup, onRollup, onClose }: {
+function AssignmentDetail({ assignment, canWrite, canApprove, allAssignments, rollup, onRollup, onClose }: {
   assignment: { id: string; assignment_key?: string | null };
   canWrite: boolean; canApprove: boolean;
+  allAssignments: Assignment[];
   rollup: Record<string, unknown> | null; onRollup: () => Promise<void>; onClose: () => void;
 }) {
   const obsQ = useQuery({ queryKey: ['strata', 'assign-obs', assignment.id], queryFn: () => kpiApi.assignmentObservations(assignment.id), staleTime: 0 });
+  const mapQ = useQuery({ queryKey: ['strata', 'assign-maps', assignment.id], queryFn: () => kpiApi.contributionMappings(assignment.id), staleTime: 0 });
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [asOf, setAsOf] = useState('');
   const [value, setValue] = useState('');
+  const [childId, setChildId] = useState<string | null>(null);
+  const [relType, setRelType] = useState<'direct_component' | 'driver' | 'supporting_evidence'>('direct_component');
+  const [weight, setWeight] = useState('');
 
   const run = async (fn: () => Promise<unknown>) => {
     setBusy(true); setError(null);
-    try { await fn(); await obsQ.refetch(); }
+    try { await fn(); await obsQ.refetch(); await mapQ.refetch(); }
     catch (e) { setError(e instanceof Error ? e.message : String(e)); }
     finally { setBusy(false); }
   };
+  const mappings = (mapQ.data ?? []) as Array<{ id: string; child_assignment_id: string; relationship_type: string; status: string; weight: number | null; lock_version?: number }>;
   const observations = (obsQ.data ?? []) as Array<{ id: string; as_of_date: string; value: number | null; status: string }>;
 
   return (
@@ -211,6 +218,54 @@ function AssignmentDetail({ assignment, canWrite, canApprove, rollup, onRollup, 
           ))}
         </div>
       )}
+
+      <div style={{ marginTop: 16, borderTop: `1px solid ${T.border}`, paddingTop: 12 }} data-testid="assign-contributions">
+        <div style={{ color: T.subtle, fontSize: 'var(--ds-font-size-075)', marginBottom: 8 }}>
+          Contributions to this assignment (only approved <strong>direct_component</strong> children enter the roll-up)
+        </div>
+        {canWrite ? (
+          <div style={{ display: 'flex', gap: 8, alignItems: 'end', flexWrap: 'wrap', marginBottom: 10 }}>
+            <label style={{ display: 'grid', gap: 4, minWidth: 220, fontSize: 'var(--ds-font-size-075)', color: T.subtle }}>
+              Child assignment
+              <Select options={allAssignments.map((a) => ({ value: a.id, label: a.assignment_key ?? a.id.slice(0, 8) }))}
+                value={childId ? { value: childId, label: allAssignments.find((a) => a.id === childId)?.assignment_key ?? childId } : null}
+                onChange={(o) => setChildId((o as { value?: string } | null)?.value ?? null)} usePortal aria-label="Child assignment" />
+            </label>
+            <label style={{ display: 'grid', gap: 4, minWidth: 170, fontSize: 'var(--ds-font-size-075)', color: T.subtle }}>
+              Relationship
+              <Select options={[{ value: 'direct_component', label: 'Direct component' }, { value: 'driver', label: 'Driver' }, { value: 'supporting_evidence', label: 'Supporting evidence' }]}
+                value={{ value: relType, label: labelize(relType) }}
+                onChange={(o) => setRelType(((o as { value?: string } | null)?.value as typeof relType) ?? 'direct_component')} usePortal aria-label="Relationship type" />
+            </label>
+            <label style={{ display: 'grid', gap: 4, fontSize: 'var(--ds-font-size-075)', color: T.subtle }}>
+              Weight
+              <Textfield value={weight} onChange={(e) => setWeight((e.target as HTMLInputElement).value)} type="number" aria-label="Weight" />
+            </label>
+            <Button appearance="primary" isDisabled={busy || !childId} testId="map-create"
+              onClick={() => run(async () => { await kpiApi.createContributionMapping({ parentAssignmentId: assignment.id, childAssignmentId: childId!, relationshipType: relType, weight: weight ? Number(weight) : undefined }); setChildId(null); setWeight(''); })}>Add contribution</Button>
+          </div>
+        ) : null}
+        {mappings.length === 0 ? <p style={{ color: T.subtlest, margin: 0 }}>No contributions mapped.</p> : (
+          <div style={{ display: 'grid', gap: 6 }}>
+            {mappings.map((m) => (
+              <div key={m.id} style={{ display: 'flex', gap: 12, alignItems: 'center' }} data-testid={`map-${m.id}`}>
+                <span style={{ color: T.text, minWidth: 96 }}>{allAssignments.find((a) => a.id === m.child_assignment_id)?.assignment_key ?? m.child_assignment_id.slice(0, 8)}</span>
+                <Lozenge appearance={m.relationship_type === 'direct_component' ? 'inprogress' : 'default'}>{labelize(m.relationship_type)}</Lozenge>
+                <span style={{ color: T.subtle, minWidth: 48 }}>{m.weight ?? '—'}</span>
+                <Lozenge appearance={m.status === 'approved' ? 'success' : m.status === 'retired' ? 'moved' : m.status === 'rejected' ? 'removed' : 'default'}>{labelize(m.status)}</Lozenge>
+                {canWrite && (m.status === 'draft' || m.status === 'rejected') ? (
+                  <Button spacing="compact" isDisabled={busy} testId={`map-submit-${m.id}`}
+                    onClick={() => run(() => kpiApi.submitContributionMapping(m.id, m.lock_version))}>Submit</Button>
+                ) : null}
+                {canApprove && m.status === 'submitted' ? (
+                  <Button spacing="compact" appearance="primary" isDisabled={busy} testId={`map-approve-${m.id}`}
+                    onClick={() => run(() => kpiApi.approveContributionMapping(m.id, m.lock_version))}>Approve</Button>
+                ) : null}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
 
       {rollup ? (
         <div style={{ marginTop: 12, padding: 12, background: T.sunken, borderRadius: 6 }} data-testid="rollup-result">
