@@ -719,6 +719,66 @@ export const kpiApi = {
     run((supabase.from('strata_kpi_categories' as never).select('*').eq('active', true).order('name')) as never) as Promise<Array<Record<string, unknown>>>,
   upsertKpiCategory: (name: string, description?: string, slug?: string): Promise<string> =>
     run(rpcAny('strata_upsert_kpi_category', { p_name: name, p_slug: slug ?? null, p_description: description ?? null, p_active: true })) as Promise<string>,
+  // ── KPI Assignments (STRATA-KPI-025/026/027, slice S2) ─────────────────────
+  kpiAssignments: (kpiId?: string): Promise<Array<Record<string, unknown>>> =>
+    run((
+      kpiId
+        ? supabase.from('strata_kpi_assignments' as never).select('*').eq('kpi_id', kpiId).order('created_at', { ascending: false })
+        : supabase.from('strata_kpi_assignments' as never).select('*').order('created_at', { ascending: false })
+    ) as never) as Promise<Array<Record<string, unknown>>>,
+  createKpiAssignment: (input: {
+    kpiId: string; scopeType: 'strategic' | 'project';
+    elementId?: string; orgUnitId?: string; projectCardId?: string; projectObjectiveId?: string;
+    ownerId?: string; target?: number; targetBandMin?: number; targetBandMax?: number;
+    startPeriodId?: string; endPeriodId?: string; krEligible?: boolean;
+  }): Promise<string> =>
+    run(rpcAny('strata_create_kpi_assignment', {
+      p_kpi: input.kpiId, p_scope_type: input.scopeType, p_element: input.elementId ?? null,
+      p_project_card: input.projectCardId ?? null, p_project_objective: input.projectObjectiveId ?? null,
+      p_owner: input.ownerId ?? null, p_target: input.target ?? null,
+      p_target_band_min: input.targetBandMin ?? null, p_target_band_max: input.targetBandMax ?? null,
+      p_start_period: input.startPeriodId ?? null, p_end_period: input.endPeriodId ?? null,
+      p_kr_eligible: input.krEligible ?? false, p_org_unit: input.orgUnitId ?? null,
+    })) as Promise<string>,
+  submitKpiAssignment: (id: string, lockVersion?: number) =>
+    run(rpcAny('strata_submit_kpi_assignment', { p_assignment: id, p_lock_version: lockVersion ?? null })),
+  approveKpiAssignment: (id: string, lockVersion?: number) =>
+    run(rpcAny('strata_approve_kpi_assignment', { p_assignment: id, p_lock_version: lockVersion ?? null })),
+  rejectKpiAssignment: (id: string, reason: string) =>
+    run(rpcAny('strata_reject_kpi_assignment', { p_assignment: id, p_reason: reason })),
+  retireKpiAssignment: (id: string, reason?: string) =>
+    run(rpcAny('strata_retire_kpi_assignment', { p_assignment: id, p_reason: reason ?? null })),
+  submitAssignmentObservation: (input: {
+    assignmentId: string; asOf: string; value: number; periodId?: string;
+    numerator?: number; denominator?: number; sourceChannel?: 'manual' | 'upload' | 'integration'; evidenceUrl?: string;
+  }): Promise<string> =>
+    run(rpcAny('strata_submit_assignment_observation', {
+      p_assignment: input.assignmentId, p_as_of: input.asOf, p_value: input.value, p_period: input.periodId ?? null,
+      p_numerator: input.numerator ?? null, p_denominator: input.denominator ?? null,
+      p_source_channel: input.sourceChannel ?? 'manual', p_evidence_url: input.evidenceUrl ?? null,
+    })) as Promise<string>,
+  validateAssignmentObservation: (observationId: string, decision: 'validated' | 'rejected' | 'accepted_with_exception', reason?: string) =>
+    run(rpcAny('strata_validate_assignment_observation', { p_observation: observationId, p_decision: decision, p_reason: reason ?? null })),
+  // ── Contribution mappings + aggregation (STRATA-KPI-028/029/030/031, slice S3) ──
+  contributionMappings: (parentAssignmentId: string): Promise<Array<Record<string, unknown>>> =>
+    run((supabase.from('strata_kpi_contribution_mappings' as never).select('*').eq('parent_assignment_id', parentAssignmentId).order('created_at', { ascending: false })) as never) as Promise<Array<Record<string, unknown>>>,
+  createContributionMapping: (input: {
+    parentAssignmentId: string; childAssignmentId: string;
+    relationshipType: 'direct_component' | 'driver' | 'supporting_evidence' | 'none';
+    aggregationRule?: 'sum' | 'average' | 'weighted_average'; weight?: number; scope?: string;
+  }): Promise<string> =>
+    run(rpcAny('strata_create_contribution_mapping', {
+      p_parent: input.parentAssignmentId, p_child: input.childAssignmentId, p_relationship_type: input.relationshipType,
+      p_aggregation_rule: input.aggregationRule ?? null, p_weight: input.weight ?? null, p_scope: input.scope ?? null,
+    })) as Promise<string>,
+  submitContributionMapping: (id: string, lockVersion?: number) =>
+    run(rpcAny('strata_submit_contribution_mapping', { p_mapping: id, p_lock_version: lockVersion ?? null })),
+  approveContributionMapping: (id: string, lockVersion?: number) =>
+    run(rpcAny('strata_approve_contribution_mapping', { p_mapping: id, p_lock_version: lockVersion ?? null })),
+  retireContributionMapping: (id: string, reason?: string) =>
+    run(rpcAny('strata_retire_contribution_mapping', { p_mapping: id, p_reason: reason ?? null })),
+  assignmentRollup: (parentAssignmentId: string, periodId?: string, asOf?: string): Promise<Record<string, unknown>> =>
+    run(rpcAny('strata_calc_assignment_rollup', { p_parent_assignment: parentAssignmentId, p_period: periodId ?? null, p_as_of: asOf ?? null })) as Promise<Record<string, unknown>>,
   approveFormulaVersion: (formulaId: string, note?: string) =>
     run(typedRpc('strata_approve_formula_version', { p_formula: formulaId, p_note: note ?? null })),
   okrs: (): Promise<StrataOkr[]> => run(typedQuery('strata_okrs').select('*').order('created_at', { ascending: false })),
