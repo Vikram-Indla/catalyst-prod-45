@@ -779,6 +779,28 @@ export const kpiApi = {
     run(rpcAny('strata_retire_contribution_mapping', { p_mapping: id, p_reason: reason ?? null })),
   assignmentRollup: (parentAssignmentId: string, periodId?: string, asOf?: string): Promise<Record<string, unknown>> =>
     run(rpcAny('strata_calc_assignment_rollup', { p_parent_assignment: parentAssignmentId, p_period: periodId ?? null, p_as_of: asOf ?? null })) as Promise<Record<string, unknown>>,
+  // ── KR<->Assignment bridge (STRATA-KPI-014, slice S5) ──────────────────────
+  linkKrAssignment: (krId: string, assignmentId: string) =>
+    run(rpcAny('strata_link_kr_assignment', { p_kr: krId, p_assignment: assignmentId })),
+  unlinkKrAssignment: (krId: string) =>
+    run(rpcAny('strata_unlink_kr_assignment', { p_kr: krId })),
+  // ── Project Objective Alignment (STRATA-KPI-034/036/037, slice S4) ─────────
+  objectiveAlignments: (projectObjectiveId: string): Promise<Array<Record<string, unknown>>> =>
+    run((supabase.from('strata_project_objective_alignments' as never).select('*').eq('project_objective_id', projectObjectiveId).order('created_at', { ascending: false })) as never) as Promise<Array<Record<string, unknown>>>,
+  createObjectiveAlignment: (input: {
+    projectObjectiveId: string; strategicObjectiveId: string;
+    alignmentType?: 'primary' | 'secondary'; attributionShare?: number; rationale?: string;
+  }): Promise<string> =>
+    run(rpcAny('strata_create_objective_alignment', {
+      p_project_objective: input.projectObjectiveId, p_strategic_objective: input.strategicObjectiveId,
+      p_alignment_type: input.alignmentType ?? 'primary', p_attribution: input.attributionShare ?? null, p_rationale: input.rationale ?? null,
+    })) as Promise<string>,
+  submitObjectiveAlignment: (id: string, lockVersion?: number) =>
+    run(rpcAny('strata_submit_objective_alignment', { p_alignment: id, p_lock_version: lockVersion ?? null })),
+  approveObjectiveAlignment: (id: string, lockVersion?: number) =>
+    run(rpcAny('strata_approve_objective_alignment', { p_alignment: id, p_lock_version: lockVersion ?? null })),
+  retireObjectiveAlignment: (id: string, reason?: string) =>
+    run(rpcAny('strata_retire_objective_alignment', { p_alignment: id, p_reason: reason ?? null })),
   approveFormulaVersion: (formulaId: string, note?: string) =>
     run(typedRpc('strata_approve_formula_version', { p_formula: formulaId, p_note: note ?? null })),
   okrs: (): Promise<StrataOkr[]> => run(typedQuery('strata_okrs').select('*').order('created_at', { ascending: false })),
