@@ -1583,6 +1583,8 @@ export function OkrLifecycleActions({ okr }: { okr: StrataOkr }) {
   const [checkinOpen, setCheckinOpen] = useState(false);
   const [assessment, setAssessment] = useState('');
   const [mgmtStatus, setMgmtStatus] = useState('on_track');
+  const [cancelOpen, setCancelOpen] = useState(false);
+  const [cancelReason, setCancelReason] = useState('');
 
   const periodOpts = (periods ?? []).map((p) => ({ value: p.id, label: p.name }));
   const objectiveOpts = (elementsQ.data ?? []).filter((e) => e.element_type === 'objective').map((e) => ({ value: e.id, label: e.name }));
@@ -1636,6 +1638,10 @@ export function OkrLifecycleActions({ okr }: { okr: StrataOkr }) {
                 onClick={() => run(() => kpiApi.rejectOkr(okr.id, 'sent back for revision'))}>Reject</Button>
             </>
           ) : null}
+          {(s === 'draft' || s === 'submitted') ? (
+            <Button spacing="compact" appearance="subtle" isDisabled={busy} testId={`strata-okr-withdraw-${okr.id}`}
+              onClick={() => run(() => kpiApi.withdrawOkr(okr.id))}>Withdraw</Button>
+          ) : null}
           {(s === 'active' || s === 'closing_review') ? (
             <Button spacing="compact" isDisabled={busy} testId={`strata-okr-checkin-${okr.id}`}
               onClick={() => setCheckinOpen((v) => !v)}>Check-in</Button>
@@ -1648,7 +1654,23 @@ export function OkrLifecycleActions({ okr }: { okr: StrataOkr }) {
             <Button spacing="compact" appearance="primary" isDisabled={busy} testId={`strata-okr-close-${okr.id}`}
               onClick={() => setCloseOpen(true)}>Close &amp; snapshot</Button>
           ) : null}
+          {(s === 'active' || s === 'closing_review') ? (
+            <Button spacing="compact" appearance="subtle" isDisabled={busy} testId={`strata-okr-cancel-${okr.id}`}
+              onClick={() => setCancelOpen((v) => !v)}>Cancel OKR</Button>
+          ) : null}
         </div>
+        {cancelOpen ? (
+          <div style={{ display: 'grid', gap: 6, maxWidth: 460 }} data-testid={`strata-okr-cancel-form-${okr.id}`}>
+            <TextArea value={cancelReason} minimumRows={2} onChange={(e) => setCancelReason((e.target as HTMLTextAreaElement).value)}
+              placeholder="Reason for cancelling this OKR (required)" aria-label="OKR cancellation reason" />
+            <div style={{ display: 'flex', gap: 8 }}>
+              <Button spacing="compact" appearance="subtle" isDisabled={busy} onClick={() => { setCancelOpen(false); setCancelReason(''); }}>Dismiss</Button>
+              <Button spacing="compact" appearance="warning" isDisabled={busy || cancelReason.trim() === ''} testId={`strata-okr-cancel-confirm-${okr.id}`}
+                onClick={() => run(async () => { await kpiApi.cancelOkr(okr.id, cancelReason.trim()); setCancelOpen(false); setCancelReason(''); })}>
+                Cancel OKR</Button>
+            </div>
+          </div>
+        ) : null}
         {s === 'submitted' ? (
           <span style={{ fontSize: 'var(--ds-font-size-100)', color: T.subtle }}>
             Pending approval — an approver other than the submitter must approve (maker-checker).
