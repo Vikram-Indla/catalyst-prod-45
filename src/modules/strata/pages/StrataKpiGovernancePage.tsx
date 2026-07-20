@@ -48,6 +48,16 @@ export default function StrataKpiGovernancePage() {
   const [scopeType, setScopeType] = useState<'strategic' | 'project'>('strategic');
   const [target, setTarget] = useState('');
   const [krEligible, setKrEligible] = useState(false);
+  // scope target (STRATA-KPI-025): strategic -> a strategy element; project -> card + project objective
+  const [elementId, setElementId] = useState<string | null>(null);
+  const [projectCardId, setProjectCardId] = useState<string | null>(null);
+  const [projectObjectiveId, setProjectObjectiveId] = useState<string | null>(null);
+  const elemQ = useQuery({ queryKey: ['strata', 'elements'], queryFn: () => kpiApi.strategyElements(), staleTime: 30_000 });
+  const cardQ = useQuery({ queryKey: ['strata', 'project-cards'], queryFn: () => kpiApi.projectCards(), staleTime: 30_000 });
+  const strategicElements = (elemQ.data ?? []).filter((e) => e.context === 'theme');
+  const projectObjectives = (elemQ.data ?? []).filter((e) => e.context === 'project');
+  const projectCards = cardQ.data ?? [];
+  const scopeReady = scopeType === 'strategic' ? !!elementId : (!!projectCardId && !!projectObjectiveId);
 
   const run = async (fn: () => Promise<unknown>) => {
     setBusy(true); setError(null);
@@ -118,17 +128,45 @@ export default function StrataKpiGovernancePage() {
               Scope
               <Select options={[{ value: 'strategic', label: 'Strategic' }, { value: 'project', label: 'Project' }]}
                 value={{ value: scopeType, label: labelize(scopeType) }}
-                onChange={(o) => setScopeType(((o as { value?: string } | null)?.value as 'strategic' | 'project') ?? 'strategic')} usePortal aria-label="Scope" />
+                onChange={(o) => { setScopeType(((o as { value?: string } | null)?.value as 'strategic' | 'project') ?? 'strategic'); setElementId(null); setProjectCardId(null); setProjectObjectiveId(null); }} usePortal aria-label="Scope" />
             </label>
+            {scopeType === 'strategic' ? (
+              <label style={{ display: 'grid', gap: 4, fontSize: 'var(--ds-font-size-075)', color: T.subtle }}>
+                Strategy element
+                <Select options={strategicElements.map((e) => ({ value: e.id, label: e.name }))}
+                  value={elementId ? { value: elementId, label: strategicElements.find((e) => e.id === elementId)?.name ?? elementId } : null}
+                  onChange={(o) => setElementId((o as { value?: string } | null)?.value ?? null)} usePortal aria-label="Strategy element" />
+              </label>
+            ) : (
+              <>
+                <label style={{ display: 'grid', gap: 4, fontSize: 'var(--ds-font-size-075)', color: T.subtle }}>
+                  Project card
+                  <Select options={projectCards.map((c) => ({ value: c.id, label: c.name }))}
+                    value={projectCardId ? { value: projectCardId, label: projectCards.find((c) => c.id === projectCardId)?.name ?? projectCardId } : null}
+                    onChange={(o) => setProjectCardId((o as { value?: string } | null)?.value ?? null)} usePortal aria-label="Project card" />
+                </label>
+                <label style={{ display: 'grid', gap: 4, fontSize: 'var(--ds-font-size-075)', color: T.subtle }}>
+                  Project objective
+                  <Select options={projectObjectives.map((e) => ({ value: e.id, label: e.name }))}
+                    value={projectObjectiveId ? { value: projectObjectiveId, label: projectObjectives.find((e) => e.id === projectObjectiveId)?.name ?? projectObjectiveId } : null}
+                    onChange={(o) => setProjectObjectiveId((o as { value?: string } | null)?.value ?? null)} usePortal aria-label="Project objective" />
+                </label>
+              </>
+            )}
             <label style={{ display: 'grid', gap: 4, fontSize: 'var(--ds-font-size-075)', color: T.subtle }}>
               Target
               <Textfield value={target} onChange={(e) => setTarget((e.target as HTMLInputElement).value)} type="number" aria-label="Target" />
             </label>
             <Checkbox isChecked={krEligible} onChange={(e) => setKrEligible((e.target as HTMLInputElement).checked)} label="KR-eligible" />
-            <Button appearance="primary" isDisabled={busy || !kpiId} testId="assign-create-btn"
+            <Button appearance="primary" isDisabled={busy || !kpiId || !scopeReady} testId="assign-create-btn"
               onClick={() => run(async () => {
-                await kpiApi.createKpiAssignment({ kpiId: kpiId!, scopeType, target: target ? Number(target) : undefined, krEligible });
-                setKpiId(null); setTarget(''); setKrEligible(false);
+                await kpiApi.createKpiAssignment({
+                  kpiId: kpiId!, scopeType, target: target ? Number(target) : undefined, krEligible,
+                  elementId: scopeType === 'strategic' ? elementId! : undefined,
+                  projectCardId: scopeType === 'project' ? projectCardId! : undefined,
+                  projectObjectiveId: scopeType === 'project' ? projectObjectiveId! : undefined,
+                });
+                setKpiId(null); setTarget(''); setKrEligible(false); setElementId(null); setProjectCardId(null); setProjectObjectiveId(null);
               })}>Create draft</Button>
           </div>
           <p style={{ marginTop: 8, marginBottom: 0, fontSize: 'var(--ds-font-size-075)', color: T.subtlest }}>
