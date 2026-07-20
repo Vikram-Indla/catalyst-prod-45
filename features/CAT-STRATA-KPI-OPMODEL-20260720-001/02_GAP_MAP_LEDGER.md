@@ -10,7 +10,13 @@
   - S2: 025, 026, 027 → BUILT*; 024 reinforced.
   - S3: 028, 029, 030, 031 → BUILT* (aggregation ARITHMETIC unverified — needs DB + calc/property/negative tests).
   - `*` = verified by migration-guard test + build + colour gate ONLY. DB execution / RLS / maker-checker / aggregation math NOT runtime-proven (Docker down; staging/prod forbidden).
-- NOT built this session (not authorized): S4 (032/034/035/036/037/038/040), S5 (013/014/015/016/017/018/019 — D-1 additive bridge), S6 (047/048/049/050/051/052), S7 (041/042/044/046), S8 (003/009/012). BLOCKED: 007/008 (D-2, worktree).
+- **Update — S4/S5/S6/S8 now ALSO built** (commits `34564feb`, `6ab88a68`):
+  - S5 (013/014/016/017/018/019) → BUILT* additive bridge: optional KR→assignment link, standalone policy (existing OKRs backfilled `legacy` ⇒ no number moves), period-scoped resolution, manual-can't-override.
+  - S4 (034/036/037/040) → BUILT*: `strata_project_objective_alignments` (primary/secondary+attribution), contradiction rejection, completion-gate trigger. 035/038 formalized.
+  - S6 (047/048/051) → BUILT*; 049 → BUILT* scoped to NEW entities (no retroactive change to shipped check-free element retirement); 050/052 (snapshot chain, notifications) NOT built.
+  - S8 (003) → BUILT* structural (effective dating + overlap EXCLUDE + `strata_resolve_kpi_formula`); calc-engine wiring is a follow-up. 009/012 NOT built.
+  - `*` = 40/40 kpi-opmodel guard tests + build + colour gate. DB execution / aggregation math / contradiction logic / RLS / SoD / EXCLUDE constraint NOT runtime-proven.
+- STILL NOT built: **S7 (041/042/044/046)** downstream consumers (Strategy Room readiness display, theme/element health from KR, Command Center chain, enforced review evidence) — UI-heavy + screenshot-gated + benefits from a DB; 009/012 (KR-version approval, impact preview); 050/052 (snapshot chain, notifications); calc-engine wiring of S8 resolver. BLOCKED: 007/008 (D-2, worktree).
 
 ## The gap is one coherent spine, not 44 scattered patches
 
