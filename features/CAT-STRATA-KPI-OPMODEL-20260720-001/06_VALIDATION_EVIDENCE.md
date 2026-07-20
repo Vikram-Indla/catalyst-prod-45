@@ -58,7 +58,15 @@ Browser screenshot acceptance against **staging** (dev server on :8080 = this ch
 2. Populated list (seeded `KA-DEMO00001`, then deleted): DynamicTable with Assignment / Scope / Target / **DRAFT lozenge** / **Submit + Retire** lifecycle actions, role-gated.
 Covers assignment CRUD + lifecycle + scoped observation submit/validate + authoritative roll-up display. Build green; the RPCs it calls are the same ones proven in the authenticated E2E.
 
-## Genuinely NOT done (residual)
-- **UI surfaces (step 3)** for the new entities (KPI classification form, Assignment CRUD, Contribution Mapping + rollup display, Objective Alignment, KR→Assignment link) — DB + domain methods exist; no React forms built.
-- **Browser screenshot acceptance (step 4)** — requires the app running this branch against staging in a browser; not performed.
-- Nothing pushed; no PR; prod untouched.
+## Round 4 — all remaining UI surfaces + S14 (2026-07-20)
+- **S14** (migration 20260720135000): browser testing of the roll-up UI revealed the frontend passes `p_as_of := null` → `as_of_date <= NULL` always false → `included 0`. COALESCE guard added to `strata_calc_assignment_rollup` + `strata_resolve_assignment_observation`. **Confirmed live in the browser: "Result: 72 · method average · included 1"** after the fix (same class as the shipped 195500 KR-calc guard).
+- **UI surfaces (all built, ADS-only, colour gate clean, browser screenshot-accepted on staging):**
+  1. **Contribution Mappings** (in assignment detail) — create direct_component|driver|supporting_evidence + weight → submit → approve; verified live with `KA-DEMO-CHILD · DIRECT COMPONENT · APPROVED` feeding the roll-up.
+  2. **KPI Classification** — "Classify KPIs (10)": usage_class / aggregation_policy / kr_eligible → strata_classify_kpi; verified rendering the 10 draft/pending KPIs.
+  3. **Project Objective Alignment** — create (project objective + strategic objective + primary/secondary + attribution) → submit → approve → grant governed exception; verified rendering.
+  4. **KR → Assignment link** (KR detail page) — link/unlink an approved KR-eligible assignment (STRATA-KPI-014); verified rendering the standalone-state message + Select.
+- **Bugs caught by execution/browser & fixed this feature: 4** — overlaps reserved-word (S3), formula-EXCLUDE backfill (S8), observation-period resolution (S11), null-as_of roll-up (S14). Text-only guards missed all four.
+
+## Sole remaining blocker
+- **007 / 008** — the Theme `measurement_method` mutual-exclusivity rule lives UNPUSHED in the sibling worktree `strata/theme-measurement-method` (D-2). Everything around it is prepared; the precise integration dependency is: once that branch lands on origin/main, add the objectives_kpis|okrs Theme-creation gate + reconcile `strata_okr_validate`/theme-creation. This feature never modifies that worktree.
+- Nothing pushed; no PR; prod untouched. (UI surfaces + browser screenshot acceptance: DONE — see Round 4.)
