@@ -699,6 +699,26 @@ export const kpiApi = {
     })),
   approveKpi: (kpiId: string, note?: string) =>
     run(typedRpc('strata_approve_kpi', { p_kpi: kpiId, p_note: note ?? null })),
+  // ── Governed classification (STRATA-KPI-004/005/022, slice S1) ─────────────
+  classifyKpi: (kpiId: string, patch: {
+    usageClass?: 'strategic' | 'operational' | 'project_outcome' | 'project_delivery' | 'risk_compliance';
+    officialScope?: 'enterprise' | 'department' | 'project' | 'none';
+    krEligible?: boolean;
+    aggregationPolicy?: 'none' | 'sum' | 'average' | 'weighted_average';
+    businessCategoryId?: string;
+  }) =>
+    run(rpcAny('strata_classify_kpi', {
+      p_kpi: kpiId,
+      p_usage_class: patch.usageClass ?? null,
+      p_official_scope: patch.officialScope ?? null,
+      p_kr_eligible: patch.krEligible ?? null,
+      p_aggregation_policy: patch.aggregationPolicy ?? null,
+      p_business_category: patch.businessCategoryId ?? null,
+    })),
+  kpiCategories: (): Promise<Array<Record<string, unknown>>> =>
+    run((supabase.from('strata_kpi_categories' as never).select('*').eq('active', true).order('name')) as never) as Promise<Array<Record<string, unknown>>>,
+  upsertKpiCategory: (name: string, description?: string, slug?: string): Promise<string> =>
+    run(rpcAny('strata_upsert_kpi_category', { p_name: name, p_slug: slug ?? null, p_description: description ?? null, p_active: true })) as Promise<string>,
   approveFormulaVersion: (formulaId: string, note?: string) =>
     run(typedRpc('strata_approve_formula_version', { p_formula: formulaId, p_note: note ?? null })),
   okrs: (): Promise<StrataOkr[]> => run(typedQuery('strata_okrs').select('*').order('created_at', { ascending: false })),
