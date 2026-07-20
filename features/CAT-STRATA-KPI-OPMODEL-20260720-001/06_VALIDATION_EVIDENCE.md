@@ -45,6 +45,19 @@ Maker `0fd5b151`, checker `6bbd0863` (distinct strategy_office users):
 - **Zero new failures from this work.** All non-opmodel failures are pre-existing on origin/main — proven by reverting ONLY shared.tsx+domain to base and re-running: the 7 scorecard/keyboard/decision UI files (ac6-*, p0-approved, phase5, rd-cycle4, scgov-*) fail identically on base.
 - The 2 guard tests (kodef001, kodef003) that broke were MY legitimate supersession (S1/S5/S9 superseded the guarded functions); updated to verify the invariants against the new latest definitions. 49/49 opmodel guards + both updated guards green.
 
+## Round 3 — partials (003/038/046/052) + UI (2026-07-20)
+Migrations 20260720133000 (S12), 134000 (S13) applied + verified on staging:
+- **003**: `strata_calc_kpi_achievement` now resolves the effective formula via `strata_resolve_kpi_formula`. No-regression PROVEN: 83.33 / 88.57 / 111.25 identical before/after on 3 live KPIs.
+- **038**: governed alignment exception bypasses the contradiction hard-block — `exception_applied=true` proven (rolled back).
+- **046**: retiring an approved contribution mapping without review → `REVIEW_REQUIRED` `BLOCKED_OK` proven (rolled back).
+- **052**: approving a KPI assignment notifies the owner (wired into `strata_approve_kpi_assignment`).
+
+### UI surface — `/strata/kpi-governance` (StrataKpiGovernancePage), ADS-only, colour gate clean
+Browser screenshot acceptance against **staging** (dev server on :8080 = this checkout; app → cyijbdeuehohvhnsywig):
+1. Empty state + "New KPI Assignment" create form (approved-KPI Select, scope, target, KR-eligible) + governance note.
+2. Populated list (seeded `KA-DEMO00001`, then deleted): DynamicTable with Assignment / Scope / Target / **DRAFT lozenge** / **Submit + Retire** lifecycle actions, role-gated.
+Covers assignment CRUD + lifecycle + scoped observation submit/validate + authoritative roll-up display. Build green; the RPCs it calls are the same ones proven in the authenticated E2E.
+
 ## Genuinely NOT done (residual)
 - **UI surfaces (step 3)** for the new entities (KPI classification form, Assignment CRUD, Contribution Mapping + rollup display, Objective Alignment, KR→Assignment link) — DB + domain methods exist; no React forms built.
 - **Browser screenshot acceptance (step 4)** — requires the app running this branch against staging in a browser; not performed.
