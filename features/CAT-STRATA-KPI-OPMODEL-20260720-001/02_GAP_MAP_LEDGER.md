@@ -3,8 +3,14 @@
 - Feature Work ID: `CAT-STRATA-KPI-OPMODEL-20260720-001`
 - Baseline: `main` @ `09444187f` (fast-forwarded to `origin/main`, lossless, 0 local commits)
 - Method: 5 parallel read-only investigators (sonnet), each mapping a cluster against all ~125 `*strata*` migrations + `src/modules/strata/`. Every row cites an artifact actually opened.
-- Tally: **9 SATISFIED · 24 PARTIAL · 20 MISSING**
-- Status of this document: EVIDENCE ONLY. No code written. No approval to implement.
+- Tally (baseline): **9 SATISFIED · 24 PARTIAL · 20 MISSING**
+- Slices S0/S1/S2+S3 delivered this session (branch `strata/kpi-operating-model`, commits `c2bef8e3`, `a12a81655`, `ed3ff650`). Rows now BUILT (code + migration + guard test + build green), pending DB-execution proof (no local DB):
+  - S0: 010, 020, 021 → SATISFIED*; 011 → mostly (withdraw/cancel UI; request-changes *state* deferred to a schema slice).
+  - S1: 004, 005, 006, 022 → SATISFIED*; 023 still PARTIAL (usage-class-conditioned approver routing not built).
+  - S2: 025, 026, 027 → BUILT*; 024 reinforced.
+  - S3: 028, 029, 030, 031 → BUILT* (aggregation ARITHMETIC unverified — needs DB + calc/property/negative tests).
+  - `*` = verified by migration-guard test + build + colour gate ONLY. DB execution / RLS / maker-checker / aggregation math NOT runtime-proven (Docker down; staging/prod forbidden).
+- NOT built this session (not authorized): S4 (032/034/035/036/037/038/040), S5 (013/014/015/016/017/018/019 — D-1 additive bridge), S6 (047/048/049/050/051/052), S7 (041/042/044/046), S8 (003/009/012). BLOCKED: 007/008 (D-2, worktree).
 
 ## The gap is one coherent spine, not 44 scattered patches
 
