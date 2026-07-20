@@ -39,11 +39,22 @@ function latestBody(fn: string): { file: string; body: string } {
 }
 
 const FIX = '20260718006000_strata_kpi_submission_prereqs_aligned.sql';
+// KPI-OPMODEL (CAT-STRATA-KPI-OPMODEL-20260720-001) legitimately supersedes these two functions:
+// S1 extends the blocker list (usage_class), S9 adds usage-class-aware assigned-approver enforcement.
+const S1_BLOCKERS = '20260720121000_strata_s1_kpi_classification.sql';
+const S9_APPROVE = '20260720130000_strata_s9_lifecycle_completeness.sql';
 
 describe('KO-DEF-001 — incomplete KPI cannot reach Pending Approval', () => {
   it('the aligned gate is the latest definition of the blockers function and of approve', () => {
-    expect(latestBody('strata_kpi_submission_blockers').file).toBe(FIX);
-    expect(latestBody('strata_approve_kpi').file).toBe(FIX);
+    // Supersession is expected; the anti-drift invariant is that the LATEST blockers still carries
+    // every original prerequisite and the LATEST approve still delegates to that single list.
+    expect(latestBody('strata_kpi_submission_blockers').file).toBe(S1_BLOCKERS);
+    expect(latestBody('strata_approve_kpi').file).toBe(S9_APPROVE);
+    const blockers = latestBody('strata_kpi_submission_blockers').body;
+    for (const prereq of ['accountable owner', 'data owner', 'reporter', 'validator', 'Approve at least one target', 'segregation of duties']) {
+      expect(blockers, `blocker "${prereq}" must survive supersession`).toContain(prereq);
+    }
+    expect(latestBody('strata_approve_kpi').body).toContain('strata_kpi_submission_blockers');
   });
 
   it('submit refuses a KPI with outstanding prerequisites, before the status UPDATE', () => {

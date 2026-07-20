@@ -48,8 +48,11 @@ describe('KO-DEF-003 — KR reportability (the reproduction)', () => {
     expect(b).toMatch(/accepted_with_exception[\s\S]{0,60}'qualified', true|'qualified', act\.validation_status = 'accepted_with_exception'/);
   });
   it('standalone KRs are allowed and labelled distinctly (no second dictionary)', () => {
+    // KPI-OPMODEL S5 additive bridge (CAT-STRATA-KPI-OPMODEL-20260720-001) governs standalone KRs
+    // via the OKR standalone_kr_policy instead of a bare kr.kpi_id IS NULL early-return; standalone
+    // KRs remain labelled distinctly (no second dictionary), now legacy=reportable / unofficial=excluded.
     const b = latestBody('strata_kr_reportability');
-    expect(b).toMatch(/kr\.kpi_id IS NULL/);
+    expect(b).toContain('standalone_kr_policy');
     expect(b).toContain('Standalone measurement');
   });
   it('resolves the effective KPI version for the requested date', () => {
