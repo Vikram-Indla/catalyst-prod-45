@@ -14,11 +14,23 @@ ALTER TABLE public.strata_kpi_formula_versions
 COMMENT ON COLUMN public.strata_kpi_formula_versions.effective_from IS
   'Effective-from for date-scoped formula resolution (STRATA-KPI-003). Backfilled from approved_at/created for existing approved rows.';
 
--- Backfill existing approved rows so resolution is deterministic (zero-assumption:
--- only rows that are actually approved get an effective_from; drafts stay NULL).
+-- Backfill existing approved rows so resolution is deterministic AND non-overlapping:
+-- effective_from from approved_at/created; effective_to = the next approved version's
+-- start (NULL for the latest), so the EXCLUDE constraint below never conflicts even
+-- when a KPI already carries several approved formula versions. Drafts stay NULL.
+WITH ordered AS (
+  SELECT id, kpi_id,
+         COALESCE(effective_from, approved_at, created_at) AS eff_from,
+         lead(COALESCE(effective_from, approved_at, created_at))
+           OVER (PARTITION BY kpi_id ORDER BY version) AS next_from
+    FROM public.strata_kpi_formula_versions
+   WHERE status = 'approved'
+)
 UPDATE public.strata_kpi_formula_versions f
-   SET effective_from = COALESCE(f.effective_from, f.approved_at, f.created_at)
- WHERE f.status = 'approved' AND f.effective_from IS NULL;
+   SET effective_from = o.eff_from,
+       effective_to   = o.next_from
+  FROM ordered o
+ WHERE f.id = o.id AND f.effective_from IS NULL;
 
 -- One effective approved formula per KPI at any instant (no overlap). btree_gist may be
 -- needed for the EXCLUDE; guard its creation so the migration is safe if unavailable.

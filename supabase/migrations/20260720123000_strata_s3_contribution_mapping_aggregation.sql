@@ -174,7 +174,7 @@ CREATE OR REPLACE FUNCTION public.strata_calc_assignment_rollup(
 ) RETURNS jsonb LANGUAGE plpgsql STABLE SECURITY DEFINER SET search_path TO 'public' AS $function$
 DECLARE
   pa record; pk record; m record; ca record; ck record; obs jsonb;
-  rule text; included jsonb := '[]'::jsonb; excluded jsonb := '[]'::jsonb; overlaps jsonb := '[]'::jsonb;
+  rule text; included jsonb := '[]'::jsonb; excluded jsonb := '[]'::jsonb; v_overlaps jsonb := '[]'::jsonb;
   seen_scope jsonb := '{}'::jsonb; scope_key text;
   n_incl int := 0; sum_num numeric := 0; sum_den numeric := 0; sum_val numeric := 0;
   sum_w numeric := 0; sum_wv numeric := 0; all_weighted boolean := true; result numeric; method text;
@@ -208,7 +208,7 @@ BEGIN
     -- overlap / double-count detection: two children on the same scoped population
     scope_key := coalesce(ca.project_objective_id::text, ca.element_id::text, ca.id::text);
     IF seen_scope ? scope_key THEN
-      overlaps := overlaps || jsonb_build_array(jsonb_build_object('scope', scope_key, 'child', ca.id));
+      v_overlaps := v_overlaps || jsonb_build_array(jsonb_build_object('scope', scope_key, 'child', ca.id));
     ELSE
       seen_scope := seen_scope || jsonb_build_object(scope_key, true);
     END IF;
@@ -241,7 +241,7 @@ BEGIN
     'denominator', CASE WHEN method='ratio_sum' THEN sum_den ELSE NULL END,
     'weighted_denominator', CASE WHEN method='weighted_average' THEN sum_w ELSE NULL END,
     'included_count', n_incl, 'included', included, 'excluded', excluded,
-    'overlaps', overlaps, 'has_overlap', jsonb_array_length(overlaps) > 0);
+    'overlaps', v_overlaps, 'has_overlap', jsonb_array_length(v_overlaps) > 0);
 END; $function$;
 COMMENT ON FUNCTION public.strata_calc_assignment_rollup(uuid,uuid,date) IS
   'Authoritative KPI-assignment aggregation (STRATA-KPI-031). Includes only approved, effective direct_component children with an eligible observation; exposes numerator/denominator/weights/exclusions/overlaps/provenance. driver/supporting_evidence/none never enter the arithmetic.';

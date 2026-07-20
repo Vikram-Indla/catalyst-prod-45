@@ -58,7 +58,11 @@ describe('KPI-OPMODEL S8 — formula date-scoped resolution (STRATA-KPI-003)', (
     expect(body).toMatch(/effective_from <= p_as_of AND \(effective_to IS NULL OR effective_to > p_as_of\)/);
     expect(body).toMatch(/ORDER BY version DESC LIMIT 1/);
   });
-  it('backfill is additive (only approved rows get effective_from)', () => {
-    expect(S8!.sql).toMatch(/WHERE f\.status = 'approved' AND f\.effective_from IS NULL/);
+  it('backfill is additive + non-overlapping (only approved rows, windows closed)', () => {
+    // hardened backfill: CTE over approved rows, closes superseded windows via lead(),
+    // only touches not-yet-backfilled rows — safe even with multiple approved versions.
+    expect(S8!.sql).toMatch(/WHERE status = 'approved'/);
+    expect(S8!.sql).toMatch(/lead\(COALESCE\(effective_from, approved_at, created_at\)\)/);
+    expect(S8!.sql).toMatch(/WHERE f\.id = o\.id AND f\.effective_from IS NULL/);
   });
 });
