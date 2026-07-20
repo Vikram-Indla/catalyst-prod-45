@@ -783,6 +783,10 @@ export const kpiApi = {
     run((supabase.from('strata_kpis' as never).select('id, name, unit, kr_eligible, usage_class').eq('status', 'approved').order('name')) as never) as Promise<Array<{ id: string; name: string; unit: string | null; kr_eligible?: boolean; usage_class?: string | null }>>,
   assignmentObservations: (assignmentId: string): Promise<Array<Record<string, unknown>>> =>
     run((supabase.from('strata_kpi_assignment_observations' as never).select('*').eq('assignment_id', assignmentId).order('as_of_date', { ascending: false })) as never) as Promise<Array<Record<string, unknown>>>,
+  draftKpis: (): Promise<Array<{ id: string; name: string; status: string; usage_class?: string | null; kr_eligible?: boolean; aggregation_policy?: string | null }>> =>
+    run((supabase.from('strata_kpis' as never).select('id, name, status, usage_class, kr_eligible, aggregation_policy').in('status', ['draft', 'pending_approval']).order('name')) as never) as Promise<Array<{ id: string; name: string; status: string; usage_class?: string | null; kr_eligible?: boolean; aggregation_policy?: string | null }>>,
+  strategyElements: (): Promise<Array<{ id: string; name: string; element_type: string; context: string }>> =>
+    run((supabase.from('strata_strategy_elements' as never).select('id, name, element_type, context').eq('status', 'active').order('name')) as never) as Promise<Array<{ id: string; name: string; element_type: string; context: string }>>,
   assignmentRollup: (parentAssignmentId: string, periodId?: string, asOf?: string): Promise<Record<string, unknown>> =>
     run(rpcAny('strata_calc_assignment_rollup', { p_parent_assignment: parentAssignmentId, p_period: periodId ?? null, p_as_of: asOf ?? null })) as Promise<Record<string, unknown>>,
   // ── KR<->Assignment bridge (STRATA-KPI-014, slice S5) ──────────────────────

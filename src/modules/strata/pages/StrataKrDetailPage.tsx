@@ -4,10 +4,10 @@
  * observation-based progress + performance/confidence/data-quality, and the append-only
  * observation ledger (submit + maker-checker validate). Reuses the canonical KR components.
  */
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { Button, EmptyState, Lozenge, Spinner } from '@/components/ads';
+import { Button, EmptyState, Lozenge, Select, Spinner } from '@/components/ads';
 import { Target } from '@/lib/atlaskit-icons';
 import { Routes } from '@/lib/routes';
 import { kpiApi } from '@/modules/strata/domain';
@@ -116,6 +116,10 @@ export default function StrataKrDetailPage() {
           : <EmptyState size="compact" header="Observations" description="You do not have permission to record or validate observations." />}
       </StrataPanel>
 
+      <StrataPanel title="Strategic KPI Assignment">
+        <KrAssignmentLink kr={kr} canUpdate={canUpdate} onChanged={() => krQ.refetch()} />
+      </StrataPanel>
+
       <div style={{ marginTop: 8 }}>
         <Button appearance="subtle" spacing="compact" onClick={() => navigate(okr?.slug ? Routes.strata.okr(okr.slug) : Routes.strata.strategy())}>
           ← Back to {okr ? okr.name : 'Strategy'}
@@ -123,5 +127,52 @@ export default function StrataKrDetailPage() {
       </div>
       </div>
     </StrataPageShell>
+  );
+}
+
+// ── STRATA-KPI-014: link a KR to an approved, KR-eligible Strategic KPI Assignment ──
+function KrAssignmentLink({ kr, canUpdate, onChanged }: {
+  kr: { id: string; strategic_assignment_id?: string | null };
+  canUpdate: boolean; onChanged: () => void;
+}) {
+  const asgQ = useQuery({ queryKey: ['strata', 'kr-eligible-assignments'], queryFn: () => kpiApi.kpiAssignments(), staleTime: 30_000 });
+  const eligible = (asgQ.data ?? []).filter((a) => (a as { status?: string }).status === 'approved' && (a as { kr_eligible?: boolean }).kr_eligible) as Array<{ id: string; assignment_key?: string | null }>;
+  const [pick, setPick] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const run = async (fn: () => Promise<unknown>) => { setBusy(true); setError(null); try { await fn(); onChanged(); } catch (e) { setError(e instanceof Error ? e.message : String(e)); } finally { setBusy(false); } };
+
+  if (kr.strategic_assignment_id) {
+    const cur = eligible.find((a) => a.id === kr.strategic_assignment_id);
+    return (
+      <div data-testid="kr-assignment-linked">
+        <div style={{ marginBottom: 8, color: T.text }}>
+          Officially backed by <Lozenge appearance="success">{cur?.assignment_key ?? String(kr.strategic_assignment_id).slice(0, 8)}</Lozenge>
+          {' '}— official actuals come from this assignment's observations; a manual value cannot override them.
+        </div>
+        {error ? <div style={{ color: 'var(--ds-text-danger)', fontSize: 'var(--ds-font-size-075)' }}>{error}</div> : null}
+        {canUpdate ? <Button spacing="compact" appearance="subtle" isDisabled={busy} testId="kr-unlink" onClick={() => run(() => kpiApi.unlinkKrAssignment(kr.id))}>Unlink</Button> : null}
+      </div>
+    );
+  }
+  return (
+    <div data-testid="kr-assignment-unlinked">
+      <div style={{ marginBottom: 8, color: T.subtle, fontSize: 'var(--ds-font-size-075)' }}>
+        This KR is a standalone contract. Link an approved, KR-eligible Strategic KPI Assignment to make it officially KPI-backed (STRATA-KPI-014).
+      </div>
+      {error ? <div style={{ color: 'var(--ds-text-danger)', fontSize: 'var(--ds-font-size-075)', marginBottom: 6 }}>{error}</div> : null}
+      {canUpdate ? (
+        <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
+          <div style={{ minWidth: 260 }}>
+            <Select options={eligible.map((a) => ({ value: a.id, label: a.assignment_key ?? a.id.slice(0, 8) }))}
+              value={pick ? { value: pick, label: eligible.find((a) => a.id === pick)?.assignment_key ?? pick } : null}
+              onChange={(o) => setPick((o as { value?: string } | null)?.value ?? null)} usePortal aria-label="KR-eligible assignment"
+              placeholder={eligible.length ? 'Select an assignment…' : 'No KR-eligible approved assignments'} />
+          </div>
+          <Button appearance="primary" spacing="compact" isDisabled={busy || !pick} testId="kr-link"
+            onClick={() => run(async () => { await kpiApi.linkKrAssignment(kr.id, pick!); setPick(null); })}>Link assignment</Button>
+        </div>
+      ) : <EmptyState size="compact" header="Linking" description="You do not have permission to link a KR to an assignment." />}
+    </div>
   );
 }

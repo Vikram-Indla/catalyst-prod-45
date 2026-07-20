@@ -144,6 +144,9 @@ export default function StrataKpiGovernancePage() {
             : <DynamicTable head={head} rows={rows} isFixedSize />}
       </StrataPanel>
 
+      {canWrite ? <ClassificationPanel /> : null}
+      <AlignmentPanel canWrite={canWrite} canApprove={canApprove} />
+
       {selected ? (
         <AssignmentDetail assignment={selected} canWrite={canWrite} canApprove={canApprove}
           allAssignments={assignments.filter((a) => a.status === 'approved' && a.id !== selected.id)}
@@ -276,6 +279,112 @@ function AssignmentDetail({ assignment, canWrite, canApprove, allAssignments, ro
           </div>
         </div>
       ) : null}
+    </StrataPanel>
+  );
+}
+
+// ── STRATA-KPI-004/005/022: KPI classification (draft KPIs only) ──────────────
+const USAGE_CLASSES = ['strategic', 'operational', 'project_outcome', 'project_delivery', 'risk_compliance'];
+const AGG_POLICIES = ['none', 'sum', 'average', 'weighted_average'];
+
+function ClassificationPanel() {
+  const draftQ = useQuery({ queryKey: ['strata', 'draft-kpis'], queryFn: () => kpiApi.draftKpis(), staleTime: 0 });
+  const drafts = draftQ.data ?? [];
+  return (
+    <StrataPanel title="Classify KPIs" count={drafts.length} testId="kpi-classify">
+      {draftQ.isLoading ? <Spinner size="medium" aria-label="Loading draft KPIs" />
+        : drafts.length === 0 ? <p style={{ color: T.subtlest, margin: 0 }}>No draft/pending KPIs to classify.</p>
+          : <div style={{ display: 'grid', gap: 10 }}>{drafts.map((k) => <ClassifyRow key={k.id} kpi={k} onDone={() => draftQ.refetch()} />)}</div>}
+      <p style={{ marginTop: 8, marginBottom: 0, fontSize: 'var(--ds-font-size-075)', color: T.subtlest }}>
+        Usage class is required before a KPI can be submitted. KR-eligibility is valid only for strategic or project-outcome classes.
+      </p>
+    </StrataPanel>
+  );
+}
+
+function ClassifyRow({ kpi, onDone }: { kpi: { id: string; name: string; usage_class?: string | null; kr_eligible?: boolean; aggregation_policy?: string | null }; onDone: () => void }) {
+  const [usage, setUsage] = useState<string | null>(kpi.usage_class ?? null);
+  const [kr, setKr] = useState(!!kpi.kr_eligible);
+  const [agg, setAgg] = useState(kpi.aggregation_policy ?? 'none');
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  return (
+    <div style={{ display: 'flex', gap: 10, alignItems: 'end', flexWrap: 'wrap', paddingBottom: 8, borderBottom: `1px solid ${T.border}` }} data-testid={`classify-${kpi.id}`}>
+      <span style={{ minWidth: 180, color: T.text }}>{kpi.name}</span>
+      <label style={{ display: 'grid', gap: 4, minWidth: 170, fontSize: 'var(--ds-font-size-075)', color: T.subtle }}>Usage class
+        <Select options={USAGE_CLASSES.map((u) => ({ value: u, label: labelize(u) }))}
+          value={usage ? { value: usage, label: labelize(usage) } : null}
+          onChange={(o) => setUsage((o as { value?: string } | null)?.value ?? null)} usePortal aria-label={`Usage class for ${kpi.name}`} /></label>
+      <label style={{ display: 'grid', gap: 4, minWidth: 160, fontSize: 'var(--ds-font-size-075)', color: T.subtle }}>Aggregation
+        <Select options={AGG_POLICIES.map((a) => ({ value: a, label: labelize(a) }))} value={{ value: agg, label: labelize(agg) }}
+          onChange={(o) => setAgg((o as { value?: string } | null)?.value ?? 'none')} usePortal aria-label={`Aggregation policy for ${kpi.name}`} /></label>
+      <Checkbox isChecked={kr} onChange={(e) => setKr((e.target as HTMLInputElement).checked)} label="KR-eligible" />
+      <Button appearance="primary" spacing="compact" isDisabled={busy || !usage} testId={`classify-save-${kpi.id}`}
+        onClick={async () => { setBusy(true); setError(null); try { await kpiApi.classifyKpi(kpi.id, { usageClass: usage as never, krEligible: kr, aggregationPolicy: agg as never }); onDone(); } catch (e) { setError(e instanceof Error ? e.message : String(e)); } finally { setBusy(false); } }}>Classify</Button>
+      {error ? <span style={{ color: 'var(--ds-text-danger)', fontSize: 'var(--ds-font-size-075)' }}>{error}</span> : null}
+    </div>
+  );
+}
+
+// ── STRATA-KPI-034/036/037/038: Project Objective Alignment ───────────────────
+function AlignmentPanel({ canWrite, canApprove }: { canWrite: boolean; canApprove: boolean }) {
+  const elemQ = useQuery({ queryKey: ['strata', 'elements'], queryFn: () => kpiApi.strategyElements(), staleTime: 30_000 });
+  const elements = elemQ.data ?? [];
+  const projectObjs = elements.filter((e) => e.context === 'project');
+  const strategicObjs = elements.filter((e) => e.context === 'theme');
+  const [projId, setProjId] = useState<string | null>(null);
+  const [stratId, setStratId] = useState<string | null>(null);
+  const [alignType, setAlignType] = useState<'primary' | 'secondary'>('primary');
+  const [attr, setAttr] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const alignQ = useQuery({ queryKey: ['strata', 'obj-alignments', projId], queryFn: () => kpiApi.objectiveAlignments(projId!), enabled: !!projId, staleTime: 0 });
+  const alignments = (alignQ.data ?? []) as Array<{ id: string; strategic_objective_id: string; alignment_type: string; status: string; lock_version?: number; exception_approved_by?: string | null }>;
+
+  const run = async (fn: () => Promise<unknown>) => { setBusy(true); setError(null); try { await fn(); await alignQ.refetch(); } catch (e) { setError(e instanceof Error ? e.message : String(e)); } finally { setBusy(false); } };
+
+  return (
+    <StrataPanel title="Project Objective Alignment" testId="obj-alignment">
+      {error ? <SectionMessage appearance="error" title="Failed"><p style={{ margin: 0 }}>{error}</p></SectionMessage> : null}
+      {canWrite ? (
+        <div style={{ display: 'flex', gap: 8, alignItems: 'end', flexWrap: 'wrap', marginBottom: 10 }}>
+          <label style={{ display: 'grid', gap: 4, minWidth: 200, fontSize: 'var(--ds-font-size-075)', color: T.subtle }}>Project objective
+            <Select options={projectObjs.map((e) => ({ value: e.id, label: e.name }))} value={projId ? { value: projId, label: projectObjs.find((e) => e.id === projId)?.name ?? projId } : null}
+              onChange={(o) => setProjId((o as { value?: string } | null)?.value ?? null)} usePortal aria-label="Project objective" /></label>
+          <label style={{ display: 'grid', gap: 4, minWidth: 200, fontSize: 'var(--ds-font-size-075)', color: T.subtle }}>Strategic objective
+            <Select options={strategicObjs.map((e) => ({ value: e.id, label: e.name }))} value={stratId ? { value: stratId, label: strategicObjs.find((e) => e.id === stratId)?.name ?? stratId } : null}
+              onChange={(o) => setStratId((o as { value?: string } | null)?.value ?? null)} usePortal aria-label="Strategic objective" /></label>
+          <label style={{ display: 'grid', gap: 4, minWidth: 140, fontSize: 'var(--ds-font-size-075)', color: T.subtle }}>Type
+            <Select options={[{ value: 'primary', label: 'Primary' }, { value: 'secondary', label: 'Secondary' }]} value={{ value: alignType, label: labelize(alignType) }}
+              onChange={(o) => setAlignType(((o as { value?: string } | null)?.value as typeof alignType) ?? 'primary')} usePortal aria-label="Alignment type" /></label>
+          {alignType === 'secondary' ? (
+            <label style={{ display: 'grid', gap: 4, fontSize: 'var(--ds-font-size-075)', color: T.subtle }}>Attribution (0-1)
+              <Textfield value={attr} onChange={(e) => setAttr((e.target as HTMLInputElement).value)} type="number" aria-label="Attribution share" /></label>
+          ) : null}
+          <Button appearance="primary" isDisabled={busy || !projId || !stratId} testId="align-create"
+            onClick={() => run(async () => { await kpiApi.createObjectiveAlignment({ projectObjectiveId: projId!, strategicObjectiveId: stratId!, alignmentType: alignType, attributionShare: attr ? Number(attr) : undefined }); setStratId(null); setAttr(''); })}>Create alignment</Button>
+        </div>
+      ) : null}
+      {!projId ? <p style={{ color: T.subtlest, margin: 0 }}>Select a project objective to see and manage its alignments.</p>
+        : alignments.length === 0 ? <p style={{ color: T.subtlest, margin: 0 }}>No alignments for this project objective.</p>
+          : <div style={{ display: 'grid', gap: 6 }}>{alignments.map((al) => (
+            <div key={al.id} style={{ display: 'flex', gap: 12, alignItems: 'center' }} data-testid={`align-${al.id}`}>
+              <span style={{ color: T.text, minWidth: 160 }}>{strategicObjs.find((e) => e.id === al.strategic_objective_id)?.name ?? al.strategic_objective_id.slice(0, 8)}</span>
+              <Lozenge appearance={al.alignment_type === 'primary' ? 'inprogress' : 'default'}>{labelize(al.alignment_type)}</Lozenge>
+              <Lozenge appearance={al.status === 'approved' ? 'success' : al.status === 'retired' ? 'moved' : al.status === 'rejected' ? 'removed' : 'default'}>{labelize(al.status)}</Lozenge>
+              {al.exception_approved_by ? <Lozenge appearance="moved">Exception</Lozenge> : null}
+              {canWrite && (al.status === 'draft' || al.status === 'rejected') ? (
+                <Button spacing="compact" isDisabled={busy} testId={`align-submit-${al.id}`} onClick={() => run(() => kpiApi.submitObjectiveAlignment(al.id, al.lock_version))}>Submit</Button>
+              ) : null}
+              {canApprove && al.status === 'submitted' ? (
+                <Button spacing="compact" appearance="primary" isDisabled={busy} testId={`align-approve-${al.id}`} onClick={() => run(() => kpiApi.approveObjectiveAlignment(al.id, al.lock_version))}>Approve</Button>
+              ) : null}
+              {canApprove && !al.exception_approved_by ? (
+                <Button spacing="compact" appearance="subtle" isDisabled={busy} testId={`align-exception-${al.id}`} onClick={() => run(() => kpiApi.grantAlignmentException(al.id, 'governed exception'))}>Grant exception</Button>
+              ) : null}
+            </div>
+          ))}</div>}
     </StrataPanel>
   );
 }
