@@ -40,6 +40,7 @@ import { fmtDate, fmtSarCompact, labelize } from './format';
 import { StrataFormModal } from './authoring';
 import type { StrataFormValues } from './authoring';
 import { StrataExecutionHealthLozenge, StrataPanel, T } from './shared';
+import { KpiAssignmentsSection, KpiAlignmentSection } from './kpiGovernanceSections';
 
 const WRITE_ROLES: StrataRole[] = ['strategy_office', 'vmo_validator', 'data_steward', 'strata_admin'];
 const ARCHIVE_ROLES: StrataRole[] = ['strategy_office', 'vmo_validator', 'strata_admin'];
@@ -648,6 +649,34 @@ export function ProjectCardDetailView({ card, theme }: {
                 })}
               </TabSection>
             ) : null}
+
+            {/* CAT-STRATA-KPIGOV-ENTRY — governed Project KPI Assignments (scoped to this card)
+                + Project Objective Alignment, authored inline in Scope & Measures (#7, #8, #9).
+                D3: a Project Objective is a prerequisite — when none exists, show a clear,
+                actionable prompt to add one rather than silently-disabled controls. */}
+            {objectives.length === 0 ? (
+              <StrataPanel title="Governed KPI Assignments & Objective Alignment" testId="scope-gov-prereq">
+                <EmptyState
+                  size="compact"
+                  header="Add a Project Objective first"
+                  description="Governed Project KPI Assignments and Project Objective Alignments must be scoped to a Project Objective. This card has none yet — add one to enable them."
+                />
+                {canWriteObjective && !isTerminal ? (
+                  <div style={{ marginTop: 8 }}>
+                    <Button appearance="primary" spacing="compact" onClick={() => setForm('new-objective')} testId="scope-gov-add-objective">New objective</Button>
+                  </div>
+                ) : null}
+              </StrataPanel>
+            ) : (
+              <>
+                <div style={{ marginTop: 4 }}>
+                  <KpiAssignmentsSection preset={{ scopeType: 'project', projectCardId: card.id, projectObjectiveOptions: objectives.map((o) => ({ id: o.id, name: o.name })), lockScope: true }} />
+                </div>
+                <div style={{ marginTop: 4 }}>
+                  <KpiAlignmentSection presetProjectObjectiveId={objectives.length === 1 ? objectives[0].id : undefined} />
+                </div>
+              </>
+            )}
 
             {/* PC-DEF-005 — Linked Benefits (distinct from KPIs / objectives / milestones) */}
             <TabSection

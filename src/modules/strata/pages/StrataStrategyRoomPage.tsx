@@ -8,7 +8,7 @@
  */
 import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useQueries } from '@tanstack/react-query';
+import { useQueries, useQuery } from '@tanstack/react-query';
 import {
   Button, EmptyState, IconButton,
   Lozenge, Modal, ModalBody, ModalFooter, ModalHeader, ModalTitle, SectionMessage, Select, Spinner, Textfield, Tooltip,
@@ -317,6 +317,8 @@ export default function StrataStrategyRoomPage() {
   const elementsQ = useStrategyElements(activeCycle?.id);
   const chartersQ = useThemeCharters();
   const elementKpisQ = useElementKpis();
+  // D5: server-computed Objective measure coverage (Objective -> approved OKR -> reportable KR).
+  const coverageQ = useQuery({ queryKey: ['strata', 'objective-measure-coverage', activeCycle?.id], queryFn: () => kpiApi.objectiveMeasureCoverage(activeCycle?.id), enabled: !!activeCycle, staleTime: 0 });
   const kpisQ = useKpis();
   const perspectivesQ = usePerspectives();
   const profilesQ = useProfileNames();
@@ -384,11 +386,15 @@ export default function StrataStrategyRoomPage() {
   const readiness = useMemo(() => {
     const objectives = elements.filter((e) => e.element_type === 'objective' && e.context === 'theme');
     const total = objectives.length;
-    const kpiLinked = new Set(elementKpis.map((l) => l.element_id));
+    // #33 (phased D-2): "measured" is server-computed via strata_objective_measure_coverage
+    // (CAT-STRATA-KPIGOV-ENTRY-20260721-001, building on EXECMODEL S16/S17 objective_id) — an Objective
+    // is measured only when it owns an ACTIVE OKR with a REPORTABLE KR (backed by an approved,
+    // KR-eligible Strategic KPI Assignment). NOT a direct element->KPI link (de-officialised).
+    const coverageMap = new Map((coverageQ.data ?? []).map((c) => [c.objective_id, c.has_measure]));
     const cardObjectiveIds = new Set(
       (projectCardsQ.data ?? []).map((c) => c.objective_element_id).filter(Boolean) as string[],
     );
-    const withMeasures = objectives.filter((o) => kpiLinked.has(o.id)).length;
+    const withMeasures = objectives.filter((o) => coverageMap.get(o.id) === true).length;
     const withOwners = objectives.filter((o) => !!o.owner_id).length;
     const withExecution = objectives.filter((o) => cardObjectiveIds.has(o.id)).length;
     const draftCount = elements.filter((e) => e.status === 'draft').length;
@@ -398,7 +404,7 @@ export default function StrataStrategyRoomPage() {
       {
         key: 'measures', label: 'Objectives with measures', value: `${withMeasures} / ${total}`,
         gaps: total - withMeasures, tone: gapTone(total - withMeasures),
-        caption: total - withMeasures > 0 ? `${total - withMeasures} without a linked KPI` : 'All objectives measured',
+        caption: total - withMeasures > 0 ? `${total - withMeasures} without a reportable-KR-backed OKR` : 'All objectives measured (reportable KR)',
       },
       {
         key: 'owners', label: 'Objectives with owners', value: `${withOwners} / ${total}`,
@@ -416,7 +422,7 @@ export default function StrataStrategyRoomPage() {
         caption: draftCount > 0 ? 'Not yet promoted into active governance' : 'No pending drafts',
       },
     ];
-  }, [elements, elementKpis, projectCardsQ.data]);
+  }, [elements, coverageQ.data, projectCardsQ.data]);
 
   const distinctTypes = useMemo(
     () => Array.from(new Set(elements.map((e) => e.element_type))),
@@ -603,7 +609,8 @@ export default function StrataStrategyRoomPage() {
     ...(el.element_type === 'theme'
       ? [{ key: 'charter', label: 'Charter', onClick: () => setAuthoring({ kind: 'charter', element: el }) }]
       : []),
-    { key: 'kpis', label: 'KPI links', onClick: () => setAuthoring({ kind: 'kpi-links', element: el }) },
+    // EXECMODEL S17 (phased D-2): direct element↔KPI linking is de-officialised — measurement is
+    // Objective→OKR→KR. The KpiLinksModal is retained as dead code (unreachable); Stage 6 removes it.
     ...(el.status !== 'retired'
       ? [{ key: 'retire', label: 'Retire…', onClick: () => setAuthoring({ kind: 'retire-element', element: el }) }]
       : []),
@@ -1169,15 +1176,8 @@ export default function StrataStrategyRoomPage() {
         />
       ) : null}
 
-      {authoring?.kind === 'kpi-links' ? (
-        <KpiLinksModal
-          element={authoring.element}
-          links={elementKpis.filter((l) => l.element_id === authoring.element.id)}
-          kpis={kpis}
-          onClose={closeAuthoring}
-          onChanged={invalidate}
-        />
-      ) : null}
+      {/* EXECMODEL S17 (phased D-2): element↔KPI link authoring removed (unreachable). Measurement
+          is Objective→OKR→KR. KpiLinksModal kept as dead code; Stage 6 deletes it + the RPCs. */}
     </StrataPageShell>
   );
 }

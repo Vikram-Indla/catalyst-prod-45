@@ -626,8 +626,10 @@ export type StrataOkrStatus =
 export interface StrataOkr {
   id: string;
   objective_element_id: string | null;
-  /** Theme-owned model (CAT-STRATA-THEMEOKR-20260719-001) — prospective ownership; legacy rows may be null until backfilled. */
+  /** Theme-owned model (CAT-STRATA-THEMEOKR-20260719-001) — retained as derived history. */
   theme_id: string | null;
+  /** Authoritative Strategic Objective owner (CAT-STRATA-EXECMODEL-20260721-001 S16, D-0). Objective element whose parent is a Theme; null only for parked-exception rows. */
+  objective_id: string | null;
   name: string;
   slug: string | null;
   objective_statement: string | null;

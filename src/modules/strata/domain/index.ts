@@ -779,14 +779,23 @@ export const kpiApi = {
     run(rpcAny('strata_retire_contribution_mapping', { p_mapping: id, p_reason: reason ?? null, p_review: reviewId ?? null })),
   grantAlignmentException: (alignmentId: string, reason: string) =>
     run(rpcAny('strata_grant_alignment_exception', { p_alignment: alignmentId, p_reason: reason })),
-  approvedKpis: (): Promise<Array<{ id: string; name: string; unit: string | null; kr_eligible?: boolean; usage_class?: string | null }>> =>
-    run((supabase.from('strata_kpis' as never).select('id, name, unit, kr_eligible, usage_class').eq('status', 'approved').order('name')) as never) as Promise<Array<{ id: string; name: string; unit: string | null; kr_eligible?: boolean; usage_class?: string | null }>>,
+  approvedKpis: (): Promise<Array<{ id: string; name: string; unit: string | null; kr_eligible?: boolean; usage_class?: string | null; direction?: string | null }>> =>
+    run((supabase.from('strata_kpis' as never).select('id, name, unit, kr_eligible, usage_class, direction').eq('status', 'approved').order('name')) as never) as Promise<Array<{ id: string; name: string; unit: string | null; kr_eligible?: boolean; usage_class?: string | null; direction?: string | null }>>,
   assignmentObservations: (assignmentId: string): Promise<Array<Record<string, unknown>>> =>
     run((supabase.from('strata_kpi_assignment_observations' as never).select('*').eq('assignment_id', assignmentId).order('as_of_date', { ascending: false })) as never) as Promise<Array<Record<string, unknown>>>,
   draftKpis: (): Promise<Array<{ id: string; name: string; status: string; usage_class?: string | null; kr_eligible?: boolean; aggregation_policy?: string | null }>> =>
     run((supabase.from('strata_kpis' as never).select('id, name, status, usage_class, kr_eligible, aggregation_policy').in('status', ['draft', 'pending_approval']).order('name')) as never) as Promise<Array<{ id: string; name: string; status: string; usage_class?: string | null; kr_eligible?: boolean; aggregation_policy?: string | null }>>,
   strategyElements: (): Promise<Array<{ id: string; name: string; element_type: string; context: string }>> =>
     run((supabase.from('strata_strategy_elements' as never).select('id, name, element_type, context').eq('status', 'active').order('name')) as never) as Promise<Array<{ id: string; name: string; element_type: string; context: string }>>,
+  // Resolve a single element's display name regardless of status (a pre-scoped assignment may
+  // target a non-active element, e.g. a retired objective) so the UI never shows a raw UUID.
+  strategyElementName: (id: string): Promise<{ id: string; name: string } | null> =>
+    run((supabase.from('strata_strategy_elements' as never).select('id, name').eq('id', id).maybeSingle()) as never) as Promise<{ id: string; name: string } | null>,
+  // D5: Strategy Room readiness — per Objective, whether it has a measure via the governed chain
+  // (Objective -> approved OKR -> reportable KR backed by an eligible assignment). Server-computed
+  // (strata_objective_measure_coverage); grandfathered Theme-owned OKRs are excluded.
+  objectiveMeasureCoverage: (cycleId?: string): Promise<Array<{ objective_id: string; has_measure: boolean }>> =>
+    run(rpcAny('strata_objective_measure_coverage', { p_cycle: cycleId ?? null })) as Promise<Array<{ objective_id: string; has_measure: boolean }>>,
   projectCards: (): Promise<Array<{ id: string; name: string }>> =>
     run((supabase.from('strata_project_cards' as never).select('id, name').order('name')) as never) as Promise<Array<{ id: string; name: string }>>,
   assignmentRollup: (parentAssignmentId: string, periodId?: string, asOf?: string): Promise<Record<string, unknown>> =>
@@ -799,6 +808,12 @@ export const kpiApi = {
   // ── Project Objective Alignment (STRATA-KPI-034/036/037, slice S4) ─────────
   objectiveAlignments: (projectObjectiveId: string): Promise<Array<Record<string, unknown>>> =>
     run((supabase.from('strata_project_objective_alignments' as never).select('*').eq('project_objective_id', projectObjectiveId).order('created_at', { ascending: false })) as never) as Promise<Array<Record<string, unknown>>>,
+  // Global "awaiting approval" lists for the consolidated approvals work-queue (client-side
+  // status filter — no new RPC; RLS still restricts reads to governance roles).
+  submittedContributionMappings: (): Promise<Array<Record<string, unknown>>> =>
+    run((supabase.from('strata_kpi_contribution_mappings' as never).select('*').eq('status', 'submitted').order('created_at', { ascending: false })) as never) as Promise<Array<Record<string, unknown>>>,
+  submittedObjectiveAlignments: (): Promise<Array<Record<string, unknown>>> =>
+    run((supabase.from('strata_project_objective_alignments' as never).select('*').eq('status', 'submitted').order('created_at', { ascending: false })) as never) as Promise<Array<Record<string, unknown>>>,
   createObjectiveAlignment: (input: {
     projectObjectiveId: string; strategicObjectiveId: string;
     alignmentType?: 'primary' | 'secondary'; attributionShare?: number; rationale?: string;
@@ -838,6 +853,10 @@ export const kpiApi = {
   // Slug resolution for deep-link detail pages (CAT-STRATA-THEMEOKR-20260719-001).
   okrBySlug: (slug: string): Promise<StrataOkr | null> =>
     run((supabase.from('strata_okrs' as never).select('*').eq('slug', slug).maybeSingle()) as never) as Promise<StrataOkr | null>,
+  // D4: governed per-OKR standalone-KR policy — 'unofficial' excludes standalone (non-assignment-
+  // backed) KRs from official progress; 'legacy' counts them. Server-gated + validated.
+  setOkrStandaloneKrPolicy: (okrId: string, policy: 'legacy' | 'unofficial'): Promise<string> =>
+    run(rpcAny('strata_set_okr_standalone_kr_policy', { p_okr: okrId, p_policy: policy })),
   krBySlug: (slug: string): Promise<StrataKeyResult | null> =>
     run((supabase.from('strata_key_results' as never).select('*').eq('slug', slug).maybeSingle()) as never) as Promise<StrataKeyResult | null>,
   okr: (okrId: string): Promise<StrataOkr | null> =>
@@ -977,6 +996,17 @@ export const kpiApi = {
   }): Promise<string> =>
     run(rpcAny('strata_create_okr_v2', {
       p_theme: input.themeId, p_name: input.name, p_objective_statement: input.objectiveStatement,
+      p_cycle: input.cycleId ?? null, p_owner: input.ownerId ?? null, p_owning_org: input.owningOrgId ?? null,
+      p_commitment: input.commitment ?? 'committed', p_start_period: input.startPeriodId ?? null, p_end_period: input.endPeriodId ?? null,
+    })) as Promise<string>,
+  // CAT-STRATA-EXECMODEL-20260721-001 S16 (D-0): Objective-owned OKR create. Supersedes v2 —
+  // the OKR belongs to a Strategic Objective; theme is derived + locked from the objective's parent.
+  createOkrV3: (input: {
+    objectiveId: string; name: string; objectiveStatement: string; cycleId?: string; ownerId?: string;
+    owningOrgId?: string; commitment?: 'committed' | 'aspirational'; startPeriodId?: string; endPeriodId?: string;
+  }): Promise<string> =>
+    run(rpcAny('strata_create_okr_v3', {
+      p_objective: input.objectiveId, p_name: input.name, p_objective_statement: input.objectiveStatement,
       p_cycle: input.cycleId ?? null, p_owner: input.ownerId ?? null, p_owning_org: input.owningOrgId ?? null,
       p_commitment: input.commitment ?? 'committed', p_start_period: input.startPeriodId ?? null, p_end_period: input.endPeriodId ?? null,
     })) as Promise<string>,

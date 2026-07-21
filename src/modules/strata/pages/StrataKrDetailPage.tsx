@@ -117,7 +117,7 @@ export default function StrataKrDetailPage() {
       </StrataPanel>
 
       <StrataPanel title="Strategic KPI Assignment">
-        <KrAssignmentLink kr={kr} canUpdate={canUpdate} onChanged={() => krQ.refetch()} />
+        <KrAssignmentLink kr={kr} okrThemeId={okr?.theme_id} fromPath={Routes.strata.kr(slug!)} canUpdate={canUpdate} onChanged={() => krQ.refetch()} />
       </StrataPanel>
 
       <div style={{ marginTop: 8 }}>
@@ -131,10 +131,12 @@ export default function StrataKrDetailPage() {
 }
 
 // ── STRATA-KPI-014: link a KR to an approved, KR-eligible Strategic KPI Assignment ──
-function KrAssignmentLink({ kr, canUpdate, onChanged }: {
+function KrAssignmentLink({ kr, okrThemeId, fromPath, canUpdate, onChanged }: {
   kr: { id: string; strategic_assignment_id?: string | null };
+  okrThemeId?: string | null; fromPath?: string;
   canUpdate: boolean; onChanged: () => void;
 }) {
+  const navigate = useNavigate();
   const asgQ = useQuery({ queryKey: ['strata', 'kr-eligible-assignments'], queryFn: () => kpiApi.kpiAssignments(), staleTime: 30_000 });
   const eligible = (asgQ.data ?? []).filter((a) => (a as { status?: string }).status === 'approved' && (a as { kr_eligible?: boolean }).kr_eligible) as Array<{ id: string; assignment_key?: string | null }>;
   const [pick, setPick] = useState<string | null>(null);
@@ -171,6 +173,11 @@ function KrAssignmentLink({ kr, canUpdate, onChanged }: {
           </div>
           <Button appearance="primary" spacing="compact" isDisabled={busy || !pick} testId="kr-link"
             onClick={() => run(async () => { await kpiApi.linkKrAssignment(kr.id, pick!); setPick(null); })}>Link assignment</Button>
+          {/* STRATA-KPI-014: when no eligible assignment exists yet, route to create one (KR-eligible, approved). */}
+          {eligible.length === 0 ? (
+            <Button appearance="subtle" spacing="compact" testId="kr-create-assignment"
+              onClick={() => navigate(`${Routes.strata.kpis()}?tab=assignments&scope=strategic${okrThemeId ? `&element=${okrThemeId}` : ''}${fromPath ? `&from=${encodeURIComponent(fromPath)}` : ''}`)}>Create eligible assignment →</Button>
+          ) : null}
         </div>
       ) : <EmptyState size="compact" header="Linking" description="You do not have permission to link a KR to an assignment." />}
     </div>

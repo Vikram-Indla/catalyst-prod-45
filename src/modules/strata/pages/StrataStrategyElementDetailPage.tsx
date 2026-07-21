@@ -42,12 +42,12 @@
  */
 import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useQueries, useQuery } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { Button, EmptyState, Lozenge, Spinner } from '@/components/ads';
 import { Briefcase, ClipboardList, GitBranch, Network, Plus, Target } from '@/lib/atlaskit-icons';
 import { Routes } from '@/lib/routes';
 import {
-  useActions, useBandResolver, useBenefitProjectCards, useBenefits, useDecisions, useElementKpis, useGateModels, useInvalidateStrata, useKpis, useMapEdges, useOkrs,
+  useActions, useBenefitProjectCards, useBenefits, useDecisions, useElementKpis, useGateModels, useInvalidateStrata, useKpis, useMapEdges, useOkrs,
   ctxToken, useEffectiveFrameworkMemberIds, usePerspectives, useProjectCards, useThemeCharters, useProfileNames, useStrataAudit, useStrataContext,
   useStrataRoles, useStrategyElementBySlug, useStrategyElements,
 } from '@/modules/strata/hooks/useStrata';
@@ -122,7 +122,6 @@ export default function StrataStrategyElementDetailPage() {
   const benefitsQ = useBenefits();
   const profiles = useProfileNames();
   const invalidate = useInvalidateStrata();
-  const resolveBand = useBandResolver();
   const { cycles, activePeriod } = useStrataContext();
 
   const [authoring, setAuthoring] = useState<AuthoringState | null>(null);
@@ -148,20 +147,14 @@ export default function StrataStrategyElementDetailPage() {
     return perspectivesQ.data?.find((p) => p.id === id)?.name ?? '—';
   };
 
-  // Element health is DERIVED (P2-D5: no element-health calc exists) — roll up the
-  // linked KPIs' governed achievement bands for the active period, worst-band wins.
+  // Element outcome health (EXECMODEL S17 #34): official Objective->OKR->KR results via
+  // strata_element_health_from_kr — NOT direct KPI achievement bands (de-officialised, phased D-2).
   // Called before the early returns to satisfy the rules of hooks.
-  const linkedKpiIdsForHealth = useMemo(
-    () => (element ? [...new Set((elementKpisQ.data ?? []).filter((l) => l.element_id === element.id).map((l) => l.kpi_id))] : []),
-    [element, elementKpisQ.data],
-  );
-  const achievementQueries = useQueries({
-    queries: linkedKpiIdsForHealth.map((id) => ({
-      queryKey: ['strata', 'kpi-achievement', id, activePeriod?.id],
-      queryFn: () => kpiApi.achievement(id, activePeriod!.id),
-      enabled: !!activePeriod?.id,
-      staleTime: 30_000,
-    })),
+  const elementHealthQ = useQuery({
+    queryKey: ['strata', 'element-health-from-kr', element?.id],
+    queryFn: () => kpiApi.elementHealthFromKr(element!.id),
+    enabled: !!element?.id,
+    staleTime: 30_000,
   });
   // <1100 → the 360px rail folds below the left body (anchor 14 responsive).
   useEffect(() => {
@@ -232,8 +225,10 @@ export default function StrataStrategyElementDetailPage() {
   const okrs = okrsQ.data ?? [];
   const okrCountByObjective = new Map<string, number>();
   okrs.forEach((o) => {
-    if (!o.objective_element_id) return;
-    okrCountByObjective.set(o.objective_element_id, (okrCountByObjective.get(o.objective_element_id) ?? 0) + 1);
+    // Authoritative Objective ownership (S16) with legacy objective_element_id fallback.
+    const objId = o.objective_id ?? o.objective_element_id;
+    if (!objId) return;
+    okrCountByObjective.set(objId, (okrCountByObjective.get(objId) ?? 0) + 1);
   });
 
   // OKR Performance panel — rolled up from this Theme's objectives, or direct
@@ -241,8 +236,11 @@ export default function StrataStrategyElementDetailPage() {
   const relevantObjectiveIds = new Set(
     isTheme ? objectives.map((o) => o.id) : element.element_type === 'objective' ? [element.id] : [],
   );
-  // Legacy objective-linked OKRs AND new Theme-owned OKRs (theme_id === this Theme).
+  // Objective-owned OKRs (S16 authoritative objective_id), legacy objective-linked OKRs, AND
+  // Theme-owned OKRs (theme_id === this Theme) — so an Objective page shows its own OKRs and a
+  // Theme page rolls up its child Objectives' OKRs. No path lost.
   const themeOkrs = okrs.filter((o) =>
+    (o.objective_id && relevantObjectiveIds.has(o.objective_id)) ||
     (o.objective_element_id && relevantObjectiveIds.has(o.objective_element_id)) ||
     (isTheme && o.theme_id === element.id),
   );
@@ -288,17 +286,17 @@ export default function StrataStrategyElementDetailPage() {
   const overdueActionsCount = themeActions.filter((a) =>
     (a.status === 'open' || a.status === 'in_progress') && a.due_date != null && a.due_date < todayIso).length;
 
-  // ── Derived health (P2-D5) — worst governed band across the linked measures ──
-  const BAND_RANK: Record<string, number> = { removed: 3, moved: 2, inprogress: 1, new: 1, success: 1 };
-  const bandRank = (k: string | null | undefined) => BAND_RANK[resolveBand(k ?? null)?.appearance ?? ''] ?? 0;
-  const measureBandKeys = linkedKpiIdsForHealth
-    .map((_, i) => (achievementQueries[i]?.data as { status_key?: string | null } | undefined)?.status_key)
-    .filter(Boolean) as string[];
-  const healthBandKey = measureBandKeys.length > 0
-    ? measureBandKeys.reduce((worst, k) => (bandRank(k) > bandRank(worst) ? k : worst))
-    : null;
-  const healthBand = healthBandKey ? resolveBand(healthBandKey) : null;
-  const belowMeasures = measureBandKeys.filter((k) => bandRank(k) >= 2).length;
+  // ── Outcome health (EXECMODEL S17 #34) — from official OKR->KR results, not KPI bands ──
+  const outcomeHealth = elementHealthQ.data as { outcome_health?: string; assessed_okrs?: number } | undefined;
+  // Lozenge owns its colour (ADS) — we only choose the semantic appearance name, no bare colours.
+  const HEALTH_UI: Record<string, { label: string; appearance: string }> = {
+    on_track: { label: 'On track', appearance: 'success' },
+    at_risk: { label: 'At risk', appearance: 'moved' },
+    off_track: { label: 'Off track', appearance: 'removed' },
+  };
+  const healthBand = outcomeHealth?.outcome_health && outcomeHealth.outcome_health !== 'not_assessed'
+    ? (HEALTH_UI[outcomeHealth.outcome_health] ?? null) : null;
+  const assessedOkrs = outcomeHealth?.assessed_okrs ?? 0;
 
   // ── Chain (anchor 14): Theme · Measures · Delivery · Value · Decisions ──
   const elementCards = element.element_type === 'objective'
@@ -320,9 +318,9 @@ export default function StrataStrategyElementDetailPage() {
     { icon: '⚖', label: 'Decisions', emptyText: 'No linked decisions',
       items: themeDecisions.map((d) => ({ name: d.title })) },
   ];
-  const healthVerdict = linkedKpis.length === 0
-    ? 'Not yet measured — no measures are linked to this element.'
-    : `Health is ${healthBand?.label.toLowerCase() ?? 'unresolved'} — derived from ${linkedKpis.length} linked measure${linkedKpis.length === 1 ? '' : 's'}${belowMeasures > 0 ? `, ${belowMeasures} below target` : ''}${elementCards.length > 0 ? `, across ${elementCards.length} delivery card${elementCards.length === 1 ? '' : 's'}` : ''}.`;
+  const healthVerdict = assessedOkrs === 0
+    ? 'Not yet measured — no active OKR with reportable Key Results is linked to this element.'
+    : `Outcome health is ${healthBand?.label.toLowerCase() ?? 'unresolved'} — from ${assessedOkrs} assessed OKR${assessedOkrs === 1 ? '' : 's'} (official KR results)${elementCards.length > 0 ? `, across ${elementCards.length} delivery card${elementCards.length === 1 ? '' : 's'}` : ''}.`;
 
   return (
     <StrataPageShell
@@ -338,6 +336,10 @@ export default function StrataStrategyElementDetailPage() {
           ) : null}
           <Button onClick={() => setAuthoring({ kind: 'edit-element', element })}>Edit</Button>
           <Button onClick={() => setAuthoring({ kind: 'charter', element })}>Charter</Button>
+          {/* STRATA-KPI-024: author a governed Strategic KPI Assignment scoped to this element. */}
+          <Button onClick={() => navigate(`${Routes.strata.kpis()}?tab=assignments&scope=strategic&element=${element.id}&from=${encodeURIComponent(Routes.strata.strategyElement(element.slug ?? ''))}`)} testId="strata-element-create-assignment">
+            Create Strategic Assignment
+          </Button>
           {isTheme ? (
             <Button iconBefore={<Plus size={14} />} onClick={() => setAuthoring({ kind: 'add-objective' })}>
               Add Objective
@@ -440,9 +442,10 @@ export default function StrataStrategyElementDetailPage() {
           // 1 linked KPI reported "2" while rendering a single OKR. Linked KPIs are a
           // different entity and keep their own sub-heading below.
           count={themeOkrs.length}
-          // Theme-owned OKR authoring (CAT-STRATA-THEMEOKR-20260719-001): create an OKR
-          // directly on the Theme — no child Objective/KPI required. Server enforces the gate.
-          actions={isTheme && canAuthor ? (
+          // Objective-owned OKR authoring (CAT-STRATA-EXECMODEL-20260721-001 S16, D-0): an OKR
+          // belongs to a Strategic Objective. Authoring lives on the Objective page; the Theme
+          // page rolls up its Objectives' OKRs. Server (strata_create_okr_v3) enforces the gate.
+          actions={isObjective && canAuthor ? (
             <Button appearance="primary" spacing="compact" iconBefore={<Plus size={14} />}
               onClick={() => setAddOkrOpen(true)} testId="strata-add-okr">
               Add OKR
@@ -459,8 +462,10 @@ export default function StrataStrategyElementDetailPage() {
                   size="compact"
                   header="No OKRs yet"
                   description={isTheme
-                    ? (canAuthor ? 'Add a Theme-owned OKR — no child Objective required.' : "This Theme's OKRs will appear here.")
-                    : 'OKRs linked to this Objective will appear here.'}
+                    ? "OKRs created under this Theme's Strategic Objectives will appear here."
+                    : isObjective
+                      ? (canAuthor ? 'Add the first OKR for this Strategic Objective.' : 'OKRs for this Objective will appear here.')
+                      : 'OKRs will appear here.'}
                 />
               ) : (
                 <div>
@@ -818,7 +823,7 @@ export default function StrataStrategyElementDetailPage() {
           open
           onClose={() => setAddOkrOpen(false)}
           title="Add OKR"
-          description={<>Theme-owned OKR for <strong>{element.name}</strong>. No child Objective or KPI is required.</>}
+          description={<>OKR under Strategic Objective <strong>{element.name}</strong>. Its Theme is derived from the Objective.</>}
           submitLabel="Create OKR"
           testId="strata-add-okr-modal"
           fields={[
@@ -833,8 +838,10 @@ export default function StrataStrategyElementDetailPage() {
           ]}
           initial={{ commitment: 'committed' }}
           onSubmit={async (v) => {
-            await kpiApi.createOkrV2({
-              themeId: element.id,
+            // S16 (D-0): Objective-owned create. Theme is derived+locked server-side from the
+            // objective's parent — the caller passes only the Objective element id.
+            await kpiApi.createOkrV3({
+              objectiveId: element.id,
               name: String(v.name),
               objectiveStatement: String(v.objectiveStatement),
               ownerId: v.ownerId ? String(v.ownerId) : undefined,

@@ -5,7 +5,8 @@
  * strata_calc_kpi_achievement via useKpiAchievement. Unknowns render '—'.
  */
 import React, { useMemo, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import Tabs, { Tab, TabList, TabPanel } from '@atlaskit/tabs';
 import { useQuery, useQueries } from '@tanstack/react-query';
 import {
   Avatar, Button, CatalystTag,
@@ -23,6 +24,7 @@ import {
 } from '@/modules/strata/hooks/useStrata';
 import { OkrRow, StrataBandBar, StrataBandLozenge, StrataChipMenu, StrataPageShell, StrataPanel, T } from '@/modules/strata/components/shared';
 import { StrataFormModal } from '@/modules/strata/components/authoring';
+import { KpiAssignmentsSection, KpiClassificationSection, KpiAlignmentSection, KpiApprovalsSection, useKpiGovAccess, USAGE_CLASSES, AGG_POLICIES } from '@/modules/strata/components/kpiGovernanceSections';
 import { fmtDate, fmtPct, fmtUnit, labelize } from '@/modules/strata/components/format';
 import type { GovernedStatus, StrataBulkUpdateResult, StrataKpi, StrataKpiActual, StrataOkr, StrataSavedView, ThresholdBand } from '@/modules/strata/types';
 import type { StrataProfileRef } from '@/modules/strata/hooks/useStrata';
@@ -753,6 +755,37 @@ export default function StrataKpiLibraryPage() {
 
   const statusLabel = STATUS_FILTER_OPTIONS.find((o) => o.value === statusFilter)?.label ?? 'All statuses';
 
+  // KPIs & OKRs tabbed surface (CAT-STRATA-KPIGOV-ENTRY): Library · OKRs · KPI Assignments ·
+  // Governance (role-gated). Selected tab is deep-linkable via ?tab= so /strata/kpi-governance
+  // redirects here pre-selected.
+  const { canWrite: canGovWrite, canApprove: canGovApprove } = useKpiGovAccess();
+  const govVisible = canGovWrite || canGovApprove;
+  const [tabParams, setTabParams] = useSearchParams();
+  const tabOrder = govVisible ? ['library', 'okrs', 'assignments', 'governance'] : ['library', 'okrs', 'assignments'];
+  const selectedTab = Math.max(0, tabOrder.indexOf(tabParams.get('tab') ?? 'library'));
+  const onTabChange = (index: number) => {
+    const name = tabOrder[index] ?? 'library';
+    setTabParams((prev) => { const next = new URLSearchParams(prev); if (name === 'library') next.delete('tab'); else next.set('tab', name); return next; });
+  };
+  // Deep-link pre-scoping: journeys (KPI details / Strategic Objective) route here with
+  // ?tab=assignments&kpi=…&scope=…&element=…&card=…&objective=… to seed the create form.
+  const assignmentPreset = {
+    kpiId: tabParams.get('kpi') ?? undefined,
+    scopeType: (tabParams.get('scope') as 'strategic' | 'project' | null) ?? undefined,
+    elementId: tabParams.get('element') ?? undefined,
+    projectCardId: tabParams.get('card') ?? undefined,
+    projectObjectiveId: tabParams.get('objective') ?? undefined,
+  };
+  // D2: return-to-origin — journeys deep-link with &from=<origin path>; render a Back control.
+  const assignmentFrom = tabParams.get('from');
+  const originLabel = (p: string | null) => !p ? null
+    : p.includes('/strata/krs/') ? 'Key Result'
+    : p.includes('/strata/okrs/') ? 'OKR'
+    : p.includes('/strata/strategy/elements/') ? 'Strategic Objective'
+    : p.includes('/strata/execution/') ? 'Project Card'
+    : p.includes('/strata/kpis/') ? 'KPI'
+    : 'origin';
+
   return (
     <StrataPageShell testId="strata-kpi-library-chrome">
       {kpisQ.isError ? (
@@ -760,7 +793,15 @@ export default function StrataKpiLibraryPage() {
           <p>{(kpisQ.error as Error)?.message ?? 'Unknown error'}</p>
         </SectionMessage>
       ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+        <Tabs id="strata-kpis-tabs" selected={selectedTab} onChange={onTabChange}>
+          <TabList>
+            <Tab>KPI Library</Tab>
+            <Tab>OKRs</Tab>
+            <Tab>KPI Assignments</Tab>
+            {govVisible ? <Tab>Governance</Tab> : null}
+          </TabList>
+          <TabPanel>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 16, width: '100%' }}>
           {bulkResult ? (
             <SectionMessage
               appearance={bulkResult.failed === 0 ? 'success' : 'warning'}
@@ -920,9 +961,35 @@ export default function StrataKpiLibraryPage() {
               }
             />
           </StrataPanel>
-
-          <OkrPanel />
-        </div>
+            </div>
+          </TabPanel>
+          <TabPanel>
+            <div style={{ width: '100%' }}>
+              <OkrPanel />
+            </div>
+          </TabPanel>
+          <TabPanel>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 16, width: '100%' }}>
+              {assignmentFrom ? (
+                <div>
+                  <Button appearance="subtle" spacing="compact" onClick={() => navigate(assignmentFrom)} testId="strata-assignments-back">
+                    ← Back to {originLabel(assignmentFrom)}
+                  </Button>
+                </div>
+              ) : null}
+              <KpiAssignmentsSection preset={assignmentPreset} />
+            </div>
+          </TabPanel>
+          {govVisible ? (
+            <TabPanel>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 16, width: '100%' }}>
+                <KpiApprovalsSection />
+                <KpiClassificationSection />
+                <KpiAlignmentSection />
+              </div>
+            </TabPanel>
+          ) : null}
+        </Tabs>
       )}
 
       {/* New KPI — draft governed entry; approval is a separate step */}
@@ -939,6 +1006,9 @@ export default function StrataKpiLibraryPage() {
           { key: 'frequency', label: 'Frequency', kind: 'select', options: FREQUENCY_OPTIONS },
           { key: 'entryMethod', label: 'Entry method', kind: 'select', options: ENTRY_METHOD_OPTIONS },
           { key: 'isStrategic', label: 'Strategic KPI', kind: 'checkbox', helper: 'Requires a governed strategy association (cycle/theme/objective/perspective) before approval (STRATA-E2E-010)' },
+          { key: 'usageClass', label: 'Usage class', kind: 'select', options: USAGE_CLASSES.map((u) => ({ value: u, label: labelize(u) })), helper: 'Operating-model classification — required before a KPI can be submitted for approval.' },
+          { key: 'aggregationPolicy', label: 'Aggregation', kind: 'select', options: AGG_POLICIES.map((a) => ({ value: a, label: labelize(a) })) },
+          { key: 'krEligible', label: 'KR-eligible', kind: 'checkbox', helper: 'Valid only for strategic or project-outcome usage classes — enforced server-side.' },
           { key: 'accountableOwnerId', label: 'Accountable owner', kind: 'user' },
           { key: 'dataOwnerId', label: 'Data owner', kind: 'user' },
           { key: 'reporterId', label: 'Reporter', kind: 'user' },
@@ -973,6 +1043,15 @@ export default function StrataKpiLibraryPage() {
               reporterId: v.reporterId ? String(v.reporterId) : undefined,
               validatorId: v.validatorId ? String(v.validatorId) : undefined,
               escalationOwnerId: v.escalationOwnerId ? String(v.escalationOwnerId) : undefined,
+            });
+          }
+          // STRATA-KPI-004: classify at creation so the draft is submit-ready without a detour
+          // to a separate governance surface. Classification is a distinct governed RPC.
+          if (v.usageClass) {
+            await kpiApi.classifyKpi(newKpiId, {
+              usageClass: v.usageClass as never,
+              krEligible: Boolean(v.krEligible),
+              aggregationPolicy: (v.aggregationPolicy as never) || undefined,
             });
           }
           // Full success — clear so the next New KPI opens a fresh create.

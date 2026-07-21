@@ -36,6 +36,7 @@ import {
 } from '@/modules/strata/components/shared';
 import type { StrataChainSegment } from '@/modules/strata/components/shared';
 import { StrataFormModal } from '@/modules/strata/components/authoring';
+import { USAGE_CLASSES, AGG_POLICIES } from '@/modules/strata/components/kpiGovernanceSections';
 import { fmtDate, fmtDateTime, fmtPct, fmtRatioPct, fmtUnit, labelize } from '@/modules/strata/components/format';
 import { StrataGovernedStatusLozenge } from '@/modules/strata/pages/StrataKpiLibraryPage';
 import type {
@@ -532,7 +533,7 @@ export default function StrataKpiDetailPage() {
     | null
   >(null);
   /** Authoring modal — one at a time (edit KPI / new formula / set target / submit actual). */
-  const [authoring, setAuthoring] = useState<null | 'edit-kpi' | 'new-formula' | 'set-target' | 'submit-actual'>(null);
+  const [authoring, setAuthoring] = useState<null | 'edit-kpi' | 'new-formula' | 'set-target' | 'submit-actual' | 'classify'>(null);
 
   const roles = rolesQ.data ?? [];
   const canAuthor = roles.some((r) => (CREATE_ROLES as readonly string[]).includes(r));
@@ -854,6 +855,12 @@ export default function StrataKpiDetailPage() {
               Edit KPI
             </Button>
           ) : null}
+          {/* STRATA-KPI-004: classify in-context — no detour to a separate governance page. */}
+          {canAuthor && (kpi.status === 'draft' || kpi.status === 'pending_approval') ? (
+            <Button appearance="default" onClick={() => setAuthoring('classify')} testId="strata-kpi-classify">
+              Classify
+            </Button>
+          ) : null}
           {canAuthor && kpi.status === 'draft' ? (
             // KO-DEF-001: blocked while prerequisites remain, so a KPI can no longer reach
             // Pending Approval only to fail approval later on the first unmet gate.
@@ -888,6 +895,12 @@ export default function StrataKpiDetailPage() {
           ) : null}
           {canAuthor && kpi.status === 'approved' ? (
             <Button onClick={() => setRetireOpen(true)} testId="strata-kpi-retire">Retire KPI</Button>
+          ) : null}
+          {/* STRATA-KPI-024: strategic assignment authored in-context (pre-scoped to this KPI). */}
+          {canAuthor && kpi.status === 'approved' ? (
+            <Button appearance="default" onClick={() => navigate(`${Routes.strata.kpis()}?tab=assignments&kpi=${kpi.id}`)} testId="strata-kpi-manage-assignment">
+              Manage Strategic Assignment
+            </Button>
           ) : null}
         </>
       }
@@ -1186,21 +1199,14 @@ export default function StrataKpiDetailPage() {
           icon={<Network size={16} />}
           count={kpiElementLinks.length || null}
           testId="strata-kpi-strategy-links"
-          actions={canAuthor ? (
-            <Button
-              appearance="default"
-              spacing="compact"
-              onClick={() => setShowStrategyLinks(true)}
-              testId="strata-kpi-manage-strategy-links"
-            >
-              Manage links
-            </Button>
-          ) : undefined}
+          /* EXECMODEL S17 (phased D-2): direct element↔KPI link authoring removed — measurement is
+             Objective→OKR→KR. This panel is now read-only history; existing links stay visible until
+             Stage 4 rewire / Stage 6 removal. */
         >
           {elementsQ.isLoading || elementKpisQ.isLoading ? (
             <Spinner size="medium" aria-label="Loading strategy links" />
           ) : kpiElementLinks.length === 0 ? (
-            <EmptyState size="compact" header="No strategy links" description="Link this KPI to a strategy theme or objective to roll it into the hierarchy." />
+            <EmptyState size="compact" header="No strategy links" description="This KPI has no legacy strategy links. Measurement now flows Objective → OKR → Key Result." />
           ) : (
             <div>
               {kpiElementLinks.map((l) => {
@@ -1389,6 +1395,27 @@ export default function StrataKpiDetailPage() {
       />
 
       {/* Authoring modals — server RPCs validate (SoD, band rules, closed periods); errors render in-modal */}
+      <StrataFormModal
+        open={authoring === 'classify'}
+        onClose={() => setAuthoring(null)}
+        title="Classify KPI"
+        description="Usage class is required before a KPI can be submitted. KR-eligibility is valid only for strategic or project-outcome classes — the server enforces the rule."
+        submitLabel="Classify"
+        fields={[
+          { key: 'usageClass', label: 'Usage class', kind: 'select', required: true, options: USAGE_CLASSES.map((u) => ({ value: u, label: labelize(u) })) },
+          { key: 'aggregationPolicy', label: 'Aggregation', kind: 'select', options: AGG_POLICIES.map((a) => ({ value: a, label: labelize(a) })) },
+          { key: 'krEligible', label: 'KR-eligible', kind: 'checkbox' },
+        ]}
+        onSubmit={async (v) => {
+          await kpiApi.classifyKpi(kpi.id, {
+            usageClass: v.usageClass as never,
+            krEligible: !!v.krEligible,
+            aggregationPolicy: (v.aggregationPolicy as never) || undefined,
+          });
+          await kpiQ.refetch();
+        }}
+        testId="strata-kpi-classify-modal"
+      />
       <StrataFormModal
         open={authoring === 'edit-kpi'}
         onClose={() => setAuthoring(null)}
