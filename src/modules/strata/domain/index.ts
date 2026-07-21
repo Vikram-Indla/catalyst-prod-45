@@ -467,22 +467,28 @@ export const strategyApi = {
   createElement: (input: {
     cycleId: string; elementType: string; name: string;
     parentId?: string; perspectiveId?: string;
+    /** Required when elementType==='theme': objectives_kpis | okrs (server enforces THEME_MEASUREMENT_METHOD_REQUIRED). */
+    measurementMethod?: string;
   }): Promise<string> =>
-    run(typedRpc('strata_create_strategy_element', {
+    run(rpcAny('strata_create_strategy_element', {
       p_cycle: input.cycleId, p_element_type: input.elementType, p_name: input.name,
       p_parent: input.parentId ?? null, p_perspective: input.perspectiveId ?? null,
-    })),
+      p_measurement_method: input.measurementMethod ?? null,
+    })) as Promise<string>,
   updateElement: (elementId: string, patch: {
     name?: string; description?: string; ownerId?: string; perspectiveId?: string;
     parentId?: string; stage?: string; orderIndex?: number;
     clearParent?: boolean; clearOwner?: boolean;
+    /** Theme only: governed, non-destructive method change (THEME_METHOD_CHANGE_CONFLICT if child records conflict). */
+    measurementMethod?: string;
   }) =>
-    run(typedRpc('strata_update_element', {
+    run(rpcAny('strata_update_element', {
       p_element: elementId, p_name: patch.name ?? null, p_description: patch.description ?? null,
       p_owner: patch.ownerId ?? null, p_perspective: patch.perspectiveId ?? null,
       p_parent: patch.parentId ?? null, p_stage: patch.stage ?? null,
       p_order_index: patch.orderIndex ?? null,
       p_clear_parent: patch.clearParent ?? false, p_clear_owner: patch.clearOwner ?? false,
+      p_measurement_method: patch.measurementMethod ?? null,
     })),
   retireElement: (elementId: string, reason?: string) =>
     run(typedRpc('strata_retire_element', { p_element: elementId, p_reason: reason ?? null })),
@@ -502,6 +508,13 @@ export const strategyApi = {
     })),
   unlinkElementKpi: (elementId: string, kpiId: string) =>
     run(typedRpc('strata_unlink_element_kpi', { p_element: elementId, p_kpi: kpiId })),
+  // Measurement-method conflict resolution (CAT-STRATA-THEMEMETHOD-20260720-001).
+  themeMethodConflicts: (): Promise<Array<{ theme_id: string; objective_count: number; theme_okr_count: number; resolved_at: string | null; theme: { name: string; slug: string | null } | null }>> =>
+    run(supabase.from('strata_theme_method_conflicts' as never)
+      .select('theme_id, objective_count, theme_okr_count, resolved_at, theme:strata_strategy_elements(name, slug)')
+      .is('resolved_at', null) as never),
+  resolveThemeMethodConflict: (themeId: string, method: 'objectives_kpis' | 'okrs', reason: string): Promise<Record<string, unknown>> =>
+    run(rpcAny('strata_resolve_theme_method_conflict', { p_theme: themeId, p_method: method, p_reason: reason })) as Promise<Record<string, unknown>>,
 };
 
 // ── Scorecards ───────────────────────────────────────────────────────────────

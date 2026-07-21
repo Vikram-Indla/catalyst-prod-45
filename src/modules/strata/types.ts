@@ -228,7 +228,26 @@ export interface StrataStrategyElement {
   status: 'draft' | 'proposed' | 'active' | 'on_hold' | 'retired';
   order_index: number;
   map_position: { x: number; y: number } | null;
+  /**
+   * Strategic Theme measurement method (mutually exclusive): a Theme uses EITHER Objectives & KPIs
+   * OR Theme-owned OKRs, never both. NULL for non-theme elements and for unclassified/both-conflict
+   * themes awaiting governed resolution. Authoritative (DB column) — never inferred from child records.
+   * CAT-STRATA-THEMEMETHOD-20260720-001.
+   */
+  measurement_method: StrataMeasurementMethod | null;
 }
+
+export type StrataMeasurementMethod = 'objectives_kpis' | 'okrs';
+
+/** Presentation labels + one-line consequence helper for the two Theme measurement methods. */
+export const MEASUREMENT_METHOD_LABEL: Record<StrataMeasurementMethod, string> = {
+  objectives_kpis: 'Objectives & KPIs',
+  okrs: 'OKRs',
+};
+export const MEASUREMENT_METHOD_HELPER: Record<StrataMeasurementMethod, string> = {
+  objectives_kpis: 'Strategic Objectives with linked KPIs are created beneath this Theme. Theme-owned OKRs are not available.',
+  okrs: 'Theme-owned OKRs and Key Results are created directly on this Theme. Strategic Objectives are not available.',
+};
 
 /**
  * Legacy 'play' rows were consolidated into 'theme' (CAT-STRATA-HIERARCHY-20260706-001)
