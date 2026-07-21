@@ -16,6 +16,7 @@ import {
 import type { SelectOption } from '@/components/ads';
 import { JiraTable } from '@/components/shared/JiraTable';
 import type { Column } from '@/components/shared/JiraTable';
+import Tabs, { Tab, TabList } from '@atlaskit/tabs';
 import { Routes } from '@/lib/routes';
 import {
   ChevronDown, ChevronRight, Gem, GitBranch, Target, X,
@@ -62,7 +63,7 @@ function TypeChip({ type }: { type: string }) {
   return (
     <span
       style={{
-        display: 'inline-flex', alignItems: 'center', gap: 5, flexShrink: 0,
+        display: 'inline-flex', alignItems: 'center', gap: 'var(--ds-space-050)', flexShrink: 0,
         padding: '4px 8px', borderRadius: 4,
         background: meta?.bg ?? T.neutral, color: meta?.fg ?? T.subtle,
         fontSize: 'var(--ds-font-size-050)', fontWeight: 600, whiteSpace: 'nowrap',
@@ -253,16 +254,16 @@ function ReadinessBand({ tiles }: { tiles: ReadinessTile[] }) {
       data-testid="strata-direction-readiness"
       style={{
         display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-        border: `1px solid ${T.border}`, borderRadius: 8, background: T.raised,
+        border: `1px solid ${T.border}`, borderRadius: 8,
         overflow: 'hidden', marginBottom: 'var(--ds-space-200)',
       }}
     >
       {tiles.map((t, i) => {
-        const badge = t.isDraft ? 'DRAFT' : t.gaps > 0 ? `${t.gaps} GAP${t.gaps > 1 ? 'S' : ''}` : null;
+        const badge = t.isDraft ? 'Draft' : t.gaps > 0 ? `${t.gaps} gap${t.gaps > 1 ? 's' : ''}` : null;
         const tone = READINESS_TONE[t.tone];
         return (
           <div key={t.key} style={{ padding: 'var(--ds-space-200)', borderRight: i < tiles.length - 1 ? `1px solid ${T.border}` : undefined, minWidth: 0 }}>
-            <div style={{ fontSize: 'var(--ds-font-size-050)', fontWeight: 600, letterSpacing: '0.04em', color: T.subtlest, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+            <div style={{ fontSize: 'var(--ds-font-size-050)', fontWeight: 600, color: T.subtlest, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
               {t.label}
             </div>
             <div style={{ display: 'flex', alignItems: 'baseline', gap: 'var(--ds-space-100)', margin: 'var(--ds-space-075) 0 var(--ds-space-025)' }}>
@@ -279,22 +280,31 @@ function ReadinessBand({ tiles }: { tiles: ReadinessTile[] }) {
   );
 }
 
-/** Structure / Map / Narrative segmented toggle (anchor 02). Map navigates to the
- *  protected canvas; the component is never imported here — the toggle only routes to it. */
+/** Structure / Narrative view switcher (anchor 02) — canonical @atlaskit/tabs.
+ *  Structure and Narrative are the two in-page views (real tabs); Map is a sibling
+ *  action that NAVIGATES to the protected canvas (never imported here), so it lives
+ *  outside the tab set — button role, not a tab, and not announced in the tablist.
+ *  The @atlaskit TabList owns tab semantics (roles, aria-selected/-controls/-posinset,
+ *  roving tabindex, keyboard); the group carries the accessible name because the ADS
+ *  TabList does not expose aria-label. */
 function ViewToggle({ mode, onStructure, onNarrative, onMap }: {
   mode: 'structure' | 'narrative'; onStructure: () => void; onNarrative: () => void; onMap: () => void;
 }) {
-  const seg = (active: boolean, borderLeft: boolean): React.CSSProperties => ({
-    padding: 'var(--ds-space-075) var(--ds-space-200)', fontSize: 'var(--ds-font-size-100)', cursor: 'pointer',
-    background: active ? 'var(--ds-background-selected)' : 'transparent',
-    color: active ? T.brandText : T.subtle, fontWeight: active ? 600 : 400,
-    border: 'none', borderLeft: borderLeft ? `1px solid ${T.border}` : 'none', font: 'inherit',
-  });
   return (
-    <span role="tablist" aria-label="Strategy Room view" style={{ display: 'inline-flex', border: `1px solid ${T.border}`, borderRadius: 6, overflow: 'hidden' }}>
-      <button type="button" role="tab" aria-selected={mode === 'structure'} style={seg(mode === 'structure', false)} onClick={onStructure}>Structure</button>
-      <button type="button" role="tab" aria-selected={false} style={seg(false, true)} onClick={onMap}>Map</button>
-      <button type="button" role="tab" aria-selected={mode === 'narrative'} style={seg(mode === 'narrative', true)} onClick={onNarrative}>Narrative</button>
+    <span role="group" aria-label="Strategy Room view" style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--ds-space-100)' }}>
+      <Tabs
+        id="strata-strategy-view"
+        testId="strata-strategy-view"
+        selected={mode === 'narrative' ? 1 : 0}
+        onChange={(index) => (index === 1 ? onNarrative() : onStructure())}
+      >
+        <TabList>
+          <Tab>Structure</Tab>
+          <Tab>Narrative</Tab>
+        </TabList>
+      </Tabs>
+      <span aria-hidden style={{ width: 1, height: 20, background: T.border, flexShrink: 0 }} />
+      <Button appearance="subtle" onClick={onMap} aria-label="Open strategy map">Map</Button>
     </span>
   );
 }
@@ -386,22 +396,22 @@ export default function StrataStrategyRoomPage() {
       gaps === 0 ? 'neutral' : danger ? 'danger' : 'warning';
     return [
       {
-        key: 'measures', label: 'OBJECTIVES WITH MEASURES', value: `${withMeasures} / ${total}`,
+        key: 'measures', label: 'Objectives with measures', value: `${withMeasures} / ${total}`,
         gaps: total - withMeasures, tone: gapTone(total - withMeasures),
         caption: total - withMeasures > 0 ? `${total - withMeasures} without a linked KPI` : 'All objectives measured',
       },
       {
-        key: 'owners', label: 'OBJECTIVES WITH OWNERS', value: `${withOwners} / ${total}`,
+        key: 'owners', label: 'Objectives with owners', value: `${withOwners} / ${total}`,
         gaps: total - withOwners, tone: gapTone(total - withOwners),
         caption: total - withOwners > 0 ? `${total - withOwners} with no accountable owner` : 'All objectives owned',
       },
       {
-        key: 'execution', label: 'EXECUTION COVERAGE', value: `${withExecution} / ${total}`,
+        key: 'execution', label: 'Execution coverage', value: `${withExecution} / ${total}`,
         gaps: total - withExecution, tone: gapTone(total - withExecution, true),
         caption: total - withExecution > 0 ? `${total - withExecution} with no linked Project Card` : 'All objectives in delivery',
       },
       {
-        key: 'draft', label: 'DRAFT ELEMENTS', value: String(draftCount),
+        key: 'draft', label: 'Draft elements', value: String(draftCount),
         gaps: draftCount, tone: 'neutral' as const, isDraft: true,
         caption: draftCount > 0 ? 'Not yet promoted into active governance' : 'No pending drafts',
       },
@@ -707,9 +717,11 @@ export default function StrataStrategyRoomPage() {
   const inspectorBody = () => {
     if (!selected) {
       return (
-        <div style={{ padding: 'var(--ds-space-300) var(--ds-space-200)', color: T.subtlest, fontSize: 'var(--ds-font-size-200)', textAlign: 'center' }}>
-          Select an element to inspect its chain and coverage.
-        </div>
+        <EmptyState
+          size="compact"
+          header="No element selected"
+          description="Select an element in the hierarchy to inspect its chain and coverage."
+        />
       );
     }
     const el = selected;
@@ -1014,7 +1026,7 @@ export default function StrataStrategyRoomPage() {
             {!isNarrow ? (
               <aside
                 data-testid="strata-inspector-rail"
-                style={{ position: 'sticky', top: 16, border: `1px solid ${T.border}`, borderRadius: 8, background: T.raised, boxShadow: 'var(--ds-shadow-raised)', overflow: 'hidden', alignSelf: 'start' }}
+                style={{ position: 'sticky', top: 16, borderRadius: 8, background: T.raised, boxShadow: 'var(--ds-shadow-raised)', overflow: 'hidden', alignSelf: 'start' }}
               >
                 {inspectorBody()}
               </aside>
