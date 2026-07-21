@@ -1,7 +1,11 @@
 # DECISIONS — CAT-STRATA-STRATEGY-ADS-20260720-001
 
-## D1 — Lozenge casing (DI-02) — **OPEN / BLOCKING WP-H**
-**Conflict (do not self-resolve):**
+## D1 — Lozenge casing (DI-02) — **RESOLVED 2026-07-21: DROPPED (option a)**
+> Vikram ruling 2026-07-21: **ignore DI-02.** Global Atlaskit uppercase (2026-06-09 directive) stands as
+> canonical; the Strategy Room lozenges are left as-is. WP-H is **not** implemented. Selector #2 stays as
+> documented (uppercase by design). Recorded here rather than silently closed.
+
+**Original conflict (for the record):**
 - **Design Intelligence contract** (audit basis, still standing): `SKILL.md:223,293-294,593,675` — status
   lozenges must use `data-cp-lozenge-jira-parity` + sentence case; ALL-CAPS lozenges banned.
 - **Later repository directive** (reverses the above), exact quote + date — `src/index.css:7371-7375`:
@@ -23,18 +27,22 @@
 
 ---
 
-## D2 — DI-04 (dropdown trigger) is DEFERRED — **needs a separate authorization**
-`StrataChipMenu` is shared (`components/shared.tsx:337-383`) → Cycle/Period on all 26 STRATA pages + KPI
-Library/Portfolio/Execution. Per the page-local / zero-regression directive, it is **not** touched here.
-**Decision needed (later, separate feature):** authorize a shared-component trigger remediation with
-cross-page verification, or accept the current trigger. Selector #4 stays RED by design.
+## D2 — DI-04 (dropdown trigger) — **AUTHORIZED 2026-07-21 → DONE (branch `strata/shared-chip-count-ads`)**
+> Vikram authorized the shared-component work 2026-07-21. `StrataChipMenu` trigger (`components/shared.tsx`)
+> now uses the canonical ADS `Button` (component-owned focus/hover/pressed + chevron; `appearance` carries
+> active/open state). Exactly one interactive element (Button); no nested interactive; the ads `Button`
+> wrapper preserves `aria-label`. Shared `DropdownMenu`/ADS wrappers **untouched**. Verified live on Strategy
+> Room + KPI Library (5+3 chip triggers, 0 nested, menu opens + selects). Selector #4 → GREEN.
+> Residual: `aria-haspopup` sits on the ads DropdownMenu wrapper's anchor `<span>` (not the button) — a
+> pre-existing limitation of the shared wrapper, unchanged and out of scope.
 
 ---
 
-## D3 — DI-05 (count badge) is DEFERRED — **needs a separate authorization**
-`StrataPanel` count is shared (`components/shared.tsx:1074-1081`) → ~30 pages / ~40 `count=` sites.
-Not touched here. **Decision needed (later):** authorize a shared-component count-text change with sibling
-verification, or accept the current pill. Selector #5 stays RED by design.
+## D3 — DI-05 (count badge) — **AUTHORIZED 2026-07-21 → DONE**
+> `StrataPanel` count (`components/shared.tsx`) now renders as subdued text (`--ds-text-subtlest`, tabular,
+> no background/radius) instead of a neutral pill. Verified live: Strategy Room "21" + KPI Library "20"/"6"
+> all transparent bg / radius 0. Zero new test failures across the STRATA suite (identical baseline before/after).
+> Selector #5 → GREEN.
 
 ---
 

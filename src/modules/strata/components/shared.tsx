@@ -350,23 +350,22 @@ export function StrataChipMenu({
       testId={testId}
       minWidth={180}
       trigger={({ isSelected }) => {
+        // Canonical ADS trigger: @atlaskit/button owns focus/hover/pressed/keyboard;
+        // appearance carries the active/open state (default = highlighted, subtle = idle)
+        // since the ads Button wrapper exposes no isSelected. Exactly one interactive
+        // element — the Button; the ads DropdownMenu wrapper's anchor <span> holds the
+        // popup wiring (aria-haspopup/onClick) and is not itself focusable.
         const highlighted = active || isSelected;
         return (
-          <button
-            type="button"
+          <Button
+            appearance={highlighted ? 'default' : 'subtle'}
+            spacing="compact"
+            iconAfter={<ChevronDown size={12} />}
             aria-label={ariaLabel}
-            style={{
-              display: 'inline-flex', alignItems: 'center', gap: 8, height: 28, padding: '0 12px',
-              borderRadius: 6, cursor: 'pointer', whiteSpace: 'nowrap', font: 'inherit',
-              border: `1px solid ${highlighted ? 'var(--ds-border-focused)' : T.border}`,
-              background: highlighted ? T.selected : T.raised,
-              fontSize: 'var(--ds-font-size-100)', color: T.subtle,
-            }}
           >
-            {label}
-            <strong style={{ color: T.text, fontWeight: 600 }}>{value}</strong>
-            <ChevronDown size={12} />
-          </button>
+            {label ? <span style={{ color: T.subtle, fontWeight: 400, marginRight: 4 }}>{label}</span> : null}
+            <span style={{ color: T.text, fontWeight: 600 }}>{value}</span>
+          </Button>
         );
       }}
       groups={[{
@@ -1072,9 +1071,10 @@ export function StrataPanel({
         {icon ? <span aria-hidden style={{ display: 'inline-flex', color: T.subtle }}>{icon}</span> : null}
         <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: T.text }}>{title}</span>
         {count != null ? (
+          // DI-05: subdued count text, not a status-like pill (no background/radius).
           <span style={{
-            fontSize: 'var(--ds-font-size-050)', fontWeight: 600, color: T.subtle,
-            background: T.neutral, borderRadius: 10, padding: '0 8px', fontVariantNumeric: 'tabular-nums',
+            fontSize: 'var(--ds-font-size-200)', fontWeight: 400, color: T.subtlest,
+            fontVariantNumeric: 'tabular-nums',
           }}>
             {count}
           </span>
