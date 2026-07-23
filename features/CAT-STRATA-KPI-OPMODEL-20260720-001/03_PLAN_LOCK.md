@@ -1,6 +1,6 @@
 # PLAN LOCK — CAT-STRATA-KPI-OPMODEL-20260720-001
 
-> **STATUS: PENDING APPROVAL. No code until this is approved AND the §Decisions rulings are given.**
+> **STATUS: APPROVED.** Original S0–S3 rulings approved 2026-07-20. Closure amendment S19 approved by J on 2026-07-22 via “lets proceed to closure, finish all the pending items.”
 > Baseline: `main` @ `09444187f` (== `origin/main`). Two sibling worktrees untouched.
 
 ## Objective
@@ -59,3 +59,22 @@ DB constraint + RLS + maker-checker + concurrency tests · calc/aggregation unit
 
 ## Non-scope
 Staging/prod changes; the two sibling worktrees; new `:id` routes (slug contract); any KPI registry other than `strata_kpis`; arbitrary user-defined KR weighting.
+
+## Closure amendment — S19 project KPI trace truth (approved 2026-07-22)
+
+Objective: replace the misleading read contract of `strata_project_kpi_trace` through a forward-only migration. The function must return the evidenced governed chain from Project Card through Project Objective alignment, Project KPI Assignment, typed contribution mapping, Strategic KPI Assignment, and linked KR/OKR.
+
+Rules:
+- Never edit the historical S9 migration.
+- `aggregates=true` only when the mapping is `direct_component`, approved, effective at the function's as-of timestamp, and not expired.
+- Driver, supporting-evidence, none, draft, submitted, rejected, retired, superseded, future and expired mappings remain traceable but never aggregate.
+- Link KRs only through `strata_key_results.strategic_assignment_id = parent_assignment_id`.
+- Registry/KPI-definition reuse alone never creates contribution or aggregation.
+- Preserve every historical row, snapshot, calculation and report; S19 changes a read function only.
+
+Authorized files:
+- one new `supabase/migrations/*_strata_s19_project_kpi_trace_truth.sql` migration;
+- `src/modules/strata/__tests__/kpi-opmodel-s9s11-lifecycle-downstream.guard.test.ts`;
+- this feature's evidence, decision, loop and session artifacts.
+
+Validation: focused guard tests, `git diff --check`, ADS gates, and production build. Staging application requires project-ref assertion and 1:1 migration-ledger verification. Command Center consumption remains a separately reviewed follow-on slice after the RPC response is proven.

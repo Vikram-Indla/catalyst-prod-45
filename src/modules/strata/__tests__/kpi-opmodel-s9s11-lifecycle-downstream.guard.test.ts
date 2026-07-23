@@ -45,7 +45,20 @@ describe('KPI-OPMODEL S9 — lifecycle completeness', () => {
   it('041/042/044: downstream read functions present', () => {
     expect(latestBody('strata_element_okr_readiness')).toContain('reportable');
     expect(latestBody('strata_element_health_from_kr')).toContain('outcome_health');
-    expect(latestBody('strata_project_kpi_trace')).toContain('project_kpi_assignments');
+    const trace = latestBody('strata_project_kpi_trace');
+    expect(trace).toContain('project_kpi_assignments');
+    expect(trace).toMatch(/kr\.strategic_assignment_id\s*=\s*cm\.parent_assignment_id/);
+    // S21: aggregates eligibility is the single-source helper, not inline in the trace.
+    expect(trace).toMatch(/'aggregates', public\.strata_contribution_aggregates\(cm\.id/);
+    expect(trace).toMatch(/'registry_reuse_creates_rollup',\s*false/);
+    expect(trace).not.toContain('ProjectObjective->StrategicObjective->KR->Strategic KPI Assignment');
+    // the helper enforces approved+effective direct_component AND the full governed chain (S21).
+    const elig = latestBody('strata_contribution_aggregates');
+    expect(elig).toContain("cm.relationship_type = 'direct_component'");
+    expect(elig).toContain("cm.status = 'approved'");
+    expect(elig).toMatch(/COALESCE\(cm\.effective_from, p_as_of\) <= p_as_of/);
+    expect(elig).toMatch(/al\.strategic_objective_id = parent\.element_id/);
+    expect(elig).not.toMatch(/relationship_type IN \([^)]*driver/);
   });
 });
 

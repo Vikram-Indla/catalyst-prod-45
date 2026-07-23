@@ -94,10 +94,20 @@ export default function StrataOkrDetailPage() {
       headerActions={
         <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
           {/* STRATA-KPI-024: author a Strategic KPI Assignment scoped to this OKR's owning objective. */}
-          {canAuthor && okr.theme_id ? (
-            <Button appearance="default" onClick={() => navigate(`${Routes.strata.kpis()}?tab=assignments&scope=strategic&element=${okr.theme_id}&from=${encodeURIComponent(Routes.strata.okr(slug!))}`)} testId="strata-okr-create-assignment">
+          {canAuthor && okr.objective_id ? (
+            <Button appearance="default" onClick={() => navigate(`${Routes.strata.kpis()}?tab=assignments&scope=strategic&element=${okr.objective_id}&objective=${okr.objective_id}&okr=${okr.id}&from=${encodeURIComponent(Routes.strata.okr(slug!))}`)} testId="strata-okr-create-assignment">
               Create Strategic Assignment
             </Button>
+          ) : null}
+          {canAuthor && !okr.objective_id ? (
+            <Button appearance="default" isDisabled testId="strata-okr-create-assignment-blocked">
+              Assignment unavailable · no Strategic Objective
+            </Button>
+          ) : null}
+          {/* CAT-STRATA-EXECMODEL: OKRs predating Objective-ownership are grandfathered historical
+              records (Theme-owned, no objective_id) — clearly flagged, never silently re-parented. */}
+          {okr.objective_id == null && okr.theme_id != null ? (
+            <Lozenge appearance="moved">Grandfathered · Theme-owned</Lozenge>
           ) : null}
           {status ? <Lozenge appearance={status.appearance}>{status.label}</Lozenge> : null}
         </span>

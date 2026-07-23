@@ -127,7 +127,7 @@ describe('RD-DEF-011 — modal recovery after a rejected submission', () => {
         onSubmit={async () => { throw new Error(refusal); }}
       />,
     );
-    await user.type(screen.getByLabelText('Value'), 'SNAP-1');
+    await user.type(screen.getByLabelText('Value (required)'), 'SNAP-1');
     await user.click(screen.getByRole('button', { name: 'Create' }));
     // The database's own wording is preserved on screen…
     await waitFor(() => expect(screen.getByText(refusal)).toBeTruthy());
@@ -143,7 +143,7 @@ describe('RD-DEF-011 — modal recovery after a rejected submission', () => {
     render(
       <StrataFormModal open onClose={onClose} title="Edit" fields={fields} onSubmit={async () => {}} />,
     );
-    await user.type(screen.getByLabelText('Value'), 'draft');
+    await user.type(screen.getByLabelText('Value (required)'), 'draft');
     await user.click(screen.getByRole('button', { name: 'Cancel' }));
     expect(screen.getByText('Discard unsaved changes?')).toBeTruthy();
     expect(onClose).not.toHaveBeenCalled();
@@ -158,7 +158,7 @@ describe('RD-DEF-011 — modal recovery after a rejected submission', () => {
         onSubmit={async () => { throw new Error('rejected by the database'); }}
       />,
     );
-    await user.type(screen.getByLabelText('Value'), 'x');
+    await user.type(screen.getByLabelText('Value (required)'), 'x');
     await user.click(screen.getByRole('button', { name: 'Create' }));
     await waitFor(() => expect(screen.getByText('rejected by the database')).toBeTruthy());
     await user.keyboard('{Escape}');
@@ -176,13 +176,13 @@ describe('RD-DEF-011 — modal recovery after a rejected submission', () => {
       />
     );
     const { rerender } = render(ui(true));
-    await user.type(screen.getByLabelText('Value'), 'x');
+    await user.type(screen.getByLabelText('Value (required)'), 'x');
     await user.click(screen.getByRole('button', { name: 'Create' }));
     await waitFor(() => expect(screen.getByText(refusal)).toBeTruthy());
     rerender(ui(false));
     rerender(ui(true));
     expect(screen.queryByText(refusal)).toBeNull();
-    expect((screen.getByLabelText('Value') as HTMLInputElement).value).toBe('');
+    expect((screen.getByLabelText('Value (required)') as HTMLInputElement).value).toBe('');
   });
 });
 

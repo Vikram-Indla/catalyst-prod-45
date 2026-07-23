@@ -15,7 +15,7 @@ import { useProfileNames, useStrataRoles } from '@/modules/strata/hooks/useStrat
 import {
   KrObservations, KrReportabilityBadge, StrataPageShell, StrataPanel, T,
 } from '@/modules/strata/components/shared';
-import { fmtUnit, labelize } from '@/modules/strata/components/format';
+import { fmtDate, fmtUnit, labelize } from '@/modules/strata/components/format';
 
 const UPDATE_ROLES = ['kr_reporter', 'kr_owner', 'okr_owner', 'data_steward', 'strategy_office', 'strata_admin'];
 const VALIDATE_ROLES = ['data_steward', 'strategy_office', 'okr_approver', 'strata_admin'];
@@ -117,7 +117,8 @@ export default function StrataKrDetailPage() {
       </StrataPanel>
 
       <StrataPanel title="Strategic KPI Assignment">
-        <KrAssignmentLink kr={kr} okrThemeId={okr?.theme_id} fromPath={Routes.strata.kr(slug!)} canUpdate={canUpdate} onChanged={() => krQ.refetch()} />
+        <KrAssignmentLink kr={kr} okrId={okr?.id} objectiveId={okr?.objective_id} unit={kr.unit} nameOf={nameOf}
+          fromPath={Routes.strata.kr(slug!)} canUpdate={canUpdate} onChanged={() => krQ.refetch()} />
       </StrataPanel>
 
       <div style={{ marginTop: 8 }}>
@@ -131,9 +132,10 @@ export default function StrataKrDetailPage() {
 }
 
 // ── STRATA-KPI-014: link a KR to an approved, KR-eligible Strategic KPI Assignment ──
-function KrAssignmentLink({ kr, okrThemeId, fromPath, canUpdate, onChanged }: {
+function KrAssignmentLink({ kr, okrId, objectiveId, unit, nameOf, fromPath, canUpdate, onChanged }: {
   kr: { id: string; strategic_assignment_id?: string | null };
-  okrThemeId?: string | null; fromPath?: string;
+  okrId?: string | null; objectiveId?: string | null; unit?: string | null;
+  nameOf: (id: string | null | undefined) => string; fromPath?: string;
   canUpdate: boolean; onChanged: () => void;
 }) {
   const navigate = useNavigate();
@@ -152,6 +154,9 @@ function KrAssignmentLink({ kr, okrThemeId, fromPath, canUpdate, onChanged }: {
           Officially backed by <Lozenge appearance="success">{cur?.assignment_key ?? String(kr.strategic_assignment_id).slice(0, 8)}</Lozenge>
           {' '}— official actuals come from this assignment's observations; a manual value cannot override them.
         </div>
+        {/* STRATA-KPI-014: surface the resolved Assignment observation the official value comes from,
+            with full maker-checker provenance, so executive-facing provenance is unambiguous. */}
+        <ResolvedAssignmentObservation krId={kr.id} assignmentId={kr.strategic_assignment_id} unit={unit} nameOf={nameOf} />
         {error ? <div style={{ color: 'var(--ds-text-danger)', fontSize: 'var(--ds-font-size-075)' }}>{error}</div> : null}
         {canUpdate ? <Button spacing="compact" appearance="subtle" isDisabled={busy} testId="kr-unlink" onClick={() => run(() => kpiApi.unlinkKrAssignment(kr.id))}>Unlink</Button> : null}
       </div>
@@ -174,12 +179,79 @@ function KrAssignmentLink({ kr, okrThemeId, fromPath, canUpdate, onChanged }: {
           <Button appearance="primary" spacing="compact" isDisabled={busy || !pick} testId="kr-link"
             onClick={() => run(async () => { await kpiApi.linkKrAssignment(kr.id, pick!); setPick(null); })}>Link assignment</Button>
           {/* STRATA-KPI-014: when no eligible assignment exists yet, route to create one (KR-eligible, approved). */}
-          {eligible.length === 0 ? (
+          {eligible.length === 0 && objectiveId ? (
             <Button appearance="subtle" spacing="compact" testId="kr-create-assignment"
-              onClick={() => navigate(`${Routes.strata.kpis()}?tab=assignments&scope=strategic${okrThemeId ? `&element=${okrThemeId}` : ''}${fromPath ? `&from=${encodeURIComponent(fromPath)}` : ''}`)}>Create eligible assignment →</Button>
+              onClick={() => navigate(`${Routes.strata.kpis()}?tab=assignments&scope=strategic&element=${objectiveId}&objective=${objectiveId}${okrId ? `&okr=${okrId}` : ''}&kr=${kr.id}${fromPath ? `&from=${encodeURIComponent(fromPath)}` : ''}`)}>Create eligible assignment →</Button>
+          ) : null}
+          {eligible.length === 0 && !objectiveId ? (
+            <EmptyState size="compact" header="Assignment unavailable"
+              description="This Key Result's OKR has no Strategic Objective. Assign the parked OKR to an Objective before creating an official KPI Assignment." />
           ) : null}
         </div>
       ) : <EmptyState size="compact" header="Linking" description="You do not have permission to link a KR to an assignment." />}
+    </div>
+  );
+}
+
+const OBS_STATUS_LOZENGE: Record<string, { label: string; appearance: React.ComponentProps<typeof Lozenge>['appearance'] }> = {
+  validated: { label: 'Validated', appearance: 'success' },
+  accepted_with_exception: { label: 'Accepted w/ exception', appearance: 'moved' },
+  pending: { label: 'Pending validation', appearance: 'inprogress' },
+  rejected: { label: 'Rejected', appearance: 'removed' },
+  reversed: { label: 'Reversed', appearance: 'default' },
+};
+
+// STRATA-KPI-014: the resolved Assignment observation + its maker-checker provenance. The official
+// KR value comes from THIS observation (the one strata_kr_reportability resolves to); the append-only
+// ledger below shows every observation with submitter/validator so provenance is never ambiguous.
+function ResolvedAssignmentObservation({ krId, assignmentId, unit, nameOf }: {
+  krId: string; assignmentId: string; unit?: string | null;
+  nameOf: (id: string | null | undefined) => string;
+}) {
+  const obsQ = useQuery({ queryKey: ['strata', 'assignment-observations', assignmentId], queryFn: () => kpiApi.assignmentObservations(assignmentId), staleTime: 0 });
+  const repQ = useQuery({ queryKey: ['strata', 'kr-reportability', krId], queryFn: () => kpiApi.krReportability(krId), staleTime: 0 });
+  const obs = (obsQ.data ?? []) as Array<Record<string, unknown>>;
+  const resolvedId = repQ.data?.observation_id ?? null;
+  const str = (v: unknown) => (v == null ? null : String(v));
+
+  if (obsQ.isLoading) return <div style={{ marginBottom: 8 }}><Spinner size="small" aria-label="Loading assignment observations" /></div>;
+  if (obs.length === 0) {
+    return (
+      <div style={{ marginBottom: 8 }}>
+        <EmptyState size="compact" header="No assignment observations yet"
+          description="The official value resolves once a submitted observation on this assignment is validated (maker-checker)." />
+      </div>
+    );
+  }
+  const line = (o: Record<string, unknown>) => {
+    const st = OBS_STATUS_LOZENGE[str(o.status) ?? ''] ?? { label: labelize(str(o.status) ?? ''), appearance: 'default' as const };
+    const isResolved = resolvedId != null && str(o.id) === resolvedId;
+    return (
+      <div key={str(o.id)} data-testid={isResolved ? 'kr-assignment-resolved-observation' : undefined}
+        style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap', fontSize: 'var(--ds-font-size-100)', padding: '4px 0' }}>
+        <strong style={{ color: T.text, fontVariantNumeric: 'tabular-nums' }}>{fmtUnit(Number(o.value), unit)}</strong>
+        <Lozenge appearance={st.appearance}>{st.label}</Lozenge>
+        {isResolved ? <Lozenge appearance="success">Official source</Lozenge> : null}
+        <span style={{ color: T.subtle }}>as of {fmtDate(str(o.as_of_date))}</span>
+        <span style={{ color: T.subtlest }}>
+          submitted by {nameOf(str(o.submitted_by))}
+          {o.validated_by ? ` · validated by ${nameOf(str(o.validated_by))}` : ' · not yet validated'}
+        </span>
+      </div>
+    );
+  };
+  // Resolved observation first (official source), then the rest of the ledger.
+  const resolved = obs.find((o) => resolvedId != null && str(o.id) === resolvedId);
+  const rest = obs.filter((o) => !(resolvedId != null && str(o.id) === resolvedId));
+  return (
+    <div style={{ display: 'grid', gap: 4, marginBottom: 8 }} data-testid="kr-assignment-observations">
+      <div style={{ fontSize: 'var(--ds-font-size-100)', color: T.subtle }}>Resolved assignment observation & provenance</div>
+      {resolved ? line(resolved) : (
+        <div style={{ fontSize: 'var(--ds-font-size-100)', color: T.subtlest, padding: '4px 8px' }}>
+          No validated observation resolves for the current period yet — official value is pending.
+        </div>
+      )}
+      {rest.map(line)}
     </div>
   );
 }

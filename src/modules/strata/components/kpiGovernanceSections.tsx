@@ -40,7 +40,7 @@ const STATUS_LOZENGE: Record<string, { label: string; appearance: React.Componen
   retired: { label: 'Retired', appearance: 'moved' },
 };
 
-export type Assignment = { id: string; assignment_key?: string | null; kpi_id: string; scope_type: string; status: string; target?: number | null; lock_version?: number; kr_eligible?: boolean; project_card_id?: string | null; element_id?: string | null };
+export type Assignment = { id: string; assignment_key?: string | null; kpi_id: string; scope_type: string; status: string; target?: number | null; lock_version?: number; kr_eligible?: boolean; project_card_id?: string | null; element_id?: string | null; owner_id?: string | null; start_period_id?: string | null; end_period_id?: string | null; target_band_min?: number | null; target_band_max?: number | null };
 
 /** Optional pre-scoping so a journey (KPI details / Strategic Objective / Project Card) can
  *  mount the assignment authoring already targeted, hiding the scope pickers it owns. */
@@ -87,6 +87,7 @@ export function KpiAssignmentsSection({ preset }: { preset?: AssignmentPreset } 
   const [error, setError] = useState<string | null>(null);
   const [selected, setSelected] = useState<Assignment | null>(null);
   const [rollup, setRollup] = useState<Record<string, unknown> | null>(null);
+  const [repairing, setRepairing] = useState<Assignment | null>(null); // S18 repair verb (draft/rejected)
 
   // create-form state (seeded from preset when a journey mounts this pre-scoped)
   const [kpiId, setKpiId] = useState<string | null>(preset?.kpiId ?? null);
@@ -105,7 +106,10 @@ export function KpiAssignmentsSection({ preset }: { preset?: AssignmentPreset } 
   const [startPeriodId, setStartPeriodId] = useState<string | null>(null);
   const [endPeriodId, setEndPeriodId] = useState<string | null>(null);
   const elemQ = useQuery({ queryKey: ['strata', 'elements'], queryFn: () => kpiApi.strategyElements(), staleTime: 30_000 });
-  const cardQ = useQuery({ queryKey: ['strata', 'project-cards'], queryFn: () => kpiApi.projectCards(), staleTime: 30_000 });
+  // This query intentionally returns only {id,name} option rows. It must not share the
+  // Execution cache key: StrataExecutionPage requires full cards (including theme_id),
+  // and reusing these slim rows makes every in-cycle card look unowned and disappear.
+  const cardQ = useQuery({ queryKey: ['strata', 'kpi-governance', 'project-card-options'], queryFn: () => kpiApi.projectCards(), staleTime: 30_000 });
   const strategicElements = (elemQ.data ?? []).filter((e) => e.context === 'theme');
   const projectObjectives = (elemQ.data ?? []).filter((e) => e.context === 'project');
   const projectCards = cardQ.data ?? [];
@@ -161,6 +165,11 @@ export function KpiAssignmentsSection({ preset }: { preset?: AssignmentPreset } 
               {canWrite && (a.status === 'draft' || a.status === 'rejected') ? (
                 <Button spacing="compact" appearance="primary" isDisabled={busy} testId={`assign-submit-${a.id}`}
                   onClick={() => run(() => kpiApi.submitKpiAssignment(a.id, a.lock_version))}>Submit</Button>
+              ) : null}
+              {/* S18: repair a stuck draft/rejected assignment (owner/period/target) before submit. */}
+              {canWrite && (a.status === 'draft' || a.status === 'rejected') ? (
+                <Button spacing="compact" isDisabled={busy} testId={`assign-repair-${a.id}`}
+                  onClick={() => setRepairing(a)}>Repair</Button>
               ) : null}
               {canApprove && a.status === 'submitted' ? (
                 <>
@@ -305,7 +314,90 @@ export function KpiAssignmentsSection({ preset }: { preset?: AssignmentPreset } 
           rollup={rollup} onRollup={async () => { setRollup(await kpiApi.assignmentRollup(selected.id) as Record<string, unknown>); }}
           onClose={() => { setSelected(null); setRollup(null); }} />
       ) : null}
+
+      {repairing ? (
+        <AssignmentRepairForm assignment={repairing} kpiKrEligible={!!kpis.find((k) => k.id === repairing.kpi_id)?.kr_eligible}
+          ownerOpts={ownerOpts} periodOpts={periodOpts} periods={periods}
+          onClose={() => setRepairing(null)}
+          onDone={() => { setRepairing(null); assignQ.refetch(); }} />
+      ) : null}
     </>
+  );
+}
+
+// S18 repair form — edit a draft/rejected assignment's owner/period/target(band)/kr-eligibility.
+// Identity (KPI/scope/element) is fixed; server enforces draft/rejected-only + lock-version + kr-narrow.
+function AssignmentRepairForm({ assignment, kpiKrEligible, ownerOpts, periodOpts, periods, onClose, onDone }: {
+  assignment: Assignment; kpiKrEligible: boolean;
+  ownerOpts: Array<{ value: string; label: string }>;
+  periodOpts: Array<{ value: string; label: string }>;
+  periods: Array<{ id: string; name: string }>;
+  onClose: () => void; onDone: () => void;
+}) {
+  const isBand = assignment.target_band_min != null || assignment.target_band_max != null;
+  const [ownerId, setOwnerId] = useState<string | null>(assignment.owner_id ?? null);
+  const [startPeriodId, setStartPeriodId] = useState<string | null>(assignment.start_period_id ?? null);
+  const [endPeriodId, setEndPeriodId] = useState<string | null>(assignment.end_period_id ?? null);
+  const [target, setTarget] = useState(assignment.target != null ? String(assignment.target) : '');
+  const [bandMin, setBandMin] = useState(assignment.target_band_min != null ? String(assignment.target_band_min) : '');
+  const [bandMax, setBandMax] = useState(assignment.target_band_max != null ? String(assignment.target_band_max) : '');
+  const [krEligible, setKrEligible] = useState(!!assignment.kr_eligible);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const targetReady = isBand ? (bandMin !== '' && bandMax !== '') : target !== '';
+  const ready = !!ownerId && !!startPeriodId && targetReady;
+
+  const save = async () => {
+    setBusy(true); setError(null);
+    try {
+      await kpiApi.updateKpiAssignment({
+        id: assignment.id, lockVersion: assignment.lock_version,
+        ownerId: ownerId ?? undefined,
+        target: !isBand && target ? Number(target) : undefined,
+        targetBandMin: isBand && bandMin ? Number(bandMin) : undefined,
+        targetBandMax: isBand && bandMax ? Number(bandMax) : undefined,
+        startPeriodId: startPeriodId ?? undefined, endPeriodId: endPeriodId ?? undefined,
+        krEligible: kpiKrEligible ? krEligible : false,
+      });
+      onDone();
+    } catch (e) { setError(e instanceof Error ? e.message : String(e)); }
+    finally { setBusy(false); }
+  };
+
+  return (
+    <StrataPanel title={`Repair assignment — ${assignment.assignment_key ?? assignment.id.slice(0, 8)}`} testId="assign-repair-form"
+      actions={<Button spacing="compact" appearance="subtle" onClick={onClose}>Close</Button>}>
+      {error ? <SectionMessage appearance="error" title="Repair failed"><p style={{ margin: 0, whiteSpace: 'pre-wrap' }}>{error}</p></SectionMessage> : null}
+      <Inline space="space.100" alignBlock="end" shouldWrap>
+        <LField label="Owner">
+          <Select options={ownerOpts} value={ownerId ? { value: ownerId, label: ownerOpts.find((o) => o.value === ownerId)?.label ?? ownerId } : null}
+            onChange={(o) => setOwnerId((o as { value?: string } | null)?.value ?? null)} usePortal aria-label="Owner" />
+        </LField>
+        <LField label="Start period">
+          <Select options={periodOpts} value={startPeriodId ? { value: startPeriodId, label: periods.find((p) => p.id === startPeriodId)?.name ?? startPeriodId } : null}
+            onChange={(o) => setStartPeriodId((o as { value?: string } | null)?.value ?? null)} usePortal aria-label="Start period" />
+        </LField>
+        <LField label="End period (optional)">
+          <Select options={periodOpts} value={endPeriodId ? { value: endPeriodId, label: periods.find((p) => p.id === endPeriodId)?.name ?? endPeriodId } : null}
+            onChange={(o) => setEndPeriodId((o as { value?: string } | null)?.value ?? null)} usePortal aria-label="End period" />
+        </LField>
+        {isBand ? (
+          <>
+            <LField label="Target band min"><Textfield value={bandMin} onChange={(e) => setBandMin((e.target as HTMLInputElement).value)} type="number" aria-label="Target band min" /></LField>
+            <LField label="Target band max"><Textfield value={bandMax} onChange={(e) => setBandMax((e.target as HTMLInputElement).value)} type="number" aria-label="Target band max" /></LField>
+          </>
+        ) : (
+          <LField label="Target"><Textfield value={target} onChange={(e) => setTarget((e.target as HTMLInputElement).value)} type="number" aria-label="Target" /></LField>
+        )}
+        <Checkbox isChecked={krEligible && kpiKrEligible} isDisabled={!kpiKrEligible} onChange={(e) => setKrEligible((e.target as HTMLInputElement).checked)} label="KR-eligible" />
+        <Button appearance="primary" isDisabled={busy || !ready} testId="assign-repair-save" onClick={save}>Save repair</Button>
+      </Inline>
+      <Box xcss={noteXcss}>
+        <Text size="small" color="color.text.subtlest">
+          Repair fills the owner, period and target a stuck draft was missing so it can be submitted. Identity (KPI, scope, element) is fixed; approved assignments are versioned, not edited.
+        </Text>
+      </Box>
+    </StrataPanel>
   );
 }
 
@@ -609,6 +701,10 @@ export function KpiAlignmentSection({ presetProjectObjectiveId }: { presetProjec
   const elements = elemQ.data ?? [];
   const projectObjs = elements.filter((e) => e.context === 'project');
   const strategicObjs = elements.filter((e) => e.context === 'theme');
+  // Display-only name map across ALL statuses so an alignment to a since-retired objective resolves
+  // to its name instead of a raw UUID prefix (never render a UUID).
+  const elemAllQ = useQuery({ queryKey: ['strata', 'elements-all'], queryFn: () => kpiApi.strategyElementsAll(), staleTime: 30_000 });
+  const elementNameAll = (id: string) => elemAllQ.data?.find((e) => e.id === id)?.name ?? id.slice(0, 8);
   const [projId, setProjId] = useState<string | null>(presetProjectObjectiveId ?? null);
   const [stratId, setStratId] = useState<string | null>(null);
   const [alignType, setAlignType] = useState<'primary' | 'secondary'>('primary');
@@ -662,7 +758,7 @@ export function KpiAlignmentSection({ presetProjectObjectiveId }: { presetProjec
             rows={alignments.map((al) => ({
               key: al.id, testId: `align-${al.id}`,
               cells: [
-                { key: 'o', content: <Text>{strategicObjs.find((e) => e.id === al.strategic_objective_id)?.name ?? al.strategic_objective_id.slice(0, 8)}</Text> },
+                { key: 'o', content: <Text>{elementNameAll(al.strategic_objective_id)}</Text> },
                 { key: 't', content: <Lozenge appearance={al.alignment_type === 'primary' ? 'inprogress' : 'default'}>{labelize(al.alignment_type)}</Lozenge> },
                 { key: 's', content: (
                   <Inline space="space.050" alignBlock="center">

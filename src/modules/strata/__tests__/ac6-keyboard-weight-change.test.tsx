@@ -14,6 +14,7 @@
  */
 import { describe, expect, it, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
 import userEvent from '@testing-library/user-event';
 
 // vi.mock factories are hoisted above module scope, so everything they touch
@@ -133,7 +134,7 @@ describe('§20 AC-6 — keyboard-only weight-change', () => {
 
   it('completes the whole verb with NO mouse: Tab to Edit weights → Enter → type → Tab to Save → Enter → write fires', async () => {
     const user = userEvent.setup();
-    render(<ScorecardModelsSection onError={() => {}} />);
+    render(<MemoryRouter><ScorecardModelsSection onError={() => {}} /></MemoryRouter>);
 
     // 1. reach "Edit weights" by Tab alone
     expect(await tabUntilFocused(user, EDIT)).toBeGreaterThan(0);
@@ -171,7 +172,7 @@ describe('§20 AC-6 — keyboard-only weight-change', () => {
 
   it('honours the blocking integrity rule from the keyboard too — Save is not committable at != 100', async () => {
     const user = userEvent.setup();
-    render(<ScorecardModelsSection onError={() => {}} />);
+    render(<MemoryRouter><ScorecardModelsSection onError={() => {}} /></MemoryRouter>);
 
     await tabUntilFocused(user, EDIT);
     await user.keyboard('{Enter}');

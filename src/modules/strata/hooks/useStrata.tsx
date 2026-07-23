@@ -541,6 +541,13 @@ export const useInitiatives = () =>
   useQuery({ queryKey: ['strata', 'initiatives'], queryFn: executionApi.initiatives, staleTime: STALE });
 export const useProjectCards = () =>
   useQuery({ queryKey: ['strata', 'project-cards'], queryFn: executionApi.projectCards, staleTime: STALE });
+// S20/S21 Executive Reporting read model — ONE set-based governed rollup (no per-card N+1).
+export const useExecutiveGovernedRollup = (cycleId?: string | null) =>
+  useQuery({
+    queryKey: ['strata', 'executive-governed-rollup', cycleId ?? null],
+    queryFn: () => governanceApi.executiveGovernedRollup(cycleId),
+    staleTime: STALE,
+  });
 // Initiative drill-down hooks removed with InitiativeDetailModal (REQ-019 —
 // Initiative is a legacy read-only concept; useInitiatives stays for member
 // name resolution in the VMO until legacy memberships retire).

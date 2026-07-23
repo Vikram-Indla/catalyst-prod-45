@@ -272,8 +272,9 @@ function OkrPanel() {
   const rolesQ = useStrataRoles();
   const invalidate = useInvalidateStrata();
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
-  // Theme-owned OKR authoring lives on the Strategy Theme page (CAT-STRATA-THEMEOKR-20260719-001);
-  // this registry is read-only. "Add OKR" routes to Strategy rather than creating here.
+  // Objective-owned OKR authoring lives on the Strategy Objective page (CAT-STRATA-EXECMODEL-20260721-001
+  // S16/D-0 — supersedes the Theme-owned model); this registry is read-only. "Add OKR" routes to
+  // Strategy rather than creating here.
   const navigate = useNavigate();
   const [krOkr, setKrOkr] = useState<StrataOkr | null>(null);
 
@@ -308,7 +309,7 @@ function OkrPanel() {
           onClick={() => navigate(Routes.strata.strategy())}
           testId="strata-new-okr"
         >
-          Add OKR on a Theme
+          Add OKR on an Objective
         </Button>
       ) : undefined}
     >
@@ -336,8 +337,8 @@ function OkrPanel() {
         </div>
       )}
 
-      {/* New OKR authoring moved to the Strategy Theme page (CAT-STRATA-THEMEOKR-20260719-001):
-          a Theme-owned OKR is created directly on its Theme, no child Objective/KPI required. */}
+      {/* New OKR authoring lives on the Strategy Objective page (CAT-STRATA-EXECMODEL-20260721-001 S16/D-0):
+          an OKR is created on its Strategic Objective; the theme is derived + locked from the objective. */}
 
       {/* Add key result — server RPC validates; errors render in-modal.
           KRs are independent contracts — no KPI-backed selection here (invariant 5). */}

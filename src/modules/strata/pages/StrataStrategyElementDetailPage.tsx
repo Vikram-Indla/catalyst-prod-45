@@ -309,7 +309,7 @@ export default function StrataStrategyElementDetailPage() {
   const chainSegments: StrataChainSegment[] = [
     { icon: '↑', label: 'Theme', emptyText: 'Top-level theme',
       items: parent ? [{ name: parent.name, onNav: parent.slug ? () => navigate(Routes.strata.strategyElement(parent.slug!)) : undefined }] : [] },
-    { icon: '◎', label: 'Measures', emptyText: 'No linked measures — add from the Strategy Room row menu',
+    { icon: '◎', label: 'Measures', emptyText: 'No linked measures — an Objective is measured through its approved OKRs and reportable Key Results',
       items: linkedKpis.map(({ kpi }) => ({ name: kpi!.name, onNav: kpi!.slug ? () => navigate(Routes.strata.kpi(kpi!.slug!)) : undefined })) },
     { icon: '▦', label: 'Delivery', emptyText: 'No linked Project Cards',
       items: elementCards.map((c) => ({ name: c.name, onNav: c.slug ? () => navigate(`${Routes.strata.projectCard(c.slug)}${cardCtxSuffix}`) : undefined })) },
@@ -490,7 +490,7 @@ export default function StrataStrategyElementDetailPage() {
                 Linked KPIs
               </div>
               {linkedKpis.length === 0 ? (
-                <EmptyState size="compact" header="No KPIs linked" description="Link a KPI from the Strategy Room row menu." />
+                <EmptyState size="compact" header="No KPIs linked" description="Measurement is governed through Objective → approved OKR → reportable Key Result and Strategic KPI Assignments. Direct element→KPI linking was retired." />
               ) : (
                 <div style={{ display: 'grid', gap: 6 }}>
                   {linkedKpis.map(({ link, kpi }) => (

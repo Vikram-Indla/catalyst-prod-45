@@ -14,6 +14,7 @@
  * linked via the generic strata_execution_links bridge — no second model.
  */
 import React, { useEffect, useMemo, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { useQueries } from '@tanstack/react-query';
 import Tabs, { Tab, TabList, TabPanel } from '@atlaskit/tabs';
 import {
@@ -40,6 +41,7 @@ import { fmtDate, fmtSarCompact, labelize } from './format';
 import { StrataFormModal } from './authoring';
 import type { StrataFormValues } from './authoring';
 import { StrataExecutionHealthLozenge, StrataPanel, T } from './shared';
+import { ProjectKpiTracePanel } from './executiveReporting';
 import { KpiAssignmentsSection, KpiAlignmentSection } from './kpiGovernanceSections';
 
 const WRITE_ROLES: StrataRole[] = ['strategy_office', 'vmo_validator', 'data_steward', 'strata_admin'];
@@ -158,10 +160,28 @@ type FormKey =
 
 const TERMINAL_STAGES = ['completed', 'cancelled', 'archived'];
 
+/**
+ * URL-persisted detail tabs (?tab=). Refreshing / deep-linking Scope & Measures must return to
+ * Scope & Measures rather than silently resetting to Overview. Order MUST match <TabList> below.
+ * An absent or unrecognised token falls back to 'overview' — zero-assumption, never a guess.
+ */
+const CARD_TAB_SLUGS = ['overview', 'scope-measures', 'delivery'] as const;
+
 export function ProjectCardDetailView({ card, theme }: {
   card: StrataProjectCard;
   theme: StrataStrategyElement | null;
 }) {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const selectedTab = Math.max(0, CARD_TAB_SLUGS.indexOf(
+    (searchParams.get('tab') ?? 'overview') as (typeof CARD_TAB_SLUGS)[number],
+  ));
+  const handleTabChange = React.useCallback((index: number) => {
+    setSearchParams((prev) => {
+      const next = new URLSearchParams(prev);
+      next.set('tab', CARD_TAB_SLUGS[index] ?? 'overview');
+      return next;
+    }, { replace: true });
+  }, [setSearchParams]);
   const invalidate = useInvalidateStrata();
   const roles = useStrataRoles().data ?? [];
   const canWrite = roles.some((r) => WRITE_ROLES.includes(r));
@@ -528,7 +548,7 @@ export function ProjectCardDetailView({ card, theme }: {
             </DetailPanel>
           ) : null}
 
-          <Tabs id={`strata-project-detail-tabs-${card.id}`}>
+          <Tabs id={`strata-project-detail-tabs-${card.id}`} selected={selectedTab} onChange={handleTabChange}>
         <TabList>
           <Tab>Overview</Tab>
           <Tab>Scope &amp; Measures</Tab>
@@ -674,6 +694,10 @@ export function ProjectCardDetailView({ card, theme }: {
                 </div>
                 <div style={{ marginTop: 4 }}>
                   <KpiAlignmentSection presetProjectObjectiveId={objectives.length === 1 ? objectives[0].id : undefined} />
+                </div>
+                {/* Engine 5 — governed contribution provenance for this card (S19 trace). */}
+                <div style={{ marginTop: 4 }}>
+                  <ProjectKpiTracePanel projectCardId={card.id} />
                 </div>
               </>
             )}

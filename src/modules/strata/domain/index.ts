@@ -48,7 +48,7 @@ export interface StrataKpiDependencyImpact {
 /** KO-DEF-003 KR reportability (server-resolved). */
 export interface StrataKrReportability {
   reportable: boolean;
-  kind: 'standalone' | 'kpi_backed';
+  kind: 'standalone' | 'kpi_backed' | 'assignment_backed';
   label: string;
   qualified: boolean;
   kpi_state?: string | null;
@@ -56,10 +56,42 @@ export interface StrataKrReportability {
   kpi_name?: string | null;
   resolved_kpi_id?: string | null;
   actual_status?: string | null;
+  // assignment_backed variant: the resolved Strategic KPI Assignment + the observation
+  // the official value comes from (STRATA-KPI-014 provenance).
+  assignment_id?: string | null;
+  observation_id?: string | null;
   reason?: string | null;
 }
 export interface StrataOkrOfficialProgress {
   okr_id: string; reportable_krs: number; excluded_krs: number; official_progress: number | null;
+}
+
+// S19 project KPI trace — full governed provenance chain for one Project Card.
+export interface StrataProjectKpiTraceMapping {
+  mapping_id: string; relationship_type: string; status: string;
+  effective_from?: string | null; effective_to?: string | null;
+  parent_strategic_assignment_id: string; parent_kpi_id: string | null;
+  parent_strategic_objective_id: string | null; aggregates: boolean;
+  linked_key_results: Array<{ key_result_id: string; okr_id: string; okr_objective_id: string | null; kr_lifecycle: string | null; okr_status: string | null }>;
+}
+export interface StrataProjectKpiAssignmentTrace {
+  assignment_id: string; assignment_key: string | null; kpi_id: string;
+  project_objective_id: string | null; status: string;
+  effective_from?: string | null; effective_to?: string | null;
+  contribution_mappings: StrataProjectKpiTraceMapping[];
+}
+export interface StrataProjectKpiTrace {
+  project_card_id: string; as_of?: string; error?: string;
+  card_primary_strategic_objective_id?: string | null;
+  approved_project_objective_alignments?: Array<{ alignment_id: string; project_objective_id: string; strategic_objective_id: string; alignment_type: string; attribution_share: number | null; status: string; approved_at?: string | null }>;
+  project_kpi_assignments?: StrataProjectKpiAssignmentTrace[];
+  basis?: Record<string, unknown>;
+}
+// S20 executive governed rollup — one row per Strategic KPI Assignment.
+export interface StrataExecutiveRollupRow {
+  strategic_assignment_id: string; strategic_kpi_id: string; strategic_objective_id: string | null;
+  aggregating_contributions: number; non_aggregating_contributions: number;
+  contributing_project_cards: string[]; linked_key_results: string[];
 }
 
 /** Maps known Postgres/RPC errors to business-facing copy so schema, table and
@@ -740,6 +772,20 @@ export const kpiApi = {
       p_start_period: input.startPeriodId ?? null, p_end_period: input.endPeriodId ?? null,
       p_kr_eligible: input.krEligible ?? false, p_org_unit: input.orgUnitId ?? null,
     })) as Promise<string>,
+  // S18 repair verb (CAT-STRATA-EXECMODEL): edit a draft/rejected assignment's owner/target/band/
+  // period/kr-eligibility/org before submit. Identity fields (kpi/scope/element) are NOT editable;
+  // approved assignments are versioned, not edited. Server-gated + lock-versioned + kr-narrow-only.
+  updateKpiAssignment: (input: {
+    id: string; ownerId?: string; target?: number; targetBandMin?: number; targetBandMax?: number;
+    startPeriodId?: string; endPeriodId?: string; krEligible?: boolean; orgUnitId?: string; lockVersion?: number;
+  }): Promise<void> =>
+    run(rpcAny('strata_update_kpi_assignment', {
+      p_assignment: input.id, p_owner: input.ownerId ?? null, p_target: input.target ?? null,
+      p_target_band_min: input.targetBandMin ?? null, p_target_band_max: input.targetBandMax ?? null,
+      p_start_period: input.startPeriodId ?? null, p_end_period: input.endPeriodId ?? null,
+      p_kr_eligible: input.krEligible ?? null, p_org_unit: input.orgUnitId ?? null,
+      p_lock_version: input.lockVersion ?? null,
+    })) as Promise<void>,
   submitKpiAssignment: (id: string, lockVersion?: number) =>
     run(rpcAny('strata_submit_kpi_assignment', { p_assignment: id, p_lock_version: lockVersion ?? null })),
   approveKpiAssignment: (id: string, lockVersion?: number) =>
@@ -787,6 +833,11 @@ export const kpiApi = {
     run((supabase.from('strata_kpis' as never).select('id, name, status, usage_class, kr_eligible, aggregation_policy').in('status', ['draft', 'pending_approval']).order('name')) as never) as Promise<Array<{ id: string; name: string; status: string; usage_class?: string | null; kr_eligible?: boolean; aggregation_policy?: string | null }>>,
   strategyElements: (): Promise<Array<{ id: string; name: string; element_type: string; context: string }>> =>
     run((supabase.from('strata_strategy_elements' as never).select('id, name, element_type, context').eq('status', 'active').order('name')) as never) as Promise<Array<{ id: string; name: string; element_type: string; context: string }>>,
+  // Name-resolution map across ALL statuses (incl. retired) — for DISPLAY only, so provenance never
+  // shows a raw UUID for an element that has since been retired. Authoring dropdowns keep using the
+  // active-only strategyElements().
+  strategyElementsAll: (): Promise<Array<{ id: string; name: string; element_type: string }>> =>
+    run((supabase.from('strata_strategy_elements' as never).select('id, name, element_type').order('name')) as never) as Promise<Array<{ id: string; name: string; element_type: string }>>,
   // Resolve a single element's display name regardless of status (a pre-scoped assignment may
   // target a non-active element, e.g. a retired objective) so the UI never shows a raw UUID.
   strategyElementName: (id: string): Promise<{ id: string; name: string } | null> =>
@@ -839,8 +890,8 @@ export const kpiApi = {
     run(rpcAny('strata_element_okr_readiness', { p_element: elementId, p_as_of: asOf ?? null })) as Promise<Record<string, unknown>>,
   elementHealthFromKr: (elementId: string, asOf?: string): Promise<Record<string, unknown>> =>
     run(rpcAny('strata_element_health_from_kr', { p_element: elementId, p_as_of: asOf ?? null })) as Promise<Record<string, unknown>>,
-  projectKpiTrace: (projectCardId: string): Promise<Record<string, unknown>> =>
-    run(rpcAny('strata_project_kpi_trace', { p_project_card: projectCardId })) as Promise<Record<string, unknown>>,
+  projectKpiTrace: (projectCardId: string): Promise<StrataProjectKpiTrace> =>
+    run(rpcAny('strata_project_kpi_trace', { p_project_card: projectCardId })) as Promise<StrataProjectKpiTrace>,
   snapshotGovernance: (label: string): Promise<string> =>
     run(rpcAny('strata_snapshot_governance', { p_label: label })) as Promise<string>,
   notifyStaleMeasurements: (days?: number): Promise<number> =>
@@ -850,6 +901,10 @@ export const kpiApi = {
   okrs: (): Promise<StrataOkr[]> => run(typedQuery('strata_okrs').select('*').order('created_at', { ascending: false })),
   keyResults: (okrId: string): Promise<StrataKeyResult[]> =>
     run(typedQuery('strata_key_results').select('*').eq('okr_id', okrId).order('order_index')),
+  // Batch KR id→name resolution (Engine 5 provenance UI — never render a raw KR UUID). One query.
+  keyResultNames: (ids: string[]): Promise<Array<{ id: string; name: string; slug: string | null }>> =>
+    ids.length === 0 ? Promise.resolve([])
+      : run((supabase.from('strata_key_results' as never).select('id, name, slug').in('id', ids)) as never) as Promise<Array<{ id: string; name: string; slug: string | null }>>,
   // Slug resolution for deep-link detail pages (CAT-STRATA-THEMEOKR-20260719-001).
   okrBySlug: (slug: string): Promise<StrataOkr | null> =>
     run((supabase.from('strata_okrs' as never).select('*').eq('slug', slug).maybeSingle()) as never) as Promise<StrataOkr | null>,
@@ -944,14 +999,6 @@ export const kpiApi = {
       p_note: input.note ?? null, p_confidence: input.confidence ?? null,
       p_evidence: input.evidence ?? null,
     })),
-  createOkr: (input: {
-    name: string; cycleId?: string; objectiveElementId?: string; periodId?: string; ownerId?: string;
-  }): Promise<string> =>
-    run(typedRpc('strata_create_okr', {
-      p_name: input.name, p_cycle: input.cycleId ?? null,
-      p_objective_element: input.objectiveElementId ?? null,
-      p_period: input.periodId ?? null, p_owner: input.ownerId ?? null,
-    })),
   createKeyResult: (input: {
     okrId: string; name: string; kpiId?: string; unit?: string;
     baseline?: number; target?: number; currentValue?: number; direction?: string;
@@ -978,29 +1025,13 @@ export const kpiApi = {
     run(typedRpc('strata_kr_reportability', { p_kr: krId })) as Promise<StrataKrReportability>,
   okrOfficialProgress: (okrId: string): Promise<StrataOkrOfficialProgress> =>
     run(typedRpc('strata_okr_official_progress', { p_okr: okrId })) as Promise<StrataOkrOfficialProgress>,
-  updateKeyResult: (krId: string, patch: {
-    currentValue?: number; name?: string; target?: number; status?: string; kpiId?: string;
-  }) =>
-    run(typedRpc('strata_update_key_result', {
-      p_kr: krId, p_current_value: patch.currentValue ?? null, p_name: patch.name ?? null,
-      p_target: patch.target ?? null, p_status: patch.status ?? null, p_kpi: patch.kpiId ?? null,
-    })),
-  // ── Theme-owned OKR v2 (CAT-STRATA-THEMEOKR-20260719-001) — governed direct-Theme model ──
   orgUnits: (): Promise<Array<{ id: string; name: string; slug: string | null }>> =>
     run(typedQuery('strata_org_units' as never).select('id,name,slug').eq('status', 'active').order('name') as never),
   unitsOfMeasure: (): Promise<Array<{ id: string; code: string; name: string; symbol: string | null; category: string }>> =>
     run(typedQuery('strata_units_of_measure' as never).select('id,code,name,symbol,category').eq('status', 'active').order('name') as never),
-  createOkrV2: (input: {
-    themeId: string; name: string; objectiveStatement: string; cycleId?: string; ownerId?: string;
-    owningOrgId?: string; commitment?: 'committed' | 'aspirational'; startPeriodId?: string; endPeriodId?: string;
-  }): Promise<string> =>
-    run(rpcAny('strata_create_okr_v2', {
-      p_theme: input.themeId, p_name: input.name, p_objective_statement: input.objectiveStatement,
-      p_cycle: input.cycleId ?? null, p_owner: input.ownerId ?? null, p_owning_org: input.owningOrgId ?? null,
-      p_commitment: input.commitment ?? 'committed', p_start_period: input.startPeriodId ?? null, p_end_period: input.endPeriodId ?? null,
-    })) as Promise<string>,
-  // CAT-STRATA-EXECMODEL-20260721-001 S16 (D-0): Objective-owned OKR create. Supersedes v2 —
-  // the OKR belongs to a Strategic Objective; theme is derived + locked from the objective's parent.
+  // CAT-STRATA-EXECMODEL-20260721-001 S16 (D-0): Objective-owned OKR create — the only OKR create
+  // path (legacy createOkr / createOkrV2 removed). The OKR belongs to a Strategic Objective; theme
+  // is derived + locked from the objective's parent.
   createOkrV3: (input: {
     objectiveId: string; name: string; objectiveStatement: string; cycleId?: string; ownerId?: string;
     owningOrgId?: string; commitment?: 'committed' | 'aspirational'; startPeriodId?: string; endPeriodId?: string;
@@ -2019,6 +2050,11 @@ export const importApi = {
 
 // ── Governance ───────────────────────────────────────────────────────────────
 export const governanceApi = {
+  // S20 Executive Reporting read model — one set-based governed rollup (no per-card N+1). Per
+  // Strategic KPI Assignment: aggregating vs non-aggregating project contributions (S19 rule =
+  // approved, currently-effective direct_component only), contributing cards, and linked KRs.
+  executiveGovernedRollup: (cycleId?: string | null): Promise<StrataExecutiveRollupRow[]> =>
+    run(rpcAny('strata_executive_governed_rollup', { p_cycle: cycleId ?? null })) as Promise<StrataExecutiveRollupRow[]>,
   snapshots: (): Promise<StrataSnapshot[]> =>
     run(typedQuery('strata_snapshots').select('*').order('locked_at', { ascending: false })),
   snapshotByKey: (snapshotKey: string): Promise<StrataSnapshot | null> =>

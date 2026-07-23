@@ -14,3 +14,7 @@ Approved 2026-07-20. Build order: S0 quick-wires → S1 classification layer →
 
 ## Environmental constraint (not a decision, a fact)
 No local Supabase (Docker daemon down); staging/prod writes forbidden. DB-execution / RLS / maker-checker RUNTIME proof is externally blocked. Slices are verified by forward-only migration + TS migration-guard tests + `build` + ADS color/audit gates. Runtime DB proof + UI screenshot signoff remain pre-merge gates for a human with a DB + browser.
+
+## D-5 — S19 project KPI trace truth — **APPROVED**
+
+Approved by J on 2026-07-22 as part of the instruction to proceed to closure and finish all pending items. Replace the misleading S9 read function only through a forward migration. Trace the actual typed/effective mapping and KR linkage; registry reuse never aggregates. Production, push, merge and PR remain prohibited.

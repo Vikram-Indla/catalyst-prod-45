@@ -11,7 +11,7 @@ import { useNavigate } from 'react-router-dom';
 import { useQueries, useQuery } from '@tanstack/react-query';
 import {
   Button, EmptyState, IconButton,
-  Lozenge, Modal, ModalBody, ModalFooter, ModalHeader, ModalTitle, SectionMessage, Select, Spinner, Textfield, Tooltip,
+  Lozenge, Modal, ModalBody, ModalFooter, ModalHeader, ModalTitle, SectionMessage, Spinner, Tooltip,
 } from '@/components/ads';
 import type { SelectOption } from '@/components/ads';
 import { JiraTable } from '@/components/shared/JiraTable';
@@ -33,7 +33,7 @@ import {
   str, themeParentOptions, ThemeCharterModal,
 } from '@/modules/strata/components/authoring';
 import { labelize } from '@/modules/strata/components/format';
-import type { StrataKpi, StrataStrategyElement } from '@/modules/strata/types';
+import type { StrataStrategyElement } from '@/modules/strata/types';
 
 type LozengeAppearance = React.ComponentProps<typeof Lozenge>['appearance'];
 
@@ -86,156 +86,7 @@ type AuthoringState =
   | { kind: 'create-element' }
   | { kind: 'edit-element'; element: StrataStrategyElement }
   | { kind: 'retire-element'; element: StrataStrategyElement }
-  | { kind: 'charter'; element: StrataStrategyElement }
-  | { kind: 'kpi-links'; element: StrataStrategyElement };
-
-function AuthoringFieldLabel({ children }: { children: React.ReactNode }) {
-  return (
-    <div style={{ marginBottom: 4, fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: T.subtle }}>
-      {children}
-    </div>
-  );
-}
-
-/**
- * KPI set linking for one element — link approved KPIs, unlink existing.
- * Needs in-place unlink actions, so it composes ads primitives directly
- * (StrataFormModal only submits once and closes).
- */
-function KpiLinksModal({
-  element, links, kpis, onClose, onChanged,
-}: {
-  element: StrataStrategyElement;
-  links: Array<{ element_id: string; kpi_id: string; weight: number | null }>;
-  kpis: StrataKpi[];
-  onClose: () => void;
-  onChanged: () => void;
-}) {
-  const [kpiId, setKpiId] = useState<string | null>(null);
-  const [weight, setWeight] = useState('');
-  const [contribution, setContribution] = useState<'direct' | 'supporting'>('direct');
-  const [busy, setBusy] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const kpiById = useMemo(() => new Map(kpis.map((k) => [k.id, k])), [kpis]);
-  const linkedIds = new Set(links.map((l) => l.kpi_id));
-  const kpiOptions: SelectOption<string>[] = kpis
-    .filter((k) => k.status === 'approved' && !linkedIds.has(k.id))
-    .map((k) => ({ value: k.id, label: k.name }));
-  const contributionOptions: SelectOption<string>[] = [
-    { value: 'direct', label: 'Direct' },
-    { value: 'supporting', label: 'Supporting' },
-  ];
-
-  const run = async (fn: () => Promise<unknown>) => {
-    setBusy(true);
-    setError(null);
-    try {
-      await fn();
-      onChanged();
-      return true;
-    } catch (e) {
-      setError(e instanceof Error ? e.message : String(e));
-      return false;
-    } finally {
-      setBusy(false);
-    }
-  };
-
-  const link = async () => {
-    if (!kpiId) { setError('Required: KPI'); return; }
-    const w = weight === '' ? null : Number(weight);
-    if (w != null && (Number.isNaN(w) || w < 0 || w > 100)) {
-      setError('Weight must be between 0 and 100.');
-      return;
-    }
-    const ok = await run(() => strategyApi.linkElementKpi(element.id, kpiId, w ?? undefined, contribution));
-    if (ok) { setKpiId(null); setWeight(''); }
-  };
-
-  return (
-    <Modal isOpen onClose={busy ? () => {} : onClose} width="medium" testId="strata-kpi-links-modal">
-      <ModalHeader><ModalTitle>KPI links — {element.name}</ModalTitle></ModalHeader>
-      <ModalBody>
-        {links.length === 0 ? (
-          <p style={{ margin: '0 0 12px', fontSize: 'var(--ds-font-size-200)', color: T.subtle }}>
-            No KPIs linked to this element yet.
-          </p>
-        ) : (
-          <div style={{ marginBottom: 12 }}>
-            {links.map((l) => (
-              <div
-                key={l.kpi_id}
-                style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 0', borderBottom: `1px solid ${T.border}` }}
-              >
-                <span style={{ flex: 1, fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: T.text }}>
-                  {kpiById.get(l.kpi_id)?.name ?? '—'}
-                </span>
-                <span style={{ fontSize: 'var(--ds-font-size-100)', color: T.subtle, whiteSpace: 'nowrap' }}>
-                  {l.weight != null ? `Weight ${l.weight}` : '—'}
-                </span>
-                <Button
-                  spacing="compact"
-                  appearance="subtle"
-                  isDisabled={busy}
-                  onClick={() => run(() => strategyApi.unlinkElementKpi(element.id, l.kpi_id))}
-                >
-                  Unlink
-                </Button>
-              </div>
-            ))}
-          </div>
-        )}
-        <div style={{ display: 'grid', gap: 12 }}>
-          <div>
-            <AuthoringFieldLabel>KPI (approved)</AuthoringFieldLabel>
-            <Select
-              options={kpiOptions}
-              value={kpiOptions.find((o) => o.value === kpiId) ?? null}
-              onChange={(next) => setKpiId(next?.value ?? null)}
-              placeholder="Select KPI…"
-              isSearchable
-              usePortal
-              aria-label="KPI"
-            />
-          </div>
-          <div>
-            <AuthoringFieldLabel>Weight (0–100)</AuthoringFieldLabel>
-            <Textfield
-              type="number"
-              value={weight}
-              onChange={(e) => setWeight((e.target as HTMLInputElement).value)}
-              aria-label="Weight"
-            />
-          </div>
-          <div>
-            <AuthoringFieldLabel>Contribution</AuthoringFieldLabel>
-            <Select
-              options={contributionOptions}
-              value={contributionOptions.find((o) => o.value === contribution) ?? null}
-              onChange={(next) => setContribution((next?.value as 'direct' | 'supporting') ?? 'direct')}
-              usePortal
-              aria-label="Contribution"
-            />
-          </div>
-        </div>
-        {error ? (
-          <div style={{ marginTop: 12 }}>
-            <SectionMessage appearance="error" title="Action rejected">
-              <p style={{ whiteSpace: 'pre-wrap' }}>{error}</p>
-            </SectionMessage>
-          </div>
-        ) : null}
-      </ModalBody>
-      <ModalFooter>
-        <Button appearance="subtle" onClick={onClose} isDisabled={busy}>Close</Button>
-        <Button appearance="primary" onClick={link} isDisabled={busy}>
-          {busy ? 'Working…' : 'Link KPI'}
-        </Button>
-      </ModalFooter>
-    </Modal>
-  );
-}
+  | { kind: 'charter'; element: StrataStrategyElement };
 
 /** Direction-readiness band (anchor 02) — 4 coverage tiles. Color never alone:
  *  each gap carries a worded badge ("N GAPS" / "DRAFT"). */
@@ -609,8 +460,6 @@ export default function StrataStrategyRoomPage() {
     ...(el.element_type === 'theme'
       ? [{ key: 'charter', label: 'Charter', onClick: () => setAuthoring({ kind: 'charter', element: el }) }]
       : []),
-    // EXECMODEL S17 (phased D-2): direct element↔KPI linking is de-officialised — measurement is
-    // Objective→OKR→KR. The KpiLinksModal is retained as dead code (unreachable); Stage 6 removes it.
     ...(el.status !== 'retired'
       ? [{ key: 'retire', label: 'Retire…', onClick: () => setAuthoring({ kind: 'retire-element', element: el }) }]
       : []),
@@ -1175,9 +1024,6 @@ export default function StrataStrategyRoomPage() {
           onSaved={invalidate}
         />
       ) : null}
-
-      {/* EXECMODEL S17 (phased D-2): element↔KPI link authoring removed (unreachable). Measurement
-          is Objective→OKR→KR. KpiLinksModal kept as dead code; Stage 6 deletes it + the RPCs. */}
     </StrataPageShell>
   );
 }
