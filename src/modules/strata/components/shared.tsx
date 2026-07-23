@@ -1524,6 +1524,9 @@ export function OkrRow({ okr, objectiveName, isOpen, onToggle, onAddKeyResult, o
             {confidenceText}
           </span>
         ) : null}
+        {okr.objective_id == null && okr.theme_id != null ? (
+          <Lozenge appearance="moved">Grandfathered</Lozenge>
+        ) : null}
         {status
           ? <Lozenge appearance={status.appearance}>{status.label}</Lozenge>
           : <Lozenge appearance="default">{labelize(okr.status)}</Lozenge>}

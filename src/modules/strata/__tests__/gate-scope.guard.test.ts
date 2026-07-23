@@ -50,7 +50,10 @@ describe('STRATA gate scope guards (CAT-STRATA-GATE-SCOPE-20260710-001)', () => 
   it('Theme row actions still expose valid theme-only actions (no regression)', () => {
     expect(strategyRoomSrc).toContain("el.element_type === 'theme'");
     expect(strategyRoomSrc).toContain("key: 'charter', label: 'Charter'");
-    expect(strategyRoomSrc).toContain("key: 'kpis', label: 'KPI links'");
     expect(strategyRoomSrc).toContain("key: 'retire', label: 'Retire…'");
+    // De-officialised (CAT-STRATA-EXECMODEL): direct element→KPI "KPI links" authoring was
+    // removed in favour of Objective→approved OKR→reportable KR. The theme row menu must not
+    // reintroduce it.
+    expect(strategyRoomSrc).not.toContain("label: 'KPI links'");
   });
 });

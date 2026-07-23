@@ -14,6 +14,7 @@
 import { describe, expect, it, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { MemoryRouter } from 'react-router-dom';
 
 const H = vi.hoisted(() => {
   const base = {
@@ -94,26 +95,26 @@ const q = (testId: string) => document.querySelector(`[data-testid="${testId}"]`
 
 describe('P0-A — approved scorecard-model aggregate is immutable in the UI', () => {
   it('offers NO weight-authoring control on an approved model, even to strategy_office', () => {
-    render(<ScorecardModelsSection onError={() => {}} />);
+    render(<MemoryRouter><ScorecardModelsSection onError={() => {}} /></MemoryRouter>);
     expect(q('strata-model-weights-edit-m1')).toBeNull();
   });
 
   it('still offers it on a DRAFT model — the gate is governance state, not the role', () => {
-    render(<ScorecardModelsSection onError={() => {}} />);
+    render(<MemoryRouter><ScorecardModelsSection onError={() => {}} /></MemoryRouter>);
     // Positive control: strategy_office is unchanged, so a null here would mean the gate is
     // simply broken rather than status-aware.
     expect(q('strata-model-weights-edit-m2')).not.toBeNull();
   });
 
   it('states WHY the approved model cannot be edited — never a silently missing control', () => {
-    render(<ScorecardModelsSection onError={() => {}} />);
+    render(<MemoryRouter><ScorecardModelsSection onError={() => {}} /></MemoryRouter>);
     const note = q('strata-model-immutable-note');
     expect(note).not.toBeNull();
     expect(note?.textContent).toMatch(/immutable/i);
   });
 
   it('shows no immutability note on the draft model', () => {
-    render(<ScorecardModelsSection onError={() => {}} />);
+    render(<MemoryRouter><ScorecardModelsSection onError={() => {}} /></MemoryRouter>);
     expect(screen.getAllByTestId('strata-model-immutable-note')).toHaveLength(1);
   });
 });
@@ -127,18 +128,18 @@ describe('A3a — governed revision replaces in-place edits of an approved model
   beforeEach(() => { H.createModelDraftVersion.mockClear(); });
 
   it('offers "Create new version" on the approved model', () => {
-    render(<ScorecardModelsSection onError={() => {}} />);
+    render(<MemoryRouter><ScorecardModelsSection onError={() => {}} /></MemoryRouter>);
     expect(q('strata-model-new-version-m1')).not.toBeNull();
   });
 
   it('does NOT offer it on the draft model — a draft is edited directly, not revised', () => {
-    render(<ScorecardModelsSection onError={() => {}} />);
+    render(<MemoryRouter><ScorecardModelsSection onError={() => {}} /></MemoryRouter>);
     expect(q('strata-model-new-version-m2')).toBeNull();
   });
 
   it('will not create a version without a reason, and does not call the RPC', async () => {
     const user = userEvent.setup();
-    render(<ScorecardModelsSection onError={() => {}} />);
+    render(<MemoryRouter><ScorecardModelsSection onError={() => {}} /></MemoryRouter>);
     await user.click(q('strata-model-new-version-m1') as HTMLElement);
 
     const commit = await screen.findByRole('button', { name: /Create draft version/i });
@@ -149,7 +150,7 @@ describe('A3a — governed revision replaces in-place edits of an approved model
 
   it('passes the typed reason to the RPC, trimmed', async () => {
     const user = userEvent.setup();
-    render(<ScorecardModelsSection onError={() => {}} />);
+    render(<MemoryRouter><ScorecardModelsSection onError={() => {}} /></MemoryRouter>);
     await user.click(q('strata-model-new-version-m1') as HTMLElement);
 
     await user.type(

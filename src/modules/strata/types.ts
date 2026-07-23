@@ -188,7 +188,11 @@ export interface StrataChangeRequest {
 
 export type StrataRole =
   | 'strata_admin' | 'strategy_office' | 'executive_viewer'
-  | 'kpi_owner' | 'vmo_validator' | 'data_steward';
+  | 'kpi_owner' | 'vmo_validator' | 'data_steward'
+  // Effective server roles referenced by governed RPCs via strata_has_role (reconciled
+  // CAT-STRATA-KPIGOV-ENTRY-20260721-001). Authorization is DB-enforced; the union only
+  // documents the real role strings — adding them narrows client drift, never weakens the server.
+  | 'okr_owner' | 'kpi_approver' | 'okr_approver';
 
 // ── Strategy ─────────────────────────────────────────────────────────────────
 export interface StrataCycle {

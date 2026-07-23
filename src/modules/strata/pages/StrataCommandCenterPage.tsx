@@ -49,6 +49,8 @@ import {
   useBandResolver,
   useInvalidateStrata,
   useProjectCards,
+  useExecutiveGovernedRollup,
+  ctxToken,
   useActions,
   useStrategyElements,
   useElementKpis,
@@ -377,6 +379,23 @@ export default function StrataCommandCenterPage() {
   const kpisQ = useKpis();
   // CC-DEF-003: entity lookups so every attention row drills to its EXACT owning record.
   const projectCardsQ = useProjectCards();
+  // S20/S21 authoritative governed rollup read model — one set-based call (no per-card N+1).
+  const rollupQ = useExecutiveGovernedRollup(activeCycle?.id ?? null);
+  const rollupCardById = useMemo(() => new Map((projectCardsQ.data ?? []).map((c) => [c.id, c])), [projectCardsQ.data]);
+  /**
+   * Provenance drill-through: open the NAMED contributing Project Card and carry the governed
+   * context with it — ?cycle / ?period keep the same governed window, ?tab lands on the Scope &
+   * Measures provenance, ?from returns to the Command Center. Never route to the generic index:
+   * that drops which card actually contributed.
+   */
+  const rollupCardHref = React.useCallback((slug: string) => {
+    const p = new URLSearchParams();
+    if (activeCycle) p.set('cycle', ctxToken(activeCycle.name));
+    if (activePeriod) p.set('period', ctxToken(activePeriod.name));
+    p.set('tab', 'scope-measures');
+    p.set('from', Routes.strata.root());
+    return `${Routes.strata.projectCard(slug)}?${p.toString()}`;
+  }, [activeCycle, activePeriod]);
   const actionsQ = useActions();
   // CC-DEF-005: active-cycle element set — positive-evidence scoping for theme decisions.
   const elementsQ = useStrategyElements(activeCycle?.id);
@@ -1230,6 +1249,66 @@ export default function StrataCommandCenterPage() {
                     </div>
                   );
                 })
+              )}
+            </StrataPanel>
+          </div>
+
+          {/* ── Row 5b: Executive governed KPI rollup — S20/S21 authoritative read model ── */}
+          <div style={{ gridColumn: 'span 12', minWidth: 0 }}>
+            <StrataPanel
+              title="Governed KPI rollup"
+              icon={<PieChart size={16} />}
+              count={rollupQ.isLoading ? null : (rollupQ.data ?? []).length}
+              testId="strata-cc-governed-rollup"
+            >
+              {noStrataRole ? (
+                <EmptyState size="compact" header="Restricted"
+                  description="You do not have a STRATA role. The governed rollup is limited to strategy and executive roles." />
+              ) : rollupQ.isError ? (
+                <PanelError error={rollupQ.error} />
+              ) : rollupQ.isLoading ? (
+                <div aria-hidden data-testid="strata-cc-governed-rollup-loading" style={{ height: 96, borderRadius: 8, background: T.neutral }} />
+              ) : (rollupQ.data ?? []).length === 0 ? (
+                <EmptyState size="compact" header="No governed contributions"
+                  description="No Strategic KPI Assignment yet has an aggregating or non-aggregating project contribution." />
+              ) : (
+                <div style={{ display: 'grid', gap: 'var(--ds-space-100)' }}>
+                  <span style={{ fontSize: 'var(--ds-font-size-050)', letterSpacing: '0.04em', color: T.subtlest, fontWeight: 600 }}>
+                    ONLY APPROVED, EFFECTIVE direct_component WITH AN APPROVED ALIGNMENT ROLLS UP — DRIVER / SUPPORTING / UNALIGNED NEVER AGGREGATE
+                  </span>
+                  {(rollupQ.data ?? []).map((r) => (
+                    <div
+                      key={r.strategic_assignment_id}
+                      data-testid="strata-cc-governed-rollup-row"
+                      style={{ display: 'flex', alignItems: 'center', gap: 'var(--ds-space-150)', padding: 'var(--ds-space-100) 0', borderBottom: `1px solid ${T.border}`, flexWrap: 'wrap' }}
+                    >
+                      <Lozenge appearance="success">{r.aggregating_contributions} aggregating</Lozenge>
+                      <Lozenge appearance="default">{r.non_aggregating_contributions} non-aggregating</Lozenge>
+                      <CatalystTag text={`${r.linked_key_results.length} KR`} />
+                      <span
+                        data-testid="strata-cc-governed-rollup-cards"
+                        style={{ flex: 1, minWidth: 160, display: 'flex', alignItems: 'center', gap: 'var(--ds-space-100)', flexWrap: 'wrap', fontSize: 'var(--ds-font-size-100)' }}
+                      >
+                        {r.contributing_project_cards.length === 0 ? (
+                          <span style={{ color: T.subtle }}>No aggregating project cards</span>
+                        ) : (
+                          r.contributing_project_cards.map((id) => {
+                            const c = rollupCardById.get(id);
+                            // Unresolved card → render nothing rather than a placeholder label.
+                            if (!c) return null;
+                            return c.slug ? (
+                              <InlineLink key={id} onClick={() => navigate(rollupCardHref(c.slug!))}>
+                                {c.name} →
+                              </InlineLink>
+                            ) : (
+                              <span key={id} style={{ color: T.subtle }}>{c.name}</span>
+                            );
+                          })
+                        )}
+                      </span>
+                    </div>
+                  ))}
+                </div>
               )}
             </StrataPanel>
           </div>

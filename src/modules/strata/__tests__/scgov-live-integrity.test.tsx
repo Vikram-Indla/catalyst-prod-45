@@ -16,6 +16,7 @@
  */
 import { describe, expect, it, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
 import userEvent from '@testing-library/user-event';
 
 const H = vi.hoisted(() => {
@@ -132,7 +133,7 @@ describe('persisted coverage states are distinct', () => {
       measure('ms5', 'p2', 'k5', 10), measure('ms6', 'p2', 'k6', 10),
       measure('ms7', 'p2', 'k7', 30),
     ];
-    render(<ScorecardModelsSection onError={() => {}} />);
+    render(<MemoryRouter><ScorecardModelsSection onError={() => {}} /></MemoryRouter>);
     expect(screen.getByText(/✕ Financial measure weights total 50 — assign the remaining 50/)).toBeInTheDocument();
     expect(screen.getByText(/✕ Network & Infrastructure measure weights total 50 — assign the remaining 50/)).toBeInTheDocument();
     expect(screen.queryByText(/has no measures assigned/)).not.toBeInTheDocument();
@@ -145,20 +146,20 @@ describe('persisted coverage states are distinct', () => {
       measure('ms1', 'p1', 'k1', 80), measure('ms2', 'p1', 'k2', 45),
       measure('ms3', 'p2', 'k3', 100),
     ];
-    render(<ScorecardModelsSection onError={() => {}} />);
+    render(<MemoryRouter><ScorecardModelsSection onError={() => {}} /></MemoryRouter>);
     expect(screen.getByText(/✕ Financial measure weights total 125 — remove 25/)).toBeInTheDocument();
     expect(screen.queryByText(/has no measures assigned/)).not.toBeInTheDocument();
   });
 
   it('zero measures stays its own state', () => {
-    render(<ScorecardModelsSection onError={() => {}} />);
+    render(<MemoryRouter><ScorecardModelsSection onError={() => {}} /></MemoryRouter>);
     expect(screen.getByText(/✕ Financial has no measures assigned/)).toBeInTheDocument();
     expect(screen.getByText(/✕ Network & Infrastructure has no measures assigned/)).toBeInTheDocument();
   });
 
   it('valid totals pass with no measure issues', () => {
     H.state.measures = [measure('ms1', 'p1', 'k1', 100), measure('ms2', 'p2', 'k2', 100)];
-    render(<ScorecardModelsSection onError={() => {}} />);
+    render(<MemoryRouter><ScorecardModelsSection onError={() => {}} /></MemoryRouter>);
     expect(screen.queryByText(/measure weights total \d+ —/)).not.toBeInTheDocument();
     expect(screen.queryByText(/has no measures assigned/)).not.toBeInTheDocument();
   });
@@ -168,7 +169,7 @@ describe('live validation while the measures editor is open', () => {
   it('an edited weight revalidates the band from the CURRENT rows, labeled as unsaved', async () => {
     const user = userEvent.setup();
     H.state.measures = [measure('ms1', 'p1', 'k1', 100), measure('ms2', 'p2', 'k2', 100)];
-    render(<ScorecardModelsSection onError={() => {}} />);
+    render(<MemoryRouter><ScorecardModelsSection onError={() => {}} /></MemoryRouter>);
     // Healthy at rest — no live label.
     expect(screen.queryByText(/Live — includes unsaved measure edits/)).not.toBeInTheDocument();
 
@@ -188,7 +189,7 @@ describe('live validation while the measures editor is open', () => {
   it('cancel restores the persisted (authoritative) validation', async () => {
     const user = userEvent.setup();
     H.state.measures = [measure('ms1', 'p1', 'k1', 100), measure('ms2', 'p2', 'k2', 100)];
-    render(<ScorecardModelsSection onError={() => {}} />);
+    render(<MemoryRouter><ScorecardModelsSection onError={() => {}} /></MemoryRouter>);
     await user.click(screen.getByTestId('strata-model-measures-edit-m1'));
     const field = screen.getByTestId('strata-measure-weight-k1');
     await user.clear(field);
@@ -207,7 +208,7 @@ describe('incomplete drafts save; only submission is gated', () => {
   it('Save stays enabled at 50/100 totals, persists the partial set, and states the submit gate', async () => {
     const user = userEvent.setup();
     H.state.measures = [measure('ms1', 'p1', 'k1', 100), measure('ms2', 'p2', 'k2', 100)];
-    render(<ScorecardModelsSection onError={() => {}} />);
+    render(<MemoryRouter><ScorecardModelsSection onError={() => {}} /></MemoryRouter>);
     await user.click(screen.getByTestId('strata-model-measures-edit-m1'));
     const field = screen.getByTestId('strata-measure-weight-k1');
     await user.clear(field);
@@ -239,7 +240,7 @@ describe('gap 4 — incomplete CHANGES_REQUESTED saves and stays editable; resub
     const user = userEvent.setup();
     H.state.models = [H.mkModel({ status: 'changes_requested', review_comment: 'fix totals', assigned_approver_id: null })];
     H.state.measures = [measure('ms1', 'p1', 'k1', 50), measure('ms2', 'p2', 'k2', 100)];
-    render(<ScorecardModelsSection onError={() => {}} />);
+    render(<MemoryRouter><ScorecardModelsSection onError={() => {}} /></MemoryRouter>);
     // Editable in changes_requested: the editor opens.
     await user.click(screen.getByTestId('strata-model-measures-edit-m1'));
     const save = screen.getByTestId('strata-model-measures-save-m1');
@@ -256,7 +257,7 @@ describe('gap 5 — a failed save preserves dirty values and never presents them
     const user = userEvent.setup();
     rpc.setModelMeasures.mockRejectedValueOnce(new Error('deliberate refusal — network down'));
     H.state.measures = [measure('ms1', 'p1', 'k1', 100), measure('ms2', 'p2', 'k2', 100)];
-    render(<ScorecardModelsSection onError={() => {}} />);
+    render(<MemoryRouter><ScorecardModelsSection onError={() => {}} /></MemoryRouter>);
     await user.click(screen.getByTestId('strata-model-measures-edit-m1'));
     const field = screen.getByTestId('strata-measure-weight-k1');
     await user.clear(field);

@@ -138,7 +138,7 @@ describe('§20 AC-6 — record + resolve (StrataFormModal)', () => {
       />,
     );
 
-    await tabTo(user, () => screen.getByLabelText('Title'), 'Title');
+    await tabTo(user, () => screen.getByLabelText('Title (required)'), 'Title');
     await user.keyboard('Accelerate digital care deflection');
 
     await tabTo(user, btnNamed('Create decision'), 'Create decision');
@@ -192,7 +192,7 @@ describe('§20 AC-6 — record + resolve (StrataFormModal)', () => {
       />,
     );
 
-    await tabTo(user, () => screen.getByLabelText('Title'), 'Title');
+    await tabTo(user, () => screen.getByLabelText('Title (required)'), 'Title');
     await user.keyboard('X');
     await tabTo(user, btnNamed('Create decision'), 'Create decision');
     await user.keyboard('{Enter}');

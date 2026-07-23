@@ -10,6 +10,7 @@
  */
 import { describe, expect, it, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
 
 const H = vi.hoisted(() => {
   const mkModel = (id: string, status = 'approved') => ({
@@ -133,7 +134,7 @@ describe('ModelIntegrityBand — anchor 05 tri-state + blocking', () => {
         weight: 100, required: false, aggregation_method: 'weighted_average', target_policy: 'required',
       }))
       : [];
-    return render(<ScorecardModelsSection onError={() => {}} />);
+    return render(<MemoryRouter><ScorecardModelsSection onError={() => {}} /></MemoryRouter>);
   };
 
   it('✓ when perspective weights total exactly 100', () => {

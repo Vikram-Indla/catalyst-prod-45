@@ -16,6 +16,7 @@
  */
 import { describe, expect, it, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
 import userEvent from '@testing-library/user-event';
 
 const H = vi.hoisted(() => {
@@ -140,7 +141,7 @@ describe('PENDING — the submitter', () => {
   beforeEach(() => { H.state.models = [pendingModel()]; });
 
   it('sees Withdraw but NO approval/decision controls at all', () => {
-    render(<ScorecardModelsSection onError={() => {}} />);
+    render(<MemoryRouter><ScorecardModelsSection onError={() => {}} /></MemoryRouter>);
     expect(screen.getByTestId('strata-sc-withdraw-m1')).toBeInTheDocument();
     expect(screen.queryByTestId('strata-approve-m1')).not.toBeInTheDocument();
     expect(screen.queryByTestId('strata-sc-request-changes-m1')).not.toBeInTheDocument();
@@ -148,7 +149,7 @@ describe('PENDING — the submitter', () => {
   });
 
   it('sees the honest pending copy: assignee named, version locked, recovery paths stated', () => {
-    render(<ScorecardModelsSection onError={() => {}} />);
+    render(<MemoryRouter><ScorecardModelsSection onError={() => {}} /></MemoryRouter>);
     const banner = screen.getByTestId('strata-sc-pending-banner-m1');
     expect(banner.textContent).toMatch(/Awaiting Jahanara Khan/);
     expect(banner.textContent).toMatch(/Version 2 is pending approval and cannot be edited/);
@@ -161,20 +162,20 @@ describe('PENDING — the submitter', () => {
       H.mkModel({ id: 'm0', version: 1, status: 'approved' }),
       pendingModel({ supersedes_id: 'm0' }),
     ];
-    render(<ScorecardModelsSection onError={() => {}} />);
+    render(<MemoryRouter><ScorecardModelsSection onError={() => {}} /></MemoryRouter>);
     expect(screen.getByTestId('strata-sc-pending-banner-m1').textContent)
       .toMatch(/Version 1 remains active and continues producing results/);
   });
 
   it('cannot edit weights or measures while pending', () => {
-    render(<ScorecardModelsSection onError={() => {}} />);
+    render(<MemoryRouter><ScorecardModelsSection onError={() => {}} /></MemoryRouter>);
     expect(screen.queryByTestId('strata-model-weights-edit-m1')).not.toBeInTheDocument();
     expect(screen.queryByTestId('strata-model-measures-edit-m1')).not.toBeInTheDocument();
   });
 
   it('withdraw flows through the dedicated RPC with the typed reason', async () => {
     const user = userEvent.setup();
-    render(<ScorecardModelsSection onError={() => {}} />);
+    render(<MemoryRouter><ScorecardModelsSection onError={() => {}} /></MemoryRouter>);
     await user.click(screen.getByTestId('strata-sc-withdraw-m1'));
     await user.type(screen.getByLabelText('Withdrawal reason'), 'need more time');
     await user.click(screen.getByTestId('strata-sc-withdraw-confirm-m1'));
@@ -189,7 +190,7 @@ describe('PENDING — the assigned approver', () => {
   });
 
   it('sees all three decision verbs and no Withdraw', () => {
-    render(<ScorecardModelsSection onError={() => {}} />);
+    render(<MemoryRouter><ScorecardModelsSection onError={() => {}} /></MemoryRouter>);
     expect(screen.getByTestId('strata-approve-m1')).toBeInTheDocument();
     expect(screen.getByTestId('strata-sc-request-changes-m1')).toBeInTheDocument();
     expect(screen.getByTestId('strata-sc-reject-m1')).toBeInTheDocument();
@@ -198,7 +199,7 @@ describe('PENDING — the assigned approver', () => {
 
   it('request changes requires a non-empty comment before confirm enables', async () => {
     const user = userEvent.setup();
-    render(<ScorecardModelsSection onError={() => {}} />);
+    render(<MemoryRouter><ScorecardModelsSection onError={() => {}} /></MemoryRouter>);
     await user.click(screen.getByTestId('strata-sc-request-changes-m1'));
     expect(screen.getByTestId('strata-sc-request-changes-confirm-m1')).toBeDisabled();
     await user.type(screen.getByLabelText('What needs to change (required)'), 'add measures');
@@ -209,7 +210,7 @@ describe('PENDING — the assigned approver', () => {
 
   it('reject requires a non-empty reason and states terminality', async () => {
     const user = userEvent.setup();
-    render(<ScorecardModelsSection onError={() => {}} />);
+    render(<MemoryRouter><ScorecardModelsSection onError={() => {}} /></MemoryRouter>);
     await user.click(screen.getByTestId('strata-sc-reject-m1'));
     expect(screen.getByTestId('strata-sc-reject-confirm-m1')).toBeDisabled();
     expect(screen.getByText(/Rejection is final for this version/)).toBeInTheDocument();
@@ -224,7 +225,7 @@ describe('PENDING — the assigned approver', () => {
       H.mkModel({ id: 'm0', version: 1, status: 'approved' }),
       pendingModel({ supersedes_id: 'm0', updated_at: 'TS-1' }),
     ];
-    render(<ScorecardModelsSection onError={() => {}} />);
+    render(<MemoryRouter><ScorecardModelsSection onError={() => {}} /></MemoryRouter>);
     await user.click(screen.getByTestId('strata-approve-m1'));
     expect(rpc.validateScorecardModel).toHaveBeenCalledWith('m1');
     expect(await screen.findByText(/supersedes the currently active version in the same transaction/)).toBeInTheDocument();
@@ -237,7 +238,7 @@ describe('PENDING — everyone else', () => {
   it('an unrelated strategy_office user gets read-only messaging and zero verbs', () => {
     H.state.userId = 'someone-else';
     H.state.models = [pendingModel()];
-    render(<ScorecardModelsSection onError={() => {}} />);
+    render(<MemoryRouter><ScorecardModelsSection onError={() => {}} /></MemoryRouter>);
     expect(screen.getByTestId('strata-sc-readonly-m1').textContent)
       .toMatch(/only the assigned approver can decide/);
     expect(screen.queryByTestId('strata-approve-m1')).not.toBeInTheDocument();
@@ -249,7 +250,7 @@ describe('PENDING — everyone else', () => {
     H.state.userId = 'admin-1';
     H.state.roles = ['strata_admin'];
     H.state.models = [pendingModel({ assigned_approver_id: null, assignment_source: null, submitted_by: null, submission_attempt: 0 })];
-    render(<ScorecardModelsSection onError={() => {}} />);
+    render(<MemoryRouter><ScorecardModelsSection onError={() => {}} /></MemoryRouter>);
     expect(screen.getByTestId('strata-sc-pending-banner-m1').textContent)
       .toMatch(/A STRATA admin must assign an approver/);
     expect(screen.getByTestId('strata-sc-assign-m1')).toBeInTheDocument();
@@ -268,7 +269,7 @@ describe('CHANGES_REQUESTED — same version, editable, comment shown', () => {
   });
 
   it('shows the reviewer comment prominently with the reviewer named', () => {
-    render(<ScorecardModelsSection onError={() => {}} />);
+    render(<MemoryRouter><ScorecardModelsSection onError={() => {}} /></MemoryRouter>);
     const banner = screen.getByTestId('strata-sc-changes-banner-m1');
     expect(banner.textContent).toMatch(/Changes requested by Jahanara Khan/);
     expect(banner.textContent).toMatch(/Assign measures to Customer before resubmitting\./);
@@ -276,7 +277,7 @@ describe('CHANGES_REQUESTED — same version, editable, comment shown', () => {
   });
 
   it('re-enables editing and offers Resubmit (not Submit)', () => {
-    render(<ScorecardModelsSection onError={() => {}} />);
+    render(<MemoryRouter><ScorecardModelsSection onError={() => {}} /></MemoryRouter>);
     expect(screen.getByTestId('strata-model-weights-edit-m1')).toBeInTheDocument();
     expect(screen.getByTestId('strata-model-measures-edit-m1')).toBeInTheDocument();
     expect(screen.getByTestId('strata-model-submit-m1').textContent).toMatch(/Resubmit for approval/);
@@ -284,7 +285,7 @@ describe('CHANGES_REQUESTED — same version, editable, comment shown', () => {
 
   it('resubmit dialog resolves the approver chooser, shows the checklist, and submits with the token', async () => {
     const user = userEvent.setup();
-    render(<ScorecardModelsSection onError={() => {}} />);
+    render(<MemoryRouter><ScorecardModelsSection onError={() => {}} /></MemoryRouter>);
     await user.click(screen.getByTestId('strata-model-submit-m1'));
     expect(rpc.scorecardApproverCandidates).toHaveBeenCalledWith('m1');
     expect(rpc.validateScorecardModel).toHaveBeenCalledWith('m1');
@@ -301,7 +302,7 @@ describe('REJECTED — terminal', () => {
       submitted_by: 'author-1', rejected_by: 'approver-1', rejected_at: '2026-07-18T11:00:00Z',
       review_comment: 'Wrong scope for the enterprise scorecard.',
     })];
-    render(<ScorecardModelsSection onError={() => {}} />);
+    render(<MemoryRouter><ScorecardModelsSection onError={() => {}} /></MemoryRouter>);
     const banner = screen.getByTestId('strata-sc-rejected-banner-m1');
     expect(banner.textContent).toMatch(/Rejected by Jahanara Khan/);
     expect(banner.textContent).toMatch(/Wrong scope for the enterprise scorecard\./);
@@ -315,7 +316,7 @@ describe('DRAFT — submit gate', () => {
   it('a draft failing integrity blocks Submit with the visible reason (client mirror of the server gate)', () => {
     H.state.models = [H.mkModel()];
     H.state.measures = []; // both perspectives empty → integrity fails
-    render(<ScorecardModelsSection onError={() => {}} />);
+    render(<MemoryRouter><ScorecardModelsSection onError={() => {}} /></MemoryRouter>);
     expect(screen.getByTestId('strata-model-submit-m1')).toBeDisabled();
     expect(screen.getByText(/Each perspective needs measure weights totalling 100 before submit/)).toBeInTheDocument();
   });
@@ -323,7 +324,7 @@ describe('DRAFT — submit gate', () => {
   it('a healthy draft submits through the dialog: approver required, then the RPC gets approver + note + token', async () => {
     const user = userEvent.setup();
     H.state.models = [H.mkModel({ updated_at: 'TS-9' })];
-    render(<ScorecardModelsSection onError={() => {}} />);
+    render(<MemoryRouter><ScorecardModelsSection onError={() => {}} /></MemoryRouter>);
     const submit = screen.getByTestId('strata-model-submit-m1');
     expect(submit).not.toBeDisabled();
     await user.click(submit);
